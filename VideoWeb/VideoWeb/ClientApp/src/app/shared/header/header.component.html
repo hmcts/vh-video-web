@@ -1,0 +1,23 @@
+<header class="hmcts-header" role="banner">
+  <div class="hmcts-header__container">
+    <div class="hmcts-header__logo">
+      <a class="hmcts-header__link" routerLink="#">
+        <span class="hmcts-header__logotype">
+        <img src="assets/images/UkGovCrestWhite.png" height="32" width="38" class="hmcts-header__logotype-crest" alt="HMCTS logo crest image"/>
+          <span class="hmcts-header__logotype-text">HMCTS Video hearing service</span>
+        </span>
+      </a>
+    </div>
+  </div>
+  <nav class="hmcts-primary-navigation" aria-label="Primary navigation">
+    <div class="hmcts-primary-navigation__container">
+      <ul id="navigation" style="display: inline-block;" class="hmcts-primary-navigation__list" aria-label="Top Level Navigation">
+        <li class="hmcts-primary-navigation__item" *ngFor="let topItem of topMenuItems; index as i">
+          <a class="vh-primary-navigation__link" href="javascript:void(0)" (click)="selectMenuItem(i)" [class.vh-primary-navigation__link_active]="topItem?.active">
+            {{topItem.name}}
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</header>

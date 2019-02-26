@@ -1,0 +1,24 @@
+
+<div class="govuk-grid-column-full">
+    <div class="vh-r">
+        <span>{{pagination.fromRecord}} to {{pagination.toRecord}} of {{pagination.totalCount}}</span>
+        <span class="vh-sl">
+            <a *ngIf="!pagination.firstPage" class="vh-link" href="javascript:void()" (click)="moveToFirstPage()">&laquo;</a>
+            <span *ngIf="pagination.firstPage">&laquo;</span>
+        </span>
+        <span class="vh-sr vh-sl">
+            <a *ngIf="!pagination.firstPage" class="vh-link" href="javascript:void()" (click)="moveToPreviousPage()">&lsaquo;</a>
+            <span *ngIf="pagination.firstPage">&lsaquo;</span>
+        </span>
+
+        <span class="vh-ml15">Page {{pagination.page}} of {{pagination.totalPages}}</span>
+        <span  class="vh-sl">
+            <a *ngIf="!pagination.lastPage"class="vh-link" href="javascript:void()"(click)="moveToNextPage()"> &rsaquo;</a>
+            <span *ngIf="pagination.lastPage">&rsaquo;</span>
+        </span>
+        <span  class="vh-sr vh-sl">
+            <a *ngIf="!pagination.lastPage"class="vh-link" href="javascript:void()"(click)="moveToLastPage()">&raquo;</a>
+            <span *ngIf="pagination.lastPage">&raquo;</span>
+        </span>
+    </div>
+</div>
