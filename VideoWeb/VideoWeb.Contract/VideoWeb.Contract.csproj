@@ -8,4 +8,8 @@
       <Folder Include="Requests" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="SonarAnalyzer.CSharp" Version="7.11.0.8083" />
+    </ItemGroup>
+
 </Project>

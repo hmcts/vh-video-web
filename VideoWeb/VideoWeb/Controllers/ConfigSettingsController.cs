@@ -21,14 +21,14 @@ namespace VideoWeb.Controllers
         }
         
         /// <summary>
-        /// Get the configuration settings for client
+        /// GetClientConfigurationSettings the configuration settings for client
         /// </summary>
         /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
         [ProducesResponseType(typeof(ClientSettingsResponse), (int) HttpStatusCode.OK)]
-        [SwaggerOperation(OperationId = "GetConfigSettings")]
-        public ActionResult<ClientSettingsResponse> Get()
+        [SwaggerOperation(OperationId = "GetClientConfigurationSettings")]
+        public ActionResult<ClientSettingsResponse> GetClientConfigurationSettings()
         {
             var clientSettings = new ClientSettingsResponse
             {
