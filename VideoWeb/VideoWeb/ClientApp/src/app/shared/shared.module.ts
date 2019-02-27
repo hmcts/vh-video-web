@@ -8,6 +8,7 @@ import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { SharedRoutingModule } from './shared-routing.module';
+import { ChangesGuard } from './guards/changes.guard';
 
 @NgModule({
   imports: [
@@ -23,11 +24,15 @@ import { SharedRoutingModule } from './shared-routing.module';
     ContactUsComponent,
     PaginationComponent,
   ],
+  providers: [
+    ChangesGuard
+  ],
   exports: [
     HeaderComponent,
     FooterComponent,
     ContactUsComponent,
     PaginationComponent,
+    ChangesGuard,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

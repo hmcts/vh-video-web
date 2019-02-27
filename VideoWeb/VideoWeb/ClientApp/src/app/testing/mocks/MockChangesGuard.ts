@@ -1,5 +1,5 @@
 import { CanDeactivate } from '@angular/router';
-import { CanDeactiveComponent } from 'src/app/common/guards/changes.guard';
+import { CanDeactiveComponent } from 'src/app/shared/guards/changes.guard';
 export class MockChangesGuard implements CanDeactivate<CanDeactiveComponent> {
   private _flag: boolean;
   canDeactivate() {
