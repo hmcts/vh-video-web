@@ -22,17 +22,15 @@ import { ChangesGuard } from './guards/changes.guard';
     HeaderComponent,
     FooterComponent,
     ContactUsComponent,
-    PaginationComponent,
+    PaginationComponent
   ],
   providers: [
-    ChangesGuard
   ],
   exports: [
     HeaderComponent,
     FooterComponent,
     ContactUsComponent,
     PaginationComponent,
-    ChangesGuard,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

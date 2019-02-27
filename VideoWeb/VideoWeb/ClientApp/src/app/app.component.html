@@ -1,6 +1,17 @@
-<body>
-  <app-nav-menu></app-nav-menu>
-  <div class="container">
-    <router-outlet></router-outlet>
+<div>
+  <a href="#main-content" class="govuk-skip-link">Skip to main content</a>
+
+  <app-header></app-header>
+
+  <div class="govuk-width-container vh-content">
+
+    <button *ngIf="this.loggedIn" (click)="logOut()" name="Logout">LogOut</button>
+    <!--Temporary button-->
+
+    <main class="govuk-main-wrapper " id="main-content" role="main">
+      <router-outlet></router-outlet>
+    </main>
   </div>
-</body>
+
+  <app-footer></app-footer>
+</div>
