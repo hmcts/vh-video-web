@@ -11,14 +11,16 @@
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="2.2.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
-        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.1" />
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.2" />
         <PackageReference Include="NUnit" Version="3.10.1" />
         <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
-        <PackageReference Include="SonarAnalyzer.CSharp" Version="7.10.0.7896" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Testing.Common\Testing.Common.csproj" />
+      <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />
+      <ProjectReference Include="..\VideoWeb.Contract\VideoWeb.Contract.csproj" />
+      <ProjectReference Include="..\VideoWeb\VideoWeb.csproj" />
     </ItemGroup>
 
     <ItemGroup>
