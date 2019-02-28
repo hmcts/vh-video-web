@@ -5,8 +5,8 @@ export const TopMenuItems = [
         active: false
     },
     {
-        url: "/bookings-list",
-        name: "Bookings list",
+        url: '/bookings-list',
+        name: 'Bookings list',
         active: false
     },
 ];

@@ -17,3 +17,11 @@ The configuration for the front end TypeScript can be found in 'VideoWeb/VideoWe
 * execute ```nswag run```
 
 The latest version of the client code can be found in 'src/app/services/clients/api-client.ts'
+
+## Linting
+
+Verify the source code passes linting. To quickly fix linting issues, execute the following command from the 'ClientApp' directory in a terminal
+
+``` bash
+ng lint VideoWeb --fix
+```
