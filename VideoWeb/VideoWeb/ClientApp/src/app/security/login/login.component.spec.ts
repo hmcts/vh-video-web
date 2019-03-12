@@ -1,10 +1,10 @@
 import { async, ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 import { LoginComponent } from './login.component';
 import { AdalService } from 'adal-angular4';
-import { MockAdalService } from '../testing/mocks/MockAdalService';
+import { MockAdalService } from '../../testing/mocks/MockAdalService';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ReturnUrlService } from '../services/return-url.service';
+import { ReturnUrlService } from '../../services/return-url.service';
 
 
 describe('LoginComponent', () => {

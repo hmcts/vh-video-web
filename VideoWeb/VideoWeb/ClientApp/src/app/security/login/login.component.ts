@@ -1,7 +1,7 @@
 import { Router, ActivatedRoute } from '@angular/router';
 import { OnInit, Component, Injectable } from '@angular/core';
 import { AdalService } from 'adal-angular4';
-import { ReturnUrlService } from '../services/return-url.service';
+import { ReturnUrlService } from '../../services/return-url.service';
 
 @Component({
     selector: 'app-login',
