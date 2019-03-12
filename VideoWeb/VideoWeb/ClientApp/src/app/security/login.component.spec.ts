@@ -39,4 +39,11 @@ describe('LoginComponent', () => {
     it('should create', () => {
         expect(component).toBeTruthy();
     });
+
+    it('should store return url if supplied', () => {
+        adalService.setAuthenticated(false);
+        route.snapshot.queryParams['returnUrl'] = '/returnPath';
+        component.ngOnInit();
+        expect(returnUrlService.setUrl).toHaveBeenCalledWith('/returnPath');
+    });
 });
