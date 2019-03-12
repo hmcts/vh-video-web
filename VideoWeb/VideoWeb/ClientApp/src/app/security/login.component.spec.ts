@@ -46,4 +46,27 @@ describe('LoginComponent', () => {
         component.ngOnInit();
         expect(returnUrlService.setUrl).toHaveBeenCalledWith('/returnPath');
     });
+
+    it('should use saved return url', () => {
+        adalService.setAuthenticated(true);
+        returnUrlServiceSpy.popUrl.and.returnValue('testurl');
+        spyOn(router, 'navigateByUrl').and.callFake(() => { Promise.resolve(true); });
+        component.ngOnInit();
+        expect(router.navigateByUrl).toHaveBeenCalledWith('testurl');
+    });
+
+    it('should return to root url if no return path is given', () => {
+        adalService.setAuthenticated(true);
+        spyOn(router, 'navigateByUrl').and.callFake(() => { });
+        component.ngOnInit();
+        expect(router.navigateByUrl).toHaveBeenCalledWith('/');
+    });
+
+    it('should fallback to root url if return url is invalid', () => {
+        adalService.setAuthenticated(true);
+        spyOn(router, 'navigate').and.callFake(() => { });
+        spyOn(router, 'navigateByUrl').and.callFake(() => { throw new Error('Invalid URL'); });
+        component.ngOnInit();
+        expect(router.navigate).toHaveBeenCalledWith(['/']);
+    });
 });
