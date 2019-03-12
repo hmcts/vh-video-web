@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { TopMenuItems } from './topMenuItems';
@@ -29,7 +29,6 @@ export class HeaderComponent implements OnInit {
   }
 
   logout() {
-    console.debug('trying to logout from header');
-      this.router.navigate(['logout']);
+    this.router.navigate(['logout']);
   }
 }

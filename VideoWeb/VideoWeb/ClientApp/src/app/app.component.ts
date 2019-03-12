@@ -23,7 +23,7 @@ export class AppComponent implements OnInit {
 
   private initAuthentication() {
     const clientSettings = this.configService.clientSettings;
-    let config = {
+    const config = {
       tenant: clientSettings.tenant_id,
       clientId: clientSettings.client_id,
       postLogoutRedirectUri: clientSettings.post_logout_redirect_uri,

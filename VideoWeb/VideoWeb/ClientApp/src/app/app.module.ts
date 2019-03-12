@@ -12,8 +12,8 @@ import { AppComponent } from './app.component';
 import { ConfigService } from './services/config.service';
 import { AdalInterceptor, AdalService, AdalGuard } from 'adal-angular4';
 import { AuthGuard } from './security/auth.gaurd';
-import {AppRoutingModule} from "./app-routing.module";
-import {SecurityModule} from "./security/security.module";
+import {AppRoutingModule} from './app-routing.module';
+import {SecurityModule} from './security/security.module';
 import { HomeComponent } from './home/home.component';
 
 export function getSettings(configService: ConfigService) {
