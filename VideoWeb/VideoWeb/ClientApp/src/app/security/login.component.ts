@@ -19,11 +19,9 @@ export class LoginComponent implements OnInit {
     ngOnInit() {
         if (this.adalSvc.userInfo.authenticated) {
             const returnUrl = this.returnUrlService.popUrl() || '/';
-            this.router.navigate(['/home']);
             try {
                 this.router.navigateByUrl(returnUrl);
             } catch (e) {
-                console.error('Failed to navigate to redirect url, possibly stored url is invalid: ' + returnUrl);
                 this.router.navigate(['/']);
             }
         } else {
