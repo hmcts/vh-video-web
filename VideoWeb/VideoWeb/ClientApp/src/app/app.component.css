@@ -1,6 +1,9 @@
-@media (max-width: 767px) {
-  /* On small screens, the nav menu spans the full width of the screen. Leave a space for it. */
-  .body-content {
-    padding-top: 50px;
-  }
+.vh-content { min-height: calc(100vh - 200px); }
+
+/*
+  Before the router is loaded, the page will be white.
+  To avoid this looking strange, we add in a padding that matches nicely with the page to be loaded.
+*/
+.pad-unactivated-router {
+  min-height: 595px;
 }

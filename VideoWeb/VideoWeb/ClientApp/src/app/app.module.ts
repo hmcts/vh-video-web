@@ -12,6 +12,9 @@ import { AppComponent } from './app.component';
 import { ConfigService } from './services/config.service';
 import { AdalInterceptor, AdalService, AdalGuard } from 'adal-angular4';
 import { AuthGuard } from './security/auth.gaurd';
+import {AppRoutingModule} from "./app-routing.module";
+import {SecurityModule} from "./security/security.module";
+import { HomeComponent } from './home/home.component';
 
 export function getSettings(configService: ConfigService) {
   return () => configService.loadConfig();
@@ -19,15 +22,16 @@ export function getSettings(configService: ConfigService) {
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
     FormsModule,
-    RouterModule.forRoot([
-    ]),
-    SharedModule
+    AppRoutingModule,
+    SharedModule,
+    SecurityModule
   ],
   providers: [
     { provide: APP_INITIALIZER, useFactory: getSettings, deps: [ConfigService], multi: true },
