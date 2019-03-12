@@ -25,3 +25,22 @@ Verify the source code passes linting. To quickly fix linting issues, execute th
 ``` bash
 ng lint VideoWeb --fix
 ```
+
+## Running Tests with Code Coverage with VS Code
+
+### Install Coverage Gutters
+
+Install the extension : Coverage Gutters
+Id: ryanluker.vscode-coverage-gutters
+
+This extension will load covage files and display in real-time which lines are covered
+
+### Run the Test task
+
+Ensure you have a terminal with the current directory set to the same level as angular workspace.
+
+``` bash
+npm run test
+```
+
+This will execute the angular tests files with the --code-coverage parameter. Once the coverage files have been produced, enable the watch command for Coverage Gutters.

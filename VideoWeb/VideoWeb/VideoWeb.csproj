@@ -33,37 +33,8 @@
     <ItemGroup>
         <!-- Don't publish the SPA source files, but do show them in the project files list -->
         <Content Remove="$(SpaRoot)**" />
-        <Content Include="ClientApp\api-ts.nswag" />
-        <Content Include="ClientApp\src\assets\fonts\bold-a2452cb66f-v1.woff2" />
-        <Content Include="ClientApp\src\assets\fonts\bold-f38c792ac2-v1.woff" />
-        <Content Include="ClientApp\src\assets\fonts\bold-fb2676462a-v1.eot" />
-        <Content Include="ClientApp\src\assets\fonts\bold-tabular-357fdfbcc3-v1.eot" />
-        <Content Include="ClientApp\src\assets\fonts\bold-tabular-784c21afb8-v1.woff" />
-        <Content Include="ClientApp\src\assets\fonts\bold-tabular-b89238d840-v1.woff2" />
-        <Content Include="ClientApp\src\assets\fonts\light-2c037cf7e1-v1.eot" />
-        <Content Include="ClientApp\src\assets\fonts\light-458f8ea81c-v1.woff" />
-        <Content Include="ClientApp\src\assets\fonts\light-f38ad40456-v1.woff2" />
-        <Content Include="ClientApp\src\assets\fonts\light-tabular-498ea8ffe2-v1.eot" />
-        <Content Include="ClientApp\src\assets\fonts\light-tabular-62cc6f0a28-v1.woff" />
-        <Content Include="ClientApp\src\assets\fonts\light-tabular-851b10ccdd-v1.woff2" />
-        <Content Include="ClientApp\src\assets\images\AddIcon.png" />
-        <Content Include="ClientApp\src\assets\images\BluePanelIdent.png" />
-        <Content Include="ClientApp\src\assets\images\bookicon.png" />
-        <Content Include="ClientApp\src\assets\images\ClearIcon.png" />
-        <Content Include="ClientApp\src\assets\images\glyphicons-601-chevron-up.png" />
-        <Content Include="ClientApp\src\assets\images\glyphicons-602-chevron-down.png" />
-        <Content Include="ClientApp\src\assets\images\govuk-crest-2x.png" />
-        <Content Include="ClientApp\src\assets\images\govuk-crest.png" />
-        <Content Include="ClientApp\src\assets\images\icon-arrow-left.png" />
-        <Content Include="ClientApp\src\assets\images\icon-important.png" />
-        <Content Include="ClientApp\src\assets\images\icon-pointer-2x.png" />
-        <Content Include="ClientApp\src\assets\images\icon-pointer.png" />
-        <Content Include="ClientApp\src\assets\images\open-government-licence.png" />
-        <Content Include="ClientApp\src\assets\images\searchicon.png" />
-        <Content Include="ClientApp\src\assets\images\UkGovCrestWhite.png" />
         <None Remove="$(SpaRoot)**" />
         <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
-        <None Include="ClientApp\src\styles.sass.css" />
     </ItemGroup>
 
     <ItemGroup>

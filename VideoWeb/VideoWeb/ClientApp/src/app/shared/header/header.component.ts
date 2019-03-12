@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { TopMenuItems } from './topMenuItems';
@@ -10,6 +10,8 @@ import { TopMenuItems } from './topMenuItems';
 })
 export class HeaderComponent implements OnInit {
   topMenuItems = [];
+
+  @Input() loggedIn: boolean;
 
   constructor(private router: Router) {
   }
@@ -26,4 +28,7 @@ export class HeaderComponent implements OnInit {
     this.topMenuItems = TopMenuItems;
   }
 
+  logout() {
+    this.router.navigate(['logout']);
+  }
 }

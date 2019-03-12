@@ -33,7 +33,7 @@ export class ConfigService {
     }
 
     private retrieveConfigFromApi(): Observable<ClientSettingsResponse> {
-        let url = '/api/config';
+        let url = '/config';
         url = url.replace(/[?&]$/, '');
         return this.httpClient.get<ClientSettingsResponse>(url);
     }
