@@ -20,13 +20,15 @@ export class LoginComponent implements OnInit {
         this.checkAuthAndRedirect();
     }
 
-    private checkAuthAndRedirect() {
+    private async checkAuthAndRedirect() {
         if (this.adalSvc.userInfo.authenticated) {
             const returnUrl = this.returnUrlService.popUrl() || '/';
-            this.router.navigateByUrl(returnUrl).catch(e => {
+            try {
+                await this.router.navigateByUrl(returnUrl);
+            } catch (e) {
                 console.error(e);
                 this.router.navigate(['/']);
-            });
+            }
         } else {
             const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
             this.returnUrlService.setUrl(returnUrl);
