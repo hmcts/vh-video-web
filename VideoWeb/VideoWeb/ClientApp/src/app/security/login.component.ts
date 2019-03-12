@@ -17,13 +17,16 @@ export class LoginComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.checkAuthAndRedirect();
+    }
+
+    private checkAuthAndRedirect() {
         if (this.adalSvc.userInfo.authenticated) {
             const returnUrl = this.returnUrlService.popUrl() || '/';
-            try {
-                this.router.navigateByUrl(returnUrl);
-            } catch (e) {
+            this.router.navigateByUrl(returnUrl).catch(e => {
+                console.error(e);
                 this.router.navigate(['/']);
-            }
+            });
         } else {
             const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
             this.returnUrlService.setUrl(returnUrl);
@@ -31,3 +34,4 @@ export class LoginComponent implements OnInit {
         }
     }
 }
+
