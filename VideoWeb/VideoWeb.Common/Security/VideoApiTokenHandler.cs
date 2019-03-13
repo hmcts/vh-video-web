@@ -16,4 +16,17 @@ namespace VideoWeb.Common.Security
         protected override string TokenCacheKey => "VideoApiServiceToken";
         protected override string ClientResource => HearingServicesConfiguration.VideoApiResourceId;
     }
+    
+    public class UserApiTokenHandler : BaseServiceTokenHandler
+    {
+        public UserApiTokenHandler(IOptions<AzureAdConfiguration> azureAdConfiguration,
+            IOptions<HearingServicesConfiguration> hearingServicesConfiguration, IMemoryCache memoryCache,
+            ITokenProvider tokenProvider) : base(azureAdConfiguration, hearingServicesConfiguration, memoryCache,
+            tokenProvider)
+        {
+        }
+        
+        protected override string TokenCacheKey => "UserApiServiceToken";
+        protected override string ClientResource => HearingServicesConfiguration.UserApiResourceId;
+    }
 }

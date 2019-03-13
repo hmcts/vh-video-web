@@ -15,6 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoWeb.Common", "VideoWeb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoWeb.Contract", "VideoWeb.Contract\VideoWeb.Contract.csproj", "{8DA8CEBB-148B-4459-B1FA-92F25087E2FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoWeb.Services", "VideoWeb.Services\VideoWeb.Services.csproj", "{DBB7B327-D121-42EC-B512-F657EDA96256}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoWeb.Services.Generator", "VideoWeb.Services.Generator\VideoWeb.Services.Generator.csproj", "{4437442A-6318-4092-AC52-81C7FA6E60DA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{8DA8CEBB-148B-4459-B1FA-92F25087E2FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DA8CEBB-148B-4459-B1FA-92F25087E2FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DA8CEBB-148B-4459-B1FA-92F25087E2FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBB7B327-D121-42EC-B512-F657EDA96256}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBB7B327-D121-42EC-B512-F657EDA96256}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBB7B327-D121-42EC-B512-F657EDA96256}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBB7B327-D121-42EC-B512-F657EDA96256}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4437442A-6318-4092-AC52-81C7FA6E60DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4437442A-6318-4092-AC52-81C7FA6E60DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4437442A-6318-4092-AC52-81C7FA6E60DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4437442A-6318-4092-AC52-81C7FA6E60DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{76118055-2379-410A-9D44-469175758F5D} = {CB8C2DB8-804A-467F-B03A-68D2D968D237}

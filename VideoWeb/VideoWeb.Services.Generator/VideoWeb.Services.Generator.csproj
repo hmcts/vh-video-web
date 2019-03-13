@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+        <PackageReference Include="NSwag.MSBuild" Version="12.0.11" />
+    </ItemGroup>
+
+    <Target Name="NSwag" AfterTargets="Build" Condition=" '$(Configuration)' == 'Debug' ">
+        <Copy SourceFiles="@(ReferencePath)" DestinationFolder="$(OutDir)References" />
+        <Exec Command="$(NSwagExe_Core21) run /runtime:NetCore21 /variables:Configuration=$(Configuration)" />
+        <RemoveDir Directories="$(OutDir)References" />
+    </Target>
+</Project>
