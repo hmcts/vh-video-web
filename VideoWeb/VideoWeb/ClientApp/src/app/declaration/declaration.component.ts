@@ -1,27 +1,29 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { FormGroup, Validators, FormBuilder, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-declaration',
   templateUrl: './declaration.component.html',
 })
 export class DeclarationComponent implements OnInit {
-  @ViewChild('declarationForm')
-  form: any;
+  declarationForm: FormGroup;
   submitted = false;
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private fb: FormBuilder) {
+    this.declarationForm = fb.group({
+      declare: [false, Validators.required],
+    });
+  }
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   onSubmit() {
     this.submitted = true;
-    if (this.form.invalid) {
+    if (this.declarationForm.invalid) {
       return;
     }
-
-    var navigateUrl = "/home";
-
+    const navigateUrl = '/home';
     this.router.navigate([navigateUrl]);
   }
 }

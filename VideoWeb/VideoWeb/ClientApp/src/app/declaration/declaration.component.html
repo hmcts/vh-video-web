@@ -1,45 +1,36 @@
-
 <div class="govuk-grid-row">
-<div class="govuk-grid-column-full">
-    <h1 class="govuk-fieldset__heading">
-      Declaration r
-    </h1>
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Declaration </h1>
+  </div>
 </div>
-</div>
-<form #declarationForm="ngForm" (ngSubmit)="onSubmit()" novalidate>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-
-      <div [ngClass]="{'govuk-form-group--error fieldset-margin': declarationForm.form.invalid && submitted}">
-        <div *ngIf="aboutClient.invalid && submitted">
-          <span id="about-your-client-error" class="govuk-error-message">
-            Please tick the box to confirm that you will not record the hearing in any way
-          </span>
+    <form [formGroup]="declarationForm" class="govuk-form-group" (ngSubmit)="onSubmit($event)">
+  <div [ngClass]="declarationForm.invalid && submitted ? 'govuk-form-group--error' : 'govuk-form-group'">
+      <div *ngIf="declarationForm.invalid && submitted" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> Please tick the box to confirm that you will not record the
+      hearing in any way
         </div>
-        <div class="mt-30 vh-lb">
-          <div class="vh-img"><img src="../../../assets/images/icon-important.png" alt="warning" /></div>
-          <div class="vh-warning">
-            <strong class="bold-small">
-              It is a criminal offence to record this hearing (by audio or video), to publish any such recording, or to take any images (by photo or screen shot)
-            </strong>
-          </div>
-        </div>
-        <div class="govuk-checkboxes">
-          <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input" id="nationality-1" name="nationality" type="checkbox" value="british">
-            <label class="govuk-label govuk-checkboxes__label">
-              I confirm that I will not record or take any images of this hearing
-            </label>
-          </div>
-        </div>
-        <div>
-          <button type="submit" class="govuk-button">
-            continue
-          </button>
+    <div class="govuk-warning-text">
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        It is a criminal offence to record this hearing (by audio or video), to publish any such recording, or to take
+        any images (by photo or screen shot)
+      </strong>
+    </div>
+    <fieldset class="govuk-fieldset" aria-describedby="delcare-hint">
+      <div class="govuk-checkboxes">
+        <div class="govuk-checkboxes__item">
+          <input class="govuk-checkboxes__input" id="declare" name="declare" formControlName="declare" type="checkbox" required>
+          <label class="govuk-label govuk-checkboxes__label" for="declare">
+            I confirm that I will not record or take any images of this hearing
+          </label>
         </div>
       </div>
-    </div>
+    </fieldset>
   </div>
-
+  <div class="vh-top">
+    <button type="submit" class="govuk-button">
+      continue
+    </button>
+  </div>
 </form>
-
