@@ -15,6 +15,7 @@ import { AuthGuard } from './security/auth.gaurd';
 import {AppRoutingModule} from './app-routing.module';
 import {SecurityModule} from './security/security.module';
 import { HomeComponent } from './home/home.component';
+import { DeclarationComponent } from './declaration/declaration.component';
 
 export function getSettings(configService: ConfigService) {
   return () => configService.loadConfig();
@@ -23,7 +24,8 @@ export function getSettings(configService: ConfigService) {
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent
+    HomeComponent,
+    DeclarationComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
