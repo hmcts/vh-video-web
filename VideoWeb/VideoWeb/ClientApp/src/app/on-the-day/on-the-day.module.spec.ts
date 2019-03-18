@@ -1,13 +1,13 @@
-import { SecurityModule } from './security.module';
+import { OnTheDayModule } from './on-the-day.module';
 
-describe('SecurityModule', () => {
-  let securityModule: SecurityModule;
+describe('OnTheDayModule', () => {
+  let onTheDayModule: OnTheDayModule;
 
   beforeEach(() => {
-    securityModule = new SecurityModule();
+    onTheDayModule = new OnTheDayModule();
   });
 
   it('should create an instance', () => {
-    expect(securityModule).toBeTruthy();
+    expect(OnTheDayModule).toBeTruthy();
   });
 });

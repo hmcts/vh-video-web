@@ -3,12 +3,12 @@
     <h1 class="govuk-heading-l">Declaration </h1>
   </div>
 </div>
-    <form [formGroup]="declarationForm" class="govuk-form-group" (ngSubmit)="onSubmit($event)">
+<form [formGroup]="declarationForm" class="govuk-form-group" (ngSubmit)="onSubmit()">
   <div [ngClass]="declarationForm.invalid && submitted ? 'govuk-form-group--error' : 'govuk-form-group'">
-      <div *ngIf="declarationForm.invalid && submitted" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span> Please tick the box to confirm that you will not record the
+    <div *ngIf="declarationForm.invalid && submitted" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span> Please tick the box to confirm that you will not record the
       hearing in any way
-        </div>
+    </div>
     <div class="govuk-warning-text">
       <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
       <strong class="govuk-warning-text__text">
@@ -29,8 +29,7 @@
     </fieldset>
   </div>
   <div class="vh-top">
-    <button type="submit" class="govuk-button">
-      continue
-    </button>
+    <input type="button" id="nextButton" class="govuk-button" role="button" value="continue" style="margin-right:25px;"
+           (click)="onSubmit()" alt="Declaration" />
   </div>
 </form>

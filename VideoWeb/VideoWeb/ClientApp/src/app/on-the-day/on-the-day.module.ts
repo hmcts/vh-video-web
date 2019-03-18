@@ -1,21 +1,23 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from '../shared/shared.module';
-import { OnTheDayModuleRoutingModule } from './on-the-day-routing.module';
+import { OnTheDayRoutingModule } from './on-the-day-routing.module';
+import { DeclarationComponent } from './declaration/declaration.component';
+import { WaitingRoomComponent } from './waiting-room/waiting-room.component';
 
 @NgModule({
   imports: [
     CommonModule,
     SharedModule,
-    OnTheDayModuleRoutingModule
+    OnTheDayRoutingModule
   ],
   declarations: [
-    LoginComponent,
-    LogoutComponent
+    DeclarationComponent,
+    WaitingRoomComponent
   ],
   exports: [
-    LoginComponent,
-    LogoutComponent
+    DeclarationComponent,
+    WaitingRoomComponent
   ]
 })
 export class OnTheDayModule { }
