@@ -29,9 +29,9 @@ export function getSettings(configService: ConfigService) {
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
     FormsModule,
-    AppRoutingModule,
     SharedModule,
-    SecurityModule
+    SecurityModule,
+    AppRoutingModule
   ],
   providers: [
     { provide: APP_INITIALIZER, useFactory: getSettings, deps: [ConfigService], multi: true },
