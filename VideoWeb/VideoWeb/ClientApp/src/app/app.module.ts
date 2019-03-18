@@ -16,6 +16,8 @@ import {AppRoutingModule} from './app-routing.module';
 import {SecurityModule} from './security/security.module';
 import { HomeComponent } from './home/home.component';
 import { DeclarationComponent } from './declaration/declaration.component';
+import { WaitingRoomComponent } from './waiting-room/waiting-room.component';
+import { OnTheDayComponent } from './on-the-day/on-the-day.component';
 
 export function getSettings(configService: ConfigService) {
   return () => configService.loadConfig();
@@ -25,7 +27,9 @@ export function getSettings(configService: ConfigService) {
   declarations: [
     AppComponent,
     HomeComponent,
-    DeclarationComponent
+    DeclarationComponent,
+    WaitingRoomComponent,
+    OnTheDayComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
