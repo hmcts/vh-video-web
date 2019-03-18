@@ -6,5 +6,7 @@ namespace VideoWeb.Common.Configuration
         public string BookingsApiResourceId { get; set; }
         public string VideoApiUrl { get; set; }
         public string VideoApiResourceId { get; set; }
+        public string UserApiUrl { get; set; }
+        public string UserApiResourceId { get; set; }
     }
 }
