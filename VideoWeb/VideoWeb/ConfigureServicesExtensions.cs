@@ -4,8 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Swagger;
+using VideoWeb.Common.Configuration;
+using VideoWeb.Common.Security;
+using VideoWeb.Services.Bookings;
+using VideoWeb.Services.User;
+using VideoWeb.Services.Video;
 using VideoWeb.Swagger;
 
 namespace VideoWeb
@@ -36,6 +42,29 @@ namespace VideoWeb
         
         public static IServiceCollection AddCustomTypes(this IServiceCollection services)
         {
+            services.AddMemoryCache();
+
+            services.AddTransient<BookingsApiTokenHandler>();
+            services.AddTransient<VideoApiTokenHandler>();
+            services.AddScoped<ITokenProvider, TokenProvider>();
+            
+            var container = services.BuildServiceProvider();
+            var servicesConfiguration = container.GetService<IOptions<HearingServicesConfiguration>>().Value;
+
+            services.AddHttpClient<IBookingsApiClient, BookingsApiClient>()
+                .AddTypedClient(httpClient => new BookingsApiClient(httpClient)
+                    {BaseUrl = servicesConfiguration.BookingsApiUrl})
+                .AddHttpMessageHandler(() => container.GetService<BookingsApiTokenHandler>());
+            
+            services.AddHttpClient<IVideoApiClient, VideoApiClient>()
+                .AddTypedClient(httpClient => new VideoApiClient(httpClient)
+                    {BaseUrl = servicesConfiguration.VideoApiUrl})
+                .AddHttpMessageHandler(() => container.GetService<VideoApiTokenHandler>());
+            
+            services.AddHttpClient<IUserApiClient, UserApiClient>()
+                .AddTypedClient(httpClient => new UserApiClient(httpClient)
+                    {BaseUrl = servicesConfiguration.UserApiUrl})
+                .AddHttpMessageHandler(() => container.GetService<UserApiTokenHandler>());
             return services;
         }
         
