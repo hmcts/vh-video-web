@@ -14,9 +14,11 @@
         <PackageReference Include="dotnet-reportgenerator-cli" Version="4.0.15" />
         <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
         <PackageReference Include="Microsoft.AspNetCore.App" />
+        <PackageReference Include="NBuilder" Version="6.0.0" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Testing.Common\Testing.Common.csproj" />
       <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />
       <ProjectReference Include="..\VideoWeb\VideoWeb.csproj" />
     </ItemGroup>
