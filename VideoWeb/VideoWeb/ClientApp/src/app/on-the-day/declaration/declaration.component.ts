@@ -23,7 +23,7 @@ export class DeclarationComponent implements OnInit {
     if (this.declarationForm.invalid) {
       return;
     }
-    const navigateUrl = '/home';
+    const navigateUrl = '/waiting-room';
     this.router.navigate([navigateUrl]);
   }
 }
