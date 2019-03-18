@@ -21,12 +21,9 @@ export class DeclarationComponent implements OnInit {
 
   onSubmit() {
     this.submitted = true;
-    console.log('in declaration submit method');
     if (this.declarationForm.invalid) {
-      console.log('in declaration validation error');
       return;
     }
-    console.log('in declaration before redirecting');
     const navigateUrl = '/waiting-room';
     this.router.navigate([navigateUrl]);
   }
