@@ -1,0 +1,35 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Declaration </h1>
+  </div>
+</div>
+<form [formGroup]="declarationForm" class="govuk-form-group" (ngSubmit)="onSubmit()">
+  <div [ngClass]="declarationForm.invalid && submitted ? 'govuk-form-group--error' : 'govuk-form-group'">
+    <div *ngIf="declarationForm.invalid && submitted" class="govuk-error-message">
+      <span class="govuk-visually-hidden">Error:</span> Please tick the box to confirm that you will not record the
+      hearing in any way
+    </div>
+    <div class="govuk-warning-text">
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        It is a criminal offence to record this hearing (by audio or video), to publish any such recording, or to take
+        any images (by photo or screen shot)
+      </strong>
+    </div>
+    <fieldset class="govuk-fieldset" aria-describedby="delcare-hint">
+      <div class="govuk-checkboxes">
+        <div class="govuk-checkboxes__item">
+          <input class="govuk-checkboxes__input" id="declare" name="declare" formControlName="declare" type="checkbox" aria-required="true" required>
+          <label class="govuk-label govuk-checkboxes__label" for="declare">
+            I confirm that I will not record or take any images of this hearing
+          </label>
+        </div>
+      </div>
+    </fieldset>
+  </div>
+  <div class="vh-top">
+    <input type="button" id="nextButton" class="govuk-button" role="button" value="continue" style="margin-right:25px;"
+           (click)="onSubmit()" alt="Declaration" />
+  </div>
+</form>
