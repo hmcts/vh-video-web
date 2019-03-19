@@ -1,6 +1,6 @@
 # Set variables once
 variables:
-  cleanChekout: 'false'
+  cleanChekout: 'true'
   apiDirectory: 'VideoWeb/VideoWeb'
   solutionType: angularDotNetCore # angularDotNetCore, dotNetCore
   sonarCloudPrepareExtraProperties: |  
