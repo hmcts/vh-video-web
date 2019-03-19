@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, Validators, FormBuilder, FormControl } from '@angular/forms';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
   selector: 'app-declaration',
@@ -24,7 +25,6 @@ export class DeclarationComponent implements OnInit {
     if (this.declarationForm.invalid) {
       return;
     }
-    const navigateUrl = '/waiting-room';
-    this.router.navigate([navigateUrl]);
+    this.router.navigate([PageUrls.WaitingRoom]);
   }
 }
