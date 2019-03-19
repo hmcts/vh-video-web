@@ -19,6 +19,7 @@ export class ParticipantHearingsComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log('on hearing list');
     this.retrieveHearingsForUser();
   }
 

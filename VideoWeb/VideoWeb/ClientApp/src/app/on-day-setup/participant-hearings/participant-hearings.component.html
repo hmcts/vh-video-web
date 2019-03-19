@@ -1,3 +1,10 @@
 <p>
     Participant hearing works
 </p>
+
+*<ng-container *ngIf="this.hasHearings(); else noHearingsTemplate">
+    
+</ng-container>
+<ng-template #elsenoHearingsTemplateTemplate>
+    <h1 class="govuk-heading-xl">You have no hearings</h1>
+</ng-template>

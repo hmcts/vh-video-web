@@ -36,7 +36,6 @@ export class AppComponent implements OnInit {
     const currentUrl = window.location.href;
     this.adalService.handleWindowCallback();
     this.loggedIn = this.adalService.userInfo.authenticated;
-    console.log(this.loggedIn);
     if (!this.loggedIn) {
       this.router.navigate(['/login'], { queryParams: { returnUrl: currentUrl } });
     }

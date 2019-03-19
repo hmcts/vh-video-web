@@ -33,7 +33,8 @@ namespace VideoWeb.Controllers
             var username = User.Identity.Name;
             try
             {
-                var conferences = await _videoApiClient.GetConferencesForUsernameAsync(username);
+                // var conferences = await _videoApiClient.GetConferencesForUsernameAsync(username);
+                var conferences = new List<ConferenceSummaryResponse>();
                 var response = conferences.Select(x => new ConferenceForUserResponse
                 {
                     Id = x.Id.GetValueOrDefault(),
