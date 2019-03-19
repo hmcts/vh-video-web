@@ -4,6 +4,7 @@ import { SharedModule } from '../shared/shared.module';
 import { OnTheDayRoutingModule } from './on-the-day-routing.module';
 import { DeclarationComponent } from './declaration/declaration.component';
 import { WaitingRoomComponent } from './waiting-room/waiting-room.component';
+import { HearingRulesComponent } from './hearing-rules/hearing-rules.component';
 
 @NgModule({
   imports: [
@@ -13,7 +14,8 @@ import { WaitingRoomComponent } from './waiting-room/waiting-room.component';
   ],
   declarations: [
     DeclarationComponent,
-    WaitingRoomComponent
+    WaitingRoomComponent,
+    HearingRulesComponent
   ],
   exports: [
     DeclarationComponent,
