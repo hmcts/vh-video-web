@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ConferenceForUserResponse } from 'src/app/services/clients/api-client';
 import { VideoWebService } from 'src/app/services/video-web.service';
-import moment = require('moment');
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-participant-hearings',
