@@ -30,7 +30,7 @@ export class ParticipantHearingsComponent implements OnInit {
   }
 
   hasHearings() {
-    return this.conferences.length > 0;
+    return this.conferences !== undefined && this.conferences.length > 0;
   }
 
   goToConference(conference: ConferenceForUserResponse) {
