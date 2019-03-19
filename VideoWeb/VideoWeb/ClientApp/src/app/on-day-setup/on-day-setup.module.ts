@@ -1,13 +1,14 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 import { OnDaySetupRoutingModule } from './on-day-setup-routing.module';
+import { ParticipantHearingsComponent } from './participant-hearings/participant-hearings.component';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   imports: [
-    CommonModule,
+    SharedModule,
     OnDaySetupRoutingModule
   ],
-  declarations: []
+  declarations: [ParticipantHearingsComponent]
 })
 export class OnDaySetupModule { }

@@ -1,26 +1,26 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientModule } from '@angular/common/http';
 import { ConfigService } from './config.service';
 import { ApiClient, ClientSettingsResponse } from '../services/clients/api-client';
 import { Observable } from 'rxjs';
+import { SharedModule } from '../shared/shared.module';
 
 describe('config service', () => {
-  let bhClientSpy: jasmine.SpyObj<ApiClient>;
+  let apiClientSpy: jasmine.SpyObj<ApiClient>;
   let clientSettings: ClientSettingsResponse;
   let configService: ConfigService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientModule],
-      providers: [ConfigService, { provide: ApiClient, useValue: bhClientSpy }]
+      imports: [SharedModule],
+      providers: [ConfigService, { provide: ApiClient, useValue: apiClientSpy }]
     });
-    bhClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['getConfigSettings']);
+    apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['getClientConfigurationSettings']);
     clientSettings = new ClientSettingsResponse();
     clientSettings.tenant_id = 'tenantId';
     clientSettings.client_id = 'clientId';
     clientSettings.post_logout_redirect_uri = '/dashboard';
     clientSettings.redirect_uri = '/dashboard';
-    bhClientSpy.getConfigSettings.and.returnValue(Observable.create(clientSettings));
+    apiClientSpy.getClientConfigurationSettings.and.returnValue(Observable.create(clientSettings));
     configService = TestBed.get(ConfigService);
   });
 
@@ -31,6 +31,6 @@ describe('config service', () => {
   it('should not have called method on api client', () => {
     sessionStorage.setItem('clientSettings', JSON.stringify(clientSettings));
     configService.getClientSettings();
-    expect(bhClientSpy.getConfigSettings).not.toHaveBeenCalled();
+    expect(apiClientSpy.getClientConfigurationSettings).not.toHaveBeenCalled();
   });
 });
