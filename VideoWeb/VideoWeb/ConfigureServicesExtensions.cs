@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -25,49 +26,73 @@ namespace VideoWeb
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
-                
+
                 c.SwaggerDoc("v1", new Info {Title = "Video App", Version = "v1"});
                 c.EnableAnnotations();
-                
+
                 c.OperationFilter<AuthResponsesOperationFilter>();
-                
-                c.AddSecurityDefinition("Bearer", new ApiKeyScheme { In = "header", Description = "Please enter JWT with Bearer into field", Name = "Authorization", Type = "apiKey" });
-                c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> {
-                    { "Bearer", Enumerable.Empty<string>() },
+
+                c.AddSecurityDefinition("Bearer",
+                    new ApiKeyScheme
+                    {
+                        In = "header", Description = "Please enter JWT with Bearer into field", Name = "Authorization",
+                        Type = "apiKey"
+                    });
+                c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                {
+                    {"Bearer", Enumerable.Empty<string>()},
                 });
             });
 
             return serviceCollection;
         }
-        
+
         public static IServiceCollection AddCustomTypes(this IServiceCollection services)
         {
             services.AddMemoryCache();
 
             services.AddTransient<BookingsApiTokenHandler>();
             services.AddTransient<VideoApiTokenHandler>();
+            services.AddTransient<UserApiTokenHandler>();
             services.AddScoped<ITokenProvider, TokenProvider>();
-            
+
             var container = services.BuildServiceProvider();
             var servicesConfiguration = container.GetService<IOptions<HearingServicesConfiguration>>().Value;
 
+
             services.AddHttpClient<IBookingsApiClient, BookingsApiClient>()
-                .AddTypedClient(httpClient => new BookingsApiClient(httpClient)
-                    {BaseUrl = servicesConfiguration.BookingsApiUrl})
-                .AddHttpMessageHandler(() => container.GetService<BookingsApiTokenHandler>());
+                .AddHttpMessageHandler(() => container.GetService<BookingsApiTokenHandler>())
+                .AddTypedClient(httpClient => BuildBookingsApiClient(httpClient, servicesConfiguration));
             
             services.AddHttpClient<IVideoApiClient, VideoApiClient>()
-                .AddTypedClient(httpClient => new VideoApiClient(httpClient)
-                    {BaseUrl = servicesConfiguration.VideoApiUrl})
-                .AddHttpMessageHandler(() => container.GetService<VideoApiTokenHandler>());
+                .AddHttpMessageHandler(() => container.GetService<VideoApiTokenHandler>())
+                .AddTypedClient(httpClient => BuildVideoApiClient(httpClient, servicesConfiguration));
             
             services.AddHttpClient<IUserApiClient, UserApiClient>()
-                .AddTypedClient(httpClient => new UserApiClient(httpClient)
-                    {BaseUrl = servicesConfiguration.UserApiUrl})
-                .AddHttpMessageHandler(() => container.GetService<UserApiTokenHandler>());
+                .AddHttpMessageHandler(() => container.GetService<UserApiTokenHandler>())
+                .AddTypedClient(httpClient => BuildUserApiClient(httpClient, servicesConfiguration));
+            
             return services;
         }
-        
+
+        private static IBookingsApiClient BuildBookingsApiClient(HttpClient httpClient,
+            HearingServicesConfiguration servicesConfiguration)
+        {
+            return new BookingsApiClient(httpClient) {BaseUrl = servicesConfiguration.BookingsApiUrl};
+        }
+
+        private static IVideoApiClient BuildVideoApiClient(HttpClient httpClient,
+            HearingServicesConfiguration serviceSettings)
+        {
+            return new VideoApiClient(httpClient) {BaseUrl = serviceSettings.VideoApiUrl};
+        }
+
+        private static IUserApiClient BuildUserApiClient(HttpClient httpClient,
+            HearingServicesConfiguration serviceSettings)
+        {
+            return new UserApiClient(httpClient) {BaseUrl = serviceSettings.UserApiUrl};
+        }
+
         public static IServiceCollection AddJsonOptions(this IServiceCollection serviceCollection)
         {
             var contractResolver = new DefaultContractResolver
