@@ -1,12 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { HearingRulesComponent } from './hearing-rules.component';
 import { DebugElement } from '@angular/core';
 import { Router } from '@angular/router';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule, AbstractControl } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import {By} from '@angular/platform-browser';
-import { PageUrls } from 'src/app/shared/page-url.constants';
 
 describe('HearingRulesComponent', () => {
   let component: HearingRulesComponent;
@@ -43,4 +40,9 @@ describe('HearingRulesComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('next button should work', () => {
+    spyOn(component, 'onSubmit');
+    component.onSubmit();
+    expect(component.onSubmit).toHaveBeenCalled();
+  });
 });

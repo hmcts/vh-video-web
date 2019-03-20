@@ -3,7 +3,7 @@
       <h1 class="govuk-heading-l">Her Majesty's Courts & Tribunals</h1>
     </div>
   </div>
-<form class="govuk-form-group" (ngSubmit)="onSubmit()">
+<form [formGroup]="hearingRulesForm" class="govuk-form-group" (ngSubmit)="onSubmit()">
   <div class="govuk-grid-row">
     <div class="govuk-body">
       <div class="govuk-grid-column-two-thirds">
@@ -28,7 +28,7 @@
     </div>
   </div>
   <div class="vh-top">
-    <input type="button" id="nextButton" class="govuk-button" role="button" value="continue"
+    <input type="button" formControlName="nextButton" id="nextButton" class="govuk-button" role="button" value="continue"
            (click)="onSubmit()" alt="HearingRules" />
   </div>
   <details class="govuk-details">
