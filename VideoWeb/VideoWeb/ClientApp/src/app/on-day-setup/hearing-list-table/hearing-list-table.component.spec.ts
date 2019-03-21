@@ -4,23 +4,26 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 
 import * as moment from 'moment';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Router } from '@angular/router';
 
 describe('HearingListTableComponent', () => {
   let component: HearingListTableComponent;
   let fixture: ComponentFixture<HearingListTableComponent>;
+  let router: Router;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
-      declarations: [ HearingListTableComponent ]
+      declarations: [HearingListTableComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(HearingListTableComponent);
     component = fixture.componentInstance;
     component.conferences = new ConferenceTestData().getTestData();
+    router = TestBed.get(Router);
     fixture.detectChanges();
   });
 
@@ -60,7 +63,14 @@ describe('HearingListTableComponent', () => {
   it('should show sign in date when conference is in the future date', () => {
     const conference = new ConferenceTestData().getConferenceFuture();
     const result = component.getSignInDate(conference);
-    const expectedDateString =  'on ' + moment(conference.scheduled_date_time).format('Do MMM');
+    const expectedDateString = 'on ' + moment(conference.scheduled_date_time).format('Do MMM');
     expect(result).toBe(expectedDateString);
+  });
+
+  it('should navigate to equipment check page with conference id', () => {
+    const conference = new ConferenceTestData().getConferenceFuture();
+    spyOn(router, 'navigate').and.callFake(() => { });
+    component.signIntoConference(conference);
+    expect(router.navigate).toHaveBeenCalledWith(['/equipment-check', conference.id]);
   });
 });

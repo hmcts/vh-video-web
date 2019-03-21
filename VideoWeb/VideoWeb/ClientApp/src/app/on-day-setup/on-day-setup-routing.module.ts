@@ -4,6 +4,7 @@ import { ParticipantHearingsComponent } from './participant-hearings/participant
 
 export const onTheDayRoutes: Routes = [
   { path: 'hearing-list', component: ParticipantHearingsComponent },
+  { path: 'equipment-check/:conferenceId', component: ParticipantHearingsComponent }
 ];
 
 @NgModule({

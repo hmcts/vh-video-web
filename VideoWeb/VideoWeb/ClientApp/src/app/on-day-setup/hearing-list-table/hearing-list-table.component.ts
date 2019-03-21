@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ConferenceForUserResponse } from 'src/app/services/clients/api-client';
 import * as moment from 'moment';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-hearing-list-table',
@@ -10,13 +11,13 @@ import * as moment from 'moment';
 export class HearingListTableComponent implements OnInit {
   @Input() conferences: ConferenceForUserResponse[];
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit() {
   }
 
-  signIntoConference() {
-    // TODO: implement this
+  signIntoConference(conference: ConferenceForUserResponse) {
+    this.router.navigate(['/equipment-check', conference.id]);
   }
 
   getSignInDate(conference: ConferenceForUserResponse): string {
@@ -36,7 +37,6 @@ export class HearingListTableComponent implements OnInit {
   }
 
   canStartHearing(conference: ConferenceForUserResponse) {
-    console.log(conference.id);
     const currentDateTime = new Date(new Date().getTime());
     const difference = moment(conference.scheduled_date_time).diff(moment(currentDateTime), 'minutes');
     return difference < 30;
