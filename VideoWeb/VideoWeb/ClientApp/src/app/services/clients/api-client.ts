@@ -27,10 +27,73 @@ export class ApiClient {
     }
 
     /**
-     * Get the configuration settings for client
+     * Get conferences for user
      * @return Success
      */
-    getConfigSettings(): Observable<ClientSettingsResponse> {
+    getConferencesForUser(): Observable<ConferenceForUserResponse[]> {
+        let url_ = this.baseUrl + "/conferences";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetConferencesForUser(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetConferencesForUser(<any>response_);
+                } catch (e) {
+                    return <Observable<ConferenceForUserResponse[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ConferenceForUserResponse[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetConferencesForUser(response: HttpResponseBase): Observable<ConferenceForUserResponse[]> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (resultData200 && resultData200.constructor === Array) {
+                result200 = [];
+                for (let item of resultData200)
+                    result200.push(ConferenceForUserResponse.fromJS(item));
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = resultData400 ? ProblemDetails.fromJS(resultData400) : new ProblemDetails();
+            return throwException("A server error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ConferenceForUserResponse[]>(<any>null);
+    }
+
+    /**
+     * GetClientConfigurationSettings the configuration settings for client
+     * @return Success
+     */
+    getClientConfigurationSettings(): Observable<ClientSettingsResponse> {
         let url_ = this.baseUrl + "/config";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -43,11 +106,11 @@ export class ApiClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetConfigSettings(response_);
+            return this.processGetClientConfigurationSettings(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetConfigSettings(<any>response_);
+                    return this.processGetClientConfigurationSettings(<any>response_);
                 } catch (e) {
                     return <Observable<ClientSettingsResponse>><any>_observableThrow(e);
                 }
@@ -56,7 +119,7 @@ export class ApiClient {
         }));
     }
 
-    protected processGetConfigSettings(response: HttpResponseBase): Observable<ClientSettingsResponse> {
+    protected processGetClientConfigurationSettings(response: HttpResponseBase): Observable<ClientSettingsResponse> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -77,6 +140,110 @@ export class ApiClient {
         }
         return _observableOf<ClientSettingsResponse>(<any>null);
     }
+}
+
+export class ConferenceForUserResponse implements IConferenceForUserResponse {
+    id?: string | undefined;
+    scheduled_date_time?: Date | undefined;
+    case_type?: string | undefined;
+    case_number?: string | undefined;
+    case_name?: string | undefined;
+
+    constructor(data?: IConferenceForUserResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.scheduled_date_time = data["scheduled_date_time"] ? new Date(data["scheduled_date_time"].toString()) : <any>undefined;
+            this.case_type = data["case_type"];
+            this.case_number = data["case_number"];
+            this.case_name = data["case_name"];
+        }
+    }
+
+    static fromJS(data: any): ConferenceForUserResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ConferenceForUserResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["scheduled_date_time"] = this.scheduled_date_time ? this.scheduled_date_time.toISOString() : <any>undefined;
+        data["case_type"] = this.case_type;
+        data["case_number"] = this.case_number;
+        data["case_name"] = this.case_name;
+        return data; 
+    }
+}
+
+export interface IConferenceForUserResponse {
+    id?: string | undefined;
+    scheduled_date_time?: Date | undefined;
+    case_type?: string | undefined;
+    case_number?: string | undefined;
+    case_name?: string | undefined;
+}
+
+export class ProblemDetails implements IProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+
+    constructor(data?: IProblemDetails) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.type = data["type"];
+            this.title = data["title"];
+            this.status = data["status"];
+            this.detail = data["detail"];
+            this.instance = data["instance"];
+        }
+    }
+
+    static fromJS(data: any): ProblemDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProblemDetails();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["type"] = this.type;
+        data["title"] = this.title;
+        data["status"] = this.status;
+        data["detail"] = this.detail;
+        data["instance"] = this.instance;
+        return data; 
+    }
+}
+
+export interface IProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
 }
 
 export class ClientSettingsResponse implements IClientSettingsResponse {

@@ -6,9 +6,9 @@ using VideoWeb.Common.Configuration;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 
-namespace VideoWeb.UnitTests.Controllers
+namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
 {
-    public class ConfigSettingsControllerTests
+    public class GetClientConfigurationSettingsTests
     {
         [Test]
         public void should_return_response_with_settings()
