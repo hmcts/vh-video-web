@@ -8,9 +8,9 @@ import { VideoWebService } from 'src/app/services/video-web.service';
   styleUrls: ['./participant-hearings.component.css']
 })
 export class ParticipantHearingsComponent implements OnInit {
-
   conferences: ConferenceForUserResponse[];
   loadingData: boolean;
+  interval: any;
 
   constructor(private videoWebService: VideoWebService) {
     this.loadingData = true;
@@ -18,6 +18,9 @@ export class ParticipantHearingsComponent implements OnInit {
 
   ngOnInit() {
     this.retrieveHearingsForUser();
+    this.interval = setInterval(() => {
+      this.retrieveHearingsForUser();
+    }, 30000);
   }
 
   retrieveHearingsForUser() {
