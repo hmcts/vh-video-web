@@ -1,23 +1,27 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-#
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.489
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{CB8C2DB8-804A-467F-B03A-68D2D968D237}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoWeb.UnitTests", "VideoWeb.UnitTests\VideoWeb.UnitTests.csproj", "{76118055-2379-410A-9D44-469175758F5D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.UnitTests", "VideoWeb.UnitTests\VideoWeb.UnitTests.csproj", "{76118055-2379-410A-9D44-469175758F5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoWeb.IntegrationTests", "VideoWeb.IntegrationTests\VideoWeb.IntegrationTests.csproj", "{0D96D662-B3D8-48FE-A57F-674CA986A733}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.IntegrationTests", "VideoWeb.IntegrationTests\VideoWeb.IntegrationTests.csproj", "{0D96D662-B3D8-48FE-A57F-674CA986A733}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Testing.Common", "Testing.Common\Testing.Common.csproj", "{5224656F-D232-409E-BE10-BF20AC4A738A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testing.Common", "Testing.Common\Testing.Common.csproj", "{5224656F-D232-409E-BE10-BF20AC4A738A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoWeb", "VideoWeb\VideoWeb.csproj", "{7949F512-2EBC-4DE9-A987-940439D93545}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb", "VideoWeb\VideoWeb.csproj", "{7949F512-2EBC-4DE9-A987-940439D93545}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoWeb.Common", "VideoWeb.Common\VideoWeb.Common.csproj", "{8DB35AEF-80FC-4A54-B253-D5A2236A0AF6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.Common", "VideoWeb.Common\VideoWeb.Common.csproj", "{8DB35AEF-80FC-4A54-B253-D5A2236A0AF6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoWeb.Contract", "VideoWeb.Contract\VideoWeb.Contract.csproj", "{8DA8CEBB-148B-4459-B1FA-92F25087E2FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.Contract", "VideoWeb.Contract\VideoWeb.Contract.csproj", "{8DA8CEBB-148B-4459-B1FA-92F25087E2FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoWeb.Services", "VideoWeb.Services\VideoWeb.Services.csproj", "{DBB7B327-D121-42EC-B512-F657EDA96256}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.Services", "VideoWeb.Services\VideoWeb.Services.csproj", "{DBB7B327-D121-42EC-B512-F657EDA96256}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoWeb.Services.Generator", "VideoWeb.Services.Generator\VideoWeb.Services.Generator.csproj", "{4437442A-6318-4092-AC52-81C7FA6E60DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.Services.Generator", "VideoWeb.Services.Generator\VideoWeb.Services.Generator.csproj", "{4437442A-6318-4092-AC52-81C7FA6E60DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoWeb.AcceptanceTests", "VideoWeb.AcceptanceTests\VideoWeb.AcceptanceTests.csproj", "{E901FAB5-4429-4A0B-BEF0-058610D0EDB6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,10 +61,21 @@ Global
 		{4437442A-6318-4092-AC52-81C7FA6E60DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4437442A-6318-4092-AC52-81C7FA6E60DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4437442A-6318-4092-AC52-81C7FA6E60DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E901FAB5-4429-4A0B-BEF0-058610D0EDB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E901FAB5-4429-4A0B-BEF0-058610D0EDB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E901FAB5-4429-4A0B-BEF0-058610D0EDB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E901FAB5-4429-4A0B-BEF0-058610D0EDB6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{76118055-2379-410A-9D44-469175758F5D} = {CB8C2DB8-804A-467F-B03A-68D2D968D237}
 		{0D96D662-B3D8-48FE-A57F-674CA986A733} = {CB8C2DB8-804A-467F-B03A-68D2D968D237}
 		{5224656F-D232-409E-BE10-BF20AC4A738A} = {CB8C2DB8-804A-467F-B03A-68D2D968D237}
+		{E901FAB5-4429-4A0B-BEF0-058610D0EDB6} = {CB8C2DB8-804A-467F-B03A-68D2D968D237}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3916906E-406E-4BD6-97D7-5675E620CFEC}
 	EndGlobalSection
 EndGlobal
