@@ -26,7 +26,8 @@ export class LoginComponent implements OnInit {
             try {
                 await this.router.navigateByUrl(returnUrl);
             } catch (e) {
-                console.error(e);
+                // TODO: implement logger rather than spitting out to console
+                // console.error(e);
                 this.router.navigate(['/']);
             }
         } else {

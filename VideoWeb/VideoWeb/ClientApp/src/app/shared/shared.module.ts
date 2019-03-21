@@ -8,6 +8,7 @@ import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { SharedRoutingModule } from './shared-routing.module';
+import { ContactUsFoldingComponent } from './contact-us-folding/contact-us-folding.component';
 
 @NgModule({
   imports: [
@@ -21,7 +22,8 @@ import { SharedRoutingModule } from './shared-routing.module';
     HeaderComponent,
     FooterComponent,
     ContactUsComponent,
-    PaginationComponent
+    PaginationComponent,
+    ContactUsFoldingComponent
   ],
   providers: [
   ],
@@ -29,6 +31,7 @@ import { SharedRoutingModule } from './shared-routing.module';
     HeaderComponent,
     FooterComponent,
     ContactUsComponent,
+    ContactUsFoldingComponent,
     PaginationComponent,
     CommonModule,
     FormsModule,

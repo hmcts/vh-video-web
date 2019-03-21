@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 
-import { API_BASE_URL} from './services/clients/api-client';
+import { API_BASE_URL } from './services/clients/api-client';
 
 import { SharedModule } from './shared/shared.module';
 
@@ -12,9 +12,10 @@ import { AppComponent } from './app.component';
 import { ConfigService } from './services/config.service';
 import { AdalInterceptor, AdalService, AdalGuard } from 'adal-angular4';
 import { AuthGuard } from './security/auth.gaurd';
-import {AppRoutingModule} from './app-routing.module';
-import {SecurityModule} from './security/security.module';
+import { AppRoutingModule } from './app-routing.module';
+import { SecurityModule } from './security/security.module';
 import { HomeComponent } from './home/home.component';
+import { OnDaySetupModule } from './on-day-setup/on-day-setup.module';
 
 export function getSettings(configService: ConfigService) {
   return () => configService.loadConfig();
@@ -30,6 +31,7 @@ export function getSettings(configService: ConfigService) {
     HttpClientModule,
     FormsModule,
     SharedModule,
+    OnDaySetupModule,
     SecurityModule,
     AppRoutingModule
   ],

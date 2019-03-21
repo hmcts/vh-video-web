@@ -1,0 +1,16 @@
+<div *ngIf="loadingData">
+    <p class="govuk-body">Loading please wait...</p>
+</div>
+
+<div *ngIf="!loadingData && hasHearings()">
+    <h1 class="govuk-heading-xl">Your hearings</h1>
+    <app-hearing-list-table [conferences]="conferences"></app-hearing-list-table>
+</div>
+<div *ngIf="!loadingData && !hasHearings()">
+    <h1 class="govuk-heading-xl">Video hearings</h1>
+    <h3 class="govuk-heading-m"> You have no video hearings</h3>
+    <p class="govuk-body">If you are expecting to see details of your hearing listed here, please contact us using the
+        options below.</p>
+</div>
+
+<app-contact-us-folding *ngIf="!loadingData"></app-contact-us-folding>

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LoginComponent } from './login.component';
 import { AdalService } from 'adal-angular4';
 import { MockAdalService } from '../../testing/mocks/MockAdalService';

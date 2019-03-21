@@ -1,23 +1,28 @@
 <header class="govuk-header " role="banner" data-module="header">
   <div class="govuk-header__container govuk-width-container">
+
     <div class="govuk-header__logo">
-
-      <span class="govuk-header__logotype">
-        <img src="/assets/images/UkGovCrestWhite.png" height="32" width="38" class="govuk-header__logotype-crest vh-ml15" alt="HM Courts &amp; Tribunals Service crest" />
-        <a class="govuk-header__link govuk-header__link--homepage" style="text-decoration:none; margin-left:10px;" routerLink="/">
-          <span class="govuk-header__logotype-text ">HM Courts &amp; Tribunals Service</span>
-        </a>
-      </span>
-
+      <a class="govuk-header__link--homepage">
+        <span class="govuk-header__logotype">
+          <img src="assets/images/UkGovCrestWhite.png" height="32" width="38" class="hmcts-header__logotype-crest"
+            alt="HMCTS logo crest image" style="margin-right: 30px;" />
+          <span class="govuk-header__logotype-text">
+            HM Courts &amp; Tribunals Service
+          </span>
+        </span>
+      </a>
     </div>
-    <nav>
-      <ul id="navigation" class="govuk-header__navigation right-align" aria-label="Top Level Navigation">
-        <li *ngIf="loggedIn" class="govuk-header__navigation-item">
-          <a class="govuk-header__link" href="javascript:void()" (click)="logout()">
-            Sign out
-          </a>
-        </li>
-      </ul>
-    </nav>
+
+    <div class="hmcts-header__content">
+      <nav class="hmcts-header__navigation" aria-label="Account navigation">
+        <ul class="hmcts-header__navigation-list">
+          <li *ngIf="loggedIn" class="hmcts-header__navigation-item">
+            <a class="govuk-header__link" href="/logout">
+              Sign out
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
   </div>
 </header>
