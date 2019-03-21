@@ -4,6 +4,7 @@ export let PageUrls = {
   Declaration: '/declaration',
   HearingRules: '/hearing-rules',
   WaitingRoom: '/waiting-room',
-  EquipmentCheck: '/equipment-check'
+  EquipmentCheck: '/equipment-check',
+  CameraAndMicrophone: 'camera-and-microphone'
 
 };
