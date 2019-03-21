@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Controllers
@@ -33,17 +34,9 @@ namespace VideoWeb.Controllers
             var username = User.Identity.Name;
             try
             {
-                // var conferences = await _videoApiClient.GetConferencesForUsernameAsync(username);
-                var conferences = new List<ConferenceSummaryResponse>();
-                var response = conferences.Select(x => new ConferenceForUserResponse
-                {
-                    Id = x.Id.GetValueOrDefault(),
-                    CaseName = x.Case_name,
-                    CaseNumber = x.Case_number,
-                    CaseType = x.Case_type,
-                    ScheduledDateTime = x.Scheduled_date_time.GetValueOrDefault()
-                }).ToList();
-
+                var conferences = await _videoApiClient.GetConferencesForUsernameAsync(username);
+                var mapper = new ConferenceForUserResponseMapper();
+                var response = conferences.Select(x => mapper.MapConferenceSummaryToResponseModel(x)).ToList();
                 return Ok(response);
             }
             catch (VideoApiException e)

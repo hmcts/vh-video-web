@@ -20,9 +20,10 @@ export class HearingListTableComponent implements OnInit {
   }
 
   getSignInDate(conference: ConferenceForUserResponse): string {
-    const currentDateTime = new Date(new Date().getTime());
-    const difference = moment(conference.scheduled_date_time).diff(moment(currentDateTime), 'days');
-    if (difference < 0) {
+    const today = moment.utc().dayOfYear();
+    const scheduledDate = moment(conference.scheduled_date_time).dayOfYear();
+
+    if (today >= scheduledDate) {
       return 'Today';
     } else {
       const dateString = moment(conference.scheduled_date_time).format('Do MMM');
