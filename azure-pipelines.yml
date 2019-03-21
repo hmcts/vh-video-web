@@ -25,7 +25,7 @@ resources:
   - repository: azureDevOpsTemplates
     type: github
     name: hmcts/azure-devops-templates
-    ref: refs/heads/master # ref name to use, defaults to 'refs/heads/master'
+    ref: refs/heads/improve-condition # ref name to use, defaults to 'refs/heads/master'
     endpoint: 'GitHubDevOps'
 
 trigger:
