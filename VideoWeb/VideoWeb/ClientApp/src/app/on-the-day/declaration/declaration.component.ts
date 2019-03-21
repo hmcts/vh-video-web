@@ -25,6 +25,7 @@ export class DeclarationComponent implements OnInit {
     if (this.declarationForm.invalid) {
       return;
     }
+
     this.router.navigate([PageUrls.WaitingRoom]);
   }
 }
