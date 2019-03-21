@@ -1,11 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ParticipantHearingsComponent } from './participant-hearings.component';
 import { ConferenceForUserResponse } from '../../services/clients/api-client';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { of } from 'rxjs';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { VideoWebService } from 'src/app/services/video-web.service';
+import { HearingListTableStubComponent } from 'src/app/testing/stubs/hearing-list-table-stub';
 
 describe('ParticipantHearingsComponent with no conferences for user', () => {
   let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
@@ -19,7 +19,7 @@ describe('ParticipantHearingsComponent with no conferences for user', () => {
 
     TestBed.configureTestingModule({
       imports: [SharedModule],
-      declarations: [ParticipantHearingsComponent],
+      declarations: [ParticipantHearingsComponent, HearingListTableStubComponent],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy }
       ]
@@ -52,7 +52,7 @@ describe('ParticipantHearingsComponent with conferences for user', () => {
 
     TestBed.configureTestingModule({
       imports: [SharedModule],
-      declarations: [ParticipantHearingsComponent],
+      declarations: [ParticipantHearingsComponent, HearingListTableStubComponent],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy }
       ]
@@ -70,15 +70,5 @@ describe('ParticipantHearingsComponent with conferences for user', () => {
 
   it('should list hearings', () => {
     expect(component.hasHearings()).toBeTruthy();
-  });
-
-  it('should not show sign in when start time is more 30 minutes from start time', () => {
-    const conference = new ConferenceTestData().getConferenceFuture();
-    expect(component.canStartHearing(conference)).toBeFalsy();
-  });
-
-  it('should show sign in when start time is less than 30 minutes from start time', () => {
-    const conference = new ConferenceTestData().getConferencePast();
-    expect(component.canStartHearing(conference)).toBeTruthy();
   });
 });

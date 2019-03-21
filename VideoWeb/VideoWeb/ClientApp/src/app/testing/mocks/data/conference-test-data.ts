@@ -17,7 +17,7 @@ export class ConferenceTestData {
 
     getConferencePast(): ConferenceForUserResponse {
         const pastDate = new Date(new Date().getTime());
-        pastDate.setUTCHours(pastDate.getUTCHours() - 2);
+        pastDate.setUTCHours(pastDate.getUTCHours() - 26);
         const conference = new ConferenceForUserResponse({
             id: '58CB20C7-377D-4581-8069-3776F583684B',
             case_name: 'BW V BP',
@@ -30,7 +30,7 @@ export class ConferenceTestData {
 
     getConferenceFuture(): ConferenceForUserResponse {
         const futureDate = new Date(new Date().getTime());
-        futureDate.setUTCHours(futureDate.getUTCHours() + 2);
+        futureDate.setUTCHours(futureDate.getUTCHours() + 26);
         const conference = new ConferenceForUserResponse({
             id: '612AB52C-BDA5-4F4D-95B8-3F49065219A6',
             case_name: 'WM V T',
