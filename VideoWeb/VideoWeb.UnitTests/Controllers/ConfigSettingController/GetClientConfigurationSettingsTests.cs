@@ -21,13 +21,20 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
                 Authority = "Authority",
             };
 
-            var configSettingsController = new ConfigSettingsController(Options.Create(securitySettings));
+            var servicesConfiguration = new HearingServicesConfiguration()
+            {
+                VideoApiUrl = "https://vh-video-api/"
+            };
+
+            var configSettingsController = new ConfigSettingsController(Options.Create(securitySettings),
+                Options.Create(servicesConfiguration));
 
             var actionResult = (OkObjectResult)configSettingsController.GetClientConfigurationSettings().Result;
             var clientSettings = (ClientSettingsResponse)actionResult.Value;
             
             clientSettings.ClientId.Should().Be(securitySettings.ClientId);
             clientSettings.TenantId.Should().Be(securitySettings.TenantId);
+            clientSettings.VideoApiUrl.Should().Be(servicesConfiguration.VideoApiUrl);
         }
     }
 }

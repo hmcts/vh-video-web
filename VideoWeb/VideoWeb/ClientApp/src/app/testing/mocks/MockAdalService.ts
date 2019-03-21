@@ -1,5 +1,5 @@
 export class MockAdalService {
-  private userInfo = {
+  userInfo = {
     authenticated: false,
     userName: 'test@automated.com',
     token: 'token'
@@ -12,3 +12,4 @@ export class MockAdalService {
     this.userInfo.authenticated = flag;
   }
 }
+

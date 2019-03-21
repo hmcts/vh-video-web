@@ -9,7 +9,7 @@
         <PackageReference Include="NSwag.MSBuild" Version="12.0.11" />
     </ItemGroup>
 
-    <Target Name="NSwag" AfterTargets="Build" Condition=" '$(Configuration)' == 'Debug' ">
+    <Target Name="NSwag" AfterTargets="Build" Condition=" '$(Configuration)' == 'Release' ">
         <Copy SourceFiles="@(ReferencePath)" DestinationFolder="$(OutDir)References" />
         <Exec Command="$(NSwagExe_Core21) run /runtime:NetCore21 /variables:Configuration=$(Configuration)" />
         <RemoveDir Directories="$(OutDir)References" />

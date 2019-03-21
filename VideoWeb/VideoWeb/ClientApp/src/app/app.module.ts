@@ -16,6 +16,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { SecurityModule } from './security/security.module';
 import { HomeComponent } from './home/home.component';
 import { OnDaySetupModule } from './on-day-setup/on-day-setup.module';
+import { WaitingSpaceModule } from './waiting-space/waiting-space.module';
 
 export function getSettings(configService: ConfigService) {
   return () => configService.loadConfig();
@@ -32,6 +33,7 @@ export function getSettings(configService: ConfigService) {
     FormsModule,
     SharedModule,
     OnDaySetupModule,
+    WaitingSpaceModule,
     SecurityModule,
     AppRoutingModule
   ],

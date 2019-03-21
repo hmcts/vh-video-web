@@ -21,8 +21,9 @@ describe('AppComponent', () => {
   const clientSettings = new ClientSettingsResponse({
     tenant_id: 'tenantid',
     client_id: 'clientid',
-    post_logout_redirect_uri: '/dashboard',
-    redirect_uri: '/dashboard'
+    post_logout_redirect_uri: '/logout',
+    redirect_uri: '/home',
+    video_api_url: 'http://vh-video-api/'
   });
 
   const userInfo = {

@@ -81,6 +81,10 @@ export class ApiClient {
             result400 = resultData400 ? ProblemDetails.fromJS(resultData400) : new ProblemDetails();
             return throwException("A server error occurred.", status, _responseText, _headers, result400);
             }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -251,6 +255,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     client_id?: string | undefined;
     redirect_uri?: string | undefined;
     post_logout_redirect_uri?: string | undefined;
+    video_api_url?: string | undefined;
 
     constructor(data?: IClientSettingsResponse) {
         if (data) {
@@ -267,6 +272,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
             this.client_id = data["client_id"];
             this.redirect_uri = data["redirect_uri"];
             this.post_logout_redirect_uri = data["post_logout_redirect_uri"];
+            this.video_api_url = data["video_api_url"];
         }
     }
 
@@ -283,6 +289,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         data["client_id"] = this.client_id;
         data["redirect_uri"] = this.redirect_uri;
         data["post_logout_redirect_uri"] = this.post_logout_redirect_uri;
+        data["video_api_url"] = this.video_api_url;
         return data; 
     }
 }
@@ -292,6 +299,7 @@ export interface IClientSettingsResponse {
     client_id?: string | undefined;
     redirect_uri?: string | undefined;
     post_logout_redirect_uri?: string | undefined;
+    video_api_url?: string | undefined;
 }
 
 export class SwaggerException extends Error {
