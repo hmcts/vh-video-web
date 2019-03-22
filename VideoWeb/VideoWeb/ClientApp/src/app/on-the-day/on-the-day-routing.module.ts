@@ -12,7 +12,7 @@ export const routes: Routes = [
   { path: 'hearing-rules', component: HearingRulesComponent },
   { path: 'equipment-check', component: EquipmentCheckComponent },
   { path: 'camera-and-microphone', component: CameraAndMicrophoneComponent }
-  
+
 ];
 
 @NgModule({
