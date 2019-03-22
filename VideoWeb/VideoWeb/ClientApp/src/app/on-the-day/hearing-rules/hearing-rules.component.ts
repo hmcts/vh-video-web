@@ -9,8 +9,10 @@ import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
 })
 export class HearingRulesComponent implements OnInit {
   hearingRulesForm: FormGroup;
+  loadingData: boolean;
 
   constructor(private router: Router, private fb: FormBuilder) {
+    this.loadingData = true;
     this.hearingRulesForm = fb.group({
       nextButton: new FormControl()
     });

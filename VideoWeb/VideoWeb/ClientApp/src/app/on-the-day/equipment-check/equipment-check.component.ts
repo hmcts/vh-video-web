@@ -10,7 +10,10 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
 })
 export class EquipmentCheckComponent implements OnInit {
   equipmentCheckForm: FormGroup;
+  loadingData: boolean;
+
   constructor(private router: Router, private fb: FormBuilder) {
+    this.loadingData = true;
     this.equipmentCheckForm = fb.group({
       nextButton: new FormControl()
     });

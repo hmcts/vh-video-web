@@ -7,6 +7,8 @@ import { WaitingRoomComponent } from './waiting-room/waiting-room.component';
 import { HearingRulesComponent } from './hearing-rules/hearing-rules.component';
 import { EquipmentCheckComponent } from './equipment-check/equipment-check.component';
 import { CameraAndMicrophoneComponent } from './camera-and-microphone/camera-and-microphone.component';
+import { HearingListTableComponent } from './hearing-list-table/hearing-list-table.component';
+import { ParticipantHearingsComponent } from './participant-hearings/participant-hearings.component';
 
 @NgModule({
   imports: [
@@ -18,6 +20,8 @@ import { CameraAndMicrophoneComponent } from './camera-and-microphone/camera-and
     DeclarationComponent,
     WaitingRoomComponent,
     HearingRulesComponent,
+    HearingListTableComponent,
+    ParticipantHearingsComponent,
     EquipmentCheckComponent,
     CameraAndMicrophoneComponent
   ],

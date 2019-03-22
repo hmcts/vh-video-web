@@ -9,9 +9,11 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
 })
 export class DeclarationComponent implements OnInit {
   declarationForm: FormGroup;
+  loadingData: boolean;
   submitted = false;
 
   constructor(private router: Router, private fb: FormBuilder) {
+    this.loadingData = true;
     this.declarationForm = fb.group({
       declare: [false, Validators.required],
     });
