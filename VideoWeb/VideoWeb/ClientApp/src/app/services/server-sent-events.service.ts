@@ -29,7 +29,6 @@ export class ServerSentEventsService {
   }
 
   start() {
-    console.log('connection status:  ' + this.connectionStarted);
     if (!this.connectionStarted) {
       this.connection.start().catch(err => console.error(err));
       this.connectionStarted = true;

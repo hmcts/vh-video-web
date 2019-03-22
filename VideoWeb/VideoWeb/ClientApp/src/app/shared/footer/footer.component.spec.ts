@@ -40,15 +40,19 @@ describe('FooterComponent', () => {
   });
 
   it('navigate to dashboard you should see contact us link in the footer', fakeAsync(() => {
-    router.navigate(['dashboard']);
-    tick();
-    expect(location.path()).toBe('/dashboard');
-    expect(component.hideContactUsLink).toBeFalsy();
+    fixture.ngZone.run(() => {
+      router.navigate(['dashboard']);
+      tick();
+      expect(location.path()).toBe('/dashboard');
+      expect(component.hideContactUsLink).toBeFalsy();
+    });
   }));
   it('navigate to contact-us you should not see contact us link in the footer', fakeAsync(() => {
-    router.navigate(['contact-us']);
-    tick();
-    expect(location.path()).toBe('/contact-us');
-    expect(component.hideContactUsLink).toBeTruthy();
+    fixture.ngZone.run(() => {
+      router.navigate(['contact-us']);
+      tick();
+      expect(location.path()).toBe('/contact-us');
+      expect(component.hideContactUsLink).toBeTruthy();
+    });
   }));
 });
