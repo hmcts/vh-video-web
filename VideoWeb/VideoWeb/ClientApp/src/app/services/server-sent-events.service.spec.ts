@@ -31,7 +31,7 @@ describe('ServerSentEventsService', () => {
   }));
 
   it('should not start if connected', inject([ServerSentEventsService], (service: ServerSentEventsService) => {
-    spyOn(service.connection, 'start').and.callFake(() => Promise.resolve(true));
+    spyOn(service.connection, 'start').and.callFake(() => { service.connectionStarted = true; return Promise.resolve(true); });
     service.start();
     service.start();
     expect(service.connection.start).toHaveBeenCalledTimes(1);

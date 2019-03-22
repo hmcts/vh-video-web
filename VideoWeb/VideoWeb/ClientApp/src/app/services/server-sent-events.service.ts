@@ -33,12 +33,10 @@ export class ServerSentEventsService {
 
   start() {
     if (!this.connectionStarted) {
-      console.log('attempting to connect');
       this.connection
         .start()
         .then(() => {
           this.connectionStarted = true;
-          console.log('connected');
         })
         .catch(err => console.error(err));
     }

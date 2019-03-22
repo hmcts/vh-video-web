@@ -1,0 +1,33 @@
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { FormGroup, Validators, FormBuilder, FormControl } from '@angular/forms';
+import { PageUrls } from 'src/app/shared/page-url.constants';
+
+@Component({
+  selector: 'app-declaration',
+  templateUrl: './declaration.component.html'
+})
+export class DeclarationComponent implements OnInit {
+  declarationForm: FormGroup;
+  loadingData: boolean;
+  submitted = false;
+
+  constructor(private router: Router, private fb: FormBuilder) {
+    this.loadingData = true;
+    this.declarationForm = fb.group({
+      declare: [false, Validators.required],
+    });
+  }
+
+  ngOnInit() {
+  }
+
+  onSubmit() {
+    this.submitted = true;
+    if (this.declarationForm.invalid) {
+      return;
+    }
+
+    this.router.navigate([PageUrls.WaitingRoom]);
+  }
+}
