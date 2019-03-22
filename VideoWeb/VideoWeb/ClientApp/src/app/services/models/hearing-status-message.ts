@@ -1,8 +1,8 @@
 export class HearingStatusMessage {
-    constructor(hearingId: number, status: string) {
-        this.hearingId = hearingId;
+    constructor(conferenceId: string, status: string) {
+        this.conferenceId = conferenceId;
         this.status = status;
     }
-    hearingId: number;
+    conferenceId: string;
     status: string;
 }
