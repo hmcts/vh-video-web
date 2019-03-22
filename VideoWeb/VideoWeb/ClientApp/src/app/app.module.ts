@@ -14,8 +14,8 @@ import { AdalInterceptor, AdalService, AdalGuard } from 'adal-angular4';
 import { AuthGuard } from './security/auth.gaurd';
 import { AppRoutingModule } from './app-routing.module';
 import { SecurityModule } from './security/security.module';
+import {OnTheDayModule} from './on-the-day/on-the-day.module';
 import { HomeComponent } from './home/home.component';
-import { OnDaySetupModule } from './on-day-setup/on-day-setup.module';
 
 export function getSettings(configService: ConfigService) {
   return () => configService.loadConfig();
@@ -24,15 +24,15 @@ export function getSettings(configService: ConfigService) {
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent
+    HomeComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
     HttpClientModule,
     FormsModule,
     SharedModule,
-    OnDaySetupModule,
     SecurityModule,
+    OnTheDayModule,
     AppRoutingModule
   ],
   providers: [
