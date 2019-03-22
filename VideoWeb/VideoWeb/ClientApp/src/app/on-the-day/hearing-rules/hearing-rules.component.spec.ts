@@ -4,22 +4,19 @@ import { DebugElement } from '@angular/core';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormsModule, AbstractControl } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
+import { PageUrls } from 'src/app/shared/page-url.constants';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 describe('HearingRulesComponent', () => {
   let component: HearingRulesComponent;
   let fixture: ComponentFixture<HearingRulesComponent>;
   let debugElement: DebugElement;
   let router: Router;
-  let routerSpy: jasmine.SpyObj<Router>;
 
   beforeEach(async(() => {
-    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     TestBed.configureTestingModule({
-      declarations: [ HearingRulesComponent ],
-      imports: [ReactiveFormsModule, FormsModule, RouterTestingModule],
-      providers: [
-        { provide: Router, useValue: routerSpy }
-      ]
+      declarations: [HearingRulesComponent],
+      imports: [ReactiveFormsModule, FormsModule, RouterTestingModule, SharedModule],
     })
     .compileComponents();
 
@@ -27,7 +24,6 @@ describe('HearingRulesComponent', () => {
     debugElement = fixture.debugElement;
     component = debugElement.componentInstance;
     router = TestBed.get(Router);
-
   }));
 
   beforeEach(() => {
@@ -44,5 +40,11 @@ describe('HearingRulesComponent', () => {
     spyOn(component, 'onSubmit');
     component.onSubmit();
     expect(component.onSubmit).toHaveBeenCalled();
+  });
+
+  it('should navigate to declaration', () => {
+    spyOn(router, 'navigate').and.callFake(() => { });
+    component.onSubmit();
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.Declaration]);
   });
 });

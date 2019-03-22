@@ -31,7 +31,6 @@ export function getSettings(configService: ConfigService) {
     HttpClientModule,
     FormsModule,
     SharedModule,
-    OnDaySetupModule,
     SecurityModule,
     OnTheDayModule,
     AppRoutingModule

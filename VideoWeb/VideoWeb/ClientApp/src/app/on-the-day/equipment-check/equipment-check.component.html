@@ -1,34 +1,30 @@
 <div class="govuk-grid-row">
-      <h1 class="govuk-heading-l">Let's confirm your equipment is working </h1>
-  </div>
-  <div class="govuk-grid-row">
-  <form [formGroup]="equipmentCheckForm" class="govuk-form-group" (ngSubmit)="onSubmit()">
-          <div class="govuk-form-group">
-            <label class="govuk-label" for="equipment">
-                This short video will help you check that your camera and microphone are working.
-            </label>
-          </div>
+  <h1 class="govuk-heading-l">Let's confirm your equipment is working</h1>
+</div>
+<div class="govuk-grid-row">
+  <form
+    [formGroup]="equipmentCheckForm"
+    class="govuk-form-group"
+    (ngSubmit)="onSubmit()"
+  >
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="equipment">
+        This short video will help you check that your camera and microphone are
+        working.
+      </label>
+    </div>
     <div class="vh-top">
-      <input type="button" id="nextButton" class="govuk-button" role="button" value="continue" style="margin-right:25px;"
-             (click)="onSubmit()" alt="Equipment Check" />
+      <input
+        type="button"
+        id="nextButton"
+        class="govuk-button"
+        role="button"
+        value="continue"
+        style="margin-right:25px;"
+        (click)="onSubmit()"
+        alt="Equipment Check"
+      />
     </div>
   </form>
-  <details class="govuk-details">
-      <summary class="govuk-details__summary">
-        <span class="govuk-details__summary-text">
-          Contact us for help
-        </span>
-      </summary>
-      <div class="govuk-details__text">
-        <p id="speakTo" class="govuk-body">To speak to a hearings administrator:</p>
-        <ul class="govuk-list govuk-list--bullet">
-          <li>
-            call 0300 303 0655
-          </li>
-          <li>
-            email admin@videohearings.hmcts.net
-          </li>
-        </ul>
-      </div>
-    </details>
+  <app-contact-us-folding *ngIf="!loadingData"></app-contact-us-folding>
 </div>

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { DebugElement } from '@angular/core';
 import { ReactiveFormsModule, FormsModule, AbstractControl } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 describe('DeclarationComponent Tests', () => {
   let component: DeclarationComponent;
@@ -15,7 +16,7 @@ describe('DeclarationComponent Tests', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [DeclarationComponent],
-      imports: [ReactiveFormsModule, FormsModule, RouterTestingModule],
+      imports: [ReactiveFormsModule, FormsModule, RouterTestingModule, SharedModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DeclarationComponent);

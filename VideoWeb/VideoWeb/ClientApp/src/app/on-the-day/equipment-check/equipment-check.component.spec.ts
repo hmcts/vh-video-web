@@ -5,22 +5,19 @@ import { DebugElement } from '@angular/core';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
+import { PageUrls } from 'src/app/shared/page-url.constants';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 describe('EquipmentCheckComponent', () => {
   let component: EquipmentCheckComponent;
   let fixture: ComponentFixture<EquipmentCheckComponent>;
   let debugElement: DebugElement;
   let router: Router;
-  let routerSpy: jasmine.SpyObj<Router>;
 
   beforeEach(async(() => {
-    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     TestBed.configureTestingModule({
-      declarations: [ EquipmentCheckComponent ],
-      imports: [ReactiveFormsModule, FormsModule, RouterTestingModule],
-      providers: [
-        { provide: Router, useValue: routerSpy }
-      ]
+      declarations: [EquipmentCheckComponent],
+      imports: [ReactiveFormsModule, FormsModule, RouterTestingModule, SharedModule],
     })
     .compileComponents();
 
@@ -40,9 +37,9 @@ describe('EquipmentCheckComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('next button should work', () => {
-    spyOn(component, 'onSubmit');
+  it('should navigate to camera-and-microphone', () => {
+    spyOn(router, 'navigate').and.callFake(() => { });
     component.onSubmit();
-    expect(component.onSubmit).toHaveBeenCalled();
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.CameraAndMicrophone]);
   });
 });
