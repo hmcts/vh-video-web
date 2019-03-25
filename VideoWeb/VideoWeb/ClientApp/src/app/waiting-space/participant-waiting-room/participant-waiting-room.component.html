@@ -13,7 +13,7 @@
     <div>
       <p class="govuk-body">
         {{ conference.scheduled_date_time | date: 'EEEE dd MMMM	yyyy' }} <br />
-        {{ conference.scheduled_date_time | date: 'HH:mm' }} (scheduled for minutes)
+        {{ conference.scheduled_date_time | date: 'HH:mm' }} (scheduled for {{ conference.scheduled_duration }} minutes)
       </p>
     </div>
 

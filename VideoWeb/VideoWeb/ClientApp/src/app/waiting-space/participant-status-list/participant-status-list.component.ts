@@ -21,7 +21,6 @@ export class ParticipantStatusListComponent implements OnInit {
   }
 
   isParticipantAvailable(participant: ParticipantResponse): boolean {
-    console.log('checking is available');
     return participant.status === ParticipantStatus.Available;
   }
 

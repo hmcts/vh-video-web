@@ -1,4 +1,4 @@
-import { ConferenceForUserResponse } from 'src/app/services/clients/api-client';
+import { ConferenceForUserResponse, ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus, ParticipantRole } from 'src/app/services/clients/api-client';
 
 export class ConferenceTestData {
 
@@ -50,5 +50,52 @@ export class ConferenceTestData {
         testData.push(conference2);
         testData.push(conference3);
         return testData;
+    }
+
+    getConferenceDetail(): ConferenceResponse {
+        const participants = this.getListOfParticipantDetails();
+        const futureDate = new Date(new Date().getTime());
+        futureDate.setUTCHours(futureDate.getUTCHours() + 26);
+        const conference = new ConferenceResponse({
+            id: '612AB52C-BDA5-4F4D-95B8-3F49065219A6',
+            case_name: 'WM V T',
+            case_number: '0987UDIHH',
+            case_type: 'Financial Tax Remedy',
+            scheduled_date_time: futureDate,
+            scheduled_duration: 45,
+            status: ConferenceStatus.NotStarted,
+            participants: participants
+        });
+
+        return conference;
+    }
+
+    getListOfParticipantDetails(): ParticipantResponse[] {
+        const participants: ParticipantResponse[] = [];
+        const participant1 = new ParticipantResponse({
+            id: '9F681318-4955-49AF-A887-DED64554429D',
+            name: 'Mr Chris Green',
+            status: ParticipantStatus.Available,
+            role: ParticipantRole.Individual
+        });
+
+        const participant2 = new ParticipantResponse({
+            id: '9F681318-4955-49AF-A887-DED64554429J',
+            name: 'Mr James Green',
+            status: ParticipantStatus.NotSignedIn,
+            role: ParticipantRole.Individual
+        });
+
+        const participant3 = new ParticipantResponse({
+            id: '9F681318-4955-49AF-A887-DED64554429J',
+            name: 'Judge Fudge',
+            status: ParticipantStatus.Available,
+            role: ParticipantRole.Judge
+        });
+
+        participants.push(participant1);
+        participants.push(participant2);
+        participants.push(participant3);
+        return participants;
     }
 }

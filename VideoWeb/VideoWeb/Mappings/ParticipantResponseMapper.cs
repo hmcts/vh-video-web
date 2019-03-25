@@ -8,13 +8,20 @@ namespace VideoWeb.Mappings
     {
         public ParticipantResponse MapParticipantToResponseModel(ParticipantDetailsResponse participant)
         {
-            var status =
-                Enum.Parse<ParticipantStatus>(participant.Current_status.Participant_state.GetValueOrDefault()
-                    .ToString());
-            
-            var role =
-                Enum.Parse<ParticipantRole>(participant.User_role.GetValueOrDefault()
-                    .ToString());
+            var status = ParticipantStatus.None;
+            if (participant.Current_status?.Participant_state != null)
+            {
+                status =
+                    Enum.Parse<ParticipantStatus>(participant.Current_status.Participant_state.GetValueOrDefault()
+                        .ToString());
+            }
+
+            var role = ParticipantRole.None;
+            if (participant.User_role != null)
+            {
+                role = Enum.Parse<ParticipantRole>(participant.User_role.GetValueOrDefault().ToString());
+            }
+
             var response = new ParticipantResponse
             {
                 Id = participant.Id.GetValueOrDefault(),

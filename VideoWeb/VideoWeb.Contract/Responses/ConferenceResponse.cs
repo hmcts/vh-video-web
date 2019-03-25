@@ -7,6 +7,7 @@ namespace VideoWeb.Contract.Responses
     {
         public Guid Id { get; set; }
         public DateTime ScheduledDateTime { get; set; }
+        public int ScheduledDuration { get; set; }
         public string CaseType { get; set; }
         public string CaseNumber { get; set; }
         public string CaseName { get; set; }

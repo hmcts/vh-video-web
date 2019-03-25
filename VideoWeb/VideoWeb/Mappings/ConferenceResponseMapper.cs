@@ -9,9 +9,13 @@ namespace VideoWeb.Mappings
     {
         public ConferenceResponse MapConferenceDetailsToResponseModel(ConferenceDetailsResponse conference)
         {
-            var status =
-                Enum.Parse<ConferenceStatus>(conference.Current_status.Conference_state.GetValueOrDefault()
+            var status = ConferenceStatus.NotStarted;
+            if (conference.Current_status?.Conference_state != null)
+            {
+                status = Enum.Parse<ConferenceStatus>(conference.Current_status?.Conference_state.GetValueOrDefault()
                     .ToString());
+            }
+                
             
             var participantMapper = new ParticipantResponseMapper();
             var participants = conference.Participants
@@ -25,6 +29,7 @@ namespace VideoWeb.Mappings
                 CaseNumber = conference.Case_number,
                 CaseType = conference.Case_type,
                 ScheduledDateTime = conference.Scheduled_date_time.GetValueOrDefault(),
+                ScheduledDuration = conference.Scheduled_duration.GetValueOrDefault(),
                 Status = status,
                 Participants = participants
             };

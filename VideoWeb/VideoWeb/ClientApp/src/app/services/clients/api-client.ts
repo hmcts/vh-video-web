@@ -328,6 +328,7 @@ export interface IProblemDetails {
 export class ConferenceResponse implements IConferenceResponse {
     id?: string | undefined;
     scheduled_date_time?: Date | undefined;
+    scheduled_duration?: number | undefined;
     case_type?: string | undefined;
     case_number?: string | undefined;
     case_name?: string | undefined;
@@ -347,6 +348,7 @@ export class ConferenceResponse implements IConferenceResponse {
         if (data) {
             this.id = data["id"];
             this.scheduled_date_time = data["scheduled_date_time"] ? new Date(data["scheduled_date_time"].toString()) : <any>undefined;
+            this.scheduled_duration = data["scheduled_duration"];
             this.case_type = data["case_type"];
             this.case_number = data["case_number"];
             this.case_name = data["case_name"];
@@ -370,6 +372,7 @@ export class ConferenceResponse implements IConferenceResponse {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["scheduled_date_time"] = this.scheduled_date_time ? this.scheduled_date_time.toISOString() : <any>undefined;
+        data["scheduled_duration"] = this.scheduled_duration;
         data["case_type"] = this.case_type;
         data["case_number"] = this.case_number;
         data["case_name"] = this.case_name;
@@ -386,6 +389,7 @@ export class ConferenceResponse implements IConferenceResponse {
 export interface IConferenceResponse {
     id?: string | undefined;
     scheduled_date_time?: Date | undefined;
+    scheduled_duration?: number | undefined;
     case_type?: string | undefined;
     case_number?: string | undefined;
     case_name?: string | undefined;
@@ -394,6 +398,7 @@ export interface IConferenceResponse {
 }
 
 export enum ConferenceStatus {
+    NotStarted = "NotStarted", 
     InSession = "InSession", 
     Paused = "Paused", 
     Suspended = "Suspended", 
