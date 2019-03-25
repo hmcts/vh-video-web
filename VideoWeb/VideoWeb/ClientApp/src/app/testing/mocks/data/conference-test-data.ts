@@ -1,4 +1,6 @@
-import { ConferenceForUserResponse, ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus, ParticipantRole } from 'src/app/services/clients/api-client';
+import {
+    ConferenceForUserResponse, ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus, ParticipantRole
+} from 'src/app/services/clients/api-client';
 
 export class ConferenceTestData {
 
