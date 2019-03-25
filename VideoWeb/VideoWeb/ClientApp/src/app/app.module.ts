@@ -2,7 +2,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
 
 import { API_BASE_URL } from './services/clients/api-client';
 
@@ -14,8 +13,9 @@ import { AdalInterceptor, AdalService, AdalGuard } from 'adal-angular4';
 import { AuthGuard } from './security/auth.gaurd';
 import { AppRoutingModule } from './app-routing.module';
 import { SecurityModule } from './security/security.module';
-import {OnTheDayModule} from './on-the-day/on-the-day.module';
+import { OnTheDayModule } from './on-the-day/on-the-day.module';
 import { HomeComponent } from './home/home.component';
+import { WaitingSpaceModule } from './waiting-space/waiting-space.module';
 
 export function getSettings(configService: ConfigService) {
   return () => configService.loadConfig();
@@ -32,6 +32,7 @@ export function getSettings(configService: ConfigService) {
     FormsModule,
     SharedModule,
     SecurityModule,
+    WaitingSpaceModule,
     OnTheDayModule,
     AppRoutingModule
   ],

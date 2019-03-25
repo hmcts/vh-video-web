@@ -1,0 +1,21 @@
+<div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-quarter">
+      <img src="/assets/images/govuk-crest.png" height="40" width="40" class="govuk-header__logotype-crest"
+        alt="HM Courts &amp; Tribunals Service crest" />
+    </div>
+    <div class="govuk-grid-column-three-quarters">
+      <div class="govuk-heading-m">Judge</div>
+      <div class="govuk-heading-s">Judge {{judge.name}}</div>
+    </div>
+
+    <h2 class="govuk-heading-m">Participants</h2>
+  </div>
+  <div *ngFor="let participant of nonJugdeParticipants" class="govuk-grid-row">
+    <div>
+      <p class="govuk-body-s"><strong>{{participant.name}}</strong></p>
+      <div class="govuk-body-s" [ngClass]="(isParticipantAvailable(participant))?'available':'unavailable'">{{participant.status}}</div>
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+    </div>
+  </div>
+</div>
