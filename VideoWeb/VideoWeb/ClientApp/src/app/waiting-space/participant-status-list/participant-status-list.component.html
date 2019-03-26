@@ -12,9 +12,9 @@
     <h2 class="govuk-heading-m">Participants</h2>
   </div>
   <div *ngFor="let participant of nonJugdeParticipants" class="govuk-grid-row">
-    <div>
-      <p class="govuk-body-s"><strong>{{participant.name}}</strong></p>
-      <div class="govuk-body-s" [ngClass]="(isParticipantAvailable(participant))?'available':'unavailable'">{{participant.status}}</div>
+    <div id="p-row-{{participant.id}}">
+      <p class="govuk-body-s govuk-!-margin-bottom-0"><strong>{{participant.name}}</strong></p>
+      <div class="govuk-body-s govuk-!-margin-bottom-0" [ngClass]="(isParticipantAvailable(participant))?'available':'unavailable'"><strong>{{ getParticipantStatusText(participant) }}</strong></div>
       <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
     </div>
   </div>

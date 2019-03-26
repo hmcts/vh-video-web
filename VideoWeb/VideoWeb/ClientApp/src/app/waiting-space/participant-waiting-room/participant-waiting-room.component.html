@@ -2,7 +2,7 @@
   <p class="govuk-body">Loading please wait...</p>
 </div>
 
-<div *ngIf="!loadingData && conference">
+<div *ngIf="!loadingData && conference" class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-xl">Your hearing</h1>
 
@@ -12,8 +12,8 @@
 
     <div>
       <p class="govuk-body">
-        {{ conference.scheduled_date_time | date: 'EEEE dd MMMM	yyyy' }} <br />
-        {{ conference.scheduled_date_time | date: 'HH:mm' }} (scheduled for {{ conference.scheduled_duration }} minutes)
+        <span aria-label="date of hearing">{{ conference.scheduled_date_time | date: 'EEEE dd MMMM	yyyy' }}</span> <br />
+        <span aria-label="scheduled time and duration of hearing">{{ conference.scheduled_date_time | date: 'HH:mm' }} (scheduled for {{ conference.scheduled_duration }} minutes) </span>
       </p>
     </div>
 
@@ -23,6 +23,6 @@
   </div>
 
   <div class="govuk-grid-column-one-third">
-    <app-participant-status-list [conference]="conference"></app-participant-status-list>
+    <app-participant-status-list aria-label="list of participants in hearing" [conference]="conference"></app-participant-status-list>
   </div>
 </div>

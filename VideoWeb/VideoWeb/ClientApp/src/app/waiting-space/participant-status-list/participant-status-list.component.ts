@@ -24,6 +24,10 @@ export class ParticipantStatusListComponent implements OnInit {
     return participant.status === ParticipantStatus.Available;
   }
 
+  getParticipantStatusText(participant: ParticipantResponse): string {
+    return participant.status === ParticipantStatus.Available ? 'Available' : 'Unavailable';
+  }
+
   private filterNonJudgeParticipants(): void {
     this.nonJugdeParticipants = this.conference.participants.filter(x => x.role !== ParticipantRole.Judge);
   }

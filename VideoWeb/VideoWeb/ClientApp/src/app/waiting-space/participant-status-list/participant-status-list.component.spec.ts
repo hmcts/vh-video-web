@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ParticipantStatusListComponent } from './participant-status-list.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ParticipantStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
 
 describe('ParticipantStatusListComponent', () => {
   let component: ParticipantStatusListComponent;
@@ -36,5 +36,19 @@ describe('ParticipantStatusListComponent', () => {
   it('should return false when participant is not available', () => {
     const availableParticipant = component.conference.participants.find(x => x.status !== ParticipantStatus.Available);
     expect(component.isParticipantAvailable(availableParticipant)).toBeFalsy();
+  });
+
+  it('should return unavailable text for all non-available statuses', () => {
+    expect(component.getParticipantStatusText(new ParticipantResponse({status: ParticipantStatus.Disconnected}))).toBe('Unavailable');
+    expect(component.getParticipantStatusText(new ParticipantResponse({status: ParticipantStatus.InConsultation}))).toBe('Unavailable');
+    expect(component.getParticipantStatusText(new ParticipantResponse({status: ParticipantStatus.InHearing}))).toBe('Unavailable');
+    expect(component.getParticipantStatusText(new ParticipantResponse({status: ParticipantStatus.Joining}))).toBe('Unavailable');
+    expect(component.getParticipantStatusText(new ParticipantResponse({status: ParticipantStatus.NotSignedIn}))).toBe('Unavailable');
+    expect(component.getParticipantStatusText(new ParticipantResponse({status: ParticipantStatus.UnableToJoin}))).toBe('Unavailable');
+    expect(component.getParticipantStatusText(new ParticipantResponse({status: ParticipantStatus.None}))).toBe('Unavailable');
+  });
+
+  it('should return available text for when participant is available', () => {
+    expect(component.getParticipantStatusText(new ParticipantResponse({status: ParticipantStatus.Available}))).toBe('Available');
   });
 });
