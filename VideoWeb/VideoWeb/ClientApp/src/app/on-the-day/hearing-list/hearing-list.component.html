@@ -1,0 +1,14 @@
+<div class="govuk-grid-row">
+  <h1 class="govuk-heading-l">Your video hearings</h1>
+</div>
+<div class="govuk-grid-row">
+  <form
+    [formGroup]="hearingListForm"
+    class="govuk-form-group"
+    (ngSubmit)="onSubmit()"
+  >
+    <app-judge-hearing-table></app-judge-hearing-table>
+  </form>
+
+  <app-contact-us-folding *ngIf="!loadingData"></app-contact-us-folding>
+</div>

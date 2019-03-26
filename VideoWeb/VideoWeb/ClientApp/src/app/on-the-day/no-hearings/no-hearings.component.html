@@ -1,0 +1,33 @@
+<div class="govuk-grid-row">
+  <h1 class="govuk-heading-l">Video hearings</h1>
+</div>
+<div class="govuk-grid-row">
+  <form
+    [formGroup]="noHearingForm"
+    class="govuk-form-group"
+    (ngSubmit)="onSubmit()"
+  >
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="NoHearings">
+        <b>You have no video hearings</b>
+      </label>
+      <label class="govuk-label" for="NoHearings">
+        If you are expecting to see details of your video hearing listed here,
+        please contact us using the options below
+      </label>
+    </div>
+    <div class="vh-top">
+      <input
+        type="button"
+        id="nextButton"
+        class="govuk-button"
+        role="button"
+        value="continue"
+        style="margin-right:25px;"
+        (click)="onSubmit()"
+        alt="No Hearings"
+      />
+    </div>
+  </form>
+  <app-contact-us-folding *ngIf="!loadingData"></app-contact-us-folding>
+</div>
