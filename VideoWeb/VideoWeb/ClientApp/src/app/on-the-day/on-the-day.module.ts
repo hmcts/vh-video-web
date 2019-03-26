@@ -8,6 +8,9 @@ import { EquipmentCheckComponent } from './equipment-check/equipment-check.compo
 import { CameraAndMicrophoneComponent } from './camera-and-microphone/camera-and-microphone.component';
 import { HearingListTableComponent } from './hearing-list-table/hearing-list-table.component';
 import { ParticipantHearingsComponent } from './participant-hearings/participant-hearings.component';
+import { HearingListComponent } from './hearing-list/hearing-list.component';
+import { NoHearingsComponent } from './no-hearings/no-hearings.component';
+import { JudgeHearingTableComponent } from './judge-hearing-table/judge-hearing-table.component';
 
 @NgModule({
   imports: [
@@ -21,7 +24,10 @@ import { ParticipantHearingsComponent } from './participant-hearings/participant
     HearingListTableComponent,
     ParticipantHearingsComponent,
     EquipmentCheckComponent,
-    CameraAndMicrophoneComponent
+    CameraAndMicrophoneComponent,
+    HearingListComponent,
+    NoHearingsComponent,
+    JudgeHearingTableComponent
   ],
   exports: [
     DeclarationComponent
