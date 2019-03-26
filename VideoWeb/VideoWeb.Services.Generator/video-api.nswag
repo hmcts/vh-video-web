@@ -4,7 +4,7 @@
   "swaggerGenerator": {
     "fromSwagger": {
       "json": null,
-      "url": "https://vh-video-api-preview.azurewebsites.net/swagger/v1/swagger.json",
+      "url": "https://localhost:59390/swagger/v1/swagger.json",
       "output": null
     }
   },
@@ -42,7 +42,7 @@
       "additionalNamespaceUsages": [],
       "additionalContractNamespaceUsages": [],
       "generateOptionalParameters": false,
-      "generateJsonMethods": true,
+      "generateJsonMethods": false,
       "enforceFlagEnums": false,
       "parameterArrayType": "System.Collections.Generic.IEnumerable",
       "parameterDictionaryType": "System.Collections.Generic.IDictionary",

@@ -42,6 +42,7 @@ namespace VideoWeb
                 {
                     {"Bearer", Enumerable.Empty<string>()},
                 });
+                c.SchemaFilter<EnumSchemaFilter>();
             });
 
             return serviceCollection;

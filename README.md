@@ -18,6 +18,23 @@ The configuration for the front end TypeScript can be found in 'VideoWeb/VideoWe
 
 The latest version of the client code can be found in 'src/app/services/clients/api-client.ts'
 
+## Running code coverage
+
+First ensure you are running a terminal in the VideoWeb directory of this repository and then run the following commands.
+
+``` bash
+dotnet test --no-build VideoWeb.UnitTests/VideoWeb.UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat="\"opencover,cobertura,json,lcov\"" /p:CoverletOutput=../Artifacts/Coverage/ /p:MergeWith='../Artifacts/Coverage/coverage.json' /p:Exclude="\"[VideoWeb]VideoWeb.ConfigureServicesExtensions,[VideoWeb]VideoWeb.Program,[VideoWeb]VideoWeb.Startup,[*]VideoWeb.Common.*,[*]VideoWeb.Extensions.*,[*]VideoWeb.Pages.*,[*]VideoWeb.Swagger.*,[*]VideoWeb.Views.*,[*]VideoWeb.UnitTests.*,[*]VideoWeb.Services.*,[*]Testing.Common.*\""
+
+```
+
+## Generate HTML Report
+
+Under the unit test project directory
+
+``` bash
+dotnet reportgenerator "-reports:../Artifacts/Coverage/coverage.opencover.xml" "-targetDir:../Artifacts/Coverage/Report" -reporttypes:HtmlInline_AzurePipelines
+```
+
 ## Linting
 
 Verify the source code passes linting. To quickly fix linting issues, execute the following command from the 'ClientApp' directory in a terminal

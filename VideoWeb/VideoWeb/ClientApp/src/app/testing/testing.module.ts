@@ -8,6 +8,7 @@ import { DashboardStubComponent } from './stubs/dashboard-stub';
 import { FooterStubComponent } from './stubs/footer-stub';
 import { HeaderStubComponent } from './stubs/header-stub';
 import { HearingListTableStubComponent } from './stubs/hearing-list-table-stub';
+import { ParticipantStatusListStubComponent } from './stubs/participant-status-list-stub';
 
 @NgModule({
   imports: [
@@ -21,7 +22,8 @@ import { HearingListTableStubComponent } from './stubs/hearing-list-table-stub';
     DashboardStubComponent,
     FooterStubComponent,
     HeaderStubComponent,
-    HearingListTableStubComponent
+    HearingListTableStubComponent,
+    ParticipantStatusListStubComponent
   ]
 })
 export class TestingModule { }
