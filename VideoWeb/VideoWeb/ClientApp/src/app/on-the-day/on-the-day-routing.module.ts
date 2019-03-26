@@ -5,6 +5,7 @@ import {WaitingRoomComponent} from './waiting-room/waiting-room.component';
 import {HearingRulesComponent} from './hearing-rules/hearing-rules.component';
 import { EquipmentCheckComponent } from './equipment-check/equipment-check.component';
 import { CameraAndMicrophoneComponent } from './camera-and-microphone/camera-and-microphone.component';
+import { ParticipantHearingsComponent } from './participant-hearings/participant-hearings.component';
 import { NoHearingsComponent } from './no-hearings/no-hearings.component';
 import { HearingListComponent } from './hearing-list/hearing-list.component';
 import { JudgeHearingTableComponent } from './judge-hearing-table/judge-hearing-table.component';
