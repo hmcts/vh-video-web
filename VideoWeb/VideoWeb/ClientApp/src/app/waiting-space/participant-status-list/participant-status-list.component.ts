@@ -1,5 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ConferenceResponse, ParticipantResponse, ParticipantRole, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { AdalService } from 'adal-angular4';
 
 @Component({
   selector: 'app-participant-status-list',
@@ -13,7 +14,7 @@ export class ParticipantStatusListComponent implements OnInit {
   nonJugdeParticipants: ParticipantResponse[];
   judge: ParticipantResponse;
 
-  constructor() { }
+  constructor(private adalService: AdalService) { }
 
   ngOnInit() {
     this.filterNonJudgeParticipants();
@@ -26,6 +27,23 @@ export class ParticipantStatusListComponent implements OnInit {
 
   getParticipantStatusText(participant: ParticipantResponse): string {
     return participant.status === ParticipantStatus.Available ? 'Available' : 'Unavailable';
+  }
+
+  canCallParticipant(participant: ParticipantResponse): boolean {
+    if (participant.username === this.adalService.userInfo.userName) {
+      return false;
+    }
+    return this.isParticipantAvailable(participant);
+  }
+
+  begingCallWith(participant: ParticipantResponse): void {
+    if (this.canCallParticipant(participant)) {
+      this.raiseConsultationRequestEvent(participant);
+    }
+  }
+
+  private raiseConsultationRequestEvent(participant: ParticipantResponse): void {
+    throw Error('Not Implemented');
   }
 
   private filterNonJudgeParticipants(): void {

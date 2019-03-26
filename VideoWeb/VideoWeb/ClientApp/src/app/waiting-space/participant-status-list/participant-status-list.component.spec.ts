@@ -3,16 +3,23 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ParticipantStatusListComponent } from './participant-status-list.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { ParticipantStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
+import { AdalService } from 'adal-angular4';
+import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 
 describe('ParticipantStatusListComponent', () => {
   let component: ParticipantStatusListComponent;
   let fixture: ComponentFixture<ParticipantStatusListComponent>;
+  let adalService: MockAdalService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ParticipantStatusListComponent ]
+      declarations: [ ParticipantStatusListComponent ],
+      providers: [
+        { provide: AdalService, useClass: MockAdalService },
+      ]
     })
     .compileComponents();
+    adalService = TestBed.get(AdalService);
   }));
 
   beforeEach(() => {
@@ -50,5 +57,20 @@ describe('ParticipantStatusListComponent', () => {
 
   it('should return available text for when participant is available', () => {
     expect(component.getParticipantStatusText(new ParticipantResponse({status: ParticipantStatus.Available}))).toBe('Available');
+  });
+
+  it('should not be able to call an unavailable participant', () => {
+    const participant = new ParticipantResponse({status: ParticipantStatus.InConsultation, username: 'test@dot.com'});
+    expect(component.canCallParticipant(participant)).toBeFalsy();
+  });
+
+  it('should not be able to call self', () => {
+    const participant = new ParticipantResponse({status: ParticipantStatus.InConsultation, username: 'test@automated.com'});
+    expect(component.canCallParticipant(participant)).toBeFalsy();
+  });
+
+  it('should be able to call an available participant', () => {
+    const participant = new ParticipantResponse({status: ParticipantStatus.Available, username: 'test@dot.com'});
+    expect(component.canCallParticipant(participant)).toBeTruthy();
   });
 });

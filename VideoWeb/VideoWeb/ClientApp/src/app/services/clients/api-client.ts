@@ -408,6 +408,7 @@ export enum ConferenceStatus {
 export class ParticipantResponse implements IParticipantResponse {
     id?: string | undefined;
     name?: string | undefined;
+    username?: string | undefined;
     role?: ParticipantRole | undefined;
     status?: ParticipantStatus | undefined;
 
@@ -424,6 +425,7 @@ export class ParticipantResponse implements IParticipantResponse {
         if (data) {
             this.id = data["id"];
             this.name = data["name"];
+            this.username = data["username"];
             this.role = data["role"];
             this.status = data["status"];
         }
@@ -440,6 +442,7 @@ export class ParticipantResponse implements IParticipantResponse {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
+        data["username"] = this.username;
         data["role"] = this.role;
         data["status"] = this.status;
         return data; 
@@ -449,6 +452,7 @@ export class ParticipantResponse implements IParticipantResponse {
 export interface IParticipantResponse {
     id?: string | undefined;
     name?: string | undefined;
+    username?: string | undefined;
     role?: ParticipantRole | undefined;
     status?: ParticipantStatus | undefined;
 }

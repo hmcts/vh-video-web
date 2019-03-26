@@ -29,6 +29,7 @@ namespace VideoWeb.UnitTests.Mappings
             var response = _mapper.MapParticipantToResponseModel(participant);
             response.Id.Should().Be(participant.Id.GetValueOrDefault());
             response.Name.Should().Be(participant.Name);
+            response.Username.Should().Be(participant.Username);
             response.Status.Should().Be(expectedStatus);
             response.Role.Should().Be(expectedRole);
 

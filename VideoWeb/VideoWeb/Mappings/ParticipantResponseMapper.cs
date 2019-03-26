@@ -27,7 +27,8 @@ namespace VideoWeb.Mappings
                 Id = participant.Id.GetValueOrDefault(),
                 Name = participant.Name,
                 Status = status,
-                Role = role
+                Role = role,
+                Username = participant.Username
             };
             return response;
         }
