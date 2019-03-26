@@ -50,7 +50,7 @@ namespace VideoWeb.Controllers
                     case (int) HttpStatusCode.BadRequest:
                         return BadRequest(e.Response);
                     default:
-                        throw;
+                        return StatusCode((int) HttpStatusCode.InternalServerError, e);
                 }
             }
         }
@@ -87,7 +87,7 @@ namespace VideoWeb.Controllers
                     case (int) HttpStatusCode.BadRequest:
                         return BadRequest(e.Response);
                     default:
-                        throw;
+                        return StatusCode((int) HttpStatusCode.InternalServerError, e);
                 }
             }
 

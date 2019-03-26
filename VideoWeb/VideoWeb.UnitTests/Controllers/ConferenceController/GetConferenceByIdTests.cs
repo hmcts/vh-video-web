@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -9,18 +9,17 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using Testing.Common.Helpers;
-using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Services.Video;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
+using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
-    public class GetConferencesForUserTests
+    public class GetConferenceByIdTests
     {
         private ConferencesController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
-
+        
         [SetUp]
         public void Setup()
         {
@@ -39,57 +38,47 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 ControllerContext = context
             };
         }
+
         
         [Test]
-        public async Task should_return_ok_with_list_of_conferences()
+        public async Task should_return_ok_when_user_belongs_to_conference()
         {
-            var conferences = Builder<ConferenceSummaryResponse>.CreateListOfSize(4).Build().ToList();
+            var conference = CreateValidResponse();
             _videoApiClientMock
-                .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
-                .ReturnsAsync(conferences);
+                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(conference);
 
-            var result = await _controller.GetConferencesForUser();
-            
+            var result = await _controller.GetConferenceById(conference.Id.GetValueOrDefault());
             var typedResult = (OkObjectResult) result.Result;
             typedResult.Should().NotBeNull();
-            
-            var conferencesForUser = (List<ConferenceForUserResponse>)typedResult.Value;
-            conferencesForUser.Should().NotBeNullOrEmpty();
         }
-        
-        [Test]
-        public async Task should_return_ok_with_no_conferences()
-        {
-            var conferences = new List<ConferenceSummaryResponse>();
-            _videoApiClientMock
-                .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
-                .ReturnsAsync(conferences);
 
-            var result = await _controller.GetConferencesForUser();
-            
-            var typedResult = (OkObjectResult) result.Result;
+        [Test]
+        public async Task should_return_unauthorised_when_getting_conference_user_does_not_belong_to()
+        {
+            var conference = CreateValidResponse(null);
+            _videoApiClientMock
+                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(conference);
+
+            var result = await _controller.GetConferenceById(conference.Id.GetValueOrDefault());
+            var typedResult = (UnauthorizedResult) result.Result;
             typedResult.Should().NotBeNull();
-            
-            var conferencesForUser = (List<ConferenceForUserResponse>)typedResult.Value;
-            conferencesForUser.Should().BeEmpty();
         }
         
         [Test]
         public async Task should_return_bad_request()
         {
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
-                "Please provide a valid email", null, default(ProblemDetails), null);
+                "Please provide a valid conference Id", null, default(ProblemDetails), null);
             _videoApiClientMock
                 .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferencesForUser();
+            var result = await _controller.GetConferenceById(Guid.Empty);
             
             var typedResult = (BadRequestObjectResult) result.Result;
             typedResult.Should().NotBeNull();
-            
-            var responseMessage = (string)typedResult.Value;
-            responseMessage.Should().NotBeNullOrEmpty();
         } 
         
         [Test]
@@ -98,14 +87,14 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var apiException = new VideoApiException<ProblemDetails>("Unauthorised Token", (int) HttpStatusCode.Unauthorized,
                 "Invalid Client ID", null, default(ProblemDetails), null);
             _videoApiClientMock
-                .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
+                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferencesForUser();
+            var result = await _controller.GetConferenceById(Guid.NewGuid());
             
             var typedResult = (ForbidResult) result.Result;
             typedResult.Should().NotBeNull();
-        } 
+        }
         
         [Test]
         public async Task should_return_exception()
@@ -113,12 +102,26 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default(ProblemDetails), null);
             _videoApiClientMock
-                .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
+                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferencesForUser();
+            var result = await _controller.GetConferenceById(Guid.NewGuid());
             var typedResult = result.Value;
             typedResult.Should().BeNull();
         } 
+
+        private ConferenceDetailsResponse CreateValidResponse(string username = "john@doe.com")
+        {
+            var participants = Builder<ParticipantDetailsResponse>.CreateListOfSize(2).Build().ToList();
+            if (!string.IsNullOrWhiteSpace(username))
+            {
+                participants.First().Username = username;
+            }
+
+            var conference = Builder<ConferenceDetailsResponse>.CreateNew()
+                .With(x=> x.Participants = participants)
+                .Build();
+            return conference;
+        }
     }
 }
