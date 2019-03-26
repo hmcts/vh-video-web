@@ -5,6 +5,7 @@ using NUnit.Framework;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
+using UserRole = VideoWeb.Contract.Responses.UserRole;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -16,14 +17,14 @@ namespace VideoWeb.UnitTests.Mappings
         public void should_map_all_properties()
         {
             const ParticipantStatus expectedStatus = ParticipantStatus.Available;
-            const ParticipantRole expectedRole = ParticipantRole.Individual;
+            const UserRole expectedRole = UserRole.Individual;
             var participant = Builder<ParticipantDetailsResponse>.CreateNew()
                 .With(x => x.Current_status = new ParticipantStatusResponse
                 {
                     Participant_state = ParticipantState.Available,
                     Time_stamp = DateTime.UtcNow
                 })
-                .With(x => x.User_role = UserRole.Individual)
+                .With(x => x.User_role = Services.Video.UserRole.Individual)
                 .Build();
 
             var response = _mapper.MapParticipantToResponseModel(participant);

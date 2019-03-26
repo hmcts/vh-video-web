@@ -8,6 +8,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
+using UserRole = VideoWeb.Contract.Responses.UserRole;
 
 namespace VideoWeb.Controllers
 {
@@ -100,12 +101,12 @@ namespace VideoWeb.Controllers
             }
 
             // these are roles that are filtered against when lists participants on the UI
-            var displayRoles = new List<ParticipantRole>
+            var displayRoles = new List<UserRole>
             {
-                ParticipantRole.Judge, ParticipantRole.Individual, ParticipantRole.Representative
+                UserRole.Judge, UserRole.Individual, UserRole.Representative
             };
             conference.Participants = conference.Participants
-                .Where(x => displayRoles.Contains((ParticipantRole) x.User_role.GetValueOrDefault())).ToList();
+                .Where(x => displayRoles.Contains((UserRole) x.User_role.GetValueOrDefault())).ToList();
 
             var mapper = new ConferenceResponseMapper();
             var response = mapper.MapConferenceDetailsToResponseModel(conference);

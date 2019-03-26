@@ -7,7 +7,7 @@ namespace VideoWeb.Contract.Responses
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Username { get; set; }
-        public ParticipantRole Role { get; set; }
+        public UserRole Role { get; set; }
         public ParticipantStatus Status { get; set; }
     }
 }

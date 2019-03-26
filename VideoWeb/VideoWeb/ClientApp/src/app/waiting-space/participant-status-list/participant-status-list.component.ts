@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ConferenceResponse, ParticipantResponse, ParticipantRole, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ParticipantResponse, UserRole, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { AdalService } from 'adal-angular4';
 
 @Component({
@@ -47,11 +47,11 @@ export class ParticipantStatusListComponent implements OnInit {
   }
 
   private filterNonJudgeParticipants(): void {
-    this.nonJugdeParticipants = this.conference.participants.filter(x => x.role !== ParticipantRole.Judge);
+    this.nonJugdeParticipants = this.conference.participants.filter(x => x.role !== UserRole.Judge);
   }
 
   private filterJudge(): void {
-    this.judge = this.conference.participants.find(x => x.role === ParticipantRole.Judge);
+    this.judge = this.conference.participants.find(x => x.role === UserRole.Judge);
   }
 
 }

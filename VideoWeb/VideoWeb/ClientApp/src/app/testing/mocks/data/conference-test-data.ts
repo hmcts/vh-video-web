@@ -1,5 +1,5 @@
 import {
-    ConferenceForUserResponse, ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus, ParticipantRole
+    ConferenceForUserResponse, ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus, UserRole
 } from 'src/app/services/clients/api-client';
 
 export class ConferenceTestData {
@@ -78,21 +78,21 @@ export class ConferenceTestData {
             id: '9F681318-4955-49AF-A887-DED64554429D',
             name: 'Mr Chris Green',
             status: ParticipantStatus.Available,
-            role: ParticipantRole.Individual
+            role: UserRole.Individual
         });
 
         const participant2 = new ParticipantResponse({
             id: '9F681318-4955-49AF-A887-DED64554429J',
             name: 'Mr James Green',
             status: ParticipantStatus.NotSignedIn,
-            role: ParticipantRole.Individual
+            role: UserRole.Individual
         });
 
         const participant3 = new ParticipantResponse({
             id: '9F681318-4955-49AF-A887-DED64554429J',
             name: 'Judge Fudge',
             status: ParticipantStatus.Available,
-            role: ParticipantRole.Judge
+            role: UserRole.Judge
         });
 
         participants.push(participant1);

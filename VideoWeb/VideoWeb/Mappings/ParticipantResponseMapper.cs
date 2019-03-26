@@ -1,6 +1,7 @@
 using System;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Services.Video;
+using UserRole = VideoWeb.Contract.Responses.UserRole;
 
 namespace VideoWeb.Mappings
 {
@@ -16,10 +17,10 @@ namespace VideoWeb.Mappings
                         .ToString());
             }
 
-            var role = ParticipantRole.None;
+            var role = UserRole.None;
             if (participant.User_role != null)
             {
-                role = Enum.Parse<ParticipantRole>(participant.User_role.GetValueOrDefault().ToString());
+                role = Enum.Parse<UserRole>(participant.User_role.GetValueOrDefault().ToString());
             }
 
             var response = new ParticipantResponse

@@ -409,7 +409,7 @@ export class ParticipantResponse implements IParticipantResponse {
     id?: string | undefined;
     name?: string | undefined;
     username?: string | undefined;
-    role?: ParticipantRole | undefined;
+    role?: UserRole | undefined;
     status?: ParticipantStatus | undefined;
 
     constructor(data?: IParticipantResponse) {
@@ -453,11 +453,11 @@ export interface IParticipantResponse {
     id?: string | undefined;
     name?: string | undefined;
     username?: string | undefined;
-    role?: ParticipantRole | undefined;
+    role?: UserRole | undefined;
     status?: ParticipantStatus | undefined;
 }
 
-export enum ParticipantRole {
+export enum UserRole {
     None = "None", 
     CaseAdmin = "CaseAdmin", 
     VideoHearingsOfficer = "VideoHearingsOfficer", 
