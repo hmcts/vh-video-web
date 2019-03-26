@@ -82,6 +82,8 @@ namespace VideoWeb.Controllers
             {
                 switch (e.StatusCode)
                 {
+                    case (int) HttpStatusCode.NotFound:
+                        return NotFound();
                     case (int) HttpStatusCode.Unauthorized:
                         return Forbid();
                     case (int) HttpStatusCode.BadRequest:

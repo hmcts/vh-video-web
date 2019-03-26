@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { VideoWebService } from 'src/app/services/video-web.service';
 import { ConferenceResponse } from 'src/app/services/clients/api-client';
 
@@ -15,6 +15,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private videoWebService: VideoWebService
   ) {
     this.loadingData = true;
@@ -30,6 +31,10 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       .subscribe((data: ConferenceResponse) => {
         this.loadingData = false;
         this.conference = data;
+      },
+      () => {
+        this.loadingData = false;
+        this.router.navigate(['home']);
       });
   }
 
