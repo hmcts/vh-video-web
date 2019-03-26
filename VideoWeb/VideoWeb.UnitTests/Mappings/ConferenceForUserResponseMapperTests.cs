@@ -22,7 +22,6 @@ namespace VideoWeb.UnitTests.Mappings
             response.CaseType.Should().Be(conference.Case_type);
             response.CaseNumber.Should().Be(conference.Case_number);
             response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time.GetValueOrDefault());
-
         }
     }
 }

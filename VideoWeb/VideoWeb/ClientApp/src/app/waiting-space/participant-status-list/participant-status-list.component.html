@@ -1,0 +1,29 @@
+<div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-quarter" style="padding-left: 0px;">
+      <img src="/assets/images/govuk-crest.png" height="80" width="80" class="govuk-header__logotype-crest"
+        alt="HM Courts &amp; Tribunals Service crest" />
+    </div>
+    <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-0">
+      <div class="govuk-heading-m govuk-!-margin-bottom-0">Judge</div>
+      <div class="govuk-heading-s">Judge {{judge.name}}</div>
+    </div>
+  </div>
+  <div class="govuk-grid-row">
+    <h2 class="govuk-heading-m">Participants</h2>
+  </div>
+
+  <div *ngFor="let participant of nonJugdeParticipants" class="govuk-grid-row">
+    <div id="p-row-{{participant.id}}">
+      <p class="govuk-body-s govuk-!-margin-bottom-0"><strong>{{participant.name}}</strong></p>
+      <div class="govuk-body-s govuk-!-margin-bottom-0"
+        [ngClass]="(isParticipantAvailable(participant))?'available':'unavailable'">
+        <strong>{{ getParticipantStatusText(participant) }}</strong></div>
+      <button *ngIf="canCallParticipant(participant)" id="p-call-{{participant.id}}-btn" type="button"
+        class="govuk-button govuk-!-margin-bottom-0" (click)="begingCallWith(participant)">
+        Call
+      </button>
+      <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+    </div>
+  </div>
+</div>

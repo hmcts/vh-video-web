@@ -9,7 +9,7 @@ namespace Testing.Common.Helpers
         {
             var claims = new List<Claim>
             { 
-                new Claim(ClaimTypes.Name, "username"),
+                new Claim(ClaimTypes.Name, "john@doe.com"),
                 new Claim(ClaimTypes.NameIdentifier, "userId"),
                 new Claim("name", "John Doe")
             };

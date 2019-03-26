@@ -42,6 +42,7 @@ describe('FooterComponent', () => {
   it('navigate to dashboard you should see contact us link in the footer', fakeAsync(() => {
     fixture.ngZone.run(() => {
       router.navigate(['dashboard']);
+    });
       tick();
       expect(location.path()).toBe('/dashboard');
       expect(component.hideContactUsLink).toBeFalsy();
@@ -50,6 +51,7 @@ describe('FooterComponent', () => {
   it('navigate to contact-us you should not see contact us link in the footer', fakeAsync(() => {
     fixture.ngZone.run(() => {
       router.navigate(['contact-us']);
+    });
       tick();
       expect(location.path()).toBe('/contact-us');
       expect(component.hideContactUsLink).toBeTruthy();

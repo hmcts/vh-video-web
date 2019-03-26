@@ -1,13 +1,15 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 import { WaitingSpaceRoutingModule } from './waiting-space-routing.module';
+import { ParticipantStatusListComponent } from './participant-status-list/participant-status-list.component';
+import { ParticipantWaitingRoomComponent } from './participant-waiting-room/participant-waiting-room.component';
+import { SharedModule } from '../shared/shared.module';
 
 @NgModule({
   imports: [
-    CommonModule,
+    SharedModule,
     WaitingSpaceRoutingModule
   ],
-  declarations: []
+  declarations: [ParticipantStatusListComponent, ParticipantWaitingRoomComponent]
 })
 export class WaitingSpaceModule { }
