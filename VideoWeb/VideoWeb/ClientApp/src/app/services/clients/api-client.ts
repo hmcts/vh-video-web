@@ -90,6 +90,10 @@ export class ApiClient {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("A server error occurred.", status, _responseText, _headers);
             }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
