@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 })
 export class JudgeHearingTableComponent implements OnInit {
   @Input() conferences: ConferenceForUserResponse[];
-
+  
   constructor(private router: Router) {}
 
   ngOnInit() {}

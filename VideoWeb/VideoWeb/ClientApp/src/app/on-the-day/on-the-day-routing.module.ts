@@ -10,7 +10,7 @@ import { HearingListComponent } from './hearing-list/hearing-list.component';
 import { JudgeHearingTableComponent } from './judge-hearing-table/judge-hearing-table.component';
 
 export const routes: Routes = [
-  { path: 'hearing-list', component: ParticipantHearingsComponent},
+  { path: 'hearing-list', component: HearingListComponent},
   { path: 'declaration', component: DeclarationComponent },
   { path: 'hearing-rules', component: HearingRulesComponent },
   { path: 'equipment-check', component: EquipmentCheckComponent },
