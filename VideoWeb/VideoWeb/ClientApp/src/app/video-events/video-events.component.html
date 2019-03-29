@@ -1,0 +1,81 @@
+<div *ngIf="conference" class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <p class="govuk-body-m">Hearing ID: {{conference.id}} {{conference.start_date_time | date:'medium' }} Status:
+      {{conference.status}}</p>
+  </div>
+</div>
+
+<div *ngIf="conference">
+
+  <h1 class="govuk-heading-l">Hearing Events</h1>
+  <div *ngIf="conference" class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+      <button type="button" class="govuk-button" (click)="pauseHearing(conference.conference_id)">
+        Pause Hearing
+      </button></div>
+    <div class="govuk-grid-column-one-third">
+      <button type="button" class="govuk-button" (click)="endHearing(conference.conference_id)">
+        End Hearing
+      </button>
+    </div>
+  </div>
+
+  <h1 class="govuk-heading-l">Participant Events</h1>
+  <div *ngFor="let pat of conference.participants" class="govuk-grid-row">
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+    <div class="govuk-grid-column-full">
+      <p class="govuk-heading-m">{{pat.display_name}}</p>
+    </div>
+
+
+    <div class="govuk-grid-column-one-quarter">
+      <button type="button" class="govuk-button" (click)="joinHearing(conference.conference_id, pat.uuid)">
+        Join Hearing
+      </button>
+    </div>
+    <div class="govuk-grid-column-one-quarter">
+      <button type="button" class="govuk-button" (click)="leaveHearing(conference.conference_id, pat.uuid)">
+        Leave Hearing
+      </button>
+    </div>
+    <div class="govuk-grid-column-one-quarter">
+      <button type="button" class="govuk-button" (click)="disconnectFromHearing(conference.conference_id, pat.uuid)">
+        Disconnect
+      </button>
+    </div>
+    <div class="govuk-grid-column-one-quarter">
+      <button type="button" class="govuk-button" (click)="requestHelp(conference.conference_id, pat.uuid)">
+        Request Help
+      </button>
+    </div>
+
+
+    <div class="govuk-grid-column-one-quarter">
+      <button type="button" class="govuk-button" (click)="transferToWaitingRoom(conference.conference_id, pat.uuid)">
+        Waiting Room
+      </button>
+    </div>
+    <div class="govuk-grid-column-one-quarter">
+      <button type="button" class="govuk-button" (click)="transferToHearingRoom(conference.conference_id, pat.uuid)">
+        Hearing Room
+      </button>
+    </div>
+    <div class="govuk-grid-column-one-quarter">
+      <button type="button" class="govuk-button" (click)="transferToConsultationRoom1(conference.conference_id, pat.uuid)">
+        Consultation Room 1
+      </button>
+    </div>
+    <div class="govuk-grid-column-one-quarter">
+      <button type="button" class="govuk-button" (click)="transferToConsultationRoom2(conference.conference_id, pat.uuid)">
+        Consultation Room 2
+      </button>
+    </div>
+
+    <div class="govuk-grid-column-one-quarter">
+      <button type="button" class="govuk-button" (click)="transferToHearingRoomFromConsultationRoom(conference.conference_id, pat.uuid)">
+        Consultation to Waiting Room
+      </button>
+    </div>
+
+  </div>
+</div>
