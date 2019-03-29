@@ -35,6 +35,7 @@ export class HearingListComponent implements OnInit {
     this.videoWebService.getConferencesForUser().subscribe((data: ConferenceForUserResponse[]) => {
       this.loadingData = false;
       this.conferences = data;
+      console.log(data);
     },
     () => {
       this.loadingData = false;
