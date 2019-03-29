@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using VideoWeb.Common.Enums;
 
 namespace VideoWeb.Contract.Responses
 {
@@ -9,5 +11,8 @@ namespace VideoWeb.Contract.Responses
         public string CaseType { get; set; }
         public string CaseNumber { get; set; }
         public string CaseName { get; set; }
+        public int? ScheduledDuration { get; set; }
+        public ConferenceState? Status { get; set; }
+        public List<ParticipantSummaryResponse> Participants { get; set; }
     }
 }
