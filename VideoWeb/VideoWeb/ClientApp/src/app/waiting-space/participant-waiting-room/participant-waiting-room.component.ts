@@ -44,16 +44,17 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       .subscribe((data: ConferenceResponse) => {
         this.loadingData = false;
         this.conference = data;
-        this.participant = data.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
-        this.setupSubscribers();
-
-        this.setupPexipClient();
-        this.call();
+        if (data) {
+          this.participant = data.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
+          this.setupSubscribers();
+          this.setupPexipClient();
+          this.call();
+        }
       },
-      () => {
-        this.loadingData = false;
-        this.router.navigate(['home']);
-      });
+        () => {
+          this.loadingData = false;
+          this.router.navigate(['home']);
+        });
   }
 
   private setupSubscribers() {

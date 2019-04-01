@@ -28,7 +28,7 @@ describe('AppComponent', () => {
 
   const userInfo = {
     authenticated: false,
-    userName: 'test@automated.com',
+    userName: 'chris.green@hearings.net',
     token: 'token'
   };
 

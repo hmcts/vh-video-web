@@ -65,7 +65,7 @@ describe('ParticipantStatusListComponent', () => {
   });
 
   it('should not be able to call self', () => {
-    const participant = new ParticipantResponse({status: ParticipantStatus.InConsultation, username: 'test@automated.com'});
+    const participant = new ParticipantResponse({status: ParticipantStatus.InConsultation, username: 'chris.green@hearings.net'});
     expect(component.canCallParticipant(participant)).toBeFalsy();
   });
 

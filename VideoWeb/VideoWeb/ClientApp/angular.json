@@ -83,7 +83,9 @@
               "styles.css",
               "styles.sass"
             ],
-            "scripts": [],
+            "scripts": [
+              "src/scripts/pexrtc.js"
+            ],
             "assets": [
               "src/assets"
             ]

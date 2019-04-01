@@ -1,7 +1,7 @@
 export class MockAdalService {
   userInfo = {
     authenticated: false,
-    userName: 'test@automated.com',
+    userName: 'chris.green@hearings.net',
     token: 'token'
   };
   init(configOptions: adal.Config) { }

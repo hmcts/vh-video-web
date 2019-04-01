@@ -8,11 +8,13 @@ import { VideoWebService } from 'src/app/services/video-web.service';
 import { of, throwError } from 'rxjs';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { ConferenceResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { AdalService } from 'adal-angular4';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { ConfigService } from 'src/app/services/config.service';
+import { ServerSentEventsService } from 'src/app/services/server-sent-events.service';
+import { MockServerSentEventsService } from 'src/app/testing/mocks/MockServerEventService';
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
   let component: ParticipantWaitingRoomComponent;
@@ -21,9 +23,10 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
   let route: ActivatedRoute;
   let conference: ConferenceResponse;
   let adalService: MockAdalService;
+  let eventService: MockServerSentEventsService;
 
   beforeEach(() => {
-    conference = new ConferenceTestData().getConferenceFuture();
+    conference = new ConferenceTestData().getConferenceDetail();
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
     videoWebServiceSpy.getConferenceById.and.returnValue(of(conference));
 
@@ -42,14 +45,17 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },
         { provide: ConfigService, useClass: MockConfigService },
+        { provide: ServerSentEventsService, useClass: MockServerSentEventsService }
       ]
     })
       .compileComponents();
 
     adalService = TestBed.get(AdalService);
+    eventService = TestBed.get(ServerSentEventsService);
     route = TestBed.get(ActivatedRoute);
     fixture = TestBed.createComponent(ParticipantWaitingRoomComponent);
     component = fixture.componentInstance;
+    spyOn(component, 'call').and.callFake(() => { Promise.resolve(true); });
     fixture.detectChanges();
   });
 
@@ -63,6 +69,17 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     expect(component).toBeTruthy();
     expect(component.loadingData).toBeFalsy();
     expect(component.conference).toBeDefined();
+  });
+
+  it('should update conference status', () => {
+    const conferenceStatus = ConferenceStatus.InSession;
+    component.handleHearingStatusChange(conferenceStatus);
+    expect(component.conference.status).toBe(conferenceStatus);
+  });
+
+  it('should update participant status', () => {
+    const message = eventService.nextParticipantStatusMessage;
+    component.handleParticipantStatusChange(message);
   });
 });
 
@@ -94,7 +111,8 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
         },
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },
-        { provide: ConfigService, useClass: MockConfigService }
+        { provide: ConfigService, useClass: MockConfigService },
+        { provide: ServerSentEventsService, useClass: MockServerSentEventsService }
       ]
     })
       .compileComponents();
@@ -112,6 +130,7 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
     expect(component).toBeTruthy();
     expect(component.loadingData).toBeFalsy();
     expect(component.conference).toBeUndefined();
+    expect(component.participant).toBeUndefined();
     expect(router.navigate).toHaveBeenCalledWith(['home']);
   });
 });
