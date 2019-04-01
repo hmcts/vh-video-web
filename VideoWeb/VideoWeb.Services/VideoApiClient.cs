@@ -1454,6 +1454,7 @@ namespace VideoWeb.Services.Video
         public MeetingRoomResponse Meeting_room { get; set; }
     
     
+    
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.13.0 (Newtonsoft.Json v11.0.0.0)")]
@@ -1505,6 +1506,28 @@ namespace VideoWeb.Services.Video
     }
     
     /// <summary>Represents the meeting room</summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.13.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class MeetingRoomResponse 
+    {
+        /// <summary>The iFrame uri for the video hearings officer</summary>
+        [Newtonsoft.Json.JsonProperty("admin_uri", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Admin_uri { get; set; }
+    
+        /// <summary>The iFrame uri for the judge</summary>
+        [Newtonsoft.Json.JsonProperty("judge_uri", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Judge_uri { get; set; }
+    
+        /// <summary>The meeting uri for participants</summary>
+        [Newtonsoft.Json.JsonProperty("participant_uri", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Participant_uri { get; set; }
+    
+        /// <summary>The Pexip node to connect to</summary>
+        [Newtonsoft.Json.JsonProperty("pexip_node", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Pexip_node { get; set; }
+    
+    
+    }
+    
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.13.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class MeetingRoomResponse 
     {
@@ -1602,9 +1625,6 @@ namespace VideoWeb.Services.Video
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.13.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class ParticipantSummaryResponse 
     {
-        [Newtonsoft.Json.JsonProperty("participant_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? Participant_id { get; set; }
-    
         [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Username { get; set; }
     

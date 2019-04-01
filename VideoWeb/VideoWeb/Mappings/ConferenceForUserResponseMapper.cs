@@ -9,7 +9,7 @@ namespace VideoWeb.Mappings
     {
         public ConferenceForUserResponse MapConferenceSummaryToResponseModel(ConferenceSummaryResponse conference)
         {
-            ConferenceForUserResponse conferenceForUserResponse = new ConferenceForUserResponse();
+            var conferenceForUserResponse = new ConferenceForUserResponse();
             var participantsByGroups = conference.Participants.GroupBy(x => x.Status);
             foreach (var participantsByGroup in participantsByGroups)
             {
@@ -48,13 +48,13 @@ namespace VideoWeb.Mappings
             conferenceForUserResponse.CaseType = conference.Case_type;
             conferenceForUserResponse.ScheduledDateTime = conference.Scheduled_date_time.GetValueOrDefault();
             conferenceForUserResponse.ScheduledDuration = conference.Scheduled_duration;
-            conferenceForUserResponse.Status =  MapStatus(conference.Status);
+            conferenceForUserResponse.Status =  MapConferenceStatus(conference.Status);
             conferenceForUserResponse.Participants = MapParticipants(conference.Participants);
 
             return conferenceForUserResponse;
         }
 
-        private ConferenceStatus MapStatus(ConferenceState? conferenceState)
+        private ConferenceStatus MapConferenceStatus(ConferenceState? conferenceState)
         {
             switch (conferenceState)
             {
@@ -67,25 +67,25 @@ namespace VideoWeb.Mappings
             }
         }
 
-        private static List<Contract.Responses.ParticipantSummaryResponse> MapParticipants(List<Services.Video.ParticipantSummaryResponse> participants)
+        private static List<ParticipantResponse> MapParticipants(List<ParticipantSummaryResponse> participants)
         {
-            var participantSummaryList = new List<Contract.Responses.ParticipantSummaryResponse>();
+            var participantSummaryList = new List<ParticipantResponse>();
 
             foreach (var participant in participants)
             {
-                var participantSummaryResponse = new Contract.Responses.ParticipantSummaryResponse
+                var participantResponse = new ParticipantResponse
                 {
                     Username = participant.Username,
                     Status = MaParticipantStatus(participant.Status),
-                    Role = participant.Role
+                    //Role = participant.Role
                 };
-                participantSummaryList.Add(participantSummaryResponse);
+                participantSummaryList.Add(participantResponse);
             }
 
             return participantSummaryList;
         }
        
-        public static ParticipantStatus MaParticipantStatus(ParticipantState? value)
+        private static ParticipantStatus MaParticipantStatus(ParticipantState? value)
         {
             switch (value)
             {
