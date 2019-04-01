@@ -101,7 +101,6 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
     this.pexipAPI.onError = function (reason) {
       self.connected = false;
-      // self.displayFeed = false;
       console.warn('Error from pexip. Reason : ' + reason);
     };
 

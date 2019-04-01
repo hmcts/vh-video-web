@@ -9,6 +9,10 @@ import { of, throwError } from 'rxjs';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { ConferenceResponse } from 'src/app/services/clients/api-client';
+import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
+import { AdalService } from 'adal-angular4';
+import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
+import { ConfigService } from 'src/app/services/config.service';
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
   let component: ParticipantWaitingRoomComponent;
@@ -16,6 +20,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
   let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
   let route: ActivatedRoute;
   let conference: ConferenceResponse;
+  let adalService: MockAdalService;
 
   beforeEach(() => {
     conference = new ConferenceTestData().getConferenceFuture();
@@ -32,13 +37,16 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             snapshot: {
               paramMap: convertToParamMap({ conferenceId: conference.id })
             }
-          }
+          },
         },
-        { provide: VideoWebService, useValue: videoWebServiceSpy }
+        { provide: VideoWebService, useValue: videoWebServiceSpy },
+        { provide: AdalService, useClass: MockAdalService },
+        { provide: ConfigService, useClass: MockConfigService },
       ]
     })
       .compileComponents();
 
+    adalService = TestBed.get(AdalService);
     route = TestBed.get(ActivatedRoute);
     fixture = TestBed.createComponent(ParticipantWaitingRoomComponent);
     component = fixture.componentInstance;
@@ -65,6 +73,7 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
   let route: ActivatedRoute;
   let router: Router;
   let conference: ConferenceResponse;
+  let adalService: MockAdalService;
 
   beforeEach(() => {
     conference = new ConferenceTestData().getConferenceFuture();
@@ -83,11 +92,14 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
             }
           }
         },
-        { provide: VideoWebService, useValue: videoWebServiceSpy }
+        { provide: VideoWebService, useValue: videoWebServiceSpy },
+        { provide: AdalService, useClass: MockAdalService },
+        { provide: ConfigService, useClass: MockConfigService }
       ]
     })
       .compileComponents();
 
+    adalService = TestBed.get(AdalService);
     router = TestBed.get(Router);
     route = TestBed.get(ActivatedRoute);
     fixture = TestBed.createComponent(ParticipantWaitingRoomComponent);

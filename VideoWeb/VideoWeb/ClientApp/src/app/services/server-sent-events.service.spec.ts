@@ -5,8 +5,6 @@ import { AdalService } from 'adal-angular4';
 import { MockAdalService } from '../testing/mocks/MockAdalService';
 import { ConfigService } from './config.service';
 import { MockConfigService } from '../testing/mocks/MockConfigService';
-import { start } from 'repl';
-import { ParticipantStatusMessage } from './models/participant-status-message';
 
 describe('ServerSentEventsService', () => {
   beforeEach(() => {
@@ -14,7 +12,7 @@ describe('ServerSentEventsService', () => {
       providers: [
         ServerSentEventsService,
         { provide: AdalService, useClass: MockAdalService },
-        { provide: ConfigService, useClass: MockConfigService },
+        { provide: ConfigService, useClass: MockConfigService }
       ]
     });
   });
