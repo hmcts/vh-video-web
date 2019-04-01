@@ -27,7 +27,9 @@
               "src/styles.css",
               "src/styles.sass"
             ],
-            "scripts": []
+            "scripts": [
+              "src/scripts/pexrtc.js"
+            ]
           },
           "configurations": {
             "production": {

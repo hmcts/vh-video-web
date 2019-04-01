@@ -29,8 +29,14 @@ namespace VideoWeb.Mappings
                 Name = participant.Name,
                 Status = status,
                 Role = role,
-                Username = participant.Username
+                Username = participant.Username,
+                DisplayName = participant.Display_name
             };
+
+            if (role == UserRole.Judge)
+            {
+                response.TiledDisplayName = $"T{0};{participant.Display_name};{participant.Id}";
+            }
             return response;
         }
     }

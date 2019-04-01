@@ -5,7 +5,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="NBuilder" Version="6.0.0" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\VideoWeb.Services\VideoWeb.Services.csproj" />
     </ItemGroup>
 
 </Project>

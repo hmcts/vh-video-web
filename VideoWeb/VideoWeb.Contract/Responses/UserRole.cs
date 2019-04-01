@@ -1,5 +1,8 @@
 namespace VideoWeb.Contract.Responses
 {
+    /// <summary>
+    /// Known user roles
+    /// </summary>
     public enum UserRole
     {
         None = 0,
