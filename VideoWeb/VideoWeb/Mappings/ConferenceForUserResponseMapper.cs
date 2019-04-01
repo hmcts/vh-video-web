@@ -13,28 +13,28 @@ namespace VideoWeb.Mappings
             var participantsByGroups = conference.Participants.GroupBy(x => x.Status);
             foreach (var participantsByGroup in participantsByGroups)
             {
-                switch (ToLocal(participantsByGroup.Key))
+                switch (MaParticipantStatus(participantsByGroup.Key))
                 {
                     case ParticipantStatus.None:
                         conferenceForUserResponse.NoOfParticipantsNone = participantsByGroup.Count();
                         break;
                     case ParticipantStatus.NotSignedIn:
-                        conferenceForUserResponse.NoOfParticipantsNotSignedIn = participantsByGroup.Count();
+                        conferenceForUserResponse.NoOfParticipantsNotSignedIn= participantsByGroup.Count();
                         break;
                     case ParticipantStatus.UnableToJoin:
-                        conferenceForUserResponse.NoOfParticipantsUnableToJoin = participantsByGroup.Count();
+                        conferenceForUserResponse.NoOfParticipantsUnableToJoin= participantsByGroup.Count();
                         break;
                     case ParticipantStatus.Joining:
-                        conferenceForUserResponse.NoOfParticipantsJoining = participantsByGroup.Count();
+                        conferenceForUserResponse.NoOfParticipantsJoining= participantsByGroup.Count();
                         break;
                     case ParticipantStatus.Available:
-                        conferenceForUserResponse.NoOfParticipantsAvailable = participantsByGroup.Count();
+                        conferenceForUserResponse.NoOfParticipantsAvailable= participantsByGroup.Count();
                         break;
                     case ParticipantStatus.InHearing:
-                        conferenceForUserResponse.NoOfParticipantsInHearing = participantsByGroup.Count();
+                        conferenceForUserResponse.NoOfParticipantsInHearing= participantsByGroup.Count();
                         break;
                     case ParticipantStatus.InConsultation:
-                        conferenceForUserResponse.NoOfParticipantsInConsultation = participantsByGroup.Count();
+                        conferenceForUserResponse.NoOfParticipantsInConsultation= participantsByGroup.Count();
                         break;
                     case ParticipantStatus.Disconnected:
                         conferenceForUserResponse.NoOfParticipantsDisconnected = participantsByGroup.Count();
@@ -48,7 +48,7 @@ namespace VideoWeb.Mappings
             conferenceForUserResponse.CaseType = conference.Case_type;
             conferenceForUserResponse.ScheduledDateTime = conference.Scheduled_date_time.GetValueOrDefault();
             conferenceForUserResponse.ScheduledDuration = conference.Scheduled_duration;
-            conferenceForUserResponse.Status = MapStatus(conference.Status);
+            conferenceForUserResponse.Status =  MapStatus(conference.Status);
             conferenceForUserResponse.Participants = MapParticipants(conference.Participants);
 
             return conferenceForUserResponse;
@@ -76,7 +76,7 @@ namespace VideoWeb.Mappings
                 var participantSummaryResponse = new Contract.Responses.ParticipantSummaryResponse
                 {
                     Username = participant.Username,
-                    Status = ToLocal(participant.Status),
+                    Status = MaParticipantStatus(participant.Status),
                     Role = participant.Role
                 };
                 participantSummaryList.Add(participantSummaryResponse);
@@ -84,8 +84,8 @@ namespace VideoWeb.Mappings
 
             return participantSummaryList;
         }
-
-        public static ParticipantStatus ToLocal(ParticipantState? value)
+       
+        public static ParticipantStatus MaParticipantStatus(ParticipantState? value)
         {
             switch (value)
             {
