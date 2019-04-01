@@ -13,7 +13,7 @@ namespace VideoWeb.Contract.Responses
         public string CaseName { get; set; }
         public int? ScheduledDuration { get; set; }
         public ConferenceStatus Status { get; set; }
-        public List<ParticipantSummaryResponse> Participants { get; set; }
+        public List<ParticipantResponse> Participants { get; set; }
         public int NoOfParticipantsNone { get; set; }
         public int NoOfParticipantsNotSignedIn { get; set; }
         public int NoOfParticipantsUnableToJoin { get; set; }
