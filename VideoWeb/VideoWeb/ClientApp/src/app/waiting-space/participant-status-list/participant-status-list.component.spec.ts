@@ -13,12 +13,12 @@ describe('ParticipantStatusListComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ParticipantStatusListComponent ],
+      declarations: [ParticipantStatusListComponent],
       providers: [
         { provide: AdalService, useClass: MockAdalService },
       ]
     })
-    .compileComponents();
+      .compileComponents();
     adalService = TestBed.get(AdalService);
   }));
 
@@ -46,31 +46,45 @@ describe('ParticipantStatusListComponent', () => {
   });
 
   it('should return unavailable text for all non-available statuses', () => {
-    expect(component.getParticipantStatusText(new ParticipantResponse({status: ParticipantStatus.Disconnected}))).toBe('Unavailable');
-    expect(component.getParticipantStatusText(new ParticipantResponse({status: ParticipantStatus.InConsultation}))).toBe('Unavailable');
-    expect(component.getParticipantStatusText(new ParticipantResponse({status: ParticipantStatus.InHearing}))).toBe('Unavailable');
-    expect(component.getParticipantStatusText(new ParticipantResponse({status: ParticipantStatus.Joining}))).toBe('Unavailable');
-    expect(component.getParticipantStatusText(new ParticipantResponse({status: ParticipantStatus.NotSignedIn}))).toBe('Unavailable');
-    expect(component.getParticipantStatusText(new ParticipantResponse({status: ParticipantStatus.UnableToJoin}))).toBe('Unavailable');
-    expect(component.getParticipantStatusText(new ParticipantResponse({status: ParticipantStatus.None}))).toBe('Unavailable');
+    expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.Disconnected }))).toBe('Unavailable');
+    expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.InConsultation }))).toBe('Unavailable');
+    expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.InHearing }))).toBe('Unavailable');
+    expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.Joining }))).toBe('Unavailable');
+    expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.NotSignedIn }))).toBe('Unavailable');
+    expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.UnableToJoin }))).toBe('Unavailable');
+    expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.None }))).toBe('Unavailable');
   });
 
   it('should return available text for when participant is available', () => {
-    expect(component.getParticipantStatusText(new ParticipantResponse({status: ParticipantStatus.Available}))).toBe('Available');
+    expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.Available }))).toBe('Available');
   });
 
   it('should not be able to call an unavailable participant', () => {
-    const participant = new ParticipantResponse({status: ParticipantStatus.InConsultation, username: 'test@dot.com'});
+    const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
     expect(component.canCallParticipant(participant)).toBeFalsy();
   });
 
   it('should not be able to call self', () => {
-    const participant = new ParticipantResponse({status: ParticipantStatus.InConsultation, username: 'chris.green@hearings.net'});
+    const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'chris.green@hearings.net' });
     expect(component.canCallParticipant(participant)).toBeFalsy();
   });
 
   it('should be able to call an available participant', () => {
-    const participant = new ParticipantResponse({status: ParticipantStatus.Available, username: 'test@dot.com'});
+    const participant = new ParticipantResponse({ status: ParticipantStatus.Available, username: 'test@dot.com' });
     expect(component.canCallParticipant(participant)).toBeTruthy();
+  });
+
+  it('should not be able to begin call self', () => {
+    const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'chris.green@hearings.net' });
+    const spiedObject = spyOn<any>(component, 'raiseConsultationRequestEvent');
+    component.begingCallWith(participant);
+    expect(spiedObject).toHaveBeenCalledTimes(0);
+  });
+
+  it('should be able to begin call with another participant', () => {
+    const participant = new ParticipantResponse({ status: ParticipantStatus.Available, username: 'test@dot.com' });
+    const spiedObject = spyOn<any>(component, 'raiseConsultationRequestEvent');
+    component.begingCallWith(participant);
+    expect(spiedObject).toHaveBeenCalled();
   });
 });
