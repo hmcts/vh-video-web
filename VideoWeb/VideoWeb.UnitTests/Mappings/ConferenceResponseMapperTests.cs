@@ -1,11 +1,12 @@
-using System;
 using System.Collections.Generic;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
+using Testing.Common.Builders;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
+using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -16,22 +17,24 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void should_map_all_properties()
         {
-            var participant = Builder<ParticipantDetailsResponse>.CreateNew()
-                .With(x => x.Current_status = new ParticipantStatusResponse
-                {
-                    Participant_state = ParticipantState.Available,
-                    Time_stamp = DateTime.UtcNow
-                })
-                .Build();
+            var participants = new List<ParticipantDetailsResponse>
+            {
+                new ParticipantDetailsResponseBuilder(UserRole.Individual).Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.Individual).Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.Representative).Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.Judge).Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.VideoHearingsOfficer).Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.CaseAdmin).Build()
+            };
             
             var expectedConferenceStatus = ConferenceStatus.Suspended;
+
+            var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
+            
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-                .With(x => x.Current_status = new ConferenceStatusResponse
-                {
-                    Conference_state = ConferenceState.Suspended,
-                    Time_stamp = DateTime.UtcNow 
-                })
-                .With(x => x.Participants = new List<ParticipantDetailsResponse>{participant})
+                .With(x => x.Current_status = ConferenceState.Suspended)
+                .With(x => x.Participants = participants)
+                .With(x => x.Meeting_room = meetingRoom)
                 .Build();
             
             var response = _mapper.MapConferenceDetailsToResponseModel(conference);
@@ -44,8 +47,22 @@ namespace VideoWeb.UnitTests.Mappings
             response.ScheduledDuration.Should().Be(conference.Scheduled_duration.GetValueOrDefault());
             response.Status.Should().Be(expectedConferenceStatus);
 
-            var participants = response.Participants;
+            var participantsResponse = response.Participants;
             participants.Should().NotBeNullOrEmpty();
+            foreach (var participantResponse in participantsResponse)
+            {
+                if (participantResponse.Role == Contract.Responses.UserRole.Judge ||
+                    participantResponse.Role == Contract.Responses.UserRole.Individual ||
+                    participantResponse.Role == Contract.Responses.UserRole.Representative)
+                {
+                    participantResponse.TiledDisplayName.Should().NotBeNullOrEmpty();
+                }
+            }
+
+            response.AdminIFrameUri.Should().Be(meetingRoom.Admin_uri);
+            response.JudgeIFrameUri.Should().Be(meetingRoom.Judge_uri);
+            response.ParticipantUri.Should().Be(meetingRoom.Participant_uri);
+            response.PexipNodeUri.Should().Be(meetingRoom.Pexip_node);
         }
     }
 }

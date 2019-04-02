@@ -333,6 +333,10 @@ export class ConferenceResponse implements IConferenceResponse {
     case_number?: string | undefined;
     case_name?: string | undefined;
     status?: ConferenceStatus | undefined;
+    judge_i_frame_uri?: string | undefined;
+    admin_i_frame_uri?: string | undefined;
+    participant_uri?: string | undefined;
+    pexip_node_uri?: string | undefined;
     participants?: ParticipantResponse[] | undefined;
 
     constructor(data?: IConferenceResponse) {
@@ -353,6 +357,10 @@ export class ConferenceResponse implements IConferenceResponse {
             this.case_number = data["case_number"];
             this.case_name = data["case_name"];
             this.status = data["status"];
+            this.judge_i_frame_uri = data["judge_i_frame_uri"];
+            this.admin_i_frame_uri = data["admin_i_frame_uri"];
+            this.participant_uri = data["participant_uri"];
+            this.pexip_node_uri = data["pexip_node_uri"];
             if (data["participants"] && data["participants"].constructor === Array) {
                 this.participants = [] as any;
                 for (let item of data["participants"])
@@ -377,6 +385,10 @@ export class ConferenceResponse implements IConferenceResponse {
         data["case_number"] = this.case_number;
         data["case_name"] = this.case_name;
         data["status"] = this.status;
+        data["judge_i_frame_uri"] = this.judge_i_frame_uri;
+        data["admin_i_frame_uri"] = this.admin_i_frame_uri;
+        data["participant_uri"] = this.participant_uri;
+        data["pexip_node_uri"] = this.pexip_node_uri;
         if (this.participants && this.participants.constructor === Array) {
             data["participants"] = [];
             for (let item of this.participants)
@@ -394,6 +406,10 @@ export interface IConferenceResponse {
     case_number?: string | undefined;
     case_name?: string | undefined;
     status?: ConferenceStatus | undefined;
+    judge_i_frame_uri?: string | undefined;
+    admin_i_frame_uri?: string | undefined;
+    participant_uri?: string | undefined;
+    pexip_node_uri?: string | undefined;
     participants?: ParticipantResponse[] | undefined;
 }
 
@@ -411,6 +427,8 @@ export class ParticipantResponse implements IParticipantResponse {
     username?: string | undefined;
     role?: UserRole | undefined;
     status?: ParticipantStatus | undefined;
+    display_name?: string | undefined;
+    tiled_display_name?: string | undefined;
 
     constructor(data?: IParticipantResponse) {
         if (data) {
@@ -428,6 +446,8 @@ export class ParticipantResponse implements IParticipantResponse {
             this.username = data["username"];
             this.role = data["role"];
             this.status = data["status"];
+            this.display_name = data["display_name"];
+            this.tiled_display_name = data["tiled_display_name"];
         }
     }
 
@@ -445,6 +465,8 @@ export class ParticipantResponse implements IParticipantResponse {
         data["username"] = this.username;
         data["role"] = this.role;
         data["status"] = this.status;
+        data["display_name"] = this.display_name;
+        data["tiled_display_name"] = this.tiled_display_name;
         return data; 
     }
 }
@@ -455,6 +477,8 @@ export interface IParticipantResponse {
     username?: string | undefined;
     role?: UserRole | undefined;
     status?: ParticipantStatus | undefined;
+    display_name?: string | undefined;
+    tiled_display_name?: string | undefined;
 }
 
 export enum UserRole {
@@ -483,6 +507,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     client_id?: string | undefined;
     redirect_uri?: string | undefined;
     post_logout_redirect_uri?: string | undefined;
+    video_api_url?: string | undefined;
 
     constructor(data?: IClientSettingsResponse) {
         if (data) {
@@ -499,6 +524,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
             this.client_id = data["client_id"];
             this.redirect_uri = data["redirect_uri"];
             this.post_logout_redirect_uri = data["post_logout_redirect_uri"];
+            this.video_api_url = data["video_api_url"];
         }
     }
 
@@ -515,6 +541,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         data["client_id"] = this.client_id;
         data["redirect_uri"] = this.redirect_uri;
         data["post_logout_redirect_uri"] = this.post_logout_redirect_uri;
+        data["video_api_url"] = this.video_api_url;
         return data; 
     }
 }
@@ -524,6 +551,7 @@ export interface IClientSettingsResponse {
     client_id?: string | undefined;
     redirect_uri?: string | undefined;
     post_logout_redirect_uri?: string | undefined;
+    video_api_url?: string | undefined;
 }
 
 export class SwaggerException extends Error {
