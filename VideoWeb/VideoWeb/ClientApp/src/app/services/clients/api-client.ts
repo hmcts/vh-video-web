@@ -291,15 +291,10 @@ export class ConferenceForUserResponse implements IConferenceForUserResponse {
     case_name?: string | undefined;
     scheduled_duration?: number | undefined;
     status?: ConferenceStatus | undefined;
-    participants?: ParticipantResponse[] | undefined;
-    no_of_participants_none?: number | undefined;
-    no_of_participants_not_signed_in?: number | undefined;
-    no_of_participants_unable_to_join?: number | undefined;
-    no_of_participants_joining?: number | undefined;
+    participants?: ParticipantForUserResponse[] | undefined;
     no_of_participants_available?: number | undefined;
-    no_of_participants_in_hearing?: number | undefined;
+    no_of_participants_unavailable?: number | undefined;
     no_of_participants_in_consultation?: number | undefined;
-    no_of_participants_disconnected?: number | undefined;
 
     constructor(data?: IConferenceForUserResponse) {
         if (data) {
@@ -322,16 +317,11 @@ export class ConferenceForUserResponse implements IConferenceForUserResponse {
             if (data["participants"] && data["participants"].constructor === Array) {
                 this.participants = [] as any;
                 for (let item of data["participants"])
-                    this.participants!.push(ParticipantResponse.fromJS(item));
+                    this.participants!.push(ParticipantForUserResponse.fromJS(item));
             }
-            this.no_of_participants_none = data["no_of_participants_none"];
-            this.no_of_participants_not_signed_in = data["no_of_participants_not_signed_in"];
-            this.no_of_participants_unable_to_join = data["no_of_participants_unable_to_join"];
-            this.no_of_participants_joining = data["no_of_participants_joining"];
             this.no_of_participants_available = data["no_of_participants_available"];
-            this.no_of_participants_in_hearing = data["no_of_participants_in_hearing"];
+            this.no_of_participants_unavailable = data["no_of_participants_unavailable"];
             this.no_of_participants_in_consultation = data["no_of_participants_in_consultation"];
-            this.no_of_participants_disconnected = data["no_of_participants_disconnected"];
         }
     }
 
@@ -356,14 +346,9 @@ export class ConferenceForUserResponse implements IConferenceForUserResponse {
             for (let item of this.participants)
                 data["participants"].push(item.toJSON());
         }
-        data["no_of_participants_none"] = this.no_of_participants_none;
-        data["no_of_participants_not_signed_in"] = this.no_of_participants_not_signed_in;
-        data["no_of_participants_unable_to_join"] = this.no_of_participants_unable_to_join;
-        data["no_of_participants_joining"] = this.no_of_participants_joining;
         data["no_of_participants_available"] = this.no_of_participants_available;
-        data["no_of_participants_in_hearing"] = this.no_of_participants_in_hearing;
+        data["no_of_participants_unavailable"] = this.no_of_participants_unavailable;
         data["no_of_participants_in_consultation"] = this.no_of_participants_in_consultation;
-        data["no_of_participants_disconnected"] = this.no_of_participants_disconnected;
         return data; 
     }
 }
@@ -376,15 +361,10 @@ export interface IConferenceForUserResponse {
     case_name?: string | undefined;
     scheduled_duration?: number | undefined;
     status?: ConferenceStatus | undefined;
-    participants?: ParticipantResponse[] | undefined;
-    no_of_participants_none?: number | undefined;
-    no_of_participants_not_signed_in?: number | undefined;
-    no_of_participants_unable_to_join?: number | undefined;
-    no_of_participants_joining?: number | undefined;
+    participants?: ParticipantForUserResponse[] | undefined;
     no_of_participants_available?: number | undefined;
-    no_of_participants_in_hearing?: number | undefined;
+    no_of_participants_unavailable?: number | undefined;
     no_of_participants_in_consultation?: number | undefined;
-    no_of_participants_disconnected?: number | undefined;
 }
 
 export enum ConferenceStatus {
@@ -395,14 +375,11 @@ export enum ConferenceStatus {
     Closed = "Closed", 
 }
 
-export class ParticipantResponse implements IParticipantResponse {
-    id?: string | undefined;
-    name?: string | undefined;
+export class ParticipantForUserResponse implements IParticipantForUserResponse {
     username?: string | undefined;
-    role?: UserRole | undefined;
     status?: ParticipantStatus | undefined;
 
-    constructor(data?: IParticipantResponse) {
+    constructor(data?: IParticipantForUserResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -413,48 +390,29 @@ export class ParticipantResponse implements IParticipantResponse {
 
     init(data?: any) {
         if (data) {
-            this.id = data["id"];
-            this.name = data["name"];
             this.username = data["username"];
-            this.role = data["role"];
             this.status = data["status"];
         }
     }
 
-    static fromJS(data: any): ParticipantResponse {
+    static fromJS(data: any): ParticipantForUserResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new ParticipantResponse();
+        let result = new ParticipantForUserResponse();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
         data["username"] = this.username;
-        data["role"] = this.role;
         data["status"] = this.status;
         return data; 
     }
 }
 
-export interface IParticipantResponse {
-    id?: string | undefined;
-    name?: string | undefined;
+export interface IParticipantForUserResponse {
     username?: string | undefined;
-    role?: UserRole | undefined;
     status?: ParticipantStatus | undefined;
-}
-
-export enum UserRole {
-    None = "None", 
-    CaseAdmin = "CaseAdmin", 
-    VideoHearingsOfficer = "VideoHearingsOfficer", 
-    HearingFacilitationSupport = "HearingFacilitationSupport", 
-    Judge = "Judge", 
-    Individual = "Individual", 
-    Representative = "Representative", 
 }
 
 export enum ParticipantStatus {
@@ -590,6 +548,68 @@ export interface IConferenceResponse {
     case_name?: string | undefined;
     status?: ConferenceStatus | undefined;
     participants?: ParticipantResponse[] | undefined;
+}
+
+export class ParticipantResponse implements IParticipantResponse {
+    id?: string | undefined;
+    name?: string | undefined;
+    username?: string | undefined;
+    role?: UserRole | undefined;
+    status?: ParticipantStatus | undefined;
+
+    constructor(data?: IParticipantResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.id = data["id"];
+            this.name = data["name"];
+            this.username = data["username"];
+            this.role = data["role"];
+            this.status = data["status"];
+        }
+    }
+
+    static fromJS(data: any): ParticipantResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ParticipantResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["username"] = this.username;
+        data["role"] = this.role;
+        data["status"] = this.status;
+        return data; 
+    }
+}
+
+export interface IParticipantResponse {
+    id?: string | undefined;
+    name?: string | undefined;
+    username?: string | undefined;
+    role?: UserRole | undefined;
+    status?: ParticipantStatus | undefined;
+}
+
+export enum UserRole {
+    None = "None", 
+    CaseAdmin = "CaseAdmin", 
+    VideoHearingsOfficer = "VideoHearingsOfficer", 
+    HearingFacilitationSupport = "HearingFacilitationSupport", 
+    Judge = "Judge", 
+    Individual = "Individual", 
+    Representative = "Representative", 
 }
 
 export class ClientSettingsResponse implements IClientSettingsResponse {

@@ -17,10 +17,8 @@ export class HearingListComponent implements OnInit {
   loadingData: boolean;
   interval: any;
 
-  constructor(private videoWebService: VideoWebService, private router: Router, private fb: FormBuilder) {
+  constructor(private videoWebService: VideoWebService, private router: Router) {
     this.loadingData = true;
-    this.hearingListForm = fb.group({
-    });
   }
 
   ngOnInit() {
@@ -44,9 +42,4 @@ export class HearingListComponent implements OnInit {
   hasHearings() {
     return this.conferences !== undefined && this.conferences.length > 0;
   }
-
-  onSubmit() {
-    this.router.navigate([PageUrls.CameraAndMicrophone]);
-  }
-
 }

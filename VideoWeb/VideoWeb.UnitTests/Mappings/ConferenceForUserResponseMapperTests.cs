@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
@@ -22,6 +24,22 @@ namespace VideoWeb.UnitTests.Mappings
             response.CaseType.Should().Be(conference.Case_type);
             response.CaseNumber.Should().Be(conference.Case_number);
             response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time.GetValueOrDefault());
+        }
+
+        [Test]
+        public void should_map_all_participants()
+        {
+            var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(2).Build().ToList();
+
+            var response = _mapper.MapParticipants(participants);
+
+            for (var index = 0; index < participants.Count; index++)
+            {
+                var participant = participants[index];
+                response[index].Username.Should().Be(participant.Username);
+                response[index].Status.ToString().Should().Be(participant.Status.ToString());
+            }
+
         }
     }
 }
