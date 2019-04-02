@@ -67,11 +67,6 @@ export class JudgeHearingPageComponent implements OnInit {
     });
   }
 
-  requestFullScreen() {
-    const judgeIframe = document.getElementById('judgeIframe') as HTMLIFrameElement;
-    judgeIframe.requestFullscreen();
-  }
-
   handleHearingStatusChange(status: ConferenceStatus) {
     if (status === ConferenceStatus.Closed) {
       this.selectedHearingUrl = '';
