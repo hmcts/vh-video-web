@@ -20,7 +20,7 @@ export class JudgeWaitingRoomComponent implements OnInit {
     private router: Router,
     private videoWebService: VideoWebService,
     private eventService: ServerSentEventsService,
-    private ngZone: NgZone,
+    private ngZone: NgZone
   ) {
     this.loadingData = true;
   }
@@ -60,6 +60,10 @@ export class JudgeWaitingRoomComponent implements OnInit {
 
   isPaused(): boolean {
     return this.conference.status === ConferenceStatus.Paused || this.conference.status === ConferenceStatus.Suspended;
+  }
+
+  goToHearingPage(): void {
+    this.router.navigate(['/judge-hearing-room/', this.conference.id]);
   }
 
   private setupSubscribers() {

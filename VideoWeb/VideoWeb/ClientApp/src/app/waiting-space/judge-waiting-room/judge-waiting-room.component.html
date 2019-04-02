@@ -20,10 +20,10 @@
     </div>
 
     <div>
-      <button *ngIf="isNotStarted()" type="submit" class="govuk-button">
+      <button *ngIf="isNotStarted()" type="submit" onc class="govuk-button" (click)="goToHearingPage()">
         Start Hearing
       </button>
-      <button *ngIf="isPaused()" type="submit" class="govuk-button">
+      <button *ngIf="isPaused()" type="submit" class="govuk-button" (click)="goToHearingPage()">
         Resume Hearing
       </button>
     </div>
