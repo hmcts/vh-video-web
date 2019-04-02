@@ -58,7 +58,7 @@ namespace VideoWeb.Mappings
         {
             switch (conferenceState)
             {
-                case ConferenceState.None: return ConferenceStatus.NotStarted;
+                case ConferenceState.NotStarted: return ConferenceStatus.NotStarted;
                 case ConferenceState.InSession: return ConferenceStatus.InSession;
                 case ConferenceState.Paused: return ConferenceStatus.Paused;
                 case ConferenceState.Suspended: return ConferenceStatus.Suspended;

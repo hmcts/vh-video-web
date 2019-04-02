@@ -20,7 +20,6 @@ export class HearingListComponent implements OnInit {
   constructor(private videoWebService: VideoWebService, private router: Router, private fb: FormBuilder) {
     this.loadingData = true;
     this.hearingListForm = fb.group({
-      nextButton: new FormControl()
     });
   }
 
