@@ -73,8 +73,7 @@ export class JudgeHearingPageComponent implements OnInit {
   }
 
   handleHearingStatusChange(status: ConferenceStatus) {
-    this.conference.status = status;
-    if (this.conference.status === ConferenceStatus.Closed) {
+    if (status === ConferenceStatus.Closed) {
       this.selectedHearingUrl = '';
       this.router.navigate(['judge/dashboard']);
     }
