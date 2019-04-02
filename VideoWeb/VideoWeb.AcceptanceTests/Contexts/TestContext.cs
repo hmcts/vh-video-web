@@ -2,9 +2,10 @@
 using System.Linq;
 using RestSharp;
 using Testing.Common.Helpers;
+using VideoWeb.AcceptanceTests.Configuration;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.Services.Bookings;
-using TestSettings = VideoWeb.AcceptanceTests.Configuration.TestSettings;
+using TestSettings = Testing.Common.Configuration.TestSettings;
 
 namespace VideoWeb.AcceptanceTests.Contexts
 {
@@ -19,9 +20,11 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public string VideoApiBearerToken { get; set; }
         public string BookingsApiBaseUrl { get; set; }
         public string VideoApiBaseUrl { get; set; }
+        public string VideoWebUrl { get; set; }
         public List<string> Json { get; set; }
         public List<HearingDetailsResponse> Hearings { get; set; }
         public TestSettings TestSettings { get; set; }
+        public SeleniumEnvironment Environment { get; set; }
 
         public UserAccount GetJudgeUser()
         {
