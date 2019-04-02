@@ -10,9 +10,9 @@ namespace VideoWeb.Mappings
         public ConferenceResponse MapConferenceDetailsToResponseModel(ConferenceDetailsResponse conference)
         {
             var status = ConferenceStatus.NotStarted;
-            if (conference.Current_status?.Conference_state != null)
+            if (conference.Current_status != null)
             {
-                status = Enum.Parse<ConferenceStatus>(conference.Current_status?.Conference_state.GetValueOrDefault()
+                status = Enum.Parse<ConferenceStatus>(conference.Current_status.GetValueOrDefault()
                     .ToString());
             }
                 

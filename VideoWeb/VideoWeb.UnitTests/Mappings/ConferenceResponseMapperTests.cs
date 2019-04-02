@@ -26,11 +26,7 @@ namespace VideoWeb.UnitTests.Mappings
             
             var expectedConferenceStatus = ConferenceStatus.Suspended;
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-                .With(x => x.Current_status = new ConferenceStatusResponse
-                {
-                    Conference_state = ConferenceState.Suspended,
-                    Time_stamp = DateTime.UtcNow 
-                })
+                .With(x => x.Current_status = ConferenceState.Suspended)
                 .With(x => x.Participants = new List<ParticipantDetailsResponse>{participant})
                 .Build();
             
