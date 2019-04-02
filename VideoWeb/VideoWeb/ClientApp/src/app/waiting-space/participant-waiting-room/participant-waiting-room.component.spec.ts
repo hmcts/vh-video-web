@@ -65,12 +65,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     expect(component.conference).toBeDefined();
   });
 
-  it('should redirect back home if conference not found', () => {
-    expect(component).toBeTruthy();
-    expect(component.loadingData).toBeFalsy();
-    expect(component.conference).toBeDefined();
-  });
-
   it('should update conference status', () => {
     const conferenceStatus = ConferenceStatus.InSession;
     component.handleHearingStatusChange(conferenceStatus);
@@ -80,31 +74,33 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
   it('should update participant status', () => {
     const message = eventService.nextParticipantStatusMessage;
     component.handleParticipantStatusChange(message);
+    const participant = component.conference.participants.find(x => x.username === message.email);
+    expect(participant.status === message.status);
   });
 
   it('should return correct conference status text when suspended', () => {
     component.conference.status = ConferenceStatus.Suspended;
-    expect(component.getConferencetatusText()).toBe('is suspended');
+    expect(component.getConferenceStatusText()).toBe('is suspended');
   });
 
   it('should return correct conference status text when paused', () => {
     component.conference.status = ConferenceStatus.Paused;
-    expect(component.getConferencetatusText()).toBe('is paused');
+    expect(component.getConferenceStatusText()).toBe('is paused');
   });
 
   it('should return correct conference status text when closed', () => {
     component.conference.status = ConferenceStatus.Closed;
-    expect(component.getConferencetatusText()).toBe('is closed');
+    expect(component.getConferenceStatusText()).toBe('is closed');
   });
 
   it('should return correct conference status text when in session', () => {
     component.conference.status = ConferenceStatus.InSession;
-    expect(component.getConferencetatusText()).toBe('');
+    expect(component.getConferenceStatusText()).toBe('');
   });
 
   it('should return correct conference status text when not started', () => {
     component.conference.status = ConferenceStatus.NotStarted;
-    expect(component.getConferencetatusText()).toBe('');
+    expect(component.getConferenceStatusText()).toBe('');
   });
 
   it('should return true when conference is closed', () => {
