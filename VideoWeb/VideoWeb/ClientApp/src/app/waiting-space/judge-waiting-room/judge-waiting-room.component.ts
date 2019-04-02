@@ -63,7 +63,7 @@ export class JudgeWaitingRoomComponent implements OnInit {
   }
 
   goToHearingPage(): void {
-    this.router.navigate(['/judge-hearing-room/', this.conference.id]);
+    this.router.navigate(['/judge-hearing-room', this.conference.id]);
   }
 
   private setupSubscribers() {

@@ -57,7 +57,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     adalService = TestBed.get(AdalService);
     eventService = TestBed.get(ServerSentEventsService);
     route = TestBed.get(ActivatedRoute);
-
+    router = TestBed.get(Router);
     fixture = TestBed.createComponent(JudgeWaitingRoomComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -125,6 +125,12 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
   it('should return false when conference is has started', () => {
     component.conference.status = ConferenceStatus.InSession;
     expect(component.isNotStarted()).toBeFalsy();
+  });
+
+  it('should navigate to hearing room with conference id', () => {
+    spyOn(router, 'navigate').and.callFake(() => { Promise.resolve(true); });
+    component.goToHearingPage();
+    expect(router.navigate).toHaveBeenCalledWith(['/judge-hearing-room', component.conference.id]);
   });
 });
 
