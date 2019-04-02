@@ -8,7 +8,7 @@ import { VideoWebService } from 'src/app/services/video-web.service';
 import { of, throwError } from 'rxjs';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { ConferenceResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { AdalService } from 'adal-angular4';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
@@ -80,6 +80,86 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
   it('should update participant status', () => {
     const message = eventService.nextParticipantStatusMessage;
     component.handleParticipantStatusChange(message);
+  });
+
+  it('should return correct conference status text when suspended', () => {
+    component.conference.status = ConferenceStatus.Suspended;
+    expect(component.getConferencetatusText()).toBe('is suspended');
+  });
+
+  it('should return correct conference status text when paused', () => {
+    component.conference.status = ConferenceStatus.Paused;
+    expect(component.getConferencetatusText()).toBe('is paused');
+  });
+
+  it('should return correct conference status text when closed', () => {
+    component.conference.status = ConferenceStatus.Closed;
+    expect(component.getConferencetatusText()).toBe('is closed');
+  });
+
+  it('should return correct conference status text when in session', () => {
+    component.conference.status = ConferenceStatus.InSession;
+    expect(component.getConferencetatusText()).toBe('');
+  });
+
+  it('should return correct conference status text when not started', () => {
+    component.conference.status = ConferenceStatus.NotStarted;
+    expect(component.getConferencetatusText()).toBe('');
+  });
+
+  it('should return true when conference is closed', () => {
+    component.conference.status = ConferenceStatus.Closed;
+    expect(component.isClosed()).toBeTruthy();
+  });
+
+  it('should return false when conference is not closed', () => {
+    component.conference.status = ConferenceStatus.InSession;
+    expect(component.isClosed()).toBeFalsy();
+  });
+
+  it('should return true when conference is paused', () => {
+    component.conference.status = ConferenceStatus.Paused;
+    expect(component.isPaused()).toBeTruthy();
+  });
+
+  it('should return false when conference is not paused', () => {
+    component.conference.status = ConferenceStatus.InSession;
+    expect(component.isPaused()).toBeFalsy();
+  });
+
+  it('should return true when conference is suspended', () => {
+    component.conference.status = ConferenceStatus.Suspended;
+    expect(component.isSuspended()).toBeTruthy();
+  });
+
+  it('should return false when conference is not suspended', () => {
+    component.conference.status = ConferenceStatus.Closed;
+    expect(component.isSuspended()).toBeFalsy();
+  });
+
+  it('should not show video stream when user is not connected to call', () => {
+    component.connected = false;
+    expect(component.isSuspended()).toBeFalsy();
+  });
+
+  it('should show video stream when conference is in session', () => {
+    component.connected = true;
+    component.conference.status = ConferenceStatus.InSession;
+    expect(component.showVideo()).toBeTruthy();
+  });
+
+  it('should show video stream when participant is in consultation', () => {
+    component.connected = true;
+    component.conference.status = ConferenceStatus.Paused;
+    component.participant.status = ParticipantStatus.InConsultation;
+    expect(component.showVideo()).toBeTruthy();
+  });
+
+  it('should not show video stream when hearing is not in session and participant is not in consultation', () => {
+    component.connected = true;
+    component.conference.status = ConferenceStatus.Paused;
+    component.participant.status = ParticipantStatus.Available;
+    expect(component.showVideo()).toBeFalsy();
   });
 });
 

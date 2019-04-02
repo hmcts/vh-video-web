@@ -44,17 +44,36 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       .subscribe((data: ConferenceResponse) => {
         this.loadingData = false;
         this.conference = data;
-        if (data) {
-          this.participant = data.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
-          this.setupSubscribers();
-          this.setupPexipClient();
-          this.call();
-        }
+        this.participant = data.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
+        this.setupSubscribers();
+        this.setupPexipClient();
+        this.call();
       },
         () => {
           this.loadingData = false;
           this.router.navigate(['home']);
         });
+  }
+
+  getConferencetatusText() {
+    switch (this.conference.status) {
+      case ConferenceStatus.Suspended: return 'is suspended';
+      case ConferenceStatus.Paused: return 'is paused';
+      case ConferenceStatus.Closed: return 'is closed';
+      default: return '';
+    }
+  }
+
+  isClosed(): boolean {
+    return this.conference.status === ConferenceStatus.Closed;
+  }
+
+  isSuspended(): boolean {
+    return this.conference.status === ConferenceStatus.Suspended;
+  }
+
+  isPaused(): boolean {
+    return this.conference.status === ConferenceStatus.Paused;
   }
 
   private setupSubscribers() {
@@ -116,5 +135,19 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     const conferenceAlias = this.conference.participant_uri;
     const displayName = this.participant.tiled_display_name;
     this.pexipAPI.makeCall(pexipNode, conferenceAlias, displayName, null);
+  }
+
+  showVideo(): boolean {
+    if (!this.connected) {
+      return false;
+    }
+
+    if (this.conference.status === ConferenceStatus.InSession) {
+      return true;
+    }
+
+    if (this.participant.status === ParticipantStatus.InConsultation) {
+      return true;
+    }
   }
 }
