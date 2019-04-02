@@ -33,8 +33,6 @@ namespace VideoWeb.UnitTests.Mappings
             
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
                 .With(x => x.Current_status = ConferenceState.Suspended)
-                .With(x => x.Participants = participants)
-                .With(x => x.Meeting_room = meetingRoom)
                 .Build();
             
             var response = _mapper.MapConferenceDetailsToResponseModel(conference);

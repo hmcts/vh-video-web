@@ -1454,10 +1454,6 @@ namespace VideoWeb.Services.Video
         public MeetingRoomResponse Meeting_room { get; set; }
     
     
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.13.0 (Newtonsoft.Json v11.0.0.0)")]
     public enum ConferenceState
     {
         [System.Runtime.Serialization.EnumMember(Value = @"NotStarted")]
