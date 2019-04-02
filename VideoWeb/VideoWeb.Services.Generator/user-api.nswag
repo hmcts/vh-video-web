@@ -4,7 +4,7 @@
   "swaggerGenerator": {
     "fromSwagger": {
       "json": null,
-      "url": "https://vh-user-api-preview.azurewebsites.net/swagger/v1/swagger.json",
+      "url": "https://vh-user-api-dev.azurewebsites.net/swagger/v1/swagger.json",
       "output": null
     }
   },

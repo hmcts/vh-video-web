@@ -24,5 +24,10 @@ namespace VideoWeb.Contract.Responses
         /// The Uri to redirect back to after a successful logout
         /// </summary>
         public string PostLogoutRedirectUri { get; set; }
+
+        /// <summary>
+        /// The uri fot the video api
+        /// </summary>
+        public string VideoApiUrl { get; set; }
     }
 }

@@ -1,38 +1,40 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ParticipantWaitingRoomComponent } from './participant-waiting-room.component';
-import { ParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
-import { RouterTestingModule } from '@angular/router/testing';
-import { SharedModule } from 'src/app/shared/shared.module';
+import { JudgeWaitingRoomComponent } from './judge-waiting-room.component';
 import { VideoWebService } from 'src/app/services/video-web.service';
-import { of, throwError } from 'rxjs';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { ConferenceResponse, ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
+import { ConferenceResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
+import { throwError, of } from 'rxjs';
+import { SharedModule } from 'src/app/shared/shared.module';
+import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
-import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { ConfigService } from 'src/app/services/config.service';
 import { ServerSentEventsService } from 'src/app/services/server-sent-events.service';
+import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockServerSentEventsService } from 'src/app/testing/mocks/MockServerEventService';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { ParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
 
-describe('ParticipantWaitingRoomComponent when conference exists', () => {
-  let component: ParticipantWaitingRoomComponent;
-  let fixture: ComponentFixture<ParticipantWaitingRoomComponent>;
+describe('JudgeWaitingRoomComponent when conference exists', () => {
+  let component: JudgeWaitingRoomComponent;
+  let fixture: ComponentFixture<JudgeWaitingRoomComponent>;
   let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
   let route: ActivatedRoute;
+  let router: Router;
   let conference: ConferenceResponse;
   let adalService: MockAdalService;
   let eventService: MockServerSentEventsService;
 
-  beforeEach(() => {
+  beforeEach(async(() => {
     conference = new ConferenceTestData().getConferenceDetail();
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
     videoWebServiceSpy.getConferenceById.and.returnValue(of(conference));
 
+
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [ParticipantWaitingRoomComponent, ParticipantStatusListStubComponent],
+      declarations: [ JudgeWaitingRoomComponent, ParticipantStatusListStubComponent ],
       providers: [
         {
           provide: ActivatedRoute,
@@ -48,14 +50,16 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         { provide: ServerSentEventsService, useClass: MockServerSentEventsService }
       ]
     })
-      .compileComponents();
+    .compileComponents();
+  }));
 
+  beforeEach(() => {
     adalService = TestBed.get(AdalService);
     eventService = TestBed.get(ServerSentEventsService);
     route = TestBed.get(ActivatedRoute);
-    fixture = TestBed.createComponent(ParticipantWaitingRoomComponent);
+    router = TestBed.get(Router);
+    fixture = TestBed.createComponent(JudgeWaitingRoomComponent);
     component = fixture.componentInstance;
-    spyOn(component, 'call').and.callFake(() => { Promise.resolve(true); });
     fixture.detectChanges();
   });
 
@@ -80,17 +84,17 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
   it('should return correct conference status text when suspended', () => {
     component.conference.status = ConferenceStatus.Suspended;
-    expect(component.getConferenceStatusText()).toBe('is suspended');
+    expect(component.getConferenceStatusText()).toBe('Resume the hearing');
   });
 
   it('should return correct conference status text when paused', () => {
     component.conference.status = ConferenceStatus.Paused;
-    expect(component.getConferenceStatusText()).toBe('is paused');
+    expect(component.getConferenceStatusText()).toBe('Resume the hearing');
   });
 
   it('should return correct conference status text when closed', () => {
     component.conference.status = ConferenceStatus.Closed;
-    expect(component.getConferenceStatusText()).toBe('is closed');
+    expect(component.getConferenceStatusText()).toBe('Hearing is closed');
   });
 
   it('should return correct conference status text when in session', () => {
@@ -100,17 +104,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
   it('should return correct conference status text when not started', () => {
     component.conference.status = ConferenceStatus.NotStarted;
-    expect(component.getConferenceStatusText()).toBe('');
-  });
-
-  it('should return true when conference is closed', () => {
-    component.conference.status = ConferenceStatus.Closed;
-    expect(component.isClosed()).toBeTruthy();
-  });
-
-  it('should return false when conference is not closed', () => {
-    component.conference.status = ConferenceStatus.InSession;
-    expect(component.isClosed()).toBeFalsy();
+    expect(component.getConferenceStatusText()).toBe('Start the hearing');
   });
 
   it('should return true when conference is paused', () => {
@@ -123,59 +117,41 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     expect(component.isPaused()).toBeFalsy();
   });
 
-  it('should return true when conference is suspended', () => {
-    component.conference.status = ConferenceStatus.Suspended;
-    expect(component.isSuspended()).toBeTruthy();
+  it('should return true when conference is not started', () => {
+    component.conference.status = ConferenceStatus.NotStarted;
+    expect(component.isNotStarted()).toBeTruthy();
   });
 
-  it('should return false when conference is not suspended', () => {
-    component.conference.status = ConferenceStatus.Closed;
-    expect(component.isSuspended()).toBeFalsy();
-  });
-
-  it('should not show video stream when user is not connected to call', () => {
-    component.connected = false;
-    expect(component.isSuspended()).toBeFalsy();
-  });
-
-  it('should show video stream when conference is in session', () => {
-    component.connected = true;
+  it('should return false when conference is has started', () => {
     component.conference.status = ConferenceStatus.InSession;
-    expect(component.showVideo()).toBeTruthy();
+    expect(component.isNotStarted()).toBeFalsy();
   });
 
-  it('should show video stream when participant is in consultation', () => {
-    component.connected = true;
-    component.conference.status = ConferenceStatus.Paused;
-    component.participant.status = ParticipantStatus.InConsultation;
-    expect(component.showVideo()).toBeTruthy();
-  });
-
-  it('should not show video stream when hearing is not in session and participant is not in consultation', () => {
-    component.connected = true;
-    component.conference.status = ConferenceStatus.Paused;
-    component.participant.status = ParticipantStatus.Available;
-    expect(component.showVideo()).toBeFalsy();
+  it('should navigate to hearing room with conference id', () => {
+    spyOn(router, 'navigate').and.callFake(() => { Promise.resolve(true); });
+    component.goToHearingPage();
+    expect(router.navigate).toHaveBeenCalledWith(['/judge-hearing-room', component.conference.id]);
   });
 });
 
-describe('ParticipantWaitingRoomComponent when service returns an error', () => {
-  let component: ParticipantWaitingRoomComponent;
-  let fixture: ComponentFixture<ParticipantWaitingRoomComponent>;
+describe('JudgeWaitingRoomComponent when conference does not exist', () => {
+  let component: JudgeWaitingRoomComponent;
+  let fixture: ComponentFixture<JudgeWaitingRoomComponent>;
   let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
   let route: ActivatedRoute;
   let router: Router;
   let conference: ConferenceResponse;
   let adalService: MockAdalService;
 
-  beforeEach(() => {
+  beforeEach(async(() => {
     conference = new ConferenceTestData().getConferenceFuture();
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
     videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 404 }));
 
+
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [ParticipantWaitingRoomComponent, ParticipantStatusListStubComponent],
+      declarations: [ JudgeWaitingRoomComponent, ParticipantStatusListStubComponent ],
       providers: [
         {
           provide: ActivatedRoute,
@@ -191,12 +167,14 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
         { provide: ServerSentEventsService, useClass: MockServerSentEventsService }
       ]
     })
-      .compileComponents();
+    .compileComponents();
+  }));
 
+  beforeEach(() => {
     adalService = TestBed.get(AdalService);
     router = TestBed.get(Router);
     route = TestBed.get(ActivatedRoute);
-    fixture = TestBed.createComponent(ParticipantWaitingRoomComponent);
+    fixture = TestBed.createComponent(JudgeWaitingRoomComponent);
     component = fixture.componentInstance;
   });
 
@@ -204,9 +182,9 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
     spyOn(router, 'navigate').and.callFake(() => { Promise.resolve(true); });
     fixture.detectChanges();
     expect(component).toBeTruthy();
+    expect(component).toBeTruthy();
     expect(component.loadingData).toBeFalsy();
     expect(component.conference).toBeUndefined();
-    expect(component.participant).toBeUndefined();
     expect(router.navigate).toHaveBeenCalledWith(['home']);
   });
 });

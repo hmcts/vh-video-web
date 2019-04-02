@@ -2,27 +2,60 @@
   <p class="govuk-body">Loading please wait...</p>
 </div>
 
+<div *ngIf="showVideo()" class="govuk-grid-row">
+  <div class="govuk-grid-column-one-half">
+    <video id="incomingFeed" [srcObject]="this.stream" autoplay width="1000px" height="auto">
+      Your browser does not support Video
+    </video>
+  </div>
+</div>
+
 <div *ngIf="!loadingData && conference" class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-xl">Your hearing</h1>
+    <h1 class="govuk-heading-xl">Your hearing {{ getConferenceStatusText() }}</h1>
 
     <h2 class="govuk-heading-m">{{conference.case_name}}</h2>
 
     <h3 class="govuk-heading-m">Case number: {{conference.case_number}}</h3>
 
-    <div>
+    <div class="govuk-!-margin-bottom-9">
       <p class="govuk-body">
-        <span aria-label="date of hearing">{{ conference.scheduled_date_time | date: 'EEEE dd MMMM	yyyy' }}</span> <br />
-        <span aria-label="scheduled time and duration of hearing">{{ conference.scheduled_date_time | date: 'HH:mm' }} (scheduled for {{ conference.scheduled_duration }} minutes) </span>
+        <span aria-label="date of hearing">{{ conference.scheduled_date_time | date: 'EEEE dd MMMM	yyyy' }}</span>
+        <br />
+        <span aria-label="scheduled time and duration of hearing">{{ conference.scheduled_date_time | date: 'HH:mm' }}
+          (scheduled for {{ conference.scheduled_duration }} minutes) </span>
       </p>
     </div>
 
-    <div>
+    <div *ngIf="isClosed()">
+      <p class="govuk-body">
+        This hearing is finished. You may now sign out.
+      </p>
+    </div>
+
+    <div *ngIf="isPaused()">
+      <p class="govuk-body">
+        Please wait here. The judge will resume the hearing shortly.
+      </p>
+    </div>
+
+    <div *ngIf="isSuspended()" class="govuk-warning-text">
+      <span class="govuk-warning-text__icon" style="top:20px" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+        <span class="govuk-warning-text__assistive">Warning</span>
+        We are experiencing some technical difficulties. <br /><br />
+        Please wait here, the judge will resume the hearing as soon
+        as these issues have been resolved.
+      </strong>
+    </div>
+
+    <div class="govuk-!-margin-top-9">
       <p class="govuk-body"><strong>Helpline: 0300 303 0655</strong></p>
     </div>
   </div>
 
   <div class="govuk-grid-column-one-third">
-    <app-participant-status-list aria-label="list of participants in hearing" [conference]="conference"></app-participant-status-list>
+    <app-participant-status-list aria-label="list of participants in hearing" [conference]="conference">
+    </app-participant-status-list>
   </div>
 </div>
