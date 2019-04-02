@@ -55,7 +55,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         });
   }
 
-  getConferencetatusText() {
+  getConferenceStatusText() {
     switch (this.conference.status) {
       case ConferenceStatus.Suspended: return 'is suspended';
       case ConferenceStatus.Paused: return 'is paused';
