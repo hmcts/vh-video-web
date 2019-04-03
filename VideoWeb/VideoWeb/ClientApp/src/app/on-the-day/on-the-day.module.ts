@@ -9,7 +9,7 @@ import { CameraAndMicrophoneComponent } from './camera-and-microphone/camera-and
 import { HearingListTableComponent } from './hearing-list-table/hearing-list-table.component';
 import { ParticipantHearingsComponent } from './participant-hearings/participant-hearings.component';
 import { JudgeHearingListComponent } from './judge-hearing-list/judge-hearing-list.component';
-
+import { JudgeHearingTableComponent } from './judge-hearing-table/judge-hearing-table.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -23,7 +23,8 @@ import { JudgeHearingListComponent } from './judge-hearing-list/judge-hearing-li
     ParticipantHearingsComponent,
     EquipmentCheckComponent,
     CameraAndMicrophoneComponent,
-    JudgeHearingListComponent
+    JudgeHearingListComponent,
+    JudgeHearingTableComponent
   ],
   exports: [
     DeclarationComponent
