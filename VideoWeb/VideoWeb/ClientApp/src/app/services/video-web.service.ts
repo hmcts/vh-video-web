@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ApiClient, ConferenceForUserResponse, ConferenceResponse } from './clients/api-client';
+import { ApiClient, ConferenceForUserResponse, ConferenceResponse, ConferenceEventRequest } from './clients/api-client';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -16,5 +16,9 @@ export class VideoWebService {
 
   getConferenceById(conferenceId: string): Observable<ConferenceResponse> {
     return this.apiClient.getConferenceById(conferenceId);
+  }
+
+  raiseEvent(eventRequest: ConferenceEventRequest): Observable<void> {
+    return this.apiClient.sendEvent(eventRequest);
   }
 }
