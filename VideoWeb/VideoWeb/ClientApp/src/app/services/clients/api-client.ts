@@ -224,7 +224,7 @@ export class ApiClient {
      * @return Success
      */
     sendEvent(request: ConferenceEventRequest | null | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/api/events";
+        let url_ = this.baseUrl + "/events";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(request);
@@ -259,7 +259,7 @@ export class ApiClient {
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
-        if (status === 200) {
+        if (status === 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return _observableOf<void>(<any>null);
             }));
@@ -572,6 +572,8 @@ export class ParticipantResponse implements IParticipantResponse {
     username?: string | undefined;
     role?: UserRole | undefined;
     status?: ParticipantStatus | undefined;
+    display_name?: string | undefined;
+    tiled_display_name?: string | undefined;
 
     constructor(data?: IParticipantResponse) {
         if (data) {
@@ -589,6 +591,8 @@ export class ParticipantResponse implements IParticipantResponse {
             this.username = data["username"];
             this.role = data["role"];
             this.status = data["status"];
+            this.display_name = data["display_name"];
+            this.tiled_display_name = data["tiled_display_name"];
         }
     }
 
@@ -606,6 +610,8 @@ export class ParticipantResponse implements IParticipantResponse {
         data["username"] = this.username;
         data["role"] = this.role;
         data["status"] = this.status;
+        data["display_name"] = this.display_name;
+        data["tiled_display_name"] = this.tiled_display_name;
         return data; 
     }
 }
@@ -616,6 +622,8 @@ export interface IParticipantResponse {
     username?: string | undefined;
     role?: UserRole | undefined;
     status?: ParticipantStatus | undefined;
+    display_name?: string | undefined;
+    tiled_display_name?: string | undefined;
 }
 
 export enum UserRole {
@@ -628,14 +636,6 @@ export enum UserRole {
     Representative = "Representative", 
 }
 
-    display_name?: string | undefined;
-    tiled_display_name?: string | undefined;
-            this.display_name = data["display_name"];
-            this.tiled_display_name = data["tiled_display_name"];
-        data["display_name"] = this.display_name;
-        data["tiled_display_name"] = this.tiled_display_name;
-    display_name?: string | undefined;
-    tiled_display_name?: string | undefined;
 export class ClientSettingsResponse implements IClientSettingsResponse {
     tenant_id?: string | undefined;
     client_id?: string | undefined;

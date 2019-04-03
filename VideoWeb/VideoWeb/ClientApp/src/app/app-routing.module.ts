@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {AuthGuard} from './security/auth.gaurd';
 import { HomeComponent } from './home/home.component';
+import { SendVideoEventsComponent } from './send-video-events/send-video-events.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
