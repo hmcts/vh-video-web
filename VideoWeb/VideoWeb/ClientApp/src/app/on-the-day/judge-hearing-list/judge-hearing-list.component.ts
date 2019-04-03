@@ -1,17 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { PageUrls } from 'src/app/shared/page-url.constants';
 
 import { ConferenceForUserResponse } from 'src/app/services/clients/api-client';
 import { VideoWebService } from 'src/app/services/video-web.service';
 
 @Component({
-  selector: 'app-hearing-list',
-  templateUrl: './hearing-list.component.html'
+  selector: 'app-judge-hearing-list',
+  templateUrl: './judge-hearing-list.component.html'
 })
 
-export class HearingListComponent implements OnInit {
+export class JudgeHearingListComponent implements OnInit {
   conferences: ConferenceForUserResponse[];
   hearingListForm: FormGroup;
   loadingData: boolean;
