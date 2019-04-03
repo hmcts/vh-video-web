@@ -1,5 +1,8 @@
 namespace VideoWeb.Contract.Responses
 {
+    /// <summary>
+    /// Known states of a conference
+    /// </summary>
     public enum ConferenceStatus
     {
         NotStarted = 0,

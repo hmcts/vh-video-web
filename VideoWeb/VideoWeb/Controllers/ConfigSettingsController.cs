@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Mappings;
 
 namespace VideoWeb.Controllers
 {
@@ -14,12 +15,15 @@ namespace VideoWeb.Controllers
     public class ConfigSettingsController : Controller
     {
         private readonly AzureAdConfiguration _azureAdConfiguration;
+        private readonly HearingServicesConfiguration _servicesConfiguration;
 
-        public ConfigSettingsController(IOptions<AzureAdConfiguration> azureAdConfiguration)
+        public ConfigSettingsController(IOptions<AzureAdConfiguration> azureAdConfiguration,
+            IOptions<HearingServicesConfiguration> servicesConfiguration)
         {
             _azureAdConfiguration = azureAdConfiguration.Value;
+            _servicesConfiguration = servicesConfiguration.Value;
         }
-        
+
         /// <summary>
         /// GetClientConfigurationSettings the configuration settings for client
         /// </summary>
@@ -30,15 +34,11 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "GetClientConfigurationSettings")]
         public ActionResult<ClientSettingsResponse> GetClientConfigurationSettings()
         {
-            var clientSettings = new ClientSettingsResponse
-            {
-                ClientId = _azureAdConfiguration.ClientId,
-                TenantId = _azureAdConfiguration.TenantId,
-                RedirectUri = _azureAdConfiguration.RedirectUri,
-                PostLogoutRedirectUri = _azureAdConfiguration.PostLogoutRedirectUri
-            };
+            var response =
+                new ClientSettingsResponseMapper().MapAppConfigurationToResponseModel(_azureAdConfiguration,
+                    _servicesConfiguration);
 
-            return Ok(clientSettings);
+            return Ok(response);
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Services.Video;
+using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.Mappings
 {
@@ -33,6 +34,26 @@ namespace VideoWeb.Mappings
                 Status = status,
                 Participants = participants
             };
+
+            if (conference.Meeting_room == null) return response;
+            
+            response.AdminIFrameUri = conference.Meeting_room.Admin_uri;
+            response.JudgeIFrameUri = conference.Meeting_room.Judge_uri;
+            response.ParticipantUri = conference.Meeting_room.Participant_uri;
+            response.PexipNodeUri = conference.Meeting_room.Pexip_node;
+            
+            var tiledParticipants = conference.Participants.Where(x =>
+                x.User_role == UserRole.Individual || x.User_role == UserRole.Representative).ToList();
+
+            foreach (var participant in response.Participants)
+            {
+                var indexOf = tiledParticipants.FindIndex(x => x.Id == participant.Id);
+                
+//                var indexOf = tiledParticipants.IndexOf(tiledParticipants.SingleOrDefault(x => x.Id == participant.Id)) + 1;
+                if (indexOf <= -1) continue;
+                indexOf++;
+                participant.TiledDisplayName = $"T{indexOf};{participant.DisplayName};{participant.Id}";
+            }
 
             return response;
         }

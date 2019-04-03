@@ -1,5 +1,8 @@
 namespace VideoWeb.Contract.Responses
 {
+    /// <summary>
+    /// Known states of a participant
+    /// </summary>
     public enum ParticipantStatus
     {
         None = 0,

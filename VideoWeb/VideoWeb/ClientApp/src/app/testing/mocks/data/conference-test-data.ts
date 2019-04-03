@@ -66,7 +66,11 @@ export class ConferenceTestData {
             scheduled_date_time: futureDate,
             scheduled_duration: 45,
             status: ConferenceStatus.NotStarted,
-            participants: participants
+            participants: participants,
+            admin_i_frame_uri: 'adminiframe@kinly..com',
+            judge_i_frame_uri: 'judgeiframe@kinly..com',
+            participant_uri: 'participant@kinly..com',
+            pexip_node_uri: 'node@kinly..com'
         });
 
         return conference;
@@ -78,21 +82,30 @@ export class ConferenceTestData {
             id: '9F681318-4955-49AF-A887-DED64554429D',
             name: 'Mr Chris Green',
             status: ParticipantStatus.Available,
-            role: UserRole.Individual
+            role: UserRole.Individual,
+            display_name: 'Greeno',
+            username: 'chris.green@hearings.net',
+            tiled_display_name: 'T1;Greeno;9F681318-4955-49AF-A887-DED64554429D'
         });
 
         const participant2 = new ParticipantResponse({
             id: '9F681318-4955-49AF-A887-DED64554429J',
             name: 'Mr James Green',
             status: ParticipantStatus.NotSignedIn,
-            role: UserRole.Individual
+            role: UserRole.Individual,
+            display_name: 'James Green',
+            username: 'james.green@hearings.net',
+            tiled_display_name: 'T2;James Green;9F681318-4955-49AF-A887-DED64554429J'
         });
 
         const participant3 = new ParticipantResponse({
-            id: '9F681318-4955-49AF-A887-DED64554429J',
+            id: '9F681318-4955-49AF-A887-DED64554429T',
             name: 'Judge Fudge',
             status: ParticipantStatus.Available,
-            role: UserRole.Judge
+            role: UserRole.Judge,
+            display_name: 'Judge Fudge',
+            username: 'judge.fudge@hearings.net',
+            tiled_display_name: 'T0;Judge Fudge;9F681318-4955-49AF-A887-DED64554429T'
         });
 
         participants.push(participant1);

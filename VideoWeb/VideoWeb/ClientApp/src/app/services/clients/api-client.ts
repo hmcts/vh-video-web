@@ -218,6 +218,69 @@ export class ApiClient {
         }
         return _observableOf<ClientSettingsResponse>(<any>null);
     }
+
+    /**
+     * @param request (optional) 
+     * @return Success
+     */
+    sendEvent(request: ConferenceEventRequest | null | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/events";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSendEvent(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSendEvent(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processSendEvent(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = resultData400 !== undefined ? resultData400 : <any>null;
+            return throwException("A server error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
 }
 
 export class ConferenceForUserResponse implements IConferenceForUserResponse {
@@ -423,6 +486,10 @@ export class ConferenceResponse implements IConferenceResponse {
     case_number?: string | undefined;
     case_name?: string | undefined;
     status?: ConferenceStatus | undefined;
+    judge_i_frame_uri?: string | undefined;
+    admin_i_frame_uri?: string | undefined;
+    participant_uri?: string | undefined;
+    pexip_node_uri?: string | undefined;
     participants?: ParticipantResponse[] | undefined;
 
     constructor(data?: IConferenceResponse) {
@@ -443,6 +510,10 @@ export class ConferenceResponse implements IConferenceResponse {
             this.case_number = data["case_number"];
             this.case_name = data["case_name"];
             this.status = data["status"];
+            this.judge_i_frame_uri = data["judge_i_frame_uri"];
+            this.admin_i_frame_uri = data["admin_i_frame_uri"];
+            this.participant_uri = data["participant_uri"];
+            this.pexip_node_uri = data["pexip_node_uri"];
             if (data["participants"] && data["participants"].constructor === Array) {
                 this.participants = [] as any;
                 for (let item of data["participants"])
@@ -467,6 +538,10 @@ export class ConferenceResponse implements IConferenceResponse {
         data["case_number"] = this.case_number;
         data["case_name"] = this.case_name;
         data["status"] = this.status;
+        data["judge_i_frame_uri"] = this.judge_i_frame_uri;
+        data["admin_i_frame_uri"] = this.admin_i_frame_uri;
+        data["participant_uri"] = this.participant_uri;
+        data["pexip_node_uri"] = this.pexip_node_uri;
         if (this.participants && this.participants.constructor === Array) {
             data["participants"] = [];
             for (let item of this.participants)
@@ -484,6 +559,10 @@ export interface IConferenceResponse {
     case_number?: string | undefined;
     case_name?: string | undefined;
     status?: ConferenceStatus | undefined;
+    judge_i_frame_uri?: string | undefined;
+    admin_i_frame_uri?: string | undefined;
+    participant_uri?: string | undefined;
+    pexip_node_uri?: string | undefined;
     participants?: ParticipantResponse[] | undefined;
 }
 
@@ -493,6 +572,8 @@ export class ParticipantResponse implements IParticipantResponse {
     username?: string | undefined;
     role?: UserRole | undefined;
     status?: ParticipantStatus | undefined;
+    display_name?: string | undefined;
+    tiled_display_name?: string | undefined;
 
     constructor(data?: IParticipantResponse) {
         if (data) {
@@ -510,6 +591,8 @@ export class ParticipantResponse implements IParticipantResponse {
             this.username = data["username"];
             this.role = data["role"];
             this.status = data["status"];
+            this.display_name = data["display_name"];
+            this.tiled_display_name = data["tiled_display_name"];
         }
     }
 
@@ -527,6 +610,8 @@ export class ParticipantResponse implements IParticipantResponse {
         data["username"] = this.username;
         data["role"] = this.role;
         data["status"] = this.status;
+        data["display_name"] = this.display_name;
+        data["tiled_display_name"] = this.tiled_display_name;
         return data; 
     }
 }
@@ -537,6 +622,8 @@ export interface IParticipantResponse {
     username?: string | undefined;
     role?: UserRole | undefined;
     status?: ParticipantStatus | undefined;
+    display_name?: string | undefined;
+    tiled_display_name?: string | undefined;
 }
 
 export enum UserRole {
@@ -554,6 +641,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     client_id?: string | undefined;
     redirect_uri?: string | undefined;
     post_logout_redirect_uri?: string | undefined;
+    video_api_url?: string | undefined;
 
     constructor(data?: IClientSettingsResponse) {
         if (data) {
@@ -570,6 +658,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
             this.client_id = data["client_id"];
             this.redirect_uri = data["redirect_uri"];
             this.post_logout_redirect_uri = data["post_logout_redirect_uri"];
+            this.video_api_url = data["video_api_url"];
         }
     }
 
@@ -586,6 +675,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         data["client_id"] = this.client_id;
         data["redirect_uri"] = this.redirect_uri;
         data["post_logout_redirect_uri"] = this.post_logout_redirect_uri;
+        data["video_api_url"] = this.video_api_url;
         return data; 
     }
 }
@@ -595,6 +685,92 @@ export interface IClientSettingsResponse {
     client_id?: string | undefined;
     redirect_uri?: string | undefined;
     post_logout_redirect_uri?: string | undefined;
+    video_api_url?: string | undefined;
+}
+
+export class ConferenceEventRequest implements IConferenceEventRequest {
+    event_id?: string | undefined;
+    event_type?: EventType | undefined;
+    time_stamp_utc?: Date | undefined;
+    conference_id?: string | undefined;
+    participant_id?: string | undefined;
+    transfer_from?: RoomType | undefined;
+    transfer_to?: RoomType | undefined;
+    reason?: string | undefined;
+
+    constructor(data?: IConferenceEventRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.event_id = data["event_id"];
+            this.event_type = data["event_type"];
+            this.time_stamp_utc = data["time_stamp_utc"] ? new Date(data["time_stamp_utc"].toString()) : <any>undefined;
+            this.conference_id = data["conference_id"];
+            this.participant_id = data["participant_id"];
+            this.transfer_from = data["transfer_from"];
+            this.transfer_to = data["transfer_to"];
+            this.reason = data["reason"];
+        }
+    }
+
+    static fromJS(data: any): ConferenceEventRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new ConferenceEventRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["event_id"] = this.event_id;
+        data["event_type"] = this.event_type;
+        data["time_stamp_utc"] = this.time_stamp_utc ? this.time_stamp_utc.toISOString() : <any>undefined;
+        data["conference_id"] = this.conference_id;
+        data["participant_id"] = this.participant_id;
+        data["transfer_from"] = this.transfer_from;
+        data["transfer_to"] = this.transfer_to;
+        data["reason"] = this.reason;
+        return data; 
+    }
+}
+
+export interface IConferenceEventRequest {
+    event_id?: string | undefined;
+    event_type?: EventType | undefined;
+    time_stamp_utc?: Date | undefined;
+    conference_id?: string | undefined;
+    participant_id?: string | undefined;
+    transfer_from?: RoomType | undefined;
+    transfer_to?: RoomType | undefined;
+    reason?: string | undefined;
+}
+
+export enum EventType {
+    None = "None", 
+    Joined = "Joined", 
+    Disconnected = "Disconnected", 
+    Transfer = "Transfer", 
+    Help = "Help", 
+    Pause = "Pause", 
+    Close = "Close", 
+    Leave = "Leave", 
+    Consultation = "Consultation", 
+    JudgeAvailable = "JudgeAvailable", 
+}
+
+export enum RoomType {
+    WaitingRoom = "WaitingRoom", 
+    HearingRoom = "HearingRoom", 
+    ConsultationRoom1 = "ConsultationRoom1", 
+    ConsultationRoom2 = "ConsultationRoom2", 
+    AdminRoom = "AdminRoom", 
 }
 
 export class SwaggerException extends Error {

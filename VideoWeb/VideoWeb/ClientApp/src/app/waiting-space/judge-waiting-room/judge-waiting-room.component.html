@@ -1,0 +1,42 @@
+<div *ngIf="loadingData">
+  <p class="govuk-body">Loading please wait...</p>
+</div>
+
+<div *ngIf="!loadingData && conference" class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl">{{ getConferenceStatusText() }}</h1>
+
+    <h2 class="govuk-heading-m">{{conference.case_name}}</h2>
+
+    <h3 class="govuk-heading-m">Case number: {{conference.case_number}}</h3>
+
+    <div class="govuk-!-margin-bottom-7">
+      <p class="govuk-body">
+        <span aria-label="date of hearing">{{ conference.scheduled_date_time | date: 'EEEE dd MMMM	yyyy' }}</span>
+        <br />
+        <span aria-label="scheduled time and duration of hearing">{{ conference.scheduled_date_time | date: 'HH:mm' }}
+          (scheduled for {{ conference.scheduled_duration }} minutes) </span>
+      </p>
+    </div>
+
+    <div>
+      <button *ngIf="isNotStarted()" type="submit" onc class="govuk-button" (click)="goToHearingPage()">
+        Start Hearing
+      </button>
+      <button *ngIf="isPaused()" type="submit" class="govuk-button" (click)="goToHearingPage()">
+        Resume Hearing
+      </button>
+    </div>
+    <div>
+      <a id="back-to-hearing-list-link" [routerLink]="['/judge-waiting-list']" routerLinkActive="router-link-active"  class="govuk-link" href="javascript:void(0)">Return to hearing list</a>
+    </div>
+    <div class="govuk-!-margin-top-9">
+      <p class="govuk-body"><strong>Contact video hearings officer: 0300 303 0655</strong></p>
+    </div>
+  </div>
+
+  <div class="govuk-grid-column-one-third">
+    <app-participant-status-list aria-label="list of participants in hearing" [conference]="conference">
+    </app-participant-status-list>
+  </div>
+</div>

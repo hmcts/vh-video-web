@@ -1,0 +1,9 @@
+<div *ngIf="loadingData" class="govuk-body-l">
+  Please wait to be connected...
+</div>
+
+<div *ngIf="!loadingData" class="govuk-width-container ">
+  <iframe id="judgeIframe" [src]='selectedHearingUrl' width="1000px" height="500px" allowfullscreen frameborder="0"
+    webkitallowfullscreen mozallowfullscreen allowfullscreen allow="microphone; camera">
+  </iframe>
+</div>
