@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HearingListComponent } from './hearing-list.component';
+import { JudgeHearingListComponent } from './judge-hearing-list.component';
 import { ConferenceForUserResponse } from '../../services/clients/api-client';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { Router } from '@angular/router';
@@ -11,8 +11,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 describe('HearingListComponent with no conferences for user', () => {
   let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-  let component: HearingListComponent;
-  let fixture: ComponentFixture<HearingListComponent>;
+  let component: JudgeHearingListComponent;
+  let fixture: ComponentFixture<JudgeHearingListComponent>;
   const noConferences: ConferenceForUserResponse[] = [];
   let router: Router;
 
@@ -22,14 +22,14 @@ describe('HearingListComponent with no conferences for user', () => {
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [HearingListComponent, JudgeHearingTableStubComponent],
+      declarations: [JudgeHearingListComponent, JudgeHearingTableStubComponent],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy }
       ]
     })
       .compileComponents();
 
-    fixture = TestBed.createComponent(HearingListComponent);
+    fixture = TestBed.createComponent(JudgeHearingListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
     router = TestBed.get(Router);
@@ -46,8 +46,8 @@ describe('HearingListComponent with no conferences for user', () => {
 
 describe('HearingListComponent with conferences for user', () => {
   let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-  let component: HearingListComponent;
-  let fixture: ComponentFixture<HearingListComponent>;
+  let component: JudgeHearingListComponent;
+  let fixture: ComponentFixture<JudgeHearingListComponent>;
   const conferences = new ConferenceTestData().getTestData();
   let router: Router;
 
@@ -57,14 +57,14 @@ describe('HearingListComponent with conferences for user', () => {
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [HearingListComponent, JudgeHearingTableStubComponent],
+      declarations: [JudgeHearingListComponent, JudgeHearingTableStubComponent],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy }
       ]
     })
       .compileComponents();
 
-    fixture = TestBed.createComponent(HearingListComponent);
+    fixture = TestBed.createComponent(JudgeHearingListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
     router = TestBed.get(Router);

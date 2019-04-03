@@ -36,8 +36,8 @@ namespace VideoWeb.UnitTests.Mappings
             for (var index = 0; index < participants.Count; index++)
             {
                 var participant = participants[index];
-                response[index].Username.Should().Be(participant.Username);
-                response[index].Status.ToString().Should().Be(participant.Status.ToString());
+                response[index].Username.Should().BeEquivalentTo(participant.Username);
+                response[index].Status.ToString().Should().BeEquivalentTo(participant.Status.ToString());
             }
 
         }
