@@ -8,4 +8,9 @@
       <PackageReference Include="SonarAnalyzer.CSharp" Version="7.11.0.8083" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />
+      <ProjectReference Include="..\VideoWeb.Services\VideoWeb.Services.csproj" />
+    </ItemGroup>
+
 </Project>

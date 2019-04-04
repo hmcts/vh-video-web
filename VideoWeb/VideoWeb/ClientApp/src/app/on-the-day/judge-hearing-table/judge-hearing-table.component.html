@@ -1,0 +1,60 @@
+<table class="govuk-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th class="govuk-table__header" scope="col">Date & time</th>
+      <th class="govuk-table__header" scope="col">Video hearing details</th>
+      <th class="govuk-table__header" scope="col">Participants</th>
+      <th class="govuk-table__header" scope="col">Status</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr
+      *ngFor="let conference of conferences"
+      id="judges-list"
+      class="govuk-table__row"
+    >
+      <td class="govuk-table__cell">
+        {{ conference.scheduled_date_time | date: "dd MMM yyyy" }} <br />
+        {{ conference.scheduled_date_time | date: "HH:mm" }} <br />
+        <span id="with-hint-hint" class="govuk-hint">
+          listed for {{ conference.scheduled_duration }} minutes
+        </span>
+      </td>
+      <td class="govuk-table__cell">
+        <strong>
+          {{ conference.case_number }} <br />
+          {{ conference.case_name }}
+        </strong>
+      </td>
+      <td class="govuk-table__cell">
+        <p *ngIf="conference.no_of_participants_none>0" class="vh-red">
+          {{ conference.no_of_participants_unavailable }} Not Available
+        </p>
+        <p *ngIf="conference.no_of_participants_available>0" class="vh-green">
+          {{ conference.no_of_participants_available }} Available
+        </p>
+        <p *ngIf="conference.no_of_participants_in_consultation>0" class="vh-green">
+          {{ conference.no_of_participants_in_consultation }} In consultation
+        </p>
+      </td>
+      <td class="govuk-table__cell">
+        <p *ngIf="conference.status ==='None'">
+          Not ready to start
+        </p>
+        <p *ngIf="conference.status ==='Paused'" class="vh-red">
+          {{ conference.status }}
+        </p>
+        <p *ngIf="conference.status === 'Suspended'">
+          <input type="button"
+                 id="start-hearing-btn-{{ conference.id }}"
+                 class="govuk-button"
+                 role="button"
+                 value="Resume hearing"
+                 *ngIf="canStartHearing(conference)"
+                 (click)="signIntoConference(conference)"
+                 alt="Sign into the conference" />
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>

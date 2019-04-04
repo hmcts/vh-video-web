@@ -18,7 +18,7 @@ export class VideoWebService {
     return this.apiClient.getConferenceById(conferenceId);
   }
 
-  raiseEvent(eventRequest: ConferenceEventRequest): Observable<void> {
-    return this.apiClient.sendEvent(eventRequest);
+  sendEvent(request: ConferenceEventRequest): Observable<void> {
+    return this.apiClient.sendEvent(request);
   }
 }
