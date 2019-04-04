@@ -48,8 +48,6 @@ namespace VideoWeb.Mappings
             foreach (var participant in response.Participants)
             {
                 var indexOf = tiledParticipants.FindIndex(x => x.Id == participant.Id);
-                
-//                var indexOf = tiledParticipants.IndexOf(tiledParticipants.SingleOrDefault(x => x.Id == participant.Id)) + 1;
                 if (indexOf <= -1) continue;
                 indexOf++;
                 participant.TiledDisplayName = $"T{indexOf};{participant.DisplayName};{participant.Id}";
