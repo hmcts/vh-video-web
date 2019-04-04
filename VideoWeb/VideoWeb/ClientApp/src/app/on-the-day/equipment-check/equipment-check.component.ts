@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 
@@ -9,24 +8,19 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
   styleUrls: ['./equipment-check.component.css']
 })
 export class EquipmentCheckComponent implements OnInit {
-  equipmentCheckForm: FormGroup;
   conferenceId: string;
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute,
-    private fb: FormBuilder
-    ) {
-    this.equipmentCheckForm = fb.group({
-      nextButton: new FormControl()
-    });
+    private route: ActivatedRoute
+  ) {
   }
 
   ngOnInit() {
     this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
   }
 
-  onSubmit() {
+  goToCameraAndMicCheck() {
     this.router.navigate([PageUrls.CameraAndMicrophone, this.conferenceId]);
   }
 }

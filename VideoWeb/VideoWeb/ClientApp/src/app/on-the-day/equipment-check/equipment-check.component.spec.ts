@@ -1,25 +1,36 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { EquipmentCheckComponent } from './equipment-check.component';
 import { DebugElement } from '@angular/core';
-import { Router } from '@angular/router';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { EquipmentCheckComponent } from './equipment-check.component';
 
 describe('EquipmentCheckComponent', () => {
   let component: EquipmentCheckComponent;
   let fixture: ComponentFixture<EquipmentCheckComponent>;
   let debugElement: DebugElement;
   let router: Router;
+  const conference = new ConferenceTestData().getConferenceDetail();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [EquipmentCheckComponent],
       imports: [ReactiveFormsModule, FormsModule, RouterTestingModule, SharedModule],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              paramMap: convertToParamMap({ conferenceId: conference.id })
+            }
+          },
+        }
+      ]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(EquipmentCheckComponent);
     debugElement = fixture.debugElement;
@@ -39,7 +50,7 @@ describe('EquipmentCheckComponent', () => {
 
   it('should navigate to camera-and-microphone', () => {
     spyOn(router, 'navigate').and.callFake(() => { });
-    component.onSubmit();
-    expect(router.navigate).toHaveBeenCalledWith([PageUrls.CameraAndMicrophone]);
+    component.goToCameraAndMicCheck();
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.CameraAndMicrophone, conference.id]);
   });
 });

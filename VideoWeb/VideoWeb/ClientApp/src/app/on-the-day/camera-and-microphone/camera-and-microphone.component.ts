@@ -19,7 +19,7 @@ export class CameraAndMicrophoneComponent implements OnInit {
     this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
   }
 
-  goToHearingRules(){
+  goToHearingRules() {
     this.router.navigate([PageUrls.HearingRules, this.conferenceId]);
   }
 }

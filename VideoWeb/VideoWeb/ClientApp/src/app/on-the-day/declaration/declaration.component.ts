@@ -31,9 +31,6 @@ export class DeclarationComponent implements OnInit {
     if (this.declarationForm.invalid) {
       return;
     }
-
-    console.log(PageUrls.WaitingRoom);
-    console.log(this.conferenceId);
     this.router.navigate([PageUrls.WaitingRoom, this.conferenceId]);
   }
 }

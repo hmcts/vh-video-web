@@ -3,57 +3,41 @@
     <h1 class="govuk-heading-l">Her Majesty's Courts & Tribunals</h1>
   </div>
 </div>
-<form
-  [formGroup]="hearingRulesForm"
-  class="govuk-form-group"
-  (ngSubmit)="onSubmit()"
->
-  <div class="govuk-grid-row">
-    <div class="govuk-body">
-      <div class="govuk-grid-column-two-thirds">
-        <p>
-          <b>You must follow the same rules as you would in a courtroom.</b>
-        </p>
-        This means you:
-        <ul>
-          <li>can only drink water</li>
-          <li>must not eat</li>
-          <li>must only use your phone for the purposes of the hearing</li>
-          <li>must follow the judge’s instructions</li>
-          <li>are not allowed to smoke (including e-cigarettes)</li>
-          <li>
-            must be alone unless you have the judge’s permission to have someone
-            with you
-          </li>
-          <li>
-            must ask the judge's permission if you need to move away from your
-            screen for any reason
-          </li>
-        </ul>
-      </div>
-      <div class="govuk-grid-column-one-quarter">
-        <div class="image">
-          <img
-            src="/assets/images/HmctsCrest.png"
-            height="180"
-            width="180"
-            class="govuk-header__logotype-crest"
-            alt="HM Courts &amp; Tribunals Service crest"
-          />
-        </div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-body">
+    <div class="govuk-grid-column-two-thirds">
+      <p>
+        <b>You must follow the same rules as you would in a courtroom.</b>
+      </p>
+      This means you:
+      <ul>
+        <li>can only drink water</li>
+        <li>must not eat</li>
+        <li>must only use your phone for the purposes of the hearing</li>
+        <li>must follow the judge’s instructions</li>
+        <li>are not allowed to smoke (including e-cigarettes)</li>
+        <li>
+          must be alone unless you have the judge’s permission to have someone
+          with you
+        </li>
+        <li>
+          must ask the judge's permission if you need to move away from your
+          screen for any reason
+        </li>
+      </ul>
+    </div>
+    <div class="govuk-grid-column-one-quarter">
+      <div class="image">
+        <img src="/assets/images/HmctsCrest.png" height="180" width="180" class="govuk-header__logotype-crest"
+          alt="HM Courts &amp; Tribunals Service crest" />
       </div>
     </div>
   </div>
-  <div class="vh-top">
-    <input
-      type="button"
-      id="nextButton"
-      class="govuk-button"
-      role="button"
-      value="Continue"
-      (click)="onSubmit()"
-      alt="HearingRules"
-    />
-  </div>
-  <app-contact-us-folding *ngIf="!loadingData"></app-contact-us-folding>
-</form>
+</div>
+<div class="govuk-!-margin-top-4">
+  <input type="button" id="nextButton" class="govuk-button" role="button" value="Continue" (click)="goToDeclaration()"
+    alt="HearingRules" />
+</div>
+
+<app-contact-us-folding *ngIf="!loadingData"></app-contact-us-folding>
