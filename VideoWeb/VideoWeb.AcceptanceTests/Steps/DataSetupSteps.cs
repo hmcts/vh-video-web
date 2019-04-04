@@ -131,10 +131,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"hearing details should be retrieved")]
         public void ThenTheHearingDetailsShouldBeRetrieved()
         {
-            var model = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(_context.Json);
-            model.Should().NotBeNull();
-            AssertHearingResponse.ForHearing(model);
-            _context.Hearing = model;
+            var hearing = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(_context.Json);
+            hearing.Should().NotBeNull();
+            AssertHearingResponse.ForHearing(hearing);
+            _context.Hearing = hearing;
+            _context.NewHearingId = hearing.Id;
         }
 
         [Then(@"the conference details should be retrieved")]
@@ -144,6 +145,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             conference.Should().NotBeNull();
             AssertConferenceDetailsResponse.ForConference(conference);
             _context.Conference = conference;
+            _context.NewConferenceId = conference.Id;
         }
 
         private static void AddJudgeParticipant(UserAccount judge, ICollection<ParticipantRequest> participants)

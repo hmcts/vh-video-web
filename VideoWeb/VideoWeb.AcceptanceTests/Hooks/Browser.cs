@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Net;
+using FluentAssertions;
 using Microsoft.Extensions.Options;
 using TechTalk.SpecFlow;
 using Testing.Common.Configuration;
+using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.Common.Security;
@@ -51,9 +54,28 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
             testContext.TestSettings = testSettings;
 
+            CheckBookingsApiHealth(testContext);
+            CheckVideoApiHealth(testContext);
+
             testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, GetTargetBrowser());
             _browserContext.BrowserSetup(testContext.VideoWebUrl, testContext.Environment);
             _browserContext.LaunchSite();
+        }
+
+        public static void CheckBookingsApiHealth(TestContext testContext)
+        {
+            var endpoint = new BookingsApiUriFactory().HealthCheckEndpoints;
+            testContext.Request = testContext.Get(endpoint.HealthCheck);
+            testContext.Response = testContext.BookingsApiClient().Execute(testContext.Request);
+            testContext.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        public static void CheckVideoApiHealth(TestContext testContext)
+        {
+            var endpoint = new VideoApiUriFactory().HealthCheckEndpoints;
+            testContext.Request = testContext.Get(endpoint.CheckServiceHealth());
+            testContext.Response = testContext.BookingsApiClient().Execute(testContext.Request);
+            testContext.Response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [AfterScenario]

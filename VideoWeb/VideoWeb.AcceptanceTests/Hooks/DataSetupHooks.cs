@@ -6,6 +6,7 @@ using VideoWeb.AcceptanceTests.Contexts;
 
 namespace VideoWeb.AcceptanceTests.Hooks
 {
+    [Binding]
     public static class DataSetupHooks
     {
         [AfterScenario]
@@ -26,6 +27,6 @@ namespace VideoWeb.AcceptanceTests.Hooks
             context.Response = context.BookingsApiClient().Execute(context.Request);
             context.Response.IsSuccessful.Should().BeTrue("New hearing has been deleted after the test");
             context.NewHearingId = Guid.Empty;
-        }        
+        }
     }
 }

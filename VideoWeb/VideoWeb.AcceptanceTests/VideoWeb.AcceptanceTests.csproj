@@ -7,6 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\**" />
+    <EmbeddedResource Remove="Data\**" />
+    <None Remove="Data\**" />
+    <SpecFlowFeatureFiles Remove="Data\**" />
+    <SpecFlowObsoleteCodeBehindFiles Remove="Data\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="appsettings.json" />
   </ItemGroup>
 
@@ -48,10 +56,6 @@
     <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />
     <ProjectReference Include="..\VideoWeb.Contract\VideoWeb.Contract.csproj" />
     <ProjectReference Include="..\VideoWeb.Services\VideoWeb.Services.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Data\" />
   </ItemGroup>
 
   <ItemGroup>
