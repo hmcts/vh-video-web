@@ -1,10 +1,12 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { DeclarationComponent } from './declaration.component';
-import { Router } from '@angular/router';
 import { DebugElement } from '@angular/core';
-import { ReactiveFormsModule, FormsModule, AbstractControl } from '@angular/forms';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { AbstractControl } from '@angular/forms';
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { DeclarationComponent } from './declaration.component';
 
 describe('DeclarationComponent Tests', () => {
   let component: DeclarationComponent;
@@ -12,11 +14,22 @@ describe('DeclarationComponent Tests', () => {
   let checkboxControl: AbstractControl;
   let debugElement: DebugElement;
   let router: Router;
+  const conference = new ConferenceTestData().getConferenceDetail();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [DeclarationComponent],
-      imports: [ReactiveFormsModule, FormsModule, RouterTestingModule, SharedModule],
+      imports: [RouterTestingModule, SharedModule],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              paramMap: convertToParamMap({ conferenceId: conference.id })
+            }
+          },
+        }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(DeclarationComponent);
@@ -37,15 +50,29 @@ describe('DeclarationComponent Tests', () => {
     expect(component).toBeTruthy();
   });
 
- it('should invalidate form when declaration is not checked', () => {
+  it('should invalidate form when declaration is not checked', () => {
     expect(checkboxControl.valid).toBeFalsy();
     checkboxControl.setValue(false);
-    expect(checkboxControl.valid).toBeFalsy();
+    expect(component.declarationForm.valid).toBeFalsy();
   });
 
   it('should validate form when declaration is checked', () => {
     expect(checkboxControl.valid).toBeFalsy();
     checkboxControl.setValue(true);
-    expect(checkboxControl.valid).toBeTruthy();
+    expect(component.declarationForm.valid).toBeTruthy();
+  });
+
+  it('should not go to waiting room when form is invalid', () => {
+    spyOn(router, 'navigate').and.callFake(() => { });
+    checkboxControl.setValue(false);
+    component.onSubmit();
+    expect(router.navigate).toHaveBeenCalledTimes(0);
+  });
+
+  it('should go to waiting room when form is valid', () => {
+    spyOn(router, 'navigate').and.callFake(() => { });
+    checkboxControl.setValue(true);
+    component.onSubmit();
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.WaitingRoom, conference.id]);
   });
 });

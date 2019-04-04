@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
   selector: 'app-camera-and-microphone',
@@ -6,9 +8,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CameraAndMicrophoneComponent implements OnInit {
 
-  constructor() { }
+  conferenceId: string;
+
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute
+  ) { }
 
   ngOnInit() {
+    this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
   }
 
+  goToHearingRules() {
+    this.router.navigate([PageUrls.HearingRules, this.conferenceId]);
+  }
 }

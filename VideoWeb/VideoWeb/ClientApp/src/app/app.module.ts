@@ -16,6 +16,7 @@ import { SecurityModule } from './security/security.module';
 import { OnTheDayModule } from './on-the-day/on-the-day.module';
 import { HomeComponent } from './home/home.component';
 import { WaitingSpaceModule } from './waiting-space/waiting-space.module';
+import { SendVideoEventsComponent } from './send-video-events/send-video-events.component';
 
 export function getSettings(configService: ConfigService) {
   return () => configService.loadConfig();
@@ -25,6 +26,7 @@ export function getSettings(configService: ConfigService) {
   declarations: [
     AppComponent,
     HomeComponent,
+    SendVideoEventsComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

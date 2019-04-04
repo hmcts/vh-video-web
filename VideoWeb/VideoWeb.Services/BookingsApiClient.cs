@@ -2085,6 +2085,10 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("other_information", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Other_information { get; set; }
     
+        /// <summary>The VH admin username that created the hearing</summary>
+        [Newtonsoft.Json.JsonProperty("created_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Created_by { get; set; }
+    
         public string ToJson() 
         {
             return Newtonsoft.Json.JsonConvert.SerializeObject(this);
@@ -2253,14 +2257,6 @@ namespace VideoWeb.Services.Bookings
         /// <summary>List of participants in hearing</summary>
         [Newtonsoft.Json.JsonProperty("participants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.List<ParticipantRequest> Participants { get; set; }
-    
-        /// <summary>The hearing room name at the hearing venue</summary>
-        [Newtonsoft.Json.JsonProperty("hearing_room_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Hearing_room_name { get; set; }
-    
-        /// <summary>Any other information about the hearing</summary>
-        [Newtonsoft.Json.JsonProperty("other_information", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Other_information { get; set; }
     
         public string ToJson() 
         {

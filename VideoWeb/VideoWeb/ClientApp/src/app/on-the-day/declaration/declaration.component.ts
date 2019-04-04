@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { FormGroup, Validators, FormBuilder, FormControl } from '@angular/forms';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 
@@ -9,17 +9,21 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
 })
 export class DeclarationComponent implements OnInit {
   declarationForm: FormGroup;
-  loadingData: boolean;
   submitted = false;
+  conferenceId: string;
 
-  constructor(private router: Router, private fb: FormBuilder) {
-    this.loadingData = true;
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private fb: FormBuilder
+  ) {
     this.declarationForm = fb.group({
       declare: [false, Validators.required],
     });
   }
 
   ngOnInit() {
+    this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
   }
 
   onSubmit() {
@@ -27,7 +31,6 @@ export class DeclarationComponent implements OnInit {
     if (this.declarationForm.invalid) {
       return;
     }
-
-    this.router.navigate([PageUrls.WaitingRoom]);
+    this.router.navigate([PageUrls.WaitingRoom, this.conferenceId]);
   }
 }
