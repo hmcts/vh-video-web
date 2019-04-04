@@ -8,10 +8,10 @@ import { ParticipantHearingsComponent } from './participant-hearings/participant
 
 export const routes: Routes = [
   { path: 'hearing-list', component: ParticipantHearingsComponent},
-  { path: 'declaration', component: DeclarationComponent },
-  { path: 'hearing-rules', component: HearingRulesComponent },
-  { path: 'equipment-check', component: EquipmentCheckComponent },
-  { path: 'camera-and-microphone', component: CameraAndMicrophoneComponent }
+  { path: 'declaration/:conferenceId', component: DeclarationComponent },
+  { path: 'hearing-rules/:conferenceId', component: HearingRulesComponent },
+  { path: 'equipment-check/:conferenceId', component: EquipmentCheckComponent },
+  { path: 'camera-and-microphone/:conferenceId', component: CameraAndMicrophoneComponent }
 ];
 
 @NgModule({
