@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using VideoWeb.Common.Enums;
 
 namespace VideoWeb.Contract.Responses
 {
