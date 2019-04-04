@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using VideoWeb.Contract.Responses;
@@ -31,7 +32,7 @@ namespace VideoWeb.Mappings
             conferenceForUserResponse.CaseNumber = conference.Case_number;
             conferenceForUserResponse.CaseType = conference.Case_type;
             conferenceForUserResponse.ScheduledDateTime = conference.Scheduled_date_time.GetValueOrDefault();
-            conferenceForUserResponse.ScheduledDuration = conference.Scheduled_duration;
+            conferenceForUserResponse.ScheduledDuration = Convert.ToInt32(conference.Scheduled_duration);
             conferenceForUserResponse.Status = MapConferenceStatus(conference.Status);
 
             return conferenceForUserResponse;
