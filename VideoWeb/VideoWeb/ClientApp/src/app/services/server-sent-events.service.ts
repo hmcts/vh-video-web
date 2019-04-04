@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
-import { AdalService } from 'adal-angular4';
 import * as signalR from '@aspnet/signalr';
-import { ConfigService } from './config.service';
-import { ParticipantStatusMessage } from './models/participant-status-message';
+import { AdalService } from 'adal-angular4';
 import { Observable, Subject } from 'rxjs';
-import { HearingStatusMessage } from './models/hearing-status-message';
-import { HelpMessage } from './models/help-message';
+import { ConferenceStatus, ParticipantStatus } from './clients/api-client';
+import { ConfigService } from './config.service';
 import { ConsultationMessage } from './models/consultation-message';
+import { ConferenceStatusMessage } from './models/conference-status-message';
+import { HelpMessage } from './models/help-message';
+import { ParticipantStatusMessage } from './models/participant-status-message';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class ServerSentEventsService {
   connection: signalR.HubConnection;
   connectionStarted: boolean;
   private participantStatusSubject = new Subject<ParticipantStatusMessage>();
-  private hearingStatusSubject = new Subject<HearingStatusMessage>();
+  private hearingStatusSubject = new Subject<ConferenceStatusMessage>();
   private helpMessageSubject = new Subject<HelpMessage>();
   private consultationMessageSubject = new Subject<ConsultationMessage>();
 
@@ -47,23 +48,23 @@ export class ServerSentEventsService {
   }
 
   getParticipantStatusMessage(): Observable<ParticipantStatusMessage> {
-    this.connection.on('ParticipantStatusMessage', (email: string, status: string) => {
+    this.connection.on('ParticipantStatusMessage', (email: string, status: ParticipantStatus) => {
       this.participantStatusSubject.next(new ParticipantStatusMessage(email, status));
     });
 
     return this.participantStatusSubject.asObservable();
   }
 
-  getHearingStatusMessage(): Observable<HearingStatusMessage> {
-    this.connection.on('hearingStatusMessage', (conferenceId: string, status: string) => {
-      this.hearingStatusSubject.next(new HearingStatusMessage(conferenceId, status));
+  getHearingStatusMessage(): Observable<ConferenceStatusMessage> {
+    this.connection.on('ConferenceStatusMessage', (conferenceId: string, status: ConferenceStatus) => {
+      this.hearingStatusSubject.next(new ConferenceStatusMessage(conferenceId, status));
     });
 
     return this.hearingStatusSubject.asObservable();
   }
 
   getHelpMessage(): Observable<HelpMessage> {
-    this.connection.on('helpMessage', (conferenceId: string, participantName: string) => {
+    this.connection.on('HelpMessage', (conferenceId: string, participantName: string) => {
       this.helpMessageSubject.next(new HelpMessage(conferenceId, participantName));
     });
 
@@ -71,7 +72,7 @@ export class ServerSentEventsService {
   }
 
   getConsultationMessage(): Observable<ConsultationMessage> {
-    this.connection.on('consultationMessage', (conferenceId: string, requestedBy: string, requestedFor: string, result: string) => {
+    this.connection.on('ConsultationMessage', (conferenceId: string, requestedBy: string, requestedFor: string, result: string) => {
       this.consultationMessageSubject.next(new ConsultationMessage(conferenceId, requestedBy, requestedFor, result));
     });
 

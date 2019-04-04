@@ -1,10 +1,11 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { VideoWebService } from 'src/app/services/video-web.service';
-import { ConferenceResponse, ParticipantStatus, ConferenceStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
-import { ServerSentEventsService } from 'src/app/services/server-sent-events.service';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { AdalService } from 'adal-angular4';
+import { ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { ServerSentEventsService } from 'src/app/services/server-sent-events.service';
+import { VideoWebService } from 'src/app/services/video-web.service';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 declare var PexRTC: any;
 
 @Component({
@@ -15,6 +16,7 @@ declare var PexRTC: any;
 export class ParticipantWaitingRoomComponent implements OnInit {
 
   loadingData: boolean;
+  statusUpdated: boolean;
   conference: ConferenceResponse;
   participant: ParticipantResponse;
 
@@ -45,6 +47,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         this.loadingData = false;
         this.conference = data;
         this.participant = data.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
+        this.refresh();
         this.setupSubscribers();
         this.setupPexipClient();
         this.call();
@@ -55,7 +58,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         });
   }
 
-  getConferenceStatusText() {
+  getConferenceStatusText(): string {
     switch (this.conference.status) {
       case ConferenceStatus.Suspended: return 'is suspended';
       case ConferenceStatus.Paused: return 'is paused';
@@ -81,7 +84,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
     this.eventService.getHearingStatusMessage().subscribe(message => {
       this.ngZone.run(() => {
-        this.handleHearingStatusChange(<ConferenceStatus>message.status);
+        this.handleConferenceStatusChange(message);
       });
     });
 
@@ -94,12 +97,18 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
   handleParticipantStatusChange(message: ParticipantStatusMessage): any {
     const participant = this.conference.participants.find(p => p.username.toLowerCase() === message.email.toLowerCase());
-    const status = <ParticipantStatus>message.status;
-    participant.status = status;
+    participant.status = message.status;
+    this.refresh();
   }
 
-  handleHearingStatusChange(status: ConferenceStatus) {
-    this.conference.status = status;
+  handleConferenceStatusChange(message: ConferenceStatusMessage) {
+    this.conference.status = message.status;
+    this.refresh();
+  }
+
+  refresh() {
+    this.statusUpdated = false;
+    setTimeout(() => this.statusUpdated = true);
   }
 
   setupPexipClient() {

@@ -48,7 +48,6 @@ export class SendVideoEventsComponent implements OnInit {
   }
 
   pauseHearing() {
-    console.log('raising paused event');
     const request = this.buildBasicEventRequest();
     request.event_type = EventType.Pause;
     request.participant_id = this.conference.participants.find(x => x.role === 'Judge').id;
@@ -138,10 +137,8 @@ export class SendVideoEventsComponent implements OnInit {
   private sendEvent(request: ConferenceEventRequest) {
     this.videoWebService.raiseEvent(request)
       .subscribe(() => {
-        console.log('successfuly sent event...');
         console.log(request);
       }, error => {
-        console.error('failed to send request');
         console.error(error);
       });
   }

@@ -10,7 +10,7 @@
   </div>
 </div>
 
-<div *ngIf="!loadingData && conference" class="govuk-grid-row">
+<div *ngIf="!loadingData && conference && statusUpdated" class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-xl">Your hearing {{ getConferenceStatusText() }}</h1>
 

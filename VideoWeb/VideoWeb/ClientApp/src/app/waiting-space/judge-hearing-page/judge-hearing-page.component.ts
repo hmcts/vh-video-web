@@ -51,7 +51,6 @@ export class JudgeHearingPageComponent implements OnInit {
     const judge = this.conference.participants.find(x => x.role === UserRole.Judge);
     const encodedDisplayName = encodeURIComponent(judge.tiled_display_name);
     const judgeUri = this.conference.judge_i_frame_uri + '?display_name=' + encodedDisplayName + '';
-    console.log('Judge Uri: ' + judgeUri);
     this.selectedHearingUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
       judgeUri
     );
