@@ -71,6 +71,6 @@ describe('JudgeHearingTableComponent', () => {
     const conference = new ConferenceTestData().getConferenceFuture();
     spyOn(router, 'navigate').and.callFake(() => { });
     component.signIntoConference(conference);
-    expect(router.navigate).toHaveBeenCalledWith(['/equipment-check', conference.id]);
+    expect(router.navigate).toHaveBeenCalledWith(['/judge-waiting-room', conference.id]);
   });
 });

@@ -120,8 +120,6 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       this.connect('0000', null);
     };
 
-    // This method is called automatically after "pexipAPI.connect()", which is called in "pexipAPI.onSetup()""
-    // Accesses the html <video> element meant for incoming feed
     this.pexipAPI.onConnect = function (stream) {
       self.connected = true;
       console.info('successfully connected');

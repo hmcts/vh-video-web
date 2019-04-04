@@ -15,7 +15,7 @@ export class HomeComponent implements OnInit {
   }
 
   navigateToHearingList() {
-    this.router.navigate(['hearing-list']);
+    this.router.navigate(['participant/hearing-list']);
   }
 
 }

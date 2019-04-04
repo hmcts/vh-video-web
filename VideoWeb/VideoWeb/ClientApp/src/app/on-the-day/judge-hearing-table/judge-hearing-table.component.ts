@@ -16,7 +16,7 @@ export class JudgeHearingTableComponent implements OnInit {
   ngOnInit() {}
 
   signIntoConference(conference: ConferenceForUserResponse) {
-    this.router.navigate(['/equipment-check', conference.id]);
+    this.router.navigate(['/judge-waiting-room', conference.id]);
   }
 
   getSignInDate(conference: ConferenceForUserResponse): string {
