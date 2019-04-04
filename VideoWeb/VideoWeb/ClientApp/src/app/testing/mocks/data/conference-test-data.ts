@@ -11,7 +11,10 @@ export class ConferenceTestData {
             case_name: 'C V I',
             case_number: '123ABC',
             case_type: 'Financial Tax Remedy',
-            scheduled_date_time: currentDateTime
+            scheduled_date_time: currentDateTime,
+            no_of_participants_available: 2,
+            no_of_participants_unavailable: 1,
+            no_of_participants_in_consultation: 2
         });
 
         return conference;

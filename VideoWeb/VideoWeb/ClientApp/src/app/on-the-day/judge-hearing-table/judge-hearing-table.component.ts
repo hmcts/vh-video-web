@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ConferenceForUserResponse } from 'src/app/services/clients/api-client';
+import { ConferenceForUserResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
 import * as moment from 'moment';
 import { Router } from '@angular/router';
 
@@ -11,9 +11,9 @@ import { Router } from '@angular/router';
 export class JudgeHearingTableComponent implements OnInit {
   @Input() conferences: ConferenceForUserResponse[];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   signIntoConference(conference: ConferenceForUserResponse) {
     this.router.navigate(['/judge-waiting-room', conference.id]);
@@ -46,5 +46,17 @@ export class JudgeHearingTableComponent implements OnInit {
       'minutes'
     );
     return difference < 30;
+  }
+
+  hasAvailableParticipants(conference: ConferenceForUserResponse): boolean {
+    return conference.no_of_participants_available > 0;
+  }
+
+  hasUnavailableParticipants(conference: ConferenceForUserResponse): boolean {
+    return conference.no_of_participants_unavailable > 0;
+  }
+
+  hasInConsultationParticipants(conference: ConferenceForUserResponse): boolean {
+    return conference.no_of_participants_in_consultation > 0;
   }
 }

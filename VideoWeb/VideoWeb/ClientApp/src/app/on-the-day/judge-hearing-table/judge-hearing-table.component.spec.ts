@@ -73,4 +73,40 @@ describe('JudgeHearingTableComponent', () => {
     component.signIntoConference(conference);
     expect(router.navigate).toHaveBeenCalledWith(['/judge-waiting-room', conference.id]);
   });
+
+  it('should return true when number of participants available is more than zero', () => {
+    const conference = new ConferenceTestData().getConferenceFuture();
+    conference.no_of_participants_available = 1;
+    expect(component.hasAvailableParticipants(conference)).toBeTruthy();
+  });
+
+  it('should return false when number of participants available is zero', () => {
+    const conference = new ConferenceTestData().getConferenceFuture();
+    conference.no_of_participants_available = 0;
+    expect(component.hasAvailableParticipants(conference)).toBeFalsy();
+  });
+
+  it('should return true when number of participants unavailable is more than zero', () => {
+    const conference = new ConferenceTestData().getConferenceFuture();
+    conference.no_of_participants_unavailable = 1;
+    expect(component.hasUnavailableParticipants(conference)).toBeTruthy();
+  });
+
+  it('should return false when number of participants unavailable is zero', () => {
+    const conference = new ConferenceTestData().getConferenceFuture();
+    conference.no_of_participants_unavailable = 0;
+    expect(component.hasUnavailableParticipants(conference)).toBeFalsy();
+  });
+
+  it('should return true when number of participants in consultation is more than zero', () => {
+    const conference = new ConferenceTestData().getConferenceFuture();
+    conference.no_of_participants_in_consultation = 1;
+    expect(component.hasInConsultationParticipants(conference)).toBeTruthy();
+  });
+
+  it('should return false when number of participants in consultation is zero', () => {
+    const conference = new ConferenceTestData().getConferenceFuture();
+    conference.no_of_participants_in_consultation = 0;
+    expect(component.hasInConsultationParticipants(conference)).toBeFalsy();
+  });
 });
