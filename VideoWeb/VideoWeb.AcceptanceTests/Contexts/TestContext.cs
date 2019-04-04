@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using RestSharp;
 using Testing.Common.Helpers;
@@ -23,7 +24,9 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public string VideoWebUrl { get; set; }
         public string Json { get; set; }
         public HearingDetailsResponse Hearing { get; set; }
+        public Guid NewHearingId { get; set; }
         public ConferenceDetailsResponse Conference { get; set; }
+        public Guid NewConferenceId { get; set; }
         public TestSettings TestSettings { get; set; }
         public SeleniumEnvironment Environment { get; set; }
 
