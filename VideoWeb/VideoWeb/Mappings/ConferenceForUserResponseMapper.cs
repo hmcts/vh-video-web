@@ -46,7 +46,7 @@ namespace VideoWeb.Mappings
                 var participantResponse = new ParticipantForUserResponse
                 {
                     Username = participant.Username,
-                    Status = MaParticipantStatus(participant.Status),
+                    Status = MapParticipantStatus(participant.Status),
                 };
                 participantSummaryList.Add(participantResponse);
             }
@@ -67,7 +67,7 @@ namespace VideoWeb.Mappings
             }
         }
 
-        private static ParticipantStatus MaParticipantStatus(ParticipantState? value)
+        public ParticipantStatus MapParticipantStatus(ParticipantState? value)
         {
             switch (value)
             {
