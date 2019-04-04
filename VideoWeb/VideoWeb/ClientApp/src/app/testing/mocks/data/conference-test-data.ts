@@ -5,7 +5,7 @@ import {
 export class ConferenceTestData {
 
     getConferenceNow(): ConferenceForUserResponse {
-        const currentDateTime = new Date(new Date().getTime());
+        const currentDateTime = new Date(new Date().getUTCDate());
         const conference = new ConferenceForUserResponse({
             id: '363725D0-E3D6-4D4A-8D0A-E8E57575FBC4',
             case_name: 'C V I',
@@ -28,7 +28,10 @@ export class ConferenceTestData {
             case_name: 'BW V BP',
             case_number: 'ABC1234',
             case_type: 'Financial Tax Remedy',
-            scheduled_date_time: pastDate
+            scheduled_date_time: pastDate,
+            no_of_participants_available: 2,
+            no_of_participants_unavailable: 1,
+            no_of_participants_in_consultation: 2
         });
         return conference;
     }
@@ -41,7 +44,10 @@ export class ConferenceTestData {
             case_name: 'WM V T',
             case_number: '0987UDIHH',
             case_type: 'Financial Tax Remedy',
-            scheduled_date_time: futureDate
+            scheduled_date_time: futureDate,
+            no_of_participants_available: 2,
+            no_of_participants_unavailable: 1,
+            no_of_participants_in_consultation: 2
         });
         return conference;
     }

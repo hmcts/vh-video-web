@@ -5,6 +5,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import * as moment from 'moment';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
+import { ConferenceStatus } from 'src/app/services/clients/api-client';
 
 describe('JudgeHearingTableComponent', () => {
   let component: JudgeHearingTableComponent;
@@ -108,5 +109,23 @@ describe('JudgeHearingTableComponent', () => {
     const conference = new ConferenceTestData().getConferenceFuture();
     conference.no_of_participants_in_consultation = 0;
     expect(component.hasInConsultationParticipants(conference)).toBeFalsy();
+  });
+
+  it('should return false hearing is not paused or suspended', () => {
+    const conference = new ConferenceTestData().getConferenceFuture();
+    conference.status = ConferenceStatus.InSession;
+    expect(component.isPausedOrSuspended(conference)).toBeFalsy();
+  });
+
+  it('should return true hearing is not paused', () => {
+    const conference = new ConferenceTestData().getConferenceFuture();
+    conference.status = ConferenceStatus.Paused;
+    expect(component.isPausedOrSuspended(conference)).toBeTruthy();
+  });
+
+  it('should return true hearing is not suspended', () => {
+    const conference = new ConferenceTestData().getConferenceFuture();
+    conference.status = ConferenceStatus.Suspended;
+    expect(component.isPausedOrSuspended(conference)).toBeTruthy();
   });
 });

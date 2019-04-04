@@ -39,7 +39,7 @@ export class JudgeHearingTableComponent implements OnInit {
       .toDate();
   }
 
-  canStartHearing(conference: ConferenceForUserResponse) {
+  canStartHearing(conference: ConferenceForUserResponse): boolean {
     const currentDateTime = new Date(new Date().getTime());
     const difference = moment(conference.scheduled_date_time).diff(
       moment(currentDateTime),
@@ -58,5 +58,9 @@ export class JudgeHearingTableComponent implements OnInit {
 
   hasInConsultationParticipants(conference: ConferenceForUserResponse): boolean {
     return conference.no_of_participants_in_consultation > 0;
+  }
+
+  isPausedOrSuspended(conference: ConferenceForUserResponse): boolean {
+    return conference.status === ConferenceStatus.Paused || conference.status === ConferenceStatus.Suspended;
   }
 }

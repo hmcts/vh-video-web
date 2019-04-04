@@ -46,17 +46,22 @@
 
       <!-- Conference Status -->
       <td class="govuk-table__cell">
-        <p *ngIf="conference.status ==='None'">
-          {{ getConferenceStatusText }} Not ready to start
-        </p>
-        <p *ngIf="conference.status ==='Paused'" class="vh-red">
-          {{ conference.status }}
-        </p>
-        <p *ngIf="conference.status === 'Suspended'">
-          <input type="button" id="start-hearing-btn-{{ conference.id }}" class="govuk-button" role="button"
-            value="Resume hearing" *ngIf="canStartHearing(conference)" (click)="signIntoConference(conference)"
+        <div *ngIf="isPausedOrSuspended(conference) && canStartHearing(conference)">
+          <span class="vh-red">{{ conference.status }}</span> <br />
+          <input type="button" id="start-hearing-btn-{{ conference.id }}" class="govuk-button govuk-!-margin-top-3"
+            role="button" value="Resume hearing" (click)="signIntoConference(conference)"
             alt="Sign into the conference" />
-        </p>
+        </div>
+
+        <div *ngIf="!isPausedOrSuspended(conference) && canStartHearing(conference)">
+          <input type="button" id="start-hearing-btn-{{ conference.id }}" class="govuk-button govuk-!-margin-top-3"
+            role="button" value="Start hearing" (click)="signIntoConference(conference)"
+            alt="Sign into the conference" />
+        </div>
+
+        <div *ngIf="!canStartHearing(conference)">
+          Not ready to start
+        </div>
       </td>
     </tr>
   </tbody>
