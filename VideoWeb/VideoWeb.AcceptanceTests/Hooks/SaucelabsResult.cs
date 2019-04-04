@@ -5,7 +5,7 @@ using TechTalk.SpecFlow;
 namespace VideoWeb.AcceptanceTests.Hooks
 {
     [Binding]
-    public sealed class SaucelabsResult
+    public static class SaucelabsResult
     {
         public static void LogPassed(bool passed, IWebDriver driver)
         {

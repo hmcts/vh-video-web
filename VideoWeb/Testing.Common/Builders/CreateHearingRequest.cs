@@ -19,7 +19,7 @@ namespace Testing.Common.Builders
         public BookNewHearingRequest BuildRequest()
         {
             var cases = Builder<CaseRequest>.CreateListOfSize(1).Build().ToList();
-            cases.First().Name = $"Manual Test Hearing {GenerateRandom.Letters(_fromRandomNumber)}";
+            cases.First().Name = $"Automated Test Hearing {GenerateRandom.Letters(_fromRandomNumber)}";
 
             return Builder<BookNewHearingRequest>.CreateNew()
                 .With(x => x.Case_type_name = "Civil Money Claims")
@@ -33,7 +33,7 @@ namespace Testing.Common.Builders
 
         public CreateHearingRequest WithRandomCaseName()
         {
-            _caseName = $"Manual Test Hearing {GenerateRandom.Letters(_fromRandomNumber)}";
+            _caseName = $"Automated Test Hearing {GenerateRandom.Letters(_fromRandomNumber)}";
             return this;
         }
     }
