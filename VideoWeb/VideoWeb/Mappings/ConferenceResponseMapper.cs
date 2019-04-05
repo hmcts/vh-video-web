@@ -20,6 +20,7 @@ namespace VideoWeb.Mappings
             
             var participantMapper = new ParticipantResponseMapper();
             var participants = conference.Participants
+                .OrderBy(x => x.Case_type_group)
                 .Select(x => participantMapper.MapParticipantToResponseModel(x))
                 .ToList();
             
@@ -45,14 +46,19 @@ namespace VideoWeb.Mappings
             var tiledParticipants = conference.Participants.Where(x =>
                 x.User_role == UserRole.Individual || x.User_role == UserRole.Representative).ToList();
 
-            foreach (var participant in response.Participants)
+            var partyGroups = tiledParticipants.GroupBy(x => x.Case_type_group).ToList();
+            foreach (var group in partyGroups)
             {
-                var indexOf = tiledParticipants.FindIndex(x => x.Id == participant.Id);
-                if (indexOf <= -1) continue;
-                indexOf++;
-                participant.TiledDisplayName = $"T{indexOf};{participant.DisplayName};{participant.Id}";
+                var pats = group.ToList();
+                var position = partyGroups.IndexOf(group) + 1;
+                foreach (var p in pats)
+                {
+                    var participant = response.Participants.Find(x => x.Id == p.Id);
+                    participant.TiledDisplayName = $"T{position};{participant.DisplayName};{participant.Id}";
+                    position += 2;
+                }
             }
-
+            
             return response;
         }
     }

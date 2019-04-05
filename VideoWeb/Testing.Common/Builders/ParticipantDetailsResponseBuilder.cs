@@ -8,7 +8,7 @@ namespace Testing.Common.Builders
     {
         private readonly ISingleObjectBuilder<ParticipantDetailsResponse> _participant;
 
-        public ParticipantDetailsResponseBuilder(UserRole role)
+        public ParticipantDetailsResponseBuilder(UserRole role, string caseTypeGroup)
         {
             _participant = Builder<ParticipantDetailsResponse>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
@@ -17,6 +17,7 @@ namespace Testing.Common.Builders
                     Participant_state = ParticipantState.Available,
                     Time_stamp = DateTime.UtcNow
                 })
+                .With(x => x.Case_type_group = caseTypeGroup)
                 .With(x => x.User_role = role);
         }
 
