@@ -7,7 +7,7 @@ namespace VideoWeb.AcceptanceTests.Pages
 {
     public class MicrosoftLoginPage
     {
-        private BrowserContext _context;
+        private readonly BrowserContext _context;
         public MicrosoftLoginPage(BrowserContext browserContext)
         {
             _context = browserContext;
@@ -18,9 +18,9 @@ namespace VideoWeb.AcceptanceTests.Pages
         private By _next => By.XPath("//input[contains(@data-bind,'Next') and (@value='Next')]");
         private By _signIn => By.XPath("//input[contains(@data-bind,'SignIn') and (@value='Sign in')]");
         private By _noButton => By.XPath("//input[contains(@data-bind,'Splitter') and (@value='No')]");
-        private By _pageTitle => By.XPath("//*[@class='govuk-heading-l']");
-        private By _startNowButton => By.XPath("//*[@type='button']");
-        private By _loginBanner => By.Id("//*[@id='otherTileText']");
+        //private By _pageTitle => By.XPath("//*[@class='govuk-heading-l']");
+        //private By _startNowButton => By.XPath("//*[@type='button']");
+        //private By _loginBanner => By.Id("//*[@id='otherTileText']");
 
         public void Logon(string participantUsername, string password)
         {
@@ -40,7 +40,7 @@ namespace VideoWeb.AcceptanceTests.Pages
 
         public void EnterPassword(string password)
         {
-            string maskedPassword = new string('*', (password ?? string.Empty).Length);
+            var maskedPassword = new string('*', (password ?? string.Empty).Length);
             Console.WriteLine($"Using password {maskedPassword}");
             _context.NgDriver.WaitUntilElementVisible(_passwordfield).Clear();
             _context.NgDriver.WaitUntilElementVisible(_passwordfield).SendKeys(password);
