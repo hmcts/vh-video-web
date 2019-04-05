@@ -6,10 +6,12 @@ import { EquipmentCheckComponent } from './equipment-check/equipment-check.compo
 import { CameraAndMicrophoneComponent } from './camera-and-microphone/camera-and-microphone.component';
 import { JudgeHearingListComponent } from './judge-hearing-list/judge-hearing-list.component';
 import { ParticipantHearingsComponent } from './participant-hearings/participant-hearings.component';
+import { VhoHearingsComponent } from './vho-hearings/vho-hearings.component';
 
 export const routes: Routes = [
   { path: 'judge/hearing-list', component: JudgeHearingListComponent },
   { path: 'participant/hearing-list', component: ParticipantHearingsComponent },
+  { path: 'admin/hearing-list', component: VhoHearingsComponent },
   { path: 'declaration/:conferenceId', component: DeclarationComponent },
   { path: 'hearing-rules/:conferenceId', component: HearingRulesComponent },
   { path: 'equipment-check/:conferenceId', component: EquipmentCheckComponent },

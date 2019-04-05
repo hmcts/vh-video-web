@@ -4,7 +4,7 @@
   "swaggerGenerator": {
     "fromSwagger": {
       "json": null,
-      "url": "http://localhost:5301/swagger/v1/swagger.json",
+      "url": "https://vh-bookings-api-dev.azurewebsites.net/swagger/v1/swagger.json",
       "output": null
     }
   },
