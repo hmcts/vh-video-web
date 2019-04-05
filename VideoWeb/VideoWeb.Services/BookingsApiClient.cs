@@ -2085,6 +2085,10 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("other_information", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Other_information { get; set; }
     
+        /// <summary>The VH admin username that created the hearing</summary>
+        [Newtonsoft.Json.JsonProperty("created_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Created_by { get; set; }
+    
         public string ToJson() 
         {
             return Newtonsoft.Json.JsonConvert.SerializeObject(this);
@@ -2261,6 +2265,10 @@ namespace VideoWeb.Services.Bookings
         /// <summary>Any other information about the hearing</summary>
         [Newtonsoft.Json.JsonProperty("other_information", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Other_information { get; set; }
+    
+        /// <summary>The VH admin username that created the hearing</summary>
+        [Newtonsoft.Json.JsonProperty("created_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Created_by { get; set; }
     
         public string ToJson() 
         {
