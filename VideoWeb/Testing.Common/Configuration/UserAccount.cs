@@ -1,4 +1,4 @@
-﻿namespace VideoWeb.AcceptanceTests.Helpers
+﻿namespace VideoWeb.AcceptanceTests.Configuration
 {
     public class UserAccount
     {

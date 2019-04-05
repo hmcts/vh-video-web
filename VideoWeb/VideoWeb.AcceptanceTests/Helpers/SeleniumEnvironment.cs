@@ -83,7 +83,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             return new RemoteWebDriver(remoteUrl, caps, commandTimeout);
         }
 
-        private IWebDriver InitLocalDriver()
+        private static IWebDriver InitLocalDriver()
         {
             var chromeDriverProcesses = Process.GetProcessesByName("ChromeDriver");
 
@@ -98,18 +98,18 @@ namespace VideoWeb.AcceptanceTests.Helpers
                     Console.WriteLine(ex.Message);
                 }
             }
-            ChromeOptions options = new ChromeOptions();
+            var options = new ChromeOptions();
             options.AddArgument("ignore -certificate-errors");
 
             return new ChromeDriver(ChromeDriverPath, options);
         }
 
-        private string ChromeDriverPath
+        private static string ChromeDriverPath
         {
             get
             {
                 const string osxPath = "/usr/local/bin";
-                string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 return Directory.Exists(osxPath) ? osxPath : assemblyPath;
             }
         }

@@ -64,7 +64,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         protected void SelectOption(By elements, string option)
         {
             var getListOfElements = GetListOfElements(elements);
-            _browserContext.Retry(() => getListOfElements.ToArray().Count().Should().BeGreaterThan(0, "List is not populated"));
+            _browserContext.Retry(() => getListOfElements.AsEnumerable().Count().Should().BeGreaterThan(0, "List is not populated"));
             foreach (var element in getListOfElements)
             {
                 if (option == element.Text.Trim())
@@ -74,14 +74,14 @@ namespace VideoWeb.AcceptanceTests.Pages
         protected void SelectOption(By elements)
         {
             var getListOfElements = GetListOfElements(elements);
-            _browserContext.Retry(() => getListOfElements.ToArray().Count().Should().BeGreaterThan(0, "List is not populated"));
-            _browserContext.NgDriver.WaitUntilElementClickable(getListOfElements.ToArray().First()).Click();
+            _browserContext.Retry(() => getListOfElements.AsEnumerable().Count().Should().BeGreaterThan(0, "List is not populated"));
+            _browserContext.NgDriver.WaitUntilElementClickable(getListOfElements.AsEnumerable().First()).Click();
         }
         protected string SelectLastItem(By elements)
         {
             var getListOfElements = GetListOfElements(elements);
-            _browserContext.Retry(() => getListOfElements.ToArray().Count().Should().BeGreaterThan(0, "List is not populated"));
-            var lastItem = _browserContext.NgDriver.WaitUntilElementClickable(getListOfElements.ToArray().Last());
+            _browserContext.Retry(() => getListOfElements.AsEnumerable().Count().Should().BeGreaterThan(0, "List is not populated"));
+            var lastItem = _browserContext.NgDriver.WaitUntilElementClickable(getListOfElements.AsEnumerable().Last());
             lastItem.Click();
             return lastItem.Text.Trim();
         }

@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Net;
+using FluentAssertions;
+using Microsoft.Extensions.Options;
 using TechTalk.SpecFlow;
-using VideoWeb.AcceptanceTests.Configuration;
+using Testing.Common.Configuration;
+using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
+using VideoWeb.Common.Security;
 
 namespace VideoWeb.AcceptanceTests.Hooks
 {
@@ -14,7 +19,6 @@ namespace VideoWeb.AcceptanceTests.Hooks
         private readonly SauceLabsSettings _saucelabsSettings;
         private readonly ScenarioContext _scenarioContext;
 
-
         public Browser(BrowserContext browserContext, TestContext context, SauceLabsSettings saucelabsSettings,
             ScenarioContext injectedContext)
         {
@@ -24,20 +28,54 @@ namespace VideoWeb.AcceptanceTests.Hooks
             _scenarioContext = injectedContext;
         }
 
-
-        private TargetBrowser GetTargetBrowser()
+        private static TargetBrowser GetTargetBrowser()
         {
-            TargetBrowser targetTargetBrowser;
-            return Enum.TryParse(NUnit.Framework.TestContext.Parameters["TargetBrowser"], true, out targetTargetBrowser) ? targetTargetBrowser : TargetBrowser.Chrome;
+            return Enum.TryParse(NUnit.Framework.TestContext.Parameters["TargetBrowser"], true, out TargetBrowser targetTargetBrowser) ? targetTargetBrowser : TargetBrowser.Chrome;
         }
 
         [BeforeScenario]
-        public void BeforeScenario()
+        public void BeforeScenario(TestContext testContext)
         {
-            var appTestContext = TestConfigSettings.GetSettings(); ;
-            var environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, GetTargetBrowser());
-            _browserContext.BrowserSetup(appTestContext.WebsiteUrl, environment);
+            var azureAdConfiguration = new BookingsConfigLoader().ReadAzureAdSettings();
+            var testSettings = new BookingsConfigLoader().ReadTestSettings();
+            var hearingServiceSettings = new BookingsConfigLoader().ReadHearingServiceSettings();
+
+            testContext.BookingsApiBearerToken = new TokenProvider(Options.Create(azureAdConfiguration)).GetClientAccessToken(
+                testSettings.TestClientId, testSettings.TestClientSecret,
+                hearingServiceSettings.BookingsApiResourceId);
+
+            testContext.VideoApiBearerToken = new TokenProvider(Options.Create(azureAdConfiguration)).GetClientAccessToken(
+                testSettings.TestClientId, testSettings.TestClientSecret,
+                hearingServiceSettings.VideoApiResourceId);
+
+            testContext.BookingsApiBaseUrl = hearingServiceSettings.BookingsApiUrl;
+            testContext.VideoApiBaseUrl = hearingServiceSettings.VideoApiUrl;
+            testContext.VideoWebUrl = hearingServiceSettings.VideoWebUrl;
+
+            testContext.TestSettings = testSettings;
+
+            CheckBookingsApiHealth(testContext);
+            CheckVideoApiHealth(testContext);
+
+            testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, GetTargetBrowser());
+            _browserContext.BrowserSetup(testContext.VideoWebUrl, testContext.Environment);
             _browserContext.LaunchSite();
+        }
+
+        public static void CheckBookingsApiHealth(TestContext testContext)
+        {
+            var endpoint = new BookingsApiUriFactory().HealthCheckEndpoints;
+            testContext.Request = testContext.Get(endpoint.HealthCheck);
+            testContext.Response = testContext.BookingsApiClient().Execute(testContext.Request);
+            testContext.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        public static void CheckVideoApiHealth(TestContext testContext)
+        {
+            var endpoint = new VideoApiUriFactory().HealthCheckEndpoints;
+            testContext.Request = testContext.Get(endpoint.CheckServiceHealth());
+            testContext.Response = testContext.BookingsApiClient().Execute(testContext.Request);
+            testContext.Response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [AfterScenario]
@@ -45,7 +83,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         {
             if (_saucelabsSettings.RunWithSaucelabs)
             {
-                bool passed = _scenarioContext.TestError == null;
+                var passed = _scenarioContext.TestError == null;
                 SaucelabsResult.LogPassed(passed, _browserContext.NgDriver);
             }
             _browserContext.BrowserTearDown();

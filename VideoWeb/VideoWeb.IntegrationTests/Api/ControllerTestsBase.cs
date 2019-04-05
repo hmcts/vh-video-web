@@ -9,6 +9,7 @@ using NUnit.Framework;
 using Testing.Common.Configuration;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security;
+using AzureAdConfiguration = VideoWeb.Common.Configuration.AzureAdConfiguration;
 
 namespace VideoWeb.IntegrationTests.Api
 {

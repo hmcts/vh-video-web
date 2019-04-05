@@ -16,14 +16,14 @@ namespace VideoWeb.Mappings
                 status = Enum.Parse<ConferenceStatus>(conference.Current_status.GetValueOrDefault()
                     .ToString());
             }
-                
-            
+
+
             var participantMapper = new ParticipantResponseMapper();
             var participants = conference.Participants
                 .OrderBy(x => x.Case_type_group)
                 .Select(x => participantMapper.MapParticipantToResponseModel(x))
                 .ToList();
-            
+
             var response = new ConferenceResponse
             {
                 Id = conference.Id.GetValueOrDefault(),
@@ -37,12 +37,12 @@ namespace VideoWeb.Mappings
             };
 
             if (conference.Meeting_room == null) return response;
-            
+
             response.AdminIFrameUri = conference.Meeting_room.Admin_uri;
             response.JudgeIFrameUri = conference.Meeting_room.Judge_uri;
             response.ParticipantUri = conference.Meeting_room.Participant_uri;
             response.PexipNodeUri = conference.Meeting_room.Pexip_node;
-            
+
             var tiledParticipants = conference.Participants.Where(x =>
                 x.User_role == UserRole.Individual || x.User_role == UserRole.Representative).ToList();
 
