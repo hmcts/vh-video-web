@@ -6,8 +6,8 @@ import { JudgeHearingPageComponent } from './judge-hearing-page/judge-hearing-pa
 
 const routes: Routes = [
   { path: 'waiting-room/:conferenceId', component: ParticipantWaitingRoomComponent },
-  { path: 'judge-waiting-room/:conferenceId', component: JudgeWaitingRoomComponent },
-  { path: 'judge-hearing-room/:conferenceId', component: JudgeHearingPageComponent },
+  { path: 'judge/waiting-room/:conferenceId', component: JudgeWaitingRoomComponent },
+  { path: 'judge/hearing-room/:conferenceId', component: JudgeHearingPageComponent },
 ];
 
 @NgModule({

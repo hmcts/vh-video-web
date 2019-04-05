@@ -71,5 +71,10 @@ export class JudgeHearingPageComponent implements OnInit {
       this.selectedHearingUrl = '';
       this.router.navigate(['judge/dashboard']);
     }
+
+    if (status === ConferenceStatus.Paused || status === ConferenceStatus.Suspended) {
+      this.selectedHearingUrl = '';
+      this.router.navigate(['judge/waiting-room', this.conference.id]);
+    }
   }
 }
