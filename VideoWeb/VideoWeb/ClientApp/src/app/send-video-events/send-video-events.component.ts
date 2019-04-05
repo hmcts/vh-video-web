@@ -136,7 +136,7 @@ export class SendVideoEventsComponent implements OnInit {
   }
 
   private sendEvent(request: ConferenceEventRequest) {
-    this.videoWebService.raiseEvent(request)
+    this.videoWebService.sendEvent(request)
       .subscribe(() => {
         console.log('successfuly sent event...');
         console.log(request);

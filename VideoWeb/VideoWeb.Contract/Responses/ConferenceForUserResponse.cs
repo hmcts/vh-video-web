@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace VideoWeb.Contract.Responses
 {
@@ -31,5 +32,11 @@ namespace VideoWeb.Contract.Responses
         /// The case name
         /// </summary>
         public string CaseName { get; set; }
+        public int ScheduledDuration { get; set; }
+        public ConferenceStatus Status { get; set; }
+        public List<ParticipantForUserResponse> Participants { get; set; }
+        public int NoOfParticipantsAvailable { get; set; }
+        public int NoOfParticipantsUnavailable { get; set; }
+        public int NoOfParticipantsInConsultation { get; set; }
     }
 }

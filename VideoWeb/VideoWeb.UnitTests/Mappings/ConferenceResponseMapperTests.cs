@@ -26,17 +26,17 @@ namespace VideoWeb.UnitTests.Mappings
                 new ParticipantDetailsResponseBuilder(UserRole.VideoHearingsOfficer).Build(),
                 new ParticipantDetailsResponseBuilder(UserRole.CaseAdmin).Build()
             };
-            
+
             var expectedConferenceStatus = ConferenceStatus.Suspended;
 
             var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
-            
+
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
                 .With(x => x.Current_status = ConferenceState.Suspended)
                 .With(x => x.Participants = participants)
                 .With(x => x.Meeting_room = meetingRoom)
                 .Build();
-            
+
             var response = _mapper.MapConferenceDetailsToResponseModel(conference);
 
             response.Id.Should().Be(conference.Id.GetValueOrDefault());
