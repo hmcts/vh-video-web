@@ -17,7 +17,7 @@ namespace VideoWeb.UnitTests.Mappings
         {
             const ParticipantStatus expectedStatus = ParticipantStatus.Available;
             const UserRole expectedRole = UserRole.Individual;
-            var participant = new ParticipantDetailsResponseBuilder(Services.Video.UserRole.Individual)
+            var participant = new ParticipantDetailsResponseBuilder(Services.Video.UserRole.Individual, "Claimant")
                 .WithStatus(ParticipantState.Available).Build();
 
             var response = _mapper.MapParticipantToResponseModel(participant);

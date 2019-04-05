@@ -19,12 +19,12 @@ namespace VideoWeb.UnitTests.Mappings
         {
             var participants = new List<ParticipantDetailsResponse>
             {
-                new ParticipantDetailsResponseBuilder(UserRole.Individual).Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Individual).Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Representative).Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Judge).Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.VideoHearingsOfficer).Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.CaseAdmin).Build()
+                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant").Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.Representative, "Defendant").Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.Judge, "None").Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.VideoHearingsOfficer, "None").Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.CaseAdmin, "None").Build()
             };
 
             var expectedConferenceStatus = ConferenceStatus.Suspended;

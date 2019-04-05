@@ -72,7 +72,7 @@ describe('JudgeHearingTableComponent', () => {
     const conference = new ConferenceTestData().getConferenceFuture();
     spyOn(router, 'navigate').and.callFake(() => { });
     component.signIntoConference(conference);
-    expect(router.navigate).toHaveBeenCalledWith(['/judge-waiting-room', conference.id]);
+    expect(router.navigate).toHaveBeenCalledWith(['/judge/waiting-room', conference.id]);
   });
 
   it('should return true when number of participants available is more than zero', () => {
