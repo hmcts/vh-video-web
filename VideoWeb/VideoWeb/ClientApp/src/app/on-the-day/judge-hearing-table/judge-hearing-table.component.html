@@ -8,52 +8,60 @@
     </tr>
   </thead>
   <tbody class="govuk-table__body">
-    <tr
-      *ngFor="let conference of conferences"
-      id="judges-list"
-      class="govuk-table__row"
-    >
+    <tr *ngFor="let conference of conferences" id="judges-list" class="govuk-table__row">
+      <!-- Date & Time -->
       <td class="govuk-table__cell">
         {{ conference.scheduled_date_time | date: "dd MMM yyyy" }} <br />
         {{ conference.scheduled_date_time | date: "HH:mm" }} <br />
         <span id="with-hint-hint" class="govuk-hint">
-          listed for {{ conference.scheduled_duration }} minutes
+          listed for {{ getDuration(conference.scheduled_duration) }}
         </span>
       </td>
+
+      <!-- Video Hearing Details -->
       <td class="govuk-table__cell">
-        <strong>
-          {{ conference.case_number }} <br />
-          {{ conference.case_name }}
-        </strong>
+        <p>
+          <strong>
+            {{ conference.case_number }} <br />
+            {{ conference.case_name }}
+          </strong>
+        </p>
+        <p class="govuk-!-margin-top-0">
+          {{ conference.case_type }}
+        </p>
       </td>
+
+      <!-- Participant Statuses -->
       <td class="govuk-table__cell">
-        <p *ngIf="conference.no_of_participants_none>0" class="vh-red">
+        <p *ngIf="hasUnavailableParticipants(conference)" class="vh-red">
           {{ conference.no_of_participants_unavailable }} Not Available
         </p>
-        <p *ngIf="conference.no_of_participants_available>0" class="vh-green">
+        <p *ngIf="hasAvailableParticipants(conference)" class="vh-green">
           {{ conference.no_of_participants_available }} Available
         </p>
-        <p *ngIf="conference.no_of_participants_in_consultation>0" class="vh-green">
+        <p *ngIf="hasInConsultationParticipants(conference)" class="vh-green">
           {{ conference.no_of_participants_in_consultation }} In consultation
         </p>
       </td>
+
+      <!-- Conference Status -->
       <td class="govuk-table__cell">
-        <p *ngIf="conference.status ==='None'">
+        <div *ngIf="isPausedOrSuspended(conference) && canStartHearing(conference)">
+          <span class="vh-red">{{ conference.status }}</span> <br />
+          <input type="button" id="start-hearing-btn-{{ conference.id }}" class="govuk-button govuk-!-margin-top-3"
+            role="button" value="Resume hearing" (click)="signIntoConference(conference)"
+            alt="Sign into the conference" />
+        </div>
+
+        <div *ngIf="!isPausedOrSuspended(conference) && canStartHearing(conference)">
+          <input type="button" id="start-hearing-btn-{{ conference.id }}" class="govuk-button govuk-!-margin-top-3"
+            role="button" value="Start hearing" (click)="signIntoConference(conference)"
+            alt="Sign into the conference" />
+        </div>
+
+        <div *ngIf="!canStartHearing(conference)">
           Not ready to start
-        </p>
-        <p *ngIf="conference.status ==='Paused'" class="vh-red">
-          {{ conference.status }}
-        </p>
-        <p *ngIf="conference.status === 'Suspended'">
-          <input type="button"
-                 id="start-hearing-btn-{{ conference.id }}"
-                 class="govuk-button"
-                 role="button"
-                 value="Resume hearing"
-                 *ngIf="canStartHearing(conference)"
-                 (click)="signIntoConference(conference)"
-                 alt="Sign into the conference" />
-        </p>
+        </div>
       </td>
     </tr>
   </tbody>

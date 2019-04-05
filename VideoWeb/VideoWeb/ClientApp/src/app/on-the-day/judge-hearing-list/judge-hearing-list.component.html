@@ -4,7 +4,7 @@
 
 <div class="govuk-grid-row">
     <h1 class="govuk-heading-xl">Your video hearings</h1>
-    <app-judge-hearing-table></app-judge-hearing-table>
+    <app-judge-hearing-table [conferences]="conferences"></app-judge-hearing-table>
 </div>
 
 <div *ngIf="!loadingData && !hasHearings()">

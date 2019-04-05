@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Services.Video;
+using ConferenceUserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.Mappings
 {
@@ -12,17 +13,25 @@ namespace VideoWeb.Mappings
         {
             var conferenceForUserResponse = new ConferenceForUserResponse();
 
+            
             if (conference.Participants != null)
             {
+                var participantStatusRoles = new List<ConferenceUserRole>
+                {
+                    ConferenceUserRole.Individual, ConferenceUserRole.Representative
+                };
+                var filteredParticipants = conference.Participants
+                    .Where(x => participantStatusRoles.Contains(x.User_role.GetValueOrDefault())).ToList();
+
                 conferenceForUserResponse.NoOfParticipantsAvailable =
-                    conference.Participants.Count(x => x.Status == ParticipantState.Available);
+                    filteredParticipants.Count(x => x.Status == ParticipantState.Available);
 
                 conferenceForUserResponse.NoOfParticipantsInConsultation =
-                    conference.Participants.Count(x => x.Status == ParticipantState.InConsultation);
+                    filteredParticipants.Count(x => x.Status == ParticipantState.InConsultation);
 
                 conferenceForUserResponse.NoOfParticipantsUnavailable =
-                    conference.Participants.Count(x =>
-                        x.Status != ParticipantState.InConsultation || x.Status == ParticipantState.Available);
+                    filteredParticipants.Count(x =>
+                        (x.Status != ParticipantState.InConsultation && x.Status != ParticipantState.Available));
 
                 conferenceForUserResponse.Participants = MapParticipants(conference.Participants);
             }
@@ -47,7 +56,7 @@ namespace VideoWeb.Mappings
                 var participantResponse = new ParticipantForUserResponse
                 {
                     Username = participant.Username,
-                    Status = MapParticipantStatus(participant.Status),
+                    Status = MapParticipantStatus(participant.Status)
                 };
                 participantSummaryList.Add(participantResponse);
             }

@@ -1,10 +1,13 @@
+using System.Collections.Generic;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Linq;
+using Testing.Common.Builders;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
+using ConferenceUserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -17,7 +20,23 @@ namespace VideoWeb.UnitTests.Mappings
         {
             var conference = Builder<ConferenceSummaryResponse>.CreateNew().Build();
 
-            conference.Participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(10).Build().ToList();
+            var participants = new List<ParticipantSummaryResponse>
+            {
+                new ParticipantSummaryResponseBuilder(ConferenceUserRole.Individual)
+                    .WithStatus(ParticipantState.Available).Build(),
+                new ParticipantSummaryResponseBuilder(ConferenceUserRole.Representative)
+                    .WithStatus(ParticipantState.Disconnected).Build(),
+                new ParticipantSummaryResponseBuilder(ConferenceUserRole.Individual)
+                    .WithStatus(ParticipantState.InConsultation).Build(),
+                new ParticipantSummaryResponseBuilder(ConferenceUserRole.Representative)
+                    .WithStatus(ParticipantState.InConsultation).Build(),
+                new ParticipantSummaryResponseBuilder(ConferenceUserRole.Judge)
+                    .WithStatus(ParticipantState.NotSignedIn).Build(),
+                new ParticipantSummaryResponseBuilder(ConferenceUserRole.VideoHearingsOfficer)
+                    .WithStatus(ParticipantState.None).Build(),
+            };
+
+            conference.Participants = participants;
 
             var response = _mapper.MapConferenceSummaryToResponseModel(conference);
 
@@ -28,10 +47,9 @@ namespace VideoWeb.UnitTests.Mappings
             response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time.GetValueOrDefault());
             response.ScheduledDuration.Should().Be(conference.Scheduled_duration.GetValueOrDefault());
             response.Status.ToString().Should().Be(conference.Status.GetValueOrDefault().ToString());
-            response.NoOfParticipantsAvailable.Should().Be(conference.Participants.Count(x => x.Status == ParticipantState.Available));
-            response.NoOfParticipantsInConsultation.Should().Be(conference.Participants.Count(x => x.Status == ParticipantState.InConsultation));
-            response.NoOfParticipantsUnavailable.Should().Be(conference.Participants.Count(x =>
-                x.Status != ParticipantState.InConsultation || x.Status == ParticipantState.Available));
+            response.NoOfParticipantsAvailable.Should().Be(1);
+            response.NoOfParticipantsInConsultation.Should().Be(2);
+            response.NoOfParticipantsUnavailable.Should().Be(1);
         }
 
         [Test]

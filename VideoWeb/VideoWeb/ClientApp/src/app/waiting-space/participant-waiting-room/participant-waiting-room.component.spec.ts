@@ -66,16 +66,16 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
   });
 
   it('should update conference status', () => {
-    const conferenceStatus = ConferenceStatus.InSession;
-    component.handleHearingStatusChange(conferenceStatus);
-    expect(component.conference.status).toBe(conferenceStatus);
+    const message = eventService.nextHearingStatusMessage;
+    component.handleConferenceStatusChange(message);
+    expect(component.conference.status).toBe(message.status);
   });
 
   it('should update participant status', () => {
     const message = eventService.nextParticipantStatusMessage;
     component.handleParticipantStatusChange(message);
     const participant = component.conference.participants.find(x => x.username === message.email);
-    expect(participant.status === message.status);
+    expect(participant.status).toBe(message.status);
   });
 
   it('should return correct conference status text when suspended', () => {

@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ConferenceForUserResponse } from 'src/app/services/clients/api-client';
+import { ConferenceForUserResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
 import * as moment from 'moment';
 import { Router } from '@angular/router';
 
@@ -11,12 +11,12 @@ import { Router } from '@angular/router';
 export class JudgeHearingTableComponent implements OnInit {
   @Input() conferences: ConferenceForUserResponse[];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   signIntoConference(conference: ConferenceForUserResponse) {
-    this.router.navigate(['/equipment-check', conference.id]);
+    this.router.navigate(['/judge-waiting-room', conference.id]);
   }
 
   getSignInDate(conference: ConferenceForUserResponse): string {
@@ -39,12 +39,40 @@ export class JudgeHearingTableComponent implements OnInit {
       .toDate();
   }
 
-  canStartHearing(conference: ConferenceForUserResponse) {
+  canStartHearing(conference: ConferenceForUserResponse): boolean {
     const currentDateTime = new Date(new Date().getTime());
     const difference = moment(conference.scheduled_date_time).diff(
       moment(currentDateTime),
       'minutes'
     );
     return difference < 30;
+  }
+
+  hasAvailableParticipants(conference: ConferenceForUserResponse): boolean {
+    return conference.no_of_participants_available > 0;
+  }
+
+  hasUnavailableParticipants(conference: ConferenceForUserResponse): boolean {
+    return conference.no_of_participants_unavailable > 0;
+  }
+
+  hasInConsultationParticipants(conference: ConferenceForUserResponse): boolean {
+    return conference.no_of_participants_in_consultation > 0;
+  }
+
+  isPausedOrSuspended(conference: ConferenceForUserResponse): boolean {
+    return conference.status === ConferenceStatus.Paused || conference.status === ConferenceStatus.Suspended;
+  }
+
+  getDuration(duration: number): string {
+    const h = Math.floor(duration / 60);
+    const m = duration % 60;
+    const hours = h < 1 ? `${h} hours` : `${h} hour`;
+    const minutes = `${m} minutes`;
+    if (h > 0) {
+      return `${hours} and ${minutes}`;
+    } else {
+      return `${minutes}`;
+    }
   }
 }
