@@ -63,4 +63,16 @@ export class JudgeHearingTableComponent implements OnInit {
   isPausedOrSuspended(conference: ConferenceForUserResponse): boolean {
     return conference.status === ConferenceStatus.Paused || conference.status === ConferenceStatus.Suspended;
   }
+
+  getDuration(duration: number): string {
+    const h = Math.floor(duration / 60);
+    const m = duration % 60;
+    const hours = h < 1 ? `${h} hours` : `${h} hour`;
+    const minutes = `${m} minutes`;
+    if (h > 0) {
+      return `${hours} and ${minutes}`;
+    } else {
+      return `${minutes}`;
+    }
+  }
 }

@@ -14,7 +14,7 @@
         {{ conference.scheduled_date_time | date: "dd MMM yyyy" }} <br />
         {{ conference.scheduled_date_time | date: "HH:mm" }} <br />
         <span id="with-hint-hint" class="govuk-hint">
-          listed for {{ conference.scheduled_duration }} minutes
+          listed for {{ getDuration(conference.scheduled_duration) }}
         </span>
       </td>
 

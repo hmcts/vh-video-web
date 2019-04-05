@@ -128,4 +128,19 @@ describe('JudgeHearingTableComponent', () => {
     conference.status = ConferenceStatus.Suspended;
     expect(component.isPausedOrSuspended(conference)).toBeTruthy();
   });
+
+  it('should return hour and minutes', () => {
+    const result = component.getDuration(90);
+    expect(result).toBe('1 hour and 30 minutes');
+  });
+
+  it('should return hours and minutes', () => {
+    const result = component.getDuration(150);
+    expect(result).toBe('2 hour and 30 minutes');
+  });
+
+  it('should return only minutes', () => {
+    const result = component.getDuration(25);
+    expect(result).toBe('25 minutes');
+  });
 });
