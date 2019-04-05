@@ -1,45 +1,50 @@
-﻿using TechTalk.SpecFlow;
+﻿using System.Linq;
+using FluentAssertions;
+using TechTalk.SpecFlow;
+using VideoWeb.AcceptanceTests.Contexts;
+using VideoWeb.AcceptanceTests.Helpers;
+using VideoWeb.AcceptanceTests.Pages;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
     public sealed class LoginSteps
     {
-        // For additional details on SpecFlow step definitions see https://go.specflow.org/doc-stepdef
+        private readonly BrowserContext _browserContext;
+        private readonly TestContext _context;
+        private readonly MicrosoftLoginPage _loginPage;
+        private readonly HearingListPage _hearingListPage;
 
-        private readonly ScenarioContext context;
-
-        public LoginSteps(ScenarioContext injectedContext)
+        public LoginSteps(BrowserContext browserContext, TestContext context, 
+            MicrosoftLoginPage loginPage, HearingListPage hearingListPage)
         {
-            context = injectedContext;
+            _browserContext = browserContext;
+            _context = context;
+            _loginPage = loginPage;
+            _hearingListPage = hearingListPage;
         }
 
-        [Given("I have entered (.*) into the calculator")]
-        public void GivenIHaveEnteredSomethingIntoTheCalculator(int number)
+        [Given(@"the user is on the login page")]
+        public void GivenIndividualIsOnTheMicrosoftLoginPage()
         {
-            //TODO: implement arrange (precondition) logic
-            // For storing and retrieving scenario-specific data see https://go.specflow.org/doc-sharingdata 
-            // To use the multiline text or the table argument of the scenario,
-            // additional string/Table parameters can be defined on the step definition
-            // method. 
-
-            context.Pending();
+            _browserContext.Retry(() =>
+            {
+                _browserContext.PageUrl().Should().Contain("login.microsoftonline.com");
+            }, 10);
         }
 
-        [When("I press add")]
-        public void WhenIPressAdd()
+        [When(@"the (.*) attempts to login with valid credentials")]
+        public void WhenIndividualLogsInWithValidCredentials(string role)
         {
-            //TODO: implement act (action) logic
-
-            context.Pending();
+            var username = _context.TestSettings.UserAccounts.FirstOrDefault(c => c.Role == role)?.Username;            
+            _loginPage.Logon(username, _context.TestSettings.Password);
         }
 
-        [Then("the result should be (.*) on the screen")]
-        public void ThenTheResultShouldBe(int result)
+        [Then(@"the Hearing List page is displayed")]
+        public void ThenTheHearingListPageIsDisplayed()
         {
-            //TODO: implement assert (verification) logic
-
-            context.Pending();
+            _hearingListPage.HearingListUrl();
         }
+
     }
 }

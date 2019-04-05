@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using RestSharp;
 using Testing.Common.Helpers;
+using VideoWeb.AcceptanceTests.Configuration;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.Services.Bookings;
-using TestSettings = VideoWeb.AcceptanceTests.Configuration.TestSettings;
+using VideoWeb.Services.Video;
+using TestSettings = Testing.Common.Configuration.TestSettings;
 
 namespace VideoWeb.AcceptanceTests.Contexts
 {
@@ -12,16 +15,20 @@ namespace VideoWeb.AcceptanceTests.Contexts
     {
         public RestRequest Request { get; set; }
         public IRestResponse Response { get; set; }
-        public List<RestRequest> Requests { get; set; }
-        public List<BookNewHearingRequest> RequestBodys { get; set; }
-        public List<IRestResponse> Responses { get; set; }
+        public BookNewHearingRequest RequestBody { get; set; }
+        public IRestResponse Responses { get; set; }
         public string BookingsApiBearerToken { get; set; }
         public string VideoApiBearerToken { get; set; }
         public string BookingsApiBaseUrl { get; set; }
         public string VideoApiBaseUrl { get; set; }
-        public List<string> Json { get; set; }
-        public List<HearingDetailsResponse> Hearings { get; set; }
+        public string VideoWebUrl { get; set; }
+        public string Json { get; set; }
+        public HearingDetailsResponse Hearing { get; set; }
+        public Guid? NewHearingId { get; set; }
+        public ConferenceDetailsResponse Conference { get; set; }
+        public Guid? NewConferenceId { get; set; }
         public TestSettings TestSettings { get; set; }
+        public SeleniumEnvironment Environment { get; set; }
 
         public UserAccount GetJudgeUser()
         {
