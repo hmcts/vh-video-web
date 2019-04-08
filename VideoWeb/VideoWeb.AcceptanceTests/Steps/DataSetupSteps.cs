@@ -36,12 +36,20 @@ namespace VideoWeb.AcceptanceTests.Steps
             GivenIHaveAHearing();
             GivenIHaveAConference();
         }
+        
+        [Given(@"I have a hearing and a conference in (.*) minutes time")]
+        public void GivenIHaveAHearingAndAConferenceInMinutesTime(int minutes)
+        {
+            GivenIHaveAHearing(minutes);
+            GivenIHaveAConference();
+            _context.DelayedStartTime = minutes;
+        }
 
         [Given(@"I have a hearing")]
-        public void GivenIHaveAHearing()
+        public void GivenIHaveAHearing(int minutes = 0)
         {
             var request = new CreateHearingRequest();
-            _context.RequestBody = request.WithRandomCaseName().BuildRequest();
+            _context.RequestBody = request.BuildRequest();
 
             var participants = new List<ParticipantRequest>();
 
@@ -56,7 +64,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             AddJudgeParticipant(judge, participants);
 
             _context.RequestBody.Participants = participants;
-            _context.RequestBody.Scheduled_date_time = DateTime.Now;
+            _context.RequestBody.Scheduled_date_time = DateTime.Now.AddMinutes(minutes);
             _context.RequestBody.Scheduled_duration = HearingDuration;
             _context.Request = _context.Post(_bookingEndpoints.BookNewHearing(), _context.RequestBody);
 

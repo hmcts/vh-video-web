@@ -14,14 +14,16 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly TestContext _context;
         private readonly MicrosoftLoginPage _loginPage;
         private readonly HearingListPage _hearingListPage;
+        private readonly CommonPages _commonPageElements;
 
         public LoginSteps(BrowserContext browserContext, TestContext context, 
-            MicrosoftLoginPage loginPage, HearingListPage hearingListPage)
+            MicrosoftLoginPage loginPage, HearingListPage hearingListPage, CommonPages commonPageElements)
         {
             _browserContext = browserContext;
             _context = context;
             _loginPage = loginPage;
             _hearingListPage = hearingListPage;
+            _commonPageElements = commonPageElements;
         }
 
         [Given(@"the user is on the login page")]
@@ -36,14 +38,16 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the (.*) attempts to login with valid credentials")]
         public void WhenIndividualLogsInWithValidCredentials(string role)
         {
-            var username = _context.TestSettings.UserAccounts.FirstOrDefault(c => c.Role == role)?.Username;            
-            _loginPage.Logon(username, _context.TestSettings.Password);
+            _context.CurrenUser = role.Contains("with no hearings") ? _context.TestSettings.UserAccounts.LastOrDefault(c => c.Role == role.Split(" ")[0]) : _context.TestSettings.UserAccounts.FirstOrDefault(c => c.Role == role);
+            if (_context.CurrenUser != null)
+                _loginPage.Logon(_context.CurrenUser.Username, _context.TestSettings.Password);
         }
 
         [Then(@"the Hearing List page is displayed")]
         public void ThenTheHearingListPageIsDisplayed()
         {
             _hearingListPage.HearingListUrl();
+            _browserContext.NgDriver.WaitUntilElementVisible(_commonPageElements.SignOutLink).Displayed.Should().BeTrue();
         }
 
     }

@@ -13,14 +13,11 @@ namespace VideoWeb.AcceptanceTests.Pages
             _context = browserContext;
         }
 
-        private By _usernameTextfield => By.CssSelector("#i0116");
-        private By _passwordfield => By.XPath("//input[contains(@data-bind,'password')]");
-        private By _next => By.XPath("//input[contains(@data-bind,'Next') and (@value='Next')]");
-        private By _signIn => By.XPath("//input[contains(@data-bind,'SignIn') and (@value='Sign in')]");
-        private By _noButton => By.XPath("//input[contains(@data-bind,'Splitter') and (@value='No')]");
-        //private By _pageTitle => By.XPath("//*[@class='govuk-heading-l']");
-        //private By _startNowButton => By.XPath("//*[@type='button']");
-        //private By _loginBanner => By.Id("//*[@id='otherTileText']");
+        private static By UsernameTextfield => By.CssSelector("#i0116");
+        private static By Passwordfield => By.XPath("//input[contains(@data-bind,'password')]");
+        private static By Next => By.XPath("//input[contains(@data-bind,'Next') and (@value='Next')]");
+        private static By SignIn => By.XPath("//input[contains(@data-bind,'SignIn') and (@value='Sign in')]");
+        private static By NoButton => By.XPath("//input[contains(@data-bind,'Splitter') and (@value='No')]");
 
         public void Logon(string participantUsername, string password)
         {
@@ -34,21 +31,21 @@ namespace VideoWeb.AcceptanceTests.Pages
         public void EnterUsername(string username)
         {
             Console.WriteLine($"Logging in as {username}");
-            _context.NgDriver.WaitUntilElementVisible(_usernameTextfield).Clear();
-            _context.NgDriver.WaitUntilElementVisible(_usernameTextfield).SendKeys(username);
+            _context.NgDriver.WaitUntilElementVisible(UsernameTextfield).Clear();
+            _context.NgDriver.WaitUntilElementVisible(UsernameTextfield).SendKeys(username);
         }
 
         public void EnterPassword(string password)
         {
             var maskedPassword = new string('*', (password ?? string.Empty).Length);
             Console.WriteLine($"Using password {maskedPassword}");
-            _context.NgDriver.WaitUntilElementVisible(_passwordfield).Clear();
-            _context.NgDriver.WaitUntilElementVisible(_passwordfield).SendKeys(password);
+            _context.NgDriver.WaitUntilElementVisible(Passwordfield).Clear();
+            _context.NgDriver.WaitUntilElementVisible(Passwordfield).SendKeys(password);
         }
 
-        public void NextButton() => _context.NgDriver.WaitUntilElementVisible(_next).Click();
-        public void SignInButton() => _context.NgDriver.WaitUntilElementVisible(_signIn).Click();
-        public void DontStaySignedIn() => _context.NgDriver.WaitUntilElementVisible(_noButton).Click();
+        public void NextButton() => _context.NgDriver.WaitUntilElementVisible(Next).Click();
+        public void SignInButton() => _context.NgDriver.WaitUntilElementVisible(SignIn).Click();
+        public void DontStaySignedIn() => _context.NgDriver.WaitUntilElementVisible(NoButton).Click();
         public void SignInTitle()
         {
             _context.Retry(() => _context.NgDriver.Title.Trim().Should().Be("Sign in to your account"));
