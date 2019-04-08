@@ -1,4 +1,5 @@
 ﻿using TechTalk.SpecFlow;
+using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 
