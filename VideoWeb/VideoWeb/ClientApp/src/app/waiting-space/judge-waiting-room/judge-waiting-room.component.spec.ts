@@ -70,7 +70,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
   });
 
   it('should update conference status', () => {
-    const conferenceStatus = ConferenceStatus.InSession;
+    const conferenceStatus = ConferenceStatus.In_Session;
     component.handleHearingStatusChange(conferenceStatus);
     expect(component.conference.status).toBe(conferenceStatus);
   });
@@ -98,12 +98,12 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
   });
 
   it('should return correct conference status text when in session', () => {
-    component.conference.status = ConferenceStatus.InSession;
+    component.conference.status = ConferenceStatus.In_Session;
     expect(component.getConferenceStatusText()).toBe('');
   });
 
   it('should return correct conference status text when not started', () => {
-    component.conference.status = ConferenceStatus.NotStarted;
+    component.conference.status = ConferenceStatus.Not_Started;
     expect(component.getConferenceStatusText()).toBe('Start the hearing');
   });
 
@@ -113,17 +113,17 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
   });
 
   it('should return false when conference is not paused', () => {
-    component.conference.status = ConferenceStatus.InSession;
+    component.conference.status = ConferenceStatus.In_Session;
     expect(component.isPaused()).toBeFalsy();
   });
 
   it('should return true when conference is not started', () => {
-    component.conference.status = ConferenceStatus.NotStarted;
+    component.conference.status = ConferenceStatus.Not_Started;
     expect(component.isNotStarted()).toBeTruthy();
   });
 
   it('should return false when conference is has started', () => {
-    component.conference.status = ConferenceStatus.InSession;
+    component.conference.status = ConferenceStatus.In_Session;
     expect(component.isNotStarted()).toBeFalsy();
   });
 

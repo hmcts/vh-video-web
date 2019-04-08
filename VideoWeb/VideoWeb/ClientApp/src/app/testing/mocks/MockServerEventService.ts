@@ -14,7 +14,7 @@ export class MockServerSentEventsService {
 
   constructor() {
     this.nextParticipantStatusMessage = new ParticipantStatusMessage('chris.green@hearings.net', ParticipantStatus.Available);
-    this.nextHearingStatusMessage = new ConferenceStatusMessage('612AB52C-BDA5-4F4D-95B8-3F49065219A6', ConferenceStatus.InSession);
+    this.nextHearingStatusMessage = new ConferenceStatusMessage('612AB52C-BDA5-4F4D-95B8-3F49065219A6', ConferenceStatus.In_Session);
     this.nextHelpMessage = new HelpMessage('612AB52C-BDA5-4F4D-95B8-3F49065219A6', 'chris.green@hearings.net');
     this.nextConsultationMessage = new ConsultationMessage('612AB52C-BDA5-4F4D-95B8-3F49065219A6', 'chris.green@hearings.net',
       'james.green@hearings.net', null);

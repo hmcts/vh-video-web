@@ -94,12 +94,12 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
   });
 
   it('should return correct conference status text when in session', () => {
-    component.conference.status = ConferenceStatus.InSession;
+    component.conference.status = ConferenceStatus.In_Session;
     expect(component.getConferenceStatusText()).toBe('');
   });
 
   it('should return correct conference status text when not started', () => {
-    component.conference.status = ConferenceStatus.NotStarted;
+    component.conference.status = ConferenceStatus.Not_Started;
     expect(component.getConferenceStatusText()).toBe('');
   });
 
@@ -109,7 +109,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
   });
 
   it('should return false when conference is not closed', () => {
-    component.conference.status = ConferenceStatus.InSession;
+    component.conference.status = ConferenceStatus.In_Session;
     expect(component.isClosed()).toBeFalsy();
   });
 
@@ -119,7 +119,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
   });
 
   it('should return false when conference is not paused', () => {
-    component.conference.status = ConferenceStatus.InSession;
+    component.conference.status = ConferenceStatus.In_Session;
     expect(component.isPaused()).toBeFalsy();
   });
 
@@ -140,7 +140,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
   it('should show video stream when conference is in session', () => {
     component.connected = true;
-    component.conference.status = ConferenceStatus.InSession;
+    component.conference.status = ConferenceStatus.In_Session;
     expect(component.showVideo()).toBeTruthy();
   });
 

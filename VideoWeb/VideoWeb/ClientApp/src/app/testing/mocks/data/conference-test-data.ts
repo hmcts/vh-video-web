@@ -74,7 +74,7 @@ export class ConferenceTestData {
             case_type: 'Financial Tax Remedy',
             scheduled_date_time: futureDate,
             scheduled_duration: 45,
-            status: ConferenceStatus.NotStarted,
+            status: ConferenceStatus.Not_Started,
             participants: participants,
             admin_i_frame_uri: 'adminiframe@kinly..com',
             judge_i_frame_uri: 'judgeiframe@kinly..com',

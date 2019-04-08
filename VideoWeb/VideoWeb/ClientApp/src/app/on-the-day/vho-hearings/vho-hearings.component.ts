@@ -17,7 +17,7 @@ export class VhoHearingsComponent implements OnInit {
   conferences: ConferenceForUserResponse[];
   selectedConference: ConferenceResponse;
   loadingData: boolean;
-  interval: any;
+  interval: NodeJS.Timer;
 
   constructor(
     private videoWebService: VideoWebService,
@@ -82,7 +82,7 @@ export class VhoHearingsComponent implements OnInit {
 
     this.eventService.getConsultationMessage().subscribe(message => {
       this.ngZone.run(() => {
-        this.handleConsultationMessage(message)
+        this.handleConsultationMessage(message);
       });
     });
 

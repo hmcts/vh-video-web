@@ -46,7 +46,7 @@ export class JudgeWaitingRoomComponent implements OnInit {
 
   getConferenceStatusText() {
     switch (this.conference.status) {
-      case ConferenceStatus.NotStarted: return 'Start the hearing';
+      case ConferenceStatus.Not_Started: return 'Start the hearing';
       case ConferenceStatus.Suspended: return 'Resume the hearing';
       case ConferenceStatus.Paused: return 'Resume the hearing';
       case ConferenceStatus.Closed: return 'Hearing is closed';
@@ -55,7 +55,7 @@ export class JudgeWaitingRoomComponent implements OnInit {
   }
 
   isNotStarted(): boolean {
-    return this.conference.status === ConferenceStatus.NotStarted;
+    return this.conference.status === ConferenceStatus.Not_Started;
   }
 
   isPaused(): boolean {
