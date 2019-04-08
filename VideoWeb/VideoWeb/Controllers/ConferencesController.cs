@@ -94,7 +94,7 @@ namespace VideoWeb.Controllers
                 }
             }
 
-            var username = User.Identity.Name;
+            var username = User.Identity.Name.ToLower().Trim();
             if (conference.Participants.All(x => x.Username != username))
             {
                 return Unauthorized();
