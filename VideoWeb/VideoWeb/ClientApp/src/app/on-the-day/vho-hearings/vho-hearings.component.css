@@ -12,6 +12,7 @@
     background: #ffbf47;
 }
 
-.govuk-width-container {
-    margin: 0px !important;
+/deep/ #master-container{
+    margin-left: 10px !important;
+    margin-right: 10px !important;
 }

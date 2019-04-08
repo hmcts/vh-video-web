@@ -3,11 +3,11 @@
 </div>
 
 <div *ngIf="!loadingData && hasHearings()" class="govuk-grid-row">
-  <div class="govuk-grid-column-one-half">
-    <dl class="govuk-summary-list">
+  <div id="list-column" class="govuk-grid-column-one-half">
+    <dl id="conferences-list" class="govuk-summary-list">
       <div class="govuk-summary-list__row" [class.selected-conference]="isCurrentConference(conference)"
         *ngFor="let conference of conferences" (click)="displayAdminViewForConference(conference)">
-        <dd class="govuk-summary-list__value">
+        <dd class="govuk-summary-list__value govuk-!-padding-left-4">
           {{ conference.scheduled_date_time | date: "HH:mm" }} <br />
           <span id="with-hint-hint" class="govuk-hint">
             {{ getDuration(conference.scheduled_duration) }}
@@ -28,8 +28,8 @@
   </div>
 
   <div class="govuk-grid-column-one-half">
-    <iframe *ngIf="selectedConferenceUrl" width="900" height="800" [src]='selectedConferenceUrl' allowfullscreen
-      frameborder="0" webkitallowfullscreen mozallowfullscreen>
+    <iframe id="admin-frame" *ngIf="selectedConferenceUrl" [width]='adminFrameWidth' height="800"
+      [src]='selectedConferenceUrl' allowfullscreen frameborder="0" webkitallowfullscreen mozallowfullscreen>
     </iframe>
   </div>
 </div>

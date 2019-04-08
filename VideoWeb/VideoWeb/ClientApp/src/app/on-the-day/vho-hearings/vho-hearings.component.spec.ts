@@ -11,6 +11,7 @@ import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockServerSentEventsService } from 'src/app/testing/mocks/MockServerEventService';
 import { VhoHearingsComponent } from './vho-hearings.component';
+import { ConferenceResponse } from 'src/app/services/clients/api-client';
 
 
 describe('VhoHearingsComponent', () => {
@@ -71,5 +72,22 @@ describe('VhoHearingsComponent', () => {
   it('should return only minutes', () => {
     const result = component.getDuration(25);
     expect(result).toBe('25 minutes');
+  });
+
+  it('should return true when current conference is selected', () => {
+    const currentConference = conferences[0];
+    component.selectedConference = new ConferenceResponse({ id: currentConference.id });
+    expect(component.isCurrentConference(currentConference)).toBeTruthy();
+  });
+
+  it('should return false when current conference null', () => {
+    const currentConference = conferences[0];
+    expect(component.isCurrentConference(currentConference)).toBeFalsy();
+  });
+
+  it('should return false when current conference is different', () => {
+    const currentConference = conferences[0];
+    component.selectedConference = new ConferenceResponse({ id: conferences[1].id });
+    expect(component.isCurrentConference(currentConference)).toBeFalsy();
   });
 });

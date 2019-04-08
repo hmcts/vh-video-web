@@ -1,10 +1,10 @@
-import { Component, OnInit, NgZone } from '@angular/core';
-import { VideoWebService } from 'src/app/services/video-web.service';
-import { ConferenceForUserResponse, ConferenceResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
+import { Component, HostListener, NgZone, OnInit } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { ServerSentEventsService } from 'src/app/services/server-sent-events.service';
+import { ConferenceForUserResponse, ConferenceResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { HelpMessage } from 'src/app/services/models/help-message';
+import { ServerSentEventsService } from 'src/app/services/server-sent-events.service';
+import { VideoWebService } from 'src/app/services/video-web.service';
 
 @Component({
   selector: 'app-vho-hearings',
@@ -17,7 +17,13 @@ export class VhoHearingsComponent implements OnInit {
   conferences: ConferenceForUserResponse[];
   selectedConference: ConferenceResponse;
   loadingData: boolean;
+  adminFrameWidth: number;
   interval: NodeJS.Timer;
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.adminFrameWidth = this.getWidthForFrame();
+  }
 
   constructor(
     private videoWebService: VideoWebService,
@@ -26,10 +32,11 @@ export class VhoHearingsComponent implements OnInit {
     public sanitizer: DomSanitizer
   ) {
     this.loadingData = true;
+    this.adminFrameWidth = 0;
   }
 
   ngOnInit() {
-    this.setupSubscribers();
+    // this.setupSubscribers();
     this.retrieveHearingsForUser();
     this.interval = setInterval(() => {
       this.retrieveHearingsForUser();
@@ -51,8 +58,7 @@ export class VhoHearingsComponent implements OnInit {
   }
 
   displayAdminViewForConference(conference: ConferenceForUserResponse) {
-    const loadConference = this.selectedConference == null || this.selectedConference.id !== conference.id;
-    if (loadConference) {
+    if (!this.isCurrentConference(conference)) {
       this.videoWebService.getConferenceById(conference.id)
         .subscribe((data: ConferenceResponse) => {
           this.selectedConference = data;
@@ -63,6 +69,14 @@ export class VhoHearingsComponent implements OnInit {
 
   isSuspended(conference: ConferenceResponse): boolean {
     return conference.status === ConferenceStatus.Suspended;
+  }
+
+  getWidthForFrame(): number {
+    const listColumnElement: HTMLElement = document.getElementById('list-column');
+    const listWidth = listColumnElement.offsetWidth;
+    const windowWidth = window.innerWidth;
+    const frameWidth = windowWidth - listWidth - 30;
+    return frameWidth;
   }
 
   getDuration(duration: number): string {
@@ -83,6 +97,7 @@ export class VhoHearingsComponent implements OnInit {
 
   private sanitiseAndLoadIframe() {
     const adminUri = this.selectedConference.admin_i_frame_uri;
+    this.adminFrameWidth = this.getWidthForFrame();
     this.selectedConferenceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
       adminUri
     );
