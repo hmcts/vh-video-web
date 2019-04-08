@@ -1,15 +1,13 @@
 <div>
-  <a href="#main-content" class="govuk-skip-link">Skip to main content</a>
 
   <app-header [loggedIn]="loggedIn"></app-header>
 
-  <div class="govuk-width-container vh-content">
-
-    <main class="govuk-main-wrapper" id="main-content" role="main">
-      <router-outlet></router-outlet>
-    </main>
+  <div class="govuk-width-container">
+    <router-outlet class="govuk-main-wrapper" id="main-content" role="main"></router-outlet>
   </div>
-</div>
-<div>
-  <app-footer></app-footer>
+
+  <div>
+    <app-footer></app-footer>
+  </div>
+
 </div>
