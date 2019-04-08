@@ -1,6 +1,6 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { VideoWebService } from 'src/app/services/video-web.service';
-import { ConferenceForUserResponse, ConferenceResponse } from 'src/app/services/clients/api-client';
+import { ConferenceForUserResponse, ConferenceResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ServerSentEventsService } from 'src/app/services/server-sent-events.service';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
@@ -51,11 +51,18 @@ export class VhoHearingsComponent implements OnInit {
   }
 
   displayAdminViewForConference(conference: ConferenceForUserResponse) {
-    this.videoWebService.getConferenceById(conference.id)
-      .subscribe((data: ConferenceResponse) => {
-        this.selectedConference = data;
-        this.sanitiseAndLoadIframe();
-      });
+    const loadConference = this.selectedConference == null || this.selectedConference.id !== conference.id;
+    if (loadConference) {
+      this.videoWebService.getConferenceById(conference.id)
+        .subscribe((data: ConferenceResponse) => {
+          this.selectedConference = data;
+          this.sanitiseAndLoadIframe();
+        });
+    }
+  }
+
+  isSuspended(conference: ConferenceResponse): boolean {
+    return conference.status === ConferenceStatus.Suspended;
   }
 
   getDuration(duration: number): string {
@@ -68,6 +75,10 @@ export class VhoHearingsComponent implements OnInit {
     } else {
       return `${minutes}`;
     }
+  }
+
+  isCurrentConference(conference: ConferenceForUserResponse): boolean {
+    return this.selectedConference != null && this.selectedConference.id === conference.id;
   }
 
   private sanitiseAndLoadIframe() {

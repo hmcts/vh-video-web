@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { ParticipantWaitingRoomComponent } from './participant-waiting-room.component';
-import { ParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
-import { RouterTestingModule } from '@angular/router/testing';
-import { SharedModule } from 'src/app/shared/shared.module';
-import { VideoWebService } from 'src/app/services/video-web.service';
-import { of, throwError } from 'rxjs';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { ConferenceResponse, ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
+import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
-import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
+import { of, throwError } from 'rxjs';
+import { ConferenceResponse, ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ConfigService } from 'src/app/services/config.service';
 import { ServerSentEventsService } from 'src/app/services/server-sent-events.service';
+import { VideoWebService } from 'src/app/services/video-web.service';
+import { SharedModule } from 'src/app/shared/shared.module';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
+import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockServerSentEventsService } from 'src/app/testing/mocks/MockServerEventService';
+import { ParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
+import { ParticipantWaitingRoomComponent } from './participant-waiting-room.component';
+
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
   let component: ParticipantWaitingRoomComponent;

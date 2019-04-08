@@ -3,11 +3,10 @@
 </div>
 
 <div *ngIf="!loadingData && hasHearings()" class="govuk-grid-row">
-  <h1 class="govuk-heading-xl">Video hearings</h1>
-
   <div class="govuk-grid-column-one-half">
     <dl class="govuk-summary-list">
-      <div class="govuk-summary-list__row" *ngFor="let conference of conferences">
+      <div class="govuk-summary-list__row" [class.selected-conference]="isCurrentConference(conference)"
+        *ngFor="let conference of conferences" (click)="displayAdminViewForConference(conference)">
         <dd class="govuk-summary-list__value">
           {{ conference.scheduled_date_time | date: "HH:mm" }} <br />
           <span id="with-hint-hint" class="govuk-hint">
@@ -21,7 +20,7 @@
           </strong>
           <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3">
             <span class="govuk-!-padding-2"
-              style="background-color: #005ea5; color: white">{{ conference.status }}</span>
+              [ngClass]="[ isSuspended(conference) ? 'conference-problem' : 'conference-okay']">{{ conference.status }}</span>
           </div>
         </dd>
       </div>
@@ -30,32 +29,9 @@
 
   <div class="govuk-grid-column-one-half">
     <iframe *ngIf="selectedConferenceUrl" width="900" height="800" [src]='selectedConferenceUrl' allowfullscreen
-      frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen>
+      frameborder="0" webkitallowfullscreen mozallowfullscreen>
     </iframe>
   </div>
-
-
-  <!-- <div *ngFor="let conference of conferences" class="govuk-grid-row">
-    <div class="govuk-grid-column-one-half">
-
-      <div class="govuk-grid-column-one-half govuk-body-s">
-        {{ conference.scheduled_date_time | date: "dd MMM yyyy" }} <br />
-        <span id="with-hint-hint" class="govuk-hint">
-          {{ getDuration(conference.scheduled_duration) }}
-        </span>
-      </div>
-      
-      <div class="govuk-grid-column-one-half govuk-body-s">
-        <strong>
-          {{ conference.case_number }} <br />
-          {{ conference.case_name }}
-        </strong>
-        <div class="govuk-!-margin-top-3">
-          <span class="govuk-!-padding-2" style="background-color: #005ea5; color: white">{{ conference.status }}</span>
-        </div>
-      </div>
-    </div>
-  </div> -->
 </div>
 
 <div *ngIf="!loadingData && !hasHearings()">

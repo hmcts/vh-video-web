@@ -1,7 +1,17 @@
-.conferenceproblem {
-    color: #b10e1e
+.conference-problem {
+    background-color: #b10e1e;
+    color: #fff;
 }
 
-.conferenceokay {
-    color: #005ea5
+.conference-okay {
+    background-color: #005ea5;
+    color: #fff;
+}
+
+.selected-conference {
+    background: #ffbf47;
+}
+
+.govuk-width-container {
+    margin: 0px !important;
 }
