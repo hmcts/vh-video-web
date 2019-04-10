@@ -4,8 +4,9 @@ using FluentAssertions;
 using OpenQA.Selenium;
 using Polly;
 using Protractor;
+using VideoWeb.AcceptanceTests.Helpers;
 
-namespace VideoWeb.AcceptanceTests.Helpers
+namespace VideoWeb.AcceptanceTests.Contexts
 {
     public class BrowserContext
     {
@@ -68,11 +69,12 @@ namespace VideoWeb.AcceptanceTests.Helpers
         {
             Policy
                 .Handle<Exception>()
-                .WaitAndRetry(times, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
+                .WaitAndRetry(times, retryAttempt => TimeSpan.FromSeconds(Math.Pow(5, retryAttempt)))
                 .Execute(action);
+
         }
 
-        public void WaitForAngular() => ((NgWebDriver)NgDriver).WaitForAngular();
+        public void WaitForAngular() => NgDriver.WaitForAngular();
 
         public void SwitchTab()
         {
@@ -80,7 +82,6 @@ namespace VideoWeb.AcceptanceTests.Helpers
             {
                 var originalTabPageTitle = PageTitle.Trim();
                 var getAllWindowHandles = NgDriver.WindowHandles;
-                var originalWindow = NgDriver.CurrentWindowHandle;
                 foreach (var windowHandle in getAllWindowHandles)
                 {
                     NgDriver.SwitchTo().Window(windowHandle);
@@ -95,7 +96,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 Console.WriteLine($"Cannot switch to the main window:  {ex}");
             }
         }
-        private By _pageTitle = By.XPath("//h1[@class='govuk-heading-l']");
+        private readonly By _pageTitle = By.XPath("//h1[@class='govuk-heading-l']");
         public void ValidatePage(string url, string pageTitle, By webelement = null)
         {
             if (webelement == null)
@@ -120,7 +121,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
     internal class ContextItems
     {
-        private ConcurrentDictionary<string, dynamic> _items;
+        private readonly ConcurrentDictionary<string, dynamic> _items;
         private readonly BrowserContext _context;
 
         public ContextItems(BrowserContext context)

@@ -8,7 +8,6 @@ namespace Testing.Common.Builders
 {
     public class CreateHearingRequest
     {
-        private static string _caseName;
         private readonly Random _fromRandomNumber;
 
         public CreateHearingRequest()
@@ -30,12 +29,6 @@ namespace Testing.Common.Builders
                 .With(x => x.Hearing_room_name = "Room 1")
                 .With(x => x.Other_information = "Other information")
                 .Build();
-        }
-
-        public CreateHearingRequest WithRandomCaseName()
-        {
-            _caseName = $"Automated Test Hearing {GenerateRandom.Letters(_fromRandomNumber)}";
-            return this;
         }
     }
 }

@@ -1,43 +1,34 @@
 ﻿using TechTalk.SpecFlow;
+using VideoWeb.AcceptanceTests.Contexts;
+using VideoWeb.AcceptanceTests.Helpers;
+using VideoWeb.AcceptanceTests.Pages;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
     public sealed class LogoutSteps
     {
-        private readonly ScenarioContext context;
+        private readonly BrowserContext _browserContext;
+        private readonly CommonPages _commonPages;
+        private readonly MicrosoftLoginPage _loginPage;
 
-        public LogoutSteps(ScenarioContext injectedContext)
+        public LogoutSteps(BrowserContext browserContext, CommonPages commonPages, MicrosoftLoginPage loginPage)
         {
-            context = injectedContext;
+            _browserContext = browserContext;
+            _commonPages = commonPages;
+            _loginPage = loginPage;
         }
 
-        [Given("I have entered (.*) into the calculator")]
-        public void GivenIHaveEnteredSomethingIntoTheCalculator(int number)
+        [When(@"the user attempts to logout")]
+        public void WhenTheUserAttemptsToLogout()
         {
-            //TODO: implement arrange (precondition) logic
-            // For storing and retrieving scenario-specific data see https://go.specflow.org/doc-sharingdata 
-            // To use the multiline text or the table argument of the scenario,
-            // additional string/Table parameters can be defined on the step definition
-            // method. 
-
-            context.Pending();
+            _browserContext.NgDriver.WaitUntilElementClickable(_commonPages.SignOutLink).Click();            
         }
 
-        [When("I press add")]
-        public void WhenIPressAdd()
+        [Then(@"the user should be navigated to sign in screen")]
+        public void ThenTheUserShouldBeNavigatedToSignInScreen()
         {
-            //TODO: implement act (action) logic
-
-            context.Pending();
-        }
-
-        [Then("the result should be (.*) on the screen")]
-        public void ThenTheResultShouldBe(int result)
-        {
-            //TODO: implement assert (verification) logic
-
-            context.Pending();
+            _loginPage.SignInTitle();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using VideoWeb.Common.Configuration;
 
@@ -12,6 +13,7 @@ namespace Testing.Common.Configuration
         {
             var configRootBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
+                .AddJsonFile("useraccounts.json")
                 .AddUserSecrets("CA353381-2F0D-47D7-A97B-79A30AFF8B86");
             _configRoot = configRootBuilder.Build();
         }
@@ -25,6 +27,12 @@ namespace Testing.Common.Configuration
         public TestSettings ReadTestSettings()
         {
             var testSettingsOptions = Options.Create(_configRoot.GetSection("Testing").Get<TestSettings>());
+            return testSettingsOptions.Value;
+        }
+
+        public List<UserAccount> ReadUserAccountSettings()
+        {
+            var testSettingsOptions = Options.Create(_configRoot.GetSection("UserAccounts").Get<List<UserAccount>>());
             return testSettingsOptions.Value;
         }
 

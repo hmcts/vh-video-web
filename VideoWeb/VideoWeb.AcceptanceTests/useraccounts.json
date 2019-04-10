@@ -1,0 +1,132 @@
+﻿{
+  "UserAccounts": [
+    {
+      "Role": "Video hearings officer",
+      "Firstname": "Automation01",
+      "Lastname": "VideoHearingsOfficer01",
+      "Displayname": "Automation01 VideoHearingsOfficer01",
+      "AlternativeEmail": "a40@a.com"
+    },
+    {
+      "Role": "Case admin",
+      "Firstname": "Automation01",
+      "Lastname": "CaseAdmin01",
+      "Displayname": "Automation01 CaseAdmin01",
+      "AlternativeEmail": "a41@a.com"
+    },
+    {
+      "Role": "Individual",
+      "Firstname": "Automation01",
+      "Lastname": "Individual01",
+      "Displayname": "Automation01 Individual01",
+      "AlternativeEmail": "a42@a.com",
+      "CaseRoleName": "Claimant",
+      "HearingRoleName": "Claimant LIP",
+      "SolicitorsReference": "Automation01 Representative01"
+    },
+    {
+      "Role": "Individual",
+      "Firstname": "Automation01",
+      "Lastname": "Individual02",
+      "Displayname": "Automation01 Individual02",
+      "AlternativeEmail": "a43@a.com",
+      "CaseRoleName": "Defendant",
+      "HearingRoleName": "Defendant LIP",
+      "SolicitorsReference": "Automation01 Representative02"
+    },
+    {
+      "Role": "Individual",
+      "Firstname": "Automation01",
+      "Lastname": "Individual03",
+      "Displayname": "Automation01 Individual03",
+      "AlternativeEmail": "a44@a.com",
+      "CaseRoleName": "Applicant",
+      "HearingRoleName": "Applicant LIP",
+      "SolicitorsReference": "Automation01 Representative03"
+    },
+    {
+      "Role": "Individual",
+      "Firstname": "Automation01",
+      "Lastname": "Individual04",
+      "Displayname": "Automation01 Individual04",
+      "AlternativeEmail": "a45@a.com",
+      "CaseRoleName": "Respondent",
+      "HearingRoleName": "Respondent LIP",
+      "SolicitorsReference": "Automation01 Representative04"
+    },
+    {
+      "Role": "Individual",
+      "Firstname": "Automation01",
+      "Lastname": "Individual05",
+      "Displayname": "Automation01 Individual05",
+      "AlternativeEmail": "a52@a.com",
+      "CaseRoleName": "Respondent",
+      "HearingRoleName": "Respondent LIP",
+      "SolicitorsReference": "Automation01 Representative04"
+    },
+    {
+      "Role": "Clerk",
+      "Firstname": "Automation01",
+      "Lastname": "Clerk01",
+      "Displayname": "Automation01 Clerk01",
+      "AlternativeEmail": "a46@a.com"
+    },
+    {
+      "Role": "Judge",
+      "Firstname": "Automation01",
+      "Lastname": "Judge01",
+      "Displayname": "Automation01 Judge01",
+      "AlternativeEmail": "a47@a.com"
+    },
+    {
+      "Role": "Representative",
+      "Firstname": "Automation01",
+      "Lastname": "Representative01",
+      "Displayname": "Automation01 Representative01",
+      "AlternativeEmail": "a48@a.com",
+      "CaseRoleName": "Claimant",
+      "HearingRoleName": "Solicitor",
+      "Representee": "Automation01 Individual01"
+    },
+    {
+      "Role": "Representative",
+      "Firstname": "Automation01",
+      "Lastname": "Representative02",
+      "Displayname": "Automation01 Representative02",
+      "AlternativeEmail": "a49@a.com",
+      "CaseRoleName": "Defendant",
+      "HearingRoleName": "Solicitor",
+      "Representee": "Automation01 Individual02"
+    },
+    {
+      "Role": "Representative",
+      "Firstname": "Automation01",
+      "Lastname": "Representative03",
+      "Displayname": "Automation01 Representative03",
+      "AlternativeEmail": "a50@a.com",
+      "CaseRoleName": "Applicant",
+      "HearingRoleName": "Solicitor",
+      "Representee": "Automation01 Individual03"
+    },
+    {
+      "Role": "Representative",
+      "Firstname": "Automation01",
+      "Lastname": "Representative04",
+      "Displayname": "Automation01 Representative04",
+      "AlternativeEmail": "a51@a.com",
+      "CaseRoleName": "Respondent",
+      "HearingRoleName": "Solicitor",
+      "Representee": "Automation01 Individual04"
+    },
+    {
+      "Role": "Representative",
+      "Firstname": "Automation01",
+      "Lastname": "Representative05",
+      "Displayname": "Automation01 Representative05",
+      "AlternativeEmail": "a53@a.com",
+      "CaseRoleName": "Respondent",
+      "HearingRoleName": "Solicitor",
+      "Representee": "Automation01 Individual04"
+    }
+  ]
+}

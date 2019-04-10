@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using RestSharp;
+using Testing.Common.Configuration;
 using Testing.Common.Helpers;
-using VideoWeb.AcceptanceTests.Configuration;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
@@ -23,6 +23,8 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public string VideoApiBaseUrl { get; set; }
         public string VideoWebUrl { get; set; }
         public string Json { get; set; }
+        public UserAccount CurrenUser { get; set; }
+        public int DelayedStartTime { get; set; }
         public HearingDetailsResponse Hearing { get; set; }
         public Guid? NewHearingId { get; set; }
         public ConferenceDetailsResponse Conference { get; set; }

@@ -37,7 +37,15 @@ namespace VideoWeb.AcceptanceTests.Hooks
         public void BeforeScenario(TestContext testContext)
         {
             var azureAdConfiguration = new BookingsConfigLoader().ReadAzureAdSettings();
+
             var testSettings = new BookingsConfigLoader().ReadTestSettings();
+            testSettings.UserAccounts = new BookingsConfigLoader().ReadUserAccountSettings();
+
+            foreach (var user in testSettings.UserAccounts)
+            {
+                user.Username = user.Displayname.Replace(" ", "") + testSettings.TestUsernameStem;
+            }
+
             var hearingServiceSettings = new BookingsConfigLoader().ReadHearingServiceSettings();
 
             testContext.BookingsApiBearerToken = new TokenProvider(Options.Create(azureAdConfiguration)).GetClientAccessToken(

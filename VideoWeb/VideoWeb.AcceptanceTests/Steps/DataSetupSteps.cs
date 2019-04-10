@@ -6,6 +6,7 @@ using FluentAssertions;
 using TechTalk.SpecFlow;
 using Testing.Common.Assertions;
 using Testing.Common.Builders;
+using Testing.Common.Configuration;
 using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Configuration;
 using VideoWeb.AcceptanceTests.Contexts;
@@ -36,12 +37,20 @@ namespace VideoWeb.AcceptanceTests.Steps
             GivenIHaveAHearing();
             GivenIHaveAConference();
         }
+        
+        [Given(@"I have a hearing and a conference in (.*) minutes time")]
+        public void GivenIHaveAHearingAndAConferenceInMinutesTime(int minutes)
+        {
+            GivenIHaveAHearing(minutes);
+            GivenIHaveAConference();
+            _context.DelayedStartTime = minutes;
+        }
 
         [Given(@"I have a hearing")]
-        public void GivenIHaveAHearing()
+        public void GivenIHaveAHearing(int minutes = 0)
         {
             var request = new CreateHearingRequest();
-            _context.RequestBody = request.WithRandomCaseName().BuildRequest();
+            _context.RequestBody = request.BuildRequest();
 
             var participants = new List<ParticipantRequest>();
 
@@ -56,7 +65,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             AddJudgeParticipant(judge, participants);
 
             _context.RequestBody.Participants = participants;
-            _context.RequestBody.Scheduled_date_time = DateTime.Now;
+            _context.RequestBody.Scheduled_date_time = DateTime.Now.AddMinutes(minutes);
             _context.RequestBody.Scheduled_duration = HearingDuration;
             _context.Request = _context.Post(_bookingEndpoints.BookNewHearing(), _context.RequestBody);
 
@@ -153,7 +162,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             participants.Add(new ParticipantRequest()
             {
                 Case_role_name = "Judge",
-                Contact_email = judge.Email,
+                Contact_email = judge.AlternativeEmail,
                 Display_name = judge.Displayname,
                 First_name = judge.Firstname,
                 Hearing_role_name = "Judge",
@@ -174,7 +183,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 var participant = new ParticipantRequest
                 {
                     Case_role_name = representativeUsers[j].CaseRoleName,
-                    Contact_email = representativeUsers[j].Email,
+                    Contact_email = representativeUsers[j].AlternativeEmail,
                     Display_name = representativeUsers[j].Displayname,
                     First_name = representativeUsers[j].Firstname,
                     Hearing_role_name = representativeUsers[j].HearingRoleName,
@@ -197,7 +206,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 var participant = new ParticipantRequest
                 {
                     Case_role_name = individualUsers[i].CaseRoleName,
-                    Contact_email = individualUsers[i].Email,
+                    Contact_email = individualUsers[i].AlternativeEmail,
                     Display_name = individualUsers[i].Displayname,
                     First_name = individualUsers[i].Firstname,
                     Hearing_role_name = individualUsers[i].HearingRoleName,
