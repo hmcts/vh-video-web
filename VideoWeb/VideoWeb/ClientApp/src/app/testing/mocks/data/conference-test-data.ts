@@ -1,5 +1,5 @@
 import {
-    ConferenceForUserResponse, ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus, UserRole
+    ConferenceForUserResponse, ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus, UserRole, ParticipantForUserResponse
 } from 'src/app/services/clients/api-client';
 
 export class ConferenceTestData {
@@ -14,7 +14,10 @@ export class ConferenceTestData {
             scheduled_date_time: currentDateTime,
             no_of_participants_available: 2,
             no_of_participants_unavailable: 1,
-            no_of_participants_in_consultation: 2
+            no_of_participants_in_consultation: 2,
+            scheduled_duration: 50,
+            status: ConferenceStatus.Not_Started,
+            participants: this.getListOfParticipants()
         });
 
         return conference;
@@ -31,7 +34,10 @@ export class ConferenceTestData {
             scheduled_date_time: pastDate,
             no_of_participants_available: 2,
             no_of_participants_unavailable: 1,
-            no_of_participants_in_consultation: 2
+            no_of_participants_in_consultation: 2,
+            scheduled_duration: 50,
+            status: ConferenceStatus.Not_Started,
+            participants: this.getListOfParticipants()
         });
         return conference;
     }
@@ -47,7 +53,10 @@ export class ConferenceTestData {
             scheduled_date_time: futureDate,
             no_of_participants_available: 2,
             no_of_participants_unavailable: 1,
-            no_of_participants_in_consultation: 2
+            no_of_participants_in_consultation: 2,
+            scheduled_duration: 50,
+            status: ConferenceStatus.Not_Started,
+            participants: this.getListOfParticipants()
         });
         return conference;
     }
@@ -83,6 +92,33 @@ export class ConferenceTestData {
         });
 
         return conference;
+    }
+
+    getListOfParticipants(): ParticipantForUserResponse[] {
+        const participants: ParticipantForUserResponse[] = [];
+
+        const participant1 = new ParticipantForUserResponse({
+            status: ParticipantStatus.Available,
+            display_name: 'Greeno',
+            username: 'chris.green@hearings.net',
+        });
+
+        const participant2 = new ParticipantForUserResponse({
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'James Green',
+            username: 'james.green@hearings.net'
+        });
+
+        const participant3 = new ParticipantForUserResponse({
+            status: ParticipantStatus.Available,
+            display_name: 'Judge Fudge',
+            username: 'judge.fudge@hearings.net'
+        });
+
+        participants.push(participant1);
+        participants.push(participant2);
+        participants.push(participant3);
+        return participants;
     }
 
     getListOfParticipantDetails(): ParticipantResponse[] {

@@ -5,21 +5,31 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { ParticipantStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
 import { AdalService } from 'adal-angular4';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
+import { SharedModule } from 'src/app/shared/shared.module';
+import { ConfigService } from 'src/app/services/config.service';
+import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
+import { MockServerSentEventsService } from 'src/app/testing/mocks/MockServerEventService';
+import { ServerSentEventsService } from 'src/app/services/server-sent-events.service';
 
 describe('ParticipantStatusListComponent', () => {
   let component: ParticipantStatusListComponent;
   let fixture: ComponentFixture<ParticipantStatusListComponent>;
   let adalService: MockAdalService;
+  let eventService: MockServerSentEventsService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [SharedModule],
       declarations: [ParticipantStatusListComponent],
       providers: [
         { provide: AdalService, useClass: MockAdalService },
+        { provide: ConfigService, useClass: MockConfigService },
+        { provide: ServerSentEventsService, useClass: MockServerSentEventsService }
       ]
     })
       .compileComponents();
     adalService = TestBed.get(AdalService);
+    eventService = TestBed.get(ServerSentEventsService);
   }));
 
   beforeEach(() => {
