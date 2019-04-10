@@ -1,5 +1,6 @@
 import {
-    ConferenceForUserResponse, ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus, UserRole, ParticipantForUserResponse
+    ConferenceForUserResponse, ConferenceResponse, ConferenceStatus,
+    ParticipantResponse, ParticipantStatus, UserRole, ParticipantForUserResponse
 } from 'src/app/services/clients/api-client';
 
 export class ConferenceTestData {
