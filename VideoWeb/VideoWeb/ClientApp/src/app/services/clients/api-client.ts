@@ -506,6 +506,7 @@ export enum ConferenceStatus {
 
 export class ParticipantForUserResponse implements IParticipantForUserResponse {
     username?: string | undefined;
+    display_name?: string | undefined;
     status?: ParticipantStatus | undefined;
 
     constructor(data?: IParticipantForUserResponse) {
@@ -520,6 +521,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     init(data?: any) {
         if (data) {
             this.username = data["username"];
+            this.display_name = data["display_name"];
             this.status = data["status"];
         }
     }
@@ -534,6 +536,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["username"] = this.username;
+        data["display_name"] = this.display_name;
         data["status"] = this.status;
         return data; 
     }
@@ -541,6 +544,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
 
 export interface IParticipantForUserResponse {
     username?: string | undefined;
+    display_name?: string | undefined;
     status?: ParticipantStatus | undefined;
 }
 

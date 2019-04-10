@@ -17,6 +17,7 @@ export class ServerSentEventsService {
   eventServiceBaseUri: string;
   connection: signalR.HubConnection;
   connectionStarted: boolean;
+  attemptingConnection: boolean;
   private participantStatusSubject = new Subject<ParticipantStatusMessage>();
   private hearingStatusSubject = new Subject<ConferenceStatusMessage>();
   private helpMessageSubject = new Subject<HelpMessage>();
@@ -33,13 +34,18 @@ export class ServerSentEventsService {
   }
 
   start() {
-    if (!this.connectionStarted) {
+    if (!this.connectionStarted && !this.attemptingConnection) {
+      this.attemptingConnection = true;
       this.connection
         .start()
         .then(() => {
           this.connectionStarted = true;
+          this.attemptingConnection = false;
         })
-        .catch(err => console.error(err));
+        .catch(err => {
+          this.attemptingConnection = false;
+          console.error(err);
+        });
     }
   }
 

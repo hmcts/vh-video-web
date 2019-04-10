@@ -9,6 +9,7 @@ import { HeaderComponent } from './header/header.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { SharedRoutingModule } from './shared-routing.module';
 import { ContactUsFoldingComponent } from './contact-us-folding/contact-us-folding.component';
+import { SnotifyModule, ToastDefaults, SnotifyService } from 'ng-snotify';
 
 @NgModule({
   imports: [
@@ -16,7 +17,8 @@ import { ContactUsFoldingComponent } from './contact-us-folding/contact-us-foldi
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    SharedRoutingModule
+    SharedRoutingModule,
+    SnotifyModule
   ],
   declarations: [
     HeaderComponent,
@@ -26,6 +28,8 @@ import { ContactUsFoldingComponent } from './contact-us-folding/contact-us-foldi
     ContactUsFoldingComponent
   ],
   providers: [
+    { provide: 'SnotifyToastConfig', useValue: ToastDefaults},
+    SnotifyService
   ],
   exports: [
     HeaderComponent,
@@ -37,6 +41,7 @@ import { ContactUsFoldingComponent } from './contact-us-folding/contact-us-foldi
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
+    SnotifyModule
   ]
 })
 export class SharedModule { }
