@@ -1,9 +1,9 @@
-﻿namespace VideoWeb.AcceptanceTests.Configuration
+﻿namespace Testing.Common.Configuration
 {
     public class UserAccount
     {
         public string Role { get; set; }
-        public string Email { get; set; }
+        public string AlternativeEmail { get; set; }
         public string Firstname { get; set; }
         public string Lastname { get; set; }
         public string Displayname { get; set; }

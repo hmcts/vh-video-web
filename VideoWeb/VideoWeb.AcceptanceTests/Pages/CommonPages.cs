@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using OpenQA.Selenium;
+using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 
 namespace VideoWeb.AcceptanceTests.Pages
 {
-    public class Common
+    public class CommonPages
     {
         private readonly BrowserContext _browserContext;
-        public Common(BrowserContext browserContext)
+        public CommonPages(BrowserContext browserContext)
         {
             _browserContext = browserContext;
         }
@@ -19,6 +20,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         private By _nextButton => By.Id(("nextButton"));
         private By _cancelButton => By.Id(("cancelButton"));
         private By _primaryNavItems => By.XPath("//*[@class='vh-primary-navigation__link']");
+        public By SignOutLink => By.PartialLinkText("Sign out");
 
         protected IEnumerable<IWebElement> GetListOfElements(By elements)
         {
