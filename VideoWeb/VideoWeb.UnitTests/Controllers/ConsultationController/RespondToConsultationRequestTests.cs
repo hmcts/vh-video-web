@@ -7,17 +7,18 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using Testing.Common.Helpers;
+using VideoWeb.Contract.Requests;
 using VideoWeb.Controllers;
 using VideoWeb.Services.Video;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
-namespace VideoWeb.UnitTests.Controllers.VideoEventController
+namespace VideoWeb.UnitTests.Controllers.ConsultationController
 {
-    public class SendHearingEventTests
+    public class RespondToConsultationRequestTests
     {
-        private VideoEventsController _controller;
+        private ConsultationsController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
-        
+
         [SetUp]
         public void Setup()
         {
@@ -30,51 +31,58 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                     User = claimsPrincipal
                 }
             };
-            
-            _controller = new VideoEventsController(_videoApiClientMock.Object)
+
+            _controller = new ConsultationsController(_videoApiClientMock.Object)
             {
                 ControllerContext = context
             };
         }
 
         [Test]
-        public async Task should_return_no_content_when_event_is_sent()
+        public async Task should_return_no_content_when_request_is_sent()
         {
             _videoApiClientMock
-                .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
+                .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .Returns(Task.FromResult(default(object)));
-            
-            var result = await _controller.SendHearingEvent(Builder<ConferenceEventRequest>.CreateNew().Build());
+
+            var result =
+                await _controller.RespondToConsultationRequest(Builder<PrivateConsultationAnswerRequest>.CreateNew()
+                    .Build());
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
         }
-        
+
         [Test]
         public async Task should_return_bad_request()
         {
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id", null, default(ProblemDetails), null);
             _videoApiClientMock
-                .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
+                .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .ThrowsAsync(apiException);
-            
-            var result = await _controller.SendHearingEvent(Builder<ConferenceEventRequest>.CreateNew().Build());
+
+            var result =
+                await _controller.RespondToConsultationRequest(Builder<PrivateConsultationAnswerRequest>.CreateNew()
+                    .Build());
             var typedResult = (BadRequestObjectResult) result;
             typedResult.Should().NotBeNull();
         }
-        
+
         [Test]
         public async Task should_return_exception()
         {
-            var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
+            var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
+                (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default(ProblemDetails), null);
             _videoApiClientMock
-                .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
+                .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.SendHearingEvent(Builder<ConferenceEventRequest>.CreateNew().Build());
+            var result =
+                await _controller.RespondToConsultationRequest(Builder<PrivateConsultationAnswerRequest>.CreateNew()
+                    .Build());
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
-        } 
+        }
     }
 }
