@@ -83,6 +83,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="useraccounts.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <SpecFlowFeatureFiles Update="Features\HearingDetails.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>HearingDetails.feature.cs</LastGenOutput>

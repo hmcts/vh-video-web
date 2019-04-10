@@ -69,8 +69,9 @@ namespace VideoWeb.AcceptanceTests.Contexts
         {
             Policy
                 .Handle<Exception>()
-                .WaitAndRetry(times, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)))
+                .WaitAndRetry(times, retryAttempt => TimeSpan.FromSeconds(Math.Pow(5, retryAttempt)))
                 .Execute(action);
+
         }
 
         public void WaitForAngular() => NgDriver.WaitForAngular();

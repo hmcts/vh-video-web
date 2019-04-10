@@ -40,7 +40,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _context.CurrenUser = role.Contains("with no hearings") ? _context.TestSettings.UserAccounts.LastOrDefault(c => c.Role == role.Split(" ")[0]) : _context.TestSettings.UserAccounts.FirstOrDefault(c => c.Role == role);
             if (_context.CurrenUser != null)
-                _loginPage.Logon(_context.CurrenUser.Username, _context.TestSettings.Password);
+                _loginPage.Logon(_context.CurrenUser.Username, _context.TestSettings.TestUserPassword);
         }
 
         [Then(@"the Hearing List page is displayed")]
