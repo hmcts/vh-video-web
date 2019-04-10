@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using TechTalk.SpecFlow;
+using Testing.Common.Configuration;
 using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Configuration;
 using VideoWeb.AcceptanceTests.Contexts;

@@ -14,7 +14,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly BrowserContext _browserContext;
         private readonly TestContext _context;
         private readonly HearingListPage _hearingListPage;
-        private const int TollerenceInMinutes = 2;
+        private const int TollerenceInMinutes = 3;
         private const int MinutesToWaitBeforeAllowedToJoinHearing = 30;
 
         public HearingDetailsSteps(BrowserContext browserContext, TestContext context,

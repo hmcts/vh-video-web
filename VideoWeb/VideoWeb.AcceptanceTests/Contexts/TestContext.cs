@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using RestSharp;
+using Testing.Common.Configuration;
 using Testing.Common.Helpers;
-using VideoWeb.AcceptanceTests.Configuration;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;

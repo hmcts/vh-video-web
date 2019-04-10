@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using VideoWeb.AcceptanceTests.Configuration;
 using VideoWeb.Common.Configuration;
 
 namespace Testing.Common.Configuration

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using VideoWeb.AcceptanceTests.Configuration;
 
 namespace Testing.Common.Configuration
 {
