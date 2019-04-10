@@ -1,10 +1,11 @@
 import { Component, HostListener, NgZone, OnInit } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { ConferenceForUserResponse, ConferenceResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
+import { ConferenceForUserResponse, ConferenceResponse, ConferenceStatus, ConsultationRequestAnswer } from 'src/app/services/clients/api-client';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { HelpMessage } from 'src/app/services/models/help-message';
 import { ServerSentEventsService } from 'src/app/services/server-sent-events.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
+import { SnotifyService, SnotifyPosition } from 'ng-snotify';
 
 @Component({
   selector: 'app-vho-hearings',
@@ -19,6 +20,7 @@ export class VhoHearingsComponent implements OnInit {
   loadingData: boolean;
   adminFrameWidth: number;
   interval: NodeJS.Timer;
+  pendingTransferRequests: ConsultationMessage[] = [];
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
@@ -29,14 +31,15 @@ export class VhoHearingsComponent implements OnInit {
     private videoWebService: VideoWebService,
     private eventService: ServerSentEventsService,
     private ngZone: NgZone,
-    public sanitizer: DomSanitizer
+    public sanitizer: DomSanitizer,
+    private snotifyService: SnotifyService
   ) {
     this.loadingData = true;
     this.adminFrameWidth = 0;
   }
 
   ngOnInit() {
-    // this.setupSubscribers();
+    this.setupSubscribers();
     this.retrieveHearingsForUser();
     this.interval = setInterval(() => {
       this.retrieveHearingsForUser();
@@ -120,10 +123,43 @@ export class VhoHearingsComponent implements OnInit {
   }
 
   handleConsultationMessage(message: ConsultationMessage): void {
-    throw Error('Not Implemented');
+    this.ngZone.run(() => {
+      if (message.result === ConsultationRequestAnswer.Accepted) {
+        this.addTransferTask(message);
+      }
+    });
   }
 
   handleHelpMessage(message: HelpMessage): void {
-    throw Error('Not Implemented');
+    this.ngZone.run(() => {
+      const toastMessage = message.participantName + ' requires assistance in hearing ' + message.conferenceId;
+      this.snotifyService.info(toastMessage, {
+        position: SnotifyPosition.rightTop,
+        showProgressBar: false,
+        timeout: 0,
+        closeOnClick: true
+      });
+    });
+  }
+
+  addTransferTask(message: ConsultationMessage) {
+    this.pendingTransferRequests.push(message);
+    const conference = this.conferences.find(x => x.id === message.conferenceId);
+    const requester = conference.participants.find(x => x.username === message.requestedBy);
+    const requestee = conference.participants.find(x => x.username === message.requestedFor);
+
+    const toastMessage = `Hearing ${conference.id}: Please move ${requester.username} and
+    ${requestee.username} into a private room`;
+
+    this.snotifyService.info(toastMessage, {
+      position: SnotifyPosition.rightTop,
+      showProgressBar: false,
+      timeout: 0,
+      closeOnClick: true
+    });
+  }
+
+  dismissTransferTask(message: ConsultationMessage) {
+    this.pendingTransferRequests.splice(this.pendingTransferRequests.indexOf(message), 1);
   }
 }

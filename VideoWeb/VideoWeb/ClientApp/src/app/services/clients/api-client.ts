@@ -221,6 +221,134 @@ export class ApiClient {
     }
 
     /**
+     * Request a private consultation
+     * @param request (optional) The requester and requestee to whom to ask to consult with
+     * @return Success
+     */
+    requestConsultation(request: PrivateConsultationRequest | null | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/consultations/request";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processRequestConsultation(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processRequestConsultation(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processRequestConsultation(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = resultData400 !== undefined ? resultData400 : <any>null;
+            return throwException("A server error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * Response to a private consultation
+     * @param request (optional) The requester and requestee to whom to ask to consult with an answer
+     * @return Success
+     */
+    respondToConsultationRequest(request: PrivateConsultationAnswerRequest | null | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/consultations/respond";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processRespondToConsultationRequest(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processRespondToConsultationRequest(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processRespondToConsultationRequest(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = resultData400 !== undefined ? resultData400 : <any>null;
+            return throwException("A server error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
      * @param request (optional) 
      * @return Success
      */
@@ -687,6 +815,103 @@ export interface IClientSettingsResponse {
     redirect_uri?: string | undefined;
     post_logout_redirect_uri?: string | undefined;
     video_api_url?: string | undefined;
+}
+
+export class PrivateConsultationRequest implements IPrivateConsultationRequest {
+    request_by?: string | undefined;
+    request_for?: string | undefined;
+    conference_id?: string | undefined;
+
+    constructor(data?: IPrivateConsultationRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.request_by = data["request_by"];
+            this.request_for = data["request_for"];
+            this.conference_id = data["conference_id"];
+        }
+    }
+
+    static fromJS(data: any): PrivateConsultationRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new PrivateConsultationRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["request_by"] = this.request_by;
+        data["request_for"] = this.request_for;
+        data["conference_id"] = this.conference_id;
+        return data; 
+    }
+}
+
+export interface IPrivateConsultationRequest {
+    request_by?: string | undefined;
+    request_for?: string | undefined;
+    conference_id?: string | undefined;
+}
+
+export class PrivateConsultationAnswerRequest implements IPrivateConsultationAnswerRequest {
+    request_by?: string | undefined;
+    request_for?: string | undefined;
+    conference_id?: string | undefined;
+    answer?: ConsultationRequestAnswer | undefined;
+
+    constructor(data?: IPrivateConsultationAnswerRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.request_by = data["request_by"];
+            this.request_for = data["request_for"];
+            this.conference_id = data["conference_id"];
+            this.answer = data["answer"];
+        }
+    }
+
+    static fromJS(data: any): PrivateConsultationAnswerRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new PrivateConsultationAnswerRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["request_by"] = this.request_by;
+        data["request_for"] = this.request_for;
+        data["conference_id"] = this.conference_id;
+        data["answer"] = this.answer;
+        return data; 
+    }
+}
+
+export interface IPrivateConsultationAnswerRequest {
+    request_by?: string | undefined;
+    request_for?: string | undefined;
+    conference_id?: string | undefined;
+    answer?: ConsultationRequestAnswer | undefined;
+}
+
+export enum ConsultationRequestAnswer {
+    Accepted = "Accepted", 
+    Rejected = "Rejected", 
 }
 
 export class ConferenceEventRequest implements IConferenceEventRequest {
