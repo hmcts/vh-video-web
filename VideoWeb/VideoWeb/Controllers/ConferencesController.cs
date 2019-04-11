@@ -95,7 +95,7 @@ namespace VideoWeb.Controllers
             }
 
             var username = User.Identity.Name.ToLower().Trim();
-            if (conference.Participants.All(x => x.Username != username))
+            if (conference.Participants.All(x => x.Username.ToLower().Trim() != username))
             {
                 return Unauthorized();
             }

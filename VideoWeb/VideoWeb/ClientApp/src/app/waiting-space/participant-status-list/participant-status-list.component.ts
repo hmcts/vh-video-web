@@ -12,7 +12,7 @@ import { ConsultationMessage } from 'src/app/services/models/consultation-messag
 @Component({
   selector: 'app-participant-status-list',
   templateUrl: './participant-status-list.component.html',
-  styleUrls: ['./participant-status-list.component.css']
+  styleUrls: ['./participant-status-list.component.scss']
 })
 export class ParticipantStatusListComponent implements OnInit {
 
