@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-judge-hearing-table',
   templateUrl: './judge-hearing-table.component.html',
-  styleUrls: ['./judge-hearing-table.component.css']
+  styleUrls: ['./judge-hearing-table.component.scss']
 })
 export class JudgeHearingTableComponent implements OnInit {
   @Input() conferences: ConferenceForUserResponse[];

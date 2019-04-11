@@ -1,11 +1,13 @@
+@import "~govuk-frontend/all";
+
 .conference-problem {
-    background-color: #b10e1e;
-    color: #fff;
+    background-color: govuk-colour("red");
+    color: govuk-colour("white");
 }
 
 .conference-okay {
-    background-color: #005ea5;
-    color: #fff;
+    background-color: govuk-colour("blue");
+    color: govuk-colour("white");
 }
 
 .selected-conference {

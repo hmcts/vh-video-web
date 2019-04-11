@@ -1965,15 +1965,6 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("hearing_types", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.List<HearingTypeResponse> Hearing_types { get; set; }
     
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static CaseTypeResponse FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<CaseTypeResponse>(data);
-        }
     
     }
     
@@ -1989,15 +1980,6 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Id { get; set; }
     
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static HearingTypeResponse FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<HearingTypeResponse>(data);
-        }
     
     }
     
@@ -2009,15 +1991,6 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Name { get; set; }
     
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static CaseRoleResponse FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<CaseRoleResponse>(data);
-        }
     
     }
     
@@ -2029,15 +2002,6 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Name { get; set; }
     
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static HearingRoleResponse FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<HearingRoleResponse>(data);
-        }
     
     }
     
@@ -2089,15 +2053,6 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("created_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Created_by { get; set; }
     
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static HearingDetailsResponse FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<HearingDetailsResponse>(data);
-        }
     
     }
     
@@ -2117,15 +2072,6 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("is_lead_case", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Is_lead_case { get; set; }
     
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static CaseResponse FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<CaseResponse>(data);
-        }
     
     }
     
@@ -2180,15 +2126,6 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Username { get; set; }
     
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static ParticipantResponse FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<ParticipantResponse>(data);
-        }
     
     }
     
@@ -2215,15 +2152,6 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("other_information", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Other_information { get; set; }
     
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static UpdateHearingRequest FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<UpdateHearingRequest>(data);
-        }
     
     }
     
@@ -2270,15 +2198,6 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("created_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Created_by { get; set; }
     
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static BookNewHearingRequest FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<BookNewHearingRequest>(data);
-        }
     
     }
     
@@ -2297,15 +2216,6 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("is_lead_case", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Is_lead_case { get; set; }
     
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static CaseRequest FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<CaseRequest>(data);
-        }
     
     }
     
@@ -2360,15 +2270,6 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("representee", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Representee { get; set; }
     
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static ParticipantRequest FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<ParticipantRequest>(data);
-        }
     
     }
     
@@ -2382,15 +2283,6 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Name { get; set; }
     
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static HearingVenueResponse FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<HearingVenueResponse>(data);
-        }
     
     }
     
@@ -2401,15 +2293,6 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("participants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.List<ParticipantRequest> Participants { get; set; }
     
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static AddParticipantsToHearingRequest FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<AddParticipantsToHearingRequest>(data);
-        }
     
     }
     
@@ -2448,15 +2331,6 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Username { get; set; }
     
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static PersonResponse FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<PersonResponse>(data);
-        }
     
     }
 

@@ -349,6 +349,61 @@ export class ApiClient {
     }
 
     /**
+     * @return Success
+     */
+    getUserProfile(): Observable<UserProfileResponse> {
+        let url_ = this.baseUrl + "/profile";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetUserProfile(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetUserProfile(<any>response_);
+                } catch (e) {
+                    return <Observable<UserProfileResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<UserProfileResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetUserProfile(response: HttpResponseBase): Observable<UserProfileResponse> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? UserProfileResponse.fromJS(resultData200) : new UserProfileResponse();
+            return _observableOf(result200);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<UserProfileResponse>(<any>null);
+    }
+
+    /**
      * @param request (optional) 
      * @return Success
      */
@@ -916,6 +971,42 @@ export interface IPrivateConsultationAnswerRequest {
 export enum ConsultationRequestAnswer {
     Accepted = "Accepted", 
     Rejected = "Rejected", 
+}
+
+export class UserProfileResponse implements IUserProfileResponse {
+    role?: string | undefined;
+
+    constructor(data?: IUserProfileResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.role = data["role"];
+        }
+    }
+
+    static fromJS(data: any): UserProfileResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserProfileResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["role"] = this.role;
+        return data; 
+    }
+}
+
+export interface IUserProfileResponse {
+    role?: string | undefined;
 }
 
 export class ConferenceEventRequest implements IConferenceEventRequest {

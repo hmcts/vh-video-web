@@ -13,7 +13,7 @@ import { VideoWebService } from 'src/app/services/video-web.service';
 @Component({
   selector: 'app-vho-hearings',
   templateUrl: './vho-hearings.component.html',
-  styleUrls: ['./vho-hearings.component.css']
+  styleUrls: ['./vho-hearings.component.scss']
 })
 export class VhoHearingsComponent implements OnInit {
 
