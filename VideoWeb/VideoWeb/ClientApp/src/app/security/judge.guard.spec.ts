@@ -14,7 +14,7 @@ describe('JudgeGuard', () => {
   const router = {
     navigate: jasmine.createSpy('navigate')
   };
-  
+
   beforeEach(() => {
     profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
     TestBed.configureTestingModule({
