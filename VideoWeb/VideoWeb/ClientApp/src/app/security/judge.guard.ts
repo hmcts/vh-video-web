@@ -29,7 +29,7 @@ export class JudgeGuard implements CanActivate {
       }),
       catchError((err) => {
         console.error(`Could not get user identity: ${err}`);
-        this.router.navigate(['/login']);
+        this.router.navigate(['/logout']);
         return of(false);
       })
     );

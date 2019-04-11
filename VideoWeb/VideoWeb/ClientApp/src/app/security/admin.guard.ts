@@ -18,7 +18,8 @@ export class AdminGuard implements CanActivate {
 
   canActivate(
     next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+    state: RouterStateSnapshot): Observable<boolean> {
+
     return this.userProfileService.getUserProfile().pipe(
       map((profile: UserProfileResponse) => {
         if (profile.role === 'VHOfficer') {
@@ -30,7 +31,7 @@ export class AdminGuard implements CanActivate {
       }),
       catchError((err) => {
         console.error(`Could not get user identity: ${err}`);
-        this.router.navigate(['/login']);
+        this.router.navigate(['/logout']);
         return of(false);
       })
     );

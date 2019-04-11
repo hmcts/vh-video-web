@@ -100,7 +100,6 @@ export class ParticipantStatusListComponent implements OnInit {
     const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
 
     const toastMessage = requester.display_name + ' would like to speak to you. Would you like to join a private room?';
-    console.log(toastMessage);
     this.snotifyService.confirm(toastMessage, {
       position: SnotifyPosition.rightTop,
       showProgressBar: true,

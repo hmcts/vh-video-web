@@ -1,10 +1,9 @@
-import { Component, OnInit, NgZone } from '@angular/core';
-import { ConferenceResponse, ParticipantStatus, ConferenceStatus, UserRole } from 'src/app/services/clients/api-client';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Component, NgZone, OnInit } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ConferenceResponse, ConferenceStatus, UserRole } from 'src/app/services/clients/api-client';
 import { ServerSentEventsService } from 'src/app/services/server-sent-events.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-judge-hearing-page',

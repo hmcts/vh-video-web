@@ -17,10 +17,10 @@ export class ParticipantGuard implements CanActivate {
 
   canActivate(
     next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+    state: RouterStateSnapshot): Observable<boolean> {
     return this.userProfileService.getUserProfile().pipe(
       map((profile: UserProfileResponse) => {
-        if (profile.role !== 'Judge' && profile.role !== 'VHOfficer') {
+        if (profile.role === 'Representative' || profile.role === 'Individual') {
           return true;
         } else {
           this.router.navigate(['/home']);
@@ -29,7 +29,7 @@ export class ParticipantGuard implements CanActivate {
       }),
       catchError((err) => {
         console.error(`Could not get user identity: ${err}`);
-        this.router.navigate(['/login']);
+        this.router.navigate(['/logout']);
         return of(false);
       })
     );
