@@ -1,6 +1,5 @@
 using System.Net;
 using System.Threading.Tasks;
-using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
