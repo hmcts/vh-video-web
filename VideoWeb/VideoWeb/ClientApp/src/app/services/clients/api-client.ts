@@ -974,7 +974,7 @@ export enum ConsultationRequestAnswer {
 }
 
 export class UserProfileResponse implements IUserProfileResponse {
-    role?: string | undefined;
+    role?: UserRole | undefined;
 
     constructor(data?: IUserProfileResponse) {
         if (data) {
@@ -1006,7 +1006,7 @@ export class UserProfileResponse implements IUserProfileResponse {
 }
 
 export interface IUserProfileResponse {
-    role?: string | undefined;
+    role?: UserRole | undefined;
 }
 
 export class ConferenceEventRequest implements IConferenceEventRequest {

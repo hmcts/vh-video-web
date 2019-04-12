@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProfileService } from '../services/profile.service';
-import { UserProfileResponse } from '../services/clients/api-client';
+import { UserProfileResponse, UserRole } from '../services/clients/api-client';
 
 @Component({
   selector: 'app-home',
@@ -21,9 +21,9 @@ export class HomeComponent implements OnInit {
 
   navigateToHearingList() {
     this.profileService.getUserProfile().subscribe((data: UserProfileResponse) => {
-      if (data.role === 'Judge') {
+      if (data.role === UserRole.Judge) {
         this.router.navigate(['judge/hearing-list']);
-      } else if (data.role === 'VhOfficer') {
+      } else if (data.role === UserRole.VideoHearingsOfficer) {
         this.router.navigate(['admin/hearing-list']);
       } else {
         this.router.navigate(['participant/hearing-list']);

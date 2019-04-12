@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
 import { ProfileService } from '../services/profile.service';
 import { of } from 'rxjs';
-import { UserProfileResponse } from '../services/clients/api-client';
+import { UserProfileResponse, UserRole } from '../services/clients/api-client';
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -34,21 +34,21 @@ describe('HomeComponent', () => {
   });
 
   it('should go to judge hearing list', () => {
-    const profile = new UserProfileResponse({ role: 'Judge' });
+    const profile = new UserProfileResponse({ role: UserRole.Judge });
     profileServiceSpy.getUserProfile.and.returnValue(of(profile));
     fixture.detectChanges();
     expect(router.navigate).toHaveBeenCalledWith(['judge/hearing-list']);
   });
 
   it('should go to admin hearing list', () => {
-    const profile = new UserProfileResponse({ role: 'VhOfficer' });
+    const profile = new UserProfileResponse({ role: UserRole.VideoHearingsOfficer });
     profileServiceSpy.getUserProfile.and.returnValue(of(profile));
     fixture.detectChanges();
     expect(router.navigate).toHaveBeenCalledWith(['admin/hearing-list']);
   });
 
   it('should go to participant hearing list', () => {
-    const profile = new UserProfileResponse({ role: 'Representative' });
+    const profile = new UserProfileResponse({ role: UserRole.Representative });
     profileServiceSpy.getUserProfile.and.returnValue(of(profile));
     fixture.detectChanges();
     expect(router.navigate).toHaveBeenCalledWith(['participant/hearing-list']);

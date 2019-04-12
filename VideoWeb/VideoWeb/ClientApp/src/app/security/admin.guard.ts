@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { ProfileService } from '../services/profile.service';
-import { UserProfileResponse } from '../services/clients/api-client';
+import { UserProfileResponse, UserRole } from '../services/clients/api-client';
 import { map, catchError } from 'rxjs/operators';
 
 @Injectable({
@@ -22,7 +22,7 @@ export class AdminGuard implements CanActivate {
 
     return this.userProfileService.getUserProfile().pipe(
       map((profile: UserProfileResponse) => {
-        if (profile.role === 'VhOfficer') {
+        if (profile.role === UserRole.VideoHearingsOfficer) {
           console.log('user is an admin');
           return true;
         } else {

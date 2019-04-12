@@ -5,7 +5,7 @@ import { SharedModule } from '../shared/shared.module';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ProfileService } from '../services/profile.service';
 import { of, throwError } from 'rxjs';
-import { UserProfileResponse } from '../services/clients/api-client';
+import { UserProfileResponse, UserRole } from '../services/clients/api-client';
 import { Router } from '@angular/router';
 
 describe('AdminGuard', () => {
@@ -29,7 +29,7 @@ describe('AdminGuard', () => {
   });
 
   it('should not be able to activate component if role is not VHOfficer', async(async () => {
-    const profile = new UserProfileResponse({ role: 'Judge' });
+    const profile = new UserProfileResponse({ role: UserRole.Judge });
     profileServiceSpy.getUserProfile.and.returnValue(of(profile));
     guard.canActivate(null, null).subscribe((result) => {
       expect(result).toBeFalsy();
@@ -38,7 +38,7 @@ describe('AdminGuard', () => {
   }));
 
   it('should be able to activate component if role is VHOfficer', async(async () => {
-    const profile = new UserProfileResponse({ role: 'VhOfficer' });
+    const profile = new UserProfileResponse({ role: UserRole.VideoHearingsOfficer });
     profileServiceSpy.getUserProfile.and.returnValue(of(profile));
     guard.canActivate(null, null).subscribe((result) => {
       expect(result).toBeTruthy();

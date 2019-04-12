@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Mappings;
 using VideoWeb.Services.User;
 
 namespace VideoWeb.Controllers
@@ -28,10 +29,7 @@ namespace VideoWeb.Controllers
             try
             {
                 var profile = await _userApiClient.GetUserByAdUserNameAsync(username);
-                var response = new UserProfileResponse
-                {
-                    Role = profile.User_role
-                };
+                var response = new UserProfileResponseMapper().MapToResponseModel(profile);
                 return Ok(response);
             }
             catch (UserApiException e)
