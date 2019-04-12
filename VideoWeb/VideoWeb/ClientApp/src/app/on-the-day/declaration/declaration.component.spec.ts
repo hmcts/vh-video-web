@@ -73,6 +73,6 @@ describe('DeclarationComponent Tests', () => {
     spyOn(router, 'navigate').and.callFake(() => { });
     checkboxControl.setValue(true);
     component.onSubmit();
-    expect(router.navigate).toHaveBeenCalledWith([PageUrls.WaitingRoom, conference.id]);
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.ParticipantWaitingRoom, conference.id]);
   });
 });

@@ -42,7 +42,7 @@
       "additionalNamespaceUsages": [],
       "additionalContractNamespaceUsages": [],
       "generateOptionalParameters": false,
-      "generateJsonMethods": true,
+      "generateJsonMethods": false,
       "enforceFlagEnums": false,
       "parameterArrayType": "System.Collections.Generic.IEnumerable",
       "parameterDictionaryType": "System.Collections.Generic.IDictionary",

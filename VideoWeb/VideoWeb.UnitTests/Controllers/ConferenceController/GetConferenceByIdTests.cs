@@ -92,8 +92,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             var result = await _controller.GetConferenceById(Guid.NewGuid());
             
-            var typedResult = (ForbidResult) result.Result;
-            typedResult.Should().NotBeNull();
+            var typedResult = (ObjectResult) result.Result;
+            typedResult.StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
         }
         
         [Test]

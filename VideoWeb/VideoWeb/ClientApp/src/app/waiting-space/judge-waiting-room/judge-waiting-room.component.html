@@ -28,7 +28,7 @@
       </button>
     </div>
     <div>
-      <a id="back-to-hearing-list-link" [routerLink]="['/judge-waiting-list']" routerLinkActive="router-link-active"  class="govuk-link" href="javascript:void(0)">Return to hearing list</a>
+      <a id="back-to-hearing-list-link" href="javascript:void()" (click)="goToJudgeHearingList()" routerLinkActive="router-link-active"  class="govuk-link" href="javascript:void(0)">Return to hearing list</a>
     </div>
     <div class="govuk-!-margin-top-9">
       <p class="govuk-body"><strong>Contact video hearings officer: 0300 303 0655</strong></p>

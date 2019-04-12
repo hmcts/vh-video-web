@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace Testing.Common.Helpers
 {
@@ -9,12 +10,13 @@ namespace Testing.Common.Helpers
 
         public static string Letters(Random randomNumber)
         {
-            var randomString = "";
+            var randomStringBuilder = new StringBuilder();
             for (var i = 0; i < Length; i++)
             {
-                randomString += (char)(randomNumber.Next(26) + V);
+                randomStringBuilder.Append((char)(randomNumber.Next(26) + V));
             }
-            return randomString.ToUpper();
+
+            return randomStringBuilder.ToString().ToUpper();
         }
 
         public static string Numbers(Random randomNumber)

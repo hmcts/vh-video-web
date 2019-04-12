@@ -1,10 +1,18 @@
 export let PageUrls = {
-
+  // shared
+  Home: 'home',
   // on-the-day
   Declaration: 'declaration',
   HearingRules: 'hearing-rules',
-  WaitingRoom: 'waiting-room',
   EquipmentCheck: 'equipment-check',
-  CameraAndMicrophone: 'camera-and-microphone'
-
+  CameraAndMicrophone: 'camera-and-microphone',
+  // judge
+  JudgeHearingList: 'judge/hearing-list',
+  JudgeHearingRoom: 'judge/hearing-room',
+  JudgeWaitingRoom: 'judge/waiting-room',
+  // participant
+  ParticipantHearingList: 'participant/hearing-list',
+  ParticipantWaitingRoom: 'participant/waiting-room',
+  // vh officer
+  AdminHearingList: 'admin/hearing-list',
 };

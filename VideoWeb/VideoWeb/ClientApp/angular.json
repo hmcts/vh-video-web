@@ -76,7 +76,9 @@
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
             "codeCoverageExclude": [
-              "src/app/services/clients/api-client.ts",
+              "src/app/services/**",
+              "src/app/waiting-space/judge-hearing-page/judge-hearing-page.component.ts",
+              "src/app/app.component.ts",
               "src/app/testing/**"
             ],
             "styles": [

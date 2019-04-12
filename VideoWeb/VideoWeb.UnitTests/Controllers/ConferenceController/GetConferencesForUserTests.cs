@@ -85,11 +85,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             var result = await _controller.GetConferencesForUser();
             
-            var typedResult = (BadRequestObjectResult) result.Result;
-            typedResult.Should().NotBeNull();
-            
-            var responseMessage = (string)typedResult.Value;
-            responseMessage.Should().NotBeNullOrEmpty();
+            var typedResult = (ObjectResult) result.Result;
+            typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         } 
         
         [Test]
@@ -103,8 +100,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             var result = await _controller.GetConferencesForUser();
             
-            var typedResult = (ForbidResult) result.Result;
-            typedResult.Should().NotBeNull();
+            var typedResult = (ObjectResult) result.Result;
+            typedResult.StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
         } 
         
         [Test]

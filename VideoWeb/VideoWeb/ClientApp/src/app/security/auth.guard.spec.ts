@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { AuthGuard } from './auth.gaurd';
+import { AuthGuard } from './auth.guard';
 import { MockAdalService } from '../testing/mocks/MockAdalService';
 import { Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';

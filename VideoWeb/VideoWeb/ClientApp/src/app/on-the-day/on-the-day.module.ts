@@ -10,6 +10,7 @@ import { HearingListTableComponent } from './hearing-list-table/hearing-list-tab
 import { ParticipantHearingsComponent } from './participant-hearings/participant-hearings.component';
 import { JudgeHearingListComponent } from './judge-hearing-list/judge-hearing-list.component';
 import { JudgeHearingTableComponent } from './judge-hearing-table/judge-hearing-table.component';
+import { VhoHearingsComponent } from './vho-hearings/vho-hearings.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -24,7 +25,8 @@ import { JudgeHearingTableComponent } from './judge-hearing-table/judge-hearing-
     EquipmentCheckComponent,
     CameraAndMicrophoneComponent,
     JudgeHearingListComponent,
-    JudgeHearingTableComponent
+    JudgeHearingTableComponent,
+    VhoHearingsComponent
   ],
   exports: [
     DeclarationComponent
