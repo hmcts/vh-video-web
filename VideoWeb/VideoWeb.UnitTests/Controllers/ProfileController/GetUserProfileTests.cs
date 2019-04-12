@@ -58,8 +58,8 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
                 .ThrowsAsync(apiException);
 
             var result = await _controller.GetUserProfile();
-            var typedResult = (NotFoundResult) result;
-            typedResult.Should().NotBeNull();
+            var typedResult = (ObjectResult) result;
+            typedResult.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
         }
         
         [Test]

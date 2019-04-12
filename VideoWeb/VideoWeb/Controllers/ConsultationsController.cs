@@ -36,13 +36,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                switch (e.StatusCode)
-                {
-                    case (int) HttpStatusCode.BadRequest:
-                        return BadRequest(e.Response);
-                    default:
-                        return StatusCode((int) HttpStatusCode.InternalServerError, e);
-                }
+                return StatusCode(e.StatusCode, e);
             }
         }
     }

@@ -44,15 +44,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                switch (e.StatusCode)
-                {
-                    case (int) HttpStatusCode.Unauthorized:
-                        return Forbid();
-                    case (int) HttpStatusCode.BadRequest:
-                        return BadRequest(e.Response);
-                    default:
-                        return StatusCode((int) HttpStatusCode.InternalServerError, e);
-                }
+                return StatusCode(e.StatusCode, e);
             }
         }
 
@@ -81,17 +73,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                switch (e.StatusCode)
-                {
-                    case (int) HttpStatusCode.NotFound:
-                        return NotFound();
-                    case (int) HttpStatusCode.Unauthorized:
-                        return Forbid();
-                    case (int) HttpStatusCode.BadRequest:
-                        return BadRequest(e.Response);
-                    default:
-                        return StatusCode((int) HttpStatusCode.InternalServerError, e);
-                }
+                return StatusCode(e.StatusCode, e);
             }
 
             var username = User.Identity.Name.ToLower().Trim();

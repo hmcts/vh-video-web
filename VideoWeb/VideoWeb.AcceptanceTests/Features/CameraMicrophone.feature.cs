@@ -31,8 +31,8 @@ namespace VideoWeb.AcceptanceTests.Features
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Camera and Microphone check", "\tAs a registered video hearings user\r\n\tI would like to begin a camera and microph" +
-                    "one check\r\n\tSo that I can ensure my equipment is ready to use for the hearing", ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Camera and Microphone check", "\tAs a registered video hearings user\n\tI would like to begin a camera and micropho" +
+                    "ne check\n\tSo that I can ensure my equipment is ready to use for the hearing", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         

@@ -34,13 +34,7 @@ namespace VideoWeb.Controllers
             }
             catch (UserApiException e)
             {
-                switch (e.StatusCode)
-                {
-                    case (int) HttpStatusCode.NotFound:
-                        return NotFound();
-                    default:
-                        return StatusCode((int) HttpStatusCode.InternalServerError, e);
-                }
+                return StatusCode(e.StatusCode, e);
             }
         }
     }

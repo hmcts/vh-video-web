@@ -59,8 +59,8 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 .ThrowsAsync(apiException);
             
             var result = await _controller.SendHearingEvent(Builder<ConferenceEventRequest>.CreateNew().Build());
-            var typedResult = (BadRequestObjectResult) result;
-            typedResult.Should().NotBeNull();
+            var typedResult = (ObjectResult) result;
+            typedResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
         }
         
         [Test]
