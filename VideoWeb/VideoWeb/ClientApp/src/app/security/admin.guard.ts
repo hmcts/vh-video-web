@@ -22,10 +22,12 @@ export class AdminGuard implements CanActivate {
 
     return this.userProfileService.getUserProfile().pipe(
       map((profile: UserProfileResponse) => {
-        if (profile.role === 'VHOfficer') {
+        if (profile.role === 'VhOfficer') {
+          console.log('user is an admin');
           return true;
         } else {
           this.router.navigate(['/home']);
+          console.log('user is not an admin');
           return false;
         }
       }),
