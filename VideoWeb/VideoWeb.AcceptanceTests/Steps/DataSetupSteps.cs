@@ -172,11 +172,11 @@ namespace VideoWeb.AcceptanceTests.Steps
                 Telephone_number = "01234567890",
                 Title = "Mrs",
                 Username = judge.Username,
-                City = "London",
-                County = "London",
+                House_number = "102",
                 Street = "Petty France",
                 Postcode = "SW1H 9AJ",
-                House_number = "102"
+                City = "London",
+                County = "London"
             });
         }
 
@@ -198,11 +198,11 @@ namespace VideoWeb.AcceptanceTests.Steps
                     Telephone_number = "01234567890",
                     Title = "Mrs",
                     Username = representativeUsers[j].Username,
-                    City = "London",
-                    County = "London",
+                    House_number = "102",
                     Street = "Petty France",
                     Postcode = "SW1H 9AJ",
-                    House_number = "102"
+                    City = "London",
+                    County = "London"
                 };
                 participants.Add(participant);
             }
@@ -226,11 +226,11 @@ namespace VideoWeb.AcceptanceTests.Steps
                     Telephone_number = "01234567890",
                     Title = "Mrs",
                     Username = individualUsers[i].Username,
-                    City = "London",
-                    County = "London",
+                    House_number = "102",
                     Street = "Petty France",
                     Postcode = "SW1H 9AJ",
-                    House_number = "102"
+                    City = "London",
+                    County = "London"
                 };
                 participants.Add(participant);
             }
