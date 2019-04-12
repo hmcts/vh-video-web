@@ -39,7 +39,7 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
         [Test]
         public async Task should_return_ok_code_when_user_profile_found()
         {
-            var userProfile = Builder<UserProfile>.CreateNew().Build();
+            var userProfile = new UserProfile() {User_role = "Judge"};
             _userApiClientMock
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(userProfile);
