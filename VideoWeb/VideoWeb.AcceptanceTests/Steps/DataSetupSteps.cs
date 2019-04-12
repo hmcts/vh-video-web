@@ -8,7 +8,6 @@ using Testing.Common.Assertions;
 using Testing.Common.Builders;
 using Testing.Common.Configuration;
 using Testing.Common.Helpers;
-using VideoWeb.AcceptanceTests.Configuration;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
@@ -172,11 +171,16 @@ namespace VideoWeb.AcceptanceTests.Steps
                 Solicitors_reference = "",
                 Telephone_number = "01234567890",
                 Title = "Mrs",
-                Username = judge.Username
+                Username = judge.Username,
+                City = "London",
+                County = "London",
+                Street = "Petty France",
+                Postcode = "SW1H 9AJ",
+                House_number = "102"
             });
         }
 
-        private static void AddRepresentativeParticipants(List<UserAccount> representativeUsers, List<ParticipantRequest> participants)
+        private static void AddRepresentativeParticipants(IReadOnlyList<UserAccount> representativeUsers, ICollection<ParticipantRequest> participants)
         {
             for (var j = 0; j < NumberOfRepresentatives; j++)
             {
@@ -193,13 +197,18 @@ namespace VideoWeb.AcceptanceTests.Steps
                     Solicitors_reference = "",
                     Telephone_number = "01234567890",
                     Title = "Mrs",
-                    Username = representativeUsers[j].Username
+                    Username = representativeUsers[j].Username,
+                    City = "London",
+                    County = "London",
+                    Street = "Petty France",
+                    Postcode = "SW1H 9AJ",
+                    House_number = "102"
                 };
                 participants.Add(participant);
             }
         }
 
-        private static void AddIndividualParticipants(List<UserAccount> individualUsers, List<ParticipantRequest> participants)
+        private static void AddIndividualParticipants(IReadOnlyList<UserAccount> individualUsers, ICollection<ParticipantRequest> participants)
         {
             for (var i = 0; i < NumberOfIndividuals; i++)
             {
@@ -216,7 +225,12 @@ namespace VideoWeb.AcceptanceTests.Steps
                     Solicitors_reference = individualUsers[i].SolicitorsReference,
                     Telephone_number = "01234567890",
                     Title = "Mrs",
-                    Username = individualUsers[i].Username
+                    Username = individualUsers[i].Username,
+                    City = "London",
+                    County = "London",
+                    Street = "Petty France",
+                    Postcode = "SW1H 9AJ",
+                    House_number = "102"
                 };
                 participants.Add(participant);
             }

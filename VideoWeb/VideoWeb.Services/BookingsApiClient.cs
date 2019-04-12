@@ -141,6 +141,28 @@ namespace VideoWeb.Services.Bookings
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         System.Threading.Tasks.Task RemoveHearingAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
     
+        /// <summary>Update booking status</summary>
+        /// <param name="hearingId">Id of the hearing to update the status for</param>
+        /// <param name="updateBookingStatusRequest">Status of the hearing to change to</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task UpdateBookingStatusAsync(System.Guid hearingId, UpdateBookingStatusRequest updateBookingStatusRequest);
+    
+        /// <summary>Update booking status</summary>
+        /// <param name="hearingId">Id of the hearing to update the status for</param>
+        /// <param name="updateBookingStatusRequest">Status of the hearing to change to</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        void UpdateBookingStatus(System.Guid hearingId, UpdateBookingStatusRequest updateBookingStatusRequest);
+    
+        /// <summary>Update booking status</summary>
+        /// <param name="hearingId">Id of the hearing to update the status for</param>
+        /// <param name="updateBookingStatusRequest">Status of the hearing to change to</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        System.Threading.Tasks.Task UpdateBookingStatusAsync(System.Guid hearingId, UpdateBookingStatusRequest updateBookingStatusRequest, System.Threading.CancellationToken cancellationToken);
+    
         /// <summary>Request to book a new hearing</summary>
         /// <param name="request">Details of a new hearing to book</param>
         /// <returns>Success</returns>
@@ -159,6 +181,31 @@ namespace VideoWeb.Services.Bookings
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         System.Threading.Tasks.Task<HearingDetailsResponse> BookNewHearingAsync(BookNewHearingRequest request, System.Threading.CancellationToken cancellationToken);
+    
+        /// <summary>Get a paged list of booked hearings</summary>
+        /// <param name="types">The hearing case types.</param>
+        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
+        /// <param name="limit">The max number hearings records to return.</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(System.Collections.Generic.IEnumerable<int> types, string cursor, int? limit);
+    
+        /// <summary>Get a paged list of booked hearings</summary>
+        /// <param name="types">The hearing case types.</param>
+        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
+        /// <param name="limit">The max number hearings records to return.</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        BookingsResponse GetHearingsByTypes(System.Collections.Generic.IEnumerable<int> types, string cursor, int? limit);
+    
+        /// <summary>Get a paged list of booked hearings</summary>
+        /// <param name="types">The hearing case types.</param>
+        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
+        /// <param name="limit">The max number hearings records to return.</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(System.Collections.Generic.IEnumerable<int> types, string cursor, int? limit, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get all hearing venues available for booking</summary>
         /// <returns>Success</returns>
@@ -239,6 +286,31 @@ namespace VideoWeb.Services.Bookings
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         System.Threading.Tasks.Task<ParticipantResponse> GetParticipantInHearingAsync(System.Guid hearingId, System.Guid participantId, System.Threading.CancellationToken cancellationToken);
     
+        /// <summary>Update participant details</summary>
+        /// <param name="hearingId">Id of hearing to look up</param>
+        /// <param name="participantId">Id of participant to remove</param>
+        /// <param name="request">The participant information to add</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task UpdateParticipantDetailsAsync(System.Guid hearingId, System.Guid participantId, UpdateParticipantRequest request);
+    
+        /// <summary>Update participant details</summary>
+        /// <param name="hearingId">Id of hearing to look up</param>
+        /// <param name="participantId">Id of participant to remove</param>
+        /// <param name="request">The participant information to add</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        void UpdateParticipantDetails(System.Guid hearingId, System.Guid participantId, UpdateParticipantRequest request);
+    
+        /// <summary>Update participant details</summary>
+        /// <param name="hearingId">Id of hearing to look up</param>
+        /// <param name="participantId">Id of participant to remove</param>
+        /// <param name="request">The participant information to add</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        System.Threading.Tasks.Task UpdateParticipantDetailsAsync(System.Guid hearingId, System.Guid participantId, UpdateParticipantRequest request, System.Threading.CancellationToken cancellationToken);
+    
         /// <summary>Remove a participant from a hearing</summary>
         /// <param name="hearingId">Id of hearing to look up</param>
         /// <param name="participantId">Id of participant to remove</param>
@@ -298,6 +370,25 @@ namespace VideoWeb.Services.Bookings
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         System.Threading.Tasks.Task<PersonResponse> GetPersonByContactEmailAsync(string contactEmail, System.Threading.CancellationToken cancellationToken);
+    
+        /// <summary>Find persons with contact email matching a search term.</summary>
+        /// <param name="term">Partial string to match contact email with, case-insensitive.</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<System.Collections.Generic.List<PersonResponse>> GetPersonBySearchTermAsync(string term);
+    
+        /// <summary>Find persons with contact email matching a search term.</summary>
+        /// <param name="term">Partial string to match contact email with, case-insensitive.</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        System.Collections.Generic.List<PersonResponse> GetPersonBySearchTerm(string term);
+    
+        /// <summary>Find persons with contact email matching a search term.</summary>
+        /// <param name="term">Partial string to match contact email with, case-insensitive.</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        System.Threading.Tasks.Task<System.Collections.Generic.List<PersonResponse>> GetPersonBySearchTermAsync(string term, System.Threading.CancellationToken cancellationToken);
     
     }
     
@@ -1049,6 +1140,116 @@ namespace VideoWeb.Services.Bookings
             }
         }
     
+        /// <summary>Update booking status</summary>
+        /// <param name="hearingId">Id of the hearing to update the status for</param>
+        /// <param name="updateBookingStatusRequest">Status of the hearing to change to</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task UpdateBookingStatusAsync(System.Guid hearingId, UpdateBookingStatusRequest updateBookingStatusRequest)
+        {
+            return UpdateBookingStatusAsync(hearingId, updateBookingStatusRequest, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Update booking status</summary>
+        /// <param name="hearingId">Id of the hearing to update the status for</param>
+        /// <param name="updateBookingStatusRequest">Status of the hearing to change to</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public void UpdateBookingStatus(System.Guid hearingId, UpdateBookingStatusRequest updateBookingStatusRequest)
+        {
+            System.Threading.Tasks.Task.Run(async () => await UpdateBookingStatusAsync(hearingId, updateBookingStatusRequest, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <summary>Update booking status</summary>
+        /// <param name="hearingId">Id of the hearing to update the status for</param>
+        /// <param name="updateBookingStatusRequest">Status of the hearing to change to</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        public async System.Threading.Tasks.Task UpdateBookingStatusAsync(System.Guid hearingId, UpdateBookingStatusRequest updateBookingStatusRequest, System.Threading.CancellationToken cancellationToken)
+        {
+            if (hearingId == null)
+                throw new System.ArgumentNullException("hearingId");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/{hearingId}");
+            urlBuilder_.Replace("{hearingId}", System.Uri.EscapeDataString(ConvertToString(hearingId, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(updateBookingStatusRequest, _settings.Value));
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("PATCH");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "204") 
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == "404") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new BookingsApiException("Not Found", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                        else
+                        if (status_ == "400") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new BookingsApiException("Bad Request", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                        else
+                        if (status_ == "409") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new BookingsApiException("Conflict", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new BookingsApiException("Unauthorized", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new BookingsApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
         /// <summary>Request to book a new hearing</summary>
         /// <param name="request">Details of a new hearing to book</param>
         /// <returns>Success</returns>
@@ -1140,6 +1341,132 @@ namespace VideoWeb.Services.Bookings
                         }
             
                         return default(HearingDetailsResponse);
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Get a paged list of booked hearings</summary>
+        /// <param name="types">The hearing case types.</param>
+        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
+        /// <param name="limit">The max number hearings records to return.</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(System.Collections.Generic.IEnumerable<int> types, string cursor, int? limit)
+        {
+            return GetHearingsByTypesAsync(types, cursor, limit, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Get a paged list of booked hearings</summary>
+        /// <param name="types">The hearing case types.</param>
+        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
+        /// <param name="limit">The max number hearings records to return.</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public BookingsResponse GetHearingsByTypes(System.Collections.Generic.IEnumerable<int> types, string cursor, int? limit)
+        {
+            return System.Threading.Tasks.Task.Run(async () => await GetHearingsByTypesAsync(types, cursor, limit, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <summary>Get a paged list of booked hearings</summary>
+        /// <param name="types">The hearing case types.</param>
+        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
+        /// <param name="limit">The max number hearings records to return.</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        public async System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(System.Collections.Generic.IEnumerable<int> types, string cursor, int? limit, System.Threading.CancellationToken cancellationToken)
+        {
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/types?");
+            if (types != null) 
+            {
+                foreach (var item_ in types) { urlBuilder_.Append("types=").Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append("&"); }
+            }
+            if (cursor != null) 
+            {
+                urlBuilder_.Append("cursor=").Append(System.Uri.EscapeDataString(ConvertToString(cursor, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (limit != null) 
+            {
+                urlBuilder_.Append("limit=").Append(System.Uri.EscapeDataString(ConvertToString(limit, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            var result_ = default(BookingsResponse); 
+                            try
+                            {
+                                result_ = Newtonsoft.Json.JsonConvert.DeserializeObject<BookingsResponse>(responseData_, _settings.Value);
+                                return result_; 
+                            } 
+                            catch (System.Exception exception_) 
+                            {
+                                throw new BookingsApiException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, headers_, exception_);
+                            }
+                        }
+                        else
+                        if (status_ == "400") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new BookingsApiException("Bad Request", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                        else
+                        if (status_ == "404") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new BookingsApiException("Not Found", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new BookingsApiException("Unauthorized", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new BookingsApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+            
+                        return default(BookingsResponse);
                     }
                     finally
                     {
@@ -1405,7 +1732,7 @@ namespace VideoWeb.Services.Bookings
                     var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value));
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
                     request_.Content = content_;
-                    request_.Method = new System.Net.Http.HttpMethod("PUT");
+                    request_.Method = new System.Net.Http.HttpMethod("POST");
     
                     PrepareRequest(client_, request_, urlBuilder_);
                     var url_ = urlBuilder_.ToString();
@@ -1571,6 +1898,117 @@ namespace VideoWeb.Services.Bookings
                         }
             
                         return default(ParticipantResponse);
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Update participant details</summary>
+        /// <param name="hearingId">Id of hearing to look up</param>
+        /// <param name="participantId">Id of participant to remove</param>
+        /// <param name="request">The participant information to add</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task UpdateParticipantDetailsAsync(System.Guid hearingId, System.Guid participantId, UpdateParticipantRequest request)
+        {
+            return UpdateParticipantDetailsAsync(hearingId, participantId, request, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Update participant details</summary>
+        /// <param name="hearingId">Id of hearing to look up</param>
+        /// <param name="participantId">Id of participant to remove</param>
+        /// <param name="request">The participant information to add</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public void UpdateParticipantDetails(System.Guid hearingId, System.Guid participantId, UpdateParticipantRequest request)
+        {
+            System.Threading.Tasks.Task.Run(async () => await UpdateParticipantDetailsAsync(hearingId, participantId, request, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <summary>Update participant details</summary>
+        /// <param name="hearingId">Id of hearing to look up</param>
+        /// <param name="participantId">Id of participant to remove</param>
+        /// <param name="request">The participant information to add</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        public async System.Threading.Tasks.Task UpdateParticipantDetailsAsync(System.Guid hearingId, System.Guid participantId, UpdateParticipantRequest request, System.Threading.CancellationToken cancellationToken)
+        {
+            if (hearingId == null)
+                throw new System.ArgumentNullException("hearingId");
+    
+            if (participantId == null)
+                throw new System.ArgumentNullException("participantId");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/{hearingId}/participants/{participantId}");
+            urlBuilder_.Replace("{hearingId}", System.Uri.EscapeDataString(ConvertToString(hearingId, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{participantId}", System.Uri.EscapeDataString(ConvertToString(participantId, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value));
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("PUT");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "204") 
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == "400") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new BookingsApiException("Bad Request", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                        else
+                        if (status_ == "404") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new BookingsApiException("Not Found", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new BookingsApiException("Unauthorized", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new BookingsApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
                     }
                     finally
                     {
@@ -1911,6 +2349,111 @@ namespace VideoWeb.Services.Bookings
             }
         }
     
+        /// <summary>Find persons with contact email matching a search term.</summary>
+        /// <param name="term">Partial string to match contact email with, case-insensitive.</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<PersonResponse>> GetPersonBySearchTermAsync(string term)
+        {
+            return GetPersonBySearchTermAsync(term, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Find persons with contact email matching a search term.</summary>
+        /// <param name="term">Partial string to match contact email with, case-insensitive.</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public System.Collections.Generic.List<PersonResponse> GetPersonBySearchTerm(string term)
+        {
+            return System.Threading.Tasks.Task.Run(async () => await GetPersonBySearchTermAsync(term, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <summary>Find persons with contact email matching a search term.</summary>
+        /// <param name="term">Partial string to match contact email with, case-insensitive.</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<PersonResponse>> GetPersonBySearchTermAsync(string term, System.Threading.CancellationToken cancellationToken)
+        {
+            if (term == null)
+                throw new System.ArgumentNullException("term");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/persons/search/{term}");
+            urlBuilder_.Replace("{term}", System.Uri.EscapeDataString(ConvertToString(term, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            var result_ = default(System.Collections.Generic.List<PersonResponse>); 
+                            try
+                            {
+                                result_ = Newtonsoft.Json.JsonConvert.DeserializeObject<System.Collections.Generic.List<PersonResponse>>(responseData_, _settings.Value);
+                                return result_; 
+                            } 
+                            catch (System.Exception exception_) 
+                            {
+                                throw new BookingsApiException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, headers_, exception_);
+                            }
+                        }
+                        else
+                        if (status_ == "400") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new BookingsApiException("Bad Request", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new BookingsApiException("Unauthorized", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new BookingsApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+            
+                        return default(System.Collections.Generic.List<PersonResponse>);
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
         private string ConvertToString(object value, System.Globalization.CultureInfo cultureInfo)
         {
             if (value is System.Enum)
@@ -1965,6 +2508,15 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("hearing_types", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.List<HearingTypeResponse> Hearing_types { get; set; }
     
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static CaseTypeResponse FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<CaseTypeResponse>(data);
+        }
     
     }
     
@@ -1980,6 +2532,15 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Id { get; set; }
     
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static HearingTypeResponse FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<HearingTypeResponse>(data);
+        }
     
     }
     
@@ -1991,6 +2552,15 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Name { get; set; }
     
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static CaseRoleResponse FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<CaseRoleResponse>(data);
+        }
     
     }
     
@@ -2002,6 +2572,15 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Name { get; set; }
     
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static HearingRoleResponse FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<HearingRoleResponse>(data);
+        }
     
     }
     
@@ -2049,10 +2628,35 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("other_information", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Other_information { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("created_date", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Created_date { get; set; }
+    
         /// <summary>The VH admin username that created the hearing</summary>
         [Newtonsoft.Json.JsonProperty("created_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Created_by { get; set; }
     
+        /// <summary>The last date and time any details for the hearing was updated</summary>
+        [Newtonsoft.Json.JsonProperty("updated_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Updated_by { get; set; }
+    
+        /// <summary>User id of the who last updated the hearing</summary>
+        [Newtonsoft.Json.JsonProperty("updated_date", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Updated_date { get; set; }
+    
+        /// <summary>Gets or sets the booking status of the hearing</summary>
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public HearingDetailsResponseStatus? Status { get; set; }
+    
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static HearingDetailsResponse FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<HearingDetailsResponse>(data);
+        }
     
     }
     
@@ -2072,6 +2676,15 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("is_lead_case", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool? Is_lead_case { get; set; }
     
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static CaseResponse FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<CaseResponse>(data);
+        }
     
     }
     
@@ -2126,6 +2739,35 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Username { get; set; }
     
+        /// <summary>House number of an Individual</summary>
+        [Newtonsoft.Json.JsonProperty("house_number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string House_number { get; set; }
+    
+        /// <summary>Street number of an Individual</summary>
+        [Newtonsoft.Json.JsonProperty("street", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Street { get; set; }
+    
+        /// <summary>Postcode of an Individual</summary>
+        [Newtonsoft.Json.JsonProperty("postcode", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Postcode { get; set; }
+    
+        /// <summary>City/Town of an Individual</summary>
+        [Newtonsoft.Json.JsonProperty("city", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string City { get; set; }
+    
+        /// <summary>County of an Individual</summary>
+        [Newtonsoft.Json.JsonProperty("county", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string County { get; set; }
+    
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static ParticipantResponse FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<ParticipantResponse>(data);
+        }
     
     }
     
@@ -2152,6 +2794,74 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("other_information", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Other_information { get; set; }
     
+        /// <summary>List of cases associated to the hearing</summary>
+        [Newtonsoft.Json.JsonProperty("cases", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.List<CaseRequest> Cases { get; set; }
+    
+        /// <summary>User updated the hearing record</summary>
+        [Newtonsoft.Json.JsonProperty("updated_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Updated_by { get; set; }
+    
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static UpdateHearingRequest FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<UpdateHearingRequest>(data);
+        }
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.13.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class CaseRequest 
+    {
+        /// <summary>The case number</summary>
+        [Newtonsoft.Json.JsonProperty("number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Number { get; set; }
+    
+        /// <summary>The case name</summary>
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    
+        /// <summary>Is lead case for hearing</summary>
+        [Newtonsoft.Json.JsonProperty("is_lead_case", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? Is_lead_case { get; set; }
+    
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static CaseRequest FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<CaseRequest>(data);
+        }
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.13.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class UpdateBookingStatusRequest 
+    {
+        /// <summary>The user requesting to update the status</summary>
+        [Newtonsoft.Json.JsonProperty("updated_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Updated_by { get; set; }
+    
+        /// <summary>New status of the hearing</summary>
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public UpdateBookingStatusRequestStatus? Status { get; set; }
+    
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static UpdateBookingStatusRequest FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<UpdateBookingStatusRequest>(data);
+        }
     
     }
     
@@ -2198,24 +2908,15 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("created_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Created_by { get; set; }
     
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
     
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.13.0 (Newtonsoft.Json v11.0.0.0)")]
-    public partial class CaseRequest 
-    {
-        /// <summary>The case number</summary>
-        [Newtonsoft.Json.JsonProperty("number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Number { get; set; }
-    
-        /// <summary>The case name</summary>
-        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Name { get; set; }
-    
-        /// <summary>Is lead case for hearing</summary>
-        [Newtonsoft.Json.JsonProperty("is_lead_case", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool? Is_lead_case { get; set; }
-    
+        public static BookNewHearingRequest FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<BookNewHearingRequest>(data);
+        }
     
     }
     
@@ -2270,6 +2971,176 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("representee", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Representee { get; set; }
     
+        /// <summary>House number of an Individual</summary>
+        [Newtonsoft.Json.JsonProperty("house_number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string House_number { get; set; }
+    
+        /// <summary>Stree number of an Individual</summary>
+        [Newtonsoft.Json.JsonProperty("street", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Street { get; set; }
+    
+        /// <summary>Postcode of an Individual</summary>
+        [Newtonsoft.Json.JsonProperty("postcode", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Postcode { get; set; }
+    
+        /// <summary>City/Town of an Individual</summary>
+        [Newtonsoft.Json.JsonProperty("city", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string City { get; set; }
+    
+        /// <summary>County of an Individual</summary>
+        [Newtonsoft.Json.JsonProperty("county", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string County { get; set; }
+    
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static ParticipantRequest FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<ParticipantRequest>(data);
+        }
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.13.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class BookingsResponse 
+    {
+        /// <summary>Gets or sets list of bookings hearings.</summary>
+        [Newtonsoft.Json.JsonProperty("hearings", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.List<BookingsByDateResponse> Hearings { get; set; }
+    
+        /// <summary>Gets or sets a unique sequential value to get next set of records. 
+        /// value is set to 0 if no records to return.</summary>
+        [Newtonsoft.Json.JsonProperty("next_cursor", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Next_cursor { get; set; }
+    
+        /// <summary>Gets or sets the maximum number of items returned for the page.</summary>
+        [Newtonsoft.Json.JsonProperty("limit", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int? Limit { get; set; }
+    
+        /// <summary>Absolute url to the previous page of items.
+        /// Will be null for the first page.</summary>
+        [Newtonsoft.Json.JsonProperty("prev_page_url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Prev_page_url { get; set; }
+    
+        /// <summary>Absolute url for the next page of items.
+        /// Will be null for the last page.</summary>
+        [Newtonsoft.Json.JsonProperty("next_page_url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Next_page_url { get; set; }
+    
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static BookingsResponse FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<BookingsResponse>(data);
+        }
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.13.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class BookingsByDateResponse 
+    {
+        /// <summary>The hearings grouped by date without time.</summary>
+        [Newtonsoft.Json.JsonProperty("scheduled_date", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Scheduled_date { get; set; }
+    
+        /// <summary>Gets or sets list of bookings hearings.</summary>
+        [Newtonsoft.Json.JsonProperty("hearings", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.List<BookingsHearingResponse> Hearings { get; set; }
+    
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static BookingsByDateResponse FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<BookingsByDateResponse>(data);
+        }
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.13.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class BookingsHearingResponse 
+    {
+        /// <summary>Gets or sets the hearing ID.</summary>
+        [Newtonsoft.Json.JsonProperty("hearing_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid? Hearing_id { get; set; }
+    
+        /// <summary>Gets or sets the hearing number/reference.</summary>
+        [Newtonsoft.Json.JsonProperty("hearing_number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Hearing_number { get; set; }
+    
+        /// <summary>Gets or sets the hearing title/name.</summary>
+        [Newtonsoft.Json.JsonProperty("hearing_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Hearing_name { get; set; }
+    
+        /// <summary>Gets or sets the hearing scheduled date and time.</summary>
+        [Newtonsoft.Json.JsonProperty("scheduled_date_time", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Scheduled_date_time { get; set; }
+    
+        /// <summary>Gets or sets the hearing duration.</summary>
+        [Newtonsoft.Json.JsonProperty("scheduled_duration", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int? Scheduled_duration { get; set; }
+    
+        /// <summary>Gets or sets the name of the case type.</summary>
+        [Newtonsoft.Json.JsonProperty("case_type_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Case_type_name { get; set; }
+    
+        /// <summary>Gets or sets the hearing case type.</summary>
+        [Newtonsoft.Json.JsonProperty("hearing_type_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Hearing_type_name { get; set; }
+    
+        /// <summary>Gets or sets the court room.</summary>
+        [Newtonsoft.Json.JsonProperty("court_room", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Court_room { get; set; }
+    
+        /// <summary>Gets or sets the court address.</summary>
+        [Newtonsoft.Json.JsonProperty("court_address", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Court_address { get; set; }
+    
+        /// <summary>Gets or sets Judge name.</summary>
+        [Newtonsoft.Json.JsonProperty("judge_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Judge_name { get; set; }
+    
+        /// <summary>Gets or sets the name/email person who create the hearing.</summary>
+        [Newtonsoft.Json.JsonProperty("created_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Created_by { get; set; }
+    
+        /// <summary>Gets or sets the created date of hearing.</summary>
+        [Newtonsoft.Json.JsonProperty("created_date", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Created_date { get; set; }
+    
+        /// <summary>Gets or sets the name/email person who last edit the hearing.</summary>
+        [Newtonsoft.Json.JsonProperty("last_edit_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Last_edit_by { get; set; }
+    
+        /// <summary>Gets or sets the last edited date of hearing.</summary>
+        [Newtonsoft.Json.JsonProperty("last_edit_date", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Last_edit_date { get; set; }
+    
+        /// <summary>Gets the scheduled date without time.</summary>
+        [Newtonsoft.Json.JsonProperty("hearing_date", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Hearing_date { get; set; }
+    
+        /// <summary>Gets or sets the booking status of the hearing.</summary>
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public BookingsHearingResponseStatus? Status { get; set; }
+    
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static BookingsHearingResponse FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<BookingsHearingResponse>(data);
+        }
     
     }
     
@@ -2283,6 +3154,15 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Name { get; set; }
     
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static HearingVenueResponse FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<HearingVenueResponse>(data);
+        }
     
     }
     
@@ -2293,6 +3173,70 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("participants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.List<ParticipantRequest> Participants { get; set; }
     
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static AddParticipantsToHearingRequest FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<AddParticipantsToHearingRequest>(data);
+        }
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.13.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class UpdateParticipantRequest 
+    {
+        /// <summary>Participant Title.</summary>
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Title { get; set; }
+    
+        /// <summary>Participant Telephone number</summary>
+        [Newtonsoft.Json.JsonProperty("telephone_number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Telephone_number { get; set; }
+    
+        /// <summary>Participant Display Name</summary>
+        [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Display_name { get; set; }
+    
+        /// <summary>House number of an Individual</summary>
+        [Newtonsoft.Json.JsonProperty("house_number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string House_number { get; set; }
+    
+        /// <summary>Stree number of an Individual</summary>
+        [Newtonsoft.Json.JsonProperty("street", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Street { get; set; }
+    
+        /// <summary>Postcode of an Individual</summary>
+        [Newtonsoft.Json.JsonProperty("postcode", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Postcode { get; set; }
+    
+        /// <summary>City/Town of an Individual</summary>
+        [Newtonsoft.Json.JsonProperty("city", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string City { get; set; }
+    
+        /// <summary>County of an Individual</summary>
+        [Newtonsoft.Json.JsonProperty("county", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string County { get; set; }
+    
+        /// <summary>Organisation name</summary>
+        [Newtonsoft.Json.JsonProperty("organisation_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Organisation_name { get; set; }
+    
+        /// <summary>Hearing Role Name</summary>
+        [Newtonsoft.Json.JsonProperty("hearing_role_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Hearing_role_name { get; set; }
+    
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static UpdateParticipantRequest FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<UpdateParticipantRequest>(data);
+        }
     
     }
     
@@ -2331,6 +3275,54 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Username { get; set; }
     
+        public string ToJson() 
+        {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
+        }
+    
+        public static PersonResponse FromJson(string data)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<PersonResponse>(data);
+        }
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.13.0 (Newtonsoft.Json v11.0.0.0)")]
+    public enum HearingDetailsResponseStatus
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"Booked")]
+        Booked = 0,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Created")]
+        Created = 1,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Cancelled")]
+        Cancelled = 2,
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.13.0 (Newtonsoft.Json v11.0.0.0)")]
+    public enum UpdateBookingStatusRequestStatus
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"Created")]
+        Created = 0,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Cancelled")]
+        Cancelled = 1,
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.13.0 (Newtonsoft.Json v11.0.0.0)")]
+    public enum BookingsHearingResponseStatus
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"Booked")]
+        Booked = 0,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Created")]
+        Created = 1,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Cancelled")]
+        Cancelled = 2,
     
     }
 

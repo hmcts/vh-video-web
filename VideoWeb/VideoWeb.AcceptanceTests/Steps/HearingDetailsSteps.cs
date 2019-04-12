@@ -39,14 +39,6 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .Should().BeTrue();
         }
 
-        [Then(@"contact us details are available")]
-        public void ThenContactUsDetailsWillBeAvailable()
-        {
-            _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.ContactUsLink).Displayed
-                .Should().BeTrue();
-            _hearingListPage.TheCaseNumberIsNotDisplayedInTheContactDetails().Should().BeTrue();
-        }
-
         [Then(@"the new hearing isn't available to join yet")]
         public void ThenTheNewHearingIsnTAvailableToJoinYet()
         {
@@ -75,7 +67,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .Should().BeTrue();
         }
 
-        [When(@"the user clicks the Start Hearing button")]
+        [When(@"the user clicks on the Start Hearing button")]
         public void WhenTheUserClicksTheStartButton()
         {
             _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage._signInButton(_context.Hearing.Cases.First().Number), TollerenceInMinutes * 60).Click();
