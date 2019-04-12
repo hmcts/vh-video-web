@@ -1,11 +1,12 @@
-import { ClientSettingsResponse, ConferenceStatus, ParticipantStatus } from '../../services/clients/api-client';
 import { Observable, of } from 'rxjs';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
-import { HelpMessage } from 'src/app/services/models/help-message';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
+import { HelpMessage } from 'src/app/services/models/help-message';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 
-export class MockServerSentEventsService {
+import { ConferenceStatus, ParticipantStatus } from '../../services/clients/api-client';
+
+export class MockEventsService {
 
   nextParticipantStatusMessage: ParticipantStatusMessage;
   nextHearingStatusMessage: ConferenceStatusMessage;

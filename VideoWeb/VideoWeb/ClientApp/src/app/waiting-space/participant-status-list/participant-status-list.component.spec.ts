@@ -8,14 +8,14 @@ import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConfigService } from 'src/app/services/config.service';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
-import { MockServerSentEventsService } from 'src/app/testing/mocks/MockServerEventService';
-import { ServerSentEventsService } from 'src/app/services/server-sent-events.service';
+import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
+import { EventsService } from 'src/app/services/events.service';
 
 describe('ParticipantStatusListComponent', () => {
   let component: ParticipantStatusListComponent;
   let fixture: ComponentFixture<ParticipantStatusListComponent>;
   let adalService: MockAdalService;
-  let eventService: MockServerSentEventsService;
+  let eventService: MockEventsService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -24,12 +24,12 @@ describe('ParticipantStatusListComponent', () => {
       providers: [
         { provide: AdalService, useClass: MockAdalService },
         { provide: ConfigService, useClass: MockConfigService },
-        { provide: ServerSentEventsService, useClass: MockServerSentEventsService }
+        { provide: EventsService, useClass: MockEventsService }
       ]
     })
       .compileComponents();
     adalService = TestBed.get(AdalService);
-    eventService = TestBed.get(ServerSentEventsService);
+    eventService = TestBed.get(EventsService);
   }));
 
   beforeEach(() => {

@@ -6,7 +6,7 @@ import {
 } from 'src/app/services/clients/api-client';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { HelpMessage } from 'src/app/services/models/help-message';
-import { ServerSentEventsService } from 'src/app/services/server-sent-events.service';
+import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
 
 @Component({
@@ -31,7 +31,7 @@ export class VhoHearingsComponent implements OnInit {
 
   constructor(
     private videoWebService: VideoWebService,
-    private eventService: ServerSentEventsService,
+    private eventService: EventsService,
     private ngZone: NgZone,
     public sanitizer: DomSanitizer,
     private snotifyService: SnotifyService

@@ -12,7 +12,7 @@ import { ParticipantStatusMessage } from './models/participant-status-message';
 @Injectable({
   providedIn: 'root'
 })
-export class ServerSentEventsService {
+export class EventsService {
 
   eventServiceBaseUri: string;
   connection: signalR.HubConnection;

@@ -3,13 +3,13 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
 import { of } from 'rxjs';
 import { ConfigService } from 'src/app/services/config.service';
-import { ServerSentEventsService } from 'src/app/services/server-sent-events.service';
+import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
-import { MockServerSentEventsService } from 'src/app/testing/mocks/MockServerEventService';
+import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { VhoHearingsComponent } from './vho-hearings.component';
 import { ConferenceResponse, ConsultationAnswer } from 'src/app/services/clients/api-client';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
@@ -20,7 +20,7 @@ describe('VhoHearingsComponent', () => {
   let fixture: ComponentFixture<VhoHearingsComponent>;
   let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
   let adalService: MockAdalService;
-  let eventService: MockServerSentEventsService;
+  let eventService: MockEventsService;
   const conferences = new ConferenceTestData().getTestData();
 
   beforeEach(async(() => {
@@ -35,7 +35,7 @@ describe('VhoHearingsComponent', () => {
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },
         { provide: ConfigService, useClass: MockConfigService },
-        { provide: ServerSentEventsService, useClass: MockServerSentEventsService }
+        { provide: EventsService, useClass: MockEventsService }
       ]
     })
       .compileComponents();
@@ -43,7 +43,7 @@ describe('VhoHearingsComponent', () => {
 
   beforeEach(() => {
     adalService = TestBed.get(AdalService);
-    eventService = TestBed.get(ServerSentEventsService);
+    eventService = TestBed.get(EventsService);
     fixture = TestBed.createComponent(VhoHearingsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

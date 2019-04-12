@@ -1,7 +1,7 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { ConferenceResponse, ParticipantStatus, ConferenceStatus } from 'src/app/services/clients/api-client';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ServerSentEventsService } from 'src/app/services/server-sent-events.service';
+import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { PageUrls } from 'src/app/shared/page-url.constants';
@@ -20,7 +20,7 @@ export class JudgeWaitingRoomComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private videoWebService: VideoWebService,
-    private eventService: ServerSentEventsService,
+    private eventService: EventsService,
     private ngZone: NgZone
   ) {
     this.loadingData = true;

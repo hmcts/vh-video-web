@@ -2,7 +2,7 @@ import { Component, NgZone, OnInit } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConferenceResponse, ConferenceStatus, UserRole } from 'src/app/services/clients/api-client';
-import { ServerSentEventsService } from 'src/app/services/server-sent-events.service';
+import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
 
 @Component({
@@ -20,7 +20,7 @@ export class JudgeHearingPageComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private videoWebService: VideoWebService,
-    private eventService: ServerSentEventsService,
+    private eventService: EventsService,
     private ngZone: NgZone,
     public sanitizer: DomSanitizer
   ) {

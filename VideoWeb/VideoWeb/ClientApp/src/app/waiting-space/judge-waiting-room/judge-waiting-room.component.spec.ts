@@ -10,9 +10,9 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
 import { ConfigService } from 'src/app/services/config.service';
-import { ServerSentEventsService } from 'src/app/services/server-sent-events.service';
+import { EventsService } from 'src/app/services/events.service';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
-import { MockServerSentEventsService } from 'src/app/testing/mocks/MockServerEventService';
+import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { ParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
 import { PageUrls } from 'src/app/shared/page-url.constants';
@@ -25,7 +25,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
   let router: Router;
   let conference: ConferenceResponse;
   let adalService: MockAdalService;
-  let eventService: MockServerSentEventsService;
+  let eventService: MockEventsService;
 
   beforeEach(async(() => {
     conference = new ConferenceTestData().getConferenceDetail();
@@ -48,7 +48,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },
         { provide: ConfigService, useClass: MockConfigService },
-        { provide: ServerSentEventsService, useClass: MockServerSentEventsService }
+        { provide: EventsService, useClass: MockEventsService }
       ]
     })
     .compileComponents();
@@ -56,7 +56,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
   beforeEach(() => {
     adalService = TestBed.get(AdalService);
-    eventService = TestBed.get(ServerSentEventsService);
+    eventService = TestBed.get(EventsService);
     route = TestBed.get(ActivatedRoute);
     router = TestBed.get(Router);
     fixture = TestBed.createComponent(JudgeWaitingRoomComponent);
@@ -165,7 +165,7 @@ describe('JudgeWaitingRoomComponent when conference does not exist', () => {
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },
         { provide: ConfigService, useClass: MockConfigService },
-        { provide: ServerSentEventsService, useClass: MockServerSentEventsService }
+        { provide: EventsService, useClass: MockEventsService }
       ]
     })
     .compileComponents();

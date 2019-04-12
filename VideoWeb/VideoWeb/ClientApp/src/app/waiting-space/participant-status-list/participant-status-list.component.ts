@@ -6,7 +6,7 @@ import {
 import { AdalService } from 'adal-angular4';
 import { SnotifyService, SnotifyPosition } from 'ng-snotify';
 import { ConsultationService } from 'src/app/services/consultation.service';
-import { ServerSentEventsService } from 'src/app/services/server-sent-events.service';
+import { EventsService } from 'src/app/services/events.service';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 
 @Component({
@@ -25,7 +25,7 @@ export class ParticipantStatusListComponent implements OnInit {
     private adalService: AdalService,
     private consultationService: ConsultationService,
     private snotifyService: SnotifyService,
-    private eventService: ServerSentEventsService,
+    private eventService: EventsService,
     private ngZone: NgZone,
   ) { }
 
