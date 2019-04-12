@@ -47,6 +47,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public void NextButton() => _context.NgDriver.WaitUntilElementVisible(Next).Click();
         public void SignInButton() => _context.NgDriver.WaitUntilElementVisible(SignIn).Click();
         public void DontStaySignedIn() => _context.NgDriver.WaitUntilElementVisible(NoButton).Click();
+
         public void SignInTitle()
         {
             _context.Retry(() => _context.NgDriver.Title.Trim().Should().Be("Sign in to your account"));

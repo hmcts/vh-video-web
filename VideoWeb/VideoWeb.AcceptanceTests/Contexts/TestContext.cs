@@ -23,7 +23,7 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public string VideoApiBaseUrl { get; set; }
         public string VideoWebUrl { get; set; }
         public string Json { get; set; }
-        public UserAccount CurrenUser { get; set; }
+        public UserAccount CurrentUser { get; set; }
         public int DelayedStartTime { get; set; }
         public HearingDetailsResponse Hearing { get; set; }
         public Guid? NewHearingId { get; set; }
