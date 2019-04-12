@@ -38,7 +38,7 @@ describe('AdminGuard', () => {
   }));
 
   it('should be able to activate component if role is VHOfficer', async(async () => {
-    const profile = new UserProfileResponse({ role: 'VHOfficer' });
+    const profile = new UserProfileResponse({ role: 'VhOfficer' });
     profileServiceSpy.getUserProfile.and.returnValue(of(profile));
     guard.canActivate(null, null).subscribe((result) => {
       expect(result).toBeTruthy();
