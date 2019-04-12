@@ -2,11 +2,11 @@
 
 namespace VideoWeb.AcceptanceTests.Pages
 {
-    public class EquipmentCheckPage
+    public class CameraMicrophonePage
     {
         private readonly BrowserContext _context;
 
-        public EquipmentCheckPage(BrowserContext browserContext)
+        public CameraMicrophonePage(BrowserContext browserContext)
         {
             _context = browserContext;
         }      

@@ -11,17 +11,32 @@ namespace VideoWeb.AcceptanceTests.Pages
     public class CommonPages
     {
         private readonly BrowserContext _browserContext;
+        public By SignOutLink => By.PartialLinkText("Sign out");
+        public By QuoteYourCaseNumberText => CommonLocators.ElementContainingText("Call us on");
+        public By ContactUsLink => CommonLocators.ElementContainingText("Contact us for help");
+
         public CommonPages(BrowserContext browserContext)
         {
             _browserContext = browserContext;
         }
+        
+        public bool TheCaseNumberIsNotDisplayedInTheContactDetails()
+        {
+            _browserContext.NgDriver.WaitUntilElementClickable(ContactUsLink).Click();
+            return _browserContext.NgDriver.WaitUntilElementVisible(QuoteYourCaseNumberText).Text.Contains("and quoting your case number");
+        }
 
-        private By _breadcrumbs => By.XPath("//li[@class='vh-breadcrumbs']/a");
-        private By _nextButton => By.Id(("nextButton"));
-        private By _cancelButton => By.Id(("cancelButton"));
-        private By _primaryNavItems => By.XPath("//*[@class='vh-primary-navigation__link']");
-        public By SignOutLink => By.PartialLinkText("Sign out");
+        public void PageUrl(Page page)
+        {
+            _browserContext.Retry(() => _browserContext.NgDriver.Url.Trim().Should().Contain(page.Url));
+        }
 
+        public void ClickWithJavascript(By element)
+        {
+            IJavaScriptExecutor js = (IJavaScriptExecutor)_browserContext.NgDriver;
+            js.ExecuteScript("arguments[0].click();", element);
+        }
+        
         protected IEnumerable<IWebElement> GetListOfElements(By elements)
         {
             IEnumerable<IWebElement> webElements = null;
@@ -36,18 +51,7 @@ namespace VideoWeb.AcceptanceTests.Pages
             }
             return webElements;
         }
-        protected string GetBreadcrumbAttribute(string breadcrumb)
-        {
-            var getListOfElements = GetListOfElements(_breadcrumbs);
-            string breadcrumbAttribute = null;
-            foreach (var element in getListOfElements)
-            {
-                if (breadcrumb == element.Text)
-                    breadcrumbAttribute = element.GetAttribute("class");
-            }
-            return breadcrumbAttribute;
-        }
-
+       
         protected void InputValues(By element, string value) => _browserContext.NgDriver.WaitUntilElementVisible(element).SendKeys(value);
         protected void ClickElement(By element) => _browserContext.NgDriver.WaitUntilElementVisible(element).Click();
         protected void ClearFieldInputValues(By element, string value)
@@ -56,11 +60,7 @@ namespace VideoWeb.AcceptanceTests.Pages
             webElement.Clear();
             webElement.SendKeys(value);
         }
-        public void NextButton()
-        {
-            _browserContext.Retry(() => _browserContext.NgDriver.WaitUntilElementClickable(_nextButton).Click());
-        }
-        public void CancelButton() => _browserContext.NgDriver.WaitUntilElementClickable(_cancelButton).Click();
+
         public string GetElementText(By element) => _browserContext.NgDriver.WaitUntilElementVisible(element).Text.Trim();
 
         protected void SelectOption(By elements, string option)
@@ -93,22 +93,13 @@ namespace VideoWeb.AcceptanceTests.Pages
             _browserContext.Retry(() => _browserContext.NgDriver.Url.Should().Contain(url));
         }
 
-        public void ClickBreadcrumb(string breadcrumb) => SelectOption(_breadcrumbs, breadcrumb);
         public void AcceptBrowserAlert() => _browserContext.AcceptAlert();
-        public void DashBoard() => SelectOption(_primaryNavItems, "Dashboard");
-        public void BookingsList() => SelectOption(_primaryNavItems, "Bookings list");
         public void AddItems<T>(string key, T value) => _browserContext.Items.AddOrUpdate(key, value);
         public dynamic GetItems(string key) => _browserContext.Items.Get(key);
-        public string GetParticipantDetails() => GetElementText(By.XPath("//*[@class='govuk-grid-column-two-thirds vhtable-header']"));
         protected IEnumerable<string> Items(By elements)
         {
             var webElements = _browserContext.NgDriver.WaitUntilElementsVisible(elements);
-            IList<string> list = new List<string>();
-            foreach (var element in webElements)
-            {
-                list.Add(element.Text.Trim());
-            }
-            return list;
+            return webElements.Select(element => element.Text.Trim()).ToList();
         }
         public void TopMenuHmctsLogo() => SelectOption(By.XPath("//*[@class='hmcts-header__logotype']"));
     }

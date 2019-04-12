@@ -8,7 +8,6 @@ using Testing.Common.Assertions;
 using Testing.Common.Builders;
 using Testing.Common.Configuration;
 using Testing.Common.Helpers;
-using VideoWeb.AcceptanceTests.Configuration;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
