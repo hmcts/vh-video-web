@@ -67,6 +67,10 @@ export class JudgeWaitingRoomComponent implements OnInit {
     this.router.navigate([PageUrls.JudgeHearingRoom, this.conference.id]);
   }
 
+  goToJudgeHearingList(): void {
+    this.router.navigate([PageUrls.JudgeHearingList]);
+  }
+
   private setupSubscribers() {
     this.eventService.start();
 
