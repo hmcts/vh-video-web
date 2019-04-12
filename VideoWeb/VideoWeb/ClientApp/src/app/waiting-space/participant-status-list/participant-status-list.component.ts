@@ -44,7 +44,10 @@ export class ParticipantStatusListComponent implements OnInit {
   }
 
   canCallParticipant(participant: ParticipantResponse): boolean {
-    if (participant.username === this.adalService.userInfo.userName) {
+    if (this.judge.username.toLocaleLowerCase().trim() === this.adalService.userInfo.userName.toLocaleLowerCase().trim()) {
+      return false;
+    }
+    if (participant.username.toLocaleLowerCase().trim() === this.adalService.userInfo.userName.toLocaleLowerCase().trim()) {
       return false;
     }
     return this.isParticipantAvailable(participant);
@@ -179,6 +182,4 @@ export class ParticipantStatusListComponent implements OnInit {
   private filterJudge(): void {
     this.judge = this.conference.participants.find(x => x.role === UserRole.Judge);
   }
-
-
 }
