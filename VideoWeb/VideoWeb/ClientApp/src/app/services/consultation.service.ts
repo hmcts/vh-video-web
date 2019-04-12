@@ -1,8 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  ApiClient, PrivateConsultationRequest, ParticipantResponse,
-  ConsultationRequestAnswer, PrivateConsultationAnswerRequest, ConferenceResponse
-} from './clients/api-client';
+import { ApiClient, ConsultationRequest, ParticipantResponse, ConsultationAnswer, ConferenceResponse } from './clients/api-client';
 import { Observable } from 'rxjs';
 
 
@@ -16,19 +13,19 @@ export class ConsultationService {
 
   raiseConsultationRequest(conference: ConferenceResponse, requester: ParticipantResponse,
     requestee: ParticipantResponse): Observable<void> {
-    return this.apiClient.requestConsultation(new PrivateConsultationRequest({
-      request_by: requester.id,
-      request_for: requestee.id,
+    return this.apiClient.handleConsultationRequest(new ConsultationRequest({
+      requested_by: requester.id,
+      requested_for: requestee.id,
       conference_id: conference.id
     }));
   }
 
   respondToConsultationRequest(conference: ConferenceResponse, requester: ParticipantResponse,
-    requestee: ParticipantResponse, answer: ConsultationRequestAnswer) {
-    return this.apiClient.respondToConsultationRequest(new PrivateConsultationAnswerRequest({
-      request_by: requester.id,
-      request_for: requestee.id,
+    requestee: ParticipantResponse, answer: ConsultationAnswer) {
+    return this.apiClient.handleConsultationRequest(new ConsultationRequest({
       conference_id: conference.id,
+      requested_by: requester.id,
+      requested_for: requestee.id,
       answer: answer
     }));
   }

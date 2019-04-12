@@ -11,7 +11,7 @@ import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockServerSentEventsService } from 'src/app/testing/mocks/MockServerEventService';
 import { VhoHearingsComponent } from './vho-hearings.component';
-import { ConferenceResponse, ConsultationRequestAnswer } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConsultationAnswer } from 'src/app/services/clients/api-client';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 
 
@@ -97,7 +97,7 @@ describe('VhoHearingsComponent', () => {
     const conference = conferences[0];
     const requestedBy = conference.participants[0].username;
     const requestedFor = conference.participants[1].username;
-    const message = new ConsultationMessage(conference.id, requestedBy, requestedFor, ConsultationRequestAnswer.Accepted);
+    const message = new ConsultationMessage(conference.id, requestedBy, requestedFor, ConsultationAnswer.Accepted);
     component.handleConsultationMessage(message);
     expect(component.addTransferTask).toHaveBeenCalled();
   });

@@ -7,14 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using Testing.Common.Helpers;
-using VideoWeb.Contract.Requests;
 using VideoWeb.Controllers;
 using VideoWeb.Services.Video;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
 {
-    public class RespondToConsultationRequestTests
+    public class RequestConsultationTests
     {
         private ConsultationsController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
@@ -45,9 +44,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .Returns(Task.FromResult(default(object)));
 
-            var result =
-                await _controller.RespondToConsultationRequest(Builder<PrivateConsultationAnswerRequest>.CreateNew()
-                    .Build());
+            var result = await _controller.HandleConsultationRequest(Builder<ConsultationRequest>.CreateNew().Build());
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
         }
@@ -61,9 +58,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result =
-                await _controller.RespondToConsultationRequest(Builder<PrivateConsultationAnswerRequest>.CreateNew()
-                    .Build());
+            var result = await _controller.HandleConsultationRequest(Builder<ConsultationRequest>.CreateNew().Build());
             var typedResult = (BadRequestObjectResult) result;
             typedResult.Should().NotBeNull();
         }
@@ -78,9 +73,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result =
-                await _controller.RespondToConsultationRequest(Builder<PrivateConsultationAnswerRequest>.CreateNew()
-                    .Build());
+            var result = await _controller.HandleConsultationRequest(Builder<ConsultationRequest>.CreateNew().Build());
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
         }

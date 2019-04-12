@@ -88,19 +88,19 @@ namespace VideoWeb.Services.Video
         System.Threading.Tasks.Task<ConferenceDetailsResponse> GetConferenceDetailsByIdAsync(System.Guid conferenceId, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Remove an existing conference</summary>
-        /// <param name="conferenceId">The hearing id</param>
+        /// <param name="conferenceId">The conference id</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task RemoveConferenceAsync(System.Guid conferenceId);
     
         /// <summary>Remove an existing conference</summary>
-        /// <param name="conferenceId">The hearing id</param>
+        /// <param name="conferenceId">The conference id</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         void RemoveConference(System.Guid conferenceId);
     
         /// <summary>Remove an existing conference</summary>
-        /// <param name="conferenceId">The hearing id</param>
+        /// <param name="conferenceId">The conference id</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -160,21 +160,21 @@ namespace VideoWeb.Services.Video
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         System.Threading.Tasks.Task CheckServiceHealthAsync(System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Add participants to a hearing</summary>
+        /// <summary>Add participants to a conference</summary>
         /// <param name="conferenceId">The id of the conference to add participants to</param>
         /// <param name="request">Details of the participant</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task AddParticipantsToConferenceAsync(System.Guid conferenceId, AddParticipantsToConferenceRequest request);
     
-        /// <summary>Add participants to a hearing</summary>
+        /// <summary>Add participants to a conference</summary>
         /// <param name="conferenceId">The id of the conference to add participants to</param>
         /// <param name="request">Details of the participant</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         void AddParticipantsToConference(System.Guid conferenceId, AddParticipantsToConferenceRequest request);
     
-        /// <summary>Add participants to a hearing</summary>
+        /// <summary>Add participants to a conference</summary>
         /// <param name="conferenceId">The id of the conference to add participants to</param>
         /// <param name="request">Details of the participant</param>
         /// <returns>Success</returns>
@@ -182,21 +182,21 @@ namespace VideoWeb.Services.Video
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         System.Threading.Tasks.Task AddParticipantsToConferenceAsync(System.Guid conferenceId, AddParticipantsToConferenceRequest request, System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Remove participants from a hearing</summary>
+        /// <summary>Remove participants from a conference</summary>
         /// <param name="conferenceId">The id of the conference to remove participants from</param>
         /// <param name="participantId">The id of the participant to remove</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task RemoveParticipantFromConferenceAsync(System.Guid conferenceId, System.Guid participantId);
     
-        /// <summary>Remove participants from a hearing</summary>
+        /// <summary>Remove participants from a conference</summary>
         /// <param name="conferenceId">The id of the conference to remove participants from</param>
         /// <param name="participantId">The id of the participant to remove</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         void RemoveParticipantFromConference(System.Guid conferenceId, System.Guid participantId);
     
-        /// <summary>Remove participants from a hearing</summary>
+        /// <summary>Remove participants from a conference</summary>
         /// <param name="conferenceId">The id of the conference to remove participants from</param>
         /// <param name="participantId">The id of the participant to remove</param>
         /// <returns>Success</returns>
@@ -671,7 +671,7 @@ namespace VideoWeb.Services.Video
         }
     
         /// <summary>Remove an existing conference</summary>
-        /// <param name="conferenceId">The hearing id</param>
+        /// <param name="conferenceId">The conference id</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task RemoveConferenceAsync(System.Guid conferenceId)
@@ -680,7 +680,7 @@ namespace VideoWeb.Services.Video
         }
     
         /// <summary>Remove an existing conference</summary>
-        /// <param name="conferenceId">The hearing id</param>
+        /// <param name="conferenceId">The conference id</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public void RemoveConference(System.Guid conferenceId)
@@ -689,7 +689,7 @@ namespace VideoWeb.Services.Video
         }
     
         /// <summary>Remove an existing conference</summary>
-        /// <param name="conferenceId">The hearing id</param>
+        /// <param name="conferenceId">The conference id</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -1061,7 +1061,7 @@ namespace VideoWeb.Services.Video
             }
         }
     
-        /// <summary>Add participants to a hearing</summary>
+        /// <summary>Add participants to a conference</summary>
         /// <param name="conferenceId">The id of the conference to add participants to</param>
         /// <param name="request">Details of the participant</param>
         /// <returns>Success</returns>
@@ -1071,7 +1071,7 @@ namespace VideoWeb.Services.Video
             return AddParticipantsToConferenceAsync(conferenceId, request, System.Threading.CancellationToken.None);
         }
     
-        /// <summary>Add participants to a hearing</summary>
+        /// <summary>Add participants to a conference</summary>
         /// <param name="conferenceId">The id of the conference to add participants to</param>
         /// <param name="request">Details of the participant</param>
         /// <returns>Success</returns>
@@ -1081,7 +1081,7 @@ namespace VideoWeb.Services.Video
             System.Threading.Tasks.Task.Run(async () => await AddParticipantsToConferenceAsync(conferenceId, request, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
     
-        /// <summary>Add participants to a hearing</summary>
+        /// <summary>Add participants to a conference</summary>
         /// <param name="conferenceId">The id of the conference to add participants to</param>
         /// <param name="request">Details of the participant</param>
         /// <returns>Success</returns>
@@ -1177,7 +1177,7 @@ namespace VideoWeb.Services.Video
             }
         }
     
-        /// <summary>Remove participants from a hearing</summary>
+        /// <summary>Remove participants from a conference</summary>
         /// <param name="conferenceId">The id of the conference to remove participants from</param>
         /// <param name="participantId">The id of the participant to remove</param>
         /// <returns>Success</returns>
@@ -1187,7 +1187,7 @@ namespace VideoWeb.Services.Video
             return RemoveParticipantFromConferenceAsync(conferenceId, participantId, System.Threading.CancellationToken.None);
         }
     
-        /// <summary>Remove participants from a hearing</summary>
+        /// <summary>Remove participants from a conference</summary>
         /// <param name="conferenceId">The id of the conference to remove participants from</param>
         /// <param name="participantId">The id of the participant to remove</param>
         /// <returns>Success</returns>
@@ -1197,7 +1197,7 @@ namespace VideoWeb.Services.Video
             System.Threading.Tasks.Task.Run(async () => await RemoveParticipantFromConferenceAsync(conferenceId, participantId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
     
-        /// <summary>Remove participants from a hearing</summary>
+        /// <summary>Remove participants from a conference</summary>
         /// <param name="conferenceId">The id of the conference to remove participants from</param>
         /// <param name="participantId">The id of the participant to remove</param>
         /// <returns>Success</returns>

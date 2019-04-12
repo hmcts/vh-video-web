@@ -2,8 +2,7 @@ import { Component, HostListener, NgZone, OnInit } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { SnotifyPosition, SnotifyService } from 'ng-snotify';
 import {
-  ConferenceForUserResponse, ConferenceResponse,
-  ConferenceStatus, ConsultationRequestAnswer
+  ConferenceForUserResponse, ConferenceResponse, ConferenceStatus, ConsultationAnswer
 } from 'src/app/services/clients/api-client';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { HelpMessage } from 'src/app/services/models/help-message';
@@ -127,7 +126,7 @@ export class VhoHearingsComponent implements OnInit {
 
   handleConsultationMessage(message: ConsultationMessage): void {
     this.ngZone.run(() => {
-      if (message.result === ConsultationRequestAnswer.Accepted) {
+      if (message.result === ConsultationAnswer.Accepted) {
         this.addTransferTask(message);
       }
     });

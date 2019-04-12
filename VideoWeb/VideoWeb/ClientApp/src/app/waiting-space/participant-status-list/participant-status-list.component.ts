@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, NgZone } from '@angular/core';
 import {
   ConferenceResponse, ParticipantResponse, UserRole,
-  ParticipantStatus, ConsultationRequestAnswer
+  ParticipantStatus, ConsultationAnswer
 } from 'src/app/services/clients/api-client';
 import { AdalService } from 'adal-angular4';
 import { SnotifyService, SnotifyPosition } from 'ng-snotify';
@@ -61,9 +61,9 @@ export class ParticipantStatusListComponent implements OnInit {
 
     this.eventService.getConsultationMessage().subscribe(message => {
       this.ngZone.run(() => {
-        if (message.result === ConsultationRequestAnswer.Accepted) {
+        if (message.result === ConsultationAnswer.Accepted) {
           this.handleAcceptedConsultationRequest(message);
-        } else if (message.result === ConsultationRequestAnswer.Rejected) {
+        } else if (message.result === ConsultationAnswer.Rejected) {
           this.handleRejectedConsultationRequest(message);
         } else {
           this.displayConsultationRequestPopup(message);
@@ -125,7 +125,7 @@ export class ParticipantStatusListComponent implements OnInit {
   }
 
   acceptConsultationRequest(requester: ParticipantResponse, requestee: ParticipantResponse) {
-    this.consultationService.respondToConsultationRequest(this.conference, requester, requestee, ConsultationRequestAnswer.Accepted)
+    this.consultationService.respondToConsultationRequest(this.conference, requester, requestee, ConsultationAnswer.Accepted)
       .subscribe(() => {
         console.info('accepted consultation request from ' + requester.display_name);
       },
@@ -137,7 +137,7 @@ export class ParticipantStatusListComponent implements OnInit {
   }
 
   rejectConsultationRequest(requester: ParticipantResponse, requestee: ParticipantResponse) {
-    this.consultationService.respondToConsultationRequest(this.conference, requester, requestee, ConsultationRequestAnswer.Rejected)
+    this.consultationService.respondToConsultationRequest(this.conference, requester, requestee, ConsultationAnswer.Rejected)
       .subscribe(() => {
         console.info(requestee.display_name + ' rejected called request from ' + requester.display_name);
       },
