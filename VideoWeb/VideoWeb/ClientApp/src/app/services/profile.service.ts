@@ -17,4 +17,13 @@ export class ProfileService {
     }
     return this.apiClient.getUserProfile();
   }
+
+  loadProfile() {
+    return new Promise((resolve, reject) => {
+      this.getUserProfile().subscribe((data: UserProfileResponse) => {
+        this.profile = data;
+        resolve(true);
+      }, err => resolve(err));
+    });
+  }
 }

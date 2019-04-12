@@ -17,8 +17,13 @@ import { OnTheDayModule } from './on-the-day/on-the-day.module';
 import { HomeComponent } from './home/home.component';
 import { WaitingSpaceModule } from './waiting-space/waiting-space.module';
 import { SendVideoEventsComponent } from './send-video-events/send-video-events.component';
+import { ProfileService } from './services/profile.service';
 export function getSettings(configService: ConfigService) {
   return () => configService.loadConfig();
+}
+
+export function getUserProfile(profileService: ProfileService) {
+  return () => profileService.loadProfile();
 }
 
 @NgModule({
@@ -39,6 +44,7 @@ export function getSettings(configService: ConfigService) {
   ],
   providers: [
     { provide: APP_INITIALIZER, useFactory: getSettings, deps: [ConfigService], multi: true },
+    { provide: APP_INITIALIZER, useFactory: getUserProfile, deps: [ProfileService], multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: AdalInterceptor, multi: true },
     { provide: API_BASE_URL, useFactory: () => '.' },
     AdalService,
