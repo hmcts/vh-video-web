@@ -16,7 +16,7 @@ export class JudgeHearingListComponent implements OnInit {
   loadingData: boolean;
   interval: any;
 
-  constructor(private videoWebService: VideoWebService, private router: Router) {
+  constructor(private videoWebService: VideoWebService) {
     this.loadingData = true;
   }
 

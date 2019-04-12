@@ -4,6 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ServerSentEventsService } from 'src/app/services/server-sent-events.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
   selector: 'app-judge-waiting-room',
@@ -63,7 +64,7 @@ export class JudgeWaitingRoomComponent implements OnInit {
   }
 
   goToHearingPage(): void {
-    this.router.navigate(['/judge-hearing-room', this.conference.id]);
+    this.router.navigate([PageUrls.JudgeHearingRoom, this.conference.id]);
   }
 
   private setupSubscribers() {

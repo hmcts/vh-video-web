@@ -15,6 +15,7 @@ import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockServerSentEventsService } from 'src/app/testing/mocks/MockServerEventService';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { ParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
   let component: JudgeWaitingRoomComponent;
@@ -130,7 +131,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
   it('should navigate to hearing room with conference id', () => {
     spyOn(router, 'navigate').and.callFake(() => { Promise.resolve(true); });
     component.goToHearingPage();
-    expect(router.navigate).toHaveBeenCalledWith(['/judge-hearing-room', component.conference.id]);
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeHearingRoom, component.conference.id]);
   });
 });
 

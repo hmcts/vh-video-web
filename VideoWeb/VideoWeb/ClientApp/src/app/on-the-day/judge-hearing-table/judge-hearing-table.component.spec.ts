@@ -6,6 +6,7 @@ import * as moment from 'moment';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 
 describe('JudgeHearingTableComponent', () => {
   let component: JudgeHearingTableComponent;
@@ -72,7 +73,7 @@ describe('JudgeHearingTableComponent', () => {
     const conference = new ConferenceTestData().getConferenceFuture();
     spyOn(router, 'navigate').and.callFake(() => { });
     component.signIntoConference(conference);
-    expect(router.navigate).toHaveBeenCalledWith(['/judge/waiting-room', conference.id]);
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeWaitingRoom, conference.id]);
   });
 
   it('should return true when number of participants available is more than zero', () => {

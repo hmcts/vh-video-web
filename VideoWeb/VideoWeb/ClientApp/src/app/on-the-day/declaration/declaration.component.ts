@@ -31,6 +31,6 @@ export class DeclarationComponent implements OnInit {
     if (this.declarationForm.invalid) {
       return;
     }
-    this.router.navigate([PageUrls.WaitingRoom, this.conferenceId]);
+    this.router.navigate([PageUrls.ParticipantWaitingRoom, this.conferenceId]);
   }
 }
