@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Remote;
@@ -110,6 +111,8 @@ namespace VideoWeb.AcceptanceTests.Helpers
             {
                 const string osxPath = "/usr/local/bin";
                 var assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var path = Directory.Exists(osxPath) ? osxPath : assemblyPath;
+                TestContext.WriteLine($"looking for chrome driver in {path}");
                 return assemblyPath;
             }
         }
