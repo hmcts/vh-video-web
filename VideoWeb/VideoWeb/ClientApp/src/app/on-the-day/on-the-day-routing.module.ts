@@ -20,8 +20,8 @@ export const routes: Routes = [
   { path: 'declaration/:conferenceId', component: DeclarationComponent },
   { path: 'hearing-rules/:conferenceId', component: HearingRulesComponent },
   { path: 'equipment-check/:conferenceId', component: EquipmentCheckComponent },
-  { path: 'camera-check/:conferenceId', component: CameraCheckComponent },
-  { path: 'microphone-check/:conferenceId', component: MicrophoneCheckComponent },
+  { path: 'camera-working/:conferenceId', component: CameraCheckComponent },
+  { path: 'microphone-working/:conferenceId', component: MicrophoneCheckComponent },
   { path: 'camera-and-microphone/:conferenceId', component: CameraAndMicrophoneComponent }
 ];
 

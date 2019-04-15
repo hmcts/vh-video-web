@@ -6,8 +6,8 @@ export let PageUrls = {
   HearingRules: 'hearing-rules',
   EquipmentCheck: 'equipment-check',
   CameraAndMicrophone: 'camera-and-microphone',
-  CameraCheck: 'camera-check',
-  MicrophoneCheck: 'microphone-check',
+  CameraWorking: 'camera-working',
+  MicrophoneWorking: 'microphone-working',
   // judge
   JudgeHearingList: 'judge/hearing-list',
   JudgeHearingRoom: 'judge/hearing-room',

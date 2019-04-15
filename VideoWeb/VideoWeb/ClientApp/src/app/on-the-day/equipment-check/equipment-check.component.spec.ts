@@ -7,6 +7,8 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { EquipmentCheckComponent } from './equipment-check.component';
+import { VideoWebService } from 'src/app/services/video-web.service';
+import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 
 describe('EquipmentCheckComponent', () => {
   let component: EquipmentCheckComponent;
@@ -27,7 +29,8 @@ describe('EquipmentCheckComponent', () => {
               paramMap: convertToParamMap({ conferenceId: conference.id })
             }
           },
-        }
+        },
+        { provide: VideoWebService, useClass: MockVideoWebService }
       ]
     })
       .compileComponents();
@@ -51,6 +54,6 @@ describe('EquipmentCheckComponent', () => {
   it('should navigate to camera-and-microphone', () => {
     spyOn(router, 'navigate').and.callFake(() => { });
     component.goToCameraAndMicCheck();
-    expect(router.navigate).toHaveBeenCalledWith([PageUrls.CameraCheck, conference.id]);
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.CameraWorking, conference.id]);
   });
 });

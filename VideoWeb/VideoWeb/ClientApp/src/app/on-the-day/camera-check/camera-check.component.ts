@@ -36,10 +36,14 @@ export class CameraCheckComponent implements OnInit {
     if (this.form.invalid) {
       return;
     }
-    this.router.navigate([PageUrls.MicrophoneCheck, this.conferenceId]);
+    this.router.navigate([PageUrls.MicrophoneWorking, this.conferenceId]);
   }
 
   checkEquipmentAgain() {
+    this.submitted = true;
+    if (this.form.pristine || this.cameraCheck.valid) {
+      return;
+    }
     this.router.navigate([PageUrls.EquipmentCheck, this.conferenceId]);
   }
 }

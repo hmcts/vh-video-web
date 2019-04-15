@@ -7,6 +7,8 @@ import { AbstractControl } from '@angular/forms';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { VideoWebService } from 'src/app/services/video-web.service';
+import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 
 describe('CameraCheckComponent', () => {
   let component: CameraCheckComponent;
@@ -27,7 +29,8 @@ describe('CameraCheckComponent', () => {
               paramMap: convertToParamMap({ conferenceId: conference.id })
             }
           },
-        }
+        },
+        { provide: VideoWebService, useClass: MockVideoWebService }
       ]
     })
       .compileComponents();
@@ -59,6 +62,24 @@ describe('CameraCheckComponent', () => {
     cameraAnswer.setValue('Yes');
     component.onSubmit();
     expect(component.form.valid).toBeTruthy();
-    expect(router.navigate).toHaveBeenCalledWith([PageUrls.MicrophoneCheck, conference.id]);
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.MicrophoneWorking, conference.id]);
+  });
+
+  it('should allow equipment check when answered "No"', () => {
+    spyOn(router, 'navigate').and.callFake(() => { });
+    cameraAnswer.setValue('No');
+    component.form.markAsDirty();
+    component.checkEquipmentAgain();
+    expect(component.form.invalid).toBeTruthy();
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.EquipmentCheck, conference.id]);
+  });
+
+  it('should not allow equipment check when answered "Yes"', () => {
+    spyOn(router, 'navigate').and.callFake(() => { });
+    cameraAnswer.setValue('Yes');
+    component.form.markAsDirty();
+    component.checkEquipmentAgain();
+    expect(component.form.valid).toBeTruthy();
+    expect(router.navigate).toHaveBeenCalledTimes(0);
   });
 });
