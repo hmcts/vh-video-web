@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import {AuthGuard} from './security/auth.gaurd';
+import {AuthGuard} from './security/auth.guard';
 import { HomeComponent } from './home/home.component';
 import { SendVideoEventsComponent } from './send-video-events/send-video-events.component';
 

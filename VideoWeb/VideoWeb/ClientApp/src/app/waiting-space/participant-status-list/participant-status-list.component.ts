@@ -1,11 +1,18 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { ConferenceResponse, ParticipantResponse, UserRole, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { Component, OnInit, Input, NgZone } from '@angular/core';
+import {
+  ConferenceResponse, ParticipantResponse, UserRole,
+  ParticipantStatus, ConsultationAnswer
+} from 'src/app/services/clients/api-client';
 import { AdalService } from 'adal-angular4';
+import { SnotifyService, SnotifyPosition } from 'ng-snotify';
+import { ConsultationService } from 'src/app/services/consultation.service';
+import { EventsService } from 'src/app/services/events.service';
+import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 
 @Component({
   selector: 'app-participant-status-list',
   templateUrl: './participant-status-list.component.html',
-  styleUrls: ['./participant-status-list.component.css']
+  styleUrls: ['./participant-status-list.component.scss']
 })
 export class ParticipantStatusListComponent implements OnInit {
 
@@ -14,11 +21,18 @@ export class ParticipantStatusListComponent implements OnInit {
   nonJugdeParticipants: ParticipantResponse[];
   judge: ParticipantResponse;
 
-  constructor(private adalService: AdalService) { }
+  constructor(
+    private adalService: AdalService,
+    private consultationService: ConsultationService,
+    private snotifyService: SnotifyService,
+    private eventService: EventsService,
+    private ngZone: NgZone,
+  ) { }
 
   ngOnInit() {
     this.filterNonJudgeParticipants();
     this.filterJudge();
+    this.setupSubscribers();
   }
 
   isParticipantAvailable(participant: ParticipantResponse): boolean {
@@ -30,7 +44,10 @@ export class ParticipantStatusListComponent implements OnInit {
   }
 
   canCallParticipant(participant: ParticipantResponse): boolean {
-    if (participant.username === this.adalService.userInfo.userName) {
+    if (this.judge.username.toLocaleLowerCase().trim() === this.adalService.userInfo.userName.toLocaleLowerCase().trim()) {
+      return false;
+    }
+    if (participant.username.toLocaleLowerCase().trim() === this.adalService.userInfo.userName.toLocaleLowerCase().trim()) {
       return false;
     }
     return this.isParticipantAvailable(participant);
@@ -42,8 +59,120 @@ export class ParticipantStatusListComponent implements OnInit {
     }
   }
 
+  private setupSubscribers() {
+    this.eventService.start();
+
+    this.eventService.getConsultationMessage().subscribe(message => {
+      this.ngZone.run(() => {
+        if (message.result === ConsultationAnswer.Accepted) {
+          this.handleAcceptedConsultationRequest(message);
+        } else if (message.result === ConsultationAnswer.Rejected) {
+          this.handleRejectedConsultationRequest(message);
+        } else {
+          this.displayConsultationRequestPopup(message);
+        }
+      });
+    });
+  }
+
   private raiseConsultationRequestEvent(participant: ParticipantResponse): void {
-    throw Error('Not Implemented');
+    const requestee = this.conference.participants.find(x => x.id === participant.id);
+    const requester = this.conference.participants.find
+      (x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
+
+    const message = 'Requesting consultation with ' + requestee.display_name;
+    this.snotifyService.info(message, {
+      position: SnotifyPosition.rightTop,
+      showProgressBar: false,
+      timeout: 5000,
+      closeOnClick: true
+    });
+
+    this.consultationService.raiseConsultationRequest(this.conference, requester, requestee)
+      .subscribe(() => {
+        console.info('Raised consultation request event');
+      },
+        error => {
+          console.error(error);
+        }
+      );
+  }
+
+  private displayConsultationRequestPopup(message: ConsultationMessage) {
+    const requester = this.conference.participants.find(x => x.username === message.requestedBy);
+    const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
+
+    const toastMessage = requester.display_name + ' would like to speak to you. Would you like to join a private room?';
+    this.snotifyService.confirm(toastMessage, {
+      position: SnotifyPosition.rightTop,
+      showProgressBar: true,
+      closeOnClick: false,
+      titleMaxLength: 150,
+      timeout: 0,
+      buttons: [
+        {
+          text: 'Accept', bold: true, action: (toast) => {
+            this.snotifyService.remove(toast.id);
+            this.acceptConsultationRequest(requester, requestee);
+          }
+        },
+        {
+          text: 'Reject', action: (toast) => {
+            this.snotifyService.remove(toast.id);
+            this.rejectConsultationRequest(requester, requestee);
+          }
+        },
+      ]
+    });
+
+  }
+
+  acceptConsultationRequest(requester: ParticipantResponse, requestee: ParticipantResponse) {
+    this.consultationService.respondToConsultationRequest(this.conference, requester, requestee, ConsultationAnswer.Accepted)
+      .subscribe(() => {
+        console.info('accepted consultation request from ' + requester.display_name);
+      },
+        error => {
+          alert('Failed to send response, check logs');
+          console.error(error);
+        }
+      );
+  }
+
+  rejectConsultationRequest(requester: ParticipantResponse, requestee: ParticipantResponse) {
+    this.consultationService.respondToConsultationRequest(this.conference, requester, requestee, ConsultationAnswer.Rejected)
+      .subscribe(() => {
+        console.info(requestee.display_name + ' rejected called request from ' + requester.display_name);
+      },
+        error => {
+          alert('Failed to send response, check logs');
+          console.error(error);
+        }
+      );
+  }
+
+  private handleAcceptedConsultationRequest(message: ConsultationMessage) {
+    const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
+
+    const toastMessage = requestee.display_name + ' accepted your call. Please wait to be transferred.';
+    this.snotifyService.success(toastMessage, {
+      position: SnotifyPosition.rightTop,
+      showProgressBar: false,
+      timeout: 5000,
+      titleMaxLength: 50
+    });
+  }
+
+  private handleRejectedConsultationRequest(message: ConsultationMessage) {
+    const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
+
+    const toastMessage = requestee.display_name + ' rejected your call';
+    this.snotifyService.error(toastMessage, {
+      position: SnotifyPosition.rightTop,
+      showProgressBar: false,
+      timeout: 5000,
+      titleMaxLength: 50
+    });
   }
 
   private filterNonJudgeParticipants(): void {
@@ -53,5 +182,4 @@ export class ParticipantStatusListComponent implements OnInit {
   private filterJudge(): void {
     this.judge = this.conference.participants.find(x => x.role === UserRole.Judge);
   }
-
 }

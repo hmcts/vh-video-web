@@ -1,4 +1,3 @@
-using Faker;
 using FizzWare.NBuilder;
 using VideoWeb.Services.Video;
 
@@ -11,7 +10,6 @@ namespace Testing.Common.Builders
         public ParticipantSummaryResponseBuilder(UserRole role)
         {
             _participant = Builder<ParticipantSummaryResponse>.CreateNew()
-                .With(x => x.Username = Internet.Email())
                 .With(x => x.Status = ParticipantState.Available)
                 .With(x => x.User_role = role);
         }

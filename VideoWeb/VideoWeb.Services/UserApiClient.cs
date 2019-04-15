@@ -1033,15 +1033,6 @@ namespace VideoWeb.Services.User
         [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Display_name { get; set; }
     
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static GroupsResponse FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<GroupsResponse>(data);
-        }
     
     }
     
@@ -1054,15 +1045,6 @@ namespace VideoWeb.Services.User
         [Newtonsoft.Json.JsonProperty("group_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Group_name { get; set; }
     
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static AddUserToGroupRequest FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<AddUserToGroupRequest>(data);
-        }
     
     }
     
@@ -1078,15 +1060,6 @@ namespace VideoWeb.Services.User
         [Newtonsoft.Json.JsonProperty("recovery_email", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Recovery_email { get; set; }
     
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static CreateUserRequest FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<CreateUserRequest>(data);
-        }
     
     }
     
@@ -1102,15 +1075,6 @@ namespace VideoWeb.Services.User
         [Newtonsoft.Json.JsonProperty("one_time_password", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string One_time_password { get; set; }
     
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static NewUserResponse FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<NewUserResponse>(data);
-        }
     
     }
     
@@ -1141,15 +1105,6 @@ namespace VideoWeb.Services.User
         [Newtonsoft.Json.JsonProperty("case_type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.List<string> Case_type { get; set; }
     
-        public string ToJson() 
-        {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(this);
-        }
-    
-        public static UserProfile FromJson(string data)
-        {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<UserProfile>(data);
-        }
     
     }
 

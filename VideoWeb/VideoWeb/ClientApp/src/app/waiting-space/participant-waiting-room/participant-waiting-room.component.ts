@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { ServerSentEventsService } from 'src/app/services/server-sent-events.service';
+import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 declare var PexRTC: any;
@@ -28,7 +28,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private videoWebService: VideoWebService,
-    private eventService: ServerSentEventsService,
+    private eventService: EventsService,
     private ngZone: NgZone,
     private adalService: AdalService
   ) {
@@ -149,7 +149,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       return false;
     }
 
-    if (this.conference.status === ConferenceStatus.InSession) {
+    if (this.conference.status === ConferenceStatus.In_Session) {
       return true;
     }
 

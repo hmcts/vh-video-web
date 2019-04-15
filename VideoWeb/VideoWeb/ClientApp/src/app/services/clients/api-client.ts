@@ -221,6 +221,125 @@ export class ApiClient {
     }
 
     /**
+     * Raise or answer to a private consultation request with another participant
+     * @param request (optional) Private consultation request with or without an answer
+     * @return Success
+     */
+    handleConsultationRequest(request: ConsultationRequest | null | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/consultations";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processHandleConsultationRequest(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processHandleConsultationRequest(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processHandleConsultationRequest(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = resultData400 !== undefined ? resultData400 : <any>null;
+            return throwException("A server error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    getUserProfile(): Observable<UserProfileResponse> {
+        let url_ = this.baseUrl + "/profile";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetUserProfile(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetUserProfile(<any>response_);
+                } catch (e) {
+                    return <Observable<UserProfileResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<UserProfileResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetUserProfile(response: HttpResponseBase): Observable<UserProfileResponse> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? UserProfileResponse.fromJS(resultData200) : new UserProfileResponse();
+            return _observableOf(result200);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<UserProfileResponse>(<any>null);
+    }
+
+    /**
      * @param request (optional) 
      * @return Success
      */
@@ -369,8 +488,8 @@ export interface IConferenceForUserResponse {
 }
 
 export enum ConferenceStatus {
-    NotStarted = "NotStarted", 
-    InSession = "InSession", 
+    Not_Started = "Not Started", 
+    In_Session = "In Session", 
     Paused = "Paused", 
     Suspended = "Suspended", 
     Closed = "Closed", 
@@ -378,6 +497,7 @@ export enum ConferenceStatus {
 
 export class ParticipantForUserResponse implements IParticipantForUserResponse {
     username?: string | undefined;
+    display_name?: string | undefined;
     status?: ParticipantStatus | undefined;
 
     constructor(data?: IParticipantForUserResponse) {
@@ -392,6 +512,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     init(data?: any) {
         if (data) {
             this.username = data["username"];
+            this.display_name = data["display_name"];
             this.status = data["status"];
         }
     }
@@ -406,6 +527,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["username"] = this.username;
+        data["display_name"] = this.display_name;
         data["status"] = this.status;
         return data; 
     }
@@ -413,6 +535,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
 
 export interface IParticipantForUserResponse {
     username?: string | undefined;
+    display_name?: string | undefined;
     status?: ParticipantStatus | undefined;
 }
 
@@ -687,6 +810,96 @@ export interface IClientSettingsResponse {
     redirect_uri?: string | undefined;
     post_logout_redirect_uri?: string | undefined;
     video_api_url?: string | undefined;
+}
+
+export class ConsultationRequest implements IConsultationRequest {
+    conference_id?: string | undefined;
+    requested_by?: string | undefined;
+    requested_for?: string | undefined;
+    answer?: ConsultationAnswer | undefined;
+
+    constructor(data?: IConsultationRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.conference_id = data["conference_id"];
+            this.requested_by = data["requested_by"];
+            this.requested_for = data["requested_for"];
+            this.answer = data["answer"];
+        }
+    }
+
+    static fromJS(data: any): ConsultationRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new ConsultationRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["conference_id"] = this.conference_id;
+        data["requested_by"] = this.requested_by;
+        data["requested_for"] = this.requested_for;
+        data["answer"] = this.answer;
+        return data; 
+    }
+}
+
+export interface IConsultationRequest {
+    conference_id?: string | undefined;
+    requested_by?: string | undefined;
+    requested_for?: string | undefined;
+    answer?: ConsultationAnswer | undefined;
+}
+
+export enum ConsultationAnswer {
+    None = "None", 
+    Accepted = "Accepted", 
+    Rejected = "Rejected", 
+}
+
+export class UserProfileResponse implements IUserProfileResponse {
+    role?: UserRole | undefined;
+
+    constructor(data?: IUserProfileResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.role = data["role"];
+        }
+    }
+
+    static fromJS(data: any): UserProfileResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new UserProfileResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["role"] = this.role;
+        return data; 
+    }
+}
+
+export interface IUserProfileResponse {
+    role?: UserRole | undefined;
 }
 
 export class ConferenceEventRequest implements IConferenceEventRequest {

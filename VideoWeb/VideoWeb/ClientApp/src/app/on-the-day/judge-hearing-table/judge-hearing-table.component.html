@@ -33,13 +33,13 @@
 
       <!-- Participant Statuses -->
       <td class="govuk-table__cell">
-        <p *ngIf="hasUnavailableParticipants(conference)" class="vh-red">
+        <p *ngIf="hasUnavailableParticipants(conference)" class="unavailable">
           {{ conference.no_of_participants_unavailable }} Not Available
         </p>
-        <p *ngIf="hasAvailableParticipants(conference)" class="vh-green">
+        <p *ngIf="hasAvailableParticipants(conference)" class="available">
           {{ conference.no_of_participants_available }} Available
         </p>
-        <p *ngIf="hasInConsultationParticipants(conference)" class="vh-green">
+        <p *ngIf="hasInConsultationParticipants(conference)" class="available">
           {{ conference.no_of_participants_in_consultation }} In consultation
         </p>
       </td>

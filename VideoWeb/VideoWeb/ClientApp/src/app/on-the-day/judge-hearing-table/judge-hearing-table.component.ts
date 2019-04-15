@@ -2,11 +2,12 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ConferenceForUserResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
 import * as moment from 'moment';
 import { Router } from '@angular/router';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
   selector: 'app-judge-hearing-table',
   templateUrl: './judge-hearing-table.component.html',
-  styleUrls: ['./judge-hearing-table.component.css']
+  styleUrls: ['./judge-hearing-table.component.scss']
 })
 export class JudgeHearingTableComponent implements OnInit {
   @Input() conferences: ConferenceForUserResponse[];
@@ -16,7 +17,7 @@ export class JudgeHearingTableComponent implements OnInit {
   ngOnInit() { }
 
   signIntoConference(conference: ConferenceForUserResponse) {
-    this.router.navigate(['/judge/waiting-room', conference.id]);
+    this.router.navigate([PageUrls.JudgeWaitingRoom, conference.id]);
   }
 
   getSignInDate(conference: ConferenceForUserResponse): string {

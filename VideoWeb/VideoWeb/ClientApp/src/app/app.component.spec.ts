@@ -9,6 +9,7 @@ import { ClientSettingsResponse } from './services/clients/api-client';
 import { ConfigService } from './services/config.service';
 import { FooterStubComponent } from './testing/stubs/footer-stub';
 import { HeaderStubComponent } from './testing/stubs/header-stub';
+import { SnotifyStubComponent } from './testing/stubs/snotify-stub';
 
 describe('AppComponent', () => {
   const router = {
@@ -44,6 +45,7 @@ describe('AppComponent', () => {
         AppComponent,
         HeaderStubComponent,
         FooterStubComponent,
+        SnotifyStubComponent
       ],
       providers:
         [
