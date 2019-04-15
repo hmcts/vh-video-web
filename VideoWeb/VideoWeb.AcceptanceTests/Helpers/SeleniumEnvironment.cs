@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -100,6 +101,8 @@ namespace VideoWeb.AcceptanceTests.Helpers
             }
             var options = new ChromeOptions();
             options.AddArgument("ignore -certificate-errors");
+            options.AddArgument("use-fake-device-for-media-stream");
+            options.AddArgument("use-fake-ui-for-media-stream");
 
             return new ChromeDriver(ChromeDriverPath, options);
         }

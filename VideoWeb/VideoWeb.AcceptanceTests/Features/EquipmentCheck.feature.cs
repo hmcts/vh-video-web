@@ -32,9 +32,9 @@ namespace VideoWeb.AcceptanceTests.Features
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Equipment Check", "\tAs a registered video hearings user\n\tI would like to start a hearing and begin a" +
-                    "n equipment check\n\tSo that I can ensure my equipment is ready to use for the hea" +
-                    "ring", ProgrammingLanguage.CSharp, new string[] {
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Equipment Check", "\tAs a registered video hearings user\r\n\tI would like to start a hearing and begin " +
+                    "an equipment check\r\n\tSo that I can ensure my equipment is ready to use for the h" +
+                    "earing", ProgrammingLanguage.CSharp, new string[] {
                         "VIH-4091"});
             testRunner.OnFeatureStart(featureInfo);
         }

@@ -85,9 +85,33 @@ this.ScenarioInitialize(scenarioInfo);
 #line 9
  testRunner.Given("the Individual user has progressed to the Waiting Room page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 10
- testRunner.Then("contact us details are available", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 11
  testRunner.Then("the user is on the Waiting Room page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 11
+ testRunner.And("the user can see information about their case", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 12
+ testRunner.And("the user can see other participants status", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Representative waiting room")]
+        [NUnit.Framework.CategoryAttribute("representative")]
+        public virtual void RepresentativeWaitingRoom()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Representative waiting room", null, new string[] {
+                        "representative"});
+#line 15
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 16
+ testRunner.Given("the Representative user has progressed to the Waiting Room page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 17
+ testRunner.Then("the user is on the Waiting Room page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 18
+ testRunner.And("the user can see information about their case", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 19
+ testRunner.And("the user can see other participants status", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }

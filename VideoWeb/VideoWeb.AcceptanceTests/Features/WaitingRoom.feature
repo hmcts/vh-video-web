@@ -7,6 +7,13 @@ Feature: Waiting Room
 @smoketest
 Scenario: Individual waiting room
 	Given the Individual user has progressed to the Waiting Room page
-	Then contact us details are available
 	Then the user is on the Waiting Room page
+	And the user can see information about their case 
+	And the user can see other participants status
 
+@representative
+Scenario: Representative waiting room
+	Given the Representative user has progressed to the Waiting Room page
+	Then the user is on the Waiting Room page
+	And the user can see information about their case 
+	And the user can see other participants status
