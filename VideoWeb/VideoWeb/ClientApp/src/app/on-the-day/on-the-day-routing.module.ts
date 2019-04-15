@@ -10,6 +10,7 @@ import { VhoHearingsComponent } from './vho-hearings/vho-hearings.component';
 import { JudgeGuard } from '../security/judge.guard';
 import { AdminGuard } from '../security/admin.guard';
 import { ParticipantGuard } from '../security/participant.guard';
+import { CameraCheckComponent } from './camera-check/camera-check.component';
 
 export const routes: Routes = [
   { path: 'judge/hearing-list', component: JudgeHearingListComponent, canActivate: [JudgeGuard] },
@@ -18,6 +19,7 @@ export const routes: Routes = [
   { path: 'declaration/:conferenceId', component: DeclarationComponent },
   { path: 'hearing-rules/:conferenceId', component: HearingRulesComponent },
   { path: 'equipment-check/:conferenceId', component: EquipmentCheckComponent },
+  { path: 'camera-check/:conferenceId', component: CameraCheckComponent },
   { path: 'camera-and-microphone/:conferenceId', component: CameraAndMicrophoneComponent }
 ];
 

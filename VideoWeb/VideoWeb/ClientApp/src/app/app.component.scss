@@ -1,4 +1,8 @@
-.vh-content { min-height: calc(100vh - 200px ); }
+@import "~govuk-frontend/all";
+
+.vh-content {
+  min-height: calc(100vh - 200px);
+}
 
 /*
   Before the router is loaded, the page will be white.
@@ -6,4 +10,16 @@
 */
 .pad-unactivated-router {
   min-height: 595px;
+}
+
+.grey-btn {
+  background-color: govuk-colour("grey-3");
+  color: $govuk-text-colour;
+  box-shadow: $govuk-border-colour;
+}
+
+.grey-btn:hover {
+  background-color: govuk-colour("grey-2");
+  color: $govuk-text-colour;
+  box-shadow: $govuk-border-colour;
 }
