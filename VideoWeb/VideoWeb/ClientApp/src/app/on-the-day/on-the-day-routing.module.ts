@@ -11,6 +11,7 @@ import { JudgeGuard } from '../security/judge.guard';
 import { AdminGuard } from '../security/admin.guard';
 import { ParticipantGuard } from '../security/participant.guard';
 import { CameraCheckComponent } from './camera-check/camera-check.component';
+import { MicrophoneCheckComponent } from './microphone-check/microphone-check.component';
 
 export const routes: Routes = [
   { path: 'judge/hearing-list', component: JudgeHearingListComponent, canActivate: [JudgeGuard] },
@@ -20,6 +21,7 @@ export const routes: Routes = [
   { path: 'hearing-rules/:conferenceId', component: HearingRulesComponent },
   { path: 'equipment-check/:conferenceId', component: EquipmentCheckComponent },
   { path: 'camera-check/:conferenceId', component: CameraCheckComponent },
+  { path: 'microphone-check/:conferenceId', component: MicrophoneCheckComponent },
   { path: 'camera-and-microphone/:conferenceId', component: CameraAndMicrophoneComponent }
 ];
 
