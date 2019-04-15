@@ -23,6 +23,13 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+    <Content Include="Features\CameraMicrophone.feature" />
+    <Content Include="Features\Declaration.feature" />
+    <Content Include="Features\EquipmentCheck.feature" />
+    <Content Include="Features\HearingDetails.feature" />
+    <Content Include="Features\Login.feature" />
+    <Content Include="Features\Logout.feature" />
+    <Content Include="Features\Rules.feature" />
   </ItemGroup>
 
   <PropertyGroup>
