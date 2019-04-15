@@ -41,4 +41,8 @@ export class MicrophoneCheckComponent implements OnInit {
     this.router.navigate([PageUrls.HearingRules, this.conferenceId]);
   }
 
+  checkEquipmentAgain() {
+    this.router.navigate([PageUrls.EquipmentCheck, this.conferenceId]);
+  }
+
 }

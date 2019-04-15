@@ -38,4 +38,8 @@ export class CameraCheckComponent implements OnInit {
     }
     this.router.navigate([PageUrls.MicrophoneCheck, this.conferenceId]);
   }
+
+  checkEquipmentAgain() {
+    this.router.navigate([PageUrls.EquipmentCheck, this.conferenceId]);
+  }
 }
