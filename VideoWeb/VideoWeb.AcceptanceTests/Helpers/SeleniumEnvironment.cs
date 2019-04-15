@@ -95,7 +95,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    NUnit.Framework.TestContext.WriteLine(ex.Message);
                 }
             }
             var options = new ChromeOptions();

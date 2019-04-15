@@ -15,7 +15,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             }
             catch (Exception e)
             {
-                Console.WriteLine($"<{e.GetType().Name}> Failed to report test status to saucelabs: {e.Message}");
+                NUnit.Framework.TestContext.WriteLine($"<{e.GetType().Name}> Failed to report test status to saucelabs: {e.Message}");
             }
         }
     }
