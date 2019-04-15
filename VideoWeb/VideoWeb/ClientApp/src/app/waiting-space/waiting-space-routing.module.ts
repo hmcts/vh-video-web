@@ -5,7 +5,7 @@ import { JudgeWaitingRoomComponent } from './judge-waiting-room/judge-waiting-ro
 import { JudgeHearingPageComponent } from './judge-hearing-page/judge-hearing-page.component';
 
 const routes: Routes = [
-  { path: 'waiting-room/:conferenceId', component: ParticipantWaitingRoomComponent },
+  { path: 'participant/waiting-room/:conferenceId', component: ParticipantWaitingRoomComponent },
   { path: 'judge/waiting-room/:conferenceId', component: JudgeWaitingRoomComponent },
   { path: 'judge/hearing-room/:conferenceId', component: JudgeHearingPageComponent },
 ];

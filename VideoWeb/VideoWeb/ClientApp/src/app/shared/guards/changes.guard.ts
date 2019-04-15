@@ -9,7 +9,7 @@ export class ChangesGuard implements CanDeactivate<CanDeactiveComponent> {
 
     canDeactivate(component: CanDeactiveComponent, route: ActivatedRouteSnapshot, state: RouterStateSnapshot,
         nextState?: RouterStateSnapshot) {
-        if (nextState.url === '/dashboard') {
+        if (nextState.url === '/home') {
             return component.hasChanges ? !component.hasChanges() : true;
         }
         return true;

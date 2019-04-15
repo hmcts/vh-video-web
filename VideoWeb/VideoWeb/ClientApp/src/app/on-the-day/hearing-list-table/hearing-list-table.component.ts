@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ConferenceForUserResponse } from 'src/app/services/clients/api-client';
 import * as moment from 'moment';
 import { Router } from '@angular/router';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
   selector: 'app-hearing-list-table',
@@ -17,7 +18,7 @@ export class HearingListTableComponent implements OnInit {
   }
 
   signIntoConference(conference: ConferenceForUserResponse) {
-    this.router.navigate(['/equipment-check', conference.id]);
+    this.router.navigate([PageUrls.EquipmentCheck, conference.id]);
   }
 
   getSignInDate(conference: ConferenceForUserResponse): string {

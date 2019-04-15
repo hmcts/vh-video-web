@@ -56,6 +56,7 @@ namespace VideoWeb.Mappings
                 var participantResponse = new ParticipantForUserResponse
                 {
                     Username = participant.Username,
+                    DisplayName = participant.Display_name,
                     Status = MapParticipantStatus(participant.Status)
                 };
                 participantSummaryList.Add(participantResponse);

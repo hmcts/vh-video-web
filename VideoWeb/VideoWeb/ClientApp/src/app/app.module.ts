@@ -10,7 +10,7 @@ import { SharedModule } from './shared/shared.module';
 import { AppComponent } from './app.component';
 import { ConfigService } from './services/config.service';
 import { AdalInterceptor, AdalService, AdalGuard } from 'adal-angular4';
-import { AuthGuard } from './security/auth.gaurd';
+import { AuthGuard } from './security/auth.guard';
 import { AppRoutingModule } from './app-routing.module';
 import { SecurityModule } from './security/security.module';
 import { OnTheDayModule } from './on-the-day/on-the-day.module';
@@ -32,7 +32,6 @@ export function getSettings(configService: ConfigService) {
     HttpClientModule,
     FormsModule,
     SharedModule,
-    WaitingSpaceModule,
     SecurityModule,
     WaitingSpaceModule,
     OnTheDayModule,

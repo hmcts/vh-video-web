@@ -1,9 +1,10 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { ConferenceResponse, ParticipantStatus, ConferenceStatus } from 'src/app/services/clients/api-client';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ServerSentEventsService } from 'src/app/services/server-sent-events.service';
+import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
   selector: 'app-judge-waiting-room',
@@ -19,7 +20,7 @@ export class JudgeWaitingRoomComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private videoWebService: VideoWebService,
-    private eventService: ServerSentEventsService,
+    private eventService: EventsService,
     private ngZone: NgZone
   ) {
     this.loadingData = true;
@@ -46,7 +47,7 @@ export class JudgeWaitingRoomComponent implements OnInit {
 
   getConferenceStatusText() {
     switch (this.conference.status) {
-      case ConferenceStatus.NotStarted: return 'Start the hearing';
+      case ConferenceStatus.Not_Started: return 'Start the hearing';
       case ConferenceStatus.Suspended: return 'Resume the hearing';
       case ConferenceStatus.Paused: return 'Resume the hearing';
       case ConferenceStatus.Closed: return 'Hearing is closed';
@@ -55,7 +56,7 @@ export class JudgeWaitingRoomComponent implements OnInit {
   }
 
   isNotStarted(): boolean {
-    return this.conference.status === ConferenceStatus.NotStarted;
+    return this.conference.status === ConferenceStatus.Not_Started;
   }
 
   isPaused(): boolean {
@@ -63,7 +64,11 @@ export class JudgeWaitingRoomComponent implements OnInit {
   }
 
   goToHearingPage(): void {
-    this.router.navigate(['/judge-hearing-room', this.conference.id]);
+    this.router.navigate([PageUrls.JudgeHearingRoom, this.conference.id]);
+  }
+
+  goToJudgeHearingList(): void {
+    this.router.navigate([PageUrls.JudgeHearingList]);
   }
 
   private setupSubscribers() {

@@ -5,6 +5,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import * as moment from 'moment';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 
 describe('HearingListTableComponent', () => {
   let component: HearingListTableComponent;
@@ -71,6 +72,6 @@ describe('HearingListTableComponent', () => {
     const conference = new ConferenceTestData().getConferenceFuture();
     spyOn(router, 'navigate').and.callFake(() => { });
     component.signIntoConference(conference);
-    expect(router.navigate).toHaveBeenCalledWith(['/equipment-check', conference.id]);
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.EquipmentCheck, conference.id]);
   });
 });
