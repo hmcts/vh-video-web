@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { BreadcrumbStubComponent } from './stubs/breadcrumb-stub';
 import { CancelPopupStubComponent } from './stubs/cancel-popup-stub';
 import { ConfirmationPopupStubComponent } from './stubs/confirmation-popup-stub';
-import { ContactUsStubComponent } from './stubs/contact-us-stub';
+import { ContactUsStubComponent, ContactUsFoldingStubComponent } from './stubs/contact-us-stub';
 import { DashboardStubComponent } from './stubs/dashboard-stub';
 import { FooterStubComponent } from './stubs/footer-stub';
 import { HeaderStubComponent } from './stubs/header-stub';
@@ -27,7 +27,8 @@ import { SnotifyStubComponent } from './stubs/snotify-stub';
     HearingListTableStubComponent,
     ParticipantStatusListStubComponent,
     JudgeHearingTableStubComponent,
-    SnotifyStubComponent
+    SnotifyStubComponent,
+    ContactUsFoldingStubComponent
   ]
 })
 export class TestingModule { }
