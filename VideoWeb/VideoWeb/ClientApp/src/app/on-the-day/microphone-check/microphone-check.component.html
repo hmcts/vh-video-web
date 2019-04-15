@@ -42,10 +42,10 @@
     </div>
     <div class="govuk-!-margin-top-6">
       <input type="button" id="continue-btn" class="govuk-button govuk-!-margin-right-9" role="button" value="Continue"
-        (click)="onSubmit()" alt="Microphone Check" />
+      [ngClass]="!form.pristine && microphoneCheck.invalid ?'govuk-button--disabled':''"  (click)="onSubmit()" alt="Microphone Check" />
   
       <input type="button" id="check-equipment-btn" class="govuk-button grey-btn" role="button"
-        value="Check my equipment again" (click)="checkEquipmentAgain()" alt="Microphone Check" />
+      [ngClass]="!form.pristine && microphoneCheck.valid ?'govuk-button--disabled':''"  value="Check my equipment again" (click)="checkEquipmentAgain()" alt="Microphone Check" />
     </div>
   </form>
   
