@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <SpecFlowObsoleteCodeBehindFiles Remove="Features\CameraMicrophone - Copy.feature.cs" />
+    <SpecFlowObsoleteCodeBehindFiles Remove="Features\Declaration - Copy.feature.cs" />
     <SpecFlowObsoleteCodeBehindFiles Remove="Features\EquipmentCheck - Copy.feature.cs" />
     <SpecFlowObsoleteCodeBehindFiles Remove="Features\HearingDetails - Copy.feature.cs" />
     <SpecFlowObsoleteCodeBehindFiles Remove="Features\Rules - Copy.feature.cs" />
@@ -81,10 +82,13 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>CameraMicrophone.feature</DependentUpon>
     </Compile>
-    <Compile Update="Features\Declaration.feature.cs">
+    <Compile Update="Features\WaitingRoom.feature.cs">
+      <DependentUpon>WaitingRoom.feature</DependentUpon>
+    </Compile>
+    <Compile Update="Features\WaitingRoom.feature.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>Declaration.feature</DependentUpon>
+      <DependentUpon>WaitingRoom.feature</DependentUpon>
     </Compile>
     <Compile Update="Features\EquipmentCheck.feature.cs">
       <DesignTime>True</DesignTime>
@@ -120,6 +124,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <SpecFlowFeatureFiles Update="Features\WaitingRoom.feature">
+      <Visible>$(UsingMicrosoftNETSdk)</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+      <LastGenOutput>WaitingRoom.feature.cs</LastGenOutput>
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+    </SpecFlowFeatureFiles>
     <SpecFlowFeatureFiles Update="Features\Declaration.feature">
       <Visible>$(UsingMicrosoftNETSdk)</Visible>
       <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>

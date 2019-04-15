@@ -20,12 +20,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly CameraMicrophoneSteps _cameraMicrophoneSteps;
         private readonly RulesSteps _rulesSteps;
         private readonly DeclarationSteps _declarationSteps;
+        private readonly WaitingRoomSteps _waitingRoomSteps;
         private Page _currentPage = Page.Login;
 
         public CommonSteps(BrowserContext browserContext, CommonPages commonPages, 
             DataSetupSteps dataSetupSteps, LoginSteps loginSteps, HearingDetailsSteps hearingDetailsSteps,
             EquipmentCheckSteps equipmentCheckSteps, CameraMicrophoneSteps cameraMicrophoneSteps, RulesSteps rulesSteps,
-            DeclarationSteps declarationSteps)
+            DeclarationSteps declarationSteps, WaitingRoomSteps waitingRoomSteps)
         {
             _browserContext = browserContext;
             _commonPages = commonPages;
@@ -36,6 +37,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _cameraMicrophoneSteps = cameraMicrophoneSteps;
             _rulesSteps = rulesSteps;
             _declarationSteps = declarationSteps;
+            _waitingRoomSteps = waitingRoomSteps;
         }
 
         [Given(@"the (.*) user has progressed to the (.*) page")]
