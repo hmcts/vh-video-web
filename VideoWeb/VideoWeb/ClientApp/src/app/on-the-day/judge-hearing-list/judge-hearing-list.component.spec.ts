@@ -9,7 +9,7 @@ import { JudgeHearingTableStubComponent } from 'src/app/testing/stubs/judge-hear
 import { ConferenceForUserResponse } from '../../services/clients/api-client';
 import { JudgeHearingListComponent } from './judge-hearing-list.component';
 
-describe('HearingListComponent with no conferences for user', () => {
+describe('JudgeHearingListComponent with no conferences for user', () => {
   let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
   let component: JudgeHearingListComponent;
   let fixture: ComponentFixture<JudgeHearingListComponent>;
@@ -20,7 +20,7 @@ describe('HearingListComponent with no conferences for user', () => {
     videoWebServiceSpy.getConferencesForUser.and.returnValue(of(noConferences));
 
     TestBed.configureTestingModule({
-      imports: [SharedModule],
+      imports: [RouterTestingModule, SharedModule],
       declarations: [JudgeHearingListComponent, JudgeHearingTableStubComponent],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy }
@@ -42,7 +42,7 @@ describe('HearingListComponent with no conferences for user', () => {
   });
 });
 
-describe('HearingListComponent with conferences for user', () => {
+describe('JudgeHearingListComponent with conferences for user', () => {
   let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
   let component: JudgeHearingListComponent;
   let fixture: ComponentFixture<JudgeHearingListComponent>;

@@ -47,7 +47,7 @@ namespace VideoWeb.AcceptanceTests.Pages
             catch (Exception ex)
             {
                 webElements = _browserContext.NgDriver.FindElements(elements);
-                Console.WriteLine(ex);
+                NUnit.Framework.TestContext.WriteLine(ex);
             }
             return webElements;
         }

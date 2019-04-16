@@ -6,6 +6,8 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { HearingRulesComponent } from './hearing-rules.component';
+import { VideoWebService } from 'src/app/services/video-web.service';
+import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 
 describe('HearingRulesComponent', () => {
   let component: HearingRulesComponent;
@@ -26,7 +28,8 @@ describe('HearingRulesComponent', () => {
               paramMap: convertToParamMap({ conferenceId: conference.id })
             }
           },
-        }
+        },
+        { provide: VideoWebService, useClass: MockVideoWebService }
       ]
     })
       .compileComponents();

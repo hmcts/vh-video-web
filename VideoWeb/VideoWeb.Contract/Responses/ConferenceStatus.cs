@@ -7,9 +7,7 @@ namespace VideoWeb.Contract.Responses
     /// </summary>
     public enum ConferenceStatus
     {
-        [EnumMember(Value = "Not Started")]
         NotStarted = 0,
-        [EnumMember(Value = "In Session")]
         InSession = 1,
         Paused = 2,
         Suspended = 3,

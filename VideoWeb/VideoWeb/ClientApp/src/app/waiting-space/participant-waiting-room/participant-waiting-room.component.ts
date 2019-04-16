@@ -149,7 +149,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       return false;
     }
 
-    if (this.conference.status === ConferenceStatus.In_Session) {
+    if (this.conference.status === ConferenceStatus.InSession) {
       return true;
     }
 

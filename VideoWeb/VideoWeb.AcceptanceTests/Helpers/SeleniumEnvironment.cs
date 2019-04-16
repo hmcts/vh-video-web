@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Remote;
@@ -96,7 +97,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    NUnit.Framework.TestContext.WriteLine(ex.Message);
                 }
             }
             var options = new ChromeOptions();
@@ -113,7 +114,9 @@ namespace VideoWeb.AcceptanceTests.Helpers
             {
                 const string osxPath = "/usr/local/bin";
                 var assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                return Directory.Exists(osxPath) ? osxPath : assemblyPath;
+                var path = Directory.Exists(osxPath) ? osxPath : assemblyPath;
+                TestContext.WriteLine($"looking for chrome driver in {path}");
+                return assemblyPath;
             }
         }
     }
