@@ -25,7 +25,7 @@
             ],
             "styles": [
               "src/styles.css",
-              "src/styles.sass"
+              "src/styles.scss"
             ],
             "scripts": [
               "src/scripts/pexrtc.js"
@@ -83,7 +83,7 @@
             ],
             "styles": [
               "styles.css",
-              "styles.sass"
+              "styles.scss"
             ],
             "scripts": [
               "src/scripts/pexrtc.js"
