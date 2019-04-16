@@ -15,7 +15,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly CommonPages _commonPages;
         private readonly DataSetupSteps _dataSetupSteps;
         private readonly LoginSteps _loginSteps;
-        private readonly HearingDetailsSteps _hearingListSteps;
+        private readonly HearingsListSteps _hearingListSteps;
         private readonly EquipmentCheckSteps _equipmentCheckSteps;
         private readonly CameraMicrophoneSteps _cameraMicrophoneSteps;
         private readonly RulesSteps _rulesSteps;
@@ -24,7 +24,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private Page _currentPage = Page.Login;
 
         public CommonSteps(BrowserContext browserContext, CommonPages commonPages, 
-            DataSetupSteps dataSetupSteps, LoginSteps loginSteps, HearingDetailsSteps hearingDetailsSteps,
+            DataSetupSteps dataSetupSteps, LoginSteps loginSteps, HearingsListSteps hearingDetailsSteps,
             EquipmentCheckSteps equipmentCheckSteps, CameraMicrophoneSteps cameraMicrophoneSteps, RulesSteps rulesSteps,
             DeclarationSteps declarationSteps, WaitingRoomSteps waitingRoomSteps)
         {
@@ -57,39 +57,70 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private void ProgressToNextPage(string role, Page currentPage)
         {
-            switch (currentPage.Journey)
+            if (role.Equals("Judge"))
             {
-                case Journey.Login:
+                switch (currentPage.JudgeJourney)
                 {
-                    _loginSteps.WhenUserLogsInWithValidCredentials(role);
+                    case JudgeJourney.Login:
+                    {
+                        _loginSteps.WhenUserLogsInWithValidCredentials(role);
                         break;
-                }
-                case Journey.HearingList:
-                {
-                    _hearingListSteps.WhenTheUserClicksTheStartButton();
+                    }
+                    case JudgeJourney.HearingList:
+                    {
+                        _hearingListSteps.WhenTheUserClicksTheStartButton();
                         break;
+                    }
+                    case JudgeJourney.WaitingRoom:
+                    {
+                        break;
+                    }
+                    default:
+                        throw new InvalidOperationException($"Current page was past the intended page: {currentPage}");
                 }
-                case Journey.EquipmentCheck:
-                case Journey.CameraAndMicrophone:
-                case Journey.Rules:
+
+                _currentPage = currentPage.JudgeNextPage(currentPage);
+
+            }
+            else {
+
+                switch (currentPage.Journey)
                 {
-                    WhentheUserClicksTheButton("Continue");
-                    break;
+                    case Journey.Login:
+                    {
+                        _loginSteps.WhenUserLogsInWithValidCredentials(role);
+                        break;
+                    }
+                    case Journey.HearingList:
+                    {
+                        _hearingListSteps.WhenTheUserClicksTheStartButton();
+                        break;
+                    }
+                    case Journey.EquipmentCheck:
+                    case Journey.CameraAndMicrophone:
+                    case Journey.Rules:
+                    {
+                        WhentheUserClicksTheButton("Continue");
+                        break;
+                    }
+                    case Journey.Declaration:
+                    {
+                        _declarationSteps.WhenTheUserGivesTheirConsent();
+                        WhentheUserClicksTheButton("Continue");
+                        break;
+                    }
+                    case Journey.WaitingRoom:
+                    {
+                        break;
+                    }
+                    default:
+                        throw new InvalidOperationException($"Current page was past the intended page: {currentPage}");
                 }
-                case Journey.Declaration:
-                {
-                    _declarationSteps.WhenTheUserGivesTheirConsent();
-                    WhentheUserClicksTheButton("Continue");
-                    break;
-                }
-                case Journey.WaitingRoom:
-                {
-                    break;
-                }
-                default: throw new InvalidOperationException($"Current page was past the intended page: {currentPage}");
+
+                _currentPage = currentPage.NextPage(currentPage);
+
             }
 
-            _currentPage = currentPage.NextPage(currentPage);
             _browserContext.Retry(() => _commonPages.PageUrl(_currentPage.Url));
         }
 

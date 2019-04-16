@@ -16,3 +16,10 @@ Scenario: Representative waiting room
 	Then the user is on the Waiting Room page
 	And the user can see information about their case 
 	And the user can see other participants status
+
+@smoketest
+Scenario: Judge waiting room
+	Given the Judge user has progressed to the Waiting Room page
+	Then the user is on the Waiting Room page
+	And the user can see information about their case 
+	And the user can see other participants status

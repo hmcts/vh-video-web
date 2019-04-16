@@ -95,10 +95,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>EquipmentCheck.feature</DependentUpon>
     </Compile>
-    <Compile Update="Features\HearingDetails.feature.cs">
+    <Compile Update="Features\HearingsList.feature.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>HearingDetails.feature</DependentUpon>
+      <DependentUpon>HearingsList.feature</DependentUpon>
     </Compile>
     <Compile Update="Features\Login.feature.cs">
       <DesignTime>True</DesignTime>
@@ -154,9 +154,9 @@
       <LastGenOutput>EquipmentCheck.feature.cs</LastGenOutput>
       <Generator>SpecFlowSingleFileGenerator</Generator>
     </SpecFlowFeatureFiles>
-    <SpecFlowFeatureFiles Update="Features\HearingDetails.feature">
+    <SpecFlowFeatureFiles Update="Features\HearingsList.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>HearingDetails.feature.cs</LastGenOutput>
+      <LastGenOutput>HearingsList.feature.cs</LastGenOutput>
     </SpecFlowFeatureFiles>
     <SpecFlowFeatureFiles Update="Features\Login.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>

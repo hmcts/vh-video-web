@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using FluentAssertions;
 using TechTalk.SpecFlow;
+using Testing.Common.Builders;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
@@ -32,9 +33,22 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.CaseNumber).Text
                 .Should().Be($"Case number: {_context.Hearing.Cases.First().Number}");
             _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.HearingDate).Text
-                .Should().Be(_context.Hearing.Scheduled_date_time?.ToString("dddd d MMMM yyyy"));
+                .Should().Be(_context.Hearing.Scheduled_date_time?.ToString(DateFormats.WaitingRoomPageDate));
             _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.ScheduledDuration).Text
                 .Should().Contain($"scheduled for {_context.Hearing.Scheduled_duration?.ToString()} minutes");
+
+            if (_context.CurrentUser.Role.Equals("Judge"))
+            {
+                _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.ReturnToHearingRoomLink).Displayed
+                    .Should().BeTrue();
+                _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.ContactVho).Displayed
+                    .Should().BeTrue();
+            }
+            else
+            {
+                _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.ContactHelpline).Displayed
+                    .Should().BeTrue();
+            }
         }
 
         [Then(@"the user can see other participants status")]

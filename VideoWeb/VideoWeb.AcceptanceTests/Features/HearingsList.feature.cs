@@ -18,21 +18,21 @@ namespace VideoWeb.AcceptanceTests.Features
     [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.0.0.0")]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [NUnit.Framework.TestFixtureAttribute()]
-    [NUnit.Framework.DescriptionAttribute("Hearing Details")]
+    [NUnit.Framework.DescriptionAttribute("Hearings List")]
     [NUnit.Framework.CategoryAttribute("VIH-4035")]
-    public partial class HearingDetailsFeature
+    public partial class HearingsListFeature
     {
         
         private TechTalk.SpecFlow.ITestRunner testRunner;
         
-#line 1 "HearingDetails.feature"
+#line 1 "HearingsList.feature"
 #line hidden
         
         [NUnit.Framework.OneTimeSetUpAttribute()]
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Hearing Details", "\tAs a registered video hearings user\r\n\tI would like to login and access the heari" +
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Hearings List", "\tAs a registered video hearings user\r\n\tI would like to login and access the heari" +
                     "ng details\r\n\tSo that I can have an overview of all the scheduled hearings I am i" +
                     "nvolved in", ProgrammingLanguage.CSharp, new string[] {
                         "VIH-4035"});
@@ -92,7 +92,7 @@ this.ScenarioInitialize(scenarioInfo);
 #line 12
  testRunner.Then("the user is on the Hearings List page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 13
- testRunner.And("the user can see a list of hearings including the new hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the participant can see a list of hearings including the new hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 14
  testRunner.And("contact us details are available", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 15
@@ -122,7 +122,7 @@ this.ScenarioInitialize(scenarioInfo);
 #line 23
  testRunner.Then("the user is on the Hearings List page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 24
- testRunner.And("the user can see a list of hearings including the new hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the participant can see a list of hearings including the new hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 25
  testRunner.And("contact us details are available", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 26
@@ -233,6 +233,56 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.And("a warning message appears indicating the user has no hearings scheduled", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 63
  testRunner.And("contact us details are available", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Judge has no hearings")]
+        public virtual void JudgeHasNoHearings()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Judge has no hearings", null, ((string[])(null)));
+#line 65
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 66
+ testRunner.Given("the login page is open", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 67
+ testRunner.When("the Judge with no hearings attempts to login with valid credentials", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 68
+ testRunner.Then("the user is on the Hearings List page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 69
+ testRunner.And("a warning message appears indicating the user has no hearings scheduled", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 70
+ testRunner.And("contact us details are available", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Judge has 1 or more hearings")]
+        public virtual void JudgeHas1OrMoreHearings()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Judge has 1 or more hearings", null, ((string[])(null)));
+#line 72
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 73
+ testRunner.Given("I have a hearing and a conference", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 74
+ testRunner.And("the login page is open", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 75
+ testRunner.When("the Judge attempts to login with valid credentials", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 76
+ testRunner.Then("the user is on the Hearings List page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 77
+ testRunner.And("the Judge can see a list of hearings including the new hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 78
+ testRunner.And("contact us details are available", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 79
+ testRunner.When("the user clicks on the Start Hearing button", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 80
+ testRunner.Then("the user is on the Waiting Room page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
