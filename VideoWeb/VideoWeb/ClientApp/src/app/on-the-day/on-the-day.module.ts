@@ -13,6 +13,7 @@ import { JudgeHearingTableComponent } from './judge-hearing-table/judge-hearing-
 import { VhoHearingsComponent } from './vho-hearings/vho-hearings.component';
 import { CameraCheckComponent } from './camera-check/camera-check.component';
 import { MicrophoneCheckComponent } from './microphone-check/microphone-check.component';
+import { VideoCheckComponent } from './video-check/video-check.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -30,7 +31,8 @@ import { MicrophoneCheckComponent } from './microphone-check/microphone-check.co
     JudgeHearingTableComponent,
     VhoHearingsComponent,
     CameraCheckComponent,
-    MicrophoneCheckComponent
+    MicrophoneCheckComponent,
+    VideoCheckComponent
   ],
   exports: [
     DeclarationComponent

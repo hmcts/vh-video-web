@@ -1,14 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PageUrls } from 'src/app/shared/page-url.constants';
-import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
-
 
 @Component({
-  selector: 'app-microphone-check',
-  templateUrl: './microphone-check.component.html'
+  selector: 'app-video-check',
+  templateUrl: './video-check.component.html'
 })
-export class MicrophoneCheckComponent implements OnInit {
+export class VideoCheckComponent implements OnInit {
 
   form: FormGroup;
   submitted = false;
@@ -23,7 +22,7 @@ export class MicrophoneCheckComponent implements OnInit {
   ngOnInit() {
     this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
     this.form = this.fb.group({
-      microphoneCheck: [false, Validators.pattern('Yes')],
+      videoCheck: [false, Validators.pattern('Yes')],
     });
   }
 
@@ -31,19 +30,19 @@ export class MicrophoneCheckComponent implements OnInit {
     return this.form.invalid && this.submitted && this.form.pristine;
   }
 
-  get microphoneCheck(): AbstractControl { return this.form.get('microphoneCheck'); }
+  get videoCheck(): AbstractControl { return this.form.get('videoCheck'); }
 
   onSubmit() {
     this.submitted = true;
     if (this.form.invalid) {
       return;
     }
-    this.router.navigate([PageUrls.VideoWorking, this.conferenceId]);
+    this.router.navigate([PageUrls.HearingRules, this.conferenceId]);
   }
 
   checkEquipmentAgain() {
     this.submitted = true;
-    if (this.form.pristine || this.microphoneCheck.valid) {
+    if (this.form.pristine || this.videoCheck.valid) {
       return;
     }
     this.router.navigate([PageUrls.EquipmentCheck, this.conferenceId]);
