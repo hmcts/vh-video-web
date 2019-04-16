@@ -54,6 +54,6 @@ describe('EquipmentCheckComponent', () => {
   it('should navigate to camera-and-microphone', () => {
     spyOn(router, 'navigate').and.callFake(() => { });
     component.goToCameraAndMicCheck();
-    expect(router.navigate).toHaveBeenCalledWith([PageUrls.CameraWorking, conference.id]);
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.SwitchOnCameraMicrophone, conference.id]);
   });
 });

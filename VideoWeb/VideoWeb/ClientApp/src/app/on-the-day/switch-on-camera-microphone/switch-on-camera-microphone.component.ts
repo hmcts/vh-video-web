@@ -5,14 +5,15 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
   selector: 'app-switch-on-camera-microphone',
-  templateUrl: './switch-on-camera-microphone.component.html',
-  styleUrls: ['./switch-on-camera-microphone.component.css']
+  templateUrl: './switch-on-camera-microphone.component.html'
 })
 export class SwitchOnCameraMicrophoneComponent implements OnInit {
 
   mediaAccepted: boolean;
   userPrompted: boolean;
   conferenceId: string;
+
+  _navigator = <any>navigator;
 
   constructor(
     private router: Router,
@@ -24,6 +25,7 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
 
   ngOnInit() {
     this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+    this._navigator = <any>navigator;
   }
 
   requestMedia() {
@@ -32,12 +34,10 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
       audio: true
     };
 
-    navigator.getUserMedia = (navigator.getUserMedia ||
-      navigator.webkitGetUserMedia ||
-      navigator.mozGetUserMedia ||
-      navigator.msGetUserMedia);
+    this._navigator.getUserMedia = (this._navigator.getUserMedia || this._navigator.webkitGetUserMedia
+      || this._navigator.mozGetUserMedia || this._navigator.msGetUserMedia);
 
-    navigator.mediaDevices
+    this._navigator.mediaDevices
       .getUserMedia(mediaConstraints)
       .then(this.successCallback.bind(this), this.errorCallback.bind(this));
   }
@@ -50,7 +50,7 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
       track.stop();
     });
 
-    navigator.mediaDevices.enumerateDevices()
+    this._navigator.mediaDevices.enumerateDevices()
       .then((mediaDevice) => {
         console.log(mediaDevice);
       });
