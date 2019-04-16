@@ -1,5 +1,4 @@
-﻿using System;
-using FluentAssertions;
+﻿using FluentAssertions;
 using OpenQA.Selenium;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -31,7 +30,7 @@ namespace VideoWeb.AcceptanceTests.Pages
 
         public void EnterUsername(string username)
         {
-            Console.WriteLine($"Logging in as {username}");
+            NUnit.Framework.TestContext.WriteLine($"Logging in as {username}");
             _context.NgDriver.WaitUntilElementVisible(UsernameTextfield).Clear();
             _context.NgDriver.WaitUntilElementVisible(UsernameTextfield).SendKeys(username);
         }
@@ -39,7 +38,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public void EnterPassword(string password)
         {
             var maskedPassword = new string('*', (password ?? string.Empty).Length);
-            Console.WriteLine($"Using password {maskedPassword}");
+            NUnit.Framework.TestContext.WriteLine($"Using password {maskedPassword}");
             _context.NgDriver.WaitUntilElementVisible(Passwordfield).Clear();
             _context.NgDriver.WaitUntilElementVisible(Passwordfield).SendKeys(password);
         }

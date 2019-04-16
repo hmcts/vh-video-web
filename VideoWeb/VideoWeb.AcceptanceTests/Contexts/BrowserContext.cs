@@ -41,7 +41,8 @@ namespace VideoWeb.AcceptanceTests.Contexts
             }
             catch (NotImplementedException e)
             {
-                Console.WriteLine("Skipping maximize, not supported on current platform: " + e.Message);
+                
+                NUnit.Framework.TestContext.WriteLine("Skipping maximize, not supported on current platform: " + e.Message);
             }
         }
 
@@ -61,7 +62,7 @@ namespace VideoWeb.AcceptanceTests.Contexts
                 throw new InvalidOperationException("BaseUrl has not been set through BrowserSetup() yet");
             }
 
-            Console.WriteLine($"Navigating to {_baseUrl}");
+            NUnit.Framework.TestContext.WriteLine($"Navigating to {_baseUrl}");
             NgDriver.WrappedDriver.Navigate().GoToUrl(_baseUrl);
         }
 
@@ -93,7 +94,7 @@ namespace VideoWeb.AcceptanceTests.Contexts
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Cannot switch to the main window:  {ex}");
+                NUnit.Framework.TestContext.WriteLine($"Cannot switch to the main window:  {ex}");
             }
         }
         private readonly By _pageTitle = By.XPath("//h1[@class='govuk-heading-l']");

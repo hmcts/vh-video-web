@@ -19,17 +19,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <SpecFlowObsoleteCodeBehindFiles Remove="Features\CameraMicrophone - Copy.feature.cs" />
-    <SpecFlowObsoleteCodeBehindFiles Remove="Features\EquipmentCheck - Copy.feature.cs" />
-    <SpecFlowObsoleteCodeBehindFiles Remove="Features\HearingDetails - Copy.feature.cs" />
-    <SpecFlowObsoleteCodeBehindFiles Remove="Features\Rules - Copy.feature.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+    <Content Include="Features\CameraMicrophone.feature" />
+    <Content Include="Features\Declaration.feature" />
+    <Content Include="Features\EquipmentCheck.feature" />
+    <Content Include="Features\HearingDetails.feature" />
+    <Content Include="Features\Login.feature" />
+    <Content Include="Features\Logout.feature" />
+    <Content Include="Features\Rules.feature" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -73,44 +73,6 @@
     <Reference Include="Microsoft.Extensions.Configuration">
       <HintPath>..\..\..\..\..\.nuget\packages\microsoft.extensions.configuration\2.2.0\lib\netstandard2.0\Microsoft.Extensions.Configuration.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Features\CameraMicrophone.feature.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>CameraMicrophone.feature</DependentUpon>
-    </Compile>
-    <Compile Update="Features\Declaration.feature.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Declaration.feature</DependentUpon>
-    </Compile>
-    <Compile Update="Features\EquipmentCheck.feature.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>EquipmentCheck.feature</DependentUpon>
-    </Compile>
-    <Compile Update="Features\HearingDetails.feature.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>HearingDetails.feature</DependentUpon>
-    </Compile>
-    <Compile Update="Features\Login.feature.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Login.feature</DependentUpon>
-    </Compile>
-    <Compile Update="Features\Logout.feature.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Logout.feature</DependentUpon>
-    </Compile>
-    <Compile Update="Features\Rules.feature.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Rules.feature</DependentUpon>
-    </Compile>
   </ItemGroup>
 
   <ItemGroup>

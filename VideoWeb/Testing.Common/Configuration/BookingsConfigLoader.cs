@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using VideoWeb.Common.Configuration;
@@ -27,6 +28,10 @@ namespace Testing.Common.Configuration
         public TestSettings ReadTestSettings()
         {
             var testSettingsOptions = Options.Create(_configRoot.GetSection("Testing").Get<TestSettings>());
+            testSettingsOptions.Value.TestClientId.Should().NotBeNullOrEmpty();
+            testSettingsOptions.Value.TestClientSecret.Should().NotBeNullOrEmpty();
+            testSettingsOptions.Value.TestUsernameStem.Should().NotBeNullOrEmpty();
+            testSettingsOptions.Value.TestUserPassword.Should().NotBeNullOrEmpty();
             return testSettingsOptions.Value;
         }
 
@@ -39,6 +44,11 @@ namespace Testing.Common.Configuration
         public HearingServicesConfiguration ReadHearingServiceSettings()
         {
             var hearingServiceOptions = Options.Create(_configRoot.GetSection("VhServices").Get<HearingServicesConfiguration>());
+            hearingServiceOptions.Value.BookingsApiUrl.Should().NotBeNullOrEmpty();
+            hearingServiceOptions.Value.BookingsApiResourceId.Should().NotBeNullOrEmpty();
+            hearingServiceOptions.Value.VideoApiUrl.Should().NotBeNullOrEmpty();
+            hearingServiceOptions.Value.VideoApiResourceId.Should().NotBeNullOrEmpty();
+            hearingServiceOptions.Value.VideoWebUrl.Should().NotBeNullOrEmpty();
             return hearingServiceOptions.Value;
         }
 
