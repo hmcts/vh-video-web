@@ -39,6 +39,7 @@
     "ngx-moment": "^3.4.0",
     "popper.js": "^1.14.3",
     "rxjs": "^6.0.0",
+    "webrtc-adapter": "^7.2.3",
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
