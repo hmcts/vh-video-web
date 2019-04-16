@@ -1,4 +1,4 @@
-﻿@VIH-4127
+﻿@VIH-4127 @VIH-4131
 Feature: Waiting Room
 	As a registered video hearings user
 	I need to access a waiting room prior to my hearing
