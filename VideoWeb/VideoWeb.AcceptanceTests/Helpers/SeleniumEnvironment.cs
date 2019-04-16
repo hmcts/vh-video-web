@@ -30,6 +30,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
         private IWebDriver InitSauceLabsDriver()
         {
+            TestContext.WriteLine("Using sauce labs driver");
 #pragma warning disable 618
             // disable warning of using desired capabilities
 
@@ -79,13 +80,14 @@ namespace VideoWeb.AcceptanceTests.Helpers
             // It can take quite a bit of time for some commands to execute remotely so this is higher than default
             var commandTimeout = TimeSpan.FromMinutes(3);
 
-            var remoteUrl = new System.Uri(_saucelabsSettings.RemoteServerUrl);
+            var remoteUrl = new Uri(_saucelabsSettings.RemoteServerUrl);
 
             return new RemoteWebDriver(remoteUrl, caps, commandTimeout);
         }
 
         private static IWebDriver InitLocalDriver()
         {
+            TestContext.WriteLine("Using local driver");
             var chromeDriverProcesses = Process.GetProcessesByName("ChromeDriver");
 
             foreach (var chromeDriverProcess in chromeDriverProcesses)
@@ -96,7 +98,8 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 }
                 catch (Exception ex)
                 {
-                    NUnit.Framework.TestContext.WriteLine(ex.Message);
+                    TestContext.WriteLine("Error killing chrome processes");
+                    TestContext.WriteLine(ex.Message);
                 }
             }
             var options = new ChromeOptions();
@@ -111,7 +114,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             {
                 const string osxPath = "/usr/local/bin";
                 var assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var path = Directory.Exists(osxPath) ? osxPath : assemblyPath;
+                var path = assemblyPath;
                 TestContext.WriteLine($"looking for chrome driver in {path}");
                 return assemblyPath;
             }
