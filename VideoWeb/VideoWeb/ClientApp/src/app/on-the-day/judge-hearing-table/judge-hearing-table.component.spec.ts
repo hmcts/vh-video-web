@@ -114,7 +114,7 @@ describe('JudgeHearingTableComponent', () => {
 
   it('should return false hearing is not paused or suspended', () => {
     const conference = new ConferenceTestData().getConferenceFuture();
-    conference.status = ConferenceStatus.In_Session;
+    conference.status = ConferenceStatus.InSession;
     expect(component.isPausedOrSuspended(conference)).toBeFalsy();
   });
 

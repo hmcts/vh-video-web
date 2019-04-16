@@ -17,7 +17,7 @@ export class ConferenceTestData {
             no_of_participants_unavailable: 1,
             no_of_participants_in_consultation: 2,
             scheduled_duration: 50,
-            status: ConferenceStatus.Not_Started,
+            status: ConferenceStatus.NotStarted,
             participants: this.getListOfParticipants()
         });
 
@@ -37,7 +37,7 @@ export class ConferenceTestData {
             no_of_participants_unavailable: 1,
             no_of_participants_in_consultation: 2,
             scheduled_duration: 50,
-            status: ConferenceStatus.Not_Started,
+            status: ConferenceStatus.NotStarted,
             participants: this.getListOfParticipants()
         });
         return conference;
@@ -56,7 +56,7 @@ export class ConferenceTestData {
             no_of_participants_unavailable: 1,
             no_of_participants_in_consultation: 2,
             scheduled_duration: 50,
-            status: ConferenceStatus.Not_Started,
+            status: ConferenceStatus.NotStarted,
             participants: this.getListOfParticipants()
         });
         return conference;
@@ -84,7 +84,7 @@ export class ConferenceTestData {
             case_type: 'Financial Tax Remedy',
             scheduled_date_time: futureDate,
             scheduled_duration: 45,
-            status: ConferenceStatus.Not_Started,
+            status: ConferenceStatus.NotStarted,
             participants: participants,
             admin_i_frame_uri: 'adminiframe@kinly..com',
             judge_i_frame_uri: 'judgeiframe@kinly..com',
