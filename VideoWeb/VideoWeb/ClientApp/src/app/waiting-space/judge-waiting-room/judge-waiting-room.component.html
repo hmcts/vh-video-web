@@ -11,12 +11,14 @@
     <h3 class="govuk-heading-m">Case number: {{conference.case_number}}</h3>
 
     <div class="govuk-!-margin-bottom-7">
-      <p class="govuk-body">
-        <span aria-label="date of hearing">{{ conference.scheduled_date_time | date: 'EEEE dd MMMM	yyyy' }}</span>
-        <br />
-        <span aria-label="scheduled time and duration of hearing">{{ conference.scheduled_date_time | date: 'HH:mm' }}
-          (scheduled for {{ conference.scheduled_duration }} minutes) </span>
-      </p>
+      <span class="govuk-body">
+        <p class="govuk-!-margin-0" aria-label="date of hearing">
+          {{ conference.scheduled_date_time | date: 'EEEE dd MMMM	yyyy' }}</p>
+
+        <p class="govuk-!-margin-0" aria-label="scheduled time and duration of hearing">
+          {{ conference.scheduled_date_time | date: 'HH:mm' }}
+          (scheduled for {{ conference.scheduled_duration }} minutes) </p>
+      </span>
     </div>
 
     <div>
@@ -28,7 +30,8 @@
       </button>
     </div>
     <div>
-      <a id="back-to-hearing-list-link" href="javascript:void()" (click)="goToJudgeHearingList()" routerLinkActive="router-link-active"  class="govuk-link" href="javascript:void(0)">Return to hearing list</a>
+      <a id="back-to-hearing-list-link" href="javascript:void()" (click)="goToJudgeHearingList()"
+        routerLinkActive="router-link-active" class="govuk-link" href="javascript:void(0)">Return to hearing list</a>
     </div>
     <div class="govuk-!-margin-top-9">
       <p class="govuk-body"><strong>Contact video hearings officer: 0300 303 0655</strong></p>

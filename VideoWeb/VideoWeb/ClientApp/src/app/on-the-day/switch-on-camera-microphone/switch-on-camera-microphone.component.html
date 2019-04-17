@@ -12,16 +12,19 @@
 
 <div *ngIf="userPrompted && !mediaAccepted" class="govuk-grid-row">
   <h1 class="govuk-heading-l">Your camera and microphone are blocked</h1>
-  <p class="govuk-body govuk-!-margin-top-9 govuk-!-margin-bottom-9">
-    We're sorry, you can't take part in the hearing without using your camera and microphone. <br />
+  <p class="govuk-body govuk-!-margin-top-9">
+    We're sorry, you can't take part in the hearing without using your camera and microphone.
+  </p>
+  <p class="govuk-body govuk-!-margin-bottom-9">
     Stay close to your phone and we'll call you within 5 minutes.
   </p>
 </div>
 
-<input *ngIf="!userPrompted" type="button" id="switch-on-btn" class="govuk-button govuk-!-margin-bottom-9" role="button" value="Switch on"
-  (click)="requestMedia()" alt="Request camera and microphone" />
+<input *ngIf="!userPrompted" type="button" id="switch-on-btn" class="govuk-button govuk-!-margin-bottom-9" role="button"
+  value="Switch on" (click)="requestMedia()" alt="Request camera and microphone" />
 
-  <input *ngIf="userPrompted && mediaAccepted" type="button" id="watch-video-btn" class="govuk-button govuk-!-margin-bottom-9" role="button" value="Watch video"
-  (click)="requestMedia()" alt="Request camera and microphone" />
+<input *ngIf="userPrompted && mediaAccepted" type="button" id="watch-video-btn"
+  class="govuk-button govuk-!-margin-bottom-9" role="button" value="Watch video" (click)="requestMedia()"
+  alt="Request camera and microphone" />
 
 <app-contact-us-folding></app-contact-us-folding>
