@@ -185,6 +185,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 case "Login": _browserContext.Retry(() => _commonPages.PageUrl(Page.Login)); break;
                 case "Hearings List": _browserContext.Retry(() => _commonPages.PageUrl(Page.HearingList)); break;
                 case "Equipment Check": _browserContext.Retry(() => _commonPages.PageUrl(Page.EquipmentCheck)); break;
+                case "Switch on your camera and microphone": _browserContext.Retry(() => _commonPages.PageUrl(Page.SwitchOnCamAndMicPage)); break;
                 case "Camera Working": _browserContext.Retry(() => _commonPages.PageUrl(Page.CameraWorking)); break;
                 case "Microphone Working": _browserContext.Retry(() => _commonPages.PageUrl(Page.MicrophoneWorking)); break;
                 case "See and Hear Video": _browserContext.Retry(() => _commonPages.PageUrl(Page.SeeAndHearVideo)); break;
