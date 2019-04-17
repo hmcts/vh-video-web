@@ -1,5 +1,5 @@
 ﻿@VIH-4035
-Feature: Hearing Details
+Feature: Hearings List
 	As a registered video hearings user
 	I would like to login and access the hearing details
 	So that I can have an overview of all the scheduled hearings I am involved in
@@ -10,7 +10,7 @@ Scenario: Individual has 1 or more hearings
 	And the login page is open
 	When the Individual attempts to login with valid credentials
 	Then the user is on the Hearings List page
-	And the user can see a list of hearings including the new hearing
+	And the participant can see a list of hearings including the new hearing
 	And contact us details are available
 	When the user clicks on the Start Hearing button
 	Then the user is on the Equipment Check page
@@ -21,7 +21,7 @@ Scenario: Representative has 1 or more hearings
 	And the login page is open
 	When the Representative attempts to login with valid credentials
 	Then the user is on the Hearings List page
-	And the user can see a list of hearings including the new hearing
+	And the participant can see a list of hearings including the new hearing
 	And contact us details are available
 	When the user clicks on the Start Hearing button
 	Then the user is on the Equipment Check page
@@ -61,3 +61,20 @@ Scenario: Representative has no hearings
 	Then the user is on the Hearings List page
 	And a warning message appears indicating the user has no hearings scheduled
 	And contact us details are available
+
+Scenario: Judge has no hearings
+	Given the login page is open
+	When the Judge with no hearings attempts to login with valid credentials
+	Then the user is on the Hearings List page
+	And a warning message appears indicating the user has no hearings scheduled
+	And contact us details are available
+
+Scenario: Judge has 1 or more hearings
+	Given I have a hearing and a conference
+	And the login page is open
+	When the Judge attempts to login with valid credentials
+	Then the user is on the Hearings List page
+	And the Judge can see a list of hearings including the new hearing
+	And contact us details are available
+	When the user clicks on the Start Hearing button
+	Then the user is on the Waiting Room page

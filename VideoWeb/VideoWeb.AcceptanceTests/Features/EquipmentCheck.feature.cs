@@ -32,9 +32,9 @@ namespace VideoWeb.AcceptanceTests.Features
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Equipment Check", "\tAs a registered video hearings user\n\tI would like to start a hearing and begin a" +
-                    "n equipment check\n\tSo that I can ensure my equipment is ready to use for the hea" +
-                    "ring", ProgrammingLanguage.CSharp, new string[] {
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Equipment Check", "\tAs a registered video hearings user\r\n\tI would like to start a hearing and begin " +
+                    "an equipment check\r\n\tSo that I can ensure my equipment is ready to use for the h" +
+                    "earing", ProgrammingLanguage.CSharp, new string[] {
                         "VIH-4091"});
             testRunner.OnFeatureStart(featureInfo);
         }
@@ -88,7 +88,7 @@ this.ScenarioInitialize(scenarioInfo);
 #line 10
  testRunner.When("the user clicks the Continue button", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 11
- testRunner.Then("the user is on the Camera and Microphone page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the user is on the Camera Working page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -108,7 +108,7 @@ this.ScenarioInitialize(scenarioInfo);
 #line 16
  testRunner.When("the user clicks the Continue button", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 17
- testRunner.Then("the user is on the Camera and Microphone page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the user is on the Camera Working page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
