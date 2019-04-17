@@ -87,7 +87,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 12
  testRunner.When("the user clicks the Watch video button", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 13
- testRunner.Then("the user is on the Camera Working page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the user is on the Microphone Working page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
@@ -111,7 +111,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 20
  testRunner.When("the user clicks the Watch video button", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 21
- testRunner.Then("the user is on the Camera Working page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the user is on the Microphone Working page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
