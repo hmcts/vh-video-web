@@ -488,8 +488,8 @@ export interface IConferenceForUserResponse {
 }
 
 export enum ConferenceStatus {
-    Not_Started = "Not Started", 
-    In_Session = "In Session", 
+    NotStarted = "NotStarted", 
+    InSession = "InSession", 
     Paused = "Paused", 
     Suspended = "Suspended", 
     Closed = "Closed", 

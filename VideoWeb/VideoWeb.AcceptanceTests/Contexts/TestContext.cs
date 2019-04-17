@@ -18,8 +18,10 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public BookNewHearingRequest RequestBody { get; set; }
         public IRestResponse Responses { get; set; }
         public string BookingsApiBearerToken { get; set; }
+        public string UserApiBearerToken { get; set; }
         public string VideoApiBearerToken { get; set; }
         public string BookingsApiBaseUrl { get; set; }
+        public string UserApiBaseUrl { get; set; }
         public string VideoApiBaseUrl { get; set; }
         public string VideoWebUrl { get; set; }
         public string Json { get; set; }
@@ -67,6 +69,14 @@ namespace VideoWeb.AcceptanceTests.Contexts
             var client = new RestClient(BookingsApiBaseUrl);
             client.AddDefaultHeader("Accept", "application/json");
             client.AddDefaultHeader("Authorization", $"Bearer {BookingsApiBearerToken}");
+            return client;
+        }
+
+        public RestClient UserApiClient()
+        {
+            var client = new RestClient(UserApiBaseUrl);
+            client.AddDefaultHeader("Accept", "application/json");
+            client.AddDefaultHeader("Authorization", $"Bearer {UserApiBearerToken}");
             return client;
         }
 
