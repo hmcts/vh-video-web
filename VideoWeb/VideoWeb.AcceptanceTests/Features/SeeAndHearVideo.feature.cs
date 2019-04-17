@@ -19,6 +19,7 @@ namespace VideoWeb.AcceptanceTests.Features
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [NUnit.Framework.TestFixtureAttribute()]
     [NUnit.Framework.DescriptionAttribute("See and Hear Video")]
+    [NUnit.Framework.CategoryAttribute("VIH-4289")]
     public partial class SeeAndHearVideoFeature
     {
         
@@ -33,7 +34,8 @@ namespace VideoWeb.AcceptanceTests.Features
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
             TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "See and Hear Video", "\tAs a registered video hearings user\r\n\tI would like to confirm the equipment chec" +
                     "k was successful\r\n\tSo that I can ensure my equipment is ready to use for the hea" +
-                    "ring", ProgrammingLanguage.CSharp, ((string[])(null)));
+                    "ring", ProgrammingLanguage.CSharp, new string[] {
+                        "VIH-4289"});
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -76,18 +78,24 @@ namespace VideoWeb.AcceptanceTests.Features
         public virtual void IndividualSeeAndHearVideo()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Individual see and hear video", null, ((string[])(null)));
-#line 6
+#line 7
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 7
- testRunner.Given("the Individual user has progressed to the See and Hear Video page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 8
- testRunner.Then("contact us details are available", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Given("the Individual user has progressed to the See and Hear Video page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 9
- testRunner.When("the user selects the Yes radiobutton", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Then("contact us details are available", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 10
- testRunner.And("the user clicks the Continue button", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.When("the user clicks the Check my equipment again button", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 11
+ testRunner.Then("the Please answer this question error message appears", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 12
+ testRunner.When("the user selects the Yes radiobutton", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 13
+ testRunner.Then("the Check my equipment again button is disabled", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 14
+ testRunner.When("the user clicks the Continue button", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 15
  testRunner.Then("the user is on the Rules page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -98,18 +106,24 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void RepresentativeSeeAndHearVideo()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Representative see and hear video", null, ((string[])(null)));
-#line 13
+#line 17
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 14
- testRunner.Given("the Representative user has progressed to the See and Hear Video page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 15
- testRunner.Then("contact us details are available", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 16
- testRunner.When("the user selects the Yes radiobutton", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 17
- testRunner.And("the user clicks the Continue button", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 18
+ testRunner.Given("the Representative user has progressed to the See and Hear Video page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 19
+ testRunner.Then("contact us details are available", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 20
+ testRunner.When("the user clicks the Check my equipment again button", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 21
+ testRunner.Then("the Please answer this question error message appears", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 22
+ testRunner.When("the user selects the Yes radiobutton", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 23
+ testRunner.Then("the Check my equipment again button is disabled", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 24
+ testRunner.When("the user clicks the Continue button", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 25
  testRunner.Then("the user is on the Rules page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -120,14 +134,14 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void IndividualDoesNotConfirmTheEquipmentIsWorking()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Individual does not confirm the equipment is working", null, ((string[])(null)));
-#line 20
+#line 27
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 21
+#line 28
  testRunner.Given("the Individual user has progressed to the See and Hear Video page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 22
+#line 29
  testRunner.When("the user selects the No radiobutton", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 23
+#line 30
  testRunner.Then("an error appears prompting them to try the equipment again", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -138,14 +152,14 @@ this.ScenarioInitialize(scenarioInfo);
         public virtual void RepresentativeDoesNotConfirmTheEquipmentIsWorking()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Representative does not confirm the equipment is working", null, ((string[])(null)));
-#line 25
+#line 32
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 26
+#line 33
  testRunner.Given("the Representative user has progressed to the See and Hear Video page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 27
+#line 34
  testRunner.When("the user selects the No radiobutton", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 28
+#line 35
  testRunner.Then("an error appears prompting them to try the equipment again", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

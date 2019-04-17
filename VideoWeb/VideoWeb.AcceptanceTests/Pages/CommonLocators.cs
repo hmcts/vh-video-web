@@ -6,6 +6,7 @@ namespace VideoWeb.AcceptanceTests.Pages
     {
         public static By ElementContainingText(string text) => By.XPath($"//*[contains(text(), '{text}')]");
         public static By ButtonWithLabel(string label) => By.XPath($"//input[contains(@class,'govuk-button') and @role='button' and @value='{label}']");
+        public static By ErrorMessage = By.XPath("//div[@class='govuk-error-message']");
 
         public static By CheckboxWithLabel(string label) =>
             By.XPath($"//label[contains(text(),'{label}')]/../input[contains(@class,'govuk-checkboxes__input')]");

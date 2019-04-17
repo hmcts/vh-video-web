@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Contexts;
@@ -10,6 +11,7 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public class CommonSteps
     {
+        private readonly TestContext _context;
         private readonly BrowserContext _browserContext;
         private readonly CommonPages _commonPages;
         private readonly DataSetupSteps _dataSetupSteps;
@@ -22,11 +24,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly WaitingRoomSteps _waitingRoomSteps;
         private Page _currentPage = Page.Login;
 
-        public CommonSteps(BrowserContext browserContext, CommonPages commonPages, 
+        public CommonSteps(TestContext context, BrowserContext browserContext, CommonPages commonPages, 
             DataSetupSteps dataSetupSteps, LoginSteps loginSteps, HearingsListSteps hearingDetailsSteps,
             EquipmentCheckSteps equipmentCheckSteps, CameraWorkingSteps cameraMicrophoneSteps, RulesSteps rulesSteps,
             DeclarationSteps declarationSteps, WaitingRoomSteps waitingRoomSteps)
         {
+            _context = context;
             _browserContext = browserContext;
             _commonPages = commonPages;
             _dataSetupSteps = dataSetupSteps;
@@ -150,7 +153,19 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browserContext.NgDriver.WaitUntilElementVisible(_commonPages.ContactUsLink).Displayed
                 .Should().BeTrue();
-            _commonPages.TheCaseNumberIsNotDisplayedInTheContactDetails().Should().BeTrue();
+            if (_browserContext.NgDriver.Url.Contains(Page.HearingList.Url))
+            {
+                if (_context.Hearing != null)
+                {
+                    _commonPages.TheCaseNumberIsDisplayedInTheContactDetails(_context.Hearing.Cases.First().Number)
+                        .Should().BeFalse();
+                }
+            }
+            else
+            {
+                _commonPages.TheCaseNumberIsDisplayedInTheContactDetails(_context.Hearing.Cases.First().Number)
+                    .Should().BeTrue();
+            }
         }
 
         [Then(@"the user is on the (.*) page")]
@@ -170,6 +185,21 @@ namespace VideoWeb.AcceptanceTests.Steps
                 default: throw new ArgumentOutOfRangeException(page);
             }
         }
+
+        [Then(@"the (.*) error message appears")]
+        public void ThenTheErrorMessageAppears(string errorText)
+        {
+            _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.ErrorMessage).Text.Replace("Error:","")
+                .Should().Contain(errorText);
+        }
+
+        [Then(@"the (.*) button is disabled")]
+        public void ThenTheButtonIsDisabled(string label)
+        {
+            _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.ButtonWithLabel(label)).GetAttribute("class")
+                .Should().Contain("disabled");
+        }
+
     }
 }
 
