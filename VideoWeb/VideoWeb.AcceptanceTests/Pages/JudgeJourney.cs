@@ -6,6 +6,6 @@
         HearingList = 1,
         WaitingRoom = 2,
         Countdown = 3,
-        NotInJudgeJounrey = -1
+        NotInJudgeJourney = -1
     }
 }
