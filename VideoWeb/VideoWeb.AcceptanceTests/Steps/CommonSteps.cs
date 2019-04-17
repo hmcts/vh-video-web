@@ -18,6 +18,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly LoginSteps _loginSteps;
         private readonly HearingsListSteps _hearingListSteps;
         private readonly EquipmentCheckSteps _equipmentCheckSteps;
+        private readonly SwitchOnCamAndMicSteps _switchOnCamAndMicSteps;
         private readonly CameraWorkingSteps _cameraMicrophoneSteps;
         private readonly RulesSteps _rulesSteps;
         private readonly DeclarationSteps _declarationSteps;
@@ -26,7 +27,8 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         public CommonSteps(TestContext context, BrowserContext browserContext, CommonPages commonPages, 
             DataSetupSteps dataSetupSteps, LoginSteps loginSteps, HearingsListSteps hearingDetailsSteps,
-            EquipmentCheckSteps equipmentCheckSteps, CameraWorkingSteps cameraMicrophoneSteps, RulesSteps rulesSteps,
+            EquipmentCheckSteps equipmentCheckSteps, SwitchOnCamAndMicSteps switchOnCamAndMicSteps,
+            CameraWorkingSteps cameraMicrophoneSteps, RulesSteps rulesSteps,
             DeclarationSteps declarationSteps, WaitingRoomSteps waitingRoomSteps)
         {
             _context = context;
@@ -36,6 +38,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _loginSteps = loginSteps;
             _hearingListSteps = hearingDetailsSteps;
             _equipmentCheckSteps = equipmentCheckSteps;
+            _switchOnCamAndMicSteps = switchOnCamAndMicSteps;
             _cameraMicrophoneSteps = cameraMicrophoneSteps;
             _rulesSteps = rulesSteps;
             _declarationSteps = declarationSteps;
@@ -96,6 +99,12 @@ namespace VideoWeb.AcceptanceTests.Steps
                     case Journey.HearingList:
                     {
                         _hearingListSteps.WhenTheUserClicksTheStartButton();
+                            break;
+                    }
+                    case Journey.SwitchOnYourCameraAndMicrophone:
+                    {
+                        WhentheUserClicksTheButton("Continue");
+                        WhentheUserClicksTheButton("Watch video");
                             break;
                     }
                     case Journey.CameraWorking:
