@@ -4,7 +4,6 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using TestContext = VideoWeb.AcceptanceTests.Contexts.TestContext;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -17,7 +16,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly LoginSteps _loginSteps;
         private readonly HearingsListSteps _hearingListSteps;
         private readonly EquipmentCheckSteps _equipmentCheckSteps;
-        private readonly CameraMicrophoneSteps _cameraMicrophoneSteps;
+        private readonly CameraWorkingSteps _cameraMicrophoneSteps;
         private readonly RulesSteps _rulesSteps;
         private readonly DeclarationSteps _declarationSteps;
         private readonly WaitingRoomSteps _waitingRoomSteps;
@@ -25,7 +24,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         public CommonSteps(BrowserContext browserContext, CommonPages commonPages, 
             DataSetupSteps dataSetupSteps, LoginSteps loginSteps, HearingsListSteps hearingDetailsSteps,
-            EquipmentCheckSteps equipmentCheckSteps, CameraMicrophoneSteps cameraMicrophoneSteps, RulesSteps rulesSteps,
+            EquipmentCheckSteps equipmentCheckSteps, CameraWorkingSteps cameraMicrophoneSteps, RulesSteps rulesSteps,
             DeclarationSteps declarationSteps, WaitingRoomSteps waitingRoomSteps)
         {
             _browserContext = browserContext;
@@ -89,25 +88,32 @@ namespace VideoWeb.AcceptanceTests.Steps
                     case Journey.Login:
                     {
                         _loginSteps.WhenUserLogsInWithValidCredentials(role);
-                        break;
+                            break;
                     }
                     case Journey.HearingList:
                     {
                         _hearingListSteps.WhenTheUserClicksTheStartButton();
-                        break;
+                            break;
+                    }
+                    case Journey.CameraWorking:
+                    case Journey.MicrophoneWorking:
+                    case Journey.SeeAndHearVideo:
+                    {
+                        WhenTheUserSelectsTheRadiobutton("Yes");
+                        WhentheUserClicksTheButton("Continue");
+                            break;
                     }
                     case Journey.EquipmentCheck:
-                    case Journey.CameraAndMicrophone:
                     case Journey.Rules:
                     {
                         WhentheUserClicksTheButton("Continue");
-                        break;
+                            break;
                     }
                     case Journey.Declaration:
                     {
                         _declarationSteps.WhenTheUserGivesTheirConsent();
                         WhentheUserClicksTheButton("Continue");
-                        break;
+                            break;
                     }
                     case Journey.WaitingRoom:
                     {
@@ -132,6 +138,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.ButtonWithLabel(label)).Click();
         }
 
+        [When(@"the user selects the (.*) radiobutton")]
+        public void WhenTheUserSelectsTheRadiobutton(string label)
+        {
+
+            _browserContext.NgDriver.FindElement(CommonLocators.RadioButtonWithLabel(label)).Click();
+        }
+
         [Then(@"contact us details are available")]
         public void ThenContactUsDetailsWillBeAvailable()
         {
@@ -148,7 +161,9 @@ namespace VideoWeb.AcceptanceTests.Steps
                 case "Login": _browserContext.Retry(() => _commonPages.PageUrl(Page.Login)); break;
                 case "Hearings List": _browserContext.Retry(() => _commonPages.PageUrl(Page.HearingList)); break;
                 case "Equipment Check": _browserContext.Retry(() => _commonPages.PageUrl(Page.EquipmentCheck)); break;
-                case "Camera and Microphone": _browserContext.Retry(() => _commonPages.PageUrl(Page.CameraAndMicrophone)); break;
+                case "Camera Working": _browserContext.Retry(() => _commonPages.PageUrl(Page.CameraWorking)); break;
+                case "Microphone Working": _browserContext.Retry(() => _commonPages.PageUrl(Page.MicrophoneWorking)); break;
+                case "See and Hear Video": _browserContext.Retry(() => _commonPages.PageUrl(Page.SeeAndHearVideo)); break;
                 case "Rules": _browserContext.Retry(() => _commonPages.PageUrl(Page.Rules)); break;
                 case "Declaration": _browserContext.Retry(() => _commonPages.PageUrl(Page.Declaration)); break;
                 case "Waiting Room": _browserContext.Retry(() => _commonPages.PageUrl(Page.WaitingRoom)); break;

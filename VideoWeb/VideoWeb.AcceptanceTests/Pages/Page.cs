@@ -24,7 +24,9 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static Page Login => new Page("Login", "login.microsoftonline.com", Journey.Login, NextPageAsJourney(Journey.Login), JudgeJourney.Login, NextPageAsJudgeJourney(JudgeJourney.Login));
         public static Page HearingList => new Page("Hearing List", "hearing-list", Journey.HearingList, NextPageAsJourney(Journey.HearingList), JudgeJourney.HearingList, NextPageAsJudgeJourney(JudgeJourney.HearingList));
         public static Page EquipmentCheck => new Page("Equipment Check", "equipment-check", Journey.EquipmentCheck, NextPageAsJourney(Journey.EquipmentCheck), JudgeJourney.NotInJudgeJounrey, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJounrey));
-        public static Page CameraAndMicrophone => new Page("Camera and Microphone", "camera-and-microphone", Journey.CameraAndMicrophone, NextPageAsJourney(Journey.CameraAndMicrophone), JudgeJourney.NotInJudgeJounrey, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJounrey));
+        public static Page CameraWorking => new Page("Camera Working", "camera-working", Journey.CameraWorking, NextPageAsJourney(Journey.CameraWorking), JudgeJourney.NotInJudgeJounrey, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJounrey));
+        public static Page MicrophoneWorking => new Page("Microphone Working", "microphone-working", Journey.MicrophoneWorking, NextPageAsJourney(Journey.MicrophoneWorking), JudgeJourney.NotInJudgeJounrey, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJounrey));
+        public static Page SeeAndHearVideo => new Page("See and Hear Video", "see-and-hear-video", Journey.SeeAndHearVideo, NextPageAsJourney(Journey.SeeAndHearVideo), JudgeJourney.NotInJudgeJounrey, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJounrey));        
         public static Page Rules => new Page("Rules", "hearing-rules", Journey.Rules, NextPageAsJourney(Journey.Rules), JudgeJourney.NotInJudgeJounrey, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJounrey));
         public static Page Declaration => new Page("Declaration", "declaration", Journey.Declaration, NextPageAsJourney(Journey.Declaration), JudgeJourney.NotInJudgeJounrey, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJounrey));
         public static Page WaitingRoom => new Page("Waiting Room", "waiting-room", Journey.WaitingRoom, NextPageAsJourney(Journey.WaitingRoom), JudgeJourney.WaitingRoom, NextPageAsJudgeJourney(JudgeJourney.WaitingRoom));
@@ -50,8 +52,12 @@ namespace VideoWeb.AcceptanceTests.Pages
                     return HearingList;
                 case Journey.EquipmentCheck:
                     return EquipmentCheck;
-                case Journey.CameraAndMicrophone:
-                    return CameraAndMicrophone;
+                case Journey.CameraWorking:
+                    return CameraWorking;
+                case Journey.MicrophoneWorking:
+                    return MicrophoneWorking;
+                case Journey.SeeAndHearVideo:
+                    return SeeAndHearVideo;
                 case Journey.Rules:
                     return Rules;
                 case Journey.Declaration:
