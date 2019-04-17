@@ -1,32 +1,35 @@
 ﻿using System;
+using System.Linq;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using TestContext = VideoWeb.AcceptanceTests.Contexts.TestContext;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
     public class CommonSteps
     {
+        private readonly TestContext _context;
         private readonly BrowserContext _browserContext;
         private readonly CommonPages _commonPages;
         private readonly DataSetupSteps _dataSetupSteps;
         private readonly LoginSteps _loginSteps;
-        private readonly HearingDetailsSteps _hearingListSteps;
+        private readonly HearingsListSteps _hearingListSteps;
         private readonly EquipmentCheckSteps _equipmentCheckSteps;
-        private readonly CameraMicrophoneSteps _cameraMicrophoneSteps;
+        private readonly CameraWorkingSteps _cameraMicrophoneSteps;
         private readonly RulesSteps _rulesSteps;
         private readonly DeclarationSteps _declarationSteps;
+        private readonly WaitingRoomSteps _waitingRoomSteps;
         private Page _currentPage = Page.Login;
 
-        public CommonSteps(BrowserContext browserContext, CommonPages commonPages, 
-            DataSetupSteps dataSetupSteps, LoginSteps loginSteps, HearingDetailsSteps hearingDetailsSteps,
-            EquipmentCheckSteps equipmentCheckSteps, CameraMicrophoneSteps cameraMicrophoneSteps, RulesSteps rulesSteps,
-            DeclarationSteps declarationSteps)
+        public CommonSteps(TestContext context, BrowserContext browserContext, CommonPages commonPages, 
+            DataSetupSteps dataSetupSteps, LoginSteps loginSteps, HearingsListSteps hearingDetailsSteps,
+            EquipmentCheckSteps equipmentCheckSteps, CameraWorkingSteps cameraMicrophoneSteps, RulesSteps rulesSteps,
+            DeclarationSteps declarationSteps, WaitingRoomSteps waitingRoomSteps)
         {
+            _context = context;
             _browserContext = browserContext;
             _commonPages = commonPages;
             _dataSetupSteps = dataSetupSteps;
@@ -36,6 +39,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _cameraMicrophoneSteps = cameraMicrophoneSteps;
             _rulesSteps = rulesSteps;
             _declarationSteps = declarationSteps;
+            _waitingRoomSteps = waitingRoomSteps;
         }
 
         [Given(@"the (.*) user has progressed to the (.*) page")]
@@ -55,39 +59,77 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private void ProgressToNextPage(string role, Page currentPage)
         {
-            switch (currentPage.Journey)
+            if (role.Equals("Judge"))
             {
-                case Journey.Login:
+                switch (currentPage.JudgeJourney)
                 {
-                    _loginSteps.WhenUserLogsInWithValidCredentials(role);
+                    case JudgeJourney.Login:
+                    {
+                        _loginSteps.WhenUserLogsInWithValidCredentials(role);
                         break;
-                }
-                case Journey.HearingList:
-                {
-                    _hearingListSteps.WhenTheUserClicksTheStartButton();
+                    }
+                    case JudgeJourney.HearingList:
+                    {
+                        _hearingListSteps.WhenTheUserClicksTheStartButton();
                         break;
+                    }
+                    case JudgeJourney.WaitingRoom:
+                    {
+                        break;
+                    }
+                    default:
+                        throw new InvalidOperationException($"Current page was past the intended page: {currentPage}");
                 }
-                case Journey.EquipmentCheck:
-                case Journey.CameraAndMicrophone:
-                case Journey.Rules:
+
+                _currentPage = currentPage.JudgeNextPage(currentPage);
+
+            }
+            else {
+
+                switch (currentPage.Journey)
                 {
-                    WhentheUserClicksTheButton("Continue");
-                    break;
+                    case Journey.Login:
+                    {
+                        _loginSteps.WhenUserLogsInWithValidCredentials(role);
+                            break;
+                    }
+                    case Journey.HearingList:
+                    {
+                        _hearingListSteps.WhenTheUserClicksTheStartButton();
+                            break;
+                    }
+                    case Journey.CameraWorking:
+                    case Journey.MicrophoneWorking:
+                    case Journey.SeeAndHearVideo:
+                    {
+                        WhenTheUserSelectsTheRadiobutton("Yes");
+                        WhentheUserClicksTheButton("Continue");
+                            break;
+                    }
+                    case Journey.EquipmentCheck:
+                    case Journey.Rules:
+                    {
+                        WhentheUserClicksTheButton("Continue");
+                            break;
+                    }
+                    case Journey.Declaration:
+                    {
+                        _declarationSteps.WhenTheUserGivesTheirConsent();
+                        WhentheUserClicksTheButton("Continue");
+                            break;
+                    }
+                    case Journey.WaitingRoom:
+                    {
+                        break;
+                    }
+                    default:
+                        throw new InvalidOperationException($"Current page was past the intended page: {currentPage}");
                 }
-                case Journey.Declaration:
-                {
-                    _declarationSteps.WhenTheUserGivesTheirConsent();
-                    WhentheUserClicksTheButton("Continue");
-                    break;
-                }
-                case Journey.WaitingRoom:
-                {
-                    break;
-                }
-                default: throw new InvalidOperationException($"Current page was past the intended page: {currentPage}");
+
+                _currentPage = currentPage.NextPage(currentPage);
+
             }
 
-            _currentPage = currentPage.NextPage(currentPage);
             _browserContext.Retry(() => _commonPages.PageUrl(_currentPage.Url));
         }
 
@@ -99,12 +141,31 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.ButtonWithLabel(label)).Click();
         }
 
+        [When(@"the user selects the (.*) radiobutton")]
+        public void WhenTheUserSelectsTheRadiobutton(string label)
+        {
+
+            _browserContext.NgDriver.FindElement(CommonLocators.RadioButtonWithLabel(label)).Click();
+        }
+
         [Then(@"contact us details are available")]
         public void ThenContactUsDetailsWillBeAvailable()
         {
             _browserContext.NgDriver.WaitUntilElementVisible(_commonPages.ContactUsLink).Displayed
                 .Should().BeTrue();
-            _commonPages.TheCaseNumberIsNotDisplayedInTheContactDetails().Should().BeTrue();
+            if (_browserContext.NgDriver.Url.Contains(Page.HearingList.Url))
+            {
+                if (_context.Hearing != null)
+                {
+                    _commonPages.TheCaseNumberIsDisplayedInTheContactDetails(_context.Hearing.Cases.First().Number)
+                        .Should().BeFalse();
+                }
+            }
+            else
+            {
+                _commonPages.TheCaseNumberIsDisplayedInTheContactDetails(_context.Hearing.Cases.First().Number)
+                    .Should().BeTrue();
+            }
         }
 
         [Then(@"the user is on the (.*) page")]
@@ -115,13 +176,30 @@ namespace VideoWeb.AcceptanceTests.Steps
                 case "Login": _browserContext.Retry(() => _commonPages.PageUrl(Page.Login)); break;
                 case "Hearings List": _browserContext.Retry(() => _commonPages.PageUrl(Page.HearingList)); break;
                 case "Equipment Check": _browserContext.Retry(() => _commonPages.PageUrl(Page.EquipmentCheck)); break;
-                case "Camera and Microphone": _browserContext.Retry(() => _commonPages.PageUrl(Page.CameraAndMicrophone)); break;
+                case "Camera Working": _browserContext.Retry(() => _commonPages.PageUrl(Page.CameraWorking)); break;
+                case "Microphone Working": _browserContext.Retry(() => _commonPages.PageUrl(Page.MicrophoneWorking)); break;
+                case "See and Hear Video": _browserContext.Retry(() => _commonPages.PageUrl(Page.SeeAndHearVideo)); break;
                 case "Rules": _browserContext.Retry(() => _commonPages.PageUrl(Page.Rules)); break;
                 case "Declaration": _browserContext.Retry(() => _commonPages.PageUrl(Page.Declaration)); break;
                 case "Waiting Room": _browserContext.Retry(() => _commonPages.PageUrl(Page.WaitingRoom)); break;
                 default: throw new ArgumentOutOfRangeException(page);
             }
         }
+
+        [Then(@"the (.*) error message appears")]
+        public void ThenTheErrorMessageAppears(string errorText)
+        {
+            _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.ErrorMessage).Text.Replace("Error:","")
+                .Should().Contain(errorText);
+        }
+
+        [Then(@"the (.*) button is disabled")]
+        public void ThenTheButtonIsDisabled(string label)
+        {
+            _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.ButtonWithLabel(label)).GetAttribute("class")
+                .Should().Contain("disabled");
+        }
+
     }
 }
 

@@ -43,7 +43,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
             foreach (var user in testSettings.UserAccounts)
             {
-                user.Username = user.Displayname.Replace(" ", "") + testSettings.TestUsernameStem;
+                user.Username = $"{user.Displayname.Replace(" ", "")}{testSettings.TestUsernameStem}";
             }
 
             var hearingServiceSettings = new BookingsConfigLoader().ReadHearingServiceSettings();
@@ -52,17 +52,23 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 testSettings.TestClientId, testSettings.TestClientSecret,
                 hearingServiceSettings.BookingsApiResourceId);
 
+            testContext.UserApiBearerToken = new TokenProvider(Options.Create(azureAdConfiguration)).GetClientAccessToken(
+                testSettings.TestClientId, testSettings.TestClientSecret,
+                hearingServiceSettings.UserApiResourceId);
+
             testContext.VideoApiBearerToken = new TokenProvider(Options.Create(azureAdConfiguration)).GetClientAccessToken(
                 testSettings.TestClientId, testSettings.TestClientSecret,
                 hearingServiceSettings.VideoApiResourceId);
 
             testContext.BookingsApiBaseUrl = hearingServiceSettings.BookingsApiUrl;
+            testContext.UserApiBaseUrl = hearingServiceSettings.UserApiUrl;
             testContext.VideoApiBaseUrl = hearingServiceSettings.VideoApiUrl;
             testContext.VideoWebUrl = hearingServiceSettings.VideoWebUrl;
 
             testContext.TestSettings = testSettings;
 
             CheckBookingsApiHealth(testContext);
+            CheckUserApiHealth(testContext);
             CheckVideoApiHealth(testContext);
 
             testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, GetTargetBrowser());
@@ -75,6 +81,14 @@ namespace VideoWeb.AcceptanceTests.Hooks
             var endpoint = new BookingsApiUriFactory().HealthCheckEndpoints;
             testContext.Request = testContext.Get(endpoint.HealthCheck);
             testContext.Response = testContext.BookingsApiClient().Execute(testContext.Request);
+            testContext.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        public static void CheckUserApiHealth(TestContext testContext)
+        {
+            var endpoint = new UserApiUriFactory().HealthCheckEndpoints;
+            testContext.Request = testContext.Get(endpoint.CheckServiceHealth());
+            testContext.Response = testContext.UserApiClient().Execute(testContext.Request);
             testContext.Response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 

@@ -19,11 +19,11 @@ namespace VideoWeb.AcceptanceTests.Pages
         {
             _browserContext = browserContext;
         }
-        
-        public bool TheCaseNumberIsNotDisplayedInTheContactDetails()
+
+        public bool TheCaseNumberIsDisplayedInTheContactDetails(string caseNumber)
         {
             _browserContext.NgDriver.WaitUntilElementClickable(ContactUsLink).Click();
-            return _browserContext.NgDriver.WaitUntilElementVisible(QuoteYourCaseNumberText).Text.Contains("and quoting your case number");
+            return _browserContext.NgDriver.WaitUntilElementVisible(QuoteYourCaseNumberText).Text.Contains($"and quote your case number {caseNumber}");
         }
 
         public void PageUrl(Page page)
