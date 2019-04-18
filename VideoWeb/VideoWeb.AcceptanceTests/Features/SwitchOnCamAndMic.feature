@@ -10,7 +10,7 @@ Scenario: Individual switch on camera and microphone
 	When the user clicks the Switch on button
 	Then the camera and microphone turned on success message appears
 	When the user clicks the Watch video button
-	Then the user is on the Microphone Working page
+	Then the user is on the Camera Working page
 
 Scenario: Representative switch on camera and microphone
 	Given the Representative user has progressed to the Switch on your camera and microphone page
@@ -18,4 +18,4 @@ Scenario: Representative switch on camera and microphone
 	When the user clicks the Switch on button
 	Then the camera and microphone turned on success message appears
 	When the user clicks the Watch video button
-	Then the user is on the Microphone Working page
+	Then the user is on the Camera Working page
