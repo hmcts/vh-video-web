@@ -2685,18 +2685,6 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Username { get; set; }
     
-        /// <summary>Gets or sets the solicitor reference</summary>
-        [Newtonsoft.Json.JsonProperty("solicitor_reference", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Solicitor_reference { get; set; }
-    
-        /// <summary>Gets or sets the organization name.</summary>
-        [Newtonsoft.Json.JsonProperty("organisation", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Organisation { get; set; }
-    
-        /// <summary>Gets or sets the person name that solicitor represent.</summary>
-        [Newtonsoft.Json.JsonProperty("representee", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Representee { get; set; }
-    
         /// <summary>House number of an Individual</summary>
         [Newtonsoft.Json.JsonProperty("house_number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string House_number { get; set; }
@@ -2883,10 +2871,6 @@ namespace VideoWeb.Services.Bookings
         /// <summary>The representee of a representative</summary>
         [Newtonsoft.Json.JsonProperty("representee", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Representee { get; set; }
-    
-        /// <summary>The organization name</summary>
-        [Newtonsoft.Json.JsonProperty("organisation_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Organisation_name { get; set; }
     
         /// <summary>House number of an Individual</summary>
         [Newtonsoft.Json.JsonProperty("house_number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -3083,17 +3067,9 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("county", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string County { get; set; }
     
-        /// <summary>Participant Organisation</summary>
+        /// <summary>Organisation name</summary>
         [Newtonsoft.Json.JsonProperty("organisation_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Organisation_name { get; set; }
-    
-        /// <summary>Solicitor Reference</summary>
-        [Newtonsoft.Json.JsonProperty("solicitors_reference", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Solicitors_reference { get; set; }
-    
-        /// <summary>Representee</summary>
-        [Newtonsoft.Json.JsonProperty("representee", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Representee { get; set; }
     
     
     }
@@ -3133,7 +3109,7 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Username { get; set; }
     
-        /// <summary>Participant Organisation</summary>
+        /// <summary>Organisation of representative</summary>
         [Newtonsoft.Json.JsonProperty("organisation", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Organisation { get; set; }
     
@@ -3141,7 +3117,7 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("house_number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string House_number { get; set; }
     
-        /// <summary>Stree number of an Individual</summary>
+        /// <summary>Street number of an Individual</summary>
         [Newtonsoft.Json.JsonProperty("street", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Street { get; set; }
     
