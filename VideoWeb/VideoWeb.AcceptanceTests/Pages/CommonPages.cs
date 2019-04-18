@@ -28,7 +28,7 @@ namespace VideoWeb.AcceptanceTests.Pages
 
         public void PageUrl(Page page)
         {
-            _browserContext.Retry(() => _browserContext.NgDriver.Url.Trim().Should().Contain(page.Url));
+            _browserContext.Retry(() => _browserContext.NgDriver.Url.Trim().Should().Contain(page.Url), 1);
         }
 
         public void ClickWithJavascript(By element)
