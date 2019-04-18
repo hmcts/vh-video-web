@@ -103,7 +103,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                     }
                     case Journey.SwitchOnYourCameraAndMicrophone:
                     {
-                        WhentheUserClicksTheButton("Continue");
+                        WhentheUserClicksTheButton("Switch on");
                         WhentheUserClicksTheButton("Watch video");
                             break;
                     }
