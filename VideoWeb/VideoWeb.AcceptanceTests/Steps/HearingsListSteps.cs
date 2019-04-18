@@ -43,7 +43,10 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.ParticipantHearingDate(_context.Hearing.Cases.First().Number)).Text
                 .Should().Be(
-                    $"{_context.Hearing.Scheduled_date_time?.ToString(DateFormats.HearingListPageDate)}{Environment.NewLine}" +
+                    $"{_context.Hearing.Scheduled_date_time?.ToString(DateFormats.HearingListPageDate)}");
+
+            _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.ParticipantHearingTime(_context.Hearing.Cases.First().Number)).Text
+                .Should().Be(
                     $"{_context.Hearing.Scheduled_date_time?.ToLocalTime():HH:mm}");
         }
 
@@ -59,9 +62,13 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.JudgeHearingDate(_context.Hearing.Cases.First().Number)).Text
                 .Should().Be(
-                    $"{_context.Hearing.Scheduled_date_time?.ToString(DateFormats.HearingListPageDate)}{Environment.NewLine}" +
-                    $"{_context.Hearing.Scheduled_date_time?.ToLocalTime():HH:mm}{Environment.NewLine}" +
-                    $"{listedFor}");
+                    $"{_context.Hearing.Scheduled_date_time?.ToString(DateFormats.HearingListPageDate)}");
+
+            _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.JudgeHearingTime(_context.Hearing.Cases.First().Number)).Text
+                .Should().Be($"{_context.Hearing.Scheduled_date_time?.ToLocalTime():HH:mm}");
+
+            _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.JudgeHearingListedFor(_context.Hearing.Cases.First().Number)).Text
+                .Should().Be($"{listedFor}");
 
             _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.CaseType(_context.Hearing.Cases.First().Number, _context.Hearing.Case_type_name)).Displayed
                 .Should().BeTrue();

@@ -10,8 +10,8 @@ namespace VideoWeb.AcceptanceTests.Pages
 
         public By HearingName = By.XPath("//h1[contains(text(),'hearing')]/..//h2[@class='govuk-heading-m']");
         public By CaseNumber = By.XPath("//h1[contains(text(),'hearing')]/..//h3[@class='govuk-heading-m']");
-        public By HearingDate = By.XPath("//span[@aria-label='date of hearing']");
-        public By ScheduledDuration = By.XPath("//span[@aria-label='scheduled time and duration of hearing']");
+        public By HearingDate = By.XPath("//p[@aria-label='date of hearing']");
+        public By ScheduledDuration = By.XPath("//p[@aria-label='scheduled time and duration of hearing']");
 
         public By ParticipantStatus(string displayName) =>
             By.XPath(
