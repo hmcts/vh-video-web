@@ -18,4 +18,8 @@ export let PageUrls = {
   ParticipantWaitingRoom: 'participant/waiting-room',
   // vh officer
   AdminHearingList: 'admin/hearing-list',
+  // Errors
+  Error: 'error',
+  NotFound: 'not-found',
+  Unauthorised: 'unauthorised',
 };
