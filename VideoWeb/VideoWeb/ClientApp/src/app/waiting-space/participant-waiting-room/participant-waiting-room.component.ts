@@ -141,7 +141,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   }
 
   call() {
-    const pexipNode = this.conference.pexip_node_uri + 'fiudshfiudshfi';
+    const pexipNode = this.conference.pexip_node_uri;
     const conferenceAlias = this.conference.participant_uri;
     const displayName = this.participant.tiled_display_name;
     this.pexipAPI.makeCall(pexipNode, conferenceAlias, displayName, null);
