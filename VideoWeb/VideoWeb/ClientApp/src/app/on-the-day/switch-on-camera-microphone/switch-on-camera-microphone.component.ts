@@ -63,7 +63,7 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
   }
 
   goVideoTest() {
-    // temporarily point to mic question until video page is implemented
-    this.router.navigate([PageUrls.MicrophoneWorking, this.conferenceId]);
+    // temporarily point to camera question until video page is implemented
+    this.router.navigate([PageUrls.CameraWorking, this.conferenceId]);
   }
 }
