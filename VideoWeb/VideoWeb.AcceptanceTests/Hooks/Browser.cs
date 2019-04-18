@@ -60,6 +60,12 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 testSettings.TestClientId, testSettings.TestClientSecret,
                 hearingServiceSettings.VideoApiResourceId);
 
+            testSettings.TestClientId.Should().NotBeNullOrEmpty();
+            testSettings.TestClientSecret.Should().NotBeNullOrEmpty();
+            testSettings.TestUserPassword.Should().NotBeNullOrEmpty();
+            testSettings.TestUsernameStem.Should().NotBeNullOrEmpty();
+            testSettings.UserAccounts.Should().HaveCountGreaterThan(0);
+
             testContext.BookingsApiBaseUrl = hearingServiceSettings.BookingsApiUrl;
             testContext.UserApiBaseUrl = hearingServiceSettings.UserApiUrl;
             testContext.VideoApiBaseUrl = hearingServiceSettings.VideoApiUrl;
