@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { ConfigService } from 'src/app/services/config.service';
 import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
@@ -13,6 +13,7 @@ import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { VhoHearingsComponent } from './vho-hearings.component';
 import { ConferenceResponse, ConsultationAnswer } from 'src/app/services/clients/api-client';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
+import { ErrorService } from 'src/app/services/error.service';
 
 
 describe('VhoHearingsComponent', () => {
@@ -22,6 +23,7 @@ describe('VhoHearingsComponent', () => {
   let adalService: MockAdalService;
   let eventService: MockEventsService;
   const conferences = new ConferenceTestData().getTestData();
+  let errorService: ErrorService;
 
   beforeEach(async(() => {
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForUser', 'getConferenceById']);
@@ -44,6 +46,7 @@ describe('VhoHearingsComponent', () => {
   beforeEach(() => {
     adalService = TestBed.get(AdalService);
     eventService = TestBed.get(EventsService);
+    errorService = TestBed.get(ErrorService);
     fixture = TestBed.createComponent(VhoHearingsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -58,6 +61,13 @@ describe('VhoHearingsComponent', () => {
   it('should retrieve conference and sanitise iframe uri', () => {
     component.displayAdminViewForConference(component.conferences[0]);
     expect(component.selectedConferenceUrl).toBeDefined();
+  });
+
+  it('should handle api error when retrieving conference fails', () => {
+    spyOn(errorService, 'handleApiError').and.callFake(() => { Promise.resolve(true); });
+    videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 401, isSwaggerException: true }));
+    component.displayAdminViewForConference(component.conferences[0]);
+    expect(errorService.handleApiError).toHaveBeenCalled();
   });
 
   it('should return hour and minutes', () => {
@@ -100,5 +110,47 @@ describe('VhoHearingsComponent', () => {
     const message = new ConsultationMessage(conference.id, requestedBy, requestedFor, ConsultationAnswer.Accepted);
     component.handleConsultationMessage(message);
     expect(component.addTransferTask).toHaveBeenCalled();
+  });
+});
+
+describe('VhoHearingsComponent', () => {
+  let component: VhoHearingsComponent;
+  let fixture: ComponentFixture<VhoHearingsComponent>;
+  let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+  let adalService: MockAdalService;
+  let eventService: MockEventsService;
+  let errorService: ErrorService;
+
+  beforeEach(async(() => {
+    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForUser']);
+    videoWebServiceSpy.getConferencesForUser.and.returnValue(throwError({ status: 401, isSwaggerException: true }));
+
+    TestBed.configureTestingModule({
+      imports: [SharedModule, RouterTestingModule],
+      declarations: [VhoHearingsComponent],
+      providers: [
+        { provide: VideoWebService, useValue: videoWebServiceSpy },
+        { provide: AdalService, useClass: MockAdalService },
+        { provide: ConfigService, useClass: MockConfigService },
+        { provide: EventsService, useClass: MockEventsService }
+      ]
+    })
+      .compileComponents();
+  }));
+
+  beforeEach(() => {
+    adalService = TestBed.get(AdalService);
+    eventService = TestBed.get(EventsService);
+    errorService = TestBed.get(ErrorService);
+    fixture = TestBed.createComponent(VhoHearingsComponent);
+    component = fixture.componentInstance;
+  });
+
+  it('should handle api error with error service', () => {
+    spyOn(errorService, 'handleApiError').and.callFake(() => { Promise.resolve(true); });
+    fixture.detectChanges();
+    expect(component).toBeTruthy();
+    expect(component.loadingData).toBeFalsy();
+    expect(errorService.handleApiError).toHaveBeenCalled();
   });
 });

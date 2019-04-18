@@ -8,6 +8,7 @@ import { ConsultationMessage } from 'src/app/services/models/consultation-messag
 import { HelpMessage } from 'src/app/services/models/help-message';
 import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
+import { ErrorService } from 'src/app/services/error.service';
 
 @Component({
   selector: 'app-vho-hearings',
@@ -34,7 +35,8 @@ export class VhoHearingsComponent implements OnInit {
     private eventService: EventsService,
     private ngZone: NgZone,
     public sanitizer: DomSanitizer,
-    private snotifyService: SnotifyService
+    private snotifyService: SnotifyService,
+    private errorService: ErrorService
   ) {
     this.loadingData = true;
     this.adminFrameWidth = 0;
@@ -53,8 +55,9 @@ export class VhoHearingsComponent implements OnInit {
       this.loadingData = false;
       this.conferences = data;
     },
-      () => {
+      (error) => {
         this.loadingData = false;
+        this.errorService.handleApiError(error);
       });
   }
 
@@ -68,7 +71,10 @@ export class VhoHearingsComponent implements OnInit {
         .subscribe((data: ConferenceResponse) => {
           this.selectedConference = data;
           this.sanitiseAndLoadIframe();
-        });
+        },
+          (error) => {
+            this.errorService.handleApiError(error);
+          });
     }
   }
 

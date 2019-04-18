@@ -19,7 +19,7 @@ export let PageUrls = {
   // vh officer
   AdminHearingList: 'admin/hearing-list',
   // Errors
-  Error: 'error',
+  ServiceError: 'service-error',
   NotFound: 'not-found',
   Unauthorised: 'unauthorised',
 };
