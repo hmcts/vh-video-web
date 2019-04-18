@@ -21,7 +21,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user gives their consent")]
         public void WhenTheUserGivesTheirConsent()
         {
-            _browserContext.NgDriver.FindElement(_declarationPage.ConsentCheckbox).Click();           
+            _browserContext.NgDriver.WaitUntilElementExists(_declarationPage.ConsentCheckbox).Click();           
         }
 
         [Then(@"an error appears stating that they must confirm")]
