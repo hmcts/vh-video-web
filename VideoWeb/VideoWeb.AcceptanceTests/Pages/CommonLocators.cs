@@ -17,6 +17,6 @@ namespace VideoWeb.AcceptanceTests.Pages
             By.XPath($"//div[@class='govuk-radios__item']//label[contains(text(),'{label}')]/../input");
 
         public static By WarningMessageAfterRadioButton(string label) =>
-            By.XPath($"//label[contains(text(),'{label}')]/div[@class='govuk-details__text']");
+            By.XPath($"//label[contains(text(),'{label}')]/p[@class='govuk-details__text']");
     }
 }

@@ -14,6 +14,7 @@ import { VhoHearingsComponent } from './vho-hearings/vho-hearings.component';
 import { CameraCheckComponent } from './camera-check/camera-check.component';
 import { MicrophoneCheckComponent } from './microphone-check/microphone-check.component';
 import { VideoCheckComponent } from './video-check/video-check.component';
+import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone/switch-on-camera-microphone.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -32,7 +33,8 @@ import { VideoCheckComponent } from './video-check/video-check.component';
     VhoHearingsComponent,
     CameraCheckComponent,
     MicrophoneCheckComponent,
-    VideoCheckComponent
+    VideoCheckComponent,
+    SwitchOnCameraMicrophoneComponent
   ],
   exports: [
     DeclarationComponent

@@ -13,6 +13,7 @@ import { ParticipantGuard } from '../security/participant.guard';
 import { CameraCheckComponent } from './camera-check/camera-check.component';
 import { MicrophoneCheckComponent } from './microphone-check/microphone-check.component';
 import { VideoCheckComponent } from './video-check/video-check.component';
+import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone/switch-on-camera-microphone.component';
 
 export const routes: Routes = [
   { path: 'judge/hearing-list', component: JudgeHearingListComponent, canActivate: [JudgeGuard] },
@@ -24,7 +25,8 @@ export const routes: Routes = [
   { path: 'camera-working/:conferenceId', component: CameraCheckComponent },
   { path: 'microphone-working/:conferenceId', component: MicrophoneCheckComponent },
   { path: 'see-and-hear-video/:conferenceId', component: VideoCheckComponent },
-  { path: 'camera-and-microphone/:conferenceId', component: CameraAndMicrophoneComponent }
+  { path: 'camera-and-microphone/:conferenceId', component: CameraAndMicrophoneComponent },
+  { path: 'switch-on-camera-microphone/:conferenceId', component: SwitchOnCameraMicrophoneComponent}
 ];
 
 @NgModule({

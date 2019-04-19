@@ -5,7 +5,7 @@
     "module": "commonjs",
     "types": [
       "jasmine",
-      "node"
+      "node",
     ]
   },
   "files": [

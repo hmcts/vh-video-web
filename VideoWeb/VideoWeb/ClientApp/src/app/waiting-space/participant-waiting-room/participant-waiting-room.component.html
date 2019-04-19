@@ -19,12 +19,14 @@
     <h3 class="govuk-heading-m">Case number: {{conference.case_number}}</h3>
 
     <div class="govuk-!-margin-bottom-9">
-      <p class="govuk-body">
-        <span aria-label="date of hearing">{{ conference.scheduled_date_time | date: 'EEEE dd MMMM	yyyy' }}</span>
-        <br />
-        <span aria-label="scheduled time and duration of hearing">{{ conference.scheduled_date_time | date: 'HH:mm' }}
-          (scheduled for {{ conference.scheduled_duration }} minutes) </span>
-      </p>
+      <span class="govuk-body">
+        <p class="govuk-!-margin-0" aria-label="date of hearing">
+          {{ conference.scheduled_date_time | date: 'EEEE dd MMMM	yyyy' }}</p>
+
+        <p class="govuk-!-margin-0" aria-label="scheduled time and duration of hearing">
+          {{ conference.scheduled_date_time | date: 'HH:mm' }}
+          (scheduled for {{ conference.scheduled_duration }} minutes) </p>
+      </span>
     </div>
 
     <div *ngIf="isClosed()">
@@ -39,13 +41,15 @@
       </p>
     </div>
 
-    <div *ngIf="isSuspended()" class="govuk-warning-text">
+    <div *ngIf="isSuspended()" class="govuk-warning-text govuk-!-padding-right-6">
       <span class="govuk-warning-text__icon" style="top:20px" aria-hidden="true">!</span>
       <strong class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        We are experiencing some technical difficulties. <br /><br />
-        Please wait here, the judge will resume the hearing as soon
-        as these issues have been resolved.
+        <p>We are experiencing some technical difficulties.</p>
+        <p>
+          Please wait here, the judge will resume the hearing as soon
+          as these issues have been resolved.
+        </p>
       </strong>
     </div>
 

@@ -24,6 +24,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static Page Login => new Page("Login", "login.microsoftonline.com", Journey.Login, NextPageAsJourney(Journey.Login), JudgeJourney.Login, NextPageAsJudgeJourney(JudgeJourney.Login));
         public static Page HearingList => new Page("Hearing List", "hearing-list", Journey.HearingList, NextPageAsJourney(Journey.HearingList), JudgeJourney.HearingList, NextPageAsJudgeJourney(JudgeJourney.HearingList));
         public static Page EquipmentCheck => new Page("Equipment Check", "equipment-check", Journey.EquipmentCheck, NextPageAsJourney(Journey.EquipmentCheck), JudgeJourney.NotInJudgeJourney, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJourney));
+        public static Page SwitchOnCamAndMicPage => new Page("Switch on your camera and microphone", "switch-on-camera-microphone", Journey.SwitchOnYourCameraAndMicrophone, NextPageAsJourney(Journey.SwitchOnYourCameraAndMicrophone), JudgeJourney.NotInJudgeJourney, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJourney));
         public static Page CameraWorking => new Page("Camera Working", "camera-working", Journey.CameraWorking, NextPageAsJourney(Journey.CameraWorking), JudgeJourney.NotInJudgeJourney, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJourney));
         public static Page MicrophoneWorking => new Page("Microphone Working", "microphone-working", Journey.MicrophoneWorking, NextPageAsJourney(Journey.MicrophoneWorking), JudgeJourney.NotInJudgeJourney, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJourney));
         public static Page SeeAndHearVideo => new Page("See and Hear Video", "see-and-hear-video", Journey.SeeAndHearVideo, NextPageAsJourney(Journey.SeeAndHearVideo), JudgeJourney.NotInJudgeJourney, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJourney));        
@@ -52,6 +53,8 @@ namespace VideoWeb.AcceptanceTests.Pages
                     return HearingList;
                 case Journey.EquipmentCheck:
                     return EquipmentCheck;
+                case Journey.SwitchOnYourCameraAndMicrophone:
+                    return SwitchOnCamAndMicPage;
                 case Journey.CameraWorking:
                     return CameraWorking;
                 case Journey.MicrophoneWorking:

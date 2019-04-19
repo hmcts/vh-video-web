@@ -18,6 +18,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly LoginSteps _loginSteps;
         private readonly HearingsListSteps _hearingListSteps;
         private readonly EquipmentCheckSteps _equipmentCheckSteps;
+        private readonly SwitchOnCamAndMicSteps _switchOnCamAndMicSteps;
         private readonly CameraWorkingSteps _cameraMicrophoneSteps;
         private readonly RulesSteps _rulesSteps;
         private readonly DeclarationSteps _declarationSteps;
@@ -26,7 +27,8 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         public CommonSteps(TestContext context, BrowserContext browserContext, CommonPages commonPages, 
             DataSetupSteps dataSetupSteps, LoginSteps loginSteps, HearingsListSteps hearingDetailsSteps,
-            EquipmentCheckSteps equipmentCheckSteps, CameraWorkingSteps cameraMicrophoneSteps, RulesSteps rulesSteps,
+            EquipmentCheckSteps equipmentCheckSteps, SwitchOnCamAndMicSteps switchOnCamAndMicSteps,
+            CameraWorkingSteps cameraMicrophoneSteps, RulesSteps rulesSteps,
             DeclarationSteps declarationSteps, WaitingRoomSteps waitingRoomSteps)
         {
             _context = context;
@@ -36,6 +38,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _loginSteps = loginSteps;
             _hearingListSteps = hearingDetailsSteps;
             _equipmentCheckSteps = equipmentCheckSteps;
+            _switchOnCamAndMicSteps = switchOnCamAndMicSteps;
             _cameraMicrophoneSteps = cameraMicrophoneSteps;
             _rulesSteps = rulesSteps;
             _declarationSteps = declarationSteps;
@@ -98,6 +101,12 @@ namespace VideoWeb.AcceptanceTests.Steps
                         _hearingListSteps.WhenTheUserClicksTheStartButton();
                             break;
                     }
+                    case Journey.SwitchOnYourCameraAndMicrophone:
+                    {
+                        WhentheUserClicksTheButton("Switch on");
+                        WhentheUserClicksTheButton("Watch video");
+                            break;
+                    }
                     case Journey.CameraWorking:
                     case Journey.MicrophoneWorking:
                     case Journey.SeeAndHearVideo:
@@ -145,7 +154,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenTheUserSelectsTheRadiobutton(string label)
         {
 
-            _browserContext.NgDriver.FindElement(CommonLocators.RadioButtonWithLabel(label)).Click();
+            _browserContext.NgDriver.WaitUntilElementExists(CommonLocators.RadioButtonWithLabel(label)).Click();
         }
 
         [Then(@"contact us details are available")]
@@ -173,15 +182,16 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             switch (page)
             {
-                case "Login": _browserContext.Retry(() => _commonPages.PageUrl(Page.Login)); break;
-                case "Hearings List": _browserContext.Retry(() => _commonPages.PageUrl(Page.HearingList)); break;
-                case "Equipment Check": _browserContext.Retry(() => _commonPages.PageUrl(Page.EquipmentCheck)); break;
-                case "Camera Working": _browserContext.Retry(() => _commonPages.PageUrl(Page.CameraWorking)); break;
-                case "Microphone Working": _browserContext.Retry(() => _commonPages.PageUrl(Page.MicrophoneWorking)); break;
-                case "See and Hear Video": _browserContext.Retry(() => _commonPages.PageUrl(Page.SeeAndHearVideo)); break;
-                case "Rules": _browserContext.Retry(() => _commonPages.PageUrl(Page.Rules)); break;
-                case "Declaration": _browserContext.Retry(() => _commonPages.PageUrl(Page.Declaration)); break;
-                case "Waiting Room": _browserContext.Retry(() => _commonPages.PageUrl(Page.WaitingRoom)); break;
+                case "Login": _commonPages.PageUrl(Page.Login); break;
+                case "Hearings List": _commonPages.PageUrl(Page.HearingList); break;
+                case "Equipment Check": _commonPages.PageUrl(Page.EquipmentCheck); break;
+                case "Switch on your camera and microphone": _commonPages.PageUrl(Page.SwitchOnCamAndMicPage); break;
+                case "Camera Working": _commonPages.PageUrl(Page.CameraWorking); break;
+                case "Microphone Working": _commonPages.PageUrl(Page.MicrophoneWorking); break;
+                case "See and Hear Video": _commonPages.PageUrl(Page.SeeAndHearVideo); break;
+                case "Rules": _commonPages.PageUrl(Page.Rules); break;
+                case "Declaration": _commonPages.PageUrl(Page.Declaration); break;
+                case "Waiting Room": _commonPages.PageUrl(Page.WaitingRoom); break;
                 default: throw new ArgumentOutOfRangeException(page);
             }
         }
