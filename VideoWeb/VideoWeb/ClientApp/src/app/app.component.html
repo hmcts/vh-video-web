@@ -4,12 +4,11 @@
 
   <ng-snotify></ng-snotify>
 
-  <div class="govuk-width-container vh-content" id="master-container">
-    <router-outlet class="govuk-main-wrapper" id="main-content" role="main"></router-outlet>
+  <div class="govuk-width-container" id="master-container">
+    <router-outlet class="govuk-main-wrapper vh-content" id="main-content" role="main" [ngClass]="!loggedIn
+        ? 'pad-unactivated-router'
+        : ''"></router-outlet>
   </div>
 
-  <div>
-    <app-footer></app-footer>
-  </div>
-
+  <app-footer></app-footer>
 </div>

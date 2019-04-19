@@ -68,9 +68,75 @@ namespace VideoWeb.AcceptanceTests.Steps
             _context.RequestBody.Scheduled_duration = HearingDuration;
             _context.Request = _context.Post(_bookingEndpoints.BookNewHearing(), _context.RequestBody);
 
-            WhenISendTheRequestToTheBookingsApiEndpoint();
-            ThenTheHearingOrConferenceShouldBeCreated();
-            ThenTheHearingDetailsShouldBeRetrieved();
+            //WhenISendTheRequestToTheBookingsApiEndpoint();
+            //ThenTheHearingOrConferenceShouldBeCreated();
+            //ThenTheHearingDetailsShouldBeRetrieved();
+            ThenIHaveAFakeHearingModel();
+        }
+
+        private void ThenIHaveAFakeHearingModel()
+        {
+            _context.HearingIsNotInBookingsDb = true;
+
+            var hearing = new HearingDetailsResponse();
+            var request = _context.RequestBody;
+
+            hearing.Id = Guid.NewGuid();
+            hearing.Case_type_name = request.Case_type_name;
+
+            hearing.Cases = new List<CaseResponse>();
+            foreach (var hearingCase in request.Cases)
+            {
+                hearing.Cases.Add(new CaseResponse()
+                {
+                    Is_lead_case = hearingCase.Is_lead_case,
+                    Name = hearingCase.Name,
+                    Number = hearingCase.Number
+                });
+            }
+
+            hearing.Created_by = request.Created_by;
+            hearing.Created_date = DateTime.Now;
+            hearing.Hearing_type_name = request.Hearing_type_name;
+            hearing.Hearing_room_name = request.Hearing_room_name;
+            hearing.Hearing_venue_name = request.Hearing_venue_name;
+            hearing.Other_information = request.Other_information;
+
+            hearing.Participants = new List<ParticipantResponse>();
+            foreach (var participant in request.Participants)
+            {
+                hearing.Participants.Add(new ParticipantResponse()
+                {
+                    Case_role_name = participant.Case_role_name,
+                    Contact_email = participant.Contact_email,
+                    Display_name = participant.Display_name,
+                    First_name = participant.First_name,
+                    Hearing_role_name = participant.Hearing_role_name,
+                    Id = Guid.NewGuid(),
+                    Last_name = participant.Last_name,
+                    Middle_names = participant.Middle_names,                  
+                    Representee = participant.Representee,
+                    Solicitor_reference = participant.Solicitors_reference,
+                    Telephone_number = participant.Telephone_number,
+                    Title = participant.Title,
+                    User_role_name = participant.Last_name.Remove(participant.Last_name.Length - 2),
+                    Username = participant.Username,
+                    House_number = participant.House_number,
+                    Street = participant.Street,
+                    Postcode = participant.Postcode,
+                    City = participant.City,
+                    County = participant.County
+                });
+            }
+
+            hearing.Scheduled_date_time = request.Scheduled_date_time;
+            hearing.Scheduled_duration = request.Scheduled_duration;
+            hearing.Status = HearingDetailsResponseStatus.Created;
+            hearing.Updated_by = null;
+            hearing.Updated_date = null;
+
+            _context.Hearing = hearing;
+            _context.NewHearingId = hearing.Id;
         }
 
         [Given(@"I have a conference")]
@@ -144,6 +210,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             AssertHearingResponse.ForHearing(hearing);
             _context.Hearing = hearing;
             _context.NewHearingId = hearing.Id;
+            _context.HearingIsNotInBookingsDb = false;
         }
 
         [Then(@"the conference details should be retrieved")]

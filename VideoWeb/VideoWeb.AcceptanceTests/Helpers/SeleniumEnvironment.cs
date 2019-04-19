@@ -105,7 +105,9 @@ namespace VideoWeb.AcceptanceTests.Helpers
             options.AddArgument("use-fake-device-for-media-stream");
             options.AddArgument("use-fake-ui-for-media-stream");
 
-            return new ChromeDriver(ChromeDriverPath, options);
+            var commandTimeout = TimeSpan.FromSeconds(30);
+
+            return new ChromeDriver(ChromeDriverPath, options, commandTimeout);
         }
 
         private static string ChromeDriverPath

@@ -8,10 +8,10 @@ Scenario: Individual equipment check
 	Given the Individual user has progressed to the Equipment Check page
 	Then contact us details are available
 	When the user clicks the Continue button
-	Then the user is on the Camera Working page
+	Then the user is on the Switch on your camera and microphone page
 
 Scenario: Representative equipment check
 	Given the Representative user has progressed to the Equipment Check page
 	Then contact us details are available
 	When the user clicks the Continue button
-	Then the user is on the Camera Working page
+	Then the user is on the Switch on your camera and microphone page

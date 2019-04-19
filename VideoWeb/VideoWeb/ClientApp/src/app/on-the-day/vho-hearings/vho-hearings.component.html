@@ -8,15 +8,15 @@
       <div class="govuk-summary-list__row" [class.selected-conference]="isCurrentConference(conference)"
         *ngFor="let conference of conferences" (click)="displayAdminViewForConference(conference)">
         <dd class="govuk-summary-list__value govuk-!-padding-left-4">
-          {{ conference.scheduled_date_time | date: "HH:mm" }} <br />
+          <p class="govuk-!-margin-0 govuk-!-padding-0">{{conference.scheduled_date_time | date:'HH:mm' }}</p>
           <span id="with-hint-hint" class="govuk-hint">
             {{ getDuration(conference.scheduled_duration) }}
           </span>
         </dd>
         <dd class="govuk-summary-list__value">
           <strong>
-            {{ conference.case_number }} <br />
-            {{ conference.case_name }}
+            <p class="govuk-!-margin-0 govuk-!-padding-0">{{conference.case_number}}</p>
+            <p class="govuk-!-margin-0 govuk-!-padding-0">{{conference.case_name}}</p>
           </strong>
           <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3">
             <span class="govuk-!-padding-2"
@@ -28,7 +28,7 @@
   </div>
 
   <div class="govuk-grid-column-one-half">
-    <iframe id="admin-frame" *ngIf="selectedConferenceUrl" [width]='adminFrameWidth' height="800"
+    <iframe id="admin-frame" *ngIf="selectedConferenceUrl" [width]='adminFrameWidth' height="600"
       [src]='selectedConferenceUrl' allowfullscreen frameborder="0" webkitallowfullscreen mozallowfullscreen>
     </iframe>
   </div>

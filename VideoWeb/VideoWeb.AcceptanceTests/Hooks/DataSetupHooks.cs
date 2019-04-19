@@ -50,7 +50,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         [AfterScenario]
         public static void RemoveHearing(TestContext context, HearingsEndpoints endpoints)
         {
-            if (context.NewHearingId == Guid.Empty || context.NewHearingId == null) return;
+            if (context.NewHearingId == Guid.Empty || context.NewHearingId == null || context.HearingIsNotInBookingsDb) return;
             context.Request = context.Delete(endpoints.RemoveHearing(context.NewHearingId));
             context.Response = context.BookingsApiClient().Execute(context.Request);
             context.Response.IsSuccessful.Should().BeTrue("New hearing has been deleted after the test");

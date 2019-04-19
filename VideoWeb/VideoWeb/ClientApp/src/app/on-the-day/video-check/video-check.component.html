@@ -19,22 +19,23 @@
       </label>
       <div class="govuk-radios govuk-!-margin-top-5">
         <div class="govuk-radios__item">
-          <input class="govuk-radios__input" id="video-yes" formControlName="videoCheck" name="videoCheck"
-            type="radio" value="Yes">
+          <input class="govuk-radios__input" id="video-yes" formControlName="videoCheck" name="videoCheck" type="radio"
+            value="Yes">
           <label class="govuk-label govuk-radios__label" for="video-yes">
             Yes
           </label>
         </div>
         <div class="govuk-radios__item">
-          <input class="govuk-radios__input" id="video-no" formControlName="videoCheck" name="videoCheck"
-            type="radio" value="No">
+          <input class="govuk-radios__input" id="video-no" formControlName="videoCheck" name="videoCheck" type="radio"
+            value="No">
           <label class="govuk-label govuk-radios__label" for="video-no">
             No
-            <div *ngIf="!videoCheck.pristine && videoCheck.invalid" class="govuk-details__text">
+            <p *ngIf="!videoCheck.pristine && videoCheck.invalid" class="govuk-details__text">
               Make sure your speakers are on and the volume is turned up. If you couldn't see the videos clearly,
-              it could be because your internet connection is slow. Try moving to a different room and try checking your equipment again.
+              it could be because your internet connection is slow. Try moving to a different room and try checking your
+              equipment again.
               If you're still having problems, contact us using the options below.
-            </div>
+            </p>
           </label>
 
         </div>
@@ -43,10 +44,12 @@
   </div>
   <div class="govuk-!-margin-top-6">
     <input type="button" id="continue-btn" class="govuk-button govuk-!-margin-right-9" role="button" value="Continue"
-    [ngClass]="!form.pristine && videoCheck.invalid ?'govuk-button--disabled':''"  (click)="onSubmit()" alt="video Check" />
+      [ngClass]="!form.pristine && videoCheck.invalid ?'govuk-button--disabled':''" (click)="onSubmit()"
+      alt="video Check" />
 
     <input type="button" id="check-equipment-btn" class="govuk-button grey-btn" role="button"
-    [ngClass]="!form.pristine && videoCheck.valid ?'govuk-button--disabled':''"  value="Check my equipment again" (click)="checkEquipmentAgain()" alt="video Check" />
+      [ngClass]="!form.pristine && videoCheck.valid ?'govuk-button--disabled':''" value="Check my equipment again"
+      (click)="checkEquipmentAgain()" alt="video Check" />
   </div>
 </form>
 
