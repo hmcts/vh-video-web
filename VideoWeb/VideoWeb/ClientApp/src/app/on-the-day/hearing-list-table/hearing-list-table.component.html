@@ -10,21 +10,21 @@
     <tr *ngFor="let conference of conferences" id="judges-list" class="govuk-table__row">
 
       <td class="govuk-table__cell">
-        {{conference.scheduled_date_time | date:'dd MMM yyyy' }} <br />
-        {{conference.scheduled_date_time | date:'HH:mm' }}
+        <p class="govuk-!-margin-0 govuk-!-padding-0">{{conference.scheduled_date_time | date:'dd MMM yyyy' }}</p>
+        <p class="govuk-!-margin-0 govuk-!-padding-0">{{conference.scheduled_date_time | date:'HH:mm' }}</p>
       </td>
       <td class="govuk-table__cell">
-        {{ conference.case_name }} <br />
-        Case number: <strong>{{conference.case_number}}</strong>
+        <p class="govuk-!-margin-0 govuk-!-padding-0">{{ conference.case_name }}</p>
+        <p class="govuk-!-margin-0 govuk-!-padding-0">Case number: <strong>{{conference.case_number}}</strong></p>
       </td>
       <td class="govuk-table__cell">
-          <input type="button" id="start-hearing-btn-{{conference.id}}" class="govuk-button" role="button"
-              value="Sign into hearing" *ngIf="canStartHearing(conference)"
-              (click)="signIntoConference(conference)" alt="Sign into the conference" />
-          <p *ngIf="!canStartHearing(conference)">
-              Sign in {{getSignInDate(conference) }} <br />
-              from {{getSignInTime(conference) | date:'HH:mm' }}
-          </p>
+        <input type="button" id="start-hearing-btn-{{conference.id}}" class="govuk-button" role="button"
+          value="Sign into hearing" *ngIf="canStartHearing(conference)" (click)="signIntoConference(conference)"
+          alt="Sign into the conference" />
+        <span *ngIf="!canStartHearing(conference)">
+          <p class="govuk-!-margin-0 govuk-!-padding-0">Sign in {{getSignInDate(conference) }}</p>
+          <p class="govuk-!-margin-0 govuk-!-padding-0">from {{getSignInTime(conference) | date:'HH:mm' }} </p>
+        </span>
       </td>
     </tr>
 

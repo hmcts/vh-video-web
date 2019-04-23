@@ -5,12 +5,13 @@
         Login = 0,
         HearingList = 1,
         EquipmentCheck = 2,
-        CameraWorking = 3,
-        MicrophoneWorking = 4,
-        SeeAndHearVideo = 5,
-        Rules = 6,
-        Declaration = 7,
-        WaitingRoom = 8,
-        Countdown = 9
+        SwitchOnYourCameraAndMicrophone = 3,
+        CameraWorking = 4,
+        MicrophoneWorking = 5,
+        SeeAndHearVideo = 6,
+        Rules = 7,
+        Declaration = 8,
+        WaitingRoom = 9,
+        Countdown = 10
     }
 }

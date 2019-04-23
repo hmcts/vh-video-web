@@ -30,22 +30,23 @@
             type="radio" value="No">
           <label class="govuk-label govuk-radios__label" for="camera-no">
             No
-            <div *ngIf="!cameraCheck.pristine && cameraCheck.invalid" class="govuk-details__text">
+            <p *ngIf="!cameraCheck.pristine && cameraCheck.invalid" class="govuk-details__text">
               Make sure the camera is switched on and try checking your equipment again. If you're still having
               problems, contact us using the options below.
-            </div>
+            </p>
           </label>
-
         </div>
       </div>
     </fieldset>
   </div>
   <div class="govuk-!-margin-top-6">
     <input type="button" id="continue-btn" class="govuk-button govuk-!-margin-right-9" role="button" value="Continue"
-    [ngClass]="!form.pristine && cameraCheck.invalid ?'govuk-button--disabled':''" (click)="onSubmit()" alt="Camera Check" />
+      [ngClass]="!form.pristine && cameraCheck.invalid ?'govuk-button--disabled':''" (click)="onSubmit()"
+      alt="Camera Check" />
 
     <input type="button" id="check-equipment-btn" class="govuk-button grey-btn" role="button"
-    [ngClass]="!form.pristine && cameraCheck.valid ?'govuk-button--disabled':''" value="Check my equipment again" (click)="checkEquipmentAgain()" alt="Camera Check" />
+      [ngClass]="!form.pristine && cameraCheck.valid ?'govuk-button--disabled':''" value="Check my equipment again"
+      (click)="checkEquipmentAgain()" alt="Camera Check" />
   </div>
 </form>
 
