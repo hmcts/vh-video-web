@@ -24,10 +24,26 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By JudgeHearingListedFor(string caseNumber) =>
             By.XPath($"//p[contains(text(),'{caseNumber}')]/../../../../td/p[contains(text(),'listed for')]");
 
+        public By VideoHearingsOfficerTime(string caseNumber) =>
+            By.XPath($"//p[contains(text(),'{caseNumber}')]/../../..//p[contains(text(),':')]");
+        public By VideoHearingsOfficerListedFor(string caseNumber) =>
+            By.XPath($"//p[contains(text(),'{caseNumber}')]/../../..//span[contains(text(),'and')]");
+
+        public By VideoHearingsOfficerSelectHearingButton(string caseNumber) =>
+            By.XPath($"//p[contains(text(),'{caseNumber}')]/../..//span");
+
         public By CaseType(string caseNumber, string caseType) =>
             By.XPath($"//p[contains(text(),'{caseNumber}')]/../../../p[contains(text(),'{caseType}')]");
 
         public By ParticipantsStatus(string caseNumber) =>
             By.XPath($"//p[contains(text(),'{caseNumber}')]/../../../../td/p[contains(text(),'Available')]");
+
+        public const string AdminIframeId = "admin-frame";
+
+        public By AdminUsernameTextfield => CommonLocators.TextfieldWithName("username");
+        public By AdminPasswordTextfield => CommonLocators.TextfieldWithName("password");
+        public By SignInButton => CommonLocators.ButtonWithInnertext("Sign in");
+        public By WaitingRoomText => CommonLocators.ElementContainingText("Waiting room");
+
     }
 }
