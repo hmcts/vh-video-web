@@ -28,6 +28,33 @@ namespace VideoWeb.AcceptanceTests.Steps
             _hearingListPage = hearingListPage;
         }
 
+        [When(@"the user clicks on the Start Hearing button")]
+        public void WhenTheUserClicksTheStartButton()
+        {
+            var element = _context.CurrentUser.Role.Equals("Judge") ? _hearingListPage._startHearingButton(_context.Hearing.Cases.First().Number) : _hearingListPage._signInButton(_context.Hearing.Cases.First().Number);
+            var tollerence = _context.CurrentUser.Role.Equals("Judge") ? 30 : TollerenceInMinutes * 60;
+            _browserContext.NgDriver.WaitUntilElementVisible(element, tollerence).Click();
+        }
+
+        [When(@"the VHO selects the hearing")]
+        public void WhenTheVHOSelectsTheHearing()
+        {
+            _browserContext.NgDriver
+                .WaitUntilElementVisible(
+                    _hearingListPage.VideoHearingsOfficerSelectHearingButton(_context.Hearing.Cases.First().Number))
+                .Click();
+        }
+
+        [When(@"the VHO logs into the admin panel")]
+        public void WhenTheVHOLogsIntoTheAdminPanel()
+        {
+            _browserContext.NgDriver.SwitchTo().Frame(HearingListPage.AdminIframeId);
+
+            _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.AdminUsernameTextfield).SendKeys(_context.TestSettings.AdminUsername);
+            _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.AdminPasswordTextfield).SendKeys(_context.TestSettings.AdminPassword);
+            _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.SignInButton).Click();
+        }
+
         [Then(@"a warning message appears indicating the user has no hearings scheduled")]
         public void ThenAWarningMessageAppearsIndicatingTheUserHasNoHearingsScheduled()
         {
@@ -103,14 +130,30 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage._signInButton(_context.Hearing.Cases.First().Number), TollerenceInMinutes * 60).Displayed
                 .Should().BeTrue();
+        }        
+
+        [Then(@"the VHO can see a list of hearings including the new hearing")]
+        public void ThenTheVHOCanSeeAListOfHearingsIncludingTheNewHearing()
+        {
+            _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage._hearingWithCaseNumber(_context.Hearing.Cases.First().Number)).Displayed
+                .Should().BeTrue();
+
+            Debug.Assert(_context.Hearing.Scheduled_duration != null, "_context.Hearing.Scheduled_duration != null");
+            var timespan = TimeSpan.FromMinutes(_context.Hearing.Scheduled_duration.Value);
+            var listedFor = timespan.Hours.Equals(1) ? $"{timespan.Hours} hour and {timespan.Minutes} minutes" : $"{timespan.Hours} hours and {timespan.Minutes} minutes";
+
+            _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.VideoHearingsOfficerTime(_context.Hearing.Cases.First().Number)).Text
+                .Should().Be($"{_context.Hearing.Scheduled_date_time?.ToLocalTime():HH:mm}");
+
+            _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.VideoHearingsOfficerListedFor(_context.Hearing.Cases.First().Number)).Text
+                .Should().Be($"{listedFor}");
         }
 
-        [When(@"the user clicks on the Start Hearing button")]
-        public void WhenTheUserClicksTheStartButton()
+        [Then(@"the VHO can see the hearing view")]
+        public void ThenTheVHOCanSeeTheHearingView()
         {
-            var element = _context.CurrentUser.Role.Equals("Judge") ? _hearingListPage._startHearingButton(_context.Hearing.Cases.First().Number) : _hearingListPage._signInButton(_context.Hearing.Cases.First().Number);
-            var tollerence = _context.CurrentUser.Role.Equals("Judge") ? 30 : TollerenceInMinutes * 60;
-            _browserContext.NgDriver.WaitUntilElementVisible(element, tollerence).Click();
+            _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.WaitingRoomText).Displayed.Should().BeTrue();
         }
+
     }
 }
