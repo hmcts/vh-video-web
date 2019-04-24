@@ -56,12 +56,15 @@ namespace VideoWeb.AcceptanceTests.Steps
             var judge = _context.GetJudgeUser();
             var individualUsers = _context.GetIndividualUsers();
             var representativeUsers = _context.GetRepresentativeUsers();
+            var videoHearingsOfficer = _context.GetVideoHearingOfficerUser();
 
             AddIndividualParticipants(individualUsers, participants);
 
             AddRepresentativeParticipants(representativeUsers, participants);
 
             AddJudgeParticipant(judge, participants);
+
+            AddVhOfficerParticipant(videoHearingsOfficer, participants);
 
             _context.RequestBody.Participants = participants;
             _context.RequestBody.Scheduled_date_time = DateTime.Now.AddMinutes(minutes);
@@ -115,8 +118,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                     Id = Guid.NewGuid(),
                     Last_name = participant.Last_name,
                     Middle_names = participant.Middle_names,                  
-                    Representee = participant.Representee,
-                    Solicitor_reference = participant.Solicitors_reference,
+                    //Representee = participant.Representee,
+                    //Solicitor_reference = participant.Solicitors_reference,
                     Telephone_number = participant.Telephone_number,
                     Title = participant.Title,
                     User_role_name = participant.Last_name.Remove(participant.Last_name.Length - 2),
@@ -244,6 +247,30 @@ namespace VideoWeb.AcceptanceTests.Steps
                 Postcode = "SW1H 9AJ",
                 City = "London",
                 County = "London"
+            });
+        }
+
+        private static void AddVhOfficerParticipant(UserAccount vhOfficer, ICollection<ParticipantRequest> participants)
+        {
+            participants.Add(new ParticipantRequest()
+            {
+                Case_role_name = "Video hearings officer",
+                Contact_email = vhOfficer.AlternativeEmail,
+                Display_name = vhOfficer.Displayname,
+                First_name = vhOfficer.Firstname,
+                Hearing_role_name = "Video hearings officer",
+                Last_name = vhOfficer.Lastname,
+                Middle_names = "",
+                Representee = "",
+                Solicitors_reference = "",
+                Telephone_number = "01234567890",
+                Title = "Mrs",
+                Username = vhOfficer.Username,
+                House_number = "102",
+                Street = "Petty France",
+                Postcode = "SW1H 9AJ",
+                City = "London",
+                County = "London"               
             });
         }
 
