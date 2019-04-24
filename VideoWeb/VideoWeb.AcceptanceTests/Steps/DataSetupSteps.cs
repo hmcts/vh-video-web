@@ -71,9 +71,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             _context.RequestBody.Scheduled_duration = HearingDuration;
             _context.Request = _context.Post(_bookingEndpoints.BookNewHearing(), _context.RequestBody);
 
-            //WhenISendTheRequestToTheBookingsApiEndpoint();
-            //ThenTheHearingOrConferenceShouldBeCreated();
-            //ThenTheHearingDetailsShouldBeRetrieved();
+            // Leaving these out until the bookings api is more stable
+            // WhenISendTheRequestToTheBookingsApiEndpoint();
+            // ThenTheHearingOrConferenceShouldBeCreated();
+            // ThenTheHearingDetailsShouldBeRetrieved();
             ThenIHaveAFakeHearingModel();
         }
 
