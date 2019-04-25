@@ -457,20 +457,20 @@ namespace VideoWeb.Services.Bookings
         /// <param name="username">The username of the person</param>
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<PersonSuitabilityAnswerResponse> GetPersonSuitabilityAnswersAsync(string username);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<PersonSuitabilityAnswerResponse>> GetPersonSuitabilityAnswersAsync(string username);
     
         /// <summary>Get a list of suitability answers for a given person</summary>
         /// <param name="username">The username of the person</param>
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        PersonSuitabilityAnswerResponse GetPersonSuitabilityAnswers(string username);
+        System.Collections.Generic.List<PersonSuitabilityAnswerResponse> GetPersonSuitabilityAnswers(string username);
     
         /// <summary>Get a list of suitability answers for a given person</summary>
         /// <param name="username">The username of the person</param>
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        System.Threading.Tasks.Task<PersonSuitabilityAnswerResponse> GetPersonSuitabilityAnswersAsync(string username, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<PersonSuitabilityAnswerResponse>> GetPersonSuitabilityAnswersAsync(string username, System.Threading.CancellationToken cancellationToken);
     
     }
     
@@ -2868,7 +2868,7 @@ namespace VideoWeb.Services.Bookings
         /// <param name="username">The username of the person</param>
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<PersonSuitabilityAnswerResponse> GetPersonSuitabilityAnswersAsync(string username)
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<PersonSuitabilityAnswerResponse>> GetPersonSuitabilityAnswersAsync(string username)
         {
             return GetPersonSuitabilityAnswersAsync(username, System.Threading.CancellationToken.None);
         }
@@ -2877,7 +2877,7 @@ namespace VideoWeb.Services.Bookings
         /// <param name="username">The username of the person</param>
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public PersonSuitabilityAnswerResponse GetPersonSuitabilityAnswers(string username)
+        public System.Collections.Generic.List<PersonSuitabilityAnswerResponse> GetPersonSuitabilityAnswers(string username)
         {
             return System.Threading.Tasks.Task.Run(async () => await GetPersonSuitabilityAnswersAsync(username, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
@@ -2887,7 +2887,7 @@ namespace VideoWeb.Services.Bookings
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        public async System.Threading.Tasks.Task<PersonSuitabilityAnswerResponse> GetPersonSuitabilityAnswersAsync(string username, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<PersonSuitabilityAnswerResponse>> GetPersonSuitabilityAnswersAsync(string username, System.Threading.CancellationToken cancellationToken)
         {
             if (username == null)
                 throw new System.ArgumentNullException("username");
@@ -2925,10 +2925,10 @@ namespace VideoWeb.Services.Bookings
                         if (status_ == "200") 
                         {
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            var result_ = default(PersonSuitabilityAnswerResponse); 
+                            var result_ = default(System.Collections.Generic.List<PersonSuitabilityAnswerResponse>); 
                             try
                             {
-                                result_ = Newtonsoft.Json.JsonConvert.DeserializeObject<PersonSuitabilityAnswerResponse>(responseData_, _settings.Value);
+                                result_ = Newtonsoft.Json.JsonConvert.DeserializeObject<System.Collections.Generic.List<PersonSuitabilityAnswerResponse>>(responseData_, _settings.Value);
                                 return result_; 
                             } 
                             catch (System.Exception exception_) 
@@ -2961,7 +2961,7 @@ namespace VideoWeb.Services.Bookings
                             throw new BookingsApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
-                        return default(PersonSuitabilityAnswerResponse);
+                        return default(System.Collections.Generic.List<PersonSuitabilityAnswerResponse>);
                     }
                     finally
                     {
@@ -3729,15 +3729,15 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("participant_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid? Participant_id { get; set; }
     
-        /// <summary>Scheduled At</summary>
+        /// <summary>Scheduled time of the hearing</summary>
         [Newtonsoft.Json.JsonProperty("scheduled_at", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTime? Scheduled_at { get; set; }
     
-        /// <summary>Updated At</summary>
+        /// <summary>Updated At of the suitability answer</summary>
         [Newtonsoft.Json.JsonProperty("updated_at", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTime? Updated_at { get; set; }
     
-        /// <summary>Created At</summary>
+        /// <summary>Created time</summary>
         [Newtonsoft.Json.JsonProperty("created_at", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTime? Created_at { get; set; }
     
