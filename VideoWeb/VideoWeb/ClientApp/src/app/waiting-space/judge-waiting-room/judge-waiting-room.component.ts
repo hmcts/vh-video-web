@@ -5,6 +5,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { PageUrls } from 'src/app/shared/page-url.constants';
+import { ErrorService } from 'src/app/services/error.service';
 
 @Component({
   selector: 'app-judge-waiting-room',
@@ -21,7 +22,8 @@ export class JudgeWaitingRoomComponent implements OnInit {
     private router: Router,
     private videoWebService: VideoWebService,
     private eventService: EventsService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private errorService: ErrorService
   ) {
     this.loadingData = true;
   }
@@ -39,9 +41,9 @@ export class JudgeWaitingRoomComponent implements OnInit {
 
         this.setupSubscribers();
       },
-        () => {
+        (error) => {
           this.loadingData = false;
-          this.router.navigate(['home']);
+          this.errorService.handleApiError(error);
         });
   }
 

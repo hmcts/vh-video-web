@@ -32,7 +32,9 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static Page Declaration => new Page("Declaration", "declaration", Journey.Declaration, NextPageAsJourney(Journey.Declaration), JudgeJourney.NotInJudgeJourney, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJourney));
         public static Page WaitingRoom => new Page("Waiting Room", "waiting-room", Journey.WaitingRoom, NextPageAsJourney(Journey.WaitingRoom), JudgeJourney.WaitingRoom, NextPageAsJudgeJourney(JudgeJourney.WaitingRoom));
         public static Page Countdown => new Page("Countdown", "countdown", Journey.Countdown, NextPageAsJourney(Journey.Countdown), JudgeJourney.Countdown, NextPageAsJudgeJourney(JudgeJourney.Countdown));
-
+        public static Page NotFound => new Page("Not Found", "not-found", Journey.NotFound, NextPageAsJourney(Journey.NotFound), JudgeJourney.NotFound, NextPageAsJudgeJourney(JudgeJourney.NotFound));
+        public static Page Unauthorised => new Page("Unauthorised", "unauthorised", Journey.Unauthorised, NextPageAsJourney(Journey.Unauthorised), JudgeJourney.Unauthorised, NextPageAsJudgeJourney(JudgeJourney.Unauthorised));
+        
         public static Journey NextPageAsJourney(Journey currentPage)
         {
             return (Journey) ((int) currentPage + 1);

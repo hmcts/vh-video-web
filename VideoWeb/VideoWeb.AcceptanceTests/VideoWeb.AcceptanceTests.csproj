@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <SpecFlowObsoleteCodeBehindFiles Remove="Features\CameraWorking - Copy.feature.cs" />
+    <SpecFlowObsoleteCodeBehindFiles Remove="Features\Login - Copy.feature.cs" />
     <SpecFlowObsoleteCodeBehindFiles Remove="Features\SeeAndHearVideo - Copy.feature.cs" />
   </ItemGroup>
 
@@ -84,6 +85,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Features\Errors.feature.cs">
+      <DependentUpon>Errors.feature</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Update="Features\SwitchOnCamAndMic.feature.cs">
       <DependentUpon>SwitchOnCamAndMic.feature</DependentUpon>
     </Compile>
@@ -100,6 +106,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <SpecFlowFeatureFiles Update="Features\Errors.feature">
+      <Visible>$(UsingMicrosoftNETSdk)</Visible>
+      <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>Errors.feature.cs</LastGenOutput>
+    </SpecFlowFeatureFiles>
     <SpecFlowFeatureFiles Update="Features\SwitchOnCamAndMic.feature">
       <Visible>$(UsingMicrosoftNETSdk)</Visible>
       <CodeBehindFile>%(RelativeDir)%(Filename).feature$(DefaultLanguageSourceExtension)</CodeBehindFile>
