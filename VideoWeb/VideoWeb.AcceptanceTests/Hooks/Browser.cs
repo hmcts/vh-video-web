@@ -87,7 +87,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             var endpoint = new BookingsApiUriFactory().HealthCheckEndpoints;
             testContext.Request = testContext.Get(endpoint.HealthCheck);
             testContext.Response = testContext.BookingsApiClient().Execute(testContext.Request);
-            testContext.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+            testContext.Response.StatusCode.Should().Be(HttpStatusCode.OK, "Unable to connect to the Bookings Api");
         }
 
         public static void CheckUserApiHealth(TestContext testContext)
@@ -95,7 +95,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             var endpoint = new UserApiUriFactory().HealthCheckEndpoints;
             testContext.Request = testContext.Get(endpoint.CheckServiceHealth());
             testContext.Response = testContext.UserApiClient().Execute(testContext.Request);
-            testContext.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+            testContext.Response.StatusCode.Should().Be(HttpStatusCode.OK, "Unable to connect to the User Api");
         }
 
         public static void CheckVideoApiHealth(TestContext testContext)
@@ -103,7 +103,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             var endpoint = new VideoApiUriFactory().HealthCheckEndpoints;
             testContext.Request = testContext.Get(endpoint.CheckServiceHealth());
             testContext.Response = testContext.BookingsApiClient().Execute(testContext.Request);
-            testContext.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+            testContext.Response.StatusCode.Should().Be(HttpStatusCode.OK, "Unable to connect to the Video Api");
         }
 
         [AfterScenario]

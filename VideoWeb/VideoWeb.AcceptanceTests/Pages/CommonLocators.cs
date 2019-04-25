@@ -6,6 +6,7 @@ namespace VideoWeb.AcceptanceTests.Pages
     {
         public static By ElementContainingText(string text) => By.XPath($"//*[contains(text(), '{text}')]");
         public static By ButtonWithLabel(string label) => By.XPath($"//input[contains(@class,'govuk-button') and @role='button' and @value='{label}']");
+        public static By ButtonWithInnertext(string innertext) => By.XPath($"//button[contains(text(),'{innertext}')]");
         public static By ErrorMessage = By.XPath("//div[@class='govuk-error-message']");
 
         public static By CheckboxWithLabel(string label) =>
@@ -18,5 +19,7 @@ namespace VideoWeb.AcceptanceTests.Pages
 
         public static By WarningMessageAfterRadioButton(string label) =>
             By.XPath($"//label[contains(text(),'{label}')]/p[@class='govuk-details__text']");
+
+        public static By TextfieldWithName(string name) => By.XPath($"//input[@name='{name}']");
     }
 }
