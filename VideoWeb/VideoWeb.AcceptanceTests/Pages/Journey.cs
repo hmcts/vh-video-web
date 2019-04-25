@@ -12,6 +12,8 @@
         Rules = 7,
         Declaration = 8,
         WaitingRoom = 9,
-        Countdown = 10
+        Countdown = 10,
+        NotFound = -1,
+        Unauthorised = -2
     }
 }

@@ -79,7 +79,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
             testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, GetTargetBrowser());
             _browserContext.BrowserSetup(testContext.VideoWebUrl, testContext.Environment);
-            _browserContext.LaunchSite();
+            _browserContext.NavigateToPage();
         }
 
         public static void CheckBookingsApiHealth(TestContext testContext)
