@@ -31,8 +31,21 @@
     <iframe id="admin-frame" *ngIf="selectedConferenceUrl" [width]='adminFrameWidth' height="600"
       [src]='selectedConferenceUrl' allowfullscreen frameborder="0" webkitallowfullscreen mozallowfullscreen>
     </iframe>
+    <div id="list-column" class="govuk-grid-column-one-half">
+      <dl id="alerts-list" class="govuk-summary-list">
+        <div class="govuk-summary-list__row" *ngFor="let alert of alerts">
+          <dd class="govuk-summary-list__value govuk-!-padding-left-4">
+          </dd>
+          <dd class="govuk-summary-list__value">
+            <strong>
+              <p class="govuk-!-margin-0 govuk-!-padding-0">{{alert.body}}</p>
+              <p class="govuk-!-margin-0 govuk-!-padding-0">{{alert.type}}</p>
+            </strong>
+          </dd>
+        </div>
+      </dl>
+    </div>
   </div>
-</div>
 
 <div *ngIf="!loadingData && !hasHearings()">
   <h1 class="govuk-heading-xl">Video hearings</h1>
