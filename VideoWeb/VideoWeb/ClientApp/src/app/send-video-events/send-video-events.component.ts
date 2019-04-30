@@ -4,6 +4,7 @@ import { Guid } from 'guid-typescript';
 import { ConferenceEventRequest, ConferenceResponse, EventType, ParticipantResponse, RoomType } from '../services/clients/api-client';
 import { VideoWebService } from '../services/video-web.service';
 import { PageUrls } from '../shared/page-url.constants';
+import { ErrorService } from '../services/error.service';
 
 @Component({
   selector: 'app-send-video-events',
@@ -17,8 +18,8 @@ export class SendVideoEventsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
-    private videoWebService: VideoWebService
+    private videoWebService: VideoWebService,
+    private errorService: ErrorService
   ) {
     this.loadingData = true;
   }
@@ -34,9 +35,9 @@ export class SendVideoEventsComponent implements OnInit {
         this.loadingData = false;
         this.conference = data;
       },
-        () => {
+        (error) => {
           this.loadingData = false;
-          this.router.navigate([PageUrls.Home]);
+          this.errorService.handleApiError(error);
         });
   }
 

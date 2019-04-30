@@ -4,6 +4,7 @@ import { SharedModule } from '../shared/shared.module';
 import { SecurityRoutingModule } from './security-routing.module';
 import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
+import { UnauthorisedComponent } from './unauthorised/unauthorised.component';
 
 @NgModule({
   imports: [
@@ -13,7 +14,8 @@ import { LogoutComponent } from './logout/logout.component';
   ],
   declarations: [
     LoginComponent,
-    LogoutComponent
+    LogoutComponent,
+    UnauthorisedComponent
   ],
   exports: [
     LoginComponent,

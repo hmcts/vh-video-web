@@ -56,15 +56,15 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public string PageUrl() => NgDriver.Url;
         public string PageTitle => NgDriver.Title;
 
-        public void LaunchSite()
+        public void NavigateToPage(string url = "")
         {
             if (string.IsNullOrEmpty(_baseUrl))
             {
                 throw new InvalidOperationException("BaseUrl has not been set through BrowserSetup() yet");
             }
 
-            NUnit.Framework.TestContext.WriteLine($"Navigating to {_baseUrl}");
-            NgDriver.WrappedDriver.Navigate().GoToUrl(_baseUrl);
+            NUnit.Framework.TestContext.WriteLine($"Navigating to {_baseUrl}{url}");
+            NgDriver.WrappedDriver.Navigate().GoToUrl($"{_baseUrl}{url}");
         }
 
         internal void Retry(Action action, int times = 4)
@@ -113,7 +113,7 @@ namespace VideoWeb.AcceptanceTests.Contexts
 
         public string ExecuteJavascript(string script)
         {
-            return (String)((IJavaScriptExecutor)NgDriver).ExecuteScript($"{script};");
+            return (string)((IJavaScriptExecutor)NgDriver).ExecuteScript($"{script};");
         }
         public void AcceptAlert()
         {
@@ -146,12 +146,7 @@ namespace VideoWeb.AcceptanceTests.Contexts
 
         public dynamic Get(string key)
         {
-            dynamic value;
-            if (_items.TryGetValue(key, out value))
-            {
-                return value;
-            }
-            return null;
+            return _items.TryGetValue(key, out var value) ? value : null;
         }
     }
 }

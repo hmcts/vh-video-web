@@ -5,14 +5,15 @@
     </span>
   </summary>
   <div class="govuk-details__text">
-    <p>
-      Call us on <strong>{{contact.phone}}</strong> and quote your case number {{ caseNumber }}
-    </p>
+    <p class="govuk-body govuk-!-margin-bottom-0"><strong>Telephone: </strong></p>
+    <p class="govuk-body govuk-!-margin-bottom-0">Call us on {{ contact.phone }}</p>
+    <span class="govuk-hint">(available between 9am and 5pm, Monday to Friday)</span>
     <p><span class="govuk-hint">(available between 9am and 5pm, Monday to Friday)</span></p>
 
-    <p>
-      Email us at <a href="mailto:{{contact.email}}">{{contact.email}}</a> quoting your case number {{ caseNumber }}
+    <p class="govuk-body govuk-!-margin-bottom-0"><strong>Email: </strong></p>
+    <p class="govuk-body govuk-!-margin-bottom-0">
+      <a class="govuk-link" href="mailto:{{contact.email}}" target="_blank" data-hsupport="email">Send us a message</a>
     </p>
-    <p> <span class="govuk-hint">(available between 9am and 5pm, Monday to Friday)</span> </p>
+    <span class="govuk-hint">(responses can take upto 3 days)</span>
   </div>
 </details>

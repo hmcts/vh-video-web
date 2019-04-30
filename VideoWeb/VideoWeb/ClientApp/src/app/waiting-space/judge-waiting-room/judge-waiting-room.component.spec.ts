@@ -16,6 +16,7 @@ import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { ParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
 import { PageUrls } from 'src/app/shared/page-url.constants';
+import { ErrorService } from 'src/app/services/error.service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
   let component: JudgeWaitingRoomComponent;
@@ -35,7 +36,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [ JudgeWaitingRoomComponent, ParticipantStatusListStubComponent ],
+      declarations: [JudgeWaitingRoomComponent, ParticipantStatusListStubComponent],
       providers: [
         {
           provide: ActivatedRoute,
@@ -51,7 +52,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         { provide: EventsService, useClass: MockEventsService }
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -143,16 +144,17 @@ describe('JudgeWaitingRoomComponent when conference does not exist', () => {
   let router: Router;
   let conference: ConferenceResponse;
   let adalService: MockAdalService;
+  let errorService: ErrorService;
 
   beforeEach(async(() => {
     conference = new ConferenceTestData().getConferenceFuture();
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
-    videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 404 }));
+    videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 401, isSwaggerException: true }));
 
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [ JudgeWaitingRoomComponent, ParticipantStatusListStubComponent ],
+      declarations: [JudgeWaitingRoomComponent, ParticipantStatusListStubComponent],
       providers: [
         {
           provide: ActivatedRoute,
@@ -168,24 +170,25 @@ describe('JudgeWaitingRoomComponent when conference does not exist', () => {
         { provide: EventsService, useClass: MockEventsService }
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
     adalService = TestBed.get(AdalService);
     router = TestBed.get(Router);
     route = TestBed.get(ActivatedRoute);
+    errorService = TestBed.get(ErrorService);
     fixture = TestBed.createComponent(JudgeWaitingRoomComponent);
     component = fixture.componentInstance;
   });
 
-  it('should redirect back home if conference not found', () => {
-    spyOn(router, 'navigate').and.callFake(() => { Promise.resolve(true); });
+  it('should handle api error with error service', () => {
+    spyOn(errorService, 'handleApiError').and.callFake(() => { Promise.resolve(true); });
     fixture.detectChanges();
     expect(component).toBeTruthy();
     expect(component).toBeTruthy();
     expect(component.loadingData).toBeFalsy();
     expect(component.conference).toBeUndefined();
-    expect(router.navigate).toHaveBeenCalledWith(['home']);
+    expect(errorService.handleApiError).toHaveBeenCalled();
   });
 });

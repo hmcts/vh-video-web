@@ -6,6 +6,7 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { ErrorService } from 'src/app/services/error.service';
 declare var PexRTC: any;
 
 @Component({
@@ -30,7 +31,8 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     private videoWebService: VideoWebService,
     private eventService: EventsService,
     private ngZone: NgZone,
-    private adalService: AdalService
+    private adalService: AdalService,
+    private errorService: ErrorService
   ) {
     this.loadingData = true;
   }
@@ -52,9 +54,9 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         this.setupPexipClient();
         this.call();
       },
-        () => {
+        (error) => {
           this.loadingData = false;
-          this.router.navigate(['home']);
+          this.errorService.handleApiError(error);
         });
   }
 
@@ -129,6 +131,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     this.pexipAPI.onError = function (reason) {
       self.connected = false;
       console.warn('Error from pexip. Reason : ' + reason);
+      self.errorService.goToServiceError();
     };
 
     this.pexipAPI.onDisconnect = function (reason) {
