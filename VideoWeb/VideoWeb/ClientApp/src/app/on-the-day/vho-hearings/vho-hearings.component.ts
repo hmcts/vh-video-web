@@ -66,6 +66,10 @@ export class VhoHearingsComponent implements OnInit {
     return this.conferences !== undefined && this.conferences.length > 0;
   }
 
+  hasTasks() {
+    return this.tasks !== undefined && this.tasks.length > 0;
+  }
+
   displayAdminViewForConference(conference: ConferenceForUserResponse) {
     if (!this.isCurrentConference(conference)) {
       this.videoWebService.getConferenceById(conference.id)
@@ -77,7 +81,7 @@ export class VhoHearingsComponent implements OnInit {
             this.errorService.handleApiError(error);
           });
 
-          this.videoWebService.getsAlertsForConference(conference.id)
+          this.videoWebService.getTasksForConference(conference.id)
           .subscribe((data: TaskResponse[]) => {
             this.tasks = data;
           },

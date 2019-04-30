@@ -1093,8 +1093,10 @@ export interface IUserProfileResponse {
 
 export class TaskResponse implements ITaskResponse {
     id?: number | undefined;
+    origin_id?: string | undefined;
     body?: string | undefined;
     type?: TaskType | undefined;
+    created?: Date | undefined;
 
     constructor(data?: ITaskResponse) {
         if (data) {
@@ -1108,8 +1110,10 @@ export class TaskResponse implements ITaskResponse {
     init(data?: any) {
         if (data) {
             this.id = data["id"];
+            this.origin_id = data["origin_id"];
             this.body = data["body"];
             this.type = data["type"];
+            this.created = data["created"] ? new Date(data["created"].toString()) : <any>undefined;
         }
     }
 
@@ -1123,16 +1127,20 @@ export class TaskResponse implements ITaskResponse {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
+        data["origin_id"] = this.origin_id;
         data["body"] = this.body;
         data["type"] = this.type;
+        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
         return data; 
     }
 }
 
 export interface ITaskResponse {
     id?: number | undefined;
+    origin_id?: string | undefined;
     body?: string | undefined;
     type?: TaskType | undefined;
+    created?: Date | undefined;
 }
 
 export enum TaskType {
