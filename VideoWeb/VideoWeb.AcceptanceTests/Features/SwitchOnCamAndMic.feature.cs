@@ -20,6 +20,7 @@ namespace VideoWeb.AcceptanceTests.Features
     [NUnit.Framework.TestFixtureAttribute()]
     [NUnit.Framework.DescriptionAttribute("Switch on your camera and microphone")]
     [NUnit.Framework.CategoryAttribute("VIH-4289")]
+    [NUnit.Framework.CategoryAttribute("VIH-4036")]
     public partial class SwitchOnYourCameraAndMicrophoneFeature
     {
         
@@ -35,7 +36,8 @@ namespace VideoWeb.AcceptanceTests.Features
             TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Switch on your camera and microphone", "\tAs a registered video hearings user\r\n\tI would like to be prompted to switch on m" +
                     "y camera and microphone\r\n\tSo that I can ensure my equipment is ready to use for " +
                     "the hearing", ProgrammingLanguage.CSharp, new string[] {
-                        "VIH-4289"});
+                        "VIH-4289",
+                        "VIH-4036"});
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -119,6 +121,60 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.When("the user clicks the Watch video button", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 21
  testRunner.Then("the user is on the Camera Working page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Individual blocks use of camera and microphone")]
+        [NUnit.Framework.CategoryAttribute("Chrome")]
+        [NUnit.Framework.CategoryAttribute("Permissions")]
+        public virtual void IndividualBlocksUseOfCameraAndMicrophone()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Individual blocks use of camera and microphone", null, new string[] {
+                        "Chrome",
+                        "Permissions"});
+#line 24
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 25
+ testRunner.Given("the Individual user has progressed to the Switch on your camera and microphone pa" +
+                    "ge", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 26
+ testRunner.When("the user clicks the Switch on button", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 27
+ testRunner.And("the user selects block on the permissions notification", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 28
+ testRunner.Then("the camera and microphone are blocked message appears", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 29
+ testRunner.And("the continue button is not displayed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Representative blocks use of camera and microphone")]
+        [NUnit.Framework.CategoryAttribute("Chrome")]
+        [NUnit.Framework.CategoryAttribute("Permissions")]
+        public virtual void RepresentativeBlocksUseOfCameraAndMicrophone()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Representative blocks use of camera and microphone", null, new string[] {
+                        "Chrome",
+                        "Permissions"});
+#line 32
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 33
+ testRunner.Given("the Representative user has progressed to the Switch on your camera and microphon" +
+                    "e page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 34
+ testRunner.When("the user clicks the Switch on button", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 35
+ testRunner.And("the user selects block on the permissions notification", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 36
+ testRunner.Then("the camera and microphone are blocked message appears", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 37
+ testRunner.And("the continue button is not displayed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }

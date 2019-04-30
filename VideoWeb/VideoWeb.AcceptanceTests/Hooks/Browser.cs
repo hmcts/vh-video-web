@@ -28,9 +28,10 @@ namespace VideoWeb.AcceptanceTests.Hooks
             _scenarioContext = injectedContext;
         }
 
-        private static TargetBrowser GetTargetBrowser()
+        private TargetBrowser GetTargetBrowser()
         {
-            return Enum.TryParse(NUnit.Framework.TestContext.Parameters["TargetBrowser"], true, out TargetBrowser targetTargetBrowser) ? targetTargetBrowser : TargetBrowser.Chrome;
+            _browserContext.TargetBrowser = Enum.TryParse(NUnit.Framework.TestContext.Parameters["TargetBrowser"], true, out TargetBrowser targetTargetBrowser) ? targetTargetBrowser : TargetBrowser.Chrome;
+            return _browserContext.TargetBrowser;
         }
 
         [BeforeScenario]
