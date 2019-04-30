@@ -56,7 +56,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             foreach (var participant in _context.Hearing.Participants)
             {
-                if (!participant.Hearing_role_name.Equals("Judge"))
+                if (participant.Hearing_role_name.Equals("Individual") ||
+                    participant.Hearing_role_name.Equals("Representative"))
                 {
                     _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.ParticipantStatus(participant.Display_name)).Text
                         .Should().Be("Unavailable");

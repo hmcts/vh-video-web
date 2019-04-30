@@ -13,6 +13,18 @@ namespace VideoWeb.AcceptanceTests.Hooks
     public static class DataSetupHooks
     {
         [BeforeScenario]
+        public static void WriteTestNameToConsoleBefore(ScenarioContext context)
+        {
+            Console.WriteLine($"Starting test : {context.ScenarioInfo.Title}");
+        }
+
+        [AfterScenario]
+        public static void WriteTestNameToConsoleAfter(ScenarioContext context)
+        {
+            Console.WriteLine($"Finished test: {context.ScenarioInfo.Title}");
+        }
+
+        [BeforeScenario]
         public static void ClearAnyConferences(TestContext context, ConferenceEndpoints endpoints)
         {
             ClearConferences(context, endpoints, context.GetIndividualUsers());

@@ -162,7 +162,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browserContext.NgDriver.WaitUntilElementVisible(_commonPages.ContactUsLink).Displayed
                 .Should().BeTrue();
-            if (_browserContext.NgDriver.Url.Contains(Page.HearingList.Url))
+            if (_browserContext.NgDriver.Url.Contains(Page.HearingList.Url) ||
+                _browserContext.NgDriver.Url.Contains(Page.NotFound.Url) ||
+                _browserContext.NgDriver.Url.Contains(Page.Unauthorised.Url))
             {
                 if (_context.Hearing != null)
                 {
@@ -192,6 +194,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                 case "Rules": _commonPages.PageUrl(Page.Rules); break;
                 case "Declaration": _commonPages.PageUrl(Page.Declaration); break;
                 case "Waiting Room": _commonPages.PageUrl(Page.WaitingRoom); break;
+                case "Not Found": _commonPages.PageUrl(Page.NotFound); break;
+                case "Unauthorised": _commonPages.PageUrl(Page.Unauthorised); break;
                 default: throw new ArgumentOutOfRangeException(page);
             }
         }

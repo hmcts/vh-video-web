@@ -8,7 +8,7 @@ export const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'events/:conferenceId', component: SendVideoEventsComponent },
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
-  { path: '**', redirectTo: 'home', pathMatch: 'full', canActivate: [AuthGuard] }
+  { path: '**', redirectTo: 'not-found', pathMatch: 'full', canActivate: [AuthGuard] }
 ];
 
 @NgModule({

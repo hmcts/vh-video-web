@@ -19,4 +19,8 @@ export let PageUrls = {
   ParticipantWaitingRoom: 'participant/waiting-room',
   // vh officer
   AdminHearingList: 'admin/hearing-list',
+  // Errors
+  ServiceError: 'service-error',
+  NotFound: 'not-found',
+  Unauthorised: 'unauthorised',
 };

@@ -8,6 +8,8 @@ namespace Testing.Common.Configuration
         public string TestClientSecret { get; set; }
         public string TestUserPassword { get; set; }
         public string TestUsernameStem { get; set; }
+        public string AdminUsername { get; set; }
+        public string AdminPassword { get; set; }
         public List<UserAccount> UserAccounts { get; set; }        
     }
 }

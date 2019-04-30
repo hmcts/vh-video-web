@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ConferenceResponse, ConferenceStatus, UserRole } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
+import { ErrorService } from 'src/app/services/error.service';
 
 @Component({
   selector: 'app-judge-hearing-page',
@@ -22,7 +23,8 @@ export class JudgeHearingPageComponent implements OnInit {
     private videoWebService: VideoWebService,
     private eventService: EventsService,
     private ngZone: NgZone,
-    public sanitizer: DomSanitizer
+    public sanitizer: DomSanitizer,
+    private errorService: ErrorService
   ) {
     this.loadingData = true;
   }
@@ -40,9 +42,9 @@ export class JudgeHearingPageComponent implements OnInit {
         this.sanitiseIframeUrl();
         this.setupSubscribers();
       },
-        () => {
+        (error) => {
           this.loadingData = false;
-          this.router.navigate(['home']);
+          this.errorService.handleApiError(error);
         });
   }
 

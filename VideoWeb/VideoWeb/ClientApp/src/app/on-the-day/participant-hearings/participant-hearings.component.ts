@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ConferenceForUserResponse } from 'src/app/services/clients/api-client';
+import { ConferenceForUserResponse, SwaggerException } from 'src/app/services/clients/api-client';
 import { VideoWebService } from 'src/app/services/video-web.service';
+import { ErrorService } from 'src/app/services/error.service';
 
 @Component({
   selector: 'app-participant-hearings',
@@ -12,7 +13,10 @@ export class ParticipantHearingsComponent implements OnInit {
   loadingData: boolean;
   interval: any;
 
-  constructor(private videoWebService: VideoWebService) {
+  constructor(
+    private videoWebService: VideoWebService,
+    private errorService: ErrorService
+  ) {
     this.loadingData = true;
   }
 
@@ -28,9 +32,10 @@ export class ParticipantHearingsComponent implements OnInit {
       this.loadingData = false;
       this.conferences = data;
     },
-    () => {
-      this.loadingData = false;
-    });
+      (error) => {
+        this.loadingData = false;
+        this.errorService.handleApiError(error);
+      });
   }
 
   hasHearings() {

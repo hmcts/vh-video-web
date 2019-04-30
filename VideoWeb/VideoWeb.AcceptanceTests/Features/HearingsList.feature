@@ -78,3 +78,21 @@ Scenario: Judge has 1 or more hearings
 	And contact us details are available
 	When the user clicks on the Start Hearing button
 	Then the user is on the Waiting Room page
+
+@VIH-4156
+Scenario: Video Hearings Officer has no hearings
+	Given the login page is open
+	When the Video Hearings Officer attempts to login with valid credentials
+	Then the user is on the Hearings List page
+	And a warning message appears indicating the user has no hearings scheduled
+
+@VIH-4156
+Scenario: Video Hearings Officer has 1 or more hearings
+	Given I have a hearing and a conference
+	And the login page is open
+	When the Video Hearings Officer attempts to login with valid credentials
+	Then the user is on the Hearings List page
+	And the VHO can see a list of hearings including the new hearing
+	When the VHO selects the hearing
+	And the VHO logs into the admin panel
+	Then the VHO can see the hearing view
