@@ -10,6 +10,8 @@ import { PaginationComponent } from './pagination/pagination.component';
 import { SharedRoutingModule } from './shared-routing.module';
 import { ContactUsFoldingComponent } from './contact-us-folding/contact-us-folding.component';
 import { SnotifyModule, ToastDefaults, SnotifyService } from 'ng-snotify';
+import { ErrorComponent } from './error/error.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 @NgModule({
   imports: [
@@ -25,7 +27,9 @@ import { SnotifyModule, ToastDefaults, SnotifyService } from 'ng-snotify';
     FooterComponent,
     ContactUsComponent,
     PaginationComponent,
-    ContactUsFoldingComponent
+    ContactUsFoldingComponent,
+    ErrorComponent,
+    NotFoundComponent
   ],
   providers: [
     { provide: 'SnotifyToastConfig', useValue: ToastDefaults},

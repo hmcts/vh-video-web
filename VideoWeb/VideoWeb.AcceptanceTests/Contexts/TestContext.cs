@@ -47,7 +47,7 @@ namespace VideoWeb.AcceptanceTests.Contexts
 
         public UserAccount GetVideoHearingOfficerUser()
         {
-            return TestSettings.UserAccounts.First(x => x.Role.StartsWith("Video hearings officer"));
+            return TestSettings.UserAccounts.First(x => x.Role.StartsWith("Video Hearings Officer"));
         }
 
         public UserAccount GetClerkUser()

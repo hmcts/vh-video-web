@@ -14,6 +14,7 @@ import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { ParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room.component';
+import { ErrorService } from 'src/app/services/error.service';
 
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
@@ -167,11 +168,12 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
   let router: Router;
   let conference: ConferenceResponse;
   let adalService: MockAdalService;
+  let errorService: ErrorService;
 
   beforeEach(() => {
     conference = new ConferenceTestData().getConferenceFuture();
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
-    videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 404 }));
+    videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 404, isSwaggerException: true }));
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
@@ -196,17 +198,18 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
     adalService = TestBed.get(AdalService);
     router = TestBed.get(Router);
     route = TestBed.get(ActivatedRoute);
+    errorService = TestBed.get(ErrorService);
     fixture = TestBed.createComponent(ParticipantWaitingRoomComponent);
     component = fixture.componentInstance;
   });
 
-  it('should redirect back home if conference not found', () => {
-    spyOn(router, 'navigate').and.callFake(() => { Promise.resolve(true); });
+  it('should handle api error with error service', () => {
+    spyOn(errorService, 'handleApiError').and.callFake(() => { Promise.resolve(true); });
     fixture.detectChanges();
     expect(component).toBeTruthy();
     expect(component.loadingData).toBeFalsy();
     expect(component.conference).toBeUndefined();
     expect(component.participant).toBeUndefined();
-    expect(router.navigate).toHaveBeenCalledWith(['home']);
+    expect(errorService.handleApiError).toHaveBeenCalled();
   });
 });
