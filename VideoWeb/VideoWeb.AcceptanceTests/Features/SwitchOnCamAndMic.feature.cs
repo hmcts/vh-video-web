@@ -20,6 +20,7 @@ namespace VideoWeb.AcceptanceTests.Features
     [NUnit.Framework.TestFixtureAttribute()]
     [NUnit.Framework.DescriptionAttribute("Switch on your camera and microphone")]
     [NUnit.Framework.CategoryAttribute("VIH-4289")]
+    [NUnit.Framework.CategoryAttribute("VIH-4036")]
     public partial class SwitchOnYourCameraAndMicrophoneFeature
     {
         
@@ -35,7 +36,8 @@ namespace VideoWeb.AcceptanceTests.Features
             TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Switch on your camera and microphone", "\tAs a registered video hearings user\r\n\tI would like to be prompted to switch on m" +
                     "y camera and microphone\r\n\tSo that I can ensure my equipment is ready to use for " +
                     "the hearing", ProgrammingLanguage.CSharp, new string[] {
-                        "VIH-4289"});
+                        "VIH-4289",
+                        "VIH-4036"});
             testRunner.OnFeatureStart(featureInfo);
         }
         
