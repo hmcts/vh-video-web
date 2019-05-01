@@ -23,5 +23,22 @@ namespace Testing.Common.Helpers
         {
             return randomNumber.Next(0, 999999).ToString("D6");
         }
+
+        public static string CaseNumber(Random randomNumber)
+        {
+            var randomStringBuilder = new StringBuilder();
+
+            for (var i = 1; i <= 2; i++)
+            {
+                randomStringBuilder.Append((char)(randomNumber.Next(26) + V));
+            }
+
+            randomStringBuilder.Append(randomNumber.Next(0, 99).ToString("D2"));
+            randomStringBuilder.Append("/");
+            randomStringBuilder.Append((char)(randomNumber.Next(26) + V));
+            randomStringBuilder.Append(randomNumber.Next(0, 99999).ToString("D5"));
+
+            return randomStringBuilder.ToString().ToUpper();
+        }
     }
 }
