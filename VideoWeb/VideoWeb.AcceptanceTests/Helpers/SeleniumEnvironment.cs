@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using OpenQA.Selenium;
@@ -116,12 +115,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             var options = new ChromeOptions();
             options.AddArgument("ignore -certificate-errors");
             options.AddArgument("use-fake-device-for-media-stream");         
-
-            if (!scenarioTags.Any(x => x.Contains("Permissions")))           
-            {
-                // this auto allows the permission to access the cam and mic
-                options.AddArgument("use-fake-ui-for-media-stream");
-            }
+            options.AddArgument("use-fake-ui-for-media-stream");
 
             var commandTimeout = TimeSpan.FromSeconds(30);
 

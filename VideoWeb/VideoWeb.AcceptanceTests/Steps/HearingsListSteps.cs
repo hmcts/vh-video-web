@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Linq;
 using FluentAssertions;
-using FluentAssertions.Extensions;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders;
 using VideoWeb.AcceptanceTests.Contexts;
