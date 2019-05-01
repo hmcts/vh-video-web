@@ -1,6 +1,6 @@
 import {
     ConferenceForUserResponse, ConferenceResponse, ConferenceStatus,
-    ParticipantResponse, ParticipantStatus, UserRole, ParticipantForUserResponse
+    ParticipantResponse, ParticipantStatus, UserRole, ParticipantForUserResponse, TaskResponse, TaskType
 } from 'src/app/services/clients/api-client';
 
 export class ConferenceTestData {
@@ -158,5 +158,17 @@ export class ConferenceTestData {
         participants.push(participant2);
         participants.push(participant3);
         return participants;
+    }
+
+    getTasksForConference(): TaskResponse[] {
+        const task = new TaskResponse({
+            body: 'body',
+            type: TaskType.Participant,
+            created: new Date()
+        });
+        const participants: ParticipantResponse[] = [];
+        const tasks: TaskResponse[] = [];
+        tasks.push(task);
+        return tasks;
     }
 }
