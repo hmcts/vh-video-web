@@ -6,6 +6,7 @@ using System.Reflection;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Remote;
 using TechTalk.SpecFlow;
 
@@ -15,7 +16,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
     {
         private readonly SauceLabsSettings _saucelabsSettings;
         private readonly ScenarioInfo _scenario;
-        private readonly TargetBrowser _targetBrowser;
+        private static TargetBrowser _targetBrowser;
 
         public SeleniumEnvironment(SauceLabsSettings saucelabsSettings, ScenarioInfo scenario, TargetBrowser targetBrowser)
         {
@@ -41,6 +42,10 @@ namespace VideoWeb.AcceptanceTests.Helpers
                     caps.SetCapability("browserName", "Firefox");
                     caps.SetCapability("platform", "Windows 10");
                     caps.SetCapability("version", "64.0");
+                    var firefoxOptions = new FirefoxOptions();
+                    firefoxOptions.SetPreference("permissions.default.microphone", 1);
+                    firefoxOptions.SetPreference("permissions.default.camera", 1);
+                    caps.SetCapability("moz:firefoxOptions", firefoxOptions.ToCapabilities());
                     break;
                 case TargetBrowser.Safari:
                     caps.SetCapability("browserName", "Safari");
@@ -51,6 +56,9 @@ namespace VideoWeb.AcceptanceTests.Helpers
                     caps.SetCapability("browserName", "MicrosoftEdge");
                     caps.SetCapability("platform", "Windows 10");
                     caps.SetCapability("version", "16.16299");
+                    caps.SetCapability("dom.webnotifications.enabled", 1);
+                    caps.SetCapability("permissions.default.microphone", 1);
+                    caps.SetCapability("permissions.default.camera", 1);
                     break;
                 case TargetBrowser.IE11:
                     caps.SetCapability("browserName", "Internet Explorer");
@@ -66,10 +74,14 @@ namespace VideoWeb.AcceptanceTests.Helpers
                     caps.SetCapability("browserName", "Safari");
                     break;
                 default:
-
                     caps.SetCapability("browserName", "Chrome");
                     caps.SetCapability("platform", "Windows 10");
-                    caps.SetCapability("version", "71.0");
+                    caps.SetCapability("version", "74.0");
+                    caps.SetCapability("autoAcceptAlerts", true);
+                    var chromeOptions = new Dictionary<string, object>();
+                    chromeOptions["args"] = new List<string>
+                        { "use-fake-ui-for-media-stream", "use-fake-device-for-media-stream"};
+                    caps.SetCapability(ChromeOptions.Capability, chromeOptions);
                     break;
             }
 
@@ -102,10 +114,12 @@ namespace VideoWeb.AcceptanceTests.Helpers
             }
             var options = new ChromeOptions();
             options.AddArgument("ignore -certificate-errors");
-            options.AddArgument("use-fake-device-for-media-stream");
+            options.AddArgument("use-fake-device-for-media-stream");         
             options.AddArgument("use-fake-ui-for-media-stream");
 
             var commandTimeout = TimeSpan.FromSeconds(30);
+
+            _targetBrowser = TargetBrowser.Chrome;
 
             return new ChromeDriver(ChromeDriverPath, options, commandTimeout);
         }

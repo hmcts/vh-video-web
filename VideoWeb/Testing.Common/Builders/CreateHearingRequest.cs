@@ -19,7 +19,7 @@ namespace Testing.Common.Builders
         {
             var cases = Builder<CaseRequest>.CreateListOfSize(1).Build().ToList();
             cases.First().Name = $"Automated Test Hearing {GenerateRandom.Letters(_fromRandomNumber)}";
-            cases.First().Number = $"{GenerateRandom.Letters(_fromRandomNumber)}/{GenerateRandom.Numbers(_fromRandomNumber)}";
+            cases.First().Number = $"{GenerateRandom.CaseNumber(_fromRandomNumber)}";
 
             return Builder<BookNewHearingRequest>.CreateNew()
                 .With(x => x.Case_type_name = "Civil Money Claims")

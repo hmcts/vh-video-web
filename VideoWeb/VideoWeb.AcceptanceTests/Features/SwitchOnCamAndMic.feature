@@ -1,4 +1,4 @@
-﻿@VIH-4289
+﻿@VIH-4289 @VIH-4036
 Feature: Switch on your camera and microphone
 	As a registered video hearings user
 	I would like to be prompted to switch on my camera and microphone
