@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Linq;
 using FluentAssertions;
-using FluentAssertions.Extensions;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders;
 using VideoWeb.AcceptanceTests.Contexts;
@@ -100,8 +99,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.CaseType(_context.Hearing.Cases.First().Number, _context.Hearing.Case_type_name)).Displayed
                 .Should().BeTrue();
 
+            var count = _context.Hearing.Participants.Count(
+                x => x.User_role_name.Equals("Individual") ||
+                     x.User_role_name.Equals("Representative"));
+
             _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.ParticipantsStatus(_context.Hearing.Cases.First().Number)).Text
-                .Should().Be($"{_context.Hearing.Participants.Count - 1} Not Available");
+                .Should().Be($"{count} Not Available");
         }
 
         [Then(@"the new hearing isn't available to join yet")]
