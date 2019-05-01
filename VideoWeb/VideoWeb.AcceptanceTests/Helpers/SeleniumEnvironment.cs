@@ -75,7 +75,6 @@ namespace VideoWeb.AcceptanceTests.Helpers
                     caps.SetCapability("browserName", "Safari");
                     break;
                 default:
-                    caps.Platform = new Platform(PlatformType.Any);
                     caps.SetCapability("browserName", "Chrome");
                     caps.SetCapability("platform", "Windows 10");
                     caps.SetCapability("version", "71.0");
