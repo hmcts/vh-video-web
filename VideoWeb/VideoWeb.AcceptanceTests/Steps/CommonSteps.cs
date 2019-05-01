@@ -162,20 +162,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browserContext.NgDriver.WaitUntilElementVisible(_commonPages.ContactUsLink).Displayed
                 .Should().BeTrue();
-            if (_browserContext.NgDriver.Url.Contains(Page.HearingList.Url) ||
-                _browserContext.NgDriver.Url.Contains(Page.NotFound.Url) ||
-                _browserContext.NgDriver.Url.Contains(Page.Unauthorised.Url))
-            {
-                if (_context.Hearing != null)
-                {
-                    _commonPages.TheCaseNumberIsDisplayedInTheContactDetails(_context.Hearing.Cases.First().Number)
-                        .Should().BeFalse();
-                }
-            }
-            else
+            if (!_browserContext.NgDriver.Url.Contains(Page.HearingList.Url)) return;
+            if (_context.Hearing != null)
             {
                 _commonPages.TheCaseNumberIsDisplayedInTheContactDetails(_context.Hearing.Cases.First().Number)
-                    .Should().BeTrue();
+                    .Should().BeFalse();
             }
         }
 
