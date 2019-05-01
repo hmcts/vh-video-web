@@ -27,7 +27,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
         public IWebDriver GetDriver()
         {
-            return _saucelabsSettings.RunWithSaucelabs ? InitSauceLabsDriver() : InitLocalDriver(_scenario.Tags);
+            return _saucelabsSettings.RunWithSaucelabs ? InitSauceLabsDriver() : InitLocalDriver();
         }
 
         private IWebDriver InitSauceLabsDriver()
@@ -97,7 +97,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             return new RemoteWebDriver(remoteUrl, caps, commandTimeout);
         }
 
-        private static IWebDriver InitLocalDriver(IEnumerable<string> scenarioTags)
+        private static IWebDriver InitLocalDriver()
         {
             var chromeDriverProcesses = Process.GetProcessesByName("ChromeDriver");
 
