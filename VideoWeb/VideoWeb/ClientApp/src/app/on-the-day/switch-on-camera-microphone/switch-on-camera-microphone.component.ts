@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import 'webrtc-adapter';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { VideoWebService } from 'src/app/services/video-web.service';
-import { AddAlertRequest, AlertType, ConferenceResponse, AddMediaEventRequest } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, AddMediaEventRequest } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { AdalService } from 'adal-angular4';
 

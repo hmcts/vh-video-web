@@ -81,14 +81,7 @@ export class VhoHearingsComponent implements OnInit {
             this.errorService.handleApiError(error);
           });
 
-          this.videoWebService.getTasksForConference(conference.id)
-          .subscribe((data: TaskResponse[]) => {
-            this.tasks = data;
-          },
-            (error) => {
-              this.errorService.handleApiError(error);
-            });
-
+          this.getTasksForConference(conference.id);
     }
   }
 
@@ -183,5 +176,16 @@ export class VhoHearingsComponent implements OnInit {
 
   dismissTransferTask(message: ConsultationMessage) {
     this.pendingTransferRequests.splice(this.pendingTransferRequests.indexOf(message), 1);
+  }
+
+  getTasksForConference(conferenceId: string) {
+    this.videoWebService.getTasksForConference(conferenceId)
+    .subscribe((data: TaskResponse[]) => {
+      this.tasks = data;
+    },
+      (error) => {
+        this.errorService.handleApiError(error);
+      });
+
   }
 }

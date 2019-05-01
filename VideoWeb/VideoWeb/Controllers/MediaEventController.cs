@@ -35,7 +35,7 @@ namespace VideoWeb.Controllers
                     Event_id = Guid.NewGuid().ToString(),
                     Event_type = addMediaEventRequest.EventType,
                     Time_stamp_utc = DateTime.UtcNow,
-                    Reason = "Camera and mic permission denied"
+                    Reason = "media permission denied"
                 });
 
                 return NoContent();

@@ -153,4 +153,11 @@ describe('VhoHearingsComponent', () => {
     expect(component.loadingData).toBeFalsy();
     expect(errorService.handleApiError).toHaveBeenCalled();
   });
+
+  it('should load tasks for conference when current conference is selected', () => {
+    const currentConference = conferences[0];
+    component.selectedConference = new ConferenceResponse({ id: currentConference.id });
+    expect(component.getTasksForConference).toHaveBeenCalled();
+  });
+
 });
