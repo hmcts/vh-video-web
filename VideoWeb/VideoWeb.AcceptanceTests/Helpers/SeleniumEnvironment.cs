@@ -77,11 +77,11 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 default:
                     caps.SetCapability("browserName", "Chrome");
                     caps.SetCapability("platform", "Windows 10");
-                    caps.SetCapability("version", "74.0");
+                    caps.SetCapability("version", "71.0");
                     var chromeOptions = new ChromeOptions();
                     chromeOptions.AddArgument("use-fake-ui-for-media-stream");
                     chromeOptions.AddArgument("use-fake-device-for-media-stream");
-                    caps.SetCapability(ChromeOptions.Capability, chromeOptions);
+                    caps.SetCapability(ChromeOptions.Capability, chromeOptions.ToCapabilities() as DesiredCapabilities);
                     break;
             }
 
