@@ -1,7 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import 'webrtc-adapter';
 import { PageUrls } from 'src/app/shared/page-url.constants';
+import { VideoWebService } from 'src/app/services/video-web.service';
+import { ConferenceResponse, AddMediaEventRequest } from 'src/app/services/clients/api-client';
+import { ErrorService } from 'src/app/services/error.service';
+import { AdalService } from 'adal-angular4';
 
 @Component({
   selector: 'app-switch-on-camera-microphone',
@@ -12,20 +16,38 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
   mediaAccepted: boolean;
   userPrompted: boolean;
   conferenceId: string;
+  loadingData: boolean;
+  conference: ConferenceResponse;
 
   _navigator = <any>navigator;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
+    private videoWebService: VideoWebService,
+    private errorService: ErrorService,
+    private adalService: AdalService
   ) {
     this.userPrompted = false;
     this.mediaAccepted = false;
   }
 
   ngOnInit() {
-    this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+    this.getConference();
     this._navigator = <any>navigator;
+  }
+
+  getConference(): void {
+    const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+    this.videoWebService.getConferenceById(conferenceId)
+      .subscribe((data: ConferenceResponse) => {
+        this.loadingData = false;
+        this.conference = data;
+      },
+        (error) => {
+          this.loadingData = false;
+          this.errorService.handleApiError(error);
+        });
   }
 
   requestMedia() {
@@ -59,11 +81,22 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
   errorCallback(error: MediaStreamError) {
     this.userPrompted = true;
     this.mediaAccepted = false;
-    console.error(error);
+    if (error.name === 'NotAllowedError') {
+      this.postPermissionDeniedAlert();
+    }
   }
 
   goVideoTest() {
     // temporarily point to camera question until video page is implemented
     this.router.navigate([PageUrls.CameraWorking, this.conferenceId]);
+  }
+
+  postPermissionDeniedAlert() {
+    const participant = this.conference.participants.find(x => x.username === this.adalService.userInfo.userName);
+    this.videoWebService.raiseMediaEvent(this.conference.id,
+      new AddMediaEventRequest({participant_id: participant.id.toString()})).subscribe(x => { },
+        (error) => {
+          console.log(error);
+        });
   }
 }

@@ -31,8 +31,30 @@
     <iframe id="admin-frame" *ngIf="selectedConferenceUrl" [width]='adminFrameWidth' height="600"
       [src]='selectedConferenceUrl' allowfullscreen frameborder="0" webkitallowfullscreen mozallowfullscreen>
     </iframe>
-  </div>
-</div>
+    <table class="govuk-table" *ngIf="!loadingData && hasTasks()">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th class="govuk-table__header" scope="col">Timestamp</th>
+          <th class="govuk-table__header" scope="col">Message</th>
+          <th class="govuk-table__header" scope="col">Type</th>
+          <th class="govuk-table__header" scope="col"></th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <tr *ngFor="let task of tasks" id="tasks-list" class="govuk-table__row">
+            <td class="govuk-table__cell">
+                <p class="govuk-!-margin-0 govuk-!-padding-0">{{task.created | date:'dd/MM/yyyy HH:mm' }}</p>
+              </td>
+          <td class="govuk-table__cell">
+            <p class="govuk-!-margin-0 govuk-!-padding-0">{{ task.body }}</p>
+          </td>
+          <td class="govuk-table__cell">
+            <p class="govuk-!-margin-0 govuk-!-padding-0">{{ task.type }}</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
 
 <div *ngIf="!loadingData && !hasHearings()">
   <h1 class="govuk-heading-xl">Video hearings</h1>

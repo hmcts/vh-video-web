@@ -2,7 +2,7 @@ import { Component, HostListener, NgZone, OnInit } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { SnotifyPosition, SnotifyService } from 'ng-snotify';
 import {
-  ConferenceForUserResponse, ConferenceResponse, ConferenceStatus, ConsultationAnswer
+  ConferenceForUserResponse, ConferenceResponse, ConferenceStatus, ConsultationAnswer, TaskResponse
 } from 'src/app/services/clients/api-client';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { HelpMessage } from 'src/app/services/models/help-message';
@@ -24,6 +24,7 @@ export class VhoHearingsComponent implements OnInit {
   adminFrameWidth: number;
   interval: NodeJS.Timer;
   pendingTransferRequests: ConsultationMessage[] = [];
+  tasks: TaskResponse[];
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
@@ -65,6 +66,10 @@ export class VhoHearingsComponent implements OnInit {
     return this.conferences !== undefined && this.conferences.length > 0;
   }
 
+  hasTasks() {
+    return this.tasks !== undefined && this.tasks.length > 0;
+  }
+
   displayAdminViewForConference(conference: ConferenceForUserResponse) {
     if (!this.isCurrentConference(conference)) {
       this.videoWebService.getConferenceById(conference.id)
@@ -75,6 +80,8 @@ export class VhoHearingsComponent implements OnInit {
           (error) => {
             this.errorService.handleApiError(error);
           });
+
+          this.getTasksForConference(conference.id);
     }
   }
 
@@ -169,5 +176,16 @@ export class VhoHearingsComponent implements OnInit {
 
   dismissTransferTask(message: ConsultationMessage) {
     this.pendingTransferRequests.splice(this.pendingTransferRequests.indexOf(message), 1);
+  }
+
+  getTasksForConference(conferenceId: string) {
+    this.videoWebService.getTasksForConference(conferenceId)
+    .subscribe((data: TaskResponse[]) => {
+      this.tasks = data;
+    },
+      (error) => {
+        this.errorService.handleApiError(error);
+      });
+
   }
 }
