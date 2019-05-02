@@ -26,9 +26,11 @@ describe('VhoHearingsComponent', () => {
   let errorService: ErrorService;
 
   beforeEach(async(() => {
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForUser', 'getConferenceById']);
+    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForUser',
+    'getConferenceById', 'getTasksForConference']);
     videoWebServiceSpy.getConferencesForUser.and.returnValue(of(conferences));
     videoWebServiceSpy.getConferenceById.and.returnValue(of(new ConferenceTestData().getConferenceDetail()));
+    videoWebServiceSpy.getTasksForConference.and.returnValue(of(new ConferenceTestData().getTasksForConference()));
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
@@ -111,6 +113,14 @@ describe('VhoHearingsComponent', () => {
     component.handleConsultationMessage(message);
     expect(component.addTransferTask).toHaveBeenCalled();
   });
+
+  it('should load tasks for conference when current conference is selected', () => {
+    const currentConference = conferences[0];
+    component.selectedConference = new ConferenceResponse({ id: currentConference.id });
+    component.getTasksForConference(currentConference.id);
+    expect(component.tasks.length > 0).toBeTruthy();
+  });
+
 });
 
 describe('VhoHearingsComponent', () => {
