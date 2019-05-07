@@ -16,7 +16,7 @@ namespace VideoWeb.Common
 
         public void Initialize(ITelemetry telemetry)
         {
-            telemetry.Context.Cloud.RoleName = "vh-video-api";
+            telemetry.Context.Cloud.RoleName = "vh-video-web";
             
             if (!(telemetry is RequestTelemetry requestTelemetry))
             {
