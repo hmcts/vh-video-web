@@ -4,10 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Swagger;
+using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security;
 using VideoWeb.Services.Bookings;
@@ -51,6 +53,8 @@ namespace VideoWeb
         public static IServiceCollection AddCustomTypes(this IServiceCollection services)
         {
             services.AddMemoryCache();
+            
+            services.AddSingleton<ITelemetryInitializer, BadRequestTelemetry>();
 
             services.AddTransient<BookingsApiTokenHandler>();
             services.AddTransient<VideoApiTokenHandler>();
