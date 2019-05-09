@@ -43,7 +43,7 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
 
   requestMedia() {
     const mediaConstraints = {
-      video: { facingMode: 'user' },
+      video: true,
       audio: true
     };
 
