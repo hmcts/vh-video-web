@@ -38,16 +38,7 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
   }
 
   getConference(): void {
-    const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-    this.videoWebService.getConferenceById(conferenceId)
-      .subscribe((data: ConferenceResponse) => {
-        this.loadingData = false;
-        this.conference = data;
-      },
-        (error) => {
-          this.loadingData = false;
-          this.errorService.handleApiError(error);
-        });
+    this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
   }
 
   requestMedia() {
@@ -88,6 +79,8 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
 
   goVideoTest() {
     // temporarily point to camera question until video page is implemented
+    console.log(PageUrls.CameraWorking);
+    console.log(this.conferenceId);
     this.router.navigate([PageUrls.CameraWorking, this.conferenceId]);
   }
 
