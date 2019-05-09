@@ -60,6 +60,12 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         });
   }
 
+  getScheduledEndTime(): Date {
+    const endTime = new Date(this.conference.scheduled_date_time.getTime());
+    endTime.setUTCMinutes(endTime.getUTCMinutes() + this.conference.scheduled_duration);
+    return endTime;
+  }
+
   getConferenceStatusText(): string {
     switch (this.conference.status) {
       case ConferenceStatus.Suspended: return 'is suspended';

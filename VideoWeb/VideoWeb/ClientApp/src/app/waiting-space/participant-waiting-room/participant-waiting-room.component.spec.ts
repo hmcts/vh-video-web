@@ -158,6 +158,12 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     component.participant.status = ParticipantStatus.Available;
     expect(component.showVideo()).toBeFalsy();
   });
+
+  it('should return end time', () => {
+    const endTime = component.getScheduledEndTime();
+    expect(endTime.getTime()).toBeGreaterThan(component.conference.scheduled_date_time.getTime());
+    expect(component.showVideo()).toBeFalsy();
+  });
 });
 
 describe('ParticipantWaitingRoomComponent when service returns an error', () => {
