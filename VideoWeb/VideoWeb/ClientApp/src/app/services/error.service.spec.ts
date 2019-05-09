@@ -2,14 +2,19 @@ import { TestBed, inject } from '@angular/core/testing';
 
 import { ErrorService } from './error.service';
 import { RouterTestingModule } from '@angular/router/testing';
-import { SwaggerException } from './clients/api-client';
+import { Router } from '@angular/router';
+import { PageUrls } from '../shared/page-url.constants';
 
 describe('ErrorService', () => {
+  let router: Router;
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
       providers: [ErrorService]
     });
+
+    router = TestBed.get(Router);
   });
 
   it('should be created', inject([ErrorService], (service: ErrorService) => {
@@ -17,23 +22,23 @@ describe('ErrorService', () => {
   }));
 
   it('should navigate to unauthorised', inject([ErrorService], (service: ErrorService) => {
-    spyOn(service, 'goToUnauthorised').and.callFake(() => { });
+    spyOn(router, 'navigate').and.callFake(() => { });
     const error = { status: 401, isSwaggerException: true };
     service.handleApiError(error);
-    expect(service.goToUnauthorised).toHaveBeenCalled();
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.Unauthorised]);
   }));
 
   it('should navigate to not found', inject([ErrorService], (service: ErrorService) => {
-    spyOn(service, 'goToNotFound').and.callFake(() => { });
+    spyOn(router, 'navigate').and.callFake(() => { });
     const error = { status: 404, isSwaggerException: true };
     service.handleApiError(error);
-    expect(service.goToNotFound).toHaveBeenCalled();
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.NotFound]);
   }));
 
   it('should navigate to service error', inject([ErrorService], (service: ErrorService) => {
-    spyOn(service, 'goToServiceError').and.callFake(() => { });
+    spyOn(router, 'navigate').and.callFake(() => { });
     const error = { status: 500, isSwaggerException: true };
     service.handleApiError(error);
-    expect(service.goToServiceError).toHaveBeenCalled();
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.ServiceError]);
   }));
 });
