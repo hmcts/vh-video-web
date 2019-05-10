@@ -40,6 +40,8 @@ namespace VideoWeb.AcceptanceTests.Pages
 
         public const string AdminIframeId = "admin-frame";
 
+        public By AdminIframe => By.XPath($"//iframe[@id='{AdminIframeId}']");
+
         public By AdminUsernameTextfield => CommonLocators.TextfieldWithName("username");
         public By AdminPasswordTextfield => CommonLocators.TextfieldWithName("password");
         public By SignInButton => CommonLocators.ButtonWithInnertext("Sign in");
