@@ -42,6 +42,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WaitUntilElementVisible(
                     _hearingListPage.VideoHearingsOfficerSelectHearingButton(_context.Hearing.Cases.First().Number))
                 .Click();
+
+            _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.AdminIframe).Displayed.Should().BeTrue();
         }
 
         [When(@"the VHO logs into the admin panel")]

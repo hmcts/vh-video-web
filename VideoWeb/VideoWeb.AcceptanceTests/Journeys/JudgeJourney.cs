@@ -1,4 +1,4 @@
-﻿namespace VideoWeb.AcceptanceTests.Pages
+﻿namespace VideoWeb.AcceptanceTests.Journeys
 {
     public enum JudgeJourney
     {
