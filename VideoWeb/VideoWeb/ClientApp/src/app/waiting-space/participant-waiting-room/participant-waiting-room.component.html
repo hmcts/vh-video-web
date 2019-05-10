@@ -21,8 +21,9 @@
     <div class="govuk-!-margin-bottom-9">
       <span class="govuk-body">
         <p class="govuk-!-margin-0" aria-label="date of hearing, scheduled start time and scheduled end time">
-          {{ conference.scheduled_date_time | date: 'EEEE dd MMMM	yyyy' }}, 
-          <span class="govuk-!-font-weight-bold">{{ conference.scheduled_date_time | date: 'H:m a' }} to {{ getScheduledEndTime() | date: 'H:m a' }}</span>
+          {{ conference.scheduled_date_time | date: 'EEEE dd MMMM	yyyy' }},
+          <span class="govuk-!-font-weight-bold">{{ conference.scheduled_date_time | date: 'H:m a' }} to
+            {{ getScheduledEndTime() | date: 'H:m a' }}</span>
         </p>
       </span>
     </div>
@@ -49,6 +50,34 @@
           as these issues have been resolved.
         </p>
       </strong>
+    </div>
+
+    <div *ngIf="currentTime" class="govuk-panel"
+      [ngClass]="{'hearing-on-time': isOnTime(), 'hearing-near-start': isStarting(), 'hearing-delayed': isDelayed()}">
+      <div class="govuk-body govuk-!-margin-bottom-0"
+        [ngClass]="{'hearing-on-time': isOnTime(), 'hearing-near-start': isStarting(), 'hearing-delayed': isDelayed()}">
+        <span *ngIf="isOnTime() || isStarting()">
+          <strong>Please keep an eye on the time</strong> so you're ready when the judge starts the hearing
+        </span>
+        <span *ngIf="isDelayed()">
+          <strong>We're really sorry your hearing is delayed.</strong> Please stand by and one of the video hearing team
+          will call you in the next 5 minutes on the number you have given us.
+        </span>
+      </div>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-half">
+          <div class="govuk-panel__body">
+            Analogue Clock Goes Here
+          </div>
+        </div>
+        <div class="govuk-grid-column-one-half">
+          <div class="govuk-body"
+            [ngClass]="{'hearing-on-time': isOnTime(), 'hearing-near-start': isStarting(), 'hearing-delayed': isDelayed()}">
+            <p class="govuk-!-margin-bottom-0">The time now is:</p>
+            <p class="govuk-panel__body govuk-!-margin-top-0"><strong>{{ currentTime | date:'HH:mm' }}</strong></p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="govuk-!-margin-top-9">

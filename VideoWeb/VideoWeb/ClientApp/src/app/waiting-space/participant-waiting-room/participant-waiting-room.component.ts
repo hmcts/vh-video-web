@@ -8,7 +8,7 @@ import { VideoWebService } from 'src/app/services/video-web.service';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ErrorService } from 'src/app/services/error.service';
 import { ClockServiceService as ClockService } from 'src/app/services/clock.service';
-import moment = require('moment');
+import * as moment from 'moment';
 declare var PexRTC: any;
 
 @Component({
@@ -101,11 +101,20 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   }
 
   getConferenceStatusText(): string {
-    switch (this.conference.status) {
-      case ConferenceStatus.Suspended: return 'is suspended';
-      case ConferenceStatus.Paused: return 'is paused';
-      case ConferenceStatus.Closed: return 'is closed';
-      default: return '';
+    if (this.conference.status === ConferenceStatus.NotStarted) {
+      console.log('booop');
+      if (this.isStarting()) {
+        return 'is about to begin';
+      } else if (this.isDelayed()) {
+        return 'is delayed';
+      }
+    } else {
+      switch (this.conference.status) {
+        case ConferenceStatus.Suspended: return 'is suspended';
+        case ConferenceStatus.Paused: return 'is paused';
+        case ConferenceStatus.Closed: return 'is closed';
+        default: return '';
+      }
     }
   }
 
