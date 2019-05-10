@@ -100,8 +100,21 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
   });
 
   it('should return correct conference status text when not started', () => {
+    component.conference = new ConferenceTestData().getConferenceFuture();
     component.conference.status = ConferenceStatus.NotStarted;
     expect(component.getConferenceStatusText()).toBe('');
+  });
+
+  it('should return is about to begin header text', () => {
+    component.conference = new ConferenceTestData().getConferenceNow();
+    component.conference.status = ConferenceStatus.NotStarted;
+    expect(component.getConferenceStatusText()).toBe('is about to begin');
+  });
+
+  it('should return is delayed header text', () => {
+    component.conference = new ConferenceTestData().getConferencePast();
+    component.conference.status = ConferenceStatus.NotStarted;
+    expect(component.getConferenceStatusText()).toBe('is delayed');
   });
 
   it('should return true when conference is closed', () => {
@@ -204,7 +217,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     const pastConference = new ConferenceTestData().getConferenceNow();
     pastConference.status = ConferenceStatus.NotStarted;
     component.conference = pastConference;
-    expect(component.isStarting()).toBeFalsy();
+    expect(component.isStarting()).toBeTruthy();
   });
 
   it('should return false when conference is more than five minutes delayed', () => {

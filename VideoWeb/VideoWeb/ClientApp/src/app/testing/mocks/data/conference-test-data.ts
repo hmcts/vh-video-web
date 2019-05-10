@@ -6,7 +6,7 @@ import {
 export class ConferenceTestData {
 
     getConferenceNow(): ConferenceForUserResponse {
-        const currentDateTime = new Date(new Date().getUTCDate());
+        const currentDateTime = new Date();
         const conference = new ConferenceForUserResponse({
             id: '363725D0-E3D6-4D4A-8D0A-E8E57575FBC4',
             case_name: 'C V I',

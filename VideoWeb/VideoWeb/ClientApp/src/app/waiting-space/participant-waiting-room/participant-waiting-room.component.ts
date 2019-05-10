@@ -90,6 +90,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
     let maxStart = moment(this.conference.scheduled_date_time);
     maxStart = maxStart.add(10, 'minutes');
+
     return now.isBetween(minStart, maxStart) && this.conference.status === ConferenceStatus.NotStarted;
   }
 
@@ -102,21 +103,23 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
   getConferenceStatusText(): string {
     if (this.conference.status === ConferenceStatus.NotStarted) {
-      console.log('booop');
       if (this.isStarting()) {
         return 'is about to begin';
       } else if (this.isDelayed()) {
         return 'is delayed';
+      } else {
+        return '';
       }
-    } else {
-      switch (this.conference.status) {
-        case ConferenceStatus.Suspended: return 'is suspended';
-        case ConferenceStatus.Paused: return 'is paused';
-        case ConferenceStatus.Closed: return 'is closed';
-        default: return '';
-      }
+    } else if (this.conference.status === ConferenceStatus.Suspended) {
+      return 'is suspended';
+    } else if (this.conference.status === ConferenceStatus.Paused) {
+      return 'is paused';
+    } else if (this.conference.status === ConferenceStatus.Closed) {
+      return 'is closed';
     }
+    return '';
   }
+
 
   isClosed(): boolean {
     return this.conference.status === ConferenceStatus.Closed;
