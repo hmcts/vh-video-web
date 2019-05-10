@@ -1,6 +1,6 @@
-﻿namespace VideoWeb.AcceptanceTests.Pages
+﻿namespace VideoWeb.AcceptanceTests.Journeys
 {
-    public enum Journey
+    public enum ParticipantJourney
     {
         Login = 0,
         HearingList = 1,
@@ -13,6 +13,7 @@
         Declaration = 8,
         WaitingRoom = 9,
         Countdown = 10,
+        NotInParticipantJourney = -99,
         NotFound = -1,
         Unauthorised = -2
     }
