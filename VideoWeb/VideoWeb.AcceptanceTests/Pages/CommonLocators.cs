@@ -21,5 +21,7 @@ namespace VideoWeb.AcceptanceTests.Pages
             By.XPath($"//label[contains(text(),'{label}')]/p[@class='govuk-details__text']");
 
         public static By TextfieldWithName(string name) => By.XPath($"//input[@name='{name}']");
+
+        public static By TableCellContainingText(string text) => By.XPath($"//table//td/p[contains(text(),'{text}')]");
     }
 }
