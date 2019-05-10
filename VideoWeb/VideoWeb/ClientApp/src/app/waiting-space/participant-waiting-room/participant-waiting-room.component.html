@@ -22,8 +22,8 @@
       <span class="govuk-body">
         <p class="govuk-!-margin-0" aria-label="date of hearing, scheduled start time and scheduled end time">
           {{ conference.scheduled_date_time | date: 'EEEE dd MMMM	yyyy' }},
-          <span class="govuk-!-font-weight-bold">{{ conference.scheduled_date_time | date: 'H:m a' }} to
-            {{ getScheduledEndTime() | date: 'H:m a' }}</span>
+          <span class="govuk-!-font-weight-bold">{{ conference.scheduled_date_time | date: 'H:mm a' }} to
+            {{ getScheduledEndTime() | date: 'H:mm a' }}</span>
         </p>
       </span>
     </div>
