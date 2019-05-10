@@ -6,6 +6,7 @@ import { ParticipantWaitingRoomComponent } from './participant-waiting-room/part
 import { SharedModule } from '../shared/shared.module';
 import { JudgeWaitingRoomComponent } from './judge-waiting-room/judge-waiting-room.component';
 import { JudgeHearingPageComponent } from './judge-hearing-page/judge-hearing-page.component';
+import { AnalogueClockComponent } from './analogue-clock/analogue-clock.component';
 
 @NgModule({
   imports: [
@@ -16,7 +17,8 @@ import { JudgeHearingPageComponent } from './judge-hearing-page/judge-hearing-pa
     ParticipantStatusListComponent,
     ParticipantWaitingRoomComponent,
     JudgeWaitingRoomComponent,
-    JudgeHearingPageComponent
+    JudgeHearingPageComponent,
+    AnalogueClockComponent
   ]
 })
 export class WaitingSpaceModule { }

@@ -46,8 +46,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     this.connected = false;
     this.clockService.getClock().subscribe((time) => {
       this.currentTime = time;
-    }
-    );
+    });
     this.getConference();
   }
 
@@ -61,7 +60,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         this.refresh();
         this.setupSubscribers();
         this.setupPexipClient();
-        this.call();
+        // this.call();
       },
         (error) => {
           this.loadingData = false;

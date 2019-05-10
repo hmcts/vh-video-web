@@ -15,6 +15,7 @@ import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { ParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room.component';
 import { ErrorService } from 'src/app/services/error.service';
+import { AnalogueClockStubComponent } from 'src/app/testing/stubs/analogue-clock-stub';
 
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
@@ -33,7 +34,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [ParticipantWaitingRoomComponent, ParticipantStatusListStubComponent],
+      declarations: [ParticipantWaitingRoomComponent, ParticipantStatusListStubComponent, AnalogueClockStubComponent],
       providers: [
         {
           provide: ActivatedRoute,
@@ -259,7 +260,7 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [ParticipantWaitingRoomComponent, ParticipantStatusListStubComponent],
+      declarations: [ParticipantWaitingRoomComponent, ParticipantStatusListStubComponent, AnalogueClockStubComponent],
       providers: [
         {
           provide: ActivatedRoute,

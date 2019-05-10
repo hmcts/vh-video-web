@@ -66,15 +66,15 @@
       </div>
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
-          <div class="govuk-panel__body">
-            Analogue Clock Goes Here
+          <div class="govuk-panel__body govuk-!-margin-top-4">
+            <app-analogue-clock></app-analogue-clock>
           </div>
         </div>
         <div class="govuk-grid-column-one-half">
           <div class="govuk-body"
             [ngClass]="{'hearing-on-time': isOnTime(), 'hearing-near-start': isStarting(), 'hearing-delayed': isDelayed()}">
-            <p class="govuk-!-margin-bottom-0">The time now is:</p>
-            <p class="govuk-panel__body govuk-!-margin-top-0"><strong>{{ currentTime | date:'HH:mm' }}</strong></p>
+            <p class="govuk-!-margin-bottom-4">The time now is:</p>
+            <p class="govuk-panel__body govuk-!-margin-top-4 govuk-!-font-size-80"><strong>{{ currentTime | date:'HH:mm' }}</strong></p>
           </div>
         </div>
       </div>
