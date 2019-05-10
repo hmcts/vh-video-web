@@ -164,6 +164,69 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     expect(endTime.getTime()).toBeGreaterThan(component.conference.scheduled_date_time.getTime());
     expect(component.showVideo()).toBeFalsy();
   });
+
+  it('should return true when conference is delayed by more than ten minutes', () => {
+    const pastConference = new ConferenceTestData().getConferencePast();
+    pastConference.status = ConferenceStatus.NotStarted;
+    component.conference = pastConference;
+    expect(component.isDelayed()).toBeTruthy();
+  });
+
+  it('should return false when conference has started and passed scheduled start time', () => {
+    const pastConference = new ConferenceTestData().getConferencePast();
+    pastConference.status = ConferenceStatus.InSession;
+    component.conference = pastConference;
+    expect(component.isDelayed()).toBeFalsy();
+  });
+
+  it('should return false when conference is not delayed by more than ten minutes', () => {
+    const pastConference = new ConferenceTestData().getConferenceFuture();
+    pastConference.status = ConferenceStatus.NotStarted;
+    component.conference = pastConference;
+    expect(component.isDelayed()).toBeFalsy();
+  });
+
+  it('should return true when conference has not started and more than five minutes before start time', () => {
+    const pastConference = new ConferenceTestData().getConferenceFuture();
+    pastConference.status = ConferenceStatus.NotStarted;
+    component.conference = pastConference;
+    expect(component.isOnTime()).toBeTruthy();
+  });
+
+  it('should return false when conference has not started and less than five minutes before start time', () => {
+    const pastConference = new ConferenceTestData().getConferenceNow();
+    pastConference.status = ConferenceStatus.NotStarted;
+    component.conference = pastConference;
+    expect(component.isOnTime()).toBeFalsy();
+  });
+
+  it('should return true when conference is due to start within five minutes', () => {
+    const pastConference = new ConferenceTestData().getConferenceNow();
+    pastConference.status = ConferenceStatus.NotStarted;
+    component.conference = pastConference;
+    expect(component.isStarting()).toBeFalsy();
+  });
+
+  it('should return false when conference is more than five minutes delayed', () => {
+    const pastConference = new ConferenceTestData().getConferenceFuture();
+    pastConference.status = ConferenceStatus.NotStarted;
+    component.conference = pastConference;
+    expect(component.isStarting()).toBeFalsy();
+  });
+
+  it('should return false when conference is more than five minutes to start time', () => {
+    const pastConference = new ConferenceTestData().getConferenceFuture();
+    pastConference.status = ConferenceStatus.NotStarted;
+    component.conference = pastConference;
+    expect(component.isStarting()).toBeFalsy();
+  });
+
+  it('should return false when conference is due to start within five minutes but has started', () => {
+    const pastConference = new ConferenceTestData().getConferenceNow();
+    pastConference.status = ConferenceStatus.InSession;
+    component.conference = pastConference;
+    expect(component.isStarting()).toBeFalsy();
+  });
 });
 
 describe('ParticipantWaitingRoomComponent when service returns an error', () => {

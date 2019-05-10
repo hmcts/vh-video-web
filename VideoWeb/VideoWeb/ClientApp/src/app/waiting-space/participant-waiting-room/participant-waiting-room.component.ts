@@ -7,12 +7,14 @@ import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ErrorService } from 'src/app/services/error.service';
+import { ClockServiceService as ClockService } from 'src/app/services/clock.service';
+import moment = require('moment');
 declare var PexRTC: any;
 
 @Component({
   selector: 'app-participant-waiting-room',
   templateUrl: './participant-waiting-room.component.html',
-  styleUrls: ['./participant-waiting-room.component.css']
+  styleUrls: ['./participant-waiting-room.component.scss']
 })
 export class ParticipantWaitingRoomComponent implements OnInit {
 
@@ -25,6 +27,8 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   stream: any;
   connected: boolean;
 
+  currentTime: Date;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -32,13 +36,18 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     private eventService: EventsService,
     private ngZone: NgZone,
     private adalService: AdalService,
-    private errorService: ErrorService
+    private errorService: ErrorService,
+    private clockService: ClockService
   ) {
     this.loadingData = true;
   }
 
   ngOnInit() {
     this.connected = false;
+    this.clockService.getClock().subscribe((time) => {
+      this.currentTime = time;
+    }
+    );
     this.getConference();
   }
 
@@ -64,6 +73,31 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     const endTime = new Date(this.conference.scheduled_date_time.getTime());
     endTime.setUTCMinutes(endTime.getUTCMinutes() + this.conference.scheduled_duration);
     return endTime;
+  }
+
+  isOnTime(): boolean {
+    const now = moment.utc();
+    let scheduled = moment(this.conference.scheduled_date_time);
+    scheduled = scheduled.subtract(5, 'minutes');
+    return now.isBefore(scheduled) && this.conference.status === ConferenceStatus.NotStarted;
+  }
+
+  isStarting(): boolean {
+    const now = moment.utc();
+
+    let minStart = moment(this.conference.scheduled_date_time);
+    minStart = minStart.subtract(5, 'minutes');
+
+    let maxStart = moment(this.conference.scheduled_date_time);
+    maxStart = maxStart.add(10, 'minutes');
+    return now.isBetween(minStart, maxStart) && this.conference.status === ConferenceStatus.NotStarted;
+  }
+
+  isDelayed(): boolean {
+    const now = moment.utc();
+    let scheduled = moment(this.conference.scheduled_date_time);
+    scheduled = scheduled.add(10, 'minutes');
+    return now.isAfter(scheduled) && this.conference.status === ConferenceStatus.NotStarted;
   }
 
   getConferenceStatusText(): string {
