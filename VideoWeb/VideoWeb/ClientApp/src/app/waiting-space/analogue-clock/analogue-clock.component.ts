@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ClockServiceService } from 'src/app/services/clock.service';
+import { Hearing } from '../models/hearing';
 
 @Component({
   selector: 'app-analogue-clock',
@@ -7,6 +8,8 @@ import { ClockServiceService } from 'src/app/services/clock.service';
   styleUrls: ['./analogue-clock.component.scss']
 })
 export class AnalogueClockComponent implements OnInit {
+
+  @Input() hearing: Hearing;
 
   currentTime: Date;
   hourHand: HTMLElement;

@@ -1,6 +1,6 @@
 @import "~govuk-frontend/all";
 
-.outer_face {
+.outer_face.ontime {
   position: relative;
   width: 200px;
   /* width of clock */
@@ -14,9 +14,37 @@
   /* thickness of outer border */
 }
 
+.outer_face.isstarting {
+  position: relative;
+  width: 200px;
+  /* width of clock */
+  height: 200px;
+  /* height of clock */
+  border-radius: 200px;
+  /* clock round corner radius */
+  background: govuk-colour("black");
+  //box-shadow: inset 0 0 10px gray;
+  border: 0 solid govuk-colour("grey-2");
+  /* thickness of outer border */
+}
+
+.outer_face.delayed {
+  position: relative;
+  width: 200px;
+  /* width of clock */
+  height: 200px;
+  /* height of clock */
+  border-radius: 200px;
+  /* clock round corner radius */
+  background: govuk-colour("yellow");
+  //box-shadow: inset 0 0 10px gray;
+  border: 0 solid govuk-colour("grey-2");
+  /* thickness of outer border */
+}
+
 .outer_face::before,
 .outer_face::after,
-.outer_face .marker {
+.outer_face .marker.white {
   /* time markers syle */
   content: "";
   position: absolute;
@@ -30,20 +58,19 @@
   /* set this value of 1/2 marker width */
   top: 0
 }
+.outer_face .marker.white {
+  background: govuk-colour("white");
+  width: 2px;
+  /* width of all other markers */
+  margin-left: -1px
+    /* set this value of 1/2 marker width */
+}
 
 .outer_face::after {
   -moz-transform: rotate(90deg);
   -ms-transform: rotate(90deg);
   -webkit-transform: rotate(90deg);
   transform: rotate(90deg)
-}
-
-.outer_face .marker {
-  background: govuk-colour("white");
-  width: 2px;
-  /* width of all other markers */
-  margin-left: -1px
-    /* set this value of 1/2 marker width */
 }
 
 .outer_face .marker.oneseven {
@@ -74,11 +101,41 @@
   transform: rotate(150deg)
 }
 
-.inner_face {
+.inner_face.ontime {
   position: relative;
   width: 88%;
   height: 88%;
   background: govuk-colour("blue");
+  -moz-border-radius: 1000px;
+  -webkit-border-radius: 1000px;
+  border-radius: 1000px;
+  z-index: 1000;
+  left: 6%;
+  /* set this value of 1/2 width value*/
+  top: 6%
+    /* set this value of 1/2 height value*/
+}
+
+.inner_face.isstarting {
+  position: relative;
+  width: 88%;
+  height: 88%;
+  background: govuk-colour("black");
+  -moz-border-radius: 1000px;
+  -webkit-border-radius: 1000px;
+  border-radius: 1000px;
+  z-index: 1000;
+  left: 6%;
+  /* set this value of 1/2 width value*/
+  top: 6%
+    /* set this value of 1/2 height value*/
+}
+
+.inner_face.delayed {
+  position: relative;
+  width: 88%;
+  height: 88%;
+  background: govuk-colour("yellow");
   -moz-border-radius: 1000px;
   -webkit-border-radius: 1000px;
   border-radius: 1000px;
@@ -117,7 +174,7 @@
 }
 
 .hand,
-.hand.hour {
+.hand.hour.white {
   position: absolute;
   width: 4px;
   /* width of hour hand */
@@ -151,7 +208,7 @@
   /* set this value to 1/2 width */
 }
 
-.hand.second {
+.hand.second.white {
   height: 50%;
   /* height of sec hand */
   width: 2px;
