@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Drawing;
+using System.Linq;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders;
@@ -14,15 +16,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly BrowserContext _browserContext;
         private readonly TestContext _context;
         private readonly WaitingRoomPage _waitingRoomPage;
-        private readonly CommonPages _commonPageElements;
 
         public WaitingRoomSteps(BrowserContext browserContext, TestContext context,
-            WaitingRoomPage waitingRoomPage, CommonPages commonPage)
+            WaitingRoomPage waitingRoomPage)
         {
             _browserContext = browserContext;
             _context = context;
             _waitingRoomPage = waitingRoomPage;
-            _commonPageElements = commonPage;
         }
 
         [Then(@"the user can see information about their case")]
@@ -33,9 +33,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.CaseNumber).Text
                 .Should().Be($"Case number: {_context.Hearing.Cases.First().Number}");
             _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.HearingDate).Text
-                .Should().Be(_context.Hearing.Scheduled_date_time?.ToString(DateFormats.WaitingRoomPageDate));
-            _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.ScheduledDuration).Text
-                .Should().Contain($"scheduled for {_context.Hearing.Scheduled_duration?.ToString()} minutes");
+                .Should().Contain(_context.Hearing.Scheduled_date_time?.ToString(DateFormats.WaitingRoomPageDate));
 
             if (_context.CurrentUser.Role.Equals("Judge"))
             {
@@ -43,9 +41,22 @@ namespace VideoWeb.AcceptanceTests.Steps
                     .Should().BeTrue();
                 _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.ContactVho).Displayed
                     .Should().BeTrue();
+                _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.JudgeHearingTime).Text
+                    .Should().Contain(_context.Hearing.Scheduled_date_time?.ToString(DateFormats.JudgeWaitingRoomPageTime));
+                _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.ScheduledDuration).Text
+                    .Should().Contain($"scheduled for {_context.Hearing.Scheduled_duration?.ToString()} minutes");
             }
             else
             {
+                _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.HearingDate).Text
+                    .Should().Contain(_context.Hearing.Scheduled_date_time?.ToString(DateFormats.WaitingRoomPageTime));
+                if (_context.Hearing.Scheduled_duration != null)
+                {
+                    var endTime = _context.Hearing.Scheduled_date_time?.AddMinutes((int)_context.Hearing.Scheduled_duration)
+                        .ToString(DateFormats.WaitingRoomPageTime);
+                    _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.HearingDate).Text
+                        .Should().Contain(endTime);
+                }
                 _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.ContactHelpline).Displayed
                     .Should().BeTrue();
             }
@@ -61,8 +72,83 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {
                     _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.ParticipantStatus(participant.Display_name)).Text
                         .Should().Be("Unavailable");
-                }               
+                }
             }
+        }
+
+        [Then(@"the user can see the hearing is (.*) title")]
+        public void ThenTheUserCanSeeTheHearingIsAAboutToBeginTitle(string title)
+        {
+            switch (title)
+            {
+                case "about to begin":
+                {
+                    _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.AboutToBeginHeader).Displayed.Should()
+                        .BeTrue();
+                    break;
+                }
+                case "delayed":
+                {
+                    _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.DelayedHeader).Displayed.Should()
+                        .BeTrue();
+                    break;
+                }
+                case "scheduled":
+                {
+                    _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.ScheduledHeader).Displayed.Should()
+                        .BeTrue();
+                    break;
+                }
+                default: throw new ArgumentOutOfRangeException($"No such title: '{title}'");
+            }                      
+        }
+
+        [Then(@"the user can see a (.*) box and a (.*) message")]
+        [Then(@"the user can see a (.*) box and an (.*) message")]
+        public void ThenTheUserCanSeeABlackBoxAndAAboutToBeginMessage(string colour, string message)
+        {
+            _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.TimePanel).Displayed.Should()
+                .BeTrue();
+
+            var backgroundColourInHex = ConvertRgbToHex(_browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.TimePanel)
+                .GetCssValue("background-color"));
+
+            switch (colour)
+            {
+                case "black":
+                {
+                    backgroundColourInHex.Should().Be(_waitingRoomPage.AboutToBeginBgColour);
+                    _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.AboutToBeginText).Displayed
+                        .Should().BeTrue();
+                        break;
+                }
+                case "yellow":
+                {
+                    backgroundColourInHex.Should().Be(_waitingRoomPage.DelayedBgColour);
+                    _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.DelayedText).Displayed
+                        .Should().BeTrue();
+                        break;
+                }
+                case "blue":
+                {
+                    backgroundColourInHex.Should().Be(_waitingRoomPage.ScheduledBgColour);
+                    _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.ScheduledText).Displayed
+                        .Should().BeTrue();
+                        break;
+                }
+                default: throw new ArgumentOutOfRangeException($"No defined colour: '{colour}'");
+            }
+        }
+
+        private static string ConvertRgbToHex(string rgbCssValue)
+        {
+            var numbers = rgbCssValue.Replace("rgba(", "").Replace(")", "").Split(",");
+            var r = int.Parse(numbers[0].Trim());
+            var g = int.Parse(numbers[1].Trim());
+            var b = int.Parse(numbers[2].Trim());
+            var rgbColour = Color.FromArgb(r, g, b);
+            var hex = "#" + rgbColour.R.ToString("X2") + rgbColour.G.ToString("X2") + rgbColour.B.ToString("X2");
+            return hex.ToLower();
         }
     }
 }
