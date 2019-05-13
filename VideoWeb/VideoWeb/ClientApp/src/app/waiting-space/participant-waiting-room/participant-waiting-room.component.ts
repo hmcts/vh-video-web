@@ -60,7 +60,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         this.refresh();
         this.setupSubscribers();
         this.setupPexipClient();
-        // this.call();
+        this.call();
       },
         (error) => {
           this.loadingData = false;
