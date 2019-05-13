@@ -10,37 +10,37 @@
   </div>
 </div>
 
-<div *ngIf="!loadingData && conference && statusUpdated" class="govuk-grid-row">
+<div *ngIf="!loadingData && hearing && statusUpdated" class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-xl">Your hearing {{ getConferenceStatusText() }}</h1>
 
-    <h2 class="govuk-heading-m">{{conference.case_name}}</h2>
+    <h2 class="govuk-heading-m">{{hearing.getConference().case_name}}</h2>
 
-    <h3 class="govuk-heading-m">Case number: {{conference.case_number}}</h3>
+    <h3 class="govuk-heading-m">Case number: {{hearing.getConference().case_number}}</h3>
 
     <div class="govuk-!-margin-bottom-9">
       <span class="govuk-body">
         <p class="govuk-!-margin-0" aria-label="date of hearing, scheduled start time and scheduled end time">
-          {{ conference.scheduled_date_time | date: 'EEEE dd MMMM	yyyy' }},
-          <span class="govuk-!-font-weight-bold">{{ conference.scheduled_date_time | date: 'H:mm a' }} to
-            {{ getScheduledEndTime() | date: 'H:mm a' }}</span>
+          {{ hearing.getScheduledStartTime() | date: 'EEEE dd MMMM	yyyy' }},
+          <span class="govuk-!-font-weight-bold">{{ hearing.getScheduledStartTime() | date: 'H:mm a' }} to
+            {{ hearing.getScheduledEndTime() | date: 'H:mm a' }}</span>
         </p>
       </span>
     </div>
 
-    <div *ngIf="isClosed()">
+    <div *ngIf="hearing.isClosed()">
       <p class="govuk-body">
         This hearing is finished. You may now sign out.
       </p>
     </div>
 
-    <div *ngIf="isPaused()">
+    <div *ngIf="hearing.isPaused()">
       <p class="govuk-body">
         Please wait here. The judge will resume the hearing shortly.
       </p>
     </div>
 
-    <div *ngIf="isSuspended()" class="govuk-warning-text govuk-!-padding-right-6">
+    <div *ngIf="hearing.isSuspended()" class="govuk-warning-text govuk-!-padding-right-6">
       <span class="govuk-warning-text__icon" style="top:20px" aria-hidden="true">!</span>
       <strong class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
@@ -53,13 +53,13 @@
     </div>
 
     <div *ngIf="currentTime" class="govuk-panel"
-      [ngClass]="{'hearing-on-time': isOnTime(), 'hearing-near-start': isStarting(), 'hearing-delayed': isDelayed()}">
+      [ngClass]="{'hearing-on-time': hearing.isOnTime(), 'hearing-near-start': hearing.isStarting(), 'hearing-delayed': hearing.isDelayed()}">
       <div class="govuk-body govuk-!-margin-bottom-0"
-        [ngClass]="{'hearing-on-time': isOnTime(), 'hearing-near-start': isStarting(), 'hearing-delayed': isDelayed()}">
-        <span *ngIf="isOnTime() || isStarting()">
+        [ngClass]="{'hearing-on-time': hearing.isOnTime(), 'hearing-near-start': hearing.isStarting(), 'hearing-delayed': hearing.isDelayed()}">
+        <span *ngIf="hearing.isOnTime() || hearing.isStarting()">
           <strong>Please keep an eye on the time</strong> so you're ready when the judge starts the hearing
         </span>
-        <span *ngIf="isDelayed()">
+        <span *ngIf="hearing.isDelayed()">
           <strong>We're really sorry your hearing is delayed.</strong> Please stand by and one of the video hearing team
           will call you in the next 5 minutes on the number you have given us.
         </span>
@@ -72,9 +72,10 @@
         </div>
         <div class="govuk-grid-column-one-half">
           <div class="govuk-body"
-            [ngClass]="{'hearing-on-time': isOnTime(), 'hearing-near-start': isStarting(), 'hearing-delayed': isDelayed()}">
+            [ngClass]="{'hearing-on-time': hearing.isOnTime(), 'hearing-near-start': hearing.isStarting(), 'hearing-delayed': hearing.isDelayed()}">
             <p class="govuk-!-margin-bottom-4">The time now is:</p>
-            <p class="govuk-panel__body govuk-!-margin-top-4 govuk-!-font-size-80"><strong>{{ currentTime | date:'HH:mm' }}</strong></p>
+            <p class="govuk-panel__body govuk-!-margin-top-4 govuk-!-font-size-80">
+              <strong>{{ currentTime | date:'HH:mm' }}</strong></p>
           </div>
         </div>
       </div>
@@ -86,7 +87,7 @@
   </div>
 
   <div class="govuk-grid-column-one-third">
-    <app-participant-status-list aria-label="list of participants in hearing" [conference]="conference">
+    <app-participant-status-list aria-label="list of participants in hearing" [conference]="hearing.getConference()">
     </app-participant-status-list>
   </div>
 </div>

@@ -8,7 +8,7 @@ import { VideoWebService } from 'src/app/services/video-web.service';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ErrorService } from 'src/app/services/error.service';
 import { ClockServiceService as ClockService } from 'src/app/services/clock.service';
-import * as moment from 'moment';
+import { Hearing } from '../models/hearing';
 declare var PexRTC: any;
 
 @Component({
@@ -20,7 +20,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
   loadingData: boolean;
   statusUpdated: boolean;
-  conference: ConferenceResponse;
+  hearing: Hearing;
   participant: ParticipantResponse;
 
   pexipAPI: any;
@@ -55,7 +55,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     this.videoWebService.getConferenceById(conferenceId)
       .subscribe((data: ConferenceResponse) => {
         this.loadingData = false;
-        this.conference = data;
+        this.hearing = new Hearing(data);
         this.participant = data.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
         this.refresh();
         this.setupSubscribers();
@@ -68,68 +68,23 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         });
   }
 
-  getScheduledEndTime(): Date {
-    const endTime = new Date(this.conference.scheduled_date_time.getTime());
-    endTime.setUTCMinutes(endTime.getUTCMinutes() + this.conference.scheduled_duration);
-    return endTime;
-  }
-
-  isOnTime(): boolean {
-    const now = moment.utc();
-    let scheduled = moment(this.conference.scheduled_date_time);
-    scheduled = scheduled.subtract(5, 'minutes');
-    return now.isBefore(scheduled) && this.conference.status === ConferenceStatus.NotStarted;
-  }
-
-  isStarting(): boolean {
-    const now = moment.utc();
-
-    let minStart = moment(this.conference.scheduled_date_time);
-    minStart = minStart.subtract(5, 'minutes');
-
-    let maxStart = moment(this.conference.scheduled_date_time);
-    maxStart = maxStart.add(10, 'minutes');
-
-    return now.isBetween(minStart, maxStart) && this.conference.status === ConferenceStatus.NotStarted;
-  }
-
-  isDelayed(): boolean {
-    const now = moment.utc();
-    let scheduled = moment(this.conference.scheduled_date_time);
-    scheduled = scheduled.add(10, 'minutes');
-    return now.isAfter(scheduled) && this.conference.status === ConferenceStatus.NotStarted;
-  }
-
   getConferenceStatusText(): string {
-    if (this.conference.status === ConferenceStatus.NotStarted) {
-      if (this.isStarting()) {
+    if (this.hearing.getConference().status === ConferenceStatus.NotStarted) {
+      if (this.hearing.isStarting()) {
         return 'is about to begin';
-      } else if (this.isDelayed()) {
+      } else if (this.hearing.isDelayed()) {
         return 'is delayed';
       } else {
         return '';
       }
-    } else if (this.conference.status === ConferenceStatus.Suspended) {
+    } else if (this.hearing.isSuspended()) {
       return 'is suspended';
-    } else if (this.conference.status === ConferenceStatus.Paused) {
+    } else if (this.hearing.isPaused()) {
       return 'is paused';
-    } else if (this.conference.status === ConferenceStatus.Closed) {
+    } else if (this.hearing.isClosed()) {
       return 'is closed';
     }
     return '';
-  }
-
-
-  isClosed(): boolean {
-    return this.conference.status === ConferenceStatus.Closed;
-  }
-
-  isSuspended(): boolean {
-    return this.conference.status === ConferenceStatus.Suspended;
-  }
-
-  isPaused(): boolean {
-    return this.conference.status === ConferenceStatus.Paused;
   }
 
   private setupSubscribers() {
@@ -149,13 +104,13 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   }
 
   handleParticipantStatusChange(message: ParticipantStatusMessage): any {
-    const participant = this.conference.participants.find(p => p.username.toLowerCase() === message.email.toLowerCase());
+    const participant = this.hearing.getConference().participants.find(p => p.username.toLowerCase() === message.email.toLowerCase());
     participant.status = message.status;
     this.refresh();
   }
 
   handleConferenceStatusChange(message: ConferenceStatusMessage) {
-    this.conference.status = message.status;
+    this.hearing.getConference().status = message.status;
     this.refresh();
   }
 
@@ -192,8 +147,8 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   }
 
   call() {
-    const pexipNode = this.conference.pexip_node_uri;
-    const conferenceAlias = this.conference.participant_uri;
+    const pexipNode = this.hearing.getConference().pexip_node_uri;
+    const conferenceAlias = this.hearing.getConference().participant_uri;
     const displayName = this.participant.tiled_display_name;
     this.pexipAPI.makeCall(pexipNode, conferenceAlias, displayName, null);
   }
@@ -203,7 +158,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       return false;
     }
 
-    if (this.conference.status === ConferenceStatus.InSession) {
+    if (this.hearing.isInSession()) {
       return true;
     }
 

@@ -16,6 +16,7 @@ import { ParticipantStatusListStubComponent } from 'src/app/testing/stubs/partic
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room.component';
 import { ErrorService } from 'src/app/services/error.service';
 import { AnalogueClockStubComponent } from 'src/app/testing/stubs/analogue-clock-stub';
+import { Hearing } from '../models/hearing';
 
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
@@ -23,12 +24,12 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
   let fixture: ComponentFixture<ParticipantWaitingRoomComponent>;
   let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
   let route: ActivatedRoute;
-  let conference: ConferenceResponse;
+  // let conference: ConferenceResponse;
   let adalService: MockAdalService;
   let eventService: MockEventsService;
 
   beforeEach(() => {
-    conference = new ConferenceTestData().getConferenceDetail();
+    const conference = new ConferenceTestData().getConferenceDetail();
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
     videoWebServiceSpy.getConferenceById.and.returnValue(of(conference));
 
@@ -64,182 +65,86 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
   it('should create and display conference details', () => {
     expect(component).toBeTruthy();
     expect(component.loadingData).toBeFalsy();
-    expect(component.conference).toBeDefined();
+    expect(component.hearing.getConference()).toBeDefined();
   });
 
   it('should update conference status', () => {
     const message = eventService.nextHearingStatusMessage;
     component.handleConferenceStatusChange(message);
-    expect(component.conference.status).toBe(message.status);
+    expect(component.hearing.getConference().status).toBe(message.status);
   });
 
   it('should update participant status', () => {
     const message = eventService.nextParticipantStatusMessage;
     component.handleParticipantStatusChange(message);
-    const participant = component.conference.participants.find(x => x.username === message.email);
+    const participant = component.hearing.getConference().participants.find(x => x.username === message.email);
     expect(participant.status).toBe(message.status);
   });
 
   it('should return correct conference status text when suspended', () => {
-    component.conference.status = ConferenceStatus.Suspended;
+    component.hearing.getConference().status = ConferenceStatus.Suspended;
     expect(component.getConferenceStatusText()).toBe('is suspended');
   });
 
   it('should return correct conference status text when paused', () => {
-    component.conference.status = ConferenceStatus.Paused;
+    component.hearing.getConference().status = ConferenceStatus.Paused;
     expect(component.getConferenceStatusText()).toBe('is paused');
   });
 
   it('should return correct conference status text when closed', () => {
-    component.conference.status = ConferenceStatus.Closed;
+    component.hearing.getConference().status = ConferenceStatus.Closed;
     expect(component.getConferenceStatusText()).toBe('is closed');
   });
 
   it('should return correct conference status text when in session', () => {
-    component.conference.status = ConferenceStatus.InSession;
+    component.hearing.getConference().status = ConferenceStatus.InSession;
     expect(component.getConferenceStatusText()).toBe('');
   });
 
   it('should return correct conference status text when not started', () => {
-    component.conference = new ConferenceTestData().getConferenceFuture();
-    component.conference.status = ConferenceStatus.NotStarted;
+    const conference = new ConferenceTestData().getConferenceFuture();
+    component.hearing = new Hearing(conference);
+    component.hearing.getConference().status = ConferenceStatus.NotStarted;
     expect(component.getConferenceStatusText()).toBe('');
   });
 
   it('should return is about to begin header text', () => {
-    component.conference = new ConferenceTestData().getConferenceNow();
-    component.conference.status = ConferenceStatus.NotStarted;
+    const conference = new ConferenceTestData().getConferenceNow();
+    conference.status = ConferenceStatus.NotStarted;
+    component.hearing = new Hearing(conference);
     expect(component.getConferenceStatusText()).toBe('is about to begin');
   });
 
   it('should return is delayed header text', () => {
-    component.conference = new ConferenceTestData().getConferencePast();
-    component.conference.status = ConferenceStatus.NotStarted;
+    const conference = new ConferenceTestData().getConferencePast();
+    conference.status = ConferenceStatus.NotStarted;
+    component.hearing = new Hearing(conference);
     expect(component.getConferenceStatusText()).toBe('is delayed');
-  });
-
-  it('should return true when conference is closed', () => {
-    component.conference.status = ConferenceStatus.Closed;
-    expect(component.isClosed()).toBeTruthy();
-  });
-
-  it('should return false when conference is not closed', () => {
-    component.conference.status = ConferenceStatus.InSession;
-    expect(component.isClosed()).toBeFalsy();
-  });
-
-  it('should return true when conference is paused', () => {
-    component.conference.status = ConferenceStatus.Paused;
-    expect(component.isPaused()).toBeTruthy();
-  });
-
-  it('should return false when conference is not paused', () => {
-    component.conference.status = ConferenceStatus.InSession;
-    expect(component.isPaused()).toBeFalsy();
-  });
-
-  it('should return true when conference is suspended', () => {
-    component.conference.status = ConferenceStatus.Suspended;
-    expect(component.isSuspended()).toBeTruthy();
-  });
-
-  it('should return false when conference is not suspended', () => {
-    component.conference.status = ConferenceStatus.Closed;
-    expect(component.isSuspended()).toBeFalsy();
   });
 
   it('should not show video stream when user is not connected to call', () => {
     component.connected = false;
-    expect(component.isSuspended()).toBeFalsy();
+    expect(component.showVideo()).toBeFalsy();
   });
 
   it('should show video stream when conference is in session', () => {
     component.connected = true;
-    component.conference.status = ConferenceStatus.InSession;
+    component.hearing.getConference().status = ConferenceStatus.InSession;
     expect(component.showVideo()).toBeTruthy();
   });
 
   it('should show video stream when participant is in consultation', () => {
     component.connected = true;
-    component.conference.status = ConferenceStatus.Paused;
+    component.hearing.getConference().status = ConferenceStatus.Paused;
     component.participant.status = ParticipantStatus.InConsultation;
     expect(component.showVideo()).toBeTruthy();
   });
 
   it('should not show video stream when hearing is not in session and participant is not in consultation', () => {
     component.connected = true;
-    component.conference.status = ConferenceStatus.Paused;
+    component.hearing.getConference().status = ConferenceStatus.Paused;
     component.participant.status = ParticipantStatus.Available;
     expect(component.showVideo()).toBeFalsy();
-  });
-
-  it('should return end time', () => {
-    const endTime = component.getScheduledEndTime();
-    expect(endTime.getTime()).toBeGreaterThan(component.conference.scheduled_date_time.getTime());
-    expect(component.showVideo()).toBeFalsy();
-  });
-
-  it('should return true when conference is delayed by more than ten minutes', () => {
-    const pastConference = new ConferenceTestData().getConferencePast();
-    pastConference.status = ConferenceStatus.NotStarted;
-    component.conference = pastConference;
-    expect(component.isDelayed()).toBeTruthy();
-  });
-
-  it('should return false when conference has started and passed scheduled start time', () => {
-    const pastConference = new ConferenceTestData().getConferencePast();
-    pastConference.status = ConferenceStatus.InSession;
-    component.conference = pastConference;
-    expect(component.isDelayed()).toBeFalsy();
-  });
-
-  it('should return false when conference is not delayed by more than ten minutes', () => {
-    const pastConference = new ConferenceTestData().getConferenceFuture();
-    pastConference.status = ConferenceStatus.NotStarted;
-    component.conference = pastConference;
-    expect(component.isDelayed()).toBeFalsy();
-  });
-
-  it('should return true when conference has not started and more than five minutes before start time', () => {
-    const pastConference = new ConferenceTestData().getConferenceFuture();
-    pastConference.status = ConferenceStatus.NotStarted;
-    component.conference = pastConference;
-    expect(component.isOnTime()).toBeTruthy();
-  });
-
-  it('should return false when conference has not started and less than five minutes before start time', () => {
-    const pastConference = new ConferenceTestData().getConferenceNow();
-    pastConference.status = ConferenceStatus.NotStarted;
-    component.conference = pastConference;
-    expect(component.isOnTime()).toBeFalsy();
-  });
-
-  it('should return true when conference is due to start within five minutes', () => {
-    const pastConference = new ConferenceTestData().getConferenceNow();
-    pastConference.status = ConferenceStatus.NotStarted;
-    component.conference = pastConference;
-    expect(component.isStarting()).toBeTruthy();
-  });
-
-  it('should return false when conference is more than five minutes delayed', () => {
-    const pastConference = new ConferenceTestData().getConferenceFuture();
-    pastConference.status = ConferenceStatus.NotStarted;
-    component.conference = pastConference;
-    expect(component.isStarting()).toBeFalsy();
-  });
-
-  it('should return false when conference is more than five minutes to start time', () => {
-    const pastConference = new ConferenceTestData().getConferenceFuture();
-    pastConference.status = ConferenceStatus.NotStarted;
-    component.conference = pastConference;
-    expect(component.isStarting()).toBeFalsy();
-  });
-
-  it('should return false when conference is due to start within five minutes but has started', () => {
-    const pastConference = new ConferenceTestData().getConferenceNow();
-    pastConference.status = ConferenceStatus.InSession;
-    component.conference = pastConference;
-    expect(component.isStarting()).toBeFalsy();
   });
 });
 
@@ -291,7 +196,7 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
     fixture.detectChanges();
     expect(component).toBeTruthy();
     expect(component.loadingData).toBeFalsy();
-    expect(component.conference).toBeUndefined();
+    expect(component.hearing).toBeUndefined();
     expect(component.participant).toBeUndefined();
     expect(errorService.handleApiError).toHaveBeenCalled();
   });
