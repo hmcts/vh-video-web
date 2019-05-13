@@ -1,15 +1,15 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { ClockServiceService } from './clock.service';
+import { ClockService } from './clock.service';
 
 describe('ClockServiceService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ClockServiceService]
+      providers: [ClockService]
     });
   });
 
-  it('should be created', inject([ClockServiceService], (service: ClockServiceService) => {
+  it('should be created', inject([ClockService], (service: ClockService) => {
     expect(service).toBeTruthy();
   }));
 });

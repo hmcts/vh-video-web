@@ -7,7 +7,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ErrorService } from 'src/app/services/error.service';
-import { ClockServiceService as ClockService } from 'src/app/services/clock.service';
+import { ClockService as ClockService } from 'src/app/services/clock.service';
 import { Hearing } from '../models/hearing';
 declare var PexRTC: any;
 

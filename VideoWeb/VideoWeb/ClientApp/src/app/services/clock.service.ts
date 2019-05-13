@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class ClockServiceService {
+export class ClockService {
 
   private clock: Observable<Date>;
 

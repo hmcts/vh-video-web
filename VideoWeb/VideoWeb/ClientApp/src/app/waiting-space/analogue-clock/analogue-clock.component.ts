@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ClockServiceService } from 'src/app/services/clock.service';
+import { ClockService } from 'src/app/services/clock.service';
 import { Hearing } from '../models/hearing';
 
 @Component({
@@ -17,7 +17,7 @@ export class AnalogueClockComponent implements OnInit {
   secondHand: HTMLElement;
 
   constructor(
-    private clockService: ClockServiceService
+    private clockService: ClockService
   ) { }
 
   ngOnInit() {
