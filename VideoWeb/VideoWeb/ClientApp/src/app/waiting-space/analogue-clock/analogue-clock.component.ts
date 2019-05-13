@@ -31,6 +31,9 @@ export class AnalogueClockComponent implements OnInit {
   }
 
   updateclock() {
+    if (!this.hearing) {
+      return;
+    }
     const hour_as_degree = (this.currentTime.getHours() + this.currentTime.getMinutes() / 60) / 12 * 360;
     const minute_as_degree = this.currentTime.getMinutes() / 60 * 360;
     const second_as_degree = (this.currentTime.getSeconds() + this.currentTime.getMilliseconds() / 1000) / 60 * 360;

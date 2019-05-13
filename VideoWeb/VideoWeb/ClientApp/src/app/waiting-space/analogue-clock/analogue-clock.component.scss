@@ -42,9 +42,12 @@
   /* thickness of outer border */
 }
 
-.outer_face::before,
-.outer_face::after,
-.outer_face .marker.white {
+.outer_face.isstarting::before,
+.outer_face.isstarting::after,
+.outer_face.isstarting .marker.white,
+.outer_face.ontime::before,
+.outer_face.ontime::after,
+.outer_face.ontime .marker.white {
   /* time markers syle */
   content: "";
   position: absolute;
@@ -58,8 +61,35 @@
   /* set this value of 1/2 marker width */
   top: 0
 }
-.outer_face .marker.white {
+
+.outer_face.ontime .marker.white,
+.outer_face.isstarting .marker.white {
   background: govuk-colour("white");
+  width: 2px;
+  /* width of all other markers */
+  margin-left: -1px
+    /* set this value of 1/2 marker width */
+}
+
+.outer_face.delayed::before,
+.outer_face.delayed::after,
+.outer_face.delayed .marker.black {
+  /* time markers syle */
+  content: "";
+  position: absolute;
+  width: 8px;
+  /* width of 12-6 and 3-9 markers */
+  height: 100%;
+  background: govuk-colour("black");
+  z-index: 0;
+  left: 50%;
+  margin-left: -4px;
+  /* set this value of 1/2 marker width */
+  top: 0
+}
+
+.outer_face.delayed .marker.black {
+  background: govuk-colour("black");
   width: 2px;
   /* width of all other markers */
   margin-left: -1px
@@ -197,6 +227,30 @@
   z-index: -1;
 }
 
+.hand.minute.black,
+.hand.hour.black {
+  position: absolute;
+  width: 4px;
+  /* width of hour hand */
+  height: 30%;
+  /* height of hour hand */
+  top: 20%;
+  /* set top to 50% - height */
+  left: 50%;
+  margin-left: -2px;
+  /* set this value to 1/2 width */
+  background: govuk-colour("black");
+  -moz-transform: rotate(0deg);
+  -ms-transform: rotate(0deg);
+  -webkit-transform: rotate(0deg);
+  transform: rotate(0deg);
+  -moz-transform-origin: bottom;
+  -ms-transform-origin: bottom;
+  -webkit-transform-origin: bottom;
+  transform-origin: bottom;
+  z-index: -1;
+}
+
 .hand.minute {
   height: 45%;
   /* height of min hand */
@@ -217,4 +271,15 @@
   /* set this value to 1/2 width */
   top: 0;
   background: govuk-colour("white");
+}
+
+.hand.second.black {
+  height: 50%;
+  /* height of sec hand */
+  width: 2px;
+  /* width of sec hand */
+  margin-left: -1px;
+  /* set this value to 1/2 width */
+  top: 0;
+  background: govuk-colour("black");
 }
