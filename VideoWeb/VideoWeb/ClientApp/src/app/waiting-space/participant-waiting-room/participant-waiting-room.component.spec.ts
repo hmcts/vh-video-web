@@ -146,6 +146,13 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     component.participant.status = ParticipantStatus.Available;
     expect(component.showVideo()).toBeFalsy();
   });
+
+  it('should not announce hearing is starting when already announced', () => {
+    spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => { });
+    component.hearingStartingAnnounced = true;
+    component.checkIfHearingIsStarting();
+    expect(component.announceHearingIsAboutToStart).toHaveBeenCalledTimes(0);
+  });
 });
 
 describe('ParticipantWaitingRoomComponent when service returns an error', () => {

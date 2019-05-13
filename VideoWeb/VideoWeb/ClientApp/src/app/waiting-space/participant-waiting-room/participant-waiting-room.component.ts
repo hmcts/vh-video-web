@@ -28,6 +28,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   connected: boolean;
 
   currentTime: Date;
+  hearingStartingAnnounced: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -44,10 +45,39 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
   ngOnInit() {
     this.connected = false;
+    this.hearingStartingAnnounced = false;
+
+    this.subscribeToClock();
+    this.getConference();
+  }
+
+  subscribeToClock(): void {
     this.clockService.getClock().subscribe((time) => {
       this.currentTime = time;
+      this.checkIfHearingIsStarting();
     });
-    this.getConference();
+  }
+
+  checkIfHearingIsStarting(): void {
+    if (this.hearing.isStarting() && !this.hearingStartingAnnounced) {
+      this.announceHearingIsAboutToStart();
+    }
+  }
+
+  announceHearingIsAboutToStart(): void {
+    const audio = new Audio();
+    audio.src = '/assets/audio/hearing_starting_soon.mp3';
+    audio.load();
+    audio.loop = true;
+    let currentPlay = 1;
+    audio.addEventListener('playing', () => {
+      currentPlay++;
+      if (currentPlay > 3) {
+        audio.loop = false;
+      }
+    });
+    audio.play();
+    this.hearingStartingAnnounced = true;
   }
 
   getConference(): void {

@@ -89,7 +89,7 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
     this.videoWebService.raiseMediaEvent(this.conference.id,
       new AddMediaEventRequest({participant_id: participant.id.toString()})).subscribe(x => { },
         (error) => {
-          console.log(error);
+          console.error(error);
         });
   }
 }
