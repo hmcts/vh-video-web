@@ -1,15 +1,14 @@
 using Microsoft.ApplicationInsights.Channel;
-using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
 
 namespace VideoWeb.Common
 {
-    public class BadRequestTelemetry : ITelemetryInitializer
+    public class RequestTelemetry : ITelemetryInitializer
     {
         readonly IHttpContextAccessor _httpContextAccessor;
 
-        public BadRequestTelemetry(IHttpContextAccessor httpContextAccessor)
+        public RequestTelemetry(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
@@ -18,7 +17,7 @@ namespace VideoWeb.Common
         {
             telemetry.Context.Cloud.RoleName = "vh-video-web";
             
-            if (!(telemetry is RequestTelemetry requestTelemetry))
+            if (!(telemetry is Microsoft.ApplicationInsights.DataContracts.RequestTelemetry requestTelemetry))
             {
                 return;
             }
@@ -36,7 +35,7 @@ namespace VideoWeb.Common
             }
         }
 
-        private bool IsReadableBadRequest(RequestTelemetry telemetry)
+        private bool IsReadableBadRequest(Microsoft.ApplicationInsights.DataContracts.RequestTelemetry telemetry)
         {
             return _httpContextAccessor.HttpContext.Request.Body.CanRead
                    && telemetry.ResponseCode == "400";

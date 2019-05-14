@@ -54,7 +54,7 @@ namespace VideoWeb
         {
             services.AddMemoryCache();
             
-            services.AddSingleton<ITelemetryInitializer, BadRequestTelemetry>();
+            services.AddSingleton<ITelemetryInitializer, RequestTelemetry>();
 
             services.AddTransient<BookingsApiTokenHandler>();
             services.AddTransient<VideoApiTokenHandler>();
