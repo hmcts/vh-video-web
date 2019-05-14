@@ -4,6 +4,7 @@ using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
+using VideoWeb.AcceptanceTests.Journeys;
 using VideoWeb.AcceptanceTests.Pages;
 
 namespace VideoWeb.AcceptanceTests.Steps
@@ -87,47 +88,75 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _currentPage = currentPage.JudgeNextPage(currentPage);
 
             }
-            else {
 
-                switch (currentPage.Journey)
+            if (role.Equals("Video Hearings Officer"))
+            {
+                switch (currentPage.VhoJourney)
                 {
-                    case Journey.Login:
+                    case VhoJourney.Login:
+                    {
+                        _loginSteps.WhenUserLogsInWithValidCredentials(role);
+                        break;
+                    }
+                    case VhoJourney.HearingList:
+                    {
+                        _hearingListSteps.WhenTheVHOSelectsTheHearing();
+                        _hearingListSteps.WhenTheVHOLogsIntoTheAdminPanel();
+                        break;
+                    }
+                    case VhoJourney.AdminPanel:
+                    {
+                        break;
+                    }
+                    default:
+                        throw new InvalidOperationException($"Current page was past the intended page: {currentPage}");
+                }
+
+                _currentPage = currentPage.VhoNextPage(currentPage);
+            }
+
+            else
+            {
+
+                switch (currentPage.ParticipantJourney)
+                {
+                    case ParticipantJourney.Login:
                     {
                         _loginSteps.WhenUserLogsInWithValidCredentials(role);
                             break;
                     }
-                    case Journey.HearingList:
+                    case ParticipantJourney.HearingList:
                     {
                         _hearingListSteps.WhenTheUserClicksTheStartButton();
                             break;
                     }
-                    case Journey.SwitchOnYourCameraAndMicrophone:
+                    case ParticipantJourney.SwitchOnYourCameraAndMicrophone:
                     {
                         WhentheUserClicksTheButton("Switch on");
                         WhentheUserClicksTheButton("Watch video");
                             break;
                     }
-                    case Journey.CameraWorking:
-                    case Journey.MicrophoneWorking:
-                    case Journey.SeeAndHearVideo:
+                    case ParticipantJourney.CameraWorking:
+                    case ParticipantJourney.MicrophoneWorking:
+                    case ParticipantJourney.SeeAndHearVideo:
                     {
                         WhenTheUserSelectsTheRadiobutton("Yes");
                         WhentheUserClicksTheButton("Continue");
                             break;
                     }
-                    case Journey.EquipmentCheck:
-                    case Journey.Rules:
+                    case ParticipantJourney.EquipmentCheck:
+                    case ParticipantJourney.Rules:
                     {
                         WhentheUserClicksTheButton("Continue");
                             break;
                     }
-                    case Journey.Declaration:
+                    case ParticipantJourney.Declaration:
                     {
                         _declarationSteps.WhenTheUserGivesTheirConsent();
                         WhentheUserClicksTheButton("Continue");
                             break;
                     }
-                    case Journey.WaitingRoom:
+                    case ParticipantJourney.WaitingRoom:
                     {
                         break;
                     }
@@ -187,6 +216,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 case "Waiting Room": _commonPages.PageUrl(Page.WaitingRoom); break;
                 case "Not Found": _commonPages.PageUrl(Page.NotFound); break;
                 case "Unauthorised": _commonPages.PageUrl(Page.Unauthorised); break;
+                case "Admin Panel": _commonPages.PageUrl(Page.AdminPanel); break;
                 default: throw new ArgumentOutOfRangeException(page);
             }
         }
