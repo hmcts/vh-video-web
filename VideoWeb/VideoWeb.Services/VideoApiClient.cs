@@ -1950,6 +1950,9 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonProperty("participants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.List<ParticipantSummaryResponse> Participants { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("pending_tasks", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int? Pending_tasks { get; set; }
+    
     
     }
     

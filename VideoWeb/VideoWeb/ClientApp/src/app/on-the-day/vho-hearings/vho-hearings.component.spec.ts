@@ -14,6 +14,7 @@ import { VhoHearingsComponent } from './vho-hearings.component';
 import { ConferenceResponse, ConsultationAnswer } from 'src/app/services/clients/api-client';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { ErrorService } from 'src/app/services/error.service';
+import { Hearing } from 'src/app/waiting-space/models/hearing';
 
 
 describe('VhoHearingsComponent', () => {
@@ -89,7 +90,7 @@ describe('VhoHearingsComponent', () => {
 
   it('should return true when current conference is selected', () => {
     const currentConference = conferences[0];
-    component.selectedConference = new ConferenceResponse({ id: currentConference.id });
+    component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
     expect(component.isCurrentConference(currentConference)).toBeTruthy();
   });
 
@@ -100,7 +101,7 @@ describe('VhoHearingsComponent', () => {
 
   it('should return false when current conference is different', () => {
     const currentConference = conferences[0];
-    component.selectedConference = new ConferenceResponse({ id: conferences[1].id });
+    component.selectedHearing = new Hearing( new ConferenceResponse({ id: conferences[1].id }));
     expect(component.isCurrentConference(currentConference)).toBeFalsy();
   });
 
@@ -116,7 +117,7 @@ describe('VhoHearingsComponent', () => {
 
   it('should load tasks for conference when current conference is selected', () => {
     const currentConference = conferences[0];
-    component.selectedConference = new ConferenceResponse({ id: currentConference.id });
+    component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
     component.getTasksForConference(currentConference.id);
     expect(component.tasks.length > 0).toBeTruthy();
   });
