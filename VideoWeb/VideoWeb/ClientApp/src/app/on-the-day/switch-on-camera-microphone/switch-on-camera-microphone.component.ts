@@ -33,11 +33,11 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getConference();
+    this.getConferenceId();
     this._navigator = <any>navigator;
   }
 
-  getConference(): void {
+  getConferenceId(): void {
     this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
   }
 
