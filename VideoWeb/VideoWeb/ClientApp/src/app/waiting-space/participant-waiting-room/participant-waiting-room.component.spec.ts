@@ -24,7 +24,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
   let fixture: ComponentFixture<ParticipantWaitingRoomComponent>;
   let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
   let route: ActivatedRoute;
-  // let conference: ConferenceResponse;
   let adalService: MockAdalService;
   let eventService: MockEventsService;
 

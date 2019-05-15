@@ -52,7 +52,7 @@
       </strong>
     </div>
 
-    <div *ngIf="currentTime" class="govuk-panel"
+    <div *ngIf="currentTime && hearing.isNotStarted()" class="govuk-panel"
       [ngClass]="{'hearing-on-time': hearing.isOnTime(), 'hearing-near-start': hearing.isStarting(), 'hearing-delayed': hearing.isDelayed()}">
       <div class="govuk-body govuk-!-margin-bottom-0"
         [ngClass]="{'hearing-on-time': hearing.isOnTime(), 'hearing-near-start': hearing.isStarting(), 'hearing-delayed': hearing.isDelayed()}">
