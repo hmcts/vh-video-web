@@ -204,24 +204,24 @@ namespace VideoWeb.Services.Video
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         System.Threading.Tasks.Task RemoveParticipantFromConferenceAsync(System.Guid conferenceId, System.Guid participantId, System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Get pending tasks</summary>
+        /// <summary>Get tasks for a conference</summary>
         /// <param name="conferenceId">The id of the conference to retrieve tasks from</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<TaskResponse>> GetPendingTasksAsync(System.Guid conferenceId);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<TaskResponse>> GetTasksForConferenceAsync(System.Guid conferenceId);
     
-        /// <summary>Get pending tasks</summary>
+        /// <summary>Get tasks for a conference</summary>
         /// <param name="conferenceId">The id of the conference to retrieve tasks from</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Collections.Generic.List<TaskResponse> GetPendingTasks(System.Guid conferenceId);
+        System.Collections.Generic.List<TaskResponse> GetTasksForConference(System.Guid conferenceId);
     
-        /// <summary>Get pending tasks</summary>
+        /// <summary>Get tasks for a conference</summary>
         /// <param name="conferenceId">The id of the conference to retrieve tasks from</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<TaskResponse>> GetPendingTasksAsync(System.Guid conferenceId, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<TaskResponse>> GetTasksForConferenceAsync(System.Guid conferenceId, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Update existing tasks</summary>
         /// <param name="conferenceId">The id of the conference to update</param>
@@ -1335,30 +1335,30 @@ namespace VideoWeb.Services.Video
             }
         }
     
-        /// <summary>Get pending tasks</summary>
+        /// <summary>Get tasks for a conference</summary>
         /// <param name="conferenceId">The id of the conference to retrieve tasks from</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.List<TaskResponse>> GetPendingTasksAsync(System.Guid conferenceId)
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<TaskResponse>> GetTasksForConferenceAsync(System.Guid conferenceId)
         {
-            return GetPendingTasksAsync(conferenceId, System.Threading.CancellationToken.None);
+            return GetTasksForConferenceAsync(conferenceId, System.Threading.CancellationToken.None);
         }
     
-        /// <summary>Get pending tasks</summary>
+        /// <summary>Get tasks for a conference</summary>
         /// <param name="conferenceId">The id of the conference to retrieve tasks from</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public System.Collections.Generic.List<TaskResponse> GetPendingTasks(System.Guid conferenceId)
+        public System.Collections.Generic.List<TaskResponse> GetTasksForConference(System.Guid conferenceId)
         {
-            return System.Threading.Tasks.Task.Run(async () => await GetPendingTasksAsync(conferenceId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+            return System.Threading.Tasks.Task.Run(async () => await GetTasksForConferenceAsync(conferenceId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
     
-        /// <summary>Get pending tasks</summary>
+        /// <summary>Get tasks for a conference</summary>
         /// <param name="conferenceId">The id of the conference to retrieve tasks from</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.List<TaskResponse>> GetPendingTasksAsync(System.Guid conferenceId, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<TaskResponse>> GetTasksForConferenceAsync(System.Guid conferenceId, System.Threading.CancellationToken cancellationToken)
         {
             if (conferenceId == null)
                 throw new System.ArgumentNullException("conferenceId");
@@ -2041,8 +2041,18 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public TaskType? Type { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public TaskStatus? Status { get; set; }
+    
         [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTime? Created { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("updated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Updated { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("updated_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Updated_by { get; set; }
     
     
     }
@@ -2058,6 +2068,17 @@ namespace VideoWeb.Services.Video
     
         [System.Runtime.Serialization.EnumMember(Value = @"Participant")]
         Participant = 2,
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.13.13.0 (Newtonsoft.Json v11.0.0.0)")]
+    public enum TaskStatus
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"ToDo")]
+        ToDo = 0,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Done")]
+        Done = 1,
     
     }
     

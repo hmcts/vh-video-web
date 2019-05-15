@@ -14,13 +14,17 @@
 }
 
 .task-body {
-  width: 130px;
+  width: 120px;
 }
 
 .task-origin {
-  width: 200px;
+  width: 90px;
 }
 
 .task-updated {
-  width: 170px;
+  width: 200px;
+}
+
+.task-completed {
+  color: govuk-colour("grey-2");
 }

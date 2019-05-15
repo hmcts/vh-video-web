@@ -415,7 +415,7 @@ export class ApiClient {
     /**
      * @return Success
      */
-    getPendingTasks(conferenceId: string): Observable<TaskResponse[]> {
+    getTasks(conferenceId: string): Observable<TaskResponse[]> {
         let url_ = this.baseUrl + "/conferences/{conferenceId}/tasks";
         if (conferenceId === undefined || conferenceId === null)
             throw new Error("The parameter 'conferenceId' must be defined.");
@@ -431,11 +431,11 @@ export class ApiClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetPendingTasks(response_);
+            return this.processGetTasks(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetPendingTasks(<any>response_);
+                    return this.processGetTasks(<any>response_);
                 } catch (e) {
                     return <Observable<TaskResponse[]>><any>_observableThrow(e);
                 }
@@ -444,7 +444,7 @@ export class ApiClient {
         }));
     }
 
-    protected processGetPendingTasks(response: HttpResponseBase): Observable<TaskResponse[]> {
+    protected processGetTasks(response: HttpResponseBase): Observable<TaskResponse[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -1100,7 +1100,10 @@ export class TaskResponse implements ITaskResponse {
     origin_id?: string | undefined;
     body?: string | undefined;
     type?: TaskType | undefined;
+    status?: TaskStatus | undefined;
     created?: Date | undefined;
+    updated?: Date | undefined;
+    updated_by?: string | undefined;
 
     constructor(data?: ITaskResponse) {
         if (data) {
@@ -1117,7 +1120,10 @@ export class TaskResponse implements ITaskResponse {
             this.origin_id = data["origin_id"];
             this.body = data["body"];
             this.type = data["type"];
+            this.status = data["status"];
             this.created = data["created"] ? new Date(data["created"].toString()) : <any>undefined;
+            this.updated = data["updated"] ? new Date(data["updated"].toString()) : <any>undefined;
+            this.updated_by = data["updated_by"];
         }
     }
 
@@ -1134,7 +1140,10 @@ export class TaskResponse implements ITaskResponse {
         data["origin_id"] = this.origin_id;
         data["body"] = this.body;
         data["type"] = this.type;
+        data["status"] = this.status;
         data["created"] = this.created ? this.created.toISOString() : <any>undefined;
+        data["updated"] = this.updated ? this.updated.toISOString() : <any>undefined;
+        data["updated_by"] = this.updated_by;
         return data; 
     }
 }
@@ -1144,13 +1153,21 @@ export interface ITaskResponse {
     origin_id?: string | undefined;
     body?: string | undefined;
     type?: TaskType | undefined;
+    status?: TaskStatus | undefined;
     created?: Date | undefined;
+    updated?: Date | undefined;
+    updated_by?: string | undefined;
 }
 
 export enum TaskType {
     Hearing = "Hearing", 
     Judge = "Judge", 
     Participant = "Participant", 
+}
+
+export enum TaskStatus {
+    ToDo = "ToDo", 
+    Done = "Done", 
 }
 
 export class ConferenceEventRequest implements IConferenceEventRequest {

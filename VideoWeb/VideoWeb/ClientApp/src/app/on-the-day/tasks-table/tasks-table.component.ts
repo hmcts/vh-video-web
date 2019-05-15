@@ -31,7 +31,7 @@ export class TasksTableComponent implements OnInit {
     this.taskDivWidth = frameWidth;
   }
 
-  getOriginEmail(participantId: string): string {
-    return this.conference.participants.find(x => x.id === participantId).username;
+  getOriginName(participantId: string): string {
+    return this.conference.participants.find(x => x.id === participantId).name;
   }
 }

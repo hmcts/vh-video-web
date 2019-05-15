@@ -21,14 +21,14 @@ namespace VideoWeb.Controllers
         }
 
         [HttpGet("{conferenceId}/tasks")]
-        [SwaggerOperation(OperationId = "GetPendingTasks")]
+        [SwaggerOperation(OperationId = "GetTasks")]
         [ProducesResponseType(typeof(List<TaskResponse>), (int) HttpStatusCode.OK)]
-        public async Task<IActionResult> GetPendingTasks(Guid conferenceId)
+        public async Task<IActionResult> GetTasks(Guid conferenceId)
         {
             try
             {
-                var pendingTasks = await _videoApiClient.GetPendingTasksAsync(conferenceId);
-                return Ok(pendingTasks);
+                var tasks = await _videoApiClient.GetTasksForConferenceAsync(conferenceId);
+                return Ok(tasks);
             }
             catch (VideoApiException e)
             {

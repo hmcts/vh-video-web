@@ -34,7 +34,7 @@
   </div>
 
   <div class="govuk-grid-column-one-half">
-    <iframe id="admin-frame" *ngIf="selectedConferenceUrl" [width]='adminFrameWidth' height="400"
+    <iframe id="admin-frame" *ngIf="selectedConferenceUrl" [width]='adminFrameWidth' height="300"
       [src]='selectedConferenceUrl' allowfullscreen frameborder="0" webkitallowfullscreen mozallowfullscreen>
     </iframe>
     <app-tasks-table *ngIf="!loadingData && hasTasks()" [conference]="selectedHearing.getConference()" [tasks]="tasks"></app-tasks-table>
