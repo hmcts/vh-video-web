@@ -7,23 +7,28 @@ import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ErrorService } from 'src/app/services/error.service';
+import { ClockService as ClockService } from 'src/app/services/clock.service';
+import { Hearing } from '../models/hearing';
 declare var PexRTC: any;
 
 @Component({
   selector: 'app-participant-waiting-room',
   templateUrl: './participant-waiting-room.component.html',
-  styleUrls: ['./participant-waiting-room.component.css']
+  styleUrls: ['./participant-waiting-room.component.scss']
 })
 export class ParticipantWaitingRoomComponent implements OnInit {
 
   loadingData: boolean;
   statusUpdated: boolean;
-  conference: ConferenceResponse;
+  hearing: Hearing;
   participant: ParticipantResponse;
 
   pexipAPI: any;
   stream: any;
   connected: boolean;
+
+  currentTime: Date;
+  hearingStartingAnnounced: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -32,14 +37,47 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     private eventService: EventsService,
     private ngZone: NgZone,
     private adalService: AdalService,
-    private errorService: ErrorService
+    private errorService: ErrorService,
+    private clockService: ClockService
   ) {
     this.loadingData = true;
   }
 
   ngOnInit() {
     this.connected = false;
+    this.hearingStartingAnnounced = false;
+
+    this.subscribeToClock();
     this.getConference();
+  }
+
+  subscribeToClock(): void {
+    this.clockService.getClock().subscribe((time) => {
+      this.currentTime = time;
+      this.checkIfHearingIsStarting();
+    });
+  }
+
+  checkIfHearingIsStarting(): void {
+    if (this.hearing.isStarting() && !this.hearingStartingAnnounced) {
+      this.announceHearingIsAboutToStart();
+    }
+  }
+
+  announceHearingIsAboutToStart(): void {
+    const audio = new Audio();
+    audio.src = '/assets/audio/hearing_starting_soon.mp3';
+    audio.load();
+    audio.loop = true;
+    let currentPlay = 1;
+    audio.addEventListener('playing', () => {
+      currentPlay++;
+      if (currentPlay > 3) {
+        audio.loop = false;
+      }
+    });
+    audio.play();
+    this.hearingStartingAnnounced = true;
   }
 
   getConference(): void {
@@ -47,7 +85,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     this.videoWebService.getConferenceById(conferenceId)
       .subscribe((data: ConferenceResponse) => {
         this.loadingData = false;
-        this.conference = data;
+        this.hearing = new Hearing(data);
         this.participant = data.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
         this.refresh();
         this.setupSubscribers();
@@ -61,24 +99,22 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   }
 
   getConferenceStatusText(): string {
-    switch (this.conference.status) {
-      case ConferenceStatus.Suspended: return 'is suspended';
-      case ConferenceStatus.Paused: return 'is paused';
-      case ConferenceStatus.Closed: return 'is closed';
-      default: return '';
+    if (this.hearing.getConference().status === ConferenceStatus.NotStarted) {
+      if (this.hearing.isStarting()) {
+        return 'is about to begin';
+      } else if (this.hearing.isDelayed()) {
+        return 'is delayed';
+      } else {
+        return '';
+      }
+    } else if (this.hearing.isSuspended()) {
+      return 'is suspended';
+    } else if (this.hearing.isPaused()) {
+      return 'is paused';
+    } else if (this.hearing.isClosed()) {
+      return 'is closed';
     }
-  }
-
-  isClosed(): boolean {
-    return this.conference.status === ConferenceStatus.Closed;
-  }
-
-  isSuspended(): boolean {
-    return this.conference.status === ConferenceStatus.Suspended;
-  }
-
-  isPaused(): boolean {
-    return this.conference.status === ConferenceStatus.Paused;
+    return '';
   }
 
   private setupSubscribers() {
@@ -98,13 +134,13 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   }
 
   handleParticipantStatusChange(message: ParticipantStatusMessage): any {
-    const participant = this.conference.participants.find(p => p.username.toLowerCase() === message.email.toLowerCase());
+    const participant = this.hearing.getConference().participants.find(p => p.username.toLowerCase() === message.email.toLowerCase());
     participant.status = message.status;
     this.refresh();
   }
 
   handleConferenceStatusChange(message: ConferenceStatusMessage) {
-    this.conference.status = message.status;
+    this.hearing.getConference().status = message.status;
     this.refresh();
   }
 
@@ -141,8 +177,8 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   }
 
   call() {
-    const pexipNode = this.conference.pexip_node_uri;
-    const conferenceAlias = this.conference.participant_uri;
+    const pexipNode = this.hearing.getConference().pexip_node_uri;
+    const conferenceAlias = this.hearing.getConference().participant_uri;
     const displayName = this.participant.tiled_display_name;
     this.pexipAPI.makeCall(pexipNode, conferenceAlias, displayName, null);
   }
@@ -152,7 +188,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       return false;
     }
 
-    if (this.conference.status === ConferenceStatus.InSession) {
+    if (this.hearing.isInSession()) {
       return true;
     }
 

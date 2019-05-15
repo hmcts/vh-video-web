@@ -1,0 +1,28 @@
+@import "~govuk-frontend/all";
+
+#incomingFeed {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.govuk-panel {
+  text-align: left;
+}
+
+.hearing-on-time {
+  background-color: govuk-colour("blue");
+  color: govuk-colour("white");
+}
+
+.hearing-near-start {
+  background-color: govuk-colour("black");
+  color: govuk-colour("white");
+}
+
+.hearing-delayed {
+  background-color: govuk-colour("yellow");
+  color: govuk-colour("black");
+}

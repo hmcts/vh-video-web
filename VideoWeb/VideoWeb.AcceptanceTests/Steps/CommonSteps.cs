@@ -49,9 +49,20 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"the (.*) user has progressed to the (.*) page")]
         public void GivenIAmOnThePage(string role, string pageName)
         {
+            Progress(role, pageName, 0);
+        }
+
+        [Given(@"the (.*) user has progressed to the (.*) page with a hearing in (.*) minutes time")]
+        public void GivenIAmOnThePage(string role, string pageName, int minutes)
+        {
+            Progress(role, pageName, minutes);
+        }
+
+        private void Progress(string role, string pageName, int minutes)
+        {
             if (!pageName.Equals("Hearings Page"))
             {
-                _dataSetupSteps.GivenIHaveAHearing();
+                _dataSetupSteps.GivenIHaveAHearing(minutes);
                 _dataSetupSteps.GivenIHaveAConference();
             }
 
@@ -115,9 +126,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _currentPage = currentPage.VhoNextPage(currentPage);
             }
 
-            else
+            if (role.Equals("Individual") || role.Equals("Representative"))
             {
-
                 switch (currentPage.ParticipantJourney)
                 {
                     case ParticipantJourney.Login:
@@ -163,9 +173,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                     default:
                         throw new InvalidOperationException($"Current page was past the intended page: {currentPage}");
                 }
-
                 _currentPage = currentPage.NextPage(currentPage);
-
             }
 
             _browserContext.Retry(() => _commonPages.PageUrl(_currentPage.Url));

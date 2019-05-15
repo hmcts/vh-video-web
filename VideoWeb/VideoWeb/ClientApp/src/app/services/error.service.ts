@@ -25,10 +25,10 @@ export class ErrorService {
   }
 
   goToNotFound() {
-    this.router.navigate([PageUrls.Unauthorised]);
+    this.router.navigate([PageUrls.NotFound]);
   }
 
   goToServiceError() {
-    this.router.navigate([PageUrls.Unauthorised]);
+    this.router.navigate([PageUrls.ServiceError]);
   }
 }

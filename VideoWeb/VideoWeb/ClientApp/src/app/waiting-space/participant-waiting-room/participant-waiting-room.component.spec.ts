@@ -15,6 +15,8 @@ import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { ParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room.component';
 import { ErrorService } from 'src/app/services/error.service';
+import { AnalogueClockStubComponent } from 'src/app/testing/stubs/analogue-clock-stub';
+import { Hearing } from '../models/hearing';
 
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
@@ -22,18 +24,17 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
   let fixture: ComponentFixture<ParticipantWaitingRoomComponent>;
   let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
   let route: ActivatedRoute;
-  let conference: ConferenceResponse;
   let adalService: MockAdalService;
   let eventService: MockEventsService;
 
   beforeEach(() => {
-    conference = new ConferenceTestData().getConferenceDetail();
+    const conference = new ConferenceTestData().getConferenceDetail();
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
     videoWebServiceSpy.getConferenceById.and.returnValue(of(conference));
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [ParticipantWaitingRoomComponent, ParticipantStatusListStubComponent],
+      declarations: [ParticipantWaitingRoomComponent, ParticipantStatusListStubComponent, AnalogueClockStubComponent],
       providers: [
         {
           provide: ActivatedRoute,
@@ -63,100 +64,93 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
   it('should create and display conference details', () => {
     expect(component).toBeTruthy();
     expect(component.loadingData).toBeFalsy();
-    expect(component.conference).toBeDefined();
+    expect(component.hearing.getConference()).toBeDefined();
   });
 
   it('should update conference status', () => {
     const message = eventService.nextHearingStatusMessage;
     component.handleConferenceStatusChange(message);
-    expect(component.conference.status).toBe(message.status);
+    expect(component.hearing.getConference().status).toBe(message.status);
   });
 
   it('should update participant status', () => {
     const message = eventService.nextParticipantStatusMessage;
     component.handleParticipantStatusChange(message);
-    const participant = component.conference.participants.find(x => x.username === message.email);
+    const participant = component.hearing.getConference().participants.find(x => x.username === message.email);
     expect(participant.status).toBe(message.status);
   });
 
   it('should return correct conference status text when suspended', () => {
-    component.conference.status = ConferenceStatus.Suspended;
+    component.hearing.getConference().status = ConferenceStatus.Suspended;
     expect(component.getConferenceStatusText()).toBe('is suspended');
   });
 
   it('should return correct conference status text when paused', () => {
-    component.conference.status = ConferenceStatus.Paused;
+    component.hearing.getConference().status = ConferenceStatus.Paused;
     expect(component.getConferenceStatusText()).toBe('is paused');
   });
 
   it('should return correct conference status text when closed', () => {
-    component.conference.status = ConferenceStatus.Closed;
+    component.hearing.getConference().status = ConferenceStatus.Closed;
     expect(component.getConferenceStatusText()).toBe('is closed');
   });
 
   it('should return correct conference status text when in session', () => {
-    component.conference.status = ConferenceStatus.InSession;
+    component.hearing.getConference().status = ConferenceStatus.InSession;
     expect(component.getConferenceStatusText()).toBe('');
   });
 
   it('should return correct conference status text when not started', () => {
-    component.conference.status = ConferenceStatus.NotStarted;
+    const conference = new ConferenceTestData().getConferenceFuture();
+    component.hearing = new Hearing(conference);
+    component.hearing.getConference().status = ConferenceStatus.NotStarted;
     expect(component.getConferenceStatusText()).toBe('');
   });
 
-  it('should return true when conference is closed', () => {
-    component.conference.status = ConferenceStatus.Closed;
-    expect(component.isClosed()).toBeTruthy();
+  it('should return is about to begin header text', () => {
+    const conference = new ConferenceTestData().getConferenceNow();
+    conference.status = ConferenceStatus.NotStarted;
+    component.hearing = new Hearing(conference);
+    expect(component.getConferenceStatusText()).toBe('is about to begin');
   });
 
-  it('should return false when conference is not closed', () => {
-    component.conference.status = ConferenceStatus.InSession;
-    expect(component.isClosed()).toBeFalsy();
-  });
-
-  it('should return true when conference is paused', () => {
-    component.conference.status = ConferenceStatus.Paused;
-    expect(component.isPaused()).toBeTruthy();
-  });
-
-  it('should return false when conference is not paused', () => {
-    component.conference.status = ConferenceStatus.InSession;
-    expect(component.isPaused()).toBeFalsy();
-  });
-
-  it('should return true when conference is suspended', () => {
-    component.conference.status = ConferenceStatus.Suspended;
-    expect(component.isSuspended()).toBeTruthy();
-  });
-
-  it('should return false when conference is not suspended', () => {
-    component.conference.status = ConferenceStatus.Closed;
-    expect(component.isSuspended()).toBeFalsy();
+  it('should return is delayed header text', () => {
+    const conference = new ConferenceTestData().getConferencePast();
+    conference.status = ConferenceStatus.NotStarted;
+    component.hearing = new Hearing(conference);
+    expect(component.getConferenceStatusText()).toBe('is delayed');
   });
 
   it('should not show video stream when user is not connected to call', () => {
     component.connected = false;
-    expect(component.isSuspended()).toBeFalsy();
+    expect(component.showVideo()).toBeFalsy();
   });
 
   it('should show video stream when conference is in session', () => {
     component.connected = true;
-    component.conference.status = ConferenceStatus.InSession;
+    component.hearing.getConference().status = ConferenceStatus.InSession;
     expect(component.showVideo()).toBeTruthy();
   });
 
   it('should show video stream when participant is in consultation', () => {
     component.connected = true;
-    component.conference.status = ConferenceStatus.Paused;
+    component.hearing.getConference().status = ConferenceStatus.Paused;
     component.participant.status = ParticipantStatus.InConsultation;
     expect(component.showVideo()).toBeTruthy();
   });
 
   it('should not show video stream when hearing is not in session and participant is not in consultation', () => {
     component.connected = true;
-    component.conference.status = ConferenceStatus.Paused;
+    component.hearing.getConference().status = ConferenceStatus.Paused;
     component.participant.status = ParticipantStatus.Available;
     expect(component.showVideo()).toBeFalsy();
+  });
+
+  it('should not announce hearing is starting when already announced', () => {
+    spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => { });
+    component.hearingStartingAnnounced = true;
+    component.checkIfHearingIsStarting();
+    expect(component.announceHearingIsAboutToStart).toHaveBeenCalledTimes(0);
   });
 });
 
@@ -177,7 +171,7 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [ParticipantWaitingRoomComponent, ParticipantStatusListStubComponent],
+      declarations: [ParticipantWaitingRoomComponent, ParticipantStatusListStubComponent, AnalogueClockStubComponent],
       providers: [
         {
           provide: ActivatedRoute,
@@ -208,7 +202,7 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
     fixture.detectChanges();
     expect(component).toBeTruthy();
     expect(component.loadingData).toBeFalsy();
-    expect(component.conference).toBeUndefined();
+    expect(component.hearing).toBeUndefined();
     expect(component.participant).toBeUndefined();
     expect(errorService.handleApiError).toHaveBeenCalled();
   });
