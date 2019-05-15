@@ -15,6 +15,7 @@ import { ConferenceResponse, ConsultationAnswer } from 'src/app/services/clients
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { ErrorService } from 'src/app/services/error.service';
 import { Hearing } from 'src/app/waiting-space/models/hearing';
+import { TasksTableStubComponent } from 'src/app/testing/stubs/task-table-stub';
 
 
 describe('VhoHearingsComponent', () => {
@@ -35,7 +36,7 @@ describe('VhoHearingsComponent', () => {
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [VhoHearingsComponent],
+      declarations: [VhoHearingsComponent, TasksTableStubComponent],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },
@@ -138,7 +139,7 @@ describe('VhoHearingsComponent', () => {
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [VhoHearingsComponent],
+      declarations: [VhoHearingsComponent, TasksTableStubComponent],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },

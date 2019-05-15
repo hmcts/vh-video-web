@@ -5,15 +5,17 @@
 <div *ngIf="!loadingData && hasHearings()" class="govuk-grid-row">
   <div id="list-column" class="govuk-grid-column-one-half">
     <dl id="conferences-list" class="govuk-summary-list">
-      <div class="govuk-summary-list__row" [class.selected-conference]="isCurrentConference(conference)"
+      <div class="govuk-summary-list__row" [ngClass]="{'selected-conference': isCurrentConference(conference)}"
         *ngFor="let conference of conferences" (click)="displayAdminViewForConference(conference)">
         <dd class="govuk-summary-list__value govuk-!-padding-left-4">
           <p class="govuk-!-margin-0 govuk-!-padding-0">{{conference.scheduled_date_time | date:'HH:mm' }}</p>
           <span id="with-hint-hint" class="govuk-hint">
             {{ getDuration(conference.scheduled_duration) }}
           </span>
-          <p *ngIf="conference.no_of_pending_tasks === 1" class="pending-alerts">{{ conference.no_of_pending_tasks }} Alert</p>
-          <p *ngIf="conference.no_of_pending_tasks > 1" class="pending-alerts">{{ conference.no_of_pending_tasks }} Alerts</p>
+          <p *ngIf="conference.no_of_pending_tasks === 1" class="pending-alerts">{{ conference.no_of_pending_tasks }}
+            Alert</p>
+          <p *ngIf="conference.no_of_pending_tasks > 1" class="pending-alerts">{{ conference.no_of_pending_tasks }}
+            Alerts</p>
         </dd>
         <dd class="govuk-summary-list__value">
           <strong>
@@ -35,32 +37,11 @@
     <iframe id="admin-frame" *ngIf="selectedConferenceUrl" [width]='adminFrameWidth' height="400"
       [src]='selectedConferenceUrl' allowfullscreen frameborder="0" webkitallowfullscreen mozallowfullscreen>
     </iframe>
-    <table class="govuk-table" *ngIf="!loadingData && hasTasks()">
-      <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th class="govuk-table__header" scope="col">Timestamp</th>
-          <th class="govuk-table__header" scope="col">Message</th>
-          <th class="govuk-table__header" scope="col">Type</th>
-          <th class="govuk-table__header" scope="col"></th>
-        </tr>
-      </thead>
-      <tbody class="govuk-table__body">
-        <tr *ngFor="let task of tasks" id="tasks-list" class="govuk-table__row">
-          <td class="govuk-table__cell">
-            <p class="govuk-!-margin-0 govuk-!-padding-0">{{task.created | date:'dd/MM/yyyy HH:mm' }}</p>
-          </td>
-          <td class="govuk-table__cell">
-            <p class="govuk-!-margin-0 govuk-!-padding-0">{{ task.body }}</p>
-          </td>
-          <td class="govuk-table__cell">
-            <p class="govuk-!-margin-0 govuk-!-padding-0">{{ task.type }}</p>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <app-tasks-table *ngIf="!loadingData && hasTasks()" [conference]="selectedHearing.getConference()" [tasks]="tasks"></app-tasks-table>
   </div>
 
   <div *ngIf="!loadingData && !hasHearings()">
     <h1 class="govuk-heading-xl">Video hearings</h1>
     <h3 class="govuk-heading-m"> You have no video hearings</h3>
   </div>
+</div>

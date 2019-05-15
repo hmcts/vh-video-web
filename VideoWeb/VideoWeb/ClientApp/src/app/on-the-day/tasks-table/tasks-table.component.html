@@ -1,0 +1,28 @@
+<div class="task-header" [style.width.px]="taskDivWidth">
+    <span class="govuk-!-padding-2 govuk-!-padding-left-4 govuk-heading-s">Alerts for this hearing</span>
+  </div>
+<div id="tasks-list" [style.width.px]="taskDivWidth">
+  <dl class="govuk-summary-list govuk-summary-list--no-border">
+    <div *ngFor="let task of tasks" class="govuk-summary-list__row">
+      <dd class="govuk-summary-list__value task-checkbox-and-time govuk-!-padding-left-4">
+        <div class="govuk-checkboxes">
+          <div class="govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input" type="checkbox">
+            <label class="govuk-label govuk-checkboxes__label govuk-!-padding-left-6" for="waste-1">
+                <p class="govuk-body-s">{{task.created | date:'HH:mm' }}</p>
+            </label>
+          </div>
+        </div>
+      </dd>
+      <dd class="govuk-summary-list__value task-body">
+        <p class="govuk-body pending-alert-text">{{task.body}}</p>
+      </dd>
+      <dd class="govuk-summary-list__value task-origin">
+        <p class="govuk-body-s">{{getOriginEmail(task.origin_id)}}</p>
+      </dd>
+      <dd class="govuk-summary-list__value task-updated">
+        <p class="govuk-body-s">updated details</p>
+      </dd>
+    </div>
+  </dl>
+</div>

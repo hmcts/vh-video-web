@@ -68,7 +68,7 @@ export class VhoHearingsComponent implements OnInit {
   }
 
   hasTasks() {
-    return this.tasks !== undefined && this.tasks.length > 0;
+    return this.selectedHearing !== undefined && this.tasks !== undefined && this.tasks.length > 0;
   }
 
   displayAdminViewForConference(conference: ConferenceForUserResponse) {

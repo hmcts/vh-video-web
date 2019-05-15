@@ -15,6 +15,7 @@ import { CameraCheckComponent } from './camera-check/camera-check.component';
 import { MicrophoneCheckComponent } from './microphone-check/microphone-check.component';
 import { VideoCheckComponent } from './video-check/video-check.component';
 import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone/switch-on-camera-microphone.component';
+import { TasksTableComponent } from './tasks-table/tasks-table.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -34,7 +35,8 @@ import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone
     CameraCheckComponent,
     MicrophoneCheckComponent,
     VideoCheckComponent,
-    SwitchOnCameraMicrophoneComponent
+    SwitchOnCameraMicrophoneComponent,
+    TasksTableComponent
   ],
   exports: [
     DeclarationComponent
