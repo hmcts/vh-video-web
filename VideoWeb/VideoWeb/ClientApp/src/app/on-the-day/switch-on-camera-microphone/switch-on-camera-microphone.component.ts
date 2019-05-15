@@ -33,26 +33,17 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getConference();
+    this.getConferenceId();
     this._navigator = <any>navigator;
   }
 
-  getConference(): void {
-    const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-    this.videoWebService.getConferenceById(conferenceId)
-      .subscribe((data: ConferenceResponse) => {
-        this.loadingData = false;
-        this.conference = data;
-      },
-        (error) => {
-          this.loadingData = false;
-          this.errorService.handleApiError(error);
-        });
+  getConferenceId(): void {
+    this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
   }
 
   requestMedia() {
     const mediaConstraints = {
-      video: { facingMode: 'user' },
+      video: true,
       audio: true
     };
 
@@ -88,6 +79,8 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
 
   goVideoTest() {
     // temporarily point to camera question until video page is implemented
+    console.log(PageUrls.CameraWorking);
+    console.log(this.conferenceId);
     this.router.navigate([PageUrls.CameraWorking, this.conferenceId]);
   }
 
@@ -96,7 +89,7 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
     this.videoWebService.raiseMediaEvent(this.conference.id,
       new AddMediaEventRequest({participant_id: participant.id.toString()})).subscribe(x => { },
         (error) => {
-          console.log(error);
+          console.error(error);
         });
   }
 }

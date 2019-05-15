@@ -78,4 +78,10 @@
     <Folder Include="Properties" />
   </ItemGroup>
 
+  <ItemGroup>
+    <SpecFlowFeatureFiles Update="Features\VideoHearingOfficerAlerts.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+    </SpecFlowFeatureFiles>
+  </ItemGroup>
+
 </Project>

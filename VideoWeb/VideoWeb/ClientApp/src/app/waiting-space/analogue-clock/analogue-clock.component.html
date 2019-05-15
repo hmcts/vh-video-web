@@ -1,0 +1,15 @@
+<div id="liveclock" class="outer_face" style="display: block; margin: auto"
+  [ngClass]="{'ontime': hearing.isOnTime(), 'isstarting': hearing.isStarting(), 'delayed': hearing.isDelayed()}">
+
+  <div class="marker oneseven" [ngClass]="hearing.isDelayed() ? 'black' : 'white'"></div>
+  <div class="marker twoeight" [ngClass]="hearing.isDelayed() ? 'black' : 'white'"></div>
+  <div class="marker fourten" [ngClass]="hearing.isDelayed() ? 'black' : 'white'"></div>
+  <div class="marker fiveeleven" [ngClass]="hearing.isDelayed() ? 'black' : 'white'"></div>
+
+  <div class="inner_face"
+    [ngClass]="{'ontime': hearing.isOnTime(), 'isstarting': hearing.isStarting(), 'delayed': hearing.isDelayed()}">
+    <div id="hour-hand" class="hand hour" [ngClass]="hearing.isDelayed() ? 'black' : 'white'"></div>
+    <div id="minute-hand" class="hand minute" [ngClass]="hearing.isDelayed() ? 'black' : 'white'"></div>
+    <div id="second-hand" class="hand second" [ngClass]="hearing.isDelayed() ? 'black' : 'white'"></div>
+  </div>
+</div>
