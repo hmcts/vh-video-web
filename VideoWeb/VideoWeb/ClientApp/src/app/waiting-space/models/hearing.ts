@@ -53,6 +53,10 @@ export class Hearing {
         return now.isAfter(scheduled) && this.conference.status === ConferenceStatus.NotStarted;
     }
 
+    isNotStarted(): boolean {
+        return this.conference.status === ConferenceStatus.NotStarted;
+    }
+
     isClosed(): boolean {
         return this.conference.status === ConferenceStatus.Closed;
     }

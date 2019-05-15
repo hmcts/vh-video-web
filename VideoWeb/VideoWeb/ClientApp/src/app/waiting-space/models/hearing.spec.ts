@@ -87,6 +87,20 @@ describe('Hearing', () => {
     expect(hearing.isStarting()).toBeFalsy();
   });
 
+  it('should return true when conference has not started', () => {
+    const conference = new ConferenceTestData().getConferenceNow();
+    conference.status = ConferenceStatus.NotStarted;
+    const hearing = new Hearing(conference);
+    expect(hearing.isNotStarted()).toBeTruthy();
+  });
+
+  it('should return false when conference has started', () => {
+    const conference = new ConferenceTestData().getConferenceNow();
+    conference.status = ConferenceStatus.InSession;
+    const hearing = new Hearing(conference);
+    expect(hearing.isNotStarted()).toBeFalsy();
+  });
+
   it('should return true when conference is closed', () => {
     const conference = new ConferenceTestData().getConferenceNow();
     conference.status = ConferenceStatus.Closed;
