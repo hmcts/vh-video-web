@@ -4,7 +4,6 @@ Feature: Hearings List
 	I would like to login and access the hearing details
 	So that I can have an overview of all the scheduled hearings I am involved in
 
-@smoketest
 Scenario: Individual has 1 or more hearings
 	Given I have a hearing and a conference
 	And the login page is open
@@ -46,7 +45,6 @@ Scenario: Representative has a hearing more than 30 minutes in the future
 	When the user clicks on the Start Hearing button
 	Then the user is on the Equipment Check page
 
-@smoketest
 Scenario: Individual has no hearings
 	Given the login page is open
 	When the Individual with no hearings attempts to login with valid credentials
@@ -54,7 +52,6 @@ Scenario: Individual has no hearings
 	And a warning message appears indicating the user has no hearings scheduled
 	And contact us details are available
 
-@smoketest
 Scenario: Representative has no hearings
 	Given the login page is open
 	When the Representative with no hearings attempts to login with valid credentials
@@ -86,7 +83,7 @@ Scenario: Video Hearings Officer has no hearings
 	Then the user is on the Hearings List page
 	And a warning message appears indicating the user has no hearings scheduled
 
-@VIH-4156
+@VIH-4156 @smoketest
 Scenario: Video Hearings Officer has 1 or more hearings
 	Given I have a hearing and a conference
 	And the login page is open
