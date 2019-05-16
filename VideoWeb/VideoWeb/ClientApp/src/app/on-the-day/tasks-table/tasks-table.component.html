@@ -20,7 +20,7 @@
         </p>
       </dd>
       <dd class="govuk-summary-list__value task-origin">
-        <p class="govuk-body-s" [ngClass]="{'task-completed': task.status === 'Done'}">{{getOriginName(task.origin_id)}}
+        <p class="govuk-body-s" [ngClass]="{'task-completed': task.status === 'Done'}">{{getOriginName(task)}}
         </p>
       </dd>
       <dd class="govuk-summary-list__value task-updated">

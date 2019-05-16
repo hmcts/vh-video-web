@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, HostListener } from '@angular/core';
-import { TaskResponse, ConferenceResponse, ApiClient, TaskStatus } from 'src/app/services/clients/api-client';
+import { TaskResponse, ConferenceResponse, TaskStatus, TaskType } from 'src/app/services/clients/api-client';
+import { VideoWebService } from 'src/app/services/video-web.service';
 
 @Component({
   selector: 'app-tasks-table',
@@ -17,7 +18,7 @@ export class TasksTableComponent implements OnInit {
   onResize(event) {
     this.updateDivWidthForTasks();
   }
-  constructor(private apiClient: ApiClient) { }
+  constructor(private videoWebService: VideoWebService) { }
 
   ngOnInit() {
     this.updateDivWidthForTasks();
@@ -31,12 +32,16 @@ export class TasksTableComponent implements OnInit {
     this.taskDivWidth = frameWidth;
   }
 
-  getOriginName(participantId: string): string {
-    return this.conference.participants.find(x => x.id === participantId).name;
+  getOriginName(task: TaskResponse): string {
+    if (task.type !== TaskType.Hearing) {
+      return this.conference.participants.find(x => x.id === task.origin_id).name;
+    } else {
+      return '';
+    }
   }
 
   completeTask(task: TaskResponse) {
-    this.apiClient.completeTask(this.conference.id, task.id.valueOf()).toPromise()
+    this.videoWebService.completeTask(this.conference.id, task.id).toPromise()
       .then((updatedTask: TaskResponse) => {
         this.updateTask(updatedTask);
       });
@@ -44,9 +49,7 @@ export class TasksTableComponent implements OnInit {
 
   updateTask(updatedTask: TaskResponse) {
     const taskToUpdate = this.tasks.find(x => x.id === updatedTask.id);
-    console.log(taskToUpdate);
-    taskToUpdate.status = updatedTask.status;
-    taskToUpdate.updated = updatedTask.updated;
-    taskToUpdate.updated_by = updatedTask.updated_by;
+    const index = this.tasks.indexOf(taskToUpdate);
+    this.tasks[index] = updatedTask;
   }
 }

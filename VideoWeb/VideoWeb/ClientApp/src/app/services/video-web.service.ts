@@ -31,4 +31,7 @@ export class VideoWebService {
     return this.apiClient.getTasks(conferenceId);
   }
 
+  completeTask(conferenceId: string, taskId: number): Observable<TaskResponse> {
+    return this.apiClient.completeTask(conferenceId, taskId);
+  }
 }
