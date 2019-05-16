@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, HostListener } from '@angular/core';
-import { TaskResponse, ConferenceResponse } from 'src/app/services/clients/api-client';
+import { TaskResponse, ConferenceResponse, ApiClient, TaskStatus } from 'src/app/services/clients/api-client';
 
 @Component({
   selector: 'app-tasks-table',
@@ -17,7 +17,7 @@ export class TasksTableComponent implements OnInit {
   onResize(event) {
     this.updateDivWidthForTasks();
   }
-  constructor() { }
+  constructor(private apiClient: ApiClient) { }
 
   ngOnInit() {
     this.updateDivWidthForTasks();
@@ -33,5 +33,20 @@ export class TasksTableComponent implements OnInit {
 
   getOriginName(participantId: string): string {
     return this.conference.participants.find(x => x.id === participantId).name;
+  }
+
+  completeTask(task: TaskResponse) {
+    this.apiClient.completeTask(this.conference.id, task.id.valueOf()).toPromise()
+      .then((updatedTask: TaskResponse) => {
+        this.updateTask(updatedTask);
+      });
+  }
+
+  updateTask(updatedTask: TaskResponse) {
+    const taskToUpdate = this.tasks.find(x => x.id === updatedTask.id);
+    console.log(taskToUpdate);
+    taskToUpdate.status = updatedTask.status;
+    taskToUpdate.updated = updatedTask.updated;
+    taskToUpdate.updated_by = updatedTask.updated_by;
   }
 }

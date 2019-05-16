@@ -8,7 +8,7 @@
         <div class="govuk-checkboxes">
           <div class="govuk-checkboxes__item">
             <input class="govuk-checkboxes__input" type="checkbox" [checked]="task.status === 'Done'"
-              [disabled]="task.status === 'Done'">
+              [disabled]="task.status === 'Done'" (click)="completeTask(task)">
             <label class="govuk-label govuk-checkboxes__label govuk-!-padding-left-6" for="waste-1">
               <p class="govuk-body-s">{{task.created | date:'HH:mm' }}</p>
             </label>
