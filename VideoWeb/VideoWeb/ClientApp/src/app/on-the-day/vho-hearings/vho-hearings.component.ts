@@ -23,6 +23,7 @@ export class VhoHearingsComponent implements OnInit {
   selectedHearing: Hearing;
   loadingData: boolean;
   adminFrameWidth: number;
+  adminFrameHeight: number;
   interval: NodeJS.Timer;
   pendingTransferRequests: ConsultationMessage[] = [];
   tasks: TaskResponse[];
@@ -42,6 +43,7 @@ export class VhoHearingsComponent implements OnInit {
   ) {
     this.loadingData = true;
     this.adminFrameWidth = 0;
+    this.adminFrameHeight = this.getHeightForFrame();
   }
 
   ngOnInit() {
@@ -138,6 +140,14 @@ export class VhoHearingsComponent implements OnInit {
     return frameWidth;
   }
 
+  getHeightForFrame(): number {
+    if (this.hasTasks()) {
+      return 300;
+    } else {
+      return 600;
+    }
+  }
+
   getDuration(duration: number): string {
     const h = Math.floor(duration / 60);
     const m = duration % 60;
@@ -223,6 +233,7 @@ export class VhoHearingsComponent implements OnInit {
     this.videoWebService.getTasksForConference(conferenceId)
       .subscribe((data: TaskResponse[]) => {
         this.tasks = data;
+        this.adminFrameHeight = this.getHeightForFrame();
       },
         (error) => {
           this.errorService.handleApiError(error);
