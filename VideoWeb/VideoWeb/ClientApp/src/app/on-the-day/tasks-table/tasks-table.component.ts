@@ -1,6 +1,7 @@
-import { Component, OnInit, Input, HostListener } from '@angular/core';
+import { Component, OnInit, Input, HostListener, Output, EventEmitter } from '@angular/core';
 import { TaskResponse, ConferenceResponse, TaskStatus, TaskType } from 'src/app/services/clients/api-client';
 import { VideoWebService } from 'src/app/services/video-web.service';
+import { TaskCompleted } from '../models/task-completed';
 
 @Component({
   selector: 'app-tasks-table',
@@ -13,6 +14,7 @@ export class TasksTableComponent implements OnInit {
 
   @Input() conference: ConferenceResponse;
   @Input() tasks: TaskResponse[];
+  @Output() taskCompleted = new EventEmitter<TaskCompleted>();
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
@@ -44,6 +46,8 @@ export class TasksTableComponent implements OnInit {
     this.videoWebService.completeTask(this.conference.id, task.id).toPromise()
       .then((updatedTask: TaskResponse) => {
         this.updateTask(updatedTask);
+        const pendingTasks = this.tasks.filter(x => x.status === TaskStatus.ToDo).length;
+        this.taskCompleted.emit(new TaskCompleted(this.conference.id, pendingTasks));
       });
   }
 

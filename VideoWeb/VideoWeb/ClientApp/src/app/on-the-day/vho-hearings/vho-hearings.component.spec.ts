@@ -16,6 +16,7 @@ import { ConsultationMessage } from 'src/app/services/models/consultation-messag
 import { ErrorService } from 'src/app/services/error.service';
 import { Hearing } from 'src/app/waiting-space/models/hearing';
 import { TasksTableStubComponent } from 'src/app/testing/stubs/task-table-stub';
+import { TaskCompleted } from '../models/task-completed';
 
 
 describe('VhoHearingsComponent', () => {
@@ -121,6 +122,15 @@ describe('VhoHearingsComponent', () => {
     component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
     component.getTasksForConference(currentConference.id);
     expect(component.tasks.length > 0).toBeTruthy();
+  });
+
+  it('should update number of pending tasks on task completed', () => {
+    const currentConference = component.conferences[0];
+    const initPendingTasks = 5;
+    currentConference.no_of_pending_tasks = initPendingTasks;
+
+    component.onTaskCompleted(new TaskCompleted(currentConference.id, 3));
+    expect(component.conferences[0].no_of_pending_tasks).toBeLessThan(initPendingTasks);
   });
 
 });

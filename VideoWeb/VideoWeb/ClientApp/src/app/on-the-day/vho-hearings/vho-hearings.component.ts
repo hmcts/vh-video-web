@@ -10,6 +10,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { Hearing } from 'src/app/waiting-space/models/hearing';
+import { TaskCompleted } from '../models/task-completed';
 
 @Component({
   selector: 'app-vho-hearings',
@@ -162,6 +163,11 @@ export class VhoHearingsComponent implements OnInit {
 
   isCurrentConference(conference: ConferenceForUserResponse): boolean {
     return this.selectedHearing != null && this.selectedHearing.getConference().id === conference.id;
+  }
+
+  onTaskCompleted(taskCompleted: TaskCompleted) {
+    const conference = this.conferences.find(x => x.id === taskCompleted.conferenceId);
+    conference.no_of_pending_tasks = taskCompleted.pendingTasks;
   }
 
   private sanitiseAndLoadIframe() {
