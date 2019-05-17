@@ -17,7 +17,7 @@ import { ErrorService } from 'src/app/services/error.service';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { TasksTableStubComponent } from 'src/app/testing/stubs/task-table-stub';
 import { TaskCompleted } from '../models/task-completed';
-import { VhoHearingListCStubComponent as VhoHearingListStubComponent } from 'src/app/testing/stubs/vho-hearing-list-stub';
+import { VhoHearingListStubComponent as VhoHearingListStubComponent } from 'src/app/testing/stubs/vho-hearing-list-stub';
 
 
 describe('VhoHearingsComponent', () => {
