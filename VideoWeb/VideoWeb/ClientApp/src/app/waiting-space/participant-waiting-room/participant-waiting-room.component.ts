@@ -8,7 +8,7 @@ import { VideoWebService } from 'src/app/services/video-web.service';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ErrorService } from 'src/app/services/error.service';
 import { ClockService as ClockService } from 'src/app/services/clock.service';
-import { Hearing } from '../models/hearing';
+import { Hearing } from '../../shared/models/hearing';
 declare var PexRTC: any;
 
 @Component({

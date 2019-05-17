@@ -9,7 +9,7 @@ import { HelpMessage } from 'src/app/services/models/help-message';
 import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
-import { Hearing } from 'src/app/waiting-space/models/hearing';
+import { Hearing } from 'src/app/shared/models/hearing';
 import { TaskCompleted } from '../models/task-completed';
 
 @Component({
@@ -74,7 +74,7 @@ export class VhoHearingsComponent implements OnInit {
     return this.selectedHearing !== undefined && this.tasks !== undefined && this.tasks.length > 0;
   }
 
-  displayAdminViewForConference(conference: ConferenceForUserResponse) {
+  onConferenceSelected(conference: ConferenceForUserResponse) {
     if (!this.isCurrentConference(conference)) {
       this.videoWebService.getConferenceById(conference.id)
         .subscribe((data: ConferenceResponse) => {
@@ -84,53 +84,12 @@ export class VhoHearingsComponent implements OnInit {
           (error) => {
             this.errorService.handleApiError(error);
           });
-
       this.getTasksForConference(conference.id);
     }
   }
 
-  isSuspended(conference: ConferenceResponse): boolean {
-    return conference.status === ConferenceStatus.Suspended;
-  }
-
-  isOnTime(conference: ConferenceResponse): boolean {
-    return new Hearing(conference).isOnTime();
-  }
-
-  isDelayed(conference: ConferenceResponse): boolean {
-    return new Hearing(conference).isDelayed();
-  }
-
-  isPaused(conference: ConferenceResponse): boolean {
-    return new Hearing(conference).isPaused();
-  }
-
-  isInSession(conference: ConferenceResponse): boolean {
-    return new Hearing(conference).isInSession();
-  }
-
-  isClosed(conference: ConferenceResponse): boolean {
-    return new Hearing(conference).isClosed();
-  }
-
-  getConferenceStatusText(conference: ConferenceResponse): string {
-    const hearing = new Hearing(conference);
-    if (hearing.getConference().status === ConferenceStatus.NotStarted) {
-      if (hearing.isDelayed()) {
-        return 'Delayed';
-      } else {
-        return 'Ready';
-      }
-    } else if (hearing.isSuspended()) {
-      return 'Suspended';
-    } else if (hearing.isPaused()) {
-      return 'Paused';
-    } else if (hearing.isClosed()) {
-      return 'Closed';
-    } else if (hearing.isInSession()) {
-      return 'In Session';
-    }
-    return '';
+  isCurrentConference(conference: ConferenceForUserResponse): boolean {
+    return this.selectedHearing != null && this.selectedHearing.getConference().id === conference.id;
   }
 
   getWidthForFrame(): number {
@@ -147,22 +106,6 @@ export class VhoHearingsComponent implements OnInit {
     } else {
       return 600;
     }
-  }
-
-  getDuration(duration: number): string {
-    const h = Math.floor(duration / 60);
-    const m = duration % 60;
-    const hours = h < 1 ? `${h} hours` : `${h} hour`;
-    const minutes = `${m} minutes`;
-    if (h > 0) {
-      return `${hours} and ${minutes}`;
-    } else {
-      return `${minutes}`;
-    }
-  }
-
-  isCurrentConference(conference: ConferenceForUserResponse): boolean {
-    return this.selectedHearing != null && this.selectedHearing.getConference().id === conference.id;
   }
 
   onTaskCompleted(taskCompleted: TaskCompleted) {

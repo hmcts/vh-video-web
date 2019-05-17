@@ -27,6 +27,19 @@ export class Hearing {
         return endTime;
     }
 
+    getDurationAsText(): string {
+        const duration = this.conference.scheduled_duration;
+        const h = Math.floor(duration / 60);
+        const m = duration % 60;
+        const hours = h < 1 ? `${h} hours` : `${h} hour`;
+        const minutes = `${m} minutes`;
+        if (h > 0) {
+          return `${hours} and ${minutes}`;
+        } else {
+          return `${minutes}`;
+        }
+    }
+
     isOnTime(): boolean {
         const now = moment.utc();
         let scheduled = moment(this.conference.scheduled_date_time);
