@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using Testing.Common.Helpers;
+using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
 using VideoWeb.Services.Video;
 
