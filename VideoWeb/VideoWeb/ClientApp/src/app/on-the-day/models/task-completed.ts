@@ -1,6 +1,6 @@
 export class TaskCompleted {
 
-    constructor(conferenceId: string, pendingTasks: number){
+    constructor(conferenceId: string, pendingTasks: number) {
         this.conferenceId = conferenceId;
         this.pendingTasks = pendingTasks;
     }
