@@ -28,7 +28,11 @@ namespace VideoWeb.AcceptanceTests.Pages
             By.XPath($"//p[contains(text(),'{caseNumber}')]/../../..//p[contains(text(),':')]");
         public By VideoHearingsOfficerListedFor(string caseNumber) =>
             By.XPath($"//p[contains(text(),'{caseNumber}')]/../../..//span[contains(text(),'and')]");
-
+        public By VideoHearingsOfficerNumberofAlerts(string caseNumber) =>
+            By.XPath($"//p[contains(text(),'{caseNumber}')]/../../..//p[contains(text(),'Alert')]");
+        public By VideoHearingsOfficerAlertType(string caseNumber) =>
+            By.XPath($"//p[contains(text(),'{caseNumber}')]/../..//span");
+        
         public By VideoHearingsOfficerSelectHearingButton(string caseNumber) =>
             By.XPath($"//p[contains(text(),'{caseNumber}')]/../..//span");
 

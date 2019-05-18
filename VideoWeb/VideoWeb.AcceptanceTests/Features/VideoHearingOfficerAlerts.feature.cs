@@ -85,7 +85,91 @@ this.ScenarioInitialize(scenarioInfo);
 #line 9
  testRunner.When("a participant has chosen to block user media", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 10
- testRunner.Then("the Video Hearings Officer user should see an alert", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the Video Hearings Officer user should see a blocked user media alert", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 11
+ testRunner.When("the user selects the alert", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 12
+ testRunner.Then("the checkbox is no longer enabled", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 13
+ testRunner.And("the alert should be updated with the details of the user that actioned the alert", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Video Hearings Officer receieves suspended alert")]
+        [NUnit.Framework.CategoryAttribute("VIH-4419")]
+        public virtual void VideoHearingsOfficerReceievesSuspendedAlert()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Video Hearings Officer receieves suspended alert", null, new string[] {
+                        "VIH-4419"});
+#line 16
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 17
+ testRunner.Given("the Video Hearings Officer user has progressed to the Admin Panel page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 18
+ testRunner.When("the judge has disconnected from the hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 19
+ testRunner.Then("the Video Hearings Officer user should see a Suspended alert", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 20
+ testRunner.When("the user selects the alert", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 21
+ testRunner.Then("the checkbox is no longer enabled", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 22
+ testRunner.And("the alert should be updated with the details of the user that actioned the alert", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Video Hearings Officer receieves disconnected alert")]
+        [NUnit.Framework.CategoryAttribute("VIH-1630")]
+        public virtual void VideoHearingsOfficerReceievesDisconnectedAlert()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Video Hearings Officer receieves disconnected alert", null, new string[] {
+                        "VIH-1630"});
+#line 25
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 26
+ testRunner.Given("the Video Hearings Officer user has progressed to the Admin Panel page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 27
+ testRunner.When("a participant has disconnected from the hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 28
+ testRunner.Then("the Video Hearings Officer user should see a Disconnected alert", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 29
+ testRunner.When("the user selects the alert", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 30
+ testRunner.Then("the checkbox is no longer enabled", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 31
+ testRunner.And("the alert should be updated with the details of the user that actioned the alert", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Video Hearings Officer receieves failed self test alert")]
+        [NUnit.Framework.CategoryAttribute("VIH-1630")]
+        public virtual void VideoHearingsOfficerReceievesFailedSelfTestAlert()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Video Hearings Officer receieves failed self test alert", null, new string[] {
+                        "VIH-1630"});
+#line 34
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 35
+ testRunner.Given("the Video Hearings Officer user has progressed to the Admin Panel page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 36
+ testRunner.When("a participant has failed the self-test", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 37
+ testRunner.Then("the Video Hearings Officer user should see a failed self test alert", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 38
+ testRunner.When("the user selects the alert", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 39
+ testRunner.Then("the checkbox is no longer enabled", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 40
+ testRunner.And("the alert should be updated with the details of the user that actioned the alert", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
         }

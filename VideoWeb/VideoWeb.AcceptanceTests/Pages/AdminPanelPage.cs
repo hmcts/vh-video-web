@@ -7,9 +7,11 @@ namespace VideoWeb.AcceptanceTests.Pages
         public AdminPanelPage()
         {
         }
-     
-        public By AlertTimestamp => CommonLocators.TableCellContainingText(":");
-        public By AlertMessage(string displayname) => CommonLocators.TableCellContainingText(displayname);
-        public By AlertType(string role) => CommonLocators.TableCellContainingText(role);
+
+        public By AlertCheckbox => By.XPath("//div[@id='tasks-list']//input");
+        public By AlertTimestamp => CommonLocators.AlertCellText(":");
+        public By AlertMessage(string text) => CommonLocators.AlertCellText(text);
+        public By CompletedByTimestamp => By.XPath("//div[@id='tasks-list']//dd/p[contains(text(),':')]");
+        public By CompletedByUser => By.XPath("//div[@id='tasks-list']//dd/p[contains(text(),'@')]");
     }
 }
