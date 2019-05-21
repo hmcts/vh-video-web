@@ -71,11 +71,11 @@ namespace VideoWeb.AcceptanceTests.Features
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("Video Hearings Officer receieves blocked media alert")]
+        [NUnit.Framework.DescriptionAttribute("Video Hearings Officer receieves media blocked alert")]
         [NUnit.Framework.CategoryAttribute("VIH-4417")]
-        public virtual void VideoHearingsOfficerReceievesBlockedMediaAlert()
+        public virtual void VideoHearingsOfficerReceievesMediaBlockedAlert()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Video Hearings Officer receieves blocked media alert", null, new string[] {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Video Hearings Officer receieves media blocked alert", null, new string[] {
                         "VIH-4417"});
 #line 7
 this.ScenarioInitialize(scenarioInfo);
@@ -85,7 +85,7 @@ this.ScenarioInitialize(scenarioInfo);
 #line 9
  testRunner.When("a participant has chosen to block user media", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 10
- testRunner.Then("the Video Hearings Officer user should see a blocked user media alert", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the Video Hearings Officer user should see a Media blocked alert", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 11
  testRunner.When("the user selects the alert", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 12

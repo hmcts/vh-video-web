@@ -4,10 +4,10 @@
 	So that I can have an administrate the hearings I am involved in
 
 @VIH-4417
-Scenario: Video Hearings Officer receieves blocked media alert
+Scenario: Video Hearings Officer receieves media blocked alert
 	Given the Video Hearings Officer user has progressed to the Admin Panel page
 	When a participant has chosen to block user media
-	Then the Video Hearings Officer user should see a blocked user media alert
+	Then the Video Hearings Officer user should see a Media blocked alert
 	When the user selects the alert
 	Then the checkbox is no longer enabled
 	And the alert should be updated with the details of the user that actioned the alert

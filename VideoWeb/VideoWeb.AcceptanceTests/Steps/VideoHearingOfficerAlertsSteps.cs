@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using FizzWare.NBuilder;
 using FluentAssertions;
+using RestSharp.Extensions;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders;
 using Testing.Common.Helpers;
@@ -82,15 +83,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserContext.NgDriver
                 .WaitUntilElementVisible(
                     _hearingListPage.VideoHearingsOfficerNumberofAlerts(_context.Hearing.Cases.First().Number))
-                .Displayed.Should().BeTrue();
+                .Text.Should().Be("1 Alert");
 
-            if (alertType.Equals("Suspended"))
-            {
-                _browserContext.NgDriver
-                    .WaitUntilElementVisible(
-                        _hearingListPage.VideoHearingsOfficerAlertType(_context.Hearing.Cases.First().Number))
-                    .Text.Should().Be(alertType);
-            }
+            _browserContext.NgDriver
+                .WaitUntilElementVisible(
+                    _hearingListPage.VideoHearingsOfficerAlertType(_context.Hearing.Cases.First().Number))
+                .Text.Should().Be(alertType.Equals("Suspended") ? alertType : "Ready");
 
             _browserContext.NgDriver
                 .WaitUntilElementVisible(
@@ -103,8 +101,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserContext.NgDriver.WaitUntilElementVisible(_adminPanelPage.AlertTimestamp).Text
                 .Should().Be(
                     $"{_scenarioContext.Get<DateTime>(AlertTime).ToString(DateFormats.AlertMessageTimestamp)}");
-            _browserContext.NgDriver.WaitUntilElementVisible(_adminPanelPage.AlertMessage(alertType.ToLower())).Text.ToLower()
-                .Should().Contain(alertType.ToLower());             
+            _browserContext.NgDriver.WaitUntilElementVisible(_adminPanelPage.AlertMessage(alertType)).Text.ToLower()
+                .Should().Contain(alertType.ToLower());
+
+            if (alertType.Equals("Blocked media"))
+            {
+                _browserContext.NgDriver.WaitUntilElementExists(_adminPanelPage.AlertBy(_scenarioContext.Get<ParticipantDetailsResponse>(Participant).Id.ToString())).Displayed.Should().BeTrue();
+            }
         }
 
         [Then(@"the checkbox is no longer enabled")]
