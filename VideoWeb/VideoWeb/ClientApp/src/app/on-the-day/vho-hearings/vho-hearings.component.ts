@@ -9,6 +9,8 @@ import { HelpMessage } from 'src/app/services/models/help-message';
 import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
+import { Hearing } from 'src/app/shared/models/hearing';
+import { TaskCompleted } from '../models/task-completed';
 
 @Component({
   selector: 'app-vho-hearings',
@@ -19,9 +21,10 @@ export class VhoHearingsComponent implements OnInit {
 
   selectedConferenceUrl: SafeResourceUrl;
   conferences: ConferenceForUserResponse[];
-  selectedConference: ConferenceResponse;
+  selectedHearing: Hearing;
   loadingData: boolean;
   adminFrameWidth: number;
+  adminFrameHeight: number;
   interval: NodeJS.Timer;
   pendingTransferRequests: ConsultationMessage[] = [];
   tasks: TaskResponse[];
@@ -41,6 +44,7 @@ export class VhoHearingsComponent implements OnInit {
   ) {
     this.loadingData = true;
     this.adminFrameWidth = 0;
+    this.adminFrameHeight = this.getHeightForFrame();
   }
 
   ngOnInit() {
@@ -55,6 +59,9 @@ export class VhoHearingsComponent implements OnInit {
     this.videoWebService.getConferencesForUser().subscribe((data: ConferenceForUserResponse[]) => {
       this.loadingData = false;
       this.conferences = data;
+      if (this.selectedHearing) {
+        this.getTasksForConference(this.selectedHearing.getConference().id);
+      }
     },
       (error) => {
         this.loadingData = false;
@@ -67,26 +74,25 @@ export class VhoHearingsComponent implements OnInit {
   }
 
   hasTasks() {
-    return this.tasks !== undefined && this.tasks.length > 0;
+    return this.selectedHearing !== undefined && this.tasks !== undefined && this.tasks.length > 0;
   }
 
-  displayAdminViewForConference(conference: ConferenceForUserResponse) {
+  onConferenceSelected(conference: ConferenceForUserResponse) {
     if (!this.isCurrentConference(conference)) {
       this.videoWebService.getConferenceById(conference.id)
         .subscribe((data: ConferenceResponse) => {
-          this.selectedConference = data;
+          this.selectedHearing = new Hearing(data);
           this.sanitiseAndLoadIframe();
         },
           (error) => {
             this.errorService.handleApiError(error);
           });
-
-          this.getTasksForConference(conference.id);
+      this.getTasksForConference(conference.id);
     }
   }
 
-  isSuspended(conference: ConferenceResponse): boolean {
-    return conference.status === ConferenceStatus.Suspended;
+  isCurrentConference(conference: ConferenceForUserResponse): boolean {
+    return this.selectedHearing != null && this.selectedHearing.getConference().id === conference.id;
   }
 
   getWidthForFrame(): number {
@@ -97,24 +103,21 @@ export class VhoHearingsComponent implements OnInit {
     return frameWidth;
   }
 
-  getDuration(duration: number): string {
-    const h = Math.floor(duration / 60);
-    const m = duration % 60;
-    const hours = h < 1 ? `${h} hours` : `${h} hour`;
-    const minutes = `${m} minutes`;
-    if (h > 0) {
-      return `${hours} and ${minutes}`;
+  getHeightForFrame(): number {
+    if (this.hasTasks()) {
+      return 300;
     } else {
-      return `${minutes}`;
+      return 600;
     }
   }
 
-  isCurrentConference(conference: ConferenceForUserResponse): boolean {
-    return this.selectedConference != null && this.selectedConference.id === conference.id;
+  onTaskCompleted(taskCompleted: TaskCompleted) {
+    const conference = this.conferences.find(x => x.id === taskCompleted.conferenceId);
+    conference.no_of_pending_tasks = taskCompleted.pendingTasks;
   }
 
   private sanitiseAndLoadIframe() {
-    const adminUri = this.selectedConference.admin_i_frame_uri;
+    const adminUri = this.selectedHearing.getConference().admin_i_frame_uri;
     this.adminFrameWidth = this.getWidthForFrame();
     this.selectedConferenceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
       adminUri
@@ -180,12 +183,13 @@ export class VhoHearingsComponent implements OnInit {
 
   getTasksForConference(conferenceId: string) {
     this.videoWebService.getTasksForConference(conferenceId)
-    .subscribe((data: TaskResponse[]) => {
-      this.tasks = data;
-    },
-      (error) => {
-        this.errorService.handleApiError(error);
-      });
+      .subscribe((data: TaskResponse[]) => {
+        this.tasks = data;
+        this.adminFrameHeight = this.getHeightForFrame();
+      },
+        (error) => {
+          this.errorService.handleApiError(error);
+        });
 
   }
 }

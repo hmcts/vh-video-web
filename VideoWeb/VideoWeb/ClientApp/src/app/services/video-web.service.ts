@@ -28,7 +28,10 @@ export class VideoWebService {
   }
 
   getTasksForConference(conferenceId: string): Observable<TaskResponse[]> {
-    return this.apiClient.getPendingTasks(conferenceId);
+    return this.apiClient.getTasks(conferenceId);
   }
 
+  completeTask(conferenceId: string, taskId: number): Observable<TaskResponse> {
+    return this.apiClient.completeTask(conferenceId, taskId);
+  }
 }

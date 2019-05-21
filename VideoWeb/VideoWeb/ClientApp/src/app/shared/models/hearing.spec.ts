@@ -142,4 +142,28 @@ describe('Hearing', () => {
     const hearing = new Hearing(conference);
     expect(hearing.isSuspended()).toBeFalsy();
   });
+
+  it('should return hour and minutes', () => {
+    const conference = new ConferenceTestData().getConferenceNow();
+    conference.scheduled_duration = 90;
+    const hearing = new Hearing(conference);
+    const result = hearing.getDurationAsText();
+    expect(result).toBe('1 hour and 30 minutes');
+  });
+
+  it('should return hours and minutes', () => {
+    const conference = new ConferenceTestData().getConferenceNow();
+    conference.scheduled_duration = 150;
+    const hearing = new Hearing(conference);
+    const result = hearing.getDurationAsText();
+    expect(result).toBe('2 hour and 30 minutes');
+  });
+
+  it('should return only minutes', () => {
+    const conference = new ConferenceTestData().getConferenceNow();
+    conference.scheduled_duration = 25;
+    const hearing = new Hearing(conference);
+    const result = hearing.getDurationAsText();
+    expect(result).toBe('25 minutes');
+  });
 });

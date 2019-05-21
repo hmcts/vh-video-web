@@ -6,6 +6,6 @@
         public const string WaitingRoomPageDate = "dddd dd MMMM yyyy";
         public const string JudgeWaitingRoomPageTime = "HH:mm";
         public const string WaitingRoomPageTime = "HH:mm tt";
-        public const string AlertMessageTimestamp = "dd/MM/yyyy HH:mm";
+        public const string AlertMessageTimestamp = "HH:mm";
     }
 }

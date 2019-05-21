@@ -8,7 +8,7 @@ import { VideoWebService } from 'src/app/services/video-web.service';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ErrorService } from 'src/app/services/error.service';
 import { ClockService as ClockService } from 'src/app/services/clock.service';
-import { Hearing } from '../models/hearing';
+import { Hearing } from '../../shared/models/hearing';
 declare var PexRTC: any;
 
 @Component({
@@ -19,7 +19,6 @@ declare var PexRTC: any;
 export class ParticipantWaitingRoomComponent implements OnInit {
 
   loadingData: boolean;
-  statusUpdated: boolean;
   hearing: Hearing;
   participant: ParticipantResponse;
 
@@ -87,7 +86,6 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         this.loadingData = false;
         this.hearing = new Hearing(data);
         this.participant = data.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
-        this.refresh();
         this.setupSubscribers();
         this.setupPexipClient();
         this.call();
@@ -136,17 +134,10 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   handleParticipantStatusChange(message: ParticipantStatusMessage): any {
     const participant = this.hearing.getConference().participants.find(p => p.username.toLowerCase() === message.email.toLowerCase());
     participant.status = message.status;
-    this.refresh();
   }
 
   handleConferenceStatusChange(message: ConferenceStatusMessage) {
     this.hearing.getConference().status = message.status;
-    this.refresh();
-  }
-
-  refresh() {
-    this.statusUpdated = false;
-    setTimeout(() => this.statusUpdated = true);
   }
 
   setupPexipClient() {

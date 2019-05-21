@@ -33,12 +33,14 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getConferenceId();
+    this.getConference();
     this._navigator = <any>navigator;
   }
 
-  getConferenceId(): void {
+  getConference(): void {
     this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+    this.videoWebService.getConferenceById(this.conferenceId)
+      .subscribe((conference) => this.conference = conference);
   }
 
   requestMedia() {
@@ -85,9 +87,10 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
   }
 
   postPermissionDeniedAlert() {
-    const participant = this.conference.participants.find(x => x.username === this.adalService.userInfo.userName);
+    const participant = this.conference.participants.
+      find(x => x.username.toLocaleLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
     this.videoWebService.raiseMediaEvent(this.conference.id,
-      new AddMediaEventRequest({participant_id: participant.id.toString()})).subscribe(x => { },
+      new AddMediaEventRequest({ participant_id: participant.id.toString() })).subscribe(x => { },
         (error) => {
           console.error(error);
         });

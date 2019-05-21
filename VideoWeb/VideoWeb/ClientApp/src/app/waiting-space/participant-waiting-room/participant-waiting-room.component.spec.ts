@@ -16,7 +16,7 @@ import { ParticipantStatusListStubComponent } from 'src/app/testing/stubs/partic
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room.component';
 import { ErrorService } from 'src/app/services/error.service';
 import { AnalogueClockStubComponent } from 'src/app/testing/stubs/analogue-clock-stub';
-import { Hearing } from '../models/hearing';
+import { Hearing } from '../../shared/models/hearing';
 
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {

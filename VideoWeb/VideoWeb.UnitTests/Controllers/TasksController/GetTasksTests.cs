@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +13,7 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.UnitTests.Controllers.TasksController
 {
-    public class TasksControllerTests
+    public class GetTasksTests
     {
         private VideoWeb.Controllers.TasksController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
@@ -36,13 +38,15 @@ namespace VideoWeb.UnitTests.Controllers.TasksController
         }
 
         [Test]
-        public async Task should_return_ok_when_get_pending_tasks_is_called()
+        public async Task should_return_ok_when_get_tasks_is_called()
         {
+            var tasks = Builder<TaskResponse>.CreateListOfSize(4).Build().ToList();
+            
             _videoApiClientMock
-                .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
-                .Returns(Task.FromResult(default(object)));
+                .Setup(x => x.GetTasksForConferenceAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(tasks);
 
-            var result = await _controller.GetPendingTasks(Guid.NewGuid());
+            var result = await _controller.GetTasks(Guid.NewGuid());
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
         }
@@ -53,10 +57,10 @@ namespace VideoWeb.UnitTests.Controllers.TasksController
             var apiException = new VideoApiException<Microsoft.AspNetCore.Mvc.ProblemDetails>("Internal Server Error", (int)HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default(Microsoft.AspNetCore.Mvc.ProblemDetails), null);
             _videoApiClientMock
-                .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
+                .Setup(x => x.GetTasksForConferenceAsync(It.IsAny<Guid>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetPendingTasks(Guid.NewGuid());
+            var result = await _controller.GetTasks(Guid.NewGuid());
             var typedResult = (ObjectResult)result;
             typedResult.Should().NotBeNull();
         }

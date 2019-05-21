@@ -35,14 +35,15 @@ namespace VideoWeb.Mappings
 
                 conferenceForUserResponse.Participants = MapParticipants(conference.Participants);
             }
-
+            
             conferenceForUserResponse.Id = conference.Id.GetValueOrDefault();
             conferenceForUserResponse.CaseName = conference.Case_name;
             conferenceForUserResponse.CaseNumber = conference.Case_number;
             conferenceForUserResponse.CaseType = conference.Case_type;
             conferenceForUserResponse.ScheduledDateTime = conference.Scheduled_date_time.GetValueOrDefault();
-            conferenceForUserResponse.ScheduledDuration = Convert.ToInt32(conference.Scheduled_duration);
+            conferenceForUserResponse.ScheduledDuration = conference.Scheduled_duration.GetValueOrDefault();
             conferenceForUserResponse.Status = MapConferenceStatus(conference.Status);
+            conferenceForUserResponse.NoOfPendingTasks = conference.Pending_tasks.GetValueOrDefault();
 
             return conferenceForUserResponse;
         }

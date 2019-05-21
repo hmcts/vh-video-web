@@ -1,0 +1,30 @@
+@import "~govuk-frontend/all";
+
+.task-header {
+  background: govuk-colour("grey-3");
+}
+
+.pending-alert-text {
+  color: govuk-colour("red");
+  font-weight: bold;
+}
+
+.task-checkbox-and-time {
+  width: 10px;
+}
+
+.task-body {
+  width: 120px;
+}
+
+.task-origin {
+  width: 90px;
+}
+
+.task-updated {
+  width: 200px;
+}
+
+.task-completed {
+  color: govuk-colour("grey-2");
+}

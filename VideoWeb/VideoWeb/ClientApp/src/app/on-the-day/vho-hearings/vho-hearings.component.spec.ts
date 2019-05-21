@@ -14,6 +14,10 @@ import { VhoHearingsComponent } from './vho-hearings.component';
 import { ConferenceResponse, ConsultationAnswer } from 'src/app/services/clients/api-client';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { ErrorService } from 'src/app/services/error.service';
+import { Hearing } from 'src/app/shared/models/hearing';
+import { TasksTableStubComponent } from 'src/app/testing/stubs/task-table-stub';
+import { TaskCompleted } from '../models/task-completed';
+import { VhoHearingListStubComponent as VhoHearingListStubComponent } from 'src/app/testing/stubs/vho-hearing-list-stub';
 
 
 describe('VhoHearingsComponent', () => {
@@ -27,14 +31,14 @@ describe('VhoHearingsComponent', () => {
 
   beforeEach(async(() => {
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForUser',
-    'getConferenceById', 'getTasksForConference']);
+      'getConferenceById', 'getTasksForConference']);
     videoWebServiceSpy.getConferencesForUser.and.returnValue(of(conferences));
     videoWebServiceSpy.getConferenceById.and.returnValue(of(new ConferenceTestData().getConferenceDetail()));
     videoWebServiceSpy.getTasksForConference.and.returnValue(of(new ConferenceTestData().getTasksForConference()));
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [VhoHearingsComponent],
+      declarations: [VhoHearingsComponent, TasksTableStubComponent, VhoHearingListStubComponent],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },
@@ -60,36 +64,28 @@ describe('VhoHearingsComponent', () => {
     expect(component.conferences).toBeDefined();
   });
 
+  it('should return false when there are no conferences', () => {
+    component.conferences = null;
+  });
+
   it('should retrieve conference and sanitise iframe uri', () => {
-    component.displayAdminViewForConference(component.conferences[0]);
+    spyOn(component, 'getWidthForFrame').and.returnValue(400);
+    spyOn(component, 'getHeightForFrame').and.returnValue(600);
+
+    component.onConferenceSelected(component.conferences[0]);
     expect(component.selectedConferenceUrl).toBeDefined();
   });
 
   it('should handle api error when retrieving conference fails', () => {
     spyOn(errorService, 'handleApiError').and.callFake(() => { Promise.resolve(true); });
     videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 401, isSwaggerException: true }));
-    component.displayAdminViewForConference(component.conferences[0]);
+    component.onConferenceSelected(component.conferences[0]);
     expect(errorService.handleApiError).toHaveBeenCalled();
-  });
-
-  it('should return hour and minutes', () => {
-    const result = component.getDuration(90);
-    expect(result).toBe('1 hour and 30 minutes');
-  });
-
-  it('should return hours and minutes', () => {
-    const result = component.getDuration(150);
-    expect(result).toBe('2 hour and 30 minutes');
-  });
-
-  it('should return only minutes', () => {
-    const result = component.getDuration(25);
-    expect(result).toBe('25 minutes');
   });
 
   it('should return true when current conference is selected', () => {
     const currentConference = conferences[0];
-    component.selectedConference = new ConferenceResponse({ id: currentConference.id });
+    component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
     expect(component.isCurrentConference(currentConference)).toBeTruthy();
   });
 
@@ -100,7 +96,7 @@ describe('VhoHearingsComponent', () => {
 
   it('should return false when current conference is different', () => {
     const currentConference = conferences[0];
-    component.selectedConference = new ConferenceResponse({ id: conferences[1].id });
+    component.selectedHearing = new Hearing(new ConferenceResponse({ id: conferences[1].id }));
     expect(component.isCurrentConference(currentConference)).toBeFalsy();
   });
 
@@ -116,9 +112,18 @@ describe('VhoHearingsComponent', () => {
 
   it('should load tasks for conference when current conference is selected', () => {
     const currentConference = conferences[0];
-    component.selectedConference = new ConferenceResponse({ id: currentConference.id });
+    component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
     component.getTasksForConference(currentConference.id);
     expect(component.tasks.length > 0).toBeTruthy();
+  });
+
+  it('should update number of pending tasks on task completed', () => {
+    const currentConference = component.conferences[0];
+    const initPendingTasks = 5;
+    currentConference.no_of_pending_tasks = initPendingTasks;
+
+    component.onTaskCompleted(new TaskCompleted(currentConference.id, 3));
+    expect(component.conferences[0].no_of_pending_tasks).toBeLessThan(initPendingTasks);
   });
 
 });
@@ -137,7 +142,7 @@ describe('VhoHearingsComponent', () => {
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [VhoHearingsComponent],
+      declarations: [VhoHearingsComponent, TasksTableStubComponent, VhoHearingListStubComponent],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },

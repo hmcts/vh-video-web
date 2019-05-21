@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ClockService } from 'src/app/services/clock.service';
-import { Hearing } from '../models/hearing';
+import { Hearing } from '../../shared/models/hearing';
 
 @Component({
   selector: 'app-analogue-clock',
