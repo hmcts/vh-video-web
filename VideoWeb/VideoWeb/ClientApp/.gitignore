@@ -41,5 +41,6 @@ package-lock.json
 Thumbs.db
 
 # Large video files
-
-
+/VideoWeb/VideoWeb.AcceptanceTests/Videos/part1.y4m
+/VideoWeb/VideoWeb.AcceptanceTests/Videos/part2.y4m
+/VideoWeb/VideoWeb.AcceptanceTests/Videos/part3.y4m
