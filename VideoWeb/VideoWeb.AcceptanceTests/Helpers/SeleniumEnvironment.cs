@@ -80,7 +80,11 @@ namespace VideoWeb.AcceptanceTests.Helpers
                     caps.SetCapability("autoAcceptAlerts", true);
                     var chromeOptions = new Dictionary<string, object>();
                     chromeOptions["args"] = new List<string>
-                        { "use-fake-ui-for-media-stream", "use-fake-device-for-media-stream"};
+                        {
+                            "use-fake-ui-for-media-stream",
+                            "use-fake-device-for-media-stream",
+                            $"use-file-for-fake-video-capture={GetBuildPath}/Videos/Participant1.y4m"
+                        };
                     caps.SetCapability(ChromeOptions.Capability, chromeOptions);
                     break;
             }
@@ -114,24 +118,25 @@ namespace VideoWeb.AcceptanceTests.Helpers
             }
             var options = new ChromeOptions();
             options.AddArgument("ignore -certificate-errors");
-            options.AddArgument("use-fake-device-for-media-stream");         
             options.AddArgument("use-fake-ui-for-media-stream");
+            options.AddArgument("use-fake-device-for-media-stream");
+            options.AddArgument($"use-file-for-fake-video-capture={GetBuildPath}/Videos/Participant1.y4m");
 
             var commandTimeout = TimeSpan.FromSeconds(30);
 
             _targetBrowser = TargetBrowser.Chrome;
 
-            return new ChromeDriver(ChromeDriverPath, options, commandTimeout);
+            return new ChromeDriver(GetBuildPath, options, commandTimeout);
         }
 
-        private static string ChromeDriverPath
+        private static string GetBuildPath
         {
             get
             {
                 const string osxPath = "/usr/local/bin";
                 var assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 var path = Directory.Exists(osxPath) ? osxPath : assemblyPath;
-                TestContext.WriteLine($"looking for chrome driver in {path}");
+                TestContext.WriteLine($"looking for local build path {path}");
                 return assemblyPath;
             }
         }

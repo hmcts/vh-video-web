@@ -13,6 +13,7 @@
         Declaration = 8,
         WaitingRoom = 9,
         Countdown = 10,
+        HearingRoom = 11,
         NotInParticipantJourney = -99,
         NotFound = -1,
         Unauthorised = -2

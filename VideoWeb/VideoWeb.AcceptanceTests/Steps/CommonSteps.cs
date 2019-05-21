@@ -26,7 +26,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly WaitingRoomSteps _waitingRoomSteps;
         private Page _currentPage = Page.Login;
 
-        public CommonSteps(TestContext context, BrowserContext browserContext, CommonPages commonPages, 
+        public CommonSteps(TestContext context, BrowserContext browserContext, CommonPages commonPages,
             DataSetupSteps dataSetupSteps, LoginSteps loginSteps, HearingsListSteps hearingDetailsSteps,
             EquipmentCheckSteps equipmentCheckSteps, SwitchOnCamAndMicSteps switchOnCamAndMicSteps,
             CameraWorkingSteps cameraMicrophoneSteps, RulesSteps rulesSteps,
@@ -79,19 +79,24 @@ namespace VideoWeb.AcceptanceTests.Steps
                 switch (currentPage.JudgeJourney)
                 {
                     case JudgeJourney.Login:
-                    {
-                        _loginSteps.WhenUserLogsInWithValidCredentials(role);
-                        break;
-                    }
+                        {
+                            _loginSteps.WhenUserLogsInWithValidCredentials(role);
+                            break;
+                        }
                     case JudgeJourney.HearingList:
-                    {
-                        _hearingListSteps.WhenTheUserClicksTheStartButton();
-                        break;
-                    }
+                        {
+                            _hearingListSteps.WhenTheUserClicksTheStartButton();
+                            break;
+                        }
                     case JudgeJourney.WaitingRoom:
-                    {
-                        break;
-                    }
+                        {
+                            WhentheUserClicksTheButtonWithInnertext("Start Hearing");
+                            break;
+                        }
+                    case JudgeJourney.Countdown:
+                        {
+                            break;
+                        }
                     default:
                         throw new InvalidOperationException($"Current page was past the intended page: {currentPage}");
                 }
@@ -105,20 +110,20 @@ namespace VideoWeb.AcceptanceTests.Steps
                 switch (currentPage.VhoJourney)
                 {
                     case VhoJourney.Login:
-                    {
-                        _loginSteps.WhenUserLogsInWithValidCredentials(role);
-                        break;
-                    }
+                        {
+                            _loginSteps.WhenUserLogsInWithValidCredentials(role);
+                            break;
+                        }
                     case VhoJourney.HearingList:
-                    {
-                        _hearingListSteps.WhenTheVHOSelectsTheHearing();
-                        _hearingListSteps.WhenTheVHOLogsIntoTheAdminPanel();
-                        break;
-                    }
+                        {
+                            _hearingListSteps.WhenTheVHOSelectsTheHearing();
+                            _hearingListSteps.WhenTheVHOLogsIntoTheAdminPanel();
+                            break;
+                        }
                     case VhoJourney.AdminPanel:
-                    {
-                        break;
-                    }
+                        {
+                            break;
+                        }
                     default:
                         throw new InvalidOperationException($"Current page was past the intended page: {currentPage}");
                 }
@@ -131,45 +136,45 @@ namespace VideoWeb.AcceptanceTests.Steps
                 switch (currentPage.ParticipantJourney)
                 {
                     case ParticipantJourney.Login:
-                    {
-                        _loginSteps.WhenUserLogsInWithValidCredentials(role);
+                        {
+                            _loginSteps.WhenUserLogsInWithValidCredentials(role);
                             break;
-                    }
+                        }
                     case ParticipantJourney.HearingList:
-                    {
-                        _hearingListSteps.WhenTheUserClicksTheStartButton();
+                        {
+                            _hearingListSteps.WhenTheUserClicksTheStartButton();
                             break;
-                    }
+                        }
                     case ParticipantJourney.SwitchOnYourCameraAndMicrophone:
-                    {
-                        WhentheUserClicksTheButton("Switch on");
-                        WhentheUserClicksTheButton("Watch video");
+                        {
+                            WhentheUserClicksTheButton("Switch on");
+                            WhentheUserClicksTheButton("Watch video");
                             break;
-                    }
+                        }
                     case ParticipantJourney.CameraWorking:
                     case ParticipantJourney.MicrophoneWorking:
                     case ParticipantJourney.SeeAndHearVideo:
-                    {
-                        WhenTheUserSelectsTheRadiobutton("Yes");
-                        WhentheUserClicksTheButton("Continue");
+                        {
+                            WhenTheUserSelectsTheRadiobutton("Yes");
+                            WhentheUserClicksTheButton("Continue");
                             break;
-                    }
+                        }
                     case ParticipantJourney.EquipmentCheck:
                     case ParticipantJourney.Rules:
-                    {
-                        WhentheUserClicksTheButton("Continue");
+                        {
+                            WhentheUserClicksTheButton("Continue");
                             break;
-                    }
+                        }
                     case ParticipantJourney.Declaration:
-                    {
-                        _declarationSteps.WhenTheUserGivesTheirConsent();
-                        WhentheUserClicksTheButton("Continue");
+                        {
+                            _declarationSteps.WhenTheUserGivesTheirConsent();
+                            WhentheUserClicksTheButton("Continue");
                             break;
-                    }
+                        }
                     case ParticipantJourney.WaitingRoom:
-                    {
-                        break;
-                    }
+                        {
+                            break;
+                        }
                     default:
                         throw new InvalidOperationException($"Current page was past the intended page: {currentPage}");
                 }
@@ -185,6 +190,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.ButtonWithLabel(label)).Displayed
                 .Should().BeTrue();
             _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.ButtonWithLabel(label)).Click();
+        }
+
+        [When(@"the user clicks the button with innertext (.*)")]
+        public void WhentheUserClicksTheButtonWithInnertext(string innertext)
+        {
+            _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.ButtonWithInnertext(innertext)).Displayed
+                .Should().BeTrue();
+            _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.ButtonWithInnertext(innertext)).Click();
         }
 
         [When(@"the user selects the (.*) radiobutton")]
@@ -222,6 +235,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                 case "Rules": _commonPages.PageUrl(Page.Rules); break;
                 case "Declaration": _commonPages.PageUrl(Page.Declaration); break;
                 case "Waiting Room": _commonPages.PageUrl(Page.WaitingRoom); break;
+                case "Countdown": _commonPages.PageUrl(Page.Countdown); break;
+                case "Hearing Room": _commonPages.PageUrl(Page.HearingRoom); break;
                 case "Not Found": _commonPages.PageUrl(Page.NotFound); break;
                 case "Unauthorised": _commonPages.PageUrl(Page.Unauthorised); break;
                 case "Admin Panel": _commonPages.PageUrl(Page.AdminPanel); break;
@@ -232,7 +247,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the (.*) error message appears")]
         public void ThenTheErrorMessageAppears(string errorText)
         {
-            _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.ErrorMessage).Text.Replace("Error:","")
+            _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.ErrorMessage).Text.Replace("Error:", "")
                 .Should().Contain(errorText);
         }
 
@@ -245,4 +260,3 @@ namespace VideoWeb.AcceptanceTests.Steps
 
     }
 }
-

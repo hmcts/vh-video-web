@@ -72,13 +72,28 @@
     <None Update="useraccounts.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Videos\part1.y4m">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Videos\part2.y4m">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Videos\part3.y4m">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Videos\" />
     <Folder Include="Properties" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Features\HearingRoom.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>HearingRoom.feature</DependentUpon>
+    </Compile>
     <Compile Update="Features\VideoHearingOfficerAlerts.feature.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -87,6 +102,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <SpecFlowFeatureFiles Update="Features\HearingRoom.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>HearingRoom.feature.cs</LastGenOutput>
+    </SpecFlowFeatureFiles>
     <SpecFlowFeatureFiles Update="Features\VideoHearingOfficerAlerts.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>VideoHearingOfficerAlerts.feature.cs</LastGenOutput>
