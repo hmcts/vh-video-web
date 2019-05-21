@@ -1,7 +1,7 @@
 ﻿using System;
 using VideoWeb.Services.Video;
 
-namespace VideoWeb.Controllers
+namespace VideoWeb.Contract.Request
 {
     public class AddMediaEventRequest
     {
