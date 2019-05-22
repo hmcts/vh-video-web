@@ -328,6 +328,3 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
 TESTS.xml
-/VideoWeb/VideoWeb.AcceptanceTests/Videos/part3.y4m
-/VideoWeb/VideoWeb.AcceptanceTests/Videos/part2.y4m
-/VideoWeb/VideoWeb.AcceptanceTests/Videos/part1.y4m

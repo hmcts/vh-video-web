@@ -8,6 +8,10 @@ namespace VideoWeb.AcceptanceTests.Pages
         {
         }
 
+        public const string JudgeIframeId = "judgeIframe";
+
+        public By JudgeIframe => By.XPath($"//iframe[@id='{JudgeIframeId}']");
+
         public By SideMenuArrow = CommonLocators.IframeButtonWithTooltip("Sidemenu");
         public By RequestAssistance = CommonLocators.IframeButtonWithTooltip("Request assistance");
         public By PauseHearing = CommonLocators.IframeButtonWithTooltip("Pause hearing");

@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Threading;
+using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -10,23 +12,23 @@ namespace VideoWeb.AcceptanceTests.Steps
     public sealed class HearingRoomSteps
     {
         private readonly BrowserContext _browserContext;
-        private readonly ScenarioContext _scenario;
         private readonly HearingRoomPage _hearingRoomPage;
-        private readonly WaitingRoomPage _waitingRoomPage;
-        private readonly CommonPages _commonPages;
+        private const int CountdownDuration = 30;
 
-        public HearingRoomSteps(BrowserContext browserContext, ScenarioContext injectedContext,
-            HearingRoomPage hearingRoomPage, WaitingRoomPage waitingRoomPage)
+        public HearingRoomSteps(BrowserContext browserContext, HearingRoomPage hearingRoomPage)
         {
             _browserContext = browserContext;
-            _scenario = injectedContext;
             _hearingRoomPage = hearingRoomPage;
-            _waitingRoomPage = waitingRoomPage;
         }
 
         [When(@"the countdown finishes")]
         public void WhenTheCountdownFinishes()
         {
+            _browserContext.NgDriver.SwitchTo().Frame(HearingRoomPage.JudgeIframeId);
+
+            Thread.Sleep(TimeSpan.FromSeconds(CountdownDuration));
+            Convert.ToDouble(_browserContext.NgDriver.WaitUntilElementVisible(_hearingRoomPage.IncomingVideo)
+                .GetAttribute("currentTime")).Should().BeGreaterThan(0);
         }
 
         [Then(@"the hearing controls are visible")]
