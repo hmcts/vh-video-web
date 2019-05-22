@@ -17,6 +17,11 @@ namespace VideoWeb.AcceptanceTests.Helpers
         private readonly SauceLabsSettings _saucelabsSettings;
         private readonly ScenarioInfo _scenario;
         private static TargetBrowser _targetBrowser;
+        private const string JudgeVideo = "judge";
+        private const string Individual1Video = "part1";
+        private const string Representative1Video = "part2";
+        private const string Individual2Video = "part3";
+        private const string Representative2Video = "part4";
 
         public SeleniumEnvironment(SauceLabsSettings saucelabsSettings, ScenarioInfo scenario, TargetBrowser targetBrowser)
         {
@@ -25,12 +30,22 @@ namespace VideoWeb.AcceptanceTests.Helpers
             _targetBrowser = targetBrowser;
         }
 
-        public IWebDriver GetDriver()
+        public IWebDriver GetDriver(string user = "Individual01")
         {
-            return _saucelabsSettings.RunWithSaucelabs ? InitSauceLabsDriver() : InitLocalDriver();
+            string video;
+            switch (user)
+            {
+                case "Judge01": video = JudgeVideo; break;
+                case "Individual01": video = Individual1Video; break;
+                case "Representative01": video = Representative1Video; break;
+                case "Individual02": video = Individual2Video; break;
+                case "Representative02": video = Representative2Video; break;
+                default: throw new ArgumentOutOfRangeException($"No user defined; {user}");
+            }
+            return _saucelabsSettings.RunWithSaucelabs ? InitSauceLabsDriver(video) : InitLocalDriver(video);
         }
 
-        private IWebDriver InitSauceLabsDriver()
+        private IWebDriver InitSauceLabsDriver(string video)
         {
 #pragma warning disable 618
             // disable warning of using desired capabilities
@@ -83,7 +98,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
                         {
                             "use-fake-ui-for-media-stream",
                             "use-fake-device-for-media-stream",
-                            $"use-file-for-fake-video-capture={GetBuildPath}/Videos/part1.y4m"
+                            $"use-file-for-fake-video-capture={GetBuildPath}/Videos/{video}.y4m"
                         };
                     caps.SetCapability(ChromeOptions.Capability, chromeOptions);
                     break;
@@ -101,7 +116,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             return new RemoteWebDriver(remoteUrl, caps, commandTimeout);
         }
 
-        private static IWebDriver InitLocalDriver()
+        private static IWebDriver InitLocalDriver(string video)
         {
             var chromeDriverProcesses = Process.GetProcessesByName("ChromeDriver");
 
@@ -120,7 +135,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             options.AddArgument("ignore -certificate-errors");
             options.AddArgument("use-fake-ui-for-media-stream");
             options.AddArgument("use-fake-device-for-media-stream");
-            options.AddArgument($"use-file-for-fake-video-capture={GetBuildPath}/Videos/part1.y4m");
+            options.AddArgument($"use-file-for-fake-video-capture={GetBuildPath}/Videos/{video}.y4m");
 
             var commandTimeout = TimeSpan.FromSeconds(30);
 
