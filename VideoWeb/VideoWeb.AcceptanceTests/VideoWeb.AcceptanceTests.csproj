@@ -78,19 +78,4 @@
     <Folder Include="Properties" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Features\VideoHearingOfficerAlerts.feature.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>VideoHearingOfficerAlerts.feature</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <SpecFlowFeatureFiles Update="Features\VideoHearingOfficerAlerts.feature">
-      <Generator>SpecFlowSingleFileGenerator</Generator>
-      <LastGenOutput>VideoHearingOfficerAlerts.feature.cs</LastGenOutput>
-    </SpecFlowFeatureFiles>
-  </ItemGroup>
-
 </Project>

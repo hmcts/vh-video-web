@@ -23,7 +23,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By ContactHelpline => CommonLocators.ElementContainingText("helpline");
 
         public By AboutToBeginHeader => CommonLocators.ElementContainingText("Your hearing is about to begin");
-        public By AboutToBeginText => CommonLocators.ElementContainingText("Please keep an eye on the time");
+        public By AboutToBeginText => CommonLocators.ElementContainingText("Please stay near your screen");
         public string AboutToBeginBgColour = "#0b0c0c";
 
         public By DelayedHeader => CommonLocators.ElementContainingText("Your hearing is delayed");
