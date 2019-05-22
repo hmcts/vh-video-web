@@ -17,6 +17,7 @@ import { VideoCheckComponent } from './video-check/video-check.component';
 import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone/switch-on-camera-microphone.component';
 import { TasksTableComponent } from './vho-hearings/tasks-table.component';
 import { VhoHearingListComponent } from './vho-hearings/vho-hearing-list.component';
+import { SelfTestComponent } from './self-test/self-test.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -38,7 +39,8 @@ import { VhoHearingListComponent } from './vho-hearings/vho-hearing-list.compone
     VideoCheckComponent,
     SwitchOnCameraMicrophoneComponent,
     TasksTableComponent,
-    VhoHearingListComponent
+    VhoHearingListComponent,
+    SelfTestComponent
   ],
   exports: [
     DeclarationComponent

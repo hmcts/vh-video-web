@@ -10,6 +10,7 @@ export let PageUrls = {
   MicrophoneWorking: 'microphone-working',
   VideoWorking: 'see-and-hear-video',
   SwitchOnCameraMicrophone: 'switch-on-camera-microphone',
+  SelfTestVideo: 'practice-video-hearing',
   // judge
   JudgeHearingList: 'judge/hearing-list',
   JudgeHearingRoom: 'judge/hearing-room',
