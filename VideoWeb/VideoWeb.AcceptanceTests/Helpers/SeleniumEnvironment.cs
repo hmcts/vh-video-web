@@ -83,7 +83,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
                         {
                             "use-fake-ui-for-media-stream",
                             "use-fake-device-for-media-stream",
-                            $"use-file-for-fake-video-capture={GetBuildPath}/Videos/Participant1.y4m"
+                            $"use-file-for-fake-video-capture={GetBuildPath}/Videos/part1.y4m"
                         };
                     caps.SetCapability(ChromeOptions.Capability, chromeOptions);
                     break;
