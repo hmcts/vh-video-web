@@ -14,19 +14,20 @@ import { CameraCheckComponent } from './camera-check/camera-check.component';
 import { MicrophoneCheckComponent } from './microphone-check/microphone-check.component';
 import { VideoCheckComponent } from './video-check/video-check.component';
 import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone/switch-on-camera-microphone.component';
+import { PageUrls } from '../shared/page-url.constants';
 
 export const routes: Routes = [
-  { path: 'judge/hearing-list', component: JudgeHearingListComponent, canActivate: [JudgeGuard] },
-  { path: 'participant/hearing-list', component: ParticipantHearingsComponent, canActivate: [ParticipantGuard] },
-  { path: 'admin/hearing-list', component: VhoHearingsComponent, canActivate: [AdminGuard] },
-  { path: 'declaration/:conferenceId', component: DeclarationComponent },
-  { path: 'hearing-rules/:conferenceId', component: HearingRulesComponent },
-  { path: 'equipment-check/:conferenceId', component: EquipmentCheckComponent },
-  { path: 'camera-working/:conferenceId', component: CameraCheckComponent },
-  { path: 'microphone-working/:conferenceId', component: MicrophoneCheckComponent },
-  { path: 'see-and-hear-video/:conferenceId', component: VideoCheckComponent },
-  { path: 'camera-and-microphone/:conferenceId', component: CameraAndMicrophoneComponent },
-  { path: 'switch-on-camera-microphone/:conferenceId', component: SwitchOnCameraMicrophoneComponent}
+  { path: `${PageUrls.JudgeHearingList}`, component: JudgeHearingListComponent, canActivate: [JudgeGuard] },
+  { path: `${PageUrls.ParticipantHearingList}`, component: ParticipantHearingsComponent, canActivate: [ParticipantGuard] },
+  { path: `${PageUrls.AdminHearingList}`, component: VhoHearingsComponent, canActivate: [AdminGuard] },
+  { path: `${PageUrls.Declaration}/:conferenceId`, component: DeclarationComponent },
+  { path: `${PageUrls.HearingRules}/:conferenceId`, component: HearingRulesComponent },
+  { path: `${PageUrls.EquipmentCheck}/:conferenceId`, component: EquipmentCheckComponent },
+  { path: `${PageUrls.CameraWorking}/:conferenceId`, component: CameraCheckComponent },
+  { path: `${PageUrls.MicrophoneWorking}/:conferenceId`, component: MicrophoneCheckComponent },
+  { path: `${PageUrls.VideoWorking}/:conferenceId`, component: VideoCheckComponent },
+  { path: `${PageUrls.CameraAndMicrophone}/:conferenceId`, component: CameraAndMicrophoneComponent },
+  { path: `${PageUrls.SwitchOnCameraMicrophone}/:conferenceId`, component: SwitchOnCameraMicrophoneComponent},
 ];
 
 @NgModule({

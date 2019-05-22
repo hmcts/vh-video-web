@@ -3,11 +3,12 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
 import { UnauthorisedComponent } from './unauthorised/unauthorised.component';
+import { PageUrls } from '../shared/page-url.constants';
 
 export const routes: Routes = [
-  { path: 'login', component: LoginComponent },
-  { path: 'logout', component: LogoutComponent },
-  { path: 'unauthorised', component: UnauthorisedComponent }
+  { path: `${PageUrls.Login}`, component: LoginComponent },
+  { path: `${PageUrls.Logout}`, component: LogoutComponent },
+  { path: `${PageUrls.Unauthorised}`, component: UnauthorisedComponent }
 ];
 
 @NgModule({
