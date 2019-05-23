@@ -831,6 +831,7 @@ export class ConferenceResponse implements IConferenceResponse {
     admin_i_frame_uri?: string | undefined;
     participant_uri?: string | undefined;
     pexip_node_uri?: string | undefined;
+    pexip_self_test_node_uri?: string | undefined;
     participants?: ParticipantResponse[] | undefined;
 
     constructor(data?: IConferenceResponse) {
@@ -855,6 +856,7 @@ export class ConferenceResponse implements IConferenceResponse {
             this.admin_i_frame_uri = data["admin_i_frame_uri"];
             this.participant_uri = data["participant_uri"];
             this.pexip_node_uri = data["pexip_node_uri"];
+            this.pexip_self_test_node_uri = data["pexip_self_test_node_uri"];
             if (data["participants"] && data["participants"].constructor === Array) {
                 this.participants = [] as any;
                 for (let item of data["participants"])
@@ -883,6 +885,7 @@ export class ConferenceResponse implements IConferenceResponse {
         data["admin_i_frame_uri"] = this.admin_i_frame_uri;
         data["participant_uri"] = this.participant_uri;
         data["pexip_node_uri"] = this.pexip_node_uri;
+        data["pexip_self_test_node_uri"] = this.pexip_self_test_node_uri;
         if (this.participants && this.participants.constructor === Array) {
             data["participants"] = [];
             for (let item of this.participants)
@@ -904,6 +907,7 @@ export interface IConferenceResponse {
     admin_i_frame_uri?: string | undefined;
     participant_uri?: string | undefined;
     pexip_node_uri?: string | undefined;
+    pexip_self_test_node_uri?: string | undefined;
     participants?: ParticipantResponse[] | undefined;
 }
 

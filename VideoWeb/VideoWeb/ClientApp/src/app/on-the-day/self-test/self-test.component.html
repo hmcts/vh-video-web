@@ -1,3 +1,38 @@
-<p>
-  self-test works!
-</p>
+<div class="govuk-grid-row">
+  <div *ngIf="!displayFeed && !testComplete" class="govuk-grid-column-three-quarters ">
+    <p class="govuk-body-l">Please wait to be connected...</p>
+  </div>
+  <div *ngIf="displayFeed" class="govuk-grid-column-three-quarters ">
+    <video id="incomingStream" [srcObject]="this.incomingStream" autoplay width="100%" height="auto">
+      Your browser does not support video
+    </video>
+  </div>
+  <div *ngIf="testScore" class="govuk-grid-column-one-quarter ">
+    <p class="govuk-body-l">Test Score: <strong>{{testScore}}</strong></p>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div *ngIf="displayFeed" class="govuk-grid-column-one-quarter">
+    <video id="outgoingStream" [srcObject]="this.outgoingStream" autoplay width="100%" height="auto">
+      Your browser does not support video
+    </video>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <p class="govuk-body">
+      When the video has ended, answer a few questions to confirm your microphone and camera are working.
+    </p>
+  </div>
+</div>
+
+<div ng class="govuk-!-margin-top-6">
+  <input type="button" id="continue-btn" class="govuk-button govuk-!-margin-right-9" role="button" value="Continue"
+    (click)="onTestComplete()" alt="Continue" />
+
+  <input type="button" id="check-equipment-btn" class="govuk-button grey-btn" role="button"
+    value="Re-play the video message" (click)="replayVideo()" alt="Re-play the video message" />
+</div>
+
+<app-contact-us-folding></app-contact-us-folding>
