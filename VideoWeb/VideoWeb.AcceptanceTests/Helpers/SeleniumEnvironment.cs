@@ -30,7 +30,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             _targetBrowser = targetBrowser;
         }
 
-        public IWebDriver GetDriver(string user = "Individual01")
+        public IWebDriver GetDriver(string user)
         {
             string video;
             switch (user)
