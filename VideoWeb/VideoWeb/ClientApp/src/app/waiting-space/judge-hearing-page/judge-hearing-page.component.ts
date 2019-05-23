@@ -5,6 +5,7 @@ import { ConferenceResponse, ConferenceStatus, UserRole } from 'src/app/services
 import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
   selector: 'app-judge-hearing-page',
@@ -70,12 +71,12 @@ export class JudgeHearingPageComponent implements OnInit {
   handleHearingStatusChange(status: ConferenceStatus) {
     if (status === ConferenceStatus.Closed) {
       this.selectedHearingUrl = '';
-      this.router.navigate(['judge/dashboard']);
+      this.router.navigate([PageUrls.JudgeHearingList]);
     }
 
     if (status === ConferenceStatus.Paused || status === ConferenceStatus.Suspended) {
       this.selectedHearingUrl = '';
-      this.router.navigate(['judge/waiting-room', this.conference.id]);
+      this.router.navigate([PageUrls.JudgeWaitingRoom, this.conference.id]);
     }
   }
 }
