@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using VideoWeb.Contract.Request;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Controllers

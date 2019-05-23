@@ -112,7 +112,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     } else if (this.hearing.isClosed()) {
       return 'is closed';
     }
-    return '';
+    return 'is in session';
   }
 
   private setupSubscribers() {
