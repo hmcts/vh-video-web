@@ -915,6 +915,8 @@ export class ParticipantResponse implements IParticipantResponse {
     status?: ParticipantStatus | undefined;
     display_name?: string | undefined;
     tiled_display_name?: string | undefined;
+    case_type_group?: string | undefined;
+    representee?: string | undefined;
 
     constructor(data?: IParticipantResponse) {
         if (data) {
@@ -934,6 +936,8 @@ export class ParticipantResponse implements IParticipantResponse {
             this.status = data["status"];
             this.display_name = data["display_name"];
             this.tiled_display_name = data["tiled_display_name"];
+            this.case_type_group = data["case_type_group"];
+            this.representee = data["representee"];
         }
     }
 
@@ -953,6 +957,8 @@ export class ParticipantResponse implements IParticipantResponse {
         data["status"] = this.status;
         data["display_name"] = this.display_name;
         data["tiled_display_name"] = this.tiled_display_name;
+        data["case_type_group"] = this.case_type_group;
+        data["representee"] = this.representee;
         return data; 
     }
 }
@@ -965,6 +971,8 @@ export interface IParticipantResponse {
     status?: ParticipantStatus | undefined;
     display_name?: string | undefined;
     tiled_display_name?: string | undefined;
+    case_type_group?: string | undefined;
+    representee?: string | undefined;
 }
 
 export enum UserRole {
