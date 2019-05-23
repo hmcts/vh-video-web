@@ -101,7 +101,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
   it('should return correct conference status text when in session', () => {
     component.conference.status = ConferenceStatus.InSession;
-    expect(component.getConferenceStatusText()).toBe('');
+    expect(component.getConferenceStatusText()).toBe('Hearing is in session');
   });
 
   it('should return correct conference status text when not started', () => {
