@@ -4,11 +4,12 @@ Feature: Waiting Room
 	I need to access a waiting room prior to my hearing
 	So that I am ready for the video hearing to begin
 
-@smoketest @VIH-4233
+@VIH-4233
 Scenario: Individual waiting room
 	Given the Individual user has progressed to the Waiting Room page
 	Then the user is on the Waiting Room page
-	And the user can see information about their case 
+	And the user can see information about their case
+	And the user can see a list of participants and their representatives
 	And the user can see the hearing is about to begin title
 	And the user can see a black box and an about to begin message
 
@@ -17,6 +18,7 @@ Scenario: Representative waiting room
 	Given the Representative user has progressed to the Waiting Room page
 	Then the user is on the Waiting Room page
 	And the user can see information about their case 
+	And the user can see a list of participants and their representatives
 	And the user can see the hearing is about to begin title
 	And the user can see a black box and an about to begin message
 

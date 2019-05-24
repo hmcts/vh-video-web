@@ -53,7 +53,7 @@ export class JudgeWaitingRoomComponent implements OnInit {
       case ConferenceStatus.Suspended: return 'Resume the hearing';
       case ConferenceStatus.Paused: return 'Resume the hearing';
       case ConferenceStatus.Closed: return 'Hearing is closed';
-      default: return '';
+      default: return 'Hearing is in session';
     }
   }
 

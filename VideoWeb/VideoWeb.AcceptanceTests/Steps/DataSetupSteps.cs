@@ -158,7 +158,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                         Display_name = p.Display_name,
                         Username = p.Username,
                         User_role = (UserRole?)role,
-                        Case_type_group = p.Case_role_name
+                        Case_type_group = p.Case_role_name,
+                        Representee = p.Representee
                     };
                 participants.Add(participantsRequest);
             }

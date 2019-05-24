@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using FluentAssertions;
@@ -7,6 +8,7 @@ using Testing.Common.Builders;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.Services.Video;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -62,6 +64,41 @@ namespace VideoWeb.AcceptanceTests.Steps
             }
         }
 
+        [Then(@"the user can see a list of participants and their representatives")]
+        public void ThenTheUserCanSeeAListOfParticipantsAndTheirRepresentatives()
+        {
+            var allRows = _browserContext.NgDriver.WaitUntilElementsVisible(_waitingRoomPage.ParticipantsList);
+            var participantRowIds = (from row in allRows where row.GetAttribute("id") != "" select row.GetAttribute("id")).ToList();
+            var participantsInformation = new List<ParticipantInformation>();
+            foreach (var id in participantRowIds)
+            {
+                var infoRows = _browserContext.NgDriver.WaitUntilElementsVisible(_waitingRoomPage.RowInformation(id));
+                if (infoRows.Count <= 0) continue;
+                var participant = new ParticipantInformation
+                {
+                    CaseTypeGroup = infoRows[0].Text,
+                    Name = infoRows[1].Text,
+                    Representee = infoRows.Count.Equals(3) ? infoRows[2].Text : null
+                };
+                participantsInformation.Add(participant);
+            }
+
+            foreach (var participant in _context.Conference.Participants)
+            {
+                if (!participant.User_role.Equals(UserRole.Individual) &&
+                    !participant.User_role.Equals(UserRole.Representative)) continue;
+                foreach (var row in participantsInformation)
+                {
+                    if (!row.Name.Equals(participant.Name)) continue;
+                    row.CaseTypeGroup.Should().Be(participant.Case_type_group);
+                    if (participant.Representee != string.Empty)
+                    {
+                        row.Representee.Should().Be($"Representing {participant.Representee}");
+                    }
+                }
+            }
+        }
+    
         [Then(@"the user can see other participants status")]
         public void ThenTheUserCanSeeOtherParticipantsStatus()
         {
@@ -150,5 +187,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             var hex = "#" + rgbColour.R.ToString("X2") + rgbColour.G.ToString("X2") + rgbColour.B.ToString("X2");
             return hex.ToLower();
         }
+    }
+
+    internal class ParticipantInformation
+    {
+        internal string CaseTypeGroup { get; set; }
+        internal string Name { get; set; }
+        internal string Representee { get; set; }
     }
 }

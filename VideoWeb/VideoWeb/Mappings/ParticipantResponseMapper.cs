@@ -30,7 +30,9 @@ namespace VideoWeb.Mappings
                 Status = status,
                 Role = role,
                 Username = participant.Username,
-                DisplayName = participant.Display_name
+                DisplayName = participant.Display_name,
+                CaseTypeGroup = participant.Case_type_group,
+                Representee = participant.Representee
             };
 
             if (role == UserRole.Judge)
