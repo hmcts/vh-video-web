@@ -4,7 +4,6 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { VideoWebService } from 'src/app/services/video-web.service';
 import { ConferenceResponse, ParticipantResponse } from 'src/app/services/clients/api-client';
 import { AdalService } from 'adal-angular4';
-import { throwError } from 'rxjs';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 declare var PexRTC: any;
 

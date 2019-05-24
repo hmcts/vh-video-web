@@ -97,7 +97,8 @@ export class VhoHearingsComponent implements OnInit {
 
   getWidthForFrame(): number {
     const listColumnElement: HTMLElement = document.getElementById('list-column');
-    const listWidth = listColumnElement.offsetWidth;
+    const listWidth = listColumnElement ? listColumnElement.offsetWidth : 0;
+    // const listWidth = listColumnElement.offsetWidth;
     const windowWidth = window.innerWidth;
     const frameWidth = windowWidth - listWidth - 30;
     return frameWidth;
