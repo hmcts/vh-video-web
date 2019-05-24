@@ -360,6 +360,74 @@ export class ApiClient {
     /**
      * @return Success
      */
+    getTestCallResult(conferenceId: string, participantId: string): Observable<TestCallScoreResponse> {
+        let url_ = this.baseUrl + "/conferences/{conferenceId}/participants/{participantId}/selftestresult";
+        if (conferenceId === undefined || conferenceId === null)
+            throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace("{conferenceId}", encodeURIComponent("" + conferenceId)); 
+        if (participantId === undefined || participantId === null)
+            throw new Error("The parameter 'participantId' must be defined.");
+        url_ = url_.replace("{participantId}", encodeURIComponent("" + participantId)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetTestCallResult(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetTestCallResult(<any>response_);
+                } catch (e) {
+                    return <Observable<TestCallScoreResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<TestCallScoreResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetTestCallResult(response: HttpResponseBase): Observable<TestCallScoreResponse> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 ? TestCallScoreResponse.fromJS(resultData200) : new TestCallScoreResponse();
+            return _observableOf(result200);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = resultData404 ? ProblemDetails.fromJS(resultData404) : new ProblemDetails();
+            return throwException("A server error occurred.", status, _responseText, _headers, result404);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<TestCallScoreResponse>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
     getUserProfile(): Observable<UserProfileResponse> {
         let url_ = this.baseUrl + "/profile";
         url_ = url_.replace(/[?&]$/, "");
@@ -1139,6 +1207,52 @@ export enum EventType {
     Consultation = "Consultation", 
     JudgeAvailable = "JudgeAvailable", 
     MediaPermissionDenied = "MediaPermissionDenied", 
+}
+
+export class TestCallScoreResponse implements ITestCallScoreResponse {
+    score?: TestScore | undefined;
+    passed?: boolean | undefined;
+
+    constructor(data?: ITestCallScoreResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.score = data["score"];
+            this.passed = data["passed"];
+        }
+    }
+
+    static fromJS(data: any): TestCallScoreResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new TestCallScoreResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["score"] = this.score;
+        data["passed"] = this.passed;
+        return data; 
+    }
+}
+
+export interface ITestCallScoreResponse {
+    score?: TestScore | undefined;
+    passed?: boolean | undefined;
+}
+
+export enum TestScore {
+    Good = "Good", 
+    Okay = "Okay", 
+    Bad = "Bad", 
 }
 
 export class UserProfileResponse implements IUserProfileResponse {

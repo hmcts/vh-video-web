@@ -70,14 +70,14 @@ export class SelfTestComponent implements OnInit {
 
     this.pexipAPI.onConnect = function (stream) {
       console.info('successfully connected');
-      self.displayFeed = true;
       self.incomingStream = stream;
+      self.displayFeed = true;
     };
 
     this.pexipAPI.onError = function (reason) {
       self.displayFeed = false;
       console.warn('Error from pexip. Reason : ' + reason);
-      // self.errorService.goToServiceError();
+      self.errorService.goToServiceError();
     };
 
     this.pexipAPI.onDisconnect = function (reason) {
@@ -91,6 +91,7 @@ export class SelfTestComponent implements OnInit {
 
   call() {
     this.testComplete = false;
+    this.testScore = null;
     const pexipNode = this.conference.pexip_self_test_node_uri;
     const conferenceAlias = 'testcall2';
     this.pexipAPI.makeCall(pexipNode, conferenceAlias, this.participant.id, null);
@@ -107,10 +108,14 @@ export class SelfTestComponent implements OnInit {
 
   retrieveSelfTestScore() {
     this.testComplete = true;
-    throwError('Not implemented exception');
+    this.videoWebService.getTestCallScore(this.conference.id, this.participant.id)
+      .toPromise()
+      .then((testCallResult) => {
+        this.testScore = testCallResult.score;
+      });
   }
 
-  goToCameraWorking() {
+  onTestComplete() {
     if (!this.testComplete) {
       this.disconnect();
     }
