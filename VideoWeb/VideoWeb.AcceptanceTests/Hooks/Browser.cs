@@ -134,7 +134,11 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 var passed = _scenarioContext.TestError == null;
                 SaucelabsResult.LogPassed(passed, _browserContext.NgDriver);
             }
-            _browserContext.BrowserTearDown();
+
+            foreach (var browser in _context.Browsers.Values)
+            {
+                browser.BrowserTearDown();
+            }
         }
     }
 }

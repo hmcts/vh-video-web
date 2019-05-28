@@ -109,13 +109,14 @@ this.ScenarioInitialize(scenarioInfo);
 #line 17
  testRunner.Given("the Individual user has progressed to the Waiting Room page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 18
- testRunner.And("in another browser", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("there is a new browser open for Representative01", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 19
- testRunner.And("the Representative user has progressed to the Waiting Room page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the Representative user has progressed to the Waiting Room page for the existing " +
+                    "hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 20
- testRunner.And("in another browser", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("there is a new browser open for Judge", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 21
- testRunner.And("the Judge user has progressed to the Waiting Room page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the Judge user has progressed to the Waiting Room page for the existing hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 22
  testRunner.When("the user clicks the button with innertext Start Hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 23

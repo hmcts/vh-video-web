@@ -69,9 +69,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="useraccounts.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Videos\part1.y4m">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

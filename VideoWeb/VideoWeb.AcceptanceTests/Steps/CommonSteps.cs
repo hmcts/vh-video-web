@@ -13,35 +13,30 @@ namespace VideoWeb.AcceptanceTests.Steps
     public class CommonSteps
     {
         private readonly TestContext _context;
-        private readonly ScenarioContext _scenarioContext;
         private BrowserContext _browserContext;
         private readonly CommonPages _commonPages;
         private readonly DataSetupSteps _dataSetupSteps;
         private readonly LoginSteps _loginSteps;
         private readonly HearingsListSteps _hearingListSteps;
         private readonly DeclarationSteps _declarationSteps;
-        private readonly WaitingRoomSteps _waitingRoomSteps;
         private Page _currentPage = Page.Login;
 
-        public CommonSteps(TestContext context, ScenarioContext scenarioContext, BrowserContext browserContext, CommonPages commonPages,
+        public CommonSteps(TestContext context, BrowserContext browserContext, CommonPages commonPages,
             DataSetupSteps dataSetupSteps, LoginSteps loginSteps, HearingsListSteps hearingDetailsSteps,
-            DeclarationSteps declarationSteps, WaitingRoomSteps waitingRoomSteps)
+            DeclarationSteps declarationSteps)
         {
             _context = context;
-            _scenarioContext = scenarioContext;
             _browserContext = browserContext;
             _commonPages = commonPages;
             _dataSetupSteps = dataSetupSteps;
             _loginSteps = loginSteps;
             _hearingListSteps = hearingDetailsSteps;
             _declarationSteps = declarationSteps;
-            _waitingRoomSteps = waitingRoomSteps;
         }
 
-        [Given(@"there is another browser open for the (.*)")]
+        [Given(@"there is a new browser open for (.*)")]
         public void GivenAnotherBrowserWindowIsLaunched(string participant)
         {
-            _context.Environment = new SeleniumEnvironment(_context.SaucelabsSettings, _scenarioContext.ScenarioInfo, _context.TargetBrowser);
             _browserContext.BrowserSetup(_context.VideoWebUrl, _context.Environment, participant);
             _browserContext.NavigateToPage();
         }
@@ -71,9 +66,16 @@ namespace VideoWeb.AcceptanceTests.Steps
             Progress(role, pageName, minutes);
         }
 
-        private void Progress(string role, string pageName, int minutes)
+        [Given(@"the (.*) user has progressed to the (.*) page for the existing hearing")]
+        public void GivenHearingExistsAndIAmOnThePage(string role, string pageName)
         {
-            if (!pageName.Equals("Hearings Page"))
+            _currentPage = Page.Login;
+            Progress(role, pageName, 0, false);
+        }
+
+        private void Progress(string role, string pageName, int minutes, bool createHearing = true)
+        {
+            if (!pageName.Equals("Hearings Page") && createHearing)
             {
                 _dataSetupSteps.GivenIHaveAHearing(minutes);
                 _dataSetupSteps.GivenIHaveAConference();
