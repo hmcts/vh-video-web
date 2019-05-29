@@ -26,7 +26,18 @@ export class MicVisualiserComponent implements OnInit {
 
   requestMedia() {
     const mediaConstraints = {
-      audio: true
+      video: false,
+      audio: {
+        mandatory: {
+          echoCancellation: false, // disabling audio processing
+          googAutoGainControl: true,
+          googNoiseSuppression: true,
+          googHighpassFilter: true,
+          googTypingNoiseDetection: true,
+          //googAudioMirroring: true
+        },
+        optional: []
+      }
     };
 
     this._navigator.getUserMedia = (this._navigator.getUserMedia || this._navigator.webkitGetUserMedia
