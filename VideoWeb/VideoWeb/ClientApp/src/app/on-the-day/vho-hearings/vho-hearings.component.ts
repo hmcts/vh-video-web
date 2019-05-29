@@ -49,14 +49,14 @@ export class VhoHearingsComponent implements OnInit {
 
   ngOnInit() {
     this.setupSubscribers();
-    this.retrieveHearingsForUser();
+    this.retrieveHearingsForVhOfficer();
     this.interval = setInterval(() => {
-      this.retrieveHearingsForUser();
+      this.retrieveHearingsForVhOfficer();
     }, 30000);
   }
 
-  retrieveHearingsForUser() {
-    this.videoWebService.getConferencesForUser().subscribe((data: ConferenceForUserResponse[]) => {
+  retrieveHearingsForVhOfficer() {
+    this.videoWebService.getConferencesForVhOfficer().subscribe((data: ConferenceForUserResponse[]) => {
       this.loadingData = false;
       this.conferences = data;
       if (this.selectedHearing) {

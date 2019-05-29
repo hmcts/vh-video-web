@@ -30,9 +30,9 @@ describe('VhoHearingsComponent', () => {
   let errorService: ErrorService;
 
   beforeEach(async(() => {
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForUser',
+    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForVhOfficer',
       'getConferenceById', 'getTasksForConference']);
-    videoWebServiceSpy.getConferencesForUser.and.returnValue(of(conferences));
+    videoWebServiceSpy.getConferencesForVhOfficer.and.returnValue(of(conferences));
     videoWebServiceSpy.getConferenceById.and.returnValue(of(new ConferenceTestData().getConferenceDetail()));
     videoWebServiceSpy.getTasksForConference.and.returnValue(of(new ConferenceTestData().getTasksForConference()));
 
@@ -137,8 +137,8 @@ describe('VhoHearingsComponent', () => {
   let errorService: ErrorService;
 
   beforeEach(async(() => {
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForUser']);
-    videoWebServiceSpy.getConferencesForUser.and.returnValue(throwError({ status: 401, isSwaggerException: true }));
+    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForVhOfficer']);
+    videoWebServiceSpy.getConferencesForVhOfficer.and.returnValue(throwError({ status: 401, isSwaggerException: true }));
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],

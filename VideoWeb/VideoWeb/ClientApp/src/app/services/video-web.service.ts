@@ -15,6 +15,10 @@ export class VideoWebService {
     return this.apiClient.getConferencesForUser();
   }
 
+  getConferencesForVhOfficer(): Observable<ConferenceForUserResponse[]> {
+    return this.apiClient.getConferencesForVhOfficers();
+  }
+
   getConferenceById(conferenceId: string): Observable<ConferenceResponse> {
     return this.apiClient.getConferenceById(conferenceId);
   }

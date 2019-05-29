@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
+using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 using UserRole = VideoWeb.Contract.Responses.UserRole;
 
@@ -18,10 +19,12 @@ namespace VideoWeb.Controllers
     public class ConferencesController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
+        private readonly IUserApiClient _userApiClient;
 
-        public ConferencesController(IVideoApiClient videoApiClient)
+        public ConferencesController(IVideoApiClient videoApiClient, IUserApiClient userApiClient)
         {
             _videoApiClient = videoApiClient;
+            _userApiClient = userApiClient;
         }
 
         /// <summary>
@@ -38,6 +41,44 @@ namespace VideoWeb.Controllers
             try
             {
                 var conferences = await _videoApiClient.GetConferencesForUsernameAsync(username);
+                var mapper = new ConferenceForUserResponseMapper();
+                var response = conferences.Select(x => mapper.MapConferenceSummaryToResponseModel(x)).ToList();
+                return Ok(response);
+            }
+            catch (VideoApiException e)
+            {
+                return StatusCode(e.StatusCode, e);
+            }
+        }
+        
+        /// <summary>
+        /// Get conferences for user
+        /// </summary>
+        /// <returns>List of conferences, if any</returns>
+        [HttpGet("vhofficers")]
+        [ProducesResponseType(typeof(List<ConferenceForUserResponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.Unauthorized)]
+        [SwaggerOperation(OperationId = "GetConferencesForVhOfficers")]
+        public async Task<ActionResult<List<ConferenceForUserResponse>>> GetConferencesForVhOfficers()
+        {
+            try
+            {
+                var username = User.Identity.Name.ToLower().Trim();
+                var profile = await _userApiClient.GetUserByAdUserNameAsync(username);
+                var profileResponse = new UserProfileResponseMapper().MapToResponseModel(profile);
+                if (profileResponse.Role != UserRole.VideoHearingsOfficer)
+                {
+                    return Unauthorized("User must be a VH Officer");
+                }
+            }
+            catch (UserApiException e)
+            {
+                return StatusCode(e.StatusCode, e);
+            }
+            
+            try
+            {
+                var conferences = await _videoApiClient.GetConferencesTodayAsync();
                 var mapper = new ConferenceForUserResponseMapper();
                 var response = conferences.Select(x => mapper.MapConferenceSummaryToResponseModel(x)).ToList();
                 return Ok(response);
