@@ -33,8 +33,7 @@ export class MicVisualiserComponent implements OnInit {
           googAutoGainControl: true,
           googNoiseSuppression: true,
           googHighpassFilter: true,
-          googTypingNoiseDetection: true,
-          //googAudioMirroring: true
+          googTypingNoiseDetection: true
         },
         optional: []
       }
