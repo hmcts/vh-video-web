@@ -59,8 +59,7 @@ export class VhoHearingsComponent implements OnInit {
     this.videoWebService.getConferencesForVhOfficer().subscribe((data: ConferenceForUserResponse[]) => {
       this.loadingData = false;
       this.conferences = data;
-
-      if (data.length > 0) {
+      if (data && data.length > 0) {
         this.enableFullScreen(true);
       } else {
         this.enableFullScreen(false);
@@ -72,12 +71,14 @@ export class VhoHearingsComponent implements OnInit {
     },
       (error) => {
         this.loadingData = false;
+        this.enableFullScreen(false);
         this.errorService.handleApiError(error);
       });
   }
 
   hasHearings(): boolean {
-    return this.conferences !== null && this.conferences.length > 0;
+    console.log('checking if has hearings');
+    return !this.loadingData && this.conferences && this.conferences.length > 0;
   }
 
   hasTasks(): boolean {
@@ -204,6 +205,10 @@ export class VhoHearingsComponent implements OnInit {
 
   enableFullScreen(fullScreen: boolean) {
     const masterContainer = document.getElementById('master-container');
+    if (!masterContainer) {
+      return;
+    }
+
     if (fullScreen) {
       masterContainer.classList.add('fullscreen');
     } else {

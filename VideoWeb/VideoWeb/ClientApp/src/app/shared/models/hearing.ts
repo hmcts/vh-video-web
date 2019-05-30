@@ -32,7 +32,7 @@ export class Hearing {
         const h = Math.floor(duration / 60);
         const m = duration % 60;
         const hours = h < 1 ? `${h} hours` : `${h} hour`;
-        const minutes = `${m} minutes`;
+        const minutes = m < 1 ? `${m} minute` : `${m} minutes`;
         if (h > 0) {
           return `${hours} and ${minutes}`;
         } else {
