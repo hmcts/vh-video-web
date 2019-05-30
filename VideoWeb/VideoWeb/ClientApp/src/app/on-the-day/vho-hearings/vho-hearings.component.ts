@@ -59,6 +59,13 @@ export class VhoHearingsComponent implements OnInit {
     this.videoWebService.getConferencesForVhOfficer().subscribe((data: ConferenceForUserResponse[]) => {
       this.loadingData = false;
       this.conferences = data;
+
+      if (data.length > 0) {
+        this.enableFullScreen(true);
+      } else {
+        this.enableFullScreen(false);
+      }
+
       if (this.selectedHearing) {
         this.getTasksForConference(this.selectedHearing.getConference().id);
       }
@@ -69,11 +76,11 @@ export class VhoHearingsComponent implements OnInit {
       });
   }
 
-  hasHearings() {
-    return this.conferences !== undefined && this.conferences.length > 0;
+  hasHearings(): boolean {
+    return this.conferences !== null && this.conferences.length > 0;
   }
 
-  hasTasks() {
+  hasTasks(): boolean {
     return this.selectedHearing !== undefined && this.tasks !== undefined && this.tasks.length > 0;
   }
 
@@ -97,7 +104,10 @@ export class VhoHearingsComponent implements OnInit {
 
   getWidthForFrame(): number {
     const listColumnElement: HTMLElement = document.getElementById('list-column');
-    const listWidth = listColumnElement.offsetWidth;
+    let listWidth = 0;
+    if (listColumnElement) {
+      listWidth = listColumnElement.offsetWidth;
+    }
     const windowWidth = window.innerWidth;
     const frameWidth = windowWidth - listWidth - 30;
     return frameWidth;
@@ -190,6 +200,14 @@ export class VhoHearingsComponent implements OnInit {
         (error) => {
           this.errorService.handleApiError(error);
         });
+  }
 
+  enableFullScreen(fullScreen: boolean) {
+    const masterContainer = document.getElementById('master-container');
+    if (fullScreen) {
+      masterContainer.classList.add('fullscreen');
+    } else {
+      masterContainer.classList.remove('fullscreen');
+    }
   }
 }
