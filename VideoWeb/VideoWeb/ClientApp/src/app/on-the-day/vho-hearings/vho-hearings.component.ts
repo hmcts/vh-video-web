@@ -77,7 +77,6 @@ export class VhoHearingsComponent implements OnInit {
   }
 
   hasHearings(): boolean {
-    console.log('checking if has hearings');
     return !this.loadingData && this.conferences && this.conferences.length > 0;
   }
 

@@ -106,7 +106,21 @@ namespace VideoWeb.Controllers
                 ModelState.AddModelError(nameof(conferenceId), $"Please provide a valid {nameof(conferenceId)}");
                 return BadRequest(ModelState);
             }
-
+            var username = User.Identity.Name.ToLower().Trim();
+            bool isVhOfficer;
+            try
+            {
+                
+                var profile = await _userApiClient.GetUserByAdUserNameAsync(username);
+                var profileResponse = new UserProfileResponseMapper().MapToResponseModel(profile);
+                isVhOfficer = profileResponse.Role == UserRole.VideoHearingsOfficer; 
+                
+            }
+            catch (UserApiException e)
+            {
+                return StatusCode(e.StatusCode, e);
+            }
+            
             ConferenceDetailsResponse conference;
             try
             {
@@ -117,8 +131,7 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e);
             }
 
-            var username = User.Identity.Name.ToLower().Trim();
-            if (conference.Participants.All(x => x.Username.ToLower().Trim() != username))
+            if (!isVhOfficer && conference.Participants.All(x => x.Username.ToLower().Trim() != username))
             {
                 return Unauthorized();
             }

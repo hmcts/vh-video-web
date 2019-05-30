@@ -40,6 +40,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             {
                 ControllerContext = context
             };
+            
+            var userProfile = new UserProfile {User_role = "Individual"};
+            _userApiClientMock
+                .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(userProfile);  
         }
 
         
@@ -47,6 +52,24 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public async Task should_return_ok_when_user_belongs_to_conference()
         {
             var conference = CreateValidResponse();
+            _videoApiClientMock
+                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(conference);
+
+            var result = await _controller.GetConferenceById(conference.Id.GetValueOrDefault());
+            var typedResult = (OkObjectResult) result.Result;
+            typedResult.Should().NotBeNull();
+        }
+        
+        [Test]
+        public async Task should_return_ok_when_user_is_an_admin()
+        {
+            var userProfile = new UserProfile {User_role = "VhOfficer"};
+            _userApiClientMock
+                .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(userProfile);  
+            
+            var conference = CreateValidResponse(null);
             _videoApiClientMock
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
