@@ -12,14 +12,14 @@
   </div>
 </div>
 <div class="govuk-grid-row">
-  <div *ngIf="displayFeed">
+  <div>
     <div class="govuk-grid-column-one-quarter">
-      <video id="outgoingStream" [srcObject]="this.outgoingStream" autoplay width="270" height="auto">
+      <video id="outgoingStream" [srcObject]="this.outgoingStream" muted autoplay width="270" height="auto">
         Your browser does not support video
       </video>
     </div>
     <div class="govuk-grid-column-full">
-      <app-mic-visualiser></app-mic-visualiser>
+      <app-mic-visualiser *ngIf="displayFeed"></app-mic-visualiser>
     </div>
   </div>
 </div>
