@@ -7,7 +7,7 @@
   <div class="marker fiveeleven" [ngClass]="hearing.isDelayed() ? 'black' : 'white'"></div>
 
   <div class="inner_face"
-    [ngClass]="{'ontime': hearing.isOnTime(), 'isstarting': hearing.isStarting(), 'delayed': hearing.isDelayed()}">
+    [ngClass]="{'ontime white': hearing.isOnTime(), 'isstarting white': hearing.isStarting(), 'delayed black': hearing.isDelayed()}">
     <div id="hour-hand" class="hand hour" [ngClass]="hearing.isDelayed() ? 'black' : 'white'"></div>
     <div id="minute-hand" class="hand minute" [ngClass]="hearing.isDelayed() ? 'black' : 'white'"></div>
     <div id="second-hand" class="hand second" [ngClass]="hearing.isDelayed() ? 'black' : 'white'"></div>
