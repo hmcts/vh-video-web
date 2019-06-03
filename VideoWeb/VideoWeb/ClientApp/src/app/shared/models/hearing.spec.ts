@@ -73,14 +73,14 @@ describe('Hearing', () => {
     expect(hearing.isStarting()).toBeFalsy();
   });
 
-  it('should return false when conference is more than five minutes to start time', () => {
+  it('should return false when conference is more than two minutes to start time', () => {
     const conference = new ConferenceTestData().getConferenceFuture();
     conference.status = ConferenceStatus.NotStarted;
     const hearing = new Hearing(conference);
     expect(hearing.isStarting()).toBeFalsy();
   });
 
-  it('should return false when conference is due to start within five minutes but has started', () => {
+  it('should return false when conference is due to start within two minutes but has started', () => {
     const conference = new ConferenceTestData().getConferenceNow();
     conference.status = ConferenceStatus.InSession;
     const hearing = new Hearing(conference);
