@@ -56,7 +56,7 @@ export class VhoHearingsComponent implements OnInit {
   }
 
   retrieveHearingsForVhOfficer() {
-    this.videoWebService.getConferencesForVhOfficer().subscribe((data: ConferenceForUserResponse[]) => {
+    this.videoWebService.getConferencesToday().subscribe((data: ConferenceForUserResponse[]) => {
       this.loadingData = false;
       this.conferences = data;
       if (data && data.length > 0) {

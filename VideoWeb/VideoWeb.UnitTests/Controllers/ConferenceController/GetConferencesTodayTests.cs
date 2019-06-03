@@ -17,7 +17,7 @@ using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
-    public class GetConferencesForVhOfficersTests
+    public class GetConferencesTodayTests
     {
         private ConferencesController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
@@ -52,7 +52,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .ReturnsAsync(userProfile);
             
 
-            var result = await _controller.GetConferencesForVhOfficers();
+            var result = await _controller.GetConferencesToday();
             
             var typedResult = (UnauthorizedObjectResult) result.Result;
             typedResult.Should().NotBeNull();
@@ -67,7 +67,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferencesForVhOfficers();
+            var result = await _controller.GetConferencesToday();
             
             var typedResult = (ObjectResult)result.Result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
@@ -87,7 +87,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferencesTodayAsync())
                 .ThrowsAsync(apiException);
             
-            var result = await _controller.GetConferencesForVhOfficers();
+            var result = await _controller.GetConferencesToday();
             
             var typedResult = (ObjectResult)result.Result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
@@ -107,7 +107,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferencesTodayAsync())
                 .ReturnsAsync(conferences);
 
-            var result = await _controller.GetConferencesForVhOfficers();
+            var result = await _controller.GetConferencesToday();
             
             var typedResult = (OkObjectResult) result.Result;
             typedResult.Should().NotBeNull();

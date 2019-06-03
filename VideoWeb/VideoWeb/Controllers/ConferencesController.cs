@@ -55,11 +55,11 @@ namespace VideoWeb.Controllers
         /// Get conferences for user
         /// </summary>
         /// <returns>List of conferences, if any</returns>
-        [HttpGet("vhofficers")]
+        [HttpGet("today")]
         [ProducesResponseType(typeof(List<ConferenceForUserResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.Unauthorized)]
-        [SwaggerOperation(OperationId = "GetConferencesForVhOfficers")]
-        public async Task<ActionResult<List<ConferenceForUserResponse>>> GetConferencesForVhOfficers()
+        [SwaggerOperation(OperationId = "GetConferencesToday")]
+        public async Task<ActionResult<List<ConferenceForUserResponse>>> GetConferencesToday()
         {
             try
             {

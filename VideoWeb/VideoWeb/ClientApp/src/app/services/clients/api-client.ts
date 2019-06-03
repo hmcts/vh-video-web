@@ -98,8 +98,8 @@ export class ApiClient {
      * Get conferences for user
      * @return Success
      */
-    getConferencesForVhOfficers(): Observable<ConferenceForUserResponse[]> {
-        let url_ = this.baseUrl + "/conferences/vhofficers";
+    getConferencesToday(): Observable<ConferenceForUserResponse[]> {
+        let url_ = this.baseUrl + "/conferences/today";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -111,11 +111,11 @@ export class ApiClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetConferencesForVhOfficers(response_);
+            return this.processGetConferencesToday(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetConferencesForVhOfficers(<any>response_);
+                    return this.processGetConferencesToday(<any>response_);
                 } catch (e) {
                     return <Observable<ConferenceForUserResponse[]>><any>_observableThrow(e);
                 }
@@ -124,7 +124,7 @@ export class ApiClient {
         }));
     }
 
-    protected processGetConferencesForVhOfficers(response: HttpResponseBase): Observable<ConferenceForUserResponse[]> {
+    protected processGetConferencesToday(response: HttpResponseBase): Observable<ConferenceForUserResponse[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
