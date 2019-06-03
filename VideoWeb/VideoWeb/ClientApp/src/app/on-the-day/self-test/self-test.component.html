@@ -1,26 +1,22 @@
 <div class="govuk-grid-row">
-  <div *ngIf="!displayFeed && !testComplete" class="govuk-grid-column-three-quarters ">
+  <div *ngIf="!displayFeed && !testComplete" class="govuk-grid-column-full">
     <p class="govuk-body-l">Please wait to be connected...</p>
   </div>
-  <div *ngIf="displayFeed" class="govuk-grid-column-three-quarters ">
+  <div *ngIf="displayFeed" class="govuk-grid-column-full">
     <video id="incomingStream" [srcObject]="this.incomingStream" autoplay width="100%" height="auto">
       Your browser does not support video
     </video>
   </div>
-  <div id="testscore" *ngIf="testScore" class="govuk-grid-column-one-quarter ">
-    <p class="govuk-body-l">Test Score: <strong>{{testScore}}</strong></p>
-  </div>
 </div>
-<div class="govuk-grid-row">
-  <div>
-    <div class="govuk-grid-column-one-quarter">
-      <video id="outgoingStream" [srcObject]="this.outgoingStream" muted autoplay width="270" height="auto">
-        Your browser does not support video
-      </video>
-    </div>
-    <div class="govuk-grid-column-full">
-      <app-mic-visualiser *ngIf="displayFeed"></app-mic-visualiser>
-    </div>
+
+<div *ngIf="!testComplete" class="govuk-grid-row">
+  <div class="govuk-grid-column-one-quarter">
+    <video id="outgoingStream" [srcObject]="this.outgoingStream" muted autoplay width="270" height="auto">
+      Your browser does not support video
+    </video>
+  </div>
+  <div class="govuk-grid-column-full">
+    <app-mic-visualiser *ngIf="displayFeed"></app-mic-visualiser>
   </div>
 </div>
 
