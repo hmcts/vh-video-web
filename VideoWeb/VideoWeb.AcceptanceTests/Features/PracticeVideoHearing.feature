@@ -9,7 +9,7 @@ Scenario: Individual video hearing practice
 	Then the incoming and self video should be playing video
 	And contact us details are available
 	When the video has ended
-	Then the test score should be displayed
+	Then the test score should be produced
 	When the user clicks the Re-play the video message button
 	Then the incoming and self video should be playing video
 
@@ -19,7 +19,7 @@ Scenario: Representative video hearing practice
 	Then the incoming and self video should be playing video
 	And contact us details are available
 	When the video has ended
-	Then the test score should be displayed
+	Then the test score should be produced
 	When the user clicks the Re-play the video message button
 	Then the incoming and self video should be playing video
 

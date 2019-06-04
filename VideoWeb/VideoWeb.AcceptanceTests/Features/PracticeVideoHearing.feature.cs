@@ -90,7 +90,7 @@ this.ScenarioInitialize(scenarioInfo);
 #line 11
  testRunner.When("the video has ended", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 12
- testRunner.Then("the test score should be displayed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the test score should be produced", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 13
  testRunner.When("the user clicks the Re-play the video message button", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 14
@@ -118,7 +118,7 @@ this.ScenarioInitialize(scenarioInfo);
 #line 21
  testRunner.When("the video has ended", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 22
- testRunner.Then("the test score should be displayed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the test score should be produced", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 23
  testRunner.When("the user clicks the Re-play the video message button", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 24
