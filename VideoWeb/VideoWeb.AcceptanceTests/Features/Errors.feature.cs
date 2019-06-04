@@ -32,8 +32,8 @@ namespace VideoWeb.AcceptanceTests.Features
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Error Pages", "\tAs a registered video hearings user\n\tI would expect information error messages w" +
-                    "hen things go wrong\n\tSo that I know how to ", ProgrammingLanguage.CSharp, new string[] {
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Error Pages", "\tAs a registered video hearings user\r\n\tI would expect information error messages " +
+                    "when things go wrong\r\n\tSo that I know how to ", ProgrammingLanguage.CSharp, new string[] {
                         "VIH-4350"});
             testRunner.OnFeatureStart(featureInfo);
         }

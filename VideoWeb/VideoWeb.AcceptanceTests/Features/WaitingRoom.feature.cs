@@ -34,8 +34,8 @@ namespace VideoWeb.AcceptanceTests.Features
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Waiting Room", "\tAs a registered video hearings user\n\tI need to access a waiting room prior to my" +
-                    " hearing\n\tSo that I am ready for the video hearing to begin", ProgrammingLanguage.CSharp, new string[] {
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Waiting Room", "\tAs a registered video hearings user\r\n\tI need to access a waiting room prior to m" +
+                    "y hearing\r\n\tSo that I am ready for the video hearing to begin", ProgrammingLanguage.CSharp, new string[] {
                         "VIH-4127",
                         "VIH-4131",
                         "VIH-4233"});
@@ -78,12 +78,10 @@ namespace VideoWeb.AcceptanceTests.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Individual waiting room")]
-        [NUnit.Framework.CategoryAttribute("smoketest")]
         [NUnit.Framework.CategoryAttribute("VIH-4233")]
         public virtual void IndividualWaitingRoom()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Individual waiting room", null, new string[] {
-                        "smoketest",
                         "VIH-4233"});
 #line 8
 this.ScenarioInitialize(scenarioInfo);

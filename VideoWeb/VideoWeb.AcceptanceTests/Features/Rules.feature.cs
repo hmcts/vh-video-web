@@ -32,8 +32,8 @@ namespace VideoWeb.AcceptanceTests.Features
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Rules", "\tAs a registered video hearings user\n\tI need to see a list of rules regarding par" +
-                    "ticipating in a video hearing \n\tSo that I can comply", ProgrammingLanguage.CSharp, new string[] {
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Rules", "\tAs a registered video hearings user\r\n\tI need to see a list of rules regarding pa" +
+                    "rticipating in a video hearing \r\n\tSo that I can comply", ProgrammingLanguage.CSharp, new string[] {
                         "VIH-4037"});
             testRunner.OnFeatureStart(featureInfo);
         }
