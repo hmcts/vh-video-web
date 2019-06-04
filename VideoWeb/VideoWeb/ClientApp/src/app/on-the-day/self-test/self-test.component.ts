@@ -71,6 +71,7 @@ export class SelfTestComponent implements OnInit {
       console.info('successfully connected');
       self.incomingStream = stream;
       self.displayFeed = true;
+      self.mutedOutgoingVideo();
     };
 
     this.pexipAPI.onError = function (reason) {
@@ -119,5 +120,10 @@ export class SelfTestComponent implements OnInit {
       this.disconnect();
     }
     this.router.navigate([PageUrls.CameraWorking, this.conference.id]);
+  }
+
+  mutedOutgoingVideo() {
+    const outgoingVideo = <HTMLVideoElement>document.getElementById('outgoingStream');
+    outgoingVideo.muted = true;
   }
 }

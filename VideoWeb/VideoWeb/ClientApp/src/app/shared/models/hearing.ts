@@ -43,7 +43,7 @@ export class Hearing {
     isOnTime(): boolean {
         const now = moment.utc();
         let scheduled = moment(this.conference.scheduled_date_time);
-        scheduled = scheduled.subtract(5, 'minutes');
+        scheduled = scheduled.subtract(2, 'minutes');
         return now.isBefore(scheduled) && this.conference.status === ConferenceStatus.NotStarted;
     }
 
@@ -51,7 +51,7 @@ export class Hearing {
         const now = moment.utc();
 
         let minStart = moment(this.conference.scheduled_date_time);
-        minStart = minStart.subtract(5, 'minutes');
+        minStart = minStart.subtract(2, 'minutes');
 
         let maxStart = moment(this.conference.scheduled_date_time);
         maxStart = maxStart.add(10, 'minutes');
