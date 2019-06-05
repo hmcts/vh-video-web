@@ -17,6 +17,10 @@ Scenario: Participants join hearing
 	Given the Individual user has progressed to the Waiting Room page
 	And there is a new browser open for Representative01
 	And the Representative user has progressed to the Waiting Room page for the existing hearing
+	And there is a new browser open for Individual01
+	And the Individual user has progressed to the Waiting Room page for the existing hearing
+	And there is a new browser open for Representative02
+	And the Representative user has progressed to the Waiting Room page for the existing hearing
 	And there is a new browser open for Judge
 	And the Judge user has progressed to the Waiting Room page for the existing hearing
 	When the user clicks the button with innertext Start Hearing
