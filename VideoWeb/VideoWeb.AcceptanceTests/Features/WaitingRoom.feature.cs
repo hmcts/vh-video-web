@@ -78,12 +78,10 @@ namespace VideoWeb.AcceptanceTests.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Individual waiting room")]
-        [NUnit.Framework.CategoryAttribute("smoketest")]
         [NUnit.Framework.CategoryAttribute("VIH-4233")]
         public virtual void IndividualWaitingRoom()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Individual waiting room", null, new string[] {
-                        "smoketest",
                         "VIH-4233"});
 #line 8
 this.ScenarioInitialize(scenarioInfo);

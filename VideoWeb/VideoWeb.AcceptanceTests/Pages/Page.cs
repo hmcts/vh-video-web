@@ -32,6 +32,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static Page HearingList => new Page("Hearing List", "hearing-list", ParticipantJourney.HearingList, NextPageAsJourney(ParticipantJourney.HearingList), JudgeJourney.HearingList, NextPageAsJudgeJourney(JudgeJourney.HearingList), VhoJourney.HearingList, NextPageAsVhoJourney(VhoJourney.HearingList));
         public static Page EquipmentCheck => new Page("Equipment Check", "equipment-check", ParticipantJourney.EquipmentCheck, NextPageAsJourney(ParticipantJourney.EquipmentCheck), JudgeJourney.NotInJudgeJourney, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJourney), VhoJourney.NotInVhoJourney, NextPageAsVhoJourney(VhoJourney.NotInVhoJourney));
         public static Page SwitchOnCamAndMicPage => new Page("Switch on your camera and microphone", "switch-on-camera-microphone", ParticipantJourney.SwitchOnYourCameraAndMicrophone, NextPageAsJourney(ParticipantJourney.SwitchOnYourCameraAndMicrophone), JudgeJourney.NotInJudgeJourney, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJourney), VhoJourney.NotInVhoJourney, NextPageAsVhoJourney(VhoJourney.NotInVhoJourney));
+        public static Page PracticeVideoHearing => new Page("Practice video hearing", "practice-video-hearing", ParticipantJourney.PracticeVideoHearing, NextPageAsJourney(ParticipantJourney.PracticeVideoHearing), JudgeJourney.NotInJudgeJourney, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJourney), VhoJourney.NotInVhoJourney, NextPageAsVhoJourney(VhoJourney.NotInVhoJourney));        
         public static Page CameraWorking => new Page("Camera Working", "camera-working", ParticipantJourney.CameraWorking, NextPageAsJourney(ParticipantJourney.CameraWorking), JudgeJourney.NotInJudgeJourney, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJourney), VhoJourney.NotInVhoJourney, NextPageAsVhoJourney(VhoJourney.NotInVhoJourney));
         public static Page MicrophoneWorking => new Page("Microphone Working", "microphone-working", ParticipantJourney.MicrophoneWorking, NextPageAsJourney(ParticipantJourney.MicrophoneWorking), JudgeJourney.NotInJudgeJourney, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJourney), VhoJourney.NotInVhoJourney, NextPageAsVhoJourney(VhoJourney.NotInVhoJourney));
         public static Page SeeAndHearVideo => new Page("See and Hear Video", "see-and-hear-video", ParticipantJourney.SeeAndHearVideo, NextPageAsJourney(ParticipantJourney.SeeAndHearVideo), JudgeJourney.NotInJudgeJourney, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJourney), VhoJourney.NotInVhoJourney, NextPageAsVhoJourney(VhoJourney.NotInVhoJourney));        
@@ -70,6 +71,8 @@ namespace VideoWeb.AcceptanceTests.Pages
                     return EquipmentCheck;
                 case ParticipantJourney.SwitchOnYourCameraAndMicrophone:
                     return SwitchOnCamAndMicPage;
+                case ParticipantJourney.PracticeVideoHearing:
+                    return PracticeVideoHearing;
                 case ParticipantJourney.CameraWorking:
                     return CameraWorking;
                 case ParticipantJourney.MicrophoneWorking:

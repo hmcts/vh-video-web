@@ -61,6 +61,10 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 testSettings.TestClientId, testSettings.TestClientSecret,
                 hearingServiceSettings.VideoApiResourceId);
 
+            testContext.VideoWebBearerToken = new TokenProvider(Options.Create(azureAdConfiguration)).GetClientAccessToken(
+                testSettings.TestClientId, testSettings.TestClientSecret,
+                azureAdConfiguration.ClientId);
+
             testSettings.TestClientId.Should().NotBeNullOrEmpty();
             testSettings.TestClientSecret.Should().NotBeNullOrEmpty();
             testSettings.TestUserPassword.Should().NotBeNullOrEmpty();

@@ -63,6 +63,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.JudgeIFrameUri.Should().Be(meetingRoom.Judge_uri);
             response.ParticipantUri.Should().Be(meetingRoom.Participant_uri);
             response.PexipNodeUri.Should().Be(meetingRoom.Pexip_node);
+            response.PexipSelfTestNodeUri.Should().NotBeNullOrWhiteSpace();
         }
     }
 }

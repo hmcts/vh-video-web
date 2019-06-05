@@ -154,6 +154,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                         WhentheUserClicksTheButton("Continue");
                             break;
                     }
+                    case ParticipantJourney.PracticeVideoHearing:
                     case ParticipantJourney.EquipmentCheck:
                     case ParticipantJourney.Rules:
                     {
@@ -216,6 +217,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 case "Hearings List": _commonPages.PageUrl(Page.HearingList); break;
                 case "Equipment Check": _commonPages.PageUrl(Page.EquipmentCheck); break;
                 case "Switch on your camera and microphone": _commonPages.PageUrl(Page.SwitchOnCamAndMicPage); break;
+                case "Practice video hearing": _commonPages.PageUrl(Page.PracticeVideoHearing); break;
                 case "Camera Working": _commonPages.PageUrl(Page.CameraWorking); break;
                 case "Microphone Working": _commonPages.PageUrl(Page.MicrophoneWorking); break;
                 case "See and Hear Video": _commonPages.PageUrl(Page.SeeAndHearVideo); break;
