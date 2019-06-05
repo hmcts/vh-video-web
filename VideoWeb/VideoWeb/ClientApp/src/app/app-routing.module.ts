@@ -3,12 +3,13 @@ import { RouterModule, Routes } from '@angular/router';
 import {AuthGuard} from './security/auth.guard';
 import { HomeComponent } from './home/home.component';
 import { SendVideoEventsComponent } from './send-video-events/send-video-events.component';
+import { PageUrls } from './shared/page-url.constants';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: '', redirectTo: `${PageUrls.Home}`, pathMatch: 'full' },
   { path: 'events/:conferenceId', component: SendVideoEventsComponent },
-  { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
-  { path: '**', redirectTo: 'not-found', pathMatch: 'full', canActivate: [AuthGuard] }
+  { path: `${PageUrls.Home}`, component: HomeComponent, canActivate: [AuthGuard] },
+  { path: '**', redirectTo: `${PageUrls.NotFound}`, pathMatch: 'full', canActivate: [AuthGuard] }
 ];
 
 @NgModule({

@@ -29,9 +29,14 @@ resources:
     endpoint: 'GitHubDevOps'
 
 trigger:
-- master
+  branches:
+    include:
+    - master
+  tags:
+    include:
+    - v*
 pr:
-- master
+  - master
 
 jobs:
 - template: jobs/angularDotNetCore.yml@azureDevOpsTemplates # Template reference

@@ -4,7 +4,6 @@ import 'webrtc-adapter';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { VideoWebService } from 'src/app/services/video-web.service';
 import { ConferenceResponse, AddMediaEventRequest } from 'src/app/services/clients/api-client';
-import { ErrorService } from 'src/app/services/error.service';
 import { AdalService } from 'adal-angular4';
 
 @Component({
@@ -25,7 +24,6 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private videoWebService: VideoWebService,
-    private errorService: ErrorService,
     private adalService: AdalService
   ) {
     this.userPrompted = false;
@@ -80,10 +78,7 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
   }
 
   goVideoTest() {
-    // temporarily point to camera question until video page is implemented
-    console.log(PageUrls.CameraWorking);
-    console.log(this.conferenceId);
-    this.router.navigate([PageUrls.CameraWorking, this.conferenceId]);
+    this.router.navigate([PageUrls.SelfTestVideo, this.conferenceId]);
   }
 
   postPermissionDeniedAlert() {

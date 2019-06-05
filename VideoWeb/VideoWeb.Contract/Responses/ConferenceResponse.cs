@@ -63,6 +63,11 @@ namespace VideoWeb.Contract.Responses
         public string PexipNodeUri { get; set; }
         
         /// <summary>
+        /// The pexip self-test node to connect to
+        /// </summary>
+        public string PexipSelfTestNodeUri { get; set; }
+        
+        /// <summary>
         /// The participants in the conference
         /// </summary>
         public List<ParticipantResponse> Participants { get; set; }
