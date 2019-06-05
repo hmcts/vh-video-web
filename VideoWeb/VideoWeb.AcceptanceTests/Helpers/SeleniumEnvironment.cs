@@ -35,7 +35,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             string video;
             switch (user)
             {
-                case "Judge": video = JudgeVideo; break;
+                case "Judge": case "Judge01": video = JudgeVideo; break;
                 case "Individual01": video = Individual1Video; break;
                 case "Representative01": video = Representative1Video; break;
                 case "Individual02": video = Individual2Video; break;

@@ -141,6 +141,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
             foreach (var browser in _context.Browsers.Values)
             {
+                browser.NgDriver.WrappedDriver.SwitchTo();
                 browser.BrowserTearDown();
             }
         }
