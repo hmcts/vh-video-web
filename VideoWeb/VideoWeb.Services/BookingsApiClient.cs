@@ -3731,13 +3731,9 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("scheduled_at", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTime? Scheduled_at { get; set; }
     
-        /// <summary>Updated At of the suitability answer</summary>
+        /// <summary>Last updated date and time of the suitability answers</summary>
         [Newtonsoft.Json.JsonProperty("updated_at", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTime? Updated_at { get; set; }
-    
-        /// <summary>Created time</summary>
-        [Newtonsoft.Json.JsonProperty("created_at", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTime? Created_at { get; set; }
     
         /// <summary>List of answers</summary>
         [Newtonsoft.Json.JsonProperty("answers", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
