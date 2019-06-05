@@ -146,7 +146,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _currentPage = currentPage.VhoNextPage(currentPage);
             }
 
-            if (role.Equals("Individual") || role.Equals("Representative"))
+            if (role.Contains("Individual") || role.Contains("Representative"))
             {
                 switch (currentPage.ParticipantJourney)
                 {

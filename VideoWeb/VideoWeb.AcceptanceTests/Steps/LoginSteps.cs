@@ -37,11 +37,20 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the (.*) attempts to login with valid credentials")]
         public void WhenUserLogsInWithValidCredentials(string role)
         {
-            _context.CurrentUser = role.Contains("with no hearings") ? _context.TestSettings.UserAccounts.LastOrDefault(c => c.Role == role.Split(" ")[0]) : _context.TestSettings.UserAccounts.FirstOrDefault(c => c.Role == role);
+            if (role.EndsWith("1") || role.EndsWith("2") || role.EndsWith("3") || role.EndsWith("4"))
+            {
+                _context.CurrentUser = _context.TestSettings.UserAccounts.Find(x => x.Lastname.Equals(role));
+            }
+            else
+            {
+                _context.CurrentUser = role.Contains("with no hearings") ? _context.TestSettings.UserAccounts.LastOrDefault(c => c.Role == role.Split(" ")[0]) : _context.TestSettings.UserAccounts.FirstOrDefault(c => c.Role == role);
+            }
+
             if (_context.CurrentUser == null)
             {
                 throw new ArgumentOutOfRangeException($"There are no users configured with the role '{role}'");
             }
+
             _loginPage.Logon(_context.CurrentUser.Username, _context.TestSettings.TestUserPassword);
             _context.Browsers.Add(_context.CurrentUser.Username, _browserContext);
         }
