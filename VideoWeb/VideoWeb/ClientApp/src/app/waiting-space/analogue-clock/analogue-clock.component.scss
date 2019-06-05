@@ -131,6 +131,21 @@
   transform: rotate(150deg)
 }
 
+.inner_face {
+  position: relative;
+  width: 88%;
+  height: 88%;
+  background: white;
+  -moz-border-radius: 1000px;
+  -webkit-border-radius: 1000px;
+  border-radius: 1000px;
+  z-index: 1000;
+  left: 6%;
+  /* set this value of 1/2 width value*/
+  top: 6%
+    /* set this value of 1/2 height value*/
+}
+
 .inner_face.ontime {
   position: relative;
   width: 88%;
@@ -176,9 +191,27 @@
     /* set this value of 1/2 height value*/
 }
 
-.inner_face::before {
+.inner_face.black:before {
   /* clock center circle small */
-  content: “”;
+  content: "";
+  width: 18px;
+  /* width of inner circle */
+  height: 18px;
+  /* height of inner circle */
+  border-radius: 18px;
+  margin-left: -9px;
+  /* set this value of 1/2 width value*/
+  margin-top: -9px;
+  /* set this value of 1/2 height value*/
+  background: govuk-colour("black");
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+.inner_face.white:before {
+  /* clock center circle small */
+  content: "";
   width: 18px;
   /* width of inner circle */
   height: 18px;
@@ -195,9 +228,9 @@
 }
 
 .inner_face::after {
+  content: "";
   position: absolute;
   width: 100%;
-  font: normal 0.8em Arial;
   color: govuk-colour("white");
   text-align: center;
   top: 85%
@@ -227,7 +260,6 @@
   z-index: -1;
 }
 
-.hand.minute.black,
 .hand.hour.black {
   position: absolute;
   width: 4px;
@@ -251,12 +283,24 @@
   z-index: -1;
 }
 
-.hand.minute {
+.hand.minute.black {
   height: 45%;
   /* height of min hand */
   top: 5%;
   /* set top to 50% - height */
-  width: 5px;
+  width: 4px;
+  /* width of min hand */
+  margin-left: -2.5px;
+  /* set this value to 1/2 width */
+  background: govuk-colour("black");
+}
+
+.hand.minute.white {
+  height: 45%;
+  /* height of min hand */
+  top: 5%;
+  /* set top to 50% - height */
+  width: 4px;
   /* width of min hand */
   margin-left: -2.5px;
   /* set this value to 1/2 width */
