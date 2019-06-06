@@ -85,3 +85,9 @@ import 'zone.js/dist/webapis-rtc-peer-connection';
 import 'zone.js/dist/zone-patch-user-media';
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
+
+import 'event-source-polyfill/src/eventsource.min.js';
+
+import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
+
+const EventSource = NativeEventSource || EventSourcePolyfill;
