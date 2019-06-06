@@ -44,16 +44,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .Click();
 
             _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.AdminIframe).Displayed.Should().BeTrue();
-        }
-
-        [When(@"the VHO logs into the admin panel")]
-        public void WhenTheVHOLogsIntoTheAdminPanel()
-        {
             _browserContext.NgDriver.SwitchTo().Frame(HearingListPage.AdminIframeId);
-
-            _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.AdminUsernameTextfield).SendKeys(_context.TestSettings.AdminUsername);
-            _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.AdminPasswordTextfield).SendKeys(_context.TestSettings.AdminPassword);
-            _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.SignInButton).Click();
         }
 
         [Then(@"a warning message appears indicating the user has no hearings scheduled")]

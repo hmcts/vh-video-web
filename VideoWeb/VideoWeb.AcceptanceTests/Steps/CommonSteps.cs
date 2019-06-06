@@ -112,7 +112,6 @@ namespace VideoWeb.AcceptanceTests.Steps
                     case VhoJourney.HearingList:
                     {
                         _hearingListSteps.WhenTheVHOSelectsTheHearing();
-                        _hearingListSteps.WhenTheVHOLogsIntoTheAdminPanel();
                         break;
                     }
                     case VhoJourney.AdminPanel:
