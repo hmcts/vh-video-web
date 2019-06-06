@@ -23,7 +23,7 @@ export class VhoHearingListComponent implements OnInit {
   }
 
   isOnTime(conference: ConferenceResponse): boolean {
-    return new Hearing(conference).isOnTime();
+    return new Hearing(conference).isOnTime() || new Hearing(conference).isStarting();
   }
 
   isSuspended(conference: ConferenceResponse): boolean {

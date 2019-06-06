@@ -79,6 +79,7 @@ namespace VideoWeb.Controllers
             try
             {
                 var conferences = await _videoApiClient.GetConferencesTodayAsync();
+                conferences = conferences.Where(HasNotPassed).ToList();
                 var mapper = new ConferenceForUserResponseMapper();
                 var response = conferences.Select(x => mapper.MapConferenceSummaryToResponseModel(x)).ToList();
                 return Ok(response);
@@ -87,6 +88,18 @@ namespace VideoWeb.Controllers
             {
                 return StatusCode(e.StatusCode, e);
             }
+        }
+
+        private static bool HasNotPassed(ConferenceSummaryResponse conference)
+        {
+            if (conference.Status != ConferenceState.Closed)
+            {
+                return true;
+            }
+
+            var endTime = conference.Scheduled_date_time.GetValueOrDefault()
+                .AddMinutes(conference.Scheduled_duration.GetValueOrDefault() + 30);
+            return DateTime.UtcNow < endTime;
         }
 
         /// <summary>
