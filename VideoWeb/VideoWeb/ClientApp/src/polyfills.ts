@@ -86,8 +86,8 @@ import 'zone.js/dist/zone-patch-user-media';
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
-import 'event-source-polyfill/src/eventsource.min.js';
+import EventTargetPolyfill from '@mattkrick/event-target-polyfill';
+import EventSourcePolyfill from '@mattkrick/event-source-polyfill';
 
-import { NativeEventSource, EventSourcePolyfill } from 'event-source-polyfill';
-
-const EventSource = NativeEventSource || EventSourcePolyfill;
+window.EventTarget = EventTarget || EventTargetPolyfill;
+window.EventSource = EventSource || EventSourcePolyfill;
