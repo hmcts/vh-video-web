@@ -85,9 +85,3 @@ import 'zone.js/dist/webapis-rtc-peer-connection';
 import 'zone.js/dist/zone-patch-user-media';
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
-
-import EventTargetPolyfill from '@mattkrick/event-target-polyfill';
-import EventSourcePolyfill from '@mattkrick/event-source-polyfill';
-
-window.EventTarget = EventTargetPolyfill;
-window.EventSource = EventSourcePolyfill;
