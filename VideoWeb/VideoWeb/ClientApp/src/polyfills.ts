@@ -58,14 +58,14 @@ import 'core-js/es7/reflect';
  * user can disable parts of macroTask/DomEvents patch by setting following flags
  */
 
- // (window as any).__Zone_disable_requestAnimationFrame = true; // disable patch requestAnimationFrame
- // (window as any).__Zone_disable_on_property = true; // disable patch onProperty such as onclick
- // (window as any).__zone_symbol__BLACK_LISTED_EVENTS = ['scroll', 'mousemove']; // disable patch specified eventNames
+// (window as any).__Zone_disable_requestAnimationFrame = true; // disable patch requestAnimationFrame
+// (window as any).__Zone_disable_on_property = true; // disable patch onProperty such as onclick
+// (window as any).__zone_symbol__BLACK_LISTED_EVENTS = ['scroll', 'mousemove']; // disable patch specified eventNames
 
- /*
- * in IE/Edge developer tools, the addEventListener will also be wrapped by zone.js
- * with the following flag, it will bypass `zone.js` patch for IE/Edge
- */
+/*
+* in IE/Edge developer tools, the addEventListener will also be wrapped by zone.js
+* with the following flag, it will bypass `zone.js` patch for IE/Edge
+*/
 // (window as any).__Zone_enable_cross_context_check = true;
 
 /***************************************************************************************************
@@ -83,3 +83,5 @@ import 'zone.js/dist/zone';  // Included with Angular CLI.
 import 'zone.js/dist/webapis-rtc-peer-connection';
 // getUserMedia patch
 import 'zone.js/dist/zone-patch-user-media';
+
+window.AudioContext = window.AudioContext || window.webkitAudioContext;

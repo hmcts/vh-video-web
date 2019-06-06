@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ApiClient, ConferenceForUserResponse, ConferenceResponse, ConferenceEventRequest,
-  TaskResponse, AddMediaEventRequest } from './clients/api-client';
+  TaskResponse, AddMediaEventRequest, TestCallScoreResponse } from './clients/api-client';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -37,5 +37,9 @@ export class VideoWebService {
 
   completeTask(conferenceId: string, taskId: number): Observable<TaskResponse> {
     return this.apiClient.completeTask(conferenceId, taskId);
+  }
+
+  getTestCallScore(conferenceId: string, participantId: string): Observable<TestCallScoreResponse> {
+    return this.apiClient.getTestCallResult(conferenceId, participantId);
   }
 }

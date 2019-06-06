@@ -20,6 +20,7 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public string BookingsApiBearerToken { get; set; }
         public string UserApiBearerToken { get; set; }
         public string VideoApiBearerToken { get; set; }
+        public string VideoWebBearerToken { get; set; }
         public string BookingsApiBaseUrl { get; set; }
         public string UserApiBaseUrl { get; set; }
         public string VideoApiBaseUrl { get; set; }
@@ -86,6 +87,14 @@ namespace VideoWeb.AcceptanceTests.Contexts
             var client = new RestClient(VideoApiBaseUrl);
             client.AddDefaultHeader("Accept", "application/json");
             client.AddDefaultHeader("Authorization", $"Bearer {VideoApiBearerToken}");
+            return client;
+        }
+
+        public RestClient VideoWebClient()
+        {
+            var client = new RestClient(VideoWebUrl);
+            client.AddDefaultHeader("Accept", "application/json");
+            client.AddDefaultHeader("Authorization", $"Bearer {VideoWebBearerToken}");
             return client;
         }
 
