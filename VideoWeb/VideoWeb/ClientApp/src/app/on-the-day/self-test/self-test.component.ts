@@ -98,6 +98,7 @@ export class SelfTestComponent implements OnInit {
   }
 
   replayVideo() {
+    this.pexipAPI.disconnect();
     this.call();
   }
 
