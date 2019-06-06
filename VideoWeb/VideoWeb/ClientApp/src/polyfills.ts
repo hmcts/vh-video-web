@@ -89,5 +89,5 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 import EventTargetPolyfill from '@mattkrick/event-target-polyfill';
 import EventSourcePolyfill from '@mattkrick/event-source-polyfill';
 
-window.EventTarget = EventTarget || EventTargetPolyfill;
-window.EventSource = EventSource || EventSourcePolyfill;
+window.EventTarget = EventTargetPolyfill;
+window.EventSource = EventSourcePolyfill;
