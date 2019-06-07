@@ -4,6 +4,7 @@ using System.Net;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
+using Testing.Common.Helpers;
 using VideoWeb.Contract.Responses;
 
 namespace VideoWeb.IntegrationTests.Api
