@@ -74,6 +74,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Features\HearingsList.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>HearingsList.feature</DependentUpon>
+    </Compile>
+    <Compile Update="Features\Rules.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Rules.feature</DependentUpon>
+    </Compile>
     <Compile Update="Features\VideoHearingOfficerAlerts.feature.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -96,6 +106,7 @@
     </SpecFlowFeatureFiles>
     <SpecFlowFeatureFiles Update="Features\HearingsList.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>HearingsList.feature.cs</LastGenOutput>
     </SpecFlowFeatureFiles>
     <SpecFlowFeatureFiles Update="Features\Login.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
@@ -111,6 +122,7 @@
     </SpecFlowFeatureFiles>
     <SpecFlowFeatureFiles Update="Features\Rules.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>Rules.feature.cs</LastGenOutput>
     </SpecFlowFeatureFiles>
     <SpecFlowFeatureFiles Update="Features\SeeAndHearVideo.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>

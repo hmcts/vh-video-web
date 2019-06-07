@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
+using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 using UserRole = VideoWeb.Contract.Responses.UserRole;
 
@@ -18,10 +19,12 @@ namespace VideoWeb.Controllers
     public class ConferencesController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
+        private readonly IUserApiClient _userApiClient;
 
-        public ConferencesController(IVideoApiClient videoApiClient)
+        public ConferencesController(IVideoApiClient videoApiClient, IUserApiClient userApiClient)
         {
             _videoApiClient = videoApiClient;
+            _userApiClient = userApiClient;
         }
 
         /// <summary>
@@ -47,6 +50,57 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e);
             }
         }
+        
+        /// <summary>
+        /// Get conferences for user
+        /// </summary>
+        /// <returns>List of conferences, if any</returns>
+        [HttpGet("today")]
+        [ProducesResponseType(typeof(List<ConferenceForUserResponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.Unauthorized)]
+        [SwaggerOperation(OperationId = "GetConferencesToday")]
+        public async Task<ActionResult<List<ConferenceForUserResponse>>> GetConferencesToday()
+        {
+            try
+            {
+                var username = User.Identity.Name.ToLower().Trim();
+                var profile = await _userApiClient.GetUserByAdUserNameAsync(username);
+                var profileResponse = new UserProfileResponseMapper().MapToResponseModel(profile);
+                if (profileResponse.Role != UserRole.VideoHearingsOfficer)
+                {
+                    return Unauthorized("User must be a VH Officer");
+                }
+            }
+            catch (UserApiException e)
+            {
+                return StatusCode(e.StatusCode, e);
+            }
+            
+            try
+            {
+                var conferences = await _videoApiClient.GetConferencesTodayAsync();
+                conferences = conferences.Where(HasNotPassed).ToList();
+                var mapper = new ConferenceForUserResponseMapper();
+                var response = conferences.Select(x => mapper.MapConferenceSummaryToResponseModel(x)).ToList();
+                return Ok(response);
+            }
+            catch (VideoApiException e)
+            {
+                return StatusCode(e.StatusCode, e);
+            }
+        }
+
+        private static bool HasNotPassed(ConferenceSummaryResponse conference)
+        {
+            if (conference.Status != ConferenceState.Closed)
+            {
+                return true;
+            }
+
+            var endTime = conference.Scheduled_date_time.GetValueOrDefault()
+                .AddMinutes(conference.Scheduled_duration.GetValueOrDefault() + 30);
+            return DateTime.UtcNow < endTime;
+        }
 
         /// <summary>
         /// Get the details of a conference by id
@@ -65,7 +119,21 @@ namespace VideoWeb.Controllers
                 ModelState.AddModelError(nameof(conferenceId), $"Please provide a valid {nameof(conferenceId)}");
                 return BadRequest(ModelState);
             }
-
+            var username = User.Identity.Name.ToLower().Trim();
+            bool isVhOfficer;
+            try
+            {
+                
+                var profile = await _userApiClient.GetUserByAdUserNameAsync(username);
+                var profileResponse = new UserProfileResponseMapper().MapToResponseModel(profile);
+                isVhOfficer = profileResponse.Role == UserRole.VideoHearingsOfficer; 
+                
+            }
+            catch (UserApiException e)
+            {
+                return StatusCode(e.StatusCode, e);
+            }
+            
             ConferenceDetailsResponse conference;
             try
             {
@@ -76,8 +144,7 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e);
             }
 
-            var username = User.Identity.Name.ToLower().Trim();
-            if (conference.Participants.All(x => x.Username.ToLower().Trim() != username))
+            if (!isVhOfficer && conference.Participants.All(x => x.Username.ToLower().Trim() != username))
             {
                 return Unauthorized();
             }
