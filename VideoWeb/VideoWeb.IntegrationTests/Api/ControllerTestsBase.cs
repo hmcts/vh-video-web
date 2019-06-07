@@ -45,7 +45,7 @@ namespace VideoWeb.IntegrationTests.Api
             var testSettings = testSettingsOptions.Value;
 
             _bearerToken = new TokenProvider(azureAdConfigurationOptions).GetClientAccessToken(
-                testSettings.TestClientId, testSettings.TestClientSecret, azureAdConfiguration.VhVideoWebResourceId);
+                testSettings.TestClientId, testSettings.TestClientSecret, azureAdConfiguration.ClientId);
         }
 
         protected async Task<HttpResponseMessage> SendGetRequestAsync(string uri)
