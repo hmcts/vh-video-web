@@ -31,7 +31,7 @@ namespace VideoWeb.Controllers
                 return BadRequest(ModelState);
             }
 
-            var expiresOn = DateTime.UtcNow;
+            var expiresOn = DateTime.UtcNow.AddMinutes(20);
             var token = _hashGenerator.GenerateHash(expiresOn, participantId.ToString("N"));
             var tokenResponse = new TokenResponse {ExpiresOn = expiresOn, Token = token};
             return Ok(tokenResponse);

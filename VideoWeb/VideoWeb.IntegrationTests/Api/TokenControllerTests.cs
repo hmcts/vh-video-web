@@ -1,6 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Net;
-using System.Net.Http;
+using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Contract.Responses;
@@ -13,7 +14,11 @@ namespace VideoWeb.IntegrationTests.Api
         public void should_get_token_when_requested_with_correct_participantid()
         {
             var responseMessage = SendGetRequestAsync($"/participants/{Guid.NewGuid()}/token").Result;
-            var tokenResponse = responseMessage.Content.ReadAsAsync<TokenResponse>().Result;
+
+            Stream receiveStream = responseMessage.Content.ReadAsStreamAsync().Result;
+            StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8);
+            var json = readStream.ReadToEnd();
+            var tokenResponse = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<TokenResponse>(json);
 
             responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
             tokenResponse.Should().NotBeNull();
