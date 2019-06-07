@@ -31,6 +31,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Given(@"I have a hearing and a conference")]
+        [Given(@"I have another hearing and a conference")]
         public void GivenIHaveAHearingAndAConference()
         {
             GivenIHaveAHearing();
@@ -43,6 +44,15 @@ namespace VideoWeb.AcceptanceTests.Steps
             GivenIHaveAHearing(minutes);
             GivenIHaveAConference();
             _context.DelayedStartTime = minutes;
+        }
+
+        [Given(@"I have a hearing and a conference in (.*) days time")]
+        [Given(@"I have another hearing and a conference in (.*) days time")]
+        public void GivenIHaveAHearingAndAConferenceInDaysTime(int days)
+        {
+            var mins = Convert.ToInt32(TimeSpan.FromDays(days).TotalMinutes);
+            GivenIHaveAHearing(mins);
+            GivenIHaveAConference();
         }
 
         [Given(@"I have a hearing")]

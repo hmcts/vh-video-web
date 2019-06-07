@@ -10,6 +10,7 @@ using Moq;
 using NUnit.Framework;
 using Testing.Common.Helpers;
 using VideoWeb.Controllers;
+using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
@@ -19,11 +20,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
     {
         private ConferencesController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
+        private Mock<IUserApiClient> _userApiClientMock;
         
         [SetUp]
         public void Setup()
         {
             _videoApiClientMock = new Mock<IVideoApiClient>();
+            _userApiClientMock = new Mock<IUserApiClient>();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
             {
@@ -33,10 +36,15 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 }
             };
             
-            _controller = new ConferencesController(_videoApiClientMock.Object)
+            _controller = new ConferencesController(_videoApiClientMock.Object, _userApiClientMock.Object)
             {
                 ControllerContext = context
             };
+            
+            var userProfile = new UserProfile {User_role = "Individual"};
+            _userApiClientMock
+                .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(userProfile);  
         }
 
         
@@ -44,6 +52,24 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public async Task should_return_ok_when_user_belongs_to_conference()
         {
             var conference = CreateValidResponse();
+            _videoApiClientMock
+                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(conference);
+
+            var result = await _controller.GetConferenceById(conference.Id.GetValueOrDefault());
+            var typedResult = (OkObjectResult) result.Result;
+            typedResult.Should().NotBeNull();
+        }
+        
+        [Test]
+        public async Task should_return_ok_when_user_is_an_admin()
+        {
+            var userProfile = new UserProfile {User_role = "VhOfficer"};
+            _userApiClientMock
+                .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(userProfile);  
+            
+            var conference = CreateValidResponse(null);
             _videoApiClientMock
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
