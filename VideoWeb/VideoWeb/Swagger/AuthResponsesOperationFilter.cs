@@ -23,7 +23,10 @@ namespace VideoWeb.Swagger
                 operation.Responses = new Dictionary<string, Response>();
             }
 
-            operation.Responses.Add("401", new Response {Description = "Unauthorized"});
+            if (!operation.Responses.ContainsKey("401"))
+            {
+                operation.Responses.Add("401", new Response {Description = "Unauthorized"});
+            }
         }
     }
 }

@@ -136,7 +136,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             Debug.Assert(_context.Hearing.Scheduled_duration != null, "_context.Hearing.Scheduled_duration != null");
             var timespan = TimeSpan.FromMinutes(_context.Hearing.Scheduled_duration.Value);
-            var listedFor = timespan.Hours.Equals(1) ? $"{timespan.Hours} hour and {timespan.Minutes} minutes" : $"{timespan.Hours} hours and {timespan.Minutes} minutes";
+            var listedFor = GetListedForTimeAsString(timespan);
 
             _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.VideoHearingsOfficerTime(_context.Hearing.Cases.First().Number)).Text
                 .Should().Be($"{_context.Hearing.Scheduled_date_time?.ToLocalTime():HH:mm}");
@@ -151,5 +151,32 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.WaitingRoomText).Displayed.Should().BeTrue();
         }
 
+        private static string GetListedForTimeAsString(TimeSpan timespan)
+        {
+            var listedFor = "";
+
+            if (timespan.Hours.Equals(0))
+            {
+                listedFor = timespan.Minutes.Equals(1) ? $"{timespan.Minutes} minute" : $"{timespan.Minutes} minutes";
+            }
+            else
+            {
+                listedFor = timespan.Hours.Equals(1) ? $"{timespan.Hours} hour" : $"{timespan.Hours} hours";
+            }
+
+            if (!timespan.Minutes.Equals(0) && timespan.Hours > 0)
+            {
+                if (timespan.Minutes.Equals(1))
+                {
+                    listedFor = listedFor + $" and 1 minute";
+                }
+                else
+                {
+                    listedFor = listedFor + $" and {timespan.Minutes} minutes";
+                }
+            }
+
+            return listedFor;
+        }
     }
 }

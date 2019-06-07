@@ -52,3 +52,12 @@ Scenario: Video Hearings Officer does not receive disconnected alert when hearin
 	When the hearing has been closed
 	And a Participant has disconnected from the HearingRoom
 	Then the Video Hearings Officer user should not see an alert
+
+@VIH-4559
+Scenario: Video Hearings Officer can see all hearings for today only
+	Given I have a hearing and a conference
+	And I have another hearing and a conference
+	And I have a hearing and a conference in 1 days time
+	And I have another hearing and a conference in 2 days time
+	When the Video Hearings Officer attempts to login with valid credentials
+	Then the Video Hearings Officer should only see 2 hearings

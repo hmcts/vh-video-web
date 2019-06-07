@@ -155,8 +155,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             alert.Checkbox.Enabled.Should().BeFalse();
         }
 
-        [Then(@"the (.*) alert should be updated with the details of the user that actioned the alert")]
-        public void ThenTheAlertShouldBeUpdatedWithTheDetailsOfTheUserThatActionedTheAlert(string alertType)
+        [Then(@"the Video Hearings Officer should only see (.*) hearing")]
+        [Then(@"the Video Hearings Officer should only see (.*) hearings")]
+        public void ThenTheVideoHearingsOfficerShouldOnlySeeHearing(int count)
+        {
+            _browserContext.NgDriver.WaitUntilElementsVisible(_hearingListPage.VHOHearingRows).Count.Should().Be(count);
+        }
+
+        private void GetParticipant()
         {
             var alerts = GetAlerts();
             var alert = alerts.First(x => x.AlertType.ToLower().Equals(alertType.ToLower()));

@@ -53,7 +53,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Given(@"the (.*) user has progressed to the (.*) page with a hearing in (.*) minutes time")]
-        public void GivenIAmOnThePage(string role, string pageName, int minutes)
+        public void GivenIAmOnThePageWithAHearingInMinuteTime(string role, string pageName, int minutes)
         {
             Progress(role, pageName, minutes);
         }
