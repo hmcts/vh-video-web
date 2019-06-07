@@ -4,8 +4,6 @@ using System.Linq;
 using System.Net;
 using FizzWare.NBuilder;
 using FluentAssertions;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Interactions;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders;
 using Testing.Common.Helpers;
@@ -162,7 +160,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserContext.NgDriver.WaitUntilElementsVisible(_hearingListPage.VHOHearingRows).Count.Should().Be(count);
         }
 
-        private void GetParticipant()
+        [Then(@"the (.*) alert should be updated with the details of the user that actioned the alert")]
+        public void ThenTheAlertShouldBeUpdatedWithTheDetailsOfTheUserThatActionedTheAlert(string alertType)
         {
             var alerts = GetAlerts();
             var alert = alerts.First(x => x.AlertType.ToLower().Equals(alertType.ToLower()));

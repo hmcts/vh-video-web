@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <None Remove="appsettings.json" />
-    <None Remove="Steps\t1i5ki4a.u22~" />
   </ItemGroup>
 
   <ItemGroup>
