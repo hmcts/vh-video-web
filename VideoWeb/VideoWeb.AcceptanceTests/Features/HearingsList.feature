@@ -91,5 +91,4 @@ Scenario: Video Hearings Officer has 1 or more hearings
 	Then the user is on the Hearings List page
 	And the VHO can see a list of hearings including the new hearing
 	When the VHO selects the hearing
-	And the VHO logs into the admin panel
 	Then the VHO can see the hearing view

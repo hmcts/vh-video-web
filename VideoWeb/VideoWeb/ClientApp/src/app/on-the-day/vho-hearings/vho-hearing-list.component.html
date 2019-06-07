@@ -19,7 +19,7 @@
           </strong>
           <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3">
             <span class="govuk-!-padding-2"
-              [ngClass]="{'conference-ready': isOnTime(conference), 'conference-delayed': isDelayed(conference), 
+            [ngClass]="{'conference-ready': isOnTime(conference), 'conference-delayed': isDelayed(conference), 
               'conference-suspended': isSuspended(conference), 'conference-paused': isPaused(conference), 
               'conference-in-session': isInSession(conference), 'conference-closed': isClosed(conference)}">{{ getConferenceStatusText(conference) }}</span>
           </div>

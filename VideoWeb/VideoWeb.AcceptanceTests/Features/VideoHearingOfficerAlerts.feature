@@ -38,3 +38,12 @@ Scenario: Video Hearings Officer receieves failed self test alert
 	When the user selects the alert
 	Then the checkbox is no longer enabled
 	And the alert should be updated with the details of the user that actioned the alert
+
+@VIH-4559
+Scenario: Video Hearings Officer can see all hearings for today only
+	Given I have a hearing and a conference
+	And I have another hearing and a conference
+	And I have a hearing and a conference in 1 days time
+	And I have another hearing and a conference in 2 days time
+	When the Video Hearings Officer attempts to login with valid credentials
+	Then the Video Hearings Officer should only see 2 hearings

@@ -126,6 +126,13 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _adminPanelPage.CompletedByUser).Text.Should().Be(_context.CurrentUser.Username.ToLower());
         }
 
+        [Then(@"the Video Hearings Officer should only see (.*) hearing")]
+        [Then(@"the Video Hearings Officer should only see (.*) hearings")]
+        public void ThenTheVideoHearingsOfficerShouldOnlySeeHearing(int count)
+        {
+            _browserContext.NgDriver.WaitUntilElementsVisible(_hearingListPage.VHOHearingRows).Count.Should().Be(count);
+        }
+
         private void GetParticipant()
         {
             _scenarioContext.Add(Participant, _context.Conference.Participants.Find(x =>

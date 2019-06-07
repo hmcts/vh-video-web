@@ -27,7 +27,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By VideoHearingsOfficerTime(string caseNumber) =>
             By.XPath($"//p[contains(text(),'{caseNumber}')]/../../..//p[contains(text(),':')]");
         public By VideoHearingsOfficerListedFor(string caseNumber) =>
-            By.XPath($"//p[contains(text(),'{caseNumber}')]/../../..//span[contains(text(),'and')]");
+            By.XPath($"//p[contains(text(),'{caseNumber}')]/../../..//span[contains(text(),'hour') or contains(text(),'minute')]");
         public By VideoHearingsOfficerNumberofAlerts(string caseNumber) =>
             By.XPath($"//p[contains(text(),'{caseNumber}')]/../../..//p[contains(text(),'Alert')]");
         public By VideoHearingsOfficerAlertType(string caseNumber) =>
@@ -45,6 +45,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public const string AdminIframeId = "admin-frame";
 
         public By AdminIframe => By.XPath($"//iframe[@id='{AdminIframeId}']");
+        public By VHOHearingRows => By.XPath("//div[contains(@class,'govuk-summary-list__row')]");
 
         public By AdminUsernameTextfield => CommonLocators.TextfieldWithName("username");
         public By AdminPasswordTextfield => CommonLocators.TextfieldWithName("password");
