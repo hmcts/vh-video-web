@@ -26,8 +26,6 @@
     "@angular/router": "^6.1.10",
     "@aspnet/signalr": "^1.1.2",
     "@hmcts/frontend": "^0.0.31-alpha",
-    "@mattkrick/event-source-polyfill": "^0.1.0",
-    "@mattkrick/event-target-polyfill": "^0.1.0",
     "@nguniversal/module-map-ngfactory-loader": "6.0.0",
     "@types/webrtc": "0.0.25",
     "adal-angular4": "^3.0.16",
