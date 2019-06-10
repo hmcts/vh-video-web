@@ -18,6 +18,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { TasksTableStubComponent } from 'src/app/testing/stubs/task-table-stub';
 import { TaskCompleted } from '../models/task-completed';
 import { VhoHearingListStubComponent as VhoHearingListStubComponent } from 'src/app/testing/stubs/vho-hearing-list-stub';
+import { VhoParticipantStatusStubComponent } from 'src/app/testing/stubs/vho-participant-status-stub';
 
 
 describe('VhoHearingsComponent', () => {
@@ -38,7 +39,7 @@ describe('VhoHearingsComponent', () => {
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [VhoHearingsComponent, TasksTableStubComponent, VhoHearingListStubComponent],
+      declarations: [VhoHearingsComponent, TasksTableStubComponent, VhoHearingListStubComponent, VhoParticipantStatusStubComponent],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },
@@ -142,7 +143,7 @@ describe('VhoHearingsComponent', () => {
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [VhoHearingsComponent, TasksTableStubComponent, VhoHearingListStubComponent],
+      declarations: [VhoHearingsComponent, TasksTableStubComponent, VhoHearingListStubComponent, VhoParticipantStatusStubComponent],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },

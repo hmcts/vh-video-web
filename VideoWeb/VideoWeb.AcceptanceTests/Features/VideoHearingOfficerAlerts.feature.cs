@@ -31,8 +31,8 @@ namespace VideoWeb.AcceptanceTests.Features
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Video Hearing Officer Alerts", "\tAs a video hearings officer user\r\n\tI would like to login and access the hearing " +
-                    "details\r\n\tSo that I can have an administrate the hearings I am involved in", ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Video Hearing Officer Alerts", "\tAs a video hearings officer user\n\tI would like to login and access the hearing d" +
+                    "etails\n\tSo that I can have an administrate the hearings I am involved in", ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         

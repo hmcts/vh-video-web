@@ -19,6 +19,7 @@ import { TasksTableComponent } from './vho-hearings/tasks-table.component';
 import { VhoHearingListComponent } from './vho-hearings/vho-hearing-list.component';
 import { SelfTestComponent } from './self-test/self-test.component';
 import { MicVisualiserComponent } from './self-test/mic-visualiser.component';
+import { ParticipantStatusComponent } from './vho-hearings/participant-status.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -42,7 +43,8 @@ import { MicVisualiserComponent } from './self-test/mic-visualiser.component';
     TasksTableComponent,
     VhoHearingListComponent,
     SelfTestComponent,
-    MicVisualiserComponent
+    MicVisualiserComponent,
+    ParticipantStatusComponent
   ],
   exports: [
     DeclarationComponent

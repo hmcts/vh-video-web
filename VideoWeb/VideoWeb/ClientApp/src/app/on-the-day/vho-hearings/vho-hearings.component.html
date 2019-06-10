@@ -5,13 +5,25 @@
 <div *ngIf="!loadingData && hasHearings()" class="govuk-grid-row">
   <app-vho-hearing-list [conferences]="conferences" (selectedConference)="onConferenceSelected($event)">
   </app-vho-hearing-list>
-  <div class="govuk-grid-column-one-half">
-    <iframe id="admin-frame" *ngIf="selectedConferenceUrl" [width]='adminFrameWidth' [height]="adminFrameHeight"
-      [src]='selectedConferenceUrl' allowfullscreen frameborder="0" webkitallowfullscreen mozallowfullscreen>
-    </iframe>
-    <app-tasks-table *ngIf="!loadingData && hasTasks()" [conference]="selectedHearing.getConference()" [tasks]="tasks"
-      (taskCompleted)="onTaskCompleted($event)"></app-tasks-table>
+  <div class="govuk-grid-row">
+    <div id="conference-frame" class="govuk-grid-column-one-half">
+
+      <div *ngIf="!loadingData && isHearingSelected()" id="participant-status" class="govuk-grid-column-two-thirds">
+        <app-participant-status [participants]="participants"></app-participant-status>
+      </div>
+
+      <div id="vho-admin-view" class="govuk-grid-column-one-third">
+            <iframe id="admin-frame" [width]='adminFrameWidth' [height]="adminFrameHeight" [src]='selectedConferenceUrl'
+              allowfullscreen frameborder="0" webkitallowfullscreen mozallowfullscreen>
+            </iframe>
+          </div>
+      <div class="govuk-grid-column-full">
+        <app-tasks-table *ngIf="!loadingData && hasTasks()" [conference]="selectedHearing.getConference()"
+          [tasks]="tasks" (taskCompleted)="onTaskCompleted($event)"></app-tasks-table>
+      </div>
+    </div>
   </div>
+
 </div>
 
 <div *ngIf="!loadingData && !hasHearings()">
