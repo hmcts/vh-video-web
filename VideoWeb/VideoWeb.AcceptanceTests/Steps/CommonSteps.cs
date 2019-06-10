@@ -243,7 +243,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.ButtonWithLabel(label)).GetAttribute("class")
                 .Should().Contain("disabled");
         }
-
-    }
+   }
 }
 

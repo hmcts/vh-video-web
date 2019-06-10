@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Extensions;
+using VideoWeb.Security.HashGen;
 
 namespace VideoWeb
 {
@@ -42,8 +43,10 @@ namespace VideoWeb
         {
             services.Configure<AzureAdConfiguration>(options => Configuration.Bind("AzureAd",options));
             services.Configure<HearingServicesConfiguration>(options => Configuration.Bind("VhServices",options));
+            var customTokenSettings = Configuration.GetSection("CustomToken").Get<CustomTokenSettings>();
+            services.AddSingleton(customTokenSettings);
         }
-        
+
         private void RegisterAuth(IServiceCollection serviceCollection)
         {
             var policy = new AuthorizationPolicyBuilder()
