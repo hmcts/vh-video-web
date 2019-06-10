@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { ErrorService } from 'src/app/services/error.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { VideoWebService } from 'src/app/services/video-web.service';
-import { ConferenceResponse, ParticipantResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ParticipantResponse, TokenResponse } from 'src/app/services/clients/api-client';
 import { AdalService } from 'adal-angular4';
 import { PageUrls } from 'src/app/shared/page-url.constants';
+import { merge, mergeMap, map } from 'rxjs/operators';
 declare var PexRTC: any;
 
 @Component({
@@ -17,7 +18,7 @@ export class SelfTestComponent implements OnInit {
   loadingData: boolean;
   conference: ConferenceResponse;
   participant: ParticipantResponse;
-
+  token: TokenResponse;
   pexipAPI: any;
   incomingStream: any;
   outgoingStream: any;
@@ -49,7 +50,14 @@ export class SelfTestComponent implements OnInit {
         this.conference = data;
         this.participant = data.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
         this.setupPexipClient();
-        this.call();
+        this.videoWebService.getToken(this.participant.id).subscribe((token: TokenResponse) => {
+          this.token = token;
+          this.call();
+        },
+        (error) => {
+          this.loadingData = false;
+          this.errorService.handleApiError(error);
+        });
       },
         (error) => {
           this.loadingData = false;
@@ -94,10 +102,11 @@ export class SelfTestComponent implements OnInit {
     this.testScore = null;
     const pexipNode = this.conference.pexip_self_test_node_uri;
     const conferenceAlias = 'testcall2';
-    this.pexipAPI.makeCall(pexipNode, conferenceAlias, this.participant.id, null);
+    this.pexipAPI.makeCall(pexipNode, conferenceAlias, `${this.token.expires_on};${this.participant.id};${this.token.token}`, null);
   }
 
   replayVideo() {
+    this.pexipAPI.disconnect();
     this.call();
   }
 

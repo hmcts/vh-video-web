@@ -49,31 +49,38 @@ export class VhoHearingsComponent implements OnInit {
 
   ngOnInit() {
     this.setupSubscribers();
-    this.retrieveHearingsForUser();
+    this.retrieveHearingsForVhOfficer();
     this.interval = setInterval(() => {
-      this.retrieveHearingsForUser();
+      this.retrieveHearingsForVhOfficer();
     }, 30000);
   }
 
-  retrieveHearingsForUser() {
-    this.videoWebService.getConferencesForUser().subscribe((data: ConferenceForUserResponse[]) => {
+  retrieveHearingsForVhOfficer() {
+    this.videoWebService.getConferencesToday().subscribe((data: ConferenceForUserResponse[]) => {
       this.loadingData = false;
       this.conferences = data;
+      if (data && data.length > 0) {
+        this.enableFullScreen(true);
+      } else {
+        this.enableFullScreen(false);
+      }
+
       if (this.selectedHearing) {
         this.getTasksForConference(this.selectedHearing.getConference().id);
       }
     },
       (error) => {
         this.loadingData = false;
+        this.enableFullScreen(false);
         this.errorService.handleApiError(error);
       });
   }
 
-  hasHearings() {
-    return this.conferences !== undefined && this.conferences.length > 0;
+  hasHearings(): boolean {
+    return !this.loadingData && this.conferences && this.conferences.length > 0;
   }
 
-  hasTasks() {
+  hasTasks(): boolean {
     return this.selectedHearing !== undefined && this.tasks !== undefined && this.tasks.length > 0;
   }
 
@@ -97,8 +104,10 @@ export class VhoHearingsComponent implements OnInit {
 
   getWidthForFrame(): number {
     const listColumnElement: HTMLElement = document.getElementById('list-column');
-    const listWidth = listColumnElement ? listColumnElement.offsetWidth : 0;
-    // const listWidth = listColumnElement.offsetWidth;
+    let listWidth = 0;
+    if (listColumnElement) {
+      listWidth = listColumnElement.offsetWidth;
+    }
     const windowWidth = window.innerWidth;
     const frameWidth = windowWidth - listWidth - 30;
     return frameWidth;
@@ -191,6 +200,18 @@ export class VhoHearingsComponent implements OnInit {
         (error) => {
           this.errorService.handleApiError(error);
         });
+  }
 
+  enableFullScreen(fullScreen: boolean) {
+    const masterContainer = document.getElementById('master-container');
+    if (!masterContainer) {
+      return;
+    }
+
+    if (fullScreen) {
+      masterContainer.classList.add('fullscreen');
+    } else {
+      masterContainer.classList.remove('fullscreen');
+    }
   }
 }
