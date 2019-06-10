@@ -70,7 +70,7 @@ describe('VhoHearingsComponent', () => {
   });
 
   it('should retrieve conference and sanitise iframe uri', () => {
-    spyOn(component, 'getWidthForFrame').and.returnValue(400);
+    spyOn(component, 'updateWidthForAdminFrame');
     spyOn(component, 'getHeightForFrame').and.returnValue(600);
 
     component.onConferenceSelected(component.conferences[0]);
