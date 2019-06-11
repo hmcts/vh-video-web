@@ -54,11 +54,10 @@ export class VhoHearingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.setupSubscribers();
-    // this.retrieveHearingsForVhOfficer();
-    // this.interval = setInterval(() => {
-    //   this.retrieveHearingsForVhOfficer();
-    // }, 30000);
+    this.retrieveHearingsForVhOfficer();
+    this.interval = setInterval(() => {
+      this.retrieveHearingsForVhOfficer();
+    }, 30000);
   }
 
   private setupSubscribers() {
@@ -66,13 +65,13 @@ export class VhoHearingsComponent implements OnInit {
 
     this.eventService.getHearingStatusMessage().subscribe(message => {
       this.ngZone.run(() => {
-        console.log(message);
+        this.handleConferenceStatusChange(message);
       });
     });
 
     this.eventService.getParticipantStatusMessage().subscribe(message => {
       this.ngZone.run(() => {
-        console.log(message);
+        this.handleParticipantStatusChange(message);
       });
     });
   }
@@ -83,6 +82,7 @@ export class VhoHearingsComponent implements OnInit {
       this.conferences = data;
       if (data && data.length > 0) {
         this.enableFullScreen(true);
+        this.setupSubscribers();
       } else {
         this.enableFullScreen(false);
       }
@@ -178,6 +178,9 @@ export class VhoHearingsComponent implements OnInit {
 
   handleConferenceStatusChange(message: ConferenceStatusMessage) {
     const conference = this.conferences.find(c => c.id === message.conferenceId);
+    if (!conference) {
+      return;
+    }
     conference.status = message.status;
     if (this.isCurrentConference(new ConferenceForUserResponse({ id: message.conferenceId }))) {
       this.selectedHearing.getConference().status = message.status;
