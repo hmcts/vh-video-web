@@ -6,9 +6,9 @@
   <app-vho-hearing-list [conferences]="conferences" (selectedConference)="onConferenceSelected($event)">
   </app-vho-hearing-list>
   <div class="govuk-grid-row">
-    <div id="conference-frame" class="govuk-grid-column-one-half">
+    <div *ngIf="!loadingData && isHearingSelected()" id="conference-frame" class="govuk-grid-column-one-half">
 
-      <div *ngIf="!loadingData && isHearingSelected()" id="participant-status" class="govuk-grid-column-two-thirds">
+      <div id="participant-status" class="govuk-grid-column-two-thirds">
         <app-participant-status [participants]="participants"></app-participant-status>
       </div>
 

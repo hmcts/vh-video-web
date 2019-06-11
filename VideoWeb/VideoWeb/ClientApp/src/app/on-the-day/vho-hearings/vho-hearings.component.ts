@@ -11,6 +11,8 @@ import { VideoWebService } from 'src/app/services/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { TaskCompleted } from '../models/task-completed';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 
 @Component({
   selector: 'app-vho-hearings',
@@ -40,11 +42,11 @@ export class VhoHearingsComponent implements OnInit {
 
   constructor(
     private videoWebService: VideoWebService,
-    private eventService: EventsService,
-    private ngZone: NgZone,
     public sanitizer: DomSanitizer,
     private snotifyService: SnotifyService,
-    private errorService: ErrorService
+    private errorService: ErrorService,
+    private ngZone: NgZone,
+    private eventService: EventsService
   ) {
     this.loadingData = true;
     this.adminFrameWidth = 0;
@@ -53,10 +55,26 @@ export class VhoHearingsComponent implements OnInit {
 
   ngOnInit() {
     this.setupSubscribers();
-    this.retrieveHearingsForVhOfficer();
-    this.interval = setInterval(() => {
-      this.retrieveHearingsForVhOfficer();
-    }, 30000);
+    // this.retrieveHearingsForVhOfficer();
+    // this.interval = setInterval(() => {
+    //   this.retrieveHearingsForVhOfficer();
+    // }, 30000);
+  }
+
+  private setupSubscribers() {
+    this.eventService.start();
+
+    this.eventService.getHearingStatusMessage().subscribe(message => {
+      this.ngZone.run(() => {
+        console.log(message);
+      });
+    });
+
+    this.eventService.getParticipantStatusMessage().subscribe(message => {
+      this.ngZone.run(() => {
+        console.log(message);
+      });
+    });
   }
 
   retrieveHearingsForVhOfficer() {
@@ -96,18 +114,25 @@ export class VhoHearingsComponent implements OnInit {
     }
   }
 
+  clearSelectedConference() {
+    this.selectedHearing = null;
+    this.selectedConferenceUrl = null;
+    this.tasks = [];
+  }
+
   onConferenceSelected(conference: ConferenceForUserResponse) {
     if (!this.isCurrentConference(conference)) {
+      this.clearSelectedConference();
       this.videoWebService.getConferenceById(conference.id)
         .subscribe((data: ConferenceResponse) => {
           this.selectedHearing = new Hearing(data);
           this.participants = data.participants;
           this.sanitiseAndLoadIframe();
+          this.getTasksForConference(conference.id);
         },
           (error) => {
             this.errorService.handleApiError(error);
           });
-      this.getTasksForConference(conference.id);
     }
   }
 
@@ -144,20 +169,19 @@ export class VhoHearingsComponent implements OnInit {
     );
   }
 
-  private setupSubscribers() {
-    this.eventService.start();
+  handleParticipantStatusChange(message: ParticipantStatusMessage): any {
+    const participantToUpdate = this.participants.find(x => x.username === message.email);
+    if (participantToUpdate) {
+      participantToUpdate.status = message.status;
+    }
+  }
 
-    this.eventService.getConsultationMessage().subscribe(message => {
-      this.ngZone.run(() => {
-        this.handleConsultationMessage(message);
-      });
-    });
-
-    this.eventService.getHelpMessage().subscribe(message => {
-      this.ngZone.run(() => {
-        this.handleHelpMessage(message);
-      });
-    });
+  handleConferenceStatusChange(message: ConferenceStatusMessage) {
+    const conference = this.conferences.find(c => c.id === message.conferenceId);
+    conference.status = message.status;
+    if (this.isCurrentConference(new ConferenceForUserResponse({ id: message.conferenceId }))) {
+      this.selectedHearing.getConference().status = message.status;
+    }
   }
 
   handleConsultationMessage(message: ConsultationMessage): void {
