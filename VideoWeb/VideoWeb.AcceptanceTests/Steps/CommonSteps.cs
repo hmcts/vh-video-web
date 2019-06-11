@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using FluentAssertions;
+using OpenQA.Selenium.Support.Extensions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -18,12 +19,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly DataSetupSteps _dataSetupSteps;
         private readonly LoginSteps _loginSteps;
         private readonly HearingsListSteps _hearingListSteps;
+        private PracticeVideoHearingPage _practiceVideoHearingPage;
         private readonly DeclarationSteps _declarationSteps;
         private Page _currentPage = Page.Login;
 
         public CommonSteps(TestContext context, BrowserContext browserContext, CommonPages commonPages,
             DataSetupSteps dataSetupSteps, LoginSteps loginSteps, HearingsListSteps hearingDetailsSteps,
-            DeclarationSteps declarationSteps)
+            PracticeVideoHearingPage practiceVideoHearingPage, DeclarationSteps declarationSteps)
         {
             _context = context;
             _browserContext = browserContext;
@@ -31,6 +33,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _dataSetupSteps = dataSetupSteps;
             _loginSteps = loginSteps;
             _hearingListSteps = hearingDetailsSteps;
+            _practiceVideoHearingPage = practiceVideoHearingPage;
             _declarationSteps = declarationSteps;
         }
 
@@ -172,8 +175,15 @@ namespace VideoWeb.AcceptanceTests.Steps
                             WhenTheUserSelectsTheRadiobutton("Yes");
                             WhentheUserClicksTheButton("Continue");
                             break;
-                    }
+                        }
                     case ParticipantJourney.PracticeVideoHearing:
+                    {
+                        _browserContext.NgDriver.WaitUntilElementVisible(_practiceVideoHearingPage.IncomingVideo)
+                            .Displayed.Should().BeTrue();
+                        _browserContext.NgDriver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browserContext.NgDriver.FindElement(CommonLocators.ButtonWithLabel("Continue")));
+                            WhentheUserClicksTheButton("Continue");
+                            break;
+                        }
                     case ParticipantJourney.EquipmentCheck:
                     case ParticipantJourney.Rules:
                         {
