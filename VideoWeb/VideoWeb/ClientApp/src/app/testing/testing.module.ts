@@ -14,6 +14,7 @@ import { SnotifyStubComponent } from './stubs/snotify-stub';
 import { AnalogueClockStubComponent } from './stubs/analogue-clock-stub';
 import { TasksTableStubComponent } from './stubs/task-table-stub';
 import { VhoHearingListStubComponent } from './stubs/vho-hearing-list-stub';
+import { VhoParticipantStatusStubComponent } from './stubs/vho-participant-status-stub';
 
 @NgModule({
   imports: [
@@ -34,7 +35,8 @@ import { VhoHearingListStubComponent } from './stubs/vho-hearing-list-stub';
     ContactUsFoldingStubComponent,
     AnalogueClockStubComponent,
     TasksTableStubComponent,
-    VhoHearingListStubComponent
+    VhoHearingListStubComponent,
+    VhoParticipantStatusStubComponent
   ]
 })
 export class TestingModule { }
