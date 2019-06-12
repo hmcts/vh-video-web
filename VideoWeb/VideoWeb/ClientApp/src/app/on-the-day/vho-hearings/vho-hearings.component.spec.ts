@@ -2,23 +2,23 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
 import { of, throwError } from 'rxjs';
+import { ConferenceResponse, ConsultationAnswer } from 'src/app/services/clients/api-client';
 import { ConfigService } from 'src/app/services/config.service';
+import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
+import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { VideoWebService } from 'src/app/services/video-web.service';
+import { Hearing } from 'src/app/shared/models/hearing';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
-import { VhoHearingsComponent } from './vho-hearings.component';
-import { ConferenceResponse, ConsultationAnswer } from 'src/app/services/clients/api-client';
-import { ConsultationMessage } from 'src/app/services/models/consultation-message';
-import { ErrorService } from 'src/app/services/error.service';
-import { Hearing } from 'src/app/shared/models/hearing';
 import { TasksTableStubComponent } from 'src/app/testing/stubs/task-table-stub';
-import { TaskCompleted } from '../models/task-completed';
 import { VhoHearingListStubComponent as VhoHearingListStubComponent } from 'src/app/testing/stubs/vho-hearing-list-stub';
 import { VhoParticipantStatusStubComponent } from 'src/app/testing/stubs/vho-participant-status-stub';
+import { TaskCompleted } from '../models/task-completed';
+import { VhoHearingsComponent } from './vho-hearings.component';
 
 
 describe('VhoHearingsComponent', () => {
@@ -57,16 +57,6 @@ describe('VhoHearingsComponent', () => {
     fixture = TestBed.createComponent(VhoHearingsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-    expect(component.loadingData).toBeFalsy();
-    expect(component.conferences).toBeDefined();
-  });
-
-  it('should return false when there are no conferences', () => {
-    component.conferences = null;
   });
 
   it('should retrieve conference and sanitise iframe uri', () => {
@@ -129,44 +119,3 @@ describe('VhoHearingsComponent', () => {
 
 });
 
-describe('VhoHearingsComponent', () => {
-  let component: VhoHearingsComponent;
-  let fixture: ComponentFixture<VhoHearingsComponent>;
-  let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-  let adalService: MockAdalService;
-  let eventService: MockEventsService;
-  let errorService: ErrorService;
-
-  beforeEach(async(() => {
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesToday']);
-    videoWebServiceSpy.getConferencesToday.and.returnValue(throwError({ status: 401, isSwaggerException: true }));
-
-    TestBed.configureTestingModule({
-      imports: [SharedModule, RouterTestingModule],
-      declarations: [VhoHearingsComponent, TasksTableStubComponent, VhoHearingListStubComponent, VhoParticipantStatusStubComponent],
-      providers: [
-        { provide: VideoWebService, useValue: videoWebServiceSpy },
-        { provide: AdalService, useClass: MockAdalService },
-        { provide: ConfigService, useClass: MockConfigService },
-        { provide: EventsService, useClass: MockEventsService }
-      ]
-    })
-      .compileComponents();
-  }));
-
-  beforeEach(() => {
-    adalService = TestBed.get(AdalService);
-    eventService = TestBed.get(EventsService);
-    errorService = TestBed.get(ErrorService);
-    fixture = TestBed.createComponent(VhoHearingsComponent);
-    component = fixture.componentInstance;
-  });
-
-  it('should handle api error with error service', () => {
-    spyOn(errorService, 'handleApiError').and.callFake(() => { Promise.resolve(true); });
-    fixture.detectChanges();
-    expect(component).toBeTruthy();
-    expect(component.loadingData).toBeFalsy();
-    expect(errorService.handleApiError).toHaveBeenCalled();
-  });
-});

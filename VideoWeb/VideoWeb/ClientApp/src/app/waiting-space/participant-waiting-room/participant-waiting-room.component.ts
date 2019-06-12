@@ -75,7 +75,12 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         audio.loop = false;
       }
     });
-    audio.play();
+    const audioPromise = audio.play();
+    if (audioPromise) {
+      audioPromise.catch(function (error) {
+        console.error(`There was an error with the playback. ${error}`);
+      });
+    }
     this.hearingStartingAnnounced = true;
   }
 
