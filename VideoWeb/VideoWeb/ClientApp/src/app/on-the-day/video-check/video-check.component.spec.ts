@@ -44,11 +44,6 @@ describe('VideoCheckComponent', () => {
     videoAnswer = component.form.controls['videoCheck'];
   });
 
-  it('should default no selected values', () => {
-    expect(component.form.pristine).toBeTruthy();
-    expect(component.videoCheck.pristine).toBeTruthy();
-  });
-
   it('should invalidate form when "No" is selected', () => {
     spyOn(router, 'navigate').and.callFake(() => { });
     videoAnswer.setValue('No');
