@@ -161,12 +161,11 @@ namespace VideoWeb.AcceptanceTests.Hooks
             _browserContext.NgDriver.Quit();
             _browserContext.NgDriver.Dispose();
 
-            foreach (var driver in _context.Drivers.Values)
+            foreach (var driver in _context.WrappedDrivers.Values)
             {
                 try
                 {
-                    driver.NgDriver.Quit();
-                    driver.NgDriver.Dispose();
+                    driver.Close();
                 }
                 catch (Exception ex)
                 {

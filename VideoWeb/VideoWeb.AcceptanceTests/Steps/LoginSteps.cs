@@ -55,6 +55,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             if (!_context.Drivers.ContainsKey(_context.CurrentUser.Username))
             {
                 _context.Drivers.Add(_context.CurrentUser.Username, _browserContext);
+                _context.WrappedDrivers.Add(_context.CurrentUser.Username, _browserContext.NgDriver.WrappedDriver);
             }
         }
 

@@ -99,10 +99,10 @@ this.ScenarioInitialize(scenarioInfo);
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("2 Participants join hearing")]
-        public virtual void _2ParticipantsJoinHearing()
+        [NUnit.Framework.DescriptionAttribute("Two participants join hearing")]
+        public virtual void TwoParticipantsJoinHearing()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("2 Participants join hearing", null, ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Two participants join hearing", null, ((string[])(null)));
 #line 16
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
@@ -130,10 +130,10 @@ this.ScenarioInitialize(scenarioInfo);
         }
         
         [NUnit.Framework.TestAttribute()]
-        [NUnit.Framework.DescriptionAttribute("4 Participants join hearing")]
-        public virtual void _4ParticipantsJoinHearing()
+        [NUnit.Framework.DescriptionAttribute("Four participants join hearing")]
+        public virtual void FourParticipantsJoinHearing()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("4 Participants join hearing", null, ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Four participants join hearing", null, ((string[])(null)));
 #line 27
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
@@ -165,7 +165,7 @@ this.ScenarioInitialize(scenarioInfo);
 #line 39
  testRunner.When("the countdown finishes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 40
- testRunner.Then("the user is on the Hearing Room page for 5 minutes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the user is on the Hearing Room page for 2 minutes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

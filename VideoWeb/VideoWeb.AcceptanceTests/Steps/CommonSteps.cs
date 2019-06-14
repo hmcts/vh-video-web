@@ -41,6 +41,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void GivenAnotherBrowserWindowIsLaunched(string participant)
         {
             _context.Drivers.Add(_context.TestSettings.UserAccounts.Find(x => x.Lastname.Contains(participant)).Username, _browserContext);
+            _context.WrappedDrivers.Add(_context.TestSettings.UserAccounts.Find(x => x.Lastname.Contains(participant)).Username, _browserContext.NgDriver.WrappedDriver);
             _browserContext.BrowserSetup(_context.VideoWebUrl, _context.Environment, participant);
             _browserContext.NavigateToPage();
         }
