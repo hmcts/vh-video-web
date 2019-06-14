@@ -81,7 +81,10 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   }
 
   announceHearingIsAboutToStart(): void {
-    const audioPromise = this.hearingAlertSound.play();
+    this.hearingAlertSound.play()
+      .catch(function (reason) {
+        console.log(`caught error ${reason}`);
+      });
     this.hearingStartingAnnounced = true;
 
   }
