@@ -1503,7 +1503,7 @@ export enum TaskStatus {
 }
 
 export class TokenResponse implements ITokenResponse {
-    expires_on?: Date | undefined;
+    expires_on?: string | undefined;
     token?: string | undefined;
 
     constructor(data?: ITokenResponse) {
@@ -1517,7 +1517,7 @@ export class TokenResponse implements ITokenResponse {
 
     init(data?: any) {
         if (data) {
-            this.expires_on = data["expires_on"] ? new Date(data["expires_on"].toString()) : <any>undefined;
+            this.expires_on = data["expires_on"];
             this.token = data["token"];
         }
     }
@@ -1531,14 +1531,14 @@ export class TokenResponse implements ITokenResponse {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["expires_on"] = this.expires_on ? this.expires_on.toISOString() : <any>undefined;
+        data["expires_on"] = this.expires_on;
         data["token"] = this.token;
         return data; 
     }
 }
 
 export interface ITokenResponse {
-    expires_on?: Date | undefined;
+    expires_on?: string | undefined;
     token?: string | undefined;
 }
 

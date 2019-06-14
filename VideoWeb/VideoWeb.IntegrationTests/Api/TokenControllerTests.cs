@@ -23,7 +23,6 @@ namespace VideoWeb.IntegrationTests.Api
 
             responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
             tokenResponse.Should().NotBeNull();
-            tokenResponse.ExpiresOn.Should().BeAfter(DateTime.UtcNow);
             tokenResponse.Token.Should().NotBeEmpty();
         }
 
