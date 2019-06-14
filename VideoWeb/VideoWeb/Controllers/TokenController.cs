@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
@@ -31,8 +32,8 @@ namespace VideoWeb.Controllers
                 return BadRequest(ModelState);
             }
 
-            var expiresOn = DateTime.UtcNow.AddMinutes(20);
-            var token = _hashGenerator.GenerateHash(expiresOn, participantId.ToString("N"));
+            var expiresOn = DateTime.UtcNow.AddMinutes(20).ToUniversalTime().ToString("dd.MM.yyyy-H:mmZ");
+            var token = _hashGenerator.GenerateHash(expiresOn, participantId.ToString());
             var tokenResponse = new TokenResponse {ExpiresOn = expiresOn, Token = token};
             return Ok(tokenResponse);
         }
