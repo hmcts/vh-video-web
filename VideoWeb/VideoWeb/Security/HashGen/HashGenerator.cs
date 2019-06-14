@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -6,7 +7,7 @@ namespace VideoWeb.Security.HashGen
 {
     public interface IHashGenerator
     {
-        string GenerateHash(DateTime expiresOnUtc, string data);
+        string GenerateHash(string expiresOnUtc, string data);
     }
 
     public class HashGenerator : IHashGenerator
@@ -18,17 +19,25 @@ namespace VideoWeb.Security.HashGen
             _customTokenSettings = customTokenSettings;
         }
 
-        public string GenerateHash(DateTime expiresOnUtc, string data)
+        public string GenerateHash(string expiresOnUtc, string data)
         {
-            var key = Convert.FromBase64String(_customTokenSettings.Secret);
+            var asciiEncoding = new ASCIIEncoding();
             var stringToHash = $"{expiresOnUtc}{data}";
 
-            var request = Encoding.UTF8.GetBytes(stringToHash);
-            using (var hmac = new HMACSHA256(key))
+            var keyBytes = asciiEncoding.GetBytes(_customTokenSettings.Secret);
+            var messageBytes = asciiEncoding.GetBytes(stringToHash);
+
+            using (var hmac = new HMACSHA256(keyBytes))
             {
-                var computedHash = hmac.ComputeHash(request);
-                return Convert.ToBase64String(computedHash);
+                var computedHash = hmac.ComputeHash(messageBytes);
+                return ByteToString(computedHash);
             }
+        }
+
+        public static string ByteToString(byte[] buffer)
+        {
+            var byteToString = buffer.Aggregate("", (current, iter) => current + iter.ToString("x2"));
+            return (byteToString);
         }
     }
 }

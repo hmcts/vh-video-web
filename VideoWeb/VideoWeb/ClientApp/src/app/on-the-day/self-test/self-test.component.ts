@@ -102,7 +102,9 @@ export class SelfTestComponent implements OnInit {
     this.testScore = null;
     const pexipNode = this.conference.pexip_self_test_node_uri;
     const conferenceAlias = 'testcall2';
-    this.pexipAPI.makeCall(pexipNode, conferenceAlias, `${this.token.expires_on};${this.participant.id};${this.token.token}`, null);
+    const tokenOptions = btoa(`${this.token.expires_on};${this.participant.id};${this.token.token}`);
+
+    this.pexipAPI.makeCall(pexipNode, `${conferenceAlias};${tokenOptions}`, this.participant.id, null);
   }
 
   replayVideo() {

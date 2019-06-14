@@ -22,8 +22,8 @@ namespace VideoWeb.UnitTests
         public void should_encrypt()
         {
             var hashGenerator = new HashGenerator(_customTokenSettings);
-            var id = Guid.NewGuid().ToString("N");
-            var computedHash = hashGenerator.GenerateHash(DateTime.UtcNow.AddMinutes(20), id);
+            var id = Guid.NewGuid().ToString();
+            var computedHash = hashGenerator.GenerateHash(GetExpiryOn(), id);
             computedHash.Should().NotBeNullOrEmpty();
         }
 
@@ -31,12 +31,17 @@ namespace VideoWeb.UnitTests
         public void should_fail_authentication()
         {
             var hashGenerator = new HashGenerator(_customTokenSettings);
-            var id = Guid.NewGuid().ToString("N");
-            var computedHash = hashGenerator.GenerateHash(DateTime.UtcNow.AddMinutes(20), id);
+            var id = Guid.NewGuid().ToString();
+            var computedHash = hashGenerator.GenerateHash(GetExpiryOn(), id);
 
-            var id2 = Guid.NewGuid().ToString("N");
-            var reComputedHash = hashGenerator.GenerateHash(DateTime.UtcNow.AddMinutes(-20), id2);
+            var id2 = Guid.NewGuid().ToString();
+            var reComputedHash = hashGenerator.GenerateHash(GetExpiryOn(), id2);
             reComputedHash.Should().NotBe(computedHash);
+        }
+
+        private static string GetExpiryOn()
+        {
+            return DateTime.UtcNow.AddMinutes(20).ToUniversalTime().ToString("dd.MM.yyyy-H:mmZ");
         }
     }
 }
