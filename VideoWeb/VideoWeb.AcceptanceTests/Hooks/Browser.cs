@@ -165,7 +165,8 @@ namespace VideoWeb.AcceptanceTests.Hooks
             {
                 try
                 {
-                    driver.Close();
+                    driver.Quit();
+                    driver.Dispose();
                 }
                 catch (Exception ex)
                 {
