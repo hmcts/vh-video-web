@@ -26,13 +26,16 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the countdown finishes")]
         public void WhenTheCountdownFinishes()
         {
+            Thread.Sleep(TimeSpan.FromSeconds(CountdownDuration));
+
+            _browserContext.NgDriver.WaitUntilElementVisible(_hearingRoomPage.JudgeIframe).Displayed.Should().BeTrue();
             _browserContext.NgDriver.SwitchTo().Frame(HearingRoomPage.JudgeIframeId);
 
-            Thread.Sleep(TimeSpan.FromSeconds(CountdownDuration));
             Convert.ToDouble(_browserContext.NgDriver.WaitUntilElementVisible(_hearingRoomPage.IncomingVideo)
                 .GetAttribute("currentTime")).Should().BeGreaterThan(0);
         }
 
+        [Then(@"the user is on the Hearing Room page for (.*) minute")]
         [Then(@"the user is on the Hearing Room page for (.*) minutes")]
         public void ThenTheUserIsOnTheHearingRoomPageForMinutes(int minutes)
         {

@@ -52,7 +52,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             }
 
             _loginPage.Logon(_context.CurrentUser.Username, _context.TestSettings.TestUserPassword);
-            _context.Browsers.Add(_context.CurrentUser.Username, _browserContext);
+            if (!_context.Drivers.ContainsKey(_context.CurrentUser.Username))
+            {
+                _context.Drivers.Add(_context.CurrentUser.Username, _browserContext);
+            }
         }
 
         [Then(@"the sign out link is displayed")]

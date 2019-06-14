@@ -19,7 +19,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly DataSetupSteps _dataSetupSteps;
         private readonly LoginSteps _loginSteps;
         private readonly HearingsListSteps _hearingListSteps;
-        private PracticeVideoHearingPage _practiceVideoHearingPage;
+        private readonly PracticeVideoHearingPage _practiceVideoHearingPage;
         private readonly DeclarationSteps _declarationSteps;
         private Page _currentPage = Page.Login;
 
@@ -40,6 +40,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"there is a new browser open for (.*)")]
         public void GivenAnotherBrowserWindowIsLaunched(string participant)
         {
+            _context.Drivers.Add(_context.TestSettings.UserAccounts.Find(x => x.Lastname.Contains(participant)).Username, _browserContext);
             _browserContext.BrowserSetup(_context.VideoWebUrl, _context.Environment, participant);
             _browserContext.NavigateToPage();
         }
@@ -54,7 +55,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 throw new ArgumentOutOfRangeException($"There are no users with lastname '{participant}'");
             }
-            _browserContext = _context.Browsers.FirstOrDefault(x => x.Key.Equals(username)).Value;
+
+            _context.Drivers.Remove(username);
+            _context.Drivers.Add(username, _browserContext);
+            _browserContext = _context.Drivers.FirstOrDefault(x => x.Key.Equals(username)).Value;
         }
 
         [Given(@"the (.*) user has progressed to the (.*) page")]

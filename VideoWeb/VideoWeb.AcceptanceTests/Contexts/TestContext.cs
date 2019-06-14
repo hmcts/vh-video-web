@@ -35,13 +35,13 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public Guid? NewConferenceId { get; set; }
         public TestSettings TestSettings { get; set; }
         public SeleniumEnvironment Environment { get; set; }
-        public Dictionary<string, BrowserContext> Browsers { get; set; }
+        public Dictionary<string, BrowserContext> Drivers { get; set; }
         public SauceLabsSettings SaucelabsSettings { get; set; }
         public TargetBrowser TargetBrowser { get; set; }
 
         public TestContext()
         {
-            Browsers = new Dictionary<string, BrowserContext>();
+            Drivers = new Dictionary<string, BrowserContext>();
         }
 
         public UserAccount GetJudgeUser()

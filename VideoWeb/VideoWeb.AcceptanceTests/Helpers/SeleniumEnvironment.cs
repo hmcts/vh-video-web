@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using NUnit.Framework;
@@ -117,20 +116,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
         }
 
         private static IWebDriver InitLocalDriver(string video)
-        {
-            var chromeDriverProcesses = Process.GetProcessesByName("ChromeDriver");
-
-            foreach (var chromeDriverProcess in chromeDriverProcesses)
-            {
-                try
-                {
-                    chromeDriverProcess.Kill();
-                }
-                catch (Exception ex)
-                {
-                    NUnit.Framework.TestContext.WriteLine(ex.Message);
-                }
-            }
+        {            
             var options = new ChromeOptions();
             options.AddArgument("ignore -certificate-errors");
             options.AddArgument("use-fake-ui-for-media-stream");

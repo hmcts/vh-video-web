@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
-using NUnit.Framework;
 using TechTalk.SpecFlow;
 using Testing.Common.Configuration;
 using Testing.Common.Helpers;
@@ -85,6 +85,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             CheckVideoApiHealth(testContext);
 
             testContext.SaucelabsSettings = _saucelabsSettings;
+            KillAnyChromeDriverProcesses(_saucelabsSettings);
             testContext.TargetBrowser = GetTargetBrowser();
 
             testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, testContext.TargetBrowser);
@@ -104,6 +105,24 @@ namespace VideoWeb.AcceptanceTests.Hooks
             }
             _browserContext.BrowserSetup(testContext.VideoWebUrl, testContext.Environment, participant);
             _browserContext.NavigateToPage();
+        }
+
+        public static void KillAnyChromeDriverProcesses(SauceLabsSettings sauceLabsSettings)
+        {
+            if (sauceLabsSettings.RunWithSaucelabs) return;
+            var chromeDriverProcesses = Process.GetProcessesByName("ChromeDriver");
+
+            foreach (var chromeDriverProcess in chromeDriverProcesses)
+            {
+                try
+                {
+                    chromeDriverProcess.Kill();
+                }
+                catch (Exception ex)
+                {
+                    NUnit.Framework.TestContext.WriteLine(ex.Message);
+                }
+            }
         }
 
         public static void CheckBookingsApiHealth(TestContext testContext)
@@ -139,10 +158,34 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 SaucelabsResult.LogPassed(passed, _browserContext.NgDriver);
             }
 
-            foreach (var browser in _context.Browsers.Values)
+            _browserContext.NgDriver.Quit();
+            _browserContext.NgDriver.Dispose();
+
+            foreach (var driver in _context.Drivers.Values)
             {
-                browser.NgDriver.WrappedDriver.SwitchTo();
-                browser.BrowserTearDown();
+                try
+                {
+                    driver.NgDriver.Quit();
+                    driver.NgDriver.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    NUnit.Framework.TestContext.WriteLine(ex.Message);
+                }
+            }
+
+            var chromeDriverProcesses = Process.GetProcessesByName("ChromeDriver");
+
+            foreach (var chromeDriverProcess in chromeDriverProcesses)
+            {
+                try
+                {
+                     chromeDriverProcess.Kill();
+                }
+                catch (Exception ex)
+                {
+                    NUnit.Framework.TestContext.WriteLine(ex.Message);
+                }
             }
         }
     }

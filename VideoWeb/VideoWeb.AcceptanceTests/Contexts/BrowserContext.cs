@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using FluentAssertions;
-using Microsoft.ApplicationInsights.WindowsServer;
 using OpenQA.Selenium;
 using Polly;
 using Protractor;

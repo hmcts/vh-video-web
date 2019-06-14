@@ -114,7 +114,7 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.And("the Representative01 user has progressed to the Waiting Room page for the existin" +
                     "g hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 20
- testRunner.And("there is a new browser open for Individual02", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("there is a new browser open for Judge", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 21
  testRunner.And("the Judge user has progressed to the Waiting Room page for the existing hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 22
@@ -124,7 +124,7 @@ this.ScenarioInitialize(scenarioInfo);
 #line 24
  testRunner.When("the countdown finishes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 25
- testRunner.Then("the user is on the Hearing Room page for 5 minutes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the user is on the Hearing Room page for 1 minute", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
