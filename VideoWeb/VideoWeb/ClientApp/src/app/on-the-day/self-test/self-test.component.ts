@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { ErrorService } from 'src/app/services/error.service';
-import { Router, ActivatedRoute } from '@angular/router';
-import { VideoWebService } from 'src/app/services/video-web.service';
-import { ConferenceResponse, ParticipantResponse, TokenResponse } from 'src/app/services/clients/api-client';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
+import { ConferenceResponse, ParticipantResponse, TokenResponse } from 'src/app/services/clients/api-client';
+import { ErrorService } from 'src/app/services/error.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
+import { VideoWebService } from 'src/app/services/video-web.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
-import { merge, mergeMap, map } from 'rxjs/operators';
 declare var PexRTC: any;
 
 @Component({
@@ -20,8 +20,11 @@ export class SelfTestComponent implements OnInit {
   participant: ParticipantResponse;
   token: TokenResponse;
   pexipAPI: any;
-  incomingStream: any;
-  outgoingStream: any;
+  incomingStream: MediaStream;
+  outgoingStream: MediaStream;
+
+  availableCameraDevices: MediaDeviceInfo[];
+  availableMicrophoneDevices: MediaDeviceInfo[];
 
   testComplete: boolean;
   testScore: string;
@@ -33,6 +36,7 @@ export class SelfTestComponent implements OnInit {
     private adalService: AdalService,
     private videoWebService: VideoWebService,
     private errorService: ErrorService,
+    private userMediaService: UserMediaService
   ) {
     this.testComplete = false;
   }
@@ -40,6 +44,10 @@ export class SelfTestComponent implements OnInit {
   ngOnInit() {
     this.displayFeed = false;
     this.getConference();
+  }
+
+  get streamsActive() {
+    return this.outgoingStream && this.outgoingStream.active && this.incomingStream && this.incomingStream.active;
   }
 
   getConference(): void {
@@ -54,15 +62,26 @@ export class SelfTestComponent implements OnInit {
           this.token = token;
           this.call();
         },
-        (error) => {
-          this.loadingData = false;
-          this.errorService.handleApiError(error);
-        });
+          (error) => {
+            this.loadingData = false;
+            this.errorService.handleApiError(error);
+          });
       },
         (error) => {
           this.loadingData = false;
           this.errorService.handleApiError(error);
         });
+  }
+
+  async changeDevices() {
+    this.availableCameraDevices = await this.userMediaService.getListOfVideoDevices();
+    this.availableCameraDevices.forEach(element => {
+      console.log(element.label);
+    });
+    this.availableMicrophoneDevices = await this.userMediaService.getListOfMicrophoneDevices();
+    this.availableMicrophoneDevices.forEach(element => {
+      console.log(element.label);
+    });
   }
 
   setupPexipClient() {
@@ -79,7 +98,6 @@ export class SelfTestComponent implements OnInit {
       console.info('successfully connected');
       self.incomingStream = stream;
       self.displayFeed = true;
-      self.mutedOutgoingVideo();
     };
 
     this.pexipAPI.onError = function (reason) {
@@ -131,10 +149,5 @@ export class SelfTestComponent implements OnInit {
       this.disconnect();
     }
     this.router.navigate([PageUrls.CameraWorking, this.conference.id]);
-  }
-
-  mutedOutgoingVideo() {
-    const outgoingVideo = <HTMLVideoElement>document.getElementById('outgoingStream');
-    outgoingVideo.muted = true;
   }
 }

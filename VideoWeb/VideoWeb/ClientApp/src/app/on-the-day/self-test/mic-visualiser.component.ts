@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import 'webrtc-adapter';
+import { UserMediaService } from 'src/app/services/user-media.service';
 
 @Component({
   selector: 'app-mic-visualiser',
@@ -13,38 +14,21 @@ export class MicVisualiserComponent implements OnInit {
   analyser: AnalyserNode;
   javascriptNode: ScriptProcessorNode;
 
-  _navigator = <any>navigator;
-
-  constructor() { }
+  constructor(private userMediaService: UserMediaService) { }
 
   ngOnInit() {
-    this._navigator = <any>navigator;
     const canvas = <HTMLCanvasElement>document.getElementById('meter');
     this.canvasContext = canvas.getContext('2d');
     this.requestMedia();
   }
 
-  requestMedia() {
-    const mediaConstraints = {
-      video: false,
-      audio: {
-        mandatory: {
-          echoCancellation: false, // disabling audio processing
-          googAutoGainControl: true,
-          googNoiseSuppression: true,
-          googHighpassFilter: true,
-          googTypingNoiseDetection: true
-        },
-        optional: []
-      }
-    };
-
-    this._navigator.getUserMedia = (this._navigator.getUserMedia || this._navigator.webkitGetUserMedia
-      || this._navigator.mozGetUserMedia || this._navigator.msGetUserMedia);
-
-    this._navigator.mediaDevices
-      .getUserMedia(mediaConstraints)
-      .then(this.successCallback.bind(this), this.errorCallback.bind(this));
+  async requestMedia() {
+    const stream = await this.userMediaService.getMicStream();
+    if (stream) {
+      this.successCallback(stream);
+    } else {
+      this.errorCallback(null);
+    }
   }
 
   successCallback(stream: MediaStream) {
