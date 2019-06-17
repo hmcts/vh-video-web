@@ -34,8 +34,8 @@ namespace VideoWeb.AcceptanceTests.Features
         public virtual void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Waiting Room", "\tAs a registered video hearings user\n\tI need to access a waiting room prior to my" +
-                    " hearing\n\tSo that I am ready for the video hearing to begin", ProgrammingLanguage.CSharp, new string[] {
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Waiting Room", "\tAs a registered video hearings user\r\n\tI need to access a waiting room prior to m" +
+                    "y hearing\r\n\tSo that I am ready for the video hearing to begin", ProgrammingLanguage.CSharp, new string[] {
                         "VIH-4127",
                         "VIH-4131",
                         "VIH-4233"});

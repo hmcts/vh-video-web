@@ -230,20 +230,20 @@ namespace VideoWeb.Services.Bookings
         /// <param name="hearingId">Hearing Id</param>
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<SuitabilityAnswerResponse>> GetSuitabilityAnswersAllAsync(System.Guid hearingId);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<SuitabilityAnswerResponse>> GetSuitabilityAnswersAsync(System.Guid hearingId);
     
         /// <summary>Gets all suitability answers for a given hearing</summary>
         /// <param name="hearingId">Hearing Id</param>
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Collections.Generic.List<SuitabilityAnswerResponse> GetSuitabilityAnswersAll(System.Guid hearingId);
+        System.Collections.Generic.List<SuitabilityAnswerResponse> GetSuitabilityAnswers(System.Guid hearingId);
     
         /// <summary>Gets all suitability answers for a given hearing</summary>
         /// <param name="hearingId">Hearing Id</param>
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<SuitabilityAnswerResponse>> GetSuitabilityAnswersAllAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<SuitabilityAnswerResponse>> GetSuitabilityAnswersAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get all hearing venues available for booking</summary>
         /// <returns>Success</returns>
@@ -471,28 +471,6 @@ namespace VideoWeb.Services.Bookings
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         System.Threading.Tasks.Task<System.Collections.Generic.List<PersonSuitabilityAnswerResponse>> GetPersonSuitabilityAnswersAsync(string username, System.Threading.CancellationToken cancellationToken);
-    
-        /// <summary>Get a cursor based list of suitability answers</summary>
-        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
-        /// <param name="limit">The max number hearings records to return.</param>
-        /// <returns>Success</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<SuitabilityAnswersResponse> GetSuitabilityAnswersAsync(string cursor, int? limit);
-    
-        /// <summary>Get a cursor based list of suitability answers</summary>
-        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
-        /// <param name="limit">The max number hearings records to return.</param>
-        /// <returns>Success</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        SuitabilityAnswersResponse GetSuitabilityAnswers(string cursor, int? limit);
-    
-        /// <summary>Get a cursor based list of suitability answers</summary>
-        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
-        /// <param name="limit">The max number hearings records to return.</param>
-        /// <returns>Success</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        System.Threading.Tasks.Task<SuitabilityAnswersResponse> GetSuitabilityAnswersAsync(string cursor, int? limit, System.Threading.CancellationToken cancellationToken);
     
     }
     
@@ -1694,18 +1672,18 @@ namespace VideoWeb.Services.Bookings
         /// <param name="hearingId">Hearing Id</param>
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.List<SuitabilityAnswerResponse>> GetSuitabilityAnswersAllAsync(System.Guid hearingId)
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<SuitabilityAnswerResponse>> GetSuitabilityAnswersAsync(System.Guid hearingId)
         {
-            return GetSuitabilityAnswersAllAsync(hearingId, System.Threading.CancellationToken.None);
+            return GetSuitabilityAnswersAsync(hearingId, System.Threading.CancellationToken.None);
         }
     
         /// <summary>Gets all suitability answers for a given hearing</summary>
         /// <param name="hearingId">Hearing Id</param>
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Collections.Generic.List<SuitabilityAnswerResponse> GetSuitabilityAnswersAll(System.Guid hearingId)
+        public System.Collections.Generic.List<SuitabilityAnswerResponse> GetSuitabilityAnswers(System.Guid hearingId)
         {
-            return System.Threading.Tasks.Task.Run(async () => await GetSuitabilityAnswersAllAsync(hearingId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+            return System.Threading.Tasks.Task.Run(async () => await GetSuitabilityAnswersAsync(hearingId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
     
         /// <summary>Gets all suitability answers for a given hearing</summary>
@@ -1713,7 +1691,7 @@ namespace VideoWeb.Services.Bookings
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.List<SuitabilityAnswerResponse>> GetSuitabilityAnswersAllAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<SuitabilityAnswerResponse>> GetSuitabilityAnswersAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)
                 throw new System.ArgumentNullException("hearingId");
@@ -2997,119 +2975,6 @@ namespace VideoWeb.Services.Bookings
             }
         }
     
-        /// <summary>Get a cursor based list of suitability answers</summary>
-        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
-        /// <param name="limit">The max number hearings records to return.</param>
-        /// <returns>Success</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<SuitabilityAnswersResponse> GetSuitabilityAnswersAsync(string cursor, int? limit)
-        {
-            return GetSuitabilityAnswersAsync(cursor, limit, System.Threading.CancellationToken.None);
-        }
-    
-        /// <summary>Get a cursor based list of suitability answers</summary>
-        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
-        /// <param name="limit">The max number hearings records to return.</param>
-        /// <returns>Success</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public SuitabilityAnswersResponse GetSuitabilityAnswers(string cursor, int? limit)
-        {
-            return System.Threading.Tasks.Task.Run(async () => await GetSuitabilityAnswersAsync(cursor, limit, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
-        }
-    
-        /// <summary>Get a cursor based list of suitability answers</summary>
-        /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
-        /// <param name="limit">The max number hearings records to return.</param>
-        /// <returns>Success</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        public async System.Threading.Tasks.Task<SuitabilityAnswersResponse> GetSuitabilityAnswersAsync(string cursor, int? limit, System.Threading.CancellationToken cancellationToken)
-        {
-            var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/suitability-answers?");
-            if (cursor != null) 
-            {
-                urlBuilder_.Append("cursor=").Append(System.Uri.EscapeDataString(ConvertToString(cursor, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            if (limit != null) 
-            {
-                urlBuilder_.Append("limit=").Append(System.Uri.EscapeDataString(ConvertToString(limit, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            urlBuilder_.Length--;
-    
-            var client_ = _httpClient;
-            try
-            {
-                using (var request_ = new System.Net.Http.HttpRequestMessage())
-                {
-                    request_.Method = new System.Net.Http.HttpMethod("GET");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
-    
-                    PrepareRequest(client_, request_, urlBuilder_);
-                    var url_ = urlBuilder_.ToString();
-                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
-                    PrepareRequest(client_, request_, url_);
-    
-                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-                    try
-                    {
-                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-                        if (response_.Content != null && response_.Content.Headers != null)
-                        {
-                            foreach (var item_ in response_.Content.Headers)
-                                headers_[item_.Key] = item_.Value;
-                        }
-    
-                        ProcessResponse(client_, response_);
-    
-                        var status_ = ((int)response_.StatusCode).ToString();
-                        if (status_ == "200") 
-                        {
-                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            var result_ = default(SuitabilityAnswersResponse); 
-                            try
-                            {
-                                result_ = Newtonsoft.Json.JsonConvert.DeserializeObject<SuitabilityAnswersResponse>(responseData_, _settings.Value);
-                                return result_; 
-                            } 
-                            catch (System.Exception exception_) 
-                            {
-                                throw new BookingsApiException("Could not deserialize the response body.", (int)response_.StatusCode, responseData_, headers_, exception_);
-                            }
-                        }
-                        else
-                        if (status_ == "400") 
-                        {
-                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new BookingsApiException("Bad Request", (int)response_.StatusCode, responseData_, headers_, null);
-                        }
-                        else
-                        if (status_ == "401") 
-                        {
-                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new BookingsApiException("Unauthorized", (int)response_.StatusCode, responseData_, headers_, null);
-                        }
-                        else
-                        if (status_ != "200" && status_ != "204")
-                        {
-                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new BookingsApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
-                        }
-            
-                        return default(SuitabilityAnswersResponse);
-                    }
-                    finally
-                    {
-                        if (response_ != null)
-                            response_.Dispose();
-                    }
-                }
-            }
-            finally
-            {
-            }
-        }
-    
         private string ConvertToString(object value, System.Globalization.CultureInfo cultureInfo)
         {
             if (value is System.Enum)
@@ -3873,77 +3738,6 @@ namespace VideoWeb.Services.Bookings
         /// <summary>Created time</summary>
         [Newtonsoft.Json.JsonProperty("created_at", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTime? Created_at { get; set; }
-    
-        /// <summary>List of answers</summary>
-        [Newtonsoft.Json.JsonProperty("answers", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.List<SuitabilityAnswerResponse> Answers { get; set; }
-    
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.14.1.0 (Newtonsoft.Json v11.0.0.0)")]
-    public partial class SuitabilityAnswersResponse 
-    {
-        /// <summary>Gets or sets a list of participants suitability answers.</summary>
-        [Newtonsoft.Json.JsonProperty("participant_suitability_answer_response", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.List<ParticipantSuitabilityAnswerResponse> Participant_suitability_answer_response { get; set; }
-    
-        /// <summary>Gets or sets a unique sequential value to get next set of records. 
-        /// value is set to 0 if no records to return.</summary>
-        [Newtonsoft.Json.JsonProperty("next_cursor", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Next_cursor { get; set; }
-    
-        /// <summary>Gets or sets the maximum number of items returned for the page.</summary>
-        [Newtonsoft.Json.JsonProperty("limit", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Limit { get; set; }
-    
-        /// <summary>Absolute url to the previous page of items.
-        /// Will be null for the first page.</summary>
-        [Newtonsoft.Json.JsonProperty("prev_page_url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Prev_page_url { get; set; }
-    
-        /// <summary>Absolute url for the next page of items.
-        /// Will be null for the last page.</summary>
-        [Newtonsoft.Json.JsonProperty("next_page_url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Next_page_url { get; set; }
-    
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.14.1.0 (Newtonsoft.Json v11.0.0.0)")]
-    public partial class ParticipantSuitabilityAnswerResponse 
-    {
-        /// <summary>Gets or sets the participant ID</summary>
-        [Newtonsoft.Json.JsonProperty("participant_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid? Participant_id { get; set; }
-    
-        /// <summary>Gets or sets the hearing case number</summary>
-        [Newtonsoft.Json.JsonProperty("case_number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Case_number { get; set; }
-    
-        /// <summary>Gets or sets the participant hearing role</summary>
-        [Newtonsoft.Json.JsonProperty("hearing_role", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Hearing_role { get; set; }
-    
-        /// <summary>Gets or sets the participant title</summary>
-        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Title { get; set; }
-    
-        /// <summary>Gets or sets the participant first name</summary>
-        [Newtonsoft.Json.JsonProperty("first_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string First_name { get; set; }
-    
-        /// <summary>Gets or sets the participant last name</summary>
-        [Newtonsoft.Json.JsonProperty("last_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Last_name { get; set; }
-    
-        /// <summary>Last updated date and time of the suitability answers</summary>
-        [Newtonsoft.Json.JsonProperty("updated_at", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTime? Updated_at { get; set; }
-    
-        /// <summary>Gets or sets the name of represented person</summary>
-        [Newtonsoft.Json.JsonProperty("representee", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Representee { get; set; }
     
         /// <summary>List of answers</summary>
         [Newtonsoft.Json.JsonProperty("answers", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
