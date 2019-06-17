@@ -6,12 +6,13 @@ import { ErrorService } from 'src/app/services/error.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { VideoWebService } from 'src/app/services/video-web.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
+import { SelectedUserMediaDevice } from '../models/selected-user-media-device';
 declare var PexRTC: any;
 
 @Component({
   selector: 'app-self-test',
   templateUrl: './self-test.component.html',
-  styleUrls: ['./self-test.component.css']
+  styleUrls: ['./self-test.component.scss']
 })
 export class SelfTestComponent implements OnInit {
 
@@ -23,12 +24,14 @@ export class SelfTestComponent implements OnInit {
   incomingStream: MediaStream;
   outgoingStream: MediaStream;
 
-  availableCameraDevices: MediaDeviceInfo[];
-  availableMicrophoneDevices: MediaDeviceInfo[];
+  preferredMicrophoneStream: MediaStream;
 
   testComplete: boolean;
   testScore: string;
   displayFeed: boolean;
+
+  displayDeviceChangeModal: boolean;
+  hasMultipleDevices: boolean;
 
   constructor(
     private router: Router,
@@ -41,8 +44,9 @@ export class SelfTestComponent implements OnInit {
     this.testComplete = false;
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.displayFeed = false;
+    this.displayDeviceChangeModal = false;
     this.getConference();
   }
 
@@ -74,20 +78,43 @@ export class SelfTestComponent implements OnInit {
   }
 
   async changeDevices() {
-    this.availableCameraDevices = await this.userMediaService.getListOfVideoDevices();
-    this.availableCameraDevices.forEach(element => {
-      console.log(element.label);
-    });
-    this.availableMicrophoneDevices = await this.userMediaService.getListOfMicrophoneDevices();
-    this.availableMicrophoneDevices.forEach(element => {
-      console.log(element.label);
-    });
+    this.disconnect();
+    this.userMediaService.stopAStream(this.preferredMicrophoneStream);
+    this.displayDeviceChangeModal = true;
+  }
+
+  onMediaDeviceChangeCancelled() {
+    this.displayDeviceChangeModal = false;
+    this.call();
+  }
+
+  async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
+    console.log(selectedMediaDevice);
+    this.displayDeviceChangeModal = false;
+    this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
+    this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
+    await this.updatePexipAudioVideoSource();
+    this.call();
+  }
+
+  async updatePexipAudioVideoSource() {
+    console.log('updatePexipAudioVideoSource');
+    this.hasMultipleDevices = await this.userMediaService.hasMultipleDevices();
+
+    if (this.userMediaService.getPreferredCamera()) {
+      this.pexipAPI.video_source = this.userMediaService.getPreferredCamera().deviceId;
+    }
+
+    if (this.userMediaService.getPreferredMicrophone()) {
+      this.pexipAPI.audio_source = this.userMediaService.getPreferredMicrophone().deviceId;
+    }
+    this.preferredMicrophoneStream = await this.userMediaService.getPreferredMicStream();
   }
 
   setupPexipClient() {
     const self = this;
     this.pexipAPI = new PexRTC();
-
+    this.updatePexipAudioVideoSource();
     this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
       console.info('running pexip test call setup');
       self.outgoingStream = stream;
@@ -115,13 +142,12 @@ export class SelfTestComponent implements OnInit {
     };
   }
 
-  call() {
+  async call() {
     this.testComplete = false;
     this.testScore = null;
     const pexipNode = this.conference.pexip_self_test_node_uri;
     const conferenceAlias = 'testcall2';
     const tokenOptions = btoa(`${this.token.expires_on};${this.participant.id};${this.token.token}`);
-
     this.pexipAPI.makeCall(pexipNode, `${conferenceAlias};${tokenOptions}`, this.participant.id, null);
   }
 
@@ -132,6 +158,8 @@ export class SelfTestComponent implements OnInit {
 
   disconnect() {
     this.pexipAPI.disconnect();
+    this.incomingStream = null;
+    this.outgoingStream = null;
     this.testComplete = true;
   }
 

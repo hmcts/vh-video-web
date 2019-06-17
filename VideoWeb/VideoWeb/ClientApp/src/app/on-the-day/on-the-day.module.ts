@@ -18,7 +18,7 @@ import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone
 import { TasksTableComponent } from './vho-hearings/tasks-table.component';
 import { VhoHearingListComponent } from './vho-hearings/vho-hearing-list.component';
 import { SelfTestComponent } from './self-test/self-test.component';
-import { MicVisualiserComponent } from './self-test/mic-visualiser.component';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -41,8 +41,7 @@ import { MicVisualiserComponent } from './self-test/mic-visualiser.component';
     SwitchOnCameraMicrophoneComponent,
     TasksTableComponent,
     VhoHearingListComponent,
-    SelfTestComponent,
-    MicVisualiserComponent
+    SelfTestComponent
   ],
   exports: [
     DeclarationComponent

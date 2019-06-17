@@ -1,18 +1,13 @@
 import { Injectable, } from '@angular/core';
 import 'webrtc-adapter';
-
-const browser = <any>navigator;
-browser.mediaDevices.getUserMedia = (browser.mediaDevices.getUserMedia ||
-    browser.webkitGetUserMedia ||
-    browser.mozGetUserMedia ||
-    browser.msGetUserMedia);
+import { UserMediaDevice } from '../on-the-day/models/user-media-device';
 
 @Injectable({
     providedIn: 'root',
 })
 export class UserMediaService {
 
-    readonly constraints = {
+    readonly permissionConstraints = {
         audio: true,
         video: true
     };
@@ -31,10 +26,27 @@ export class UserMediaService {
         video: false
     };
 
+    readonly camOnlyConstraints = {
+        audio: false,
+        video: true
+    };
+
+    _navigator = <any>navigator;
+
     private stream: MediaStream;
     private inputStream: MediaStream;
 
-    devices: MediaDeviceInfo[];
+    devices: UserMediaDevice[];
+
+    private preferredCamera: UserMediaDevice;
+    private preferredMicrophone: UserMediaDevice;
+
+    constructor() {
+        this.preferredCamera = null;
+        this.preferredMicrophone = null;
+        this._navigator.getUserMedia = (this._navigator.getUserMedia || this._navigator.webkitGetUserMedia
+            || this._navigator.mozGetUserMedia || this._navigator.msGetUserMedia);
+    }
 
     async requestAccess(): Promise<boolean> {
         try {
@@ -46,57 +58,107 @@ export class UserMediaService {
         }
     }
 
-    async getStream(): Promise<MediaStream> {
-        console.log('requesting camera and mic access');
+    private async getStream(): Promise<MediaStream> {
         if (this.stream) {
-            console.log('closing existing video and mic stream');
             this.stopStream();
         }
 
-        this.stream = await browser.mediaDevices.getUserMedia(this.constraints);
+        this.stream = await this._navigator.mediaDevices.getUserMedia(this.permissionConstraints);
         return this.stream;
     }
 
-    async getMicStream(): Promise<MediaStream> {
-        console.log('getting mic input stream');
-        if (this.inputStream) {
-            console.log('closing existing mic stream');
-            this.stopStream();
+    async getPreferredMicStream(): Promise<MediaStream> {
+        if (this.preferredMicrophone) {
+            console.log(`using preferred mic ${this.preferredMicrophone.label}`);
+            console.log(this.preferredMicrophone.deviceId);
+            const stream = await this._navigator.mediaDevices.getUserMedia(
+                { audio: { deviceId: { exact: this.preferredMicrophone.deviceId } } }
+            );
+            return stream;
+        } else {
+            console.log(`using default mic`);
+            return this.getMicStream();
         }
-
-        this.stream = await browser.mediaDevices.getUserMedia(this.micOnlyConstraints);
-        return this.stream;
     }
 
-    async getListOfVideoDevices(): Promise<MediaDeviceInfo[]> {
-        if (!browser.mediaDevices || !browser.mediaDevices.enumerateDevices) {
+    async getPreferredCameraStream(): Promise<MediaStream> {
+        if (this.preferredCamera) {
+            console.log(`using preferred cam ${this.preferredCamera.label}`);
+            console.log(this.preferredCamera.deviceId);
+
+            const stream = await this._navigator.mediaDevices.getUserMedia(
+                { video: { deviceId: { exact: this.preferredCamera.deviceId } } }
+            );
+            return stream;
+        } else {
+            console.log(`using default cam`);
+            return this.getCameraStream();
+        }
+    }
+
+    private async getCameraStream(): Promise<MediaStream> {
+        return await this._navigator.mediaDevices.getUserMedia(this.camOnlyConstraints);
+    }
+
+    private async getMicStream(): Promise<MediaStream> {
+        return await this._navigator.mediaDevices.getUserMedia(this.micOnlyConstraints);
+    }
+
+    async updateAvailableDevicesList(): Promise<UserMediaDevice[]> {
+        if (!this._navigator.mediaDevices || !this._navigator.mediaDevices.enumerateDevices) {
             console.log('enumerateDevices() not supported.');
             return [];
         }
-        this.devices = await browser.mediaDevices.enumerateDevices();
+
+        const updatedDevices: MediaDeviceInfo[] = await this._navigator.mediaDevices.enumerateDevices();
+        this.devices = Array.from(updatedDevices, device =>
+            new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)
+        );
+        return this.devices;
+    }
+
+    async getListOfVideoDevices(): Promise<UserMediaDevice[]> {
+        await this.updateAvailableDevicesList();
         return this.devices.filter(x => x.kind === 'videoinput');
     }
 
-    async getListOfMicrophoneDevices(): Promise<MediaDeviceInfo[]> {
-        if (!browser.mediaDevices || !browser.mediaDevices.enumerateDevices) {
-            console.log('enumerateDevices() not supported.');
-            return [];
-        }
-        this.devices = await browser.mediaDevices.enumerateDevices();
+    async getListOfMicrophoneDevices(): Promise<UserMediaDevice[]> {
+        this.updateAvailableDevicesList();
         return this.devices.filter(x => x.kind === 'audioinput');
     }
 
+    async hasMultipleDevices(): Promise<boolean> {
+        const camDevices = await this.getListOfVideoDevices();
+        const micDevices = await this.getListOfMicrophoneDevices();
+
+        return micDevices.length > 1 || camDevices.length > 1;
+    }
+
+    getPreferredCamera() {
+        return this.preferredCamera;
+    }
+
+    getPreferredMicrophone() {
+        return this.preferredMicrophone;
+    }
+
+    updatePreferredCamera(camera: UserMediaDevice) {
+        this.preferredCamera = camera;
+    }
+
+    updatePreferredMicrophone(microphone: UserMediaDevice) {
+        this.preferredMicrophone = microphone;
+    }
+
     stopStream() {
-        console.log('closing camera and mic stream');
         this.stopAStream(this.stream);
     }
 
     stopInputStream() {
-        console.log('closing mic stream');
         this.stopAStream(this.inputStream);
     }
 
-    private stopAStream(stream: MediaStream) {
+    stopAStream(stream: MediaStream) {
         if (!stream) {
             return;
         }

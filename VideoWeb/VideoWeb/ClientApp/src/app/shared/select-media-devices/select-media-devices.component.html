@@ -1,0 +1,80 @@
+<!-- The Modal -->
+<div id="select-device-modal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <div class="govuk-width-container">
+      <h2 class="govuk-heading-l govuk-!-margin-top-6 govuk-!-margin-bottom-6">Choose your camera and microphone</h2>
+
+      <div class="govuk-grid-row">
+
+        <!-- Left hand side -->
+        <div class="govuk-grid-column-one-half">
+
+          <form *ngIf="selectedMediaDevicesForm" [formGroup]="selectedMediaDevicesForm" class="govuk-form-group"
+            (ngSubmit)="onSubmit()">
+
+            <div *ngIf="hasSingleCameraConncted">
+              <p class="govuk-body">
+                {{singleCameraName}}
+              </p>
+            </div>
+
+            <div *ngIf="!hasSingleCameraConncted" class="govuk-!-margin-bottom-9">
+              <p class="govuk-body govuk-!-font-weight-bold">
+                Change your camera?
+              </p>
+              <select class="govuk-select govuk-!-width-one-half" id="availabl-cam-list" formControlName="camera">
+                <option *ngFor="let availableCam of availableCameraDevices" [ngValue]="availableCam">
+                  {{availableCam.label}}
+                </option>
+              </select>
+            </div>
+
+            <div *ngIf="hasSingleMicrophoneConncted">
+              <p class="govuk-body">
+                {{singleMicrophoneName}}
+              </p>
+            </div>
+
+            <div *ngIf="!hasSingleMicrophoneConncted">
+              <p class="govuk-body govuk-!-font-weight-bold">
+                Change your microphone?
+              </p>
+              <select class="govuk-select govuk-!-width-one-half" id="availabl-mics-list" formControlName="microphone">
+                <option *ngFor="let availableMic of availableMicrophoneDevices" [ngValue]="availableMic">
+                  {{availableMic.label}}
+                </option>
+              </select>
+            </div>
+
+          </form>
+
+        </div>
+        <!-- Right hand side -->
+        <div class="govuk-grid-column-one-half">
+          <div class="govuk-grid-column-full">
+            <video id="preferredCameraStream" [srcObject]="preferredCameraStream" autoplay width="100%" height="auto">
+              Your browser does not support video
+            </video>
+          </div>
+          <div class="govuk-grid-column-full">
+            <app-mic-visualiser *ngIf="preferredMicrophoneStream" [stream]="preferredMicrophoneStream">
+            </app-mic-visualiser>
+          </div>
+        </div>
+
+        <div class="govuk-grid-column-full">
+          <div ng class="govuk-!-margin-top-6">
+            <input type="button" id="change-device-btn" class="govuk-button govuk-!-margin-right-9" role="button"
+              value="Change" (click)="onSubmit()" alt="Continue" />
+
+            <input type="button" id="cancel-btn" class="govuk-button grey-btn" role="button" value="Cancel"
+              (click)="onCancel()" alt="Cancel camera and microphone change" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

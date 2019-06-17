@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import 'webrtc-adapter';
 import { UserMediaService } from 'src/app/services/user-media.service';
 
@@ -14,27 +14,23 @@ export class MicVisualiserComponent implements OnInit {
   analyser: AnalyserNode;
   javascriptNode: ScriptProcessorNode;
 
-  constructor(private userMediaService: UserMediaService) { }
+  constructor() { }
+
+  @Input() stream: MediaStream;
 
   ngOnInit() {
     const canvas = <HTMLCanvasElement>document.getElementById('meter');
     this.canvasContext = canvas.getContext('2d');
-    this.requestMedia();
+    this.processStream();
   }
 
-  async requestMedia() {
-    const stream = await this.userMediaService.getMicStream();
-    if (stream) {
-      this.successCallback(stream);
-    } else {
-      this.errorCallback(null);
+  processStream() {
+    if (!this.stream) {
+      throw new Error('No stream provided');
     }
-  }
-
-  successCallback(stream: MediaStream) {
     this.audioContext = new AudioContext();
     this.analyser = this.audioContext.createAnalyser();
-    this.microphone = this.audioContext.createMediaStreamSource(stream);
+    this.microphone = this.audioContext.createMediaStreamSource(this.stream);
     this.javascriptNode = this.audioContext.createScriptProcessor(2048, 1, 1);
     this.analyser.smoothingTimeConstant = 0.8;
     this.analyser.fftSize = 1024;
@@ -64,10 +60,6 @@ export class MicVisualiserComponent implements OnInit {
 
     this.canvasContext.clearRect(0, 0, width, height);
     this.canvasContext.fillStyle = 'green';
-    this.canvasContext.fillRect(0, 0, feedback * 4, height);
-  }
-
-  errorCallback(error: MediaStreamError) {
-    console.log('not got your mic!');
+    this.canvasContext.fillRect(0, 0, feedback * 2, height);
   }
 }
