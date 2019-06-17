@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using OpenQA.Selenium;
 using RestSharp;
 using Testing.Common.Configuration;
 using Testing.Common.Helpers;
@@ -35,6 +36,16 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public Guid? NewConferenceId { get; set; }
         public TestSettings TestSettings { get; set; }
         public SeleniumEnvironment Environment { get; set; }
+        public Dictionary<string, BrowserContext> Drivers { get; set; }
+        public Dictionary<string, IWebDriver> WrappedDrivers { get; set; }
+        public SauceLabsSettings SaucelabsSettings { get; set; }
+        public TargetBrowser TargetBrowser { get; set; }
+
+        public TestContext()
+        {
+            Drivers = new Dictionary<string, BrowserContext>();
+            WrappedDrivers = new Dictionary<string, IWebDriver>();
+        }
 
         public UserAccount GetJudgeUser()
         {

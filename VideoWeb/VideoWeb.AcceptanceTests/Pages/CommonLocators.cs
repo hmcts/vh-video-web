@@ -24,6 +24,8 @@ namespace VideoWeb.AcceptanceTests.Pages
 
         public static By TableCellContainingText(string text) => By.XPath($"//table//td/p[contains(text(),'{text}')]");
 
+        public static By IframeButtonWithTooltip(string tooltip) => By.XPath($"//a[@data-tooltip='{tooltip}']");
+
         public static By AlertCellText(string text) => By.XPath($"//div[@id='tasks-list']//p[contains(text(),'{text}')]");
     }
 }

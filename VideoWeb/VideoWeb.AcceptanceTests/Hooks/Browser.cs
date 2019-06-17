@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
@@ -8,6 +9,7 @@ using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.Common.Security;
+using TestContext = VideoWeb.AcceptanceTests.Contexts.TestContext;
 
 namespace VideoWeb.AcceptanceTests.Hooks
 {
@@ -82,9 +84,45 @@ namespace VideoWeb.AcceptanceTests.Hooks
             CheckUserApiHealth(testContext);
             CheckVideoApiHealth(testContext);
 
-            testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, GetTargetBrowser());
-            _browserContext.BrowserSetup(testContext.VideoWebUrl, testContext.Environment);
+            testContext.SaucelabsSettings = _saucelabsSettings;
+            KillAnyChromeDriverProcesses(_saucelabsSettings);
+            testContext.TargetBrowser = GetTargetBrowser();
+
+            testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, testContext.TargetBrowser);
+
+            string participant;
+            if (_scenarioContext.ScenarioInfo.Title.ToLower().Contains("judge"))
+            {
+                participant = "Judge01";
+            }
+            else if (_scenarioContext.ScenarioInfo.Title.ToLower().Contains("representative"))
+            {
+                participant = "Representative01";
+            }
+            else
+            {
+                participant = "Individual01";
+            }
+            _browserContext.BrowserSetup(testContext.VideoWebUrl, testContext.Environment, participant);
             _browserContext.NavigateToPage();
+        }
+
+        public static void KillAnyChromeDriverProcesses(SauceLabsSettings sauceLabsSettings)
+        {
+            if (sauceLabsSettings.RunWithSaucelabs) return;
+            var chromeDriverProcesses = Process.GetProcessesByName("ChromeDriver");
+
+            foreach (var chromeDriverProcess in chromeDriverProcesses)
+            {
+                try
+                {
+                    chromeDriverProcess.Kill();
+                }
+                catch (Exception ex)
+                {
+                    NUnit.Framework.TestContext.WriteLine(ex.Message);
+                }
+            }
         }
 
         public static void CheckBookingsApiHealth(TestContext testContext)
@@ -119,7 +157,36 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 var passed = _scenarioContext.TestError == null;
                 SaucelabsResult.LogPassed(passed, _browserContext.NgDriver);
             }
-            _browserContext.BrowserTearDown();
+
+            _browserContext.NgDriver.Quit();
+            _browserContext.NgDriver.Dispose();
+
+            foreach (var driver in _context.WrappedDrivers.Values)
+            {
+                try
+                {
+                    driver.Quit();
+                    driver.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    NUnit.Framework.TestContext.WriteLine(ex.Message);
+                }
+            }
+
+            var chromeDriverProcesses = Process.GetProcessesByName("ChromeDriver");
+
+            foreach (var chromeDriverProcess in chromeDriverProcesses)
+            {
+                try
+                {
+                     chromeDriverProcess.Kill();
+                }
+                catch (Exception ex)
+                {
+                    NUnit.Framework.TestContext.WriteLine(ex.Message);
+                }
+            }
         }
     }
 }
