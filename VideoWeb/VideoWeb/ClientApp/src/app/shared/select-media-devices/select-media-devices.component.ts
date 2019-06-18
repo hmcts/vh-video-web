@@ -29,8 +29,6 @@ export class SelectMediaDevicesComponent implements OnInit {
     await this.requestMedia();
     this.availableCameraDevices = await this.userMediaService.getListOfVideoDevices();
     this.availableMicrophoneDevices = await this.userMediaService.getListOfMicrophoneDevices();
-    console.log(this.availableCameraDevices);
-    console.log(this.availableMicrophoneDevices);
 
     this.preferredCameraStream = await this.userMediaService.getPreferredCameraStream();
     this.preferredMicrophoneStream = await this.userMediaService.getPreferredMicStream();

@@ -4,30 +4,25 @@ import { SelectMediaDevicesComponent } from './select-media-devices.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
+import { MicVisualiserStubComponent } from 'src/app/testing/stubs/mic-visualiser-stub';
+import { MockUserMediaService } from 'src/app/testing/mocks/MockUserMediaService';
 
 describe('SelectMediaDevicesComponent', () => {
   let component: SelectMediaDevicesComponent;
   let fixture: ComponentFixture<SelectMediaDevicesComponent>;
-  let userMediaServiceSpy: jasmine.SpyObj<UserMediaService>;
-
+  let userMediaService: MockUserMediaService;
   const testData = new MediaDeviceTestData();
 
   beforeEach(async(() => {
-    userMediaServiceSpy = jasmine.createSpyObj<UserMediaService>('userMediaServiceSpy',
-      ['getListOfVideoDevices', 'getListOfMicrophoneDevices']);
-
-    userMediaServiceSpy.getListOfVideoDevices.and.returnValue(testData.getListOfCameras());
-    userMediaServiceSpy.getListOfMicrophoneDevices.and.returnValue(testData.getListOfMicrophones());
-
     TestBed.configureTestingModule({
       imports: [
         FormsModule,
         ReactiveFormsModule
       ],
       providers: [
-        { provide: UserMediaService, useValue: userMediaServiceSpy }
+        { provide: UserMediaService, useClass: MockUserMediaService }
       ],
-      declarations: [SelectMediaDevicesComponent]
+      declarations: [SelectMediaDevicesComponent, MicVisualiserStubComponent]
     })
       .compileComponents();
   }));
@@ -35,6 +30,7 @@ describe('SelectMediaDevicesComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(SelectMediaDevicesComponent);
     component = fixture.componentInstance;
+    userMediaService = TestBed.get(UserMediaService);
     fixture.detectChanges();
   });
 

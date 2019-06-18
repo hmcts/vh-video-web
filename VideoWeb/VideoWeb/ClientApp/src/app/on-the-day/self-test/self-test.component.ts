@@ -89,7 +89,6 @@ export class SelfTestComponent implements OnInit {
   }
 
   async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
-    console.log(selectedMediaDevice);
     this.displayDeviceChangeModal = false;
     this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
     this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
@@ -98,7 +97,6 @@ export class SelfTestComponent implements OnInit {
   }
 
   async updatePexipAudioVideoSource() {
-    console.log('updatePexipAudioVideoSource');
     this.hasMultipleDevices = await this.userMediaService.hasMultipleDevices();
 
     if (this.userMediaService.getPreferredCamera()) {
