@@ -40,12 +40,32 @@ export class UserMediaService {
 
     private preferredCamera: UserMediaDevice;
     private preferredMicrophone: UserMediaDevice;
+    private prefferedCamKey = 'vh.preferred.camera';
+    private prefferedMicKey = 'vh.preferred.microphone';
 
     constructor() {
-        this.preferredCamera = null;
-        this.preferredMicrophone = null;
+        this.loadPreferredDevicesFromStorage();
+
+
         this._navigator.getUserMedia = (this._navigator.getUserMedia || this._navigator.webkitGetUserMedia
             || this._navigator.mozGetUserMedia || this._navigator.msGetUserMedia);
+    }
+
+    private loadPreferredDevicesFromStorage() {
+        const preferredCamStorage = sessionStorage.getItem(this.prefferedCamKey);
+        const preferredMicStorage = sessionStorage.getItem(this.prefferedMicKey);
+
+        if (preferredCamStorage) {
+            this.preferredCamera = JSON.parse(preferredCamStorage);
+        } else {
+            this.preferredCamera = null;
+        }
+
+        if (preferredMicStorage) {
+            this.preferredMicrophone = JSON.parse(preferredMicStorage);
+        } else {
+            this.preferredMicrophone = null;
+        }
     }
 
     async requestAccess(): Promise<boolean> {
@@ -144,10 +164,12 @@ export class UserMediaService {
 
     updatePreferredCamera(camera: UserMediaDevice) {
         this.preferredCamera = camera;
+        sessionStorage.setItem(this.prefferedCamKey, JSON.stringify(this.preferredCamera));
     }
 
     updatePreferredMicrophone(microphone: UserMediaDevice) {
         this.preferredMicrophone = microphone;
+        sessionStorage.setItem(this.prefferedMicKey, JSON.stringify(this.preferredMicrophone));
     }
 
     stopStream() {
