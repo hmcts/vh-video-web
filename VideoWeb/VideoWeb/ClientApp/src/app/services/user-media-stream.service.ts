@@ -23,6 +23,10 @@ export class UserMediaStreamService {
 
     async requestAccess(): Promise<boolean> {
         try {
+            /*
+            If a user grants access a stream is returned, which needs to be closed
+            rather than being returned to the client.
+            */
             await this.getStream();
             return true;
         } catch (exception) {
