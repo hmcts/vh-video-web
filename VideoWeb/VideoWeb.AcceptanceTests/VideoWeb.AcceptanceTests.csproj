@@ -88,4 +88,22 @@
     <Folder Include="Properties" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Features\ParticipantStatus.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ParticipantStatus.feature</DependentUpon>
+    </Compile>
+    <Compile Update="Steps\ParticipantStatusSteps.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <SpecFlowFeatureFiles Update="Features\ParticipantStatus.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>ParticipantStatus.feature.cs</LastGenOutput>
+    </SpecFlowFeatureFiles>
+  </ItemGroup>
+
 </Project>
