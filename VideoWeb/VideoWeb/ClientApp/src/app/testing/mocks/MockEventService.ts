@@ -5,6 +5,7 @@ import { HelpMessage } from 'src/app/services/models/help-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 
 import { ConferenceStatus, ParticipantStatus } from '../../services/clients/api-client';
+import { EventsService } from 'src/app/services/events.service';
 
 export class MockEventsService {
 
@@ -39,4 +40,9 @@ export class MockEventsService {
   getConsultationMessage(): Observable<ConsultationMessage> {
     return of(this.nextConsultationMessage);
   }
+}
+
+export class MockEventsNonHttpService extends EventsService {
+  start() { }
+  stop() { }
 }

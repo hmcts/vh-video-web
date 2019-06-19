@@ -13,7 +13,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
-import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
+import { MockEventsService, MockEventsNonHttpService } from 'src/app/testing/mocks/MockEventService';
 import { TasksTableStubComponent } from 'src/app/testing/stubs/task-table-stub';
 import { VhoHearingListStubComponent as VhoHearingListStubComponent } from 'src/app/testing/stubs/vho-hearing-list-stub';
 import { VhoParticipantStatusStubComponent } from 'src/app/testing/stubs/vho-participant-status-stub';
@@ -26,7 +26,7 @@ describe('VhoHearingsComponent', () => {
   let fixture: ComponentFixture<VhoHearingsComponent>;
   let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
   let adalService: MockAdalService;
-  let eventService: MockEventsService;
+  let eventService: EventsService;
   const conferences = new ConferenceTestData().getTestData();
   let errorService: ErrorService;
 
@@ -44,7 +44,7 @@ describe('VhoHearingsComponent', () => {
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },
         { provide: ConfigService, useClass: MockConfigService },
-        { provide: EventsService, useClass: MockEventsService }
+        { provide: EventsService, useClass: MockEventsNonHttpService }
       ]
     })
       .compileComponents();
