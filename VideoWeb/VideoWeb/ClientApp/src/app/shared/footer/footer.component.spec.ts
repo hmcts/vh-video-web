@@ -1,12 +1,13 @@
 import { Location } from '@angular/common';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { configureTestSuite } from 'ng-bullet';
 import { ContactUsStubComponent } from 'src/app/testing/stubs/contact-us-stub';
 import { DashboardStubComponent } from 'src/app/testing/stubs/dashboard-stub';
-
 import { FooterComponent } from './footer.component';
+
 
 
 describe('FooterComponent', () => {
@@ -15,7 +16,7 @@ describe('FooterComponent', () => {
   let location: Location;
   let router: Router;
 
-  beforeEach(async(() => {
+  configureTestSuite(() => {
     TestBed.configureTestingModule({
       declarations: [FooterComponent, DashboardStubComponent,
         ContactUsStubComponent],
@@ -23,9 +24,8 @@ describe('FooterComponent', () => {
       { path: 'contact-us', component: ContactUsStubComponent }])],
       schemas: [NO_ERRORS_SCHEMA]
 
-    })
-      .compileComponents();
-  }));
+    });
+  });
 
   beforeEach(() => {
     router = TestBed.get(Router);
@@ -47,6 +47,7 @@ describe('FooterComponent', () => {
     expect(location.path()).toBe('/dashboard');
     expect(component.hideContactUsLink).toBeFalsy();
   }));
+
   it('navigate to contact-us you should not see contact us link in the footer', fakeAsync(() => {
     fixture.ngZone.run(() => {
       router.navigate(['contact-us']);

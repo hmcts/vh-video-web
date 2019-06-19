@@ -17,6 +17,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { ParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { ErrorService } from 'src/app/services/error.service';
+import { configureTestSuite } from 'ng-bullet';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
   let component: JudgeWaitingRoomComponent;
@@ -28,11 +29,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
   let adalService: MockAdalService;
   let eventService: MockEventsService;
 
-  beforeEach(async(() => {
+  configureTestSuite(() => {
     conference = new ConferenceTestData().getConferenceDetail();
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
     videoWebServiceSpy.getConferenceById.and.returnValue(of(conference));
-
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
@@ -51,9 +51,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         { provide: ConfigService, useClass: MockConfigService },
         { provide: EventsService, useClass: MockEventsService }
       ]
-    })
-      .compileComponents();
-  }));
+    });
+  });
 
   beforeEach(() => {
     adalService = TestBed.get(AdalService);
@@ -141,12 +140,10 @@ describe('JudgeWaitingRoomComponent when conference does not exist', () => {
   let fixture: ComponentFixture<JudgeWaitingRoomComponent>;
   let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
   let route: ActivatedRoute;
-  let router: Router;
   let conference: ConferenceResponse;
-  let adalService: MockAdalService;
   let errorService: ErrorService;
 
-  beforeEach(async(() => {
+  configureTestSuite(() => {
     conference = new ConferenceTestData().getConferenceFuture();
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
     videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 401, isSwaggerException: true }));
@@ -169,13 +166,10 @@ describe('JudgeWaitingRoomComponent when conference does not exist', () => {
         { provide: ConfigService, useClass: MockConfigService },
         { provide: EventsService, useClass: MockEventsService }
       ]
-    })
-      .compileComponents();
-  }));
+    });
+  });
 
   beforeEach(() => {
-    adalService = TestBed.get(AdalService);
-    router = TestBed.get(Router);
     route = TestBed.get(ActivatedRoute);
     errorService = TestBed.get(ErrorService);
     fixture = TestBed.createComponent(JudgeWaitingRoomComponent);

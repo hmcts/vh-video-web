@@ -7,19 +7,19 @@ import { Router } from '@angular/router';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { configureTestSuite } from 'ng-bullet';
 
 describe('JudgeHearingTableComponent', () => {
   let component: JudgeHearingTableComponent;
   let fixture: ComponentFixture<JudgeHearingTableComponent>;
   let router: Router;
 
-  beforeEach(async(() => {
+  configureTestSuite(() => {
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
       declarations: [JudgeHearingTableComponent]
-    })
-      .compileComponents();
-  }));
+    });
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(JudgeHearingTableComponent);

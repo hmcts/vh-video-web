@@ -1,14 +1,15 @@
 import { DebugElement } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { configureTestSuite } from 'ng-bullet';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { EquipmentCheckComponent } from './equipment-check.component';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
+import { EquipmentCheckComponent } from './equipment-check.component';
 
 describe('EquipmentCheckComponent', () => {
   let component: EquipmentCheckComponent;
@@ -17,7 +18,7 @@ describe('EquipmentCheckComponent', () => {
   let router: Router;
   const conference = new ConferenceTestData().getConferenceDetail();
 
-  beforeEach(async(() => {
+  configureTestSuite(() => {
     TestBed.configureTestingModule({
       declarations: [EquipmentCheckComponent],
       imports: [ReactiveFormsModule, FormsModule, RouterTestingModule, SharedModule],
@@ -32,23 +33,18 @@ describe('EquipmentCheckComponent', () => {
         },
         { provide: VideoWebService, useClass: MockVideoWebService }
       ]
-    })
-      .compileComponents();
+    });
 
     fixture = TestBed.createComponent(EquipmentCheckComponent);
     debugElement = fixture.debugElement;
     component = debugElement.componentInstance;
     router = TestBed.get(Router);
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(EquipmentCheckComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
   });
 
   it('should navigate to camera-and-microphone', () => {

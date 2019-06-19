@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AdalService } from 'adal-angular4';
-import { MockAdalService } from '../../testing/mocks/MockAdalService';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AdalService } from 'adal-angular4';
+import { configureTestSuite } from 'ng-bullet';
+import { MockAdalService } from '../../testing/mocks/MockAdalService';
 import { LogoutComponent } from './logout.component';
 
 
@@ -10,14 +11,17 @@ describe('LogoutComponent', () => {
     let fixture: ComponentFixture<LogoutComponent>;
     let adalService: MockAdalService;
 
-    beforeEach(() => {
+    configureTestSuite(() => {
         TestBed.configureTestingModule({
             declarations: [LogoutComponent],
             imports: [RouterTestingModule],
             providers: [
                 { provide: AdalService, useClass: MockAdalService }
             ]
-        }).compileComponents();
+        });
+    });
+
+    beforeEach(() => {
         adalService = TestBed.get(AdalService);
         fixture = TestBed.createComponent(LogoutComponent);
         component = fixture.componentInstance;

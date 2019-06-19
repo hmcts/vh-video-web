@@ -1,12 +1,13 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { SelectMediaDevicesComponent } from './select-media-devices.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { configureTestSuite } from 'ng-bullet';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
-import { MicVisualiserStubComponent } from 'src/app/testing/stubs/mic-visualiser-stub';
 import { MockUserMediaService } from 'src/app/testing/mocks/MockUserMediaService';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { MicVisualiserStubComponent } from 'src/app/testing/stubs/mic-visualiser-stub';
+import { SelectMediaDevicesComponent } from './select-media-devices.component';
+
 
 describe('SelectMediaDevicesComponent', () => {
   let component: SelectMediaDevicesComponent;
@@ -16,7 +17,7 @@ describe('SelectMediaDevicesComponent', () => {
 
   let userMediaStreamServiceSpy: jasmine.SpyObj<UserMediaStreamService>;
 
-  beforeEach(async(() => {
+  configureTestSuite(() => {
     userMediaStreamServiceSpy = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService',
       ['requestAccess', 'stopRequestStream', 'stopStream', 'getStreamForCam', 'getStreamForMic']);
     userMediaStreamServiceSpy.requestAccess.and.returnValue(true);
@@ -31,9 +32,8 @@ describe('SelectMediaDevicesComponent', () => {
         { provide: UserMediaStreamService, useValue: userMediaStreamServiceSpy }
       ],
       declarations: [SelectMediaDevicesComponent, MicVisualiserStubComponent]
-    })
-      .compileComponents();
-  }));
+    });
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SelectMediaDevicesComponent);
@@ -69,7 +69,6 @@ describe('SelectMediaDevicesComponent', () => {
   it('should return true when multiple microphones are available', () => {
     expect(component.hasSingleMicrophoneConncted).toBeFalsy();
   });
-
 
   it('should emit cancelled event', async(() => {
     spyOn(component.cancelMediaDeviceChange, 'emit');

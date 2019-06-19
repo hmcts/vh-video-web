@@ -1,15 +1,16 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { ParticipantStatusListComponent } from './participant-status-list.component';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { ParticipantStatus, ParticipantResponse, UserRole } from 'src/app/services/clients/api-client';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AdalService } from 'adal-angular4';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
-import { SharedModule } from 'src/app/shared/shared.module';
+import { configureTestSuite } from 'ng-bullet';
 import { ConfigService } from 'src/app/services/api/config.service';
+import { ParticipantResponse, ParticipantStatus, UserRole } from 'src/app/services/clients/api-client';
+import { EventsService } from 'src/app/services/events.service';
+import { SharedModule } from 'src/app/shared/shared.module';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
-import { EventsService } from 'src/app/services/events.service';
+import { ParticipantStatusListComponent } from './participant-status-list.component';
+
 
 describe('ParticipantStatusListComponent', () => {
   let component: ParticipantStatusListComponent;
@@ -17,7 +18,7 @@ describe('ParticipantStatusListComponent', () => {
   let adalService: MockAdalService;
   let eventService: MockEventsService;
 
-  beforeEach(async(() => {
+  configureTestSuite(() => {
     TestBed.configureTestingModule({
       imports: [SharedModule],
       declarations: [ParticipantStatusListComponent],
@@ -26,11 +27,10 @@ describe('ParticipantStatusListComponent', () => {
         { provide: ConfigService, useClass: MockConfigService },
         { provide: EventsService, useClass: MockEventsService }
       ]
-    })
-      .compileComponents();
+    });
     adalService = TestBed.get(AdalService);
     eventService = TestBed.get(EventsService);
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ParticipantStatusListComponent);

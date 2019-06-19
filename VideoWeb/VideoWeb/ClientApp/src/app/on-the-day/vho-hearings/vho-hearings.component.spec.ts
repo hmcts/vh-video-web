@@ -1,23 +1,24 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
+import { configureTestSuite } from 'ng-bullet';
 import { of, throwError } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
-import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { ConferenceResponse, ConsultationAnswer } from 'src/app/services/clients/api-client';
+import { ErrorService } from 'src/app/services/error.service';
+import { EventsService } from 'src/app/services/events.service';
+import { ConsultationMessage } from 'src/app/services/models/consultation-message';
+import { Hearing } from 'src/app/shared/models/hearing';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
-import { VhoHearingsComponent } from './vho-hearings.component';
-import { ConferenceResponse, ConsultationAnswer } from 'src/app/services/clients/api-client';
-import { ConsultationMessage } from 'src/app/services/models/consultation-message';
-import { ErrorService } from 'src/app/services/error.service';
-import { Hearing } from 'src/app/shared/models/hearing';
 import { TasksTableStubComponent } from 'src/app/testing/stubs/task-table-stub';
-import { TaskCompleted } from '../models/task-completed';
 import { VhoHearingListStubComponent as VhoHearingListStubComponent } from 'src/app/testing/stubs/vho-hearing-list-stub';
+import { TaskCompleted } from '../models/task-completed';
+import { VhoHearingsComponent } from './vho-hearings.component';
 
 
 describe('VhoHearingsComponent', () => {
@@ -29,7 +30,7 @@ describe('VhoHearingsComponent', () => {
   const conferences = new ConferenceTestData().getTestData();
   let errorService: ErrorService;
 
-  beforeEach(async(() => {
+  configureTestSuite(() => {
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesToday',
       'getConferenceById', 'getTasksForConference']);
     videoWebServiceSpy.getConferencesToday.and.returnValue(of(conferences));
@@ -45,9 +46,8 @@ describe('VhoHearingsComponent', () => {
         { provide: ConfigService, useClass: MockConfigService },
         { provide: EventsService, useClass: MockEventsService }
       ]
-    })
-      .compileComponents();
-  }));
+    });
+  });
 
   beforeEach(() => {
     adalService = TestBed.get(AdalService);
@@ -125,7 +125,6 @@ describe('VhoHearingsComponent', () => {
     component.onTaskCompleted(new TaskCompleted(currentConference.id, 3));
     expect(component.conferences[0].no_of_pending_tasks).toBeLessThan(initPendingTasks);
   });
-
 });
 
 describe('VhoHearingsComponent', () => {
@@ -136,7 +135,7 @@ describe('VhoHearingsComponent', () => {
   let eventService: MockEventsService;
   let errorService: ErrorService;
 
-  beforeEach(async(() => {
+  configureTestSuite(() => {
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesToday']);
     videoWebServiceSpy.getConferencesToday.and.returnValue(throwError({ status: 401, isSwaggerException: true }));
 
@@ -149,9 +148,8 @@ describe('VhoHearingsComponent', () => {
         { provide: ConfigService, useClass: MockConfigService },
         { provide: EventsService, useClass: MockEventsService }
       ]
-    })
-      .compileComponents();
-  }));
+    });
+  });
 
   beforeEach(() => {
     adalService = TestBed.get(AdalService);

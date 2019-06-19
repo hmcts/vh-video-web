@@ -1,18 +1,18 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone.component';
-import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { ContactUsFoldingStubComponent } from 'src/app/testing/stubs/contact-us-stub';
-import { RouterTestingModule } from '@angular/router/testing';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { HttpClientModule } from '@angular/common/http';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
-import { PageUrls } from 'src/app/shared/page-url.constants';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { configureTestSuite } from 'ng-bullet';
 import { of } from 'rxjs';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { PageUrls } from 'src/app/shared/page-url.constants';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
+import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
+import { ContactUsFoldingStubComponent } from 'src/app/testing/stubs/contact-us-stub';
+import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone.component';
 
 describe('SwitchOnCameraMicrophoneComponent', () => {
   let component: SwitchOnCameraMicrophoneComponent;
@@ -22,7 +22,7 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
   let userMediaStreamService: UserMediaStreamService;
   const conference = new ConferenceTestData().getConferenceDetail();
 
-  beforeEach(async(() => {
+  configureTestSuite(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientModule, RouterTestingModule],
       declarations: [SwitchOnCameraMicrophoneComponent, ContactUsFoldingStubComponent],
@@ -38,9 +38,8 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
         { provide: AdalService, useClass: MockAdalService },
         { provide: VideoWebService, useClass: MockVideoWebService }
       ]
-    })
-      .compileComponents();
-  }));
+    });
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SwitchOnCameraMicrophoneComponent);
