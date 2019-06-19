@@ -89,17 +89,103 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Features\HearingRoom.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>HearingRoom.feature</DependentUpon>
+    </Compile>
     <Compile Update="Features\ParticipantStatus.feature.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>ParticipantStatus.feature</DependentUpon>
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>ParticipantStatus.feature.feature.cs</LastGenOutput>
+    </Compile>
+    <Compile Update="Features\ParticipantStatus.feature.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ParticipantStatus.feature.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Pages\HearingRoomPage.feature.cs">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>HearingRoomPage.feature.feature.cs</LastGenOutput>
+    </Compile>
+    <Compile Update="Pages\HearingRoomPage.feature.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>HearingRoomPage.feature.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Steps\HearingRoomSteps.feature.cs">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>HearingRoomSteps.feature.feature.cs</LastGenOutput>
+    </Compile>
+    <Compile Update="Steps\HearingRoomSteps.feature.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>HearingRoomSteps.feature.cs</DependentUpon>
     </Compile>
     <Compile Update="Steps\ParticipantStatusSteps.cs">
       <SubType>Code</SubType>
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>ParticipantStatusSteps.feature.cs</LastGenOutput>
+    </Compile>
+    <Compile Update="Steps\ParticipantStatusSteps.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ParticipantStatusSteps.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Videos\judge.feature.cs">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>judge.feature.feature.cs</LastGenOutput>
+    </Compile>
+    <Compile Update="Videos\judge.feature.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>judge.feature.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Videos\part1.feature.cs">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>part1.feature.feature.cs</LastGenOutput>
+    </Compile>
+    <Compile Update="Videos\part1.feature.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>part1.feature.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Videos\part2.feature.cs">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>part2.feature.feature.cs</LastGenOutput>
+    </Compile>
+    <Compile Update="Videos\part2.feature.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>part2.feature.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Videos\part3.feature.cs">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>part3.feature.feature.cs</LastGenOutput>
+    </Compile>
+    <Compile Update="Videos\part3.feature.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>part3.feature.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Videos\part4.feature.cs">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>part4.feature.feature.cs</LastGenOutput>
+    </Compile>
+    <Compile Update="Videos\part4.feature.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>part4.feature.cs</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
+    <SpecFlowFeatureFiles Update="Features\HearingRoom.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>HearingRoom.feature.cs</LastGenOutput>
+    </SpecFlowFeatureFiles>
     <SpecFlowFeatureFiles Update="Features\ParticipantStatus.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ParticipantStatus.feature.cs</LastGenOutput>
