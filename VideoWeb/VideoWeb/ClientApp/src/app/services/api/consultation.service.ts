@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ApiClient, ConsultationRequest, ParticipantResponse, ConsultationAnswer, ConferenceResponse } from './clients/api-client';
+import { ApiClient, ConsultationRequest, ParticipantResponse, ConsultationAnswer, ConferenceResponse } from '../clients/api-client';
 import { Observable } from 'rxjs';
 
 

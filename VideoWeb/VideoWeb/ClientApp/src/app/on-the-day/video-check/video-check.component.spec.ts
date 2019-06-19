@@ -4,7 +4,7 @@ import { VideoCheckComponent } from './video-check.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { VideoWebService } from 'src/app/services/video-web.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { AbstractControl } from '@angular/forms';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';

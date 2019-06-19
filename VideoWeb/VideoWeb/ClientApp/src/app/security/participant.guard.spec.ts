@@ -3,7 +3,7 @@ import { TestBed, async, inject } from '@angular/core/testing';
 import { ParticipantGuard } from './participant.guard';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '../shared/shared.module';
-import { ProfileService } from '../services/profile.service';
+import { ProfileService } from '../services/api/profile.service';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { UserProfileResponse, UserRole } from '../services/clients/api-client';

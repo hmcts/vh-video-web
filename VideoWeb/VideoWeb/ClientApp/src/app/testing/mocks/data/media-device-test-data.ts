@@ -1,4 +1,4 @@
-import { UserMediaDevice } from 'src/app/on-the-day/models/user-media-device';
+import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 
 export class MediaDeviceTestData {
     getSingleCamera(): UserMediaDevice[] {

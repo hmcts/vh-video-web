@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { JudgeWaitingRoomComponent } from './judge-waiting-room.component';
-import { VideoWebService } from 'src/app/services/video-web.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { ConferenceResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
@@ -9,7 +9,7 @@ import { throwError, of } from 'rxjs';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
-import { ConfigService } from 'src/app/services/config.service';
+import { ConfigService } from 'src/app/services/api/config.service';
 import { EventsService } from 'src/app/services/events.service';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';

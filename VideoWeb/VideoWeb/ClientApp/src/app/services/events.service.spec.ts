@@ -3,7 +3,7 @@ import { TestBed, inject } from '@angular/core/testing';
 import { EventsService } from './events.service';
 import { AdalService } from 'adal-angular4';
 import { MockAdalService } from '../testing/mocks/MockAdalService';
-import { ConfigService } from './config.service';
+import { ConfigService } from './api/config.service';
 import { MockConfigService } from '../testing/mocks/MockConfigService';
 
 describe('EventsService', () => {

@@ -6,7 +6,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MicrophoneCheckComponent } from './microphone-check.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { VideoWebService } from 'src/app/services/video-web.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 
 describe('MicrophoneCheckComponent', () => {

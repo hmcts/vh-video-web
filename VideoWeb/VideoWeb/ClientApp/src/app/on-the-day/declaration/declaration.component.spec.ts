@@ -7,7 +7,7 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { DeclarationComponent } from './declaration.component';
-import { VideoWebService } from 'src/app/services/video-web.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 
 describe('DeclarationComponent Tests', () => {

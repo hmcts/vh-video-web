@@ -8,7 +8,7 @@ import { API_BASE_URL } from './services/clients/api-client';
 import { SharedModule } from './shared/shared.module';
 
 import { AppComponent } from './app.component';
-import { ConfigService } from './services/config.service';
+import { ConfigService } from './services/api/config.service';
 import { AdalInterceptor, AdalService, AdalGuard } from 'adal-angular4';
 import { AuthGuard } from './security/auth.guard';
 import { AppRoutingModule } from './app-routing.module';

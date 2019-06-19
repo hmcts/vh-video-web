@@ -2,7 +2,7 @@ import { Component, OnInit, NgZone } from '@angular/core';
 import { ConferenceResponse, ParticipantStatus, ConferenceStatus } from 'src/app/services/clients/api-client';
 import { Router, ActivatedRoute } from '@angular/router';
 import { EventsService } from 'src/app/services/events.service';
-import { VideoWebService } from 'src/app/services/video-web.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { ErrorService } from 'src/app/services/error.service';

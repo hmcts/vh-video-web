@@ -6,7 +6,7 @@ import { ParticipantStatus, ParticipantResponse, UserRole } from 'src/app/servic
 import { AdalService } from 'adal-angular4';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { ConfigService } from 'src/app/services/config.service';
+import { ConfigService } from 'src/app/services/api/config.service';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { EventsService } from 'src/app/services/events.service';

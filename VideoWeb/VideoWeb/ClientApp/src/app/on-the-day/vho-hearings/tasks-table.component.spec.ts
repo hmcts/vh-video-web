@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TasksTableComponent } from './tasks-table.component';
-import { VideoWebService } from 'src/app/services/video-web.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { TasksTestData } from 'src/app/testing/mocks/data/tasks-test-data';

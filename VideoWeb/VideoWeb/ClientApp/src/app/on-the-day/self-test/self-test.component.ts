@@ -4,9 +4,10 @@ import { AdalService } from 'adal-angular4';
 import { ConferenceResponse, ParticipantResponse, TokenResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
-import { VideoWebService } from 'src/app/services/video-web.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
-import { SelectedUserMediaDevice } from '../models/selected-user-media-device';
+import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 declare var PexRTC: any;
 
 @Component({
@@ -39,7 +40,8 @@ export class SelfTestComponent implements OnInit {
     private adalService: AdalService,
     private videoWebService: VideoWebService,
     private errorService: ErrorService,
-    private userMediaService: UserMediaService
+    private userMediaService: UserMediaService,
+    private userMediaStreamService: UserMediaStreamService
   ) {
     this.testComplete = false;
   }
@@ -79,7 +81,7 @@ export class SelfTestComponent implements OnInit {
 
   async changeDevices() {
     this.disconnect();
-    this.userMediaService.stopAStream(this.preferredMicrophoneStream);
+    this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
     this.displayDeviceChangeModal = true;
   }
 
@@ -99,14 +101,16 @@ export class SelfTestComponent implements OnInit {
   async updatePexipAudioVideoSource() {
     this.hasMultipleDevices = await this.userMediaService.hasMultipleDevices();
 
-    if (this.userMediaService.getPreferredCamera()) {
-      this.pexipAPI.video_source = this.userMediaService.getPreferredCamera().deviceId;
+    const cam = this.userMediaService.getPreferredCamera();
+    if (cam) {
+      this.pexipAPI.video_source = cam.deviceId;
     }
 
-    if (this.userMediaService.getPreferredMicrophone()) {
-      this.pexipAPI.audio_source = this.userMediaService.getPreferredMicrophone().deviceId;
+    const mic = this.userMediaService.getPreferredMicrophone();
+    if (mic) {
+      this.pexipAPI.audio_source = mic.deviceId;
     }
-    this.preferredMicrophoneStream = await this.userMediaService.getPreferredMicStream();
+    this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(mic);
   }
 
   setupPexipClient() {

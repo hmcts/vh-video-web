@@ -1,8 +1,9 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { SelectedUserMediaDevice } from 'src/app/on-the-day/models/selected-user-media-device';
+import { SelectedUserMediaDevice } from 'src/app/shared/models/selected-user-media-device';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { FormBuilder, FormGroup, AbstractControl, Validators } from '@angular/forms';
-import { UserMediaDevice } from 'src/app/on-the-day/models/user-media-device';
+import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 
 @Component({
   selector: 'app-select-media-devices',
@@ -22,28 +23,40 @@ export class SelectMediaDevicesComponent implements OnInit {
 
   selectedMediaDevicesForm: FormGroup;
 
-  constructor(private userMediaService: UserMediaService,
+  constructor(
+    private userMediaService: UserMediaService,
+    private userMediaStreamService: UserMediaStreamService,
     private formBuilder: FormBuilder) { }
 
   async ngOnInit() {
-    await this.requestMedia();
+    await this.requestMedia()
+      .then(() => {
+        this.updateDeviceList().then(() => {
+          this.selectedMediaDevicesForm = this.initNewDeviceSelectionForm();
+          this.subscribeToDeviceSelectionChange();
+        });
+      });
+  }
+
+  private async updateDeviceList() {
     this.availableCameraDevices = await this.userMediaService.getListOfVideoDevices();
     this.availableMicrophoneDevices = await this.userMediaService.getListOfMicrophoneDevices();
 
-    this.preferredCameraStream = await this.userMediaService.getPreferredCameraStream();
-    this.preferredMicrophoneStream = await this.userMediaService.getPreferredMicStream();
+    this.preferredCameraStream = await this.userMediaStreamService.
+      getStreamForCam(this.userMediaService.getPreferredCamera());
+    this.preferredMicrophoneStream = await this.userMediaStreamService
+      .getStreamForMic(this.userMediaService.getPreferredMicrophone());
 
-    this.setupForm();
   }
 
   async requestMedia() {
-    const mediaAccepted = await this.userMediaService.requestAccess();
+    const mediaAccepted = await this.userMediaStreamService.requestAccess();
     if (mediaAccepted) {
-      this.userMediaService.stopStream();
+      this.userMediaStreamService.stopRequestStream();
     }
   }
 
-  private setupForm() {
+  private initNewDeviceSelectionForm(): FormGroup {
     let cam = this.availableCameraDevices[0];
     if (this.userMediaService.getPreferredCamera()) {
       cam = this.availableCameraDevices.find(x => x.deviceId === this.userMediaService.getPreferredCamera().deviceId);
@@ -52,12 +65,10 @@ export class SelectMediaDevicesComponent implements OnInit {
     if (this.userMediaService.getPreferredMicrophone()) {
       mic = this.availableMicrophoneDevices.find(x => x.deviceId === this.userMediaService.getPreferredMicrophone().deviceId);
     }
-    this.selectedMediaDevicesForm = this.formBuilder.group({
+    return this.formBuilder.group({
       camera: [cam, Validators.required],
       microphone: [mic, Validators.required]
     });
-
-    this.subscribeToDeviceSelectionChange();
   }
 
   get hasSingleCameraConncted(): boolean {
@@ -86,8 +97,8 @@ export class SelectMediaDevicesComponent implements OnInit {
     }
     const selectedCam = this.getSelectedCamera();
     const selectedMic = this.getSelectedMicrophone();
-    this.userMediaService.stopAStream(this.preferredCameraStream);
-    this.userMediaService.stopAStream(this.preferredMicrophoneStream);
+    this.userMediaStreamService.stopStream(this.preferredCameraStream);
+    this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
     this.acceptMediaDeviceChange.emit(new SelectedUserMediaDevice(selectedCam, selectedMic));
   }
 
@@ -115,19 +126,19 @@ export class SelectMediaDevicesComponent implements OnInit {
 
   private async updateCameraStream(newCam: UserMediaDevice) {
     if (this.preferredCameraStream) {
-      this.userMediaService.stopAStream(this.preferredCameraStream);
+      this.userMediaStreamService.stopStream(this.preferredCameraStream);
     }
     this.userMediaService.updatePreferredCamera(newCam);
     this.preferredCameraStream = null;
-    this.preferredCameraStream = await this.userMediaService.getPreferredCameraStream();
+    this.preferredCameraStream = await this.userMediaStreamService.getStreamForCam(newCam);
   }
 
   private async updateMicrophoneStream(newMic: UserMediaDevice) {
     if (this.preferredMicrophoneStream) {
-      this.userMediaService.stopAStream(this.preferredMicrophoneStream);
+      this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
     }
     this.userMediaService.updatePreferredMicrophone(newMic);
     this.preferredMicrophoneStream = null;
-    this.preferredMicrophoneStream = await this.userMediaService.getPreferredMicStream();
+    this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(newMic);
   }
 }

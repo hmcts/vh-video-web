@@ -4,7 +4,7 @@ import { HomeComponent } from './home.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
-import { ProfileService } from '../services/profile.service';
+import { ProfileService } from '../services/api/profile.service';
 import { of } from 'rxjs';
 import { UserProfileResponse, UserRole } from '../services/clients/api-client';
 import { PageUrls } from '../shared/page-url.constants';

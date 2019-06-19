@@ -1,12 +1,12 @@
 import { JudgeHearingTableComponent } from './judge-hearing-table.component';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import * as moment from 'moment';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { PageUrls } from 'src/app/shared/page-url.constants';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 describe('JudgeHearingTableComponent', () => {
   let component: JudgeHearingTableComponent;
@@ -15,7 +15,7 @@ describe('JudgeHearingTableComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, FormsModule, RouterTestingModule],
+      imports: [SharedModule, RouterTestingModule],
       declarations: [JudgeHearingTableComponent]
     })
       .compileComponents();

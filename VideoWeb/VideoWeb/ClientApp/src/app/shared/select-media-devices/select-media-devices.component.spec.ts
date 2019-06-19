@@ -6,6 +6,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MicVisualiserStubComponent } from 'src/app/testing/stubs/mic-visualiser-stub';
 import { MockUserMediaService } from 'src/app/testing/mocks/MockUserMediaService';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 
 describe('SelectMediaDevicesComponent', () => {
   let component: SelectMediaDevicesComponent;
@@ -13,14 +14,21 @@ describe('SelectMediaDevicesComponent', () => {
   let userMediaService: MockUserMediaService;
   const testData = new MediaDeviceTestData();
 
+  let userMediaStreamServiceSpy: jasmine.SpyObj<UserMediaStreamService>;
+
   beforeEach(async(() => {
+    userMediaStreamServiceSpy = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService',
+      ['requestAccess', 'stopRequestStream', 'stopStream', 'getStreamForCam', 'getStreamForMic']);
+    userMediaStreamServiceSpy.requestAccess.and.returnValue(true);
+
     TestBed.configureTestingModule({
       imports: [
         FormsModule,
         ReactiveFormsModule
       ],
       providers: [
-        { provide: UserMediaService, useClass: MockUserMediaService }
+        { provide: UserMediaService, useClass: MockUserMediaService },
+        { provide: UserMediaStreamService, useValue: userMediaStreamServiceSpy }
       ],
       declarations: [SelectMediaDevicesComponent, MicVisualiserStubComponent]
     })

@@ -5,7 +5,7 @@ import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { SharedModule } from '../shared.module';
 import { HttpClientModule } from '@angular/common/http';
-import { VideoWebService } from 'src/app/services/video-web.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { of } from 'rxjs';
 
 describe('ContactUsFoldingComponent', () => {

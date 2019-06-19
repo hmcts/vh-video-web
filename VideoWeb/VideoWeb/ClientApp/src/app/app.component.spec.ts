@@ -6,7 +6,7 @@ import { AdalService } from 'adal-angular4';
 
 import { AppComponent } from './app.component';
 import { ClientSettingsResponse } from './services/clients/api-client';
-import { ConfigService } from './services/config.service';
+import { ConfigService } from './services/api/config.service';
 import { FooterStubComponent } from './testing/stubs/footer-stub';
 import { HeaderStubComponent } from './testing/stubs/header-stub';
 import { SnotifyStubComponent } from './testing/stubs/snotify-stub';

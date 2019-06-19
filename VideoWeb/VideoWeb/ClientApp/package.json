@@ -36,6 +36,7 @@
     "guid-typescript": "^1.0.9",
     "jquery": "3.3.1",
     "moment": "^2.24.0",
+    "ng-bullet": "^1.0.3",
     "ng-snotify": "^4.3.1",
     "ngx-moment": "^3.4.0",
     "popper.js": "^1.14.3",
@@ -61,7 +62,7 @@
     "karma-jasmine": "~1.1.1",
     "karma-jasmine-html-reporter": "^0.2.2",
     "karma-junit-reporter": "^1.2.0",
-    "puppeteer": "^1.12.2",
+    "puppeteer": "^1.17.0",
     "typescript": "~2.7.2"
   },
   "optionalDependencies": {

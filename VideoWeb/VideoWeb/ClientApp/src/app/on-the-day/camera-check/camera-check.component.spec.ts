@@ -7,7 +7,7 @@ import { AbstractControl } from '@angular/forms';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { VideoWebService } from 'src/app/services/video-web.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 
 describe('CameraCheckComponent', () => {

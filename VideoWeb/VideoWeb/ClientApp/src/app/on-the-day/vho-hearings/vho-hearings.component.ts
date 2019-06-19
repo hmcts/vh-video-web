@@ -1,14 +1,12 @@
 import { Component, HostListener, NgZone, OnInit } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { SnotifyPosition, SnotifyService } from 'ng-snotify';
-import {
-  ConferenceForUserResponse, ConferenceResponse, ConferenceStatus, ConsultationAnswer, TaskResponse
-} from 'src/app/services/clients/api-client';
+import { ConferenceForUserResponse, ConferenceResponse, ConsultationAnswer, TaskResponse } from 'src/app/services/clients/api-client';
+import { ErrorService } from 'src/app/services/error.service';
+import { EventsService } from 'src/app/services/events.service';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { HelpMessage } from 'src/app/services/models/help-message';
-import { EventsService } from 'src/app/services/events.service';
-import { VideoWebService } from 'src/app/services/video-web.service';
-import { ErrorService } from 'src/app/services/error.service';
+import { NotificationService } from 'src/app/services/notification.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { TaskCompleted } from '../models/task-completed';
 
@@ -39,7 +37,7 @@ export class VhoHearingsComponent implements OnInit {
     private eventService: EventsService,
     private ngZone: NgZone,
     public sanitizer: DomSanitizer,
-    private snotifyService: SnotifyService,
+    private notificationService: NotificationService,
     private errorService: ErrorService
   ) {
     this.loadingData = true;
@@ -161,12 +159,7 @@ export class VhoHearingsComponent implements OnInit {
   handleHelpMessage(message: HelpMessage): void {
     this.ngZone.run(() => {
       const toastMessage = message.participantName + ' requires assistance in hearing ' + message.conferenceId;
-      this.snotifyService.info(toastMessage, {
-        position: SnotifyPosition.rightTop,
-        showProgressBar: false,
-        timeout: 0,
-        closeOnClick: true
-      });
+      this.notificationService.info(toastMessage, 0, true);
     });
   }
 
@@ -178,13 +171,7 @@ export class VhoHearingsComponent implements OnInit {
 
     const toastMessage = `Hearing ${conference.case_name}: Please move ${requester.display_name} and
     ${requestee.display_name} into a private room`;
-
-    this.snotifyService.info(toastMessage, {
-      position: SnotifyPosition.rightTop,
-      showProgressBar: false,
-      timeout: 0,
-      closeOnClick: true
-    });
+    this.notificationService.info(toastMessage, 0, true);
   }
 
   dismissTransferTask(message: ConsultationMessage) {

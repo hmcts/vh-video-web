@@ -13,11 +13,11 @@ export class SelectedUserMediaDevice {
 
     private validateDeviceSelection(selectedCamera: UserMediaDevice, selectedMicrophone: UserMediaDevice) {
         if (selectedCamera.kind !== 'videoinput') {
-            throw new Error(`${selectedCamera.label} is not a camera`);
+            throw new TypeError(`${selectedCamera.label} is not a camera`);
         }
 
         if (selectedMicrophone.kind !== 'audioinput') {
-            throw new Error(`${selectedMicrophone.label} is not a microphone`);
+            throw new TypeError(`${selectedMicrophone.label} is not a microphone`);
         }
     }
 }

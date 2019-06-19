@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ApiClient, UserProfileResponse } from './clients/api-client';
+import { ApiClient, UserProfileResponse } from '../clients/api-client';
 import { Observable, of } from 'rxjs';
 
 @Injectable({

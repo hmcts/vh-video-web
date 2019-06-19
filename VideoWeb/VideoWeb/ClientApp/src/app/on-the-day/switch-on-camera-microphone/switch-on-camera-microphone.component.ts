@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { AddMediaEventRequest, ConferenceResponse } from 'src/app/services/clients/api-client';
-import { VideoWebService } from 'src/app/services/video-web.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import 'webrtc-adapter';
-import { UserMediaService } from 'src/app/services/user-media.service';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 
 @Component({
   selector: 'app-switch-on-camera-microphone',
@@ -24,7 +24,7 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
     private route: ActivatedRoute,
     private videoWebService: VideoWebService,
     private adalService: AdalService,
-    private userMediaService: UserMediaService
+    private userMediaStreamService: UserMediaStreamService
   ) {
     this.userPrompted = false;
     this.mediaAccepted = false;
@@ -41,10 +41,10 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
   }
 
   async requestMedia() {
-    this.mediaAccepted = await this.userMediaService.requestAccess();
+    this.mediaAccepted = await this.userMediaStreamService.requestAccess();
     this.userPrompted = true;
     if (this.mediaAccepted) {
-      this.userMediaService.stopStream();
+      this.userMediaStreamService.stopRequestStream();
     } else {
       this.postPermissionDeniedAlert();
     }

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
-import { VideoWebService } from 'src/app/services/video-web.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { HearingListTableStubComponent } from 'src/app/testing/stubs/hearing-list-table-stub';

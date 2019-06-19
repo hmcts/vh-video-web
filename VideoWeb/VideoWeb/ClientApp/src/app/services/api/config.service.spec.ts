@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { ConfigService } from './config.service';
-import { ApiClient, ClientSettingsResponse } from '../services/clients/api-client';
+import { ApiClient, ClientSettingsResponse } from '../clients/api-client';
 import { Observable } from 'rxjs';
-import { SharedModule } from '../shared/shared.module';
+import { SharedModule } from '../../shared/shared.module';
 
 describe('config service', () => {
   let apiClientSpy: jasmine.SpyObj<ApiClient>;

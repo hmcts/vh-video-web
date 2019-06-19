@@ -1,5 +1,5 @@
 import { UserMediaService } from 'src/app/services/user-media.service';
-import { UserMediaDevice } from 'src/app/on-the-day/models/user-media-device';
+import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { MediaDeviceTestData } from './data/media-device-test-data';
 
 export class MockUserMediaService extends UserMediaService {

@@ -3,7 +3,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConferenceResponse, ConferenceStatus, UserRole } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
-import { VideoWebService } from 'src/app/services/video-web.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 
