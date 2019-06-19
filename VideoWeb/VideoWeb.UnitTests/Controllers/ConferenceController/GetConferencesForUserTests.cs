@@ -11,6 +11,7 @@ using NUnit.Framework;
 using Testing.Common.Helpers;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
+using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
@@ -20,11 +21,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
     {
         private ConferencesController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
+        private Mock<IUserApiClient> _userApiClientMock;
 
         [SetUp]
         public void Setup()
         {
             _videoApiClientMock = new Mock<IVideoApiClient>();
+            _userApiClientMock = new Mock<IUserApiClient>();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
             {
@@ -34,7 +37,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 }
             };
             
-            _controller = new ConferencesController(_videoApiClientMock.Object)
+            _controller = new ConferencesController(_videoApiClientMock.Object, _userApiClientMock.Object)
             {
                 ControllerContext = context
             };

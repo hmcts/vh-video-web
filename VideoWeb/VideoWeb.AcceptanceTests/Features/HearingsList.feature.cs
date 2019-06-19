@@ -328,8 +328,6 @@ this.ScenarioInitialize(scenarioInfo);
 #line 93
  testRunner.When("the VHO selects the hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 94
- testRunner.And("the VHO logs into the admin panel", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 95
  testRunner.Then("the VHO can see the hearing view", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

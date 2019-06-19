@@ -28,6 +28,8 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
   currentTime: Date;
   hearingStartingAnnounced: boolean;
+  currentPlayCount: number;
+  hearingAlertSound: HTMLAudioElement;
 
   constructor(
     private route: ActivatedRoute,
@@ -44,10 +46,25 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
   ngOnInit() {
     this.connected = false;
-    this.hearingStartingAnnounced = false;
-
-    this.subscribeToClock();
+    this.initHearingAlert();
     this.getConference();
+
+  }
+
+  initHearingAlert() {
+    this.hearingStartingAnnounced = false;
+    this.currentPlayCount = 1;
+
+    this.hearingAlertSound = new Audio();
+    this.hearingAlertSound.src = '/assets/audio/hearing_starting_soon.mp3';
+    this.hearingAlertSound.load();
+    const self = this;
+    this.hearingAlertSound.addEventListener('ended', function () {
+      self.currentPlayCount++;
+      if (self.currentPlayCount <= 3) {
+        this.play();
+      }
+    }, false);
   }
 
   subscribeToClock(): void {
@@ -64,19 +81,12 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   }
 
   announceHearingIsAboutToStart(): void {
-    const audio = new Audio();
-    audio.src = '/assets/audio/hearing_starting_soon.mp3';
-    audio.load();
-    audio.loop = true;
-    let currentPlay = 1;
-    audio.addEventListener('playing', () => {
-      currentPlay++;
-      if (currentPlay > 3) {
-        audio.loop = false;
-      }
-    });
-    audio.play();
+    this.hearingAlertSound.play()
+      .catch(function (reason) {
+        console.log(`caught error ${reason}`);
+      });
     this.hearingStartingAnnounced = true;
+
   }
 
   getConference(): void {
@@ -86,6 +96,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         this.loadingData = false;
         this.hearing = new Hearing(data);
         this.participant = data.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
+        this.subscribeToClock();
         this.setupSubscribers();
         this.setupPexipClient();
         this.call();

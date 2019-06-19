@@ -6,6 +6,7 @@
         HearingList = 1,
         WaitingRoom = 2,
         Countdown = 3,
+        HearingRoom = 4,
         NotInJudgeJourney = -99,
         NotFound = -1,
         Unauthorised = -2

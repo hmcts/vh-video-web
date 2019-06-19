@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using FluentAssertions;
+using OpenQA.Selenium.Support.Extensions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -13,24 +14,18 @@ namespace VideoWeb.AcceptanceTests.Steps
     public class CommonSteps
     {
         private readonly TestContext _context;
-        private readonly BrowserContext _browserContext;
+        private BrowserContext _browserContext;
         private readonly CommonPages _commonPages;
         private readonly DataSetupSteps _dataSetupSteps;
         private readonly LoginSteps _loginSteps;
         private readonly HearingsListSteps _hearingListSteps;
-        private readonly EquipmentCheckSteps _equipmentCheckSteps;
-        private readonly SwitchOnCamAndMicSteps _switchOnCamAndMicSteps;
-        private readonly CameraWorkingSteps _cameraMicrophoneSteps;
-        private readonly RulesSteps _rulesSteps;
+        private readonly PracticeVideoHearingPage _practiceVideoHearingPage;
         private readonly DeclarationSteps _declarationSteps;
-        private readonly WaitingRoomSteps _waitingRoomSteps;
         private Page _currentPage = Page.Login;
 
-        public CommonSteps(TestContext context, BrowserContext browserContext, CommonPages commonPages, 
+        public CommonSteps(TestContext context, BrowserContext browserContext, CommonPages commonPages,
             DataSetupSteps dataSetupSteps, LoginSteps loginSteps, HearingsListSteps hearingDetailsSteps,
-            EquipmentCheckSteps equipmentCheckSteps, SwitchOnCamAndMicSteps switchOnCamAndMicSteps,
-            CameraWorkingSteps cameraMicrophoneSteps, RulesSteps rulesSteps,
-            DeclarationSteps declarationSteps, WaitingRoomSteps waitingRoomSteps)
+            PracticeVideoHearingPage practiceVideoHearingPage, DeclarationSteps declarationSteps)
         {
             _context = context;
             _browserContext = browserContext;
@@ -38,12 +33,33 @@ namespace VideoWeb.AcceptanceTests.Steps
             _dataSetupSteps = dataSetupSteps;
             _loginSteps = loginSteps;
             _hearingListSteps = hearingDetailsSteps;
-            _equipmentCheckSteps = equipmentCheckSteps;
-            _switchOnCamAndMicSteps = switchOnCamAndMicSteps;
-            _cameraMicrophoneSteps = cameraMicrophoneSteps;
-            _rulesSteps = rulesSteps;
+            _practiceVideoHearingPage = practiceVideoHearingPage;
             _declarationSteps = declarationSteps;
-            _waitingRoomSteps = waitingRoomSteps;
+        }
+
+        [Given(@"there is a new browser open for (.*)")]
+        public void GivenAnotherBrowserWindowIsLaunched(string participant)
+        {
+            _context.Drivers.Add(_context.TestSettings.UserAccounts.Find(x => x.Lastname.Contains(participant)).Username, _browserContext);
+            _context.WrappedDrivers.Add(_context.TestSettings.UserAccounts.Find(x => x.Lastname.Contains(participant)).Username, _browserContext.NgDriver.WrappedDriver);
+            _browserContext.BrowserSetup(_context.VideoWebUrl, _context.Environment, participant);
+            _browserContext.NavigateToPage();
+        }
+
+        [Given(@"in the (.*)'s browser")]
+        [When(@"in the (.*)'s browser")]
+        [Then(@"in the (.*)'s browser")]
+        public void GivenInTheParticipantsBrowser(string participant)
+        {
+            var username = _context.TestSettings.UserAccounts.First(x => x.Lastname.Equals(participant))?.Username;
+            if (username == null)
+            {
+                throw new ArgumentOutOfRangeException($"There are no users with lastname '{participant}'");
+            }
+
+            _context.Drivers.Remove(username);
+            _context.Drivers.Add(username, _browserContext);
+            _browserContext = _context.Drivers.FirstOrDefault(x => x.Key.Equals(username)).Value;
         }
 
         [Given(@"the (.*) user has progressed to the (.*) page")]
@@ -53,14 +69,21 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Given(@"the (.*) user has progressed to the (.*) page with a hearing in (.*) minutes time")]
-        public void GivenIAmOnThePage(string role, string pageName, int minutes)
+        public void GivenIAmOnThePageWithAHearingInMinuteTime(string role, string pageName, int minutes)
         {
             Progress(role, pageName, minutes);
         }
 
-        private void Progress(string role, string pageName, int minutes)
+        [Given(@"the (.*) user has progressed to the (.*) page for the existing hearing")]
+        public void GivenHearingExistsAndIAmOnThePage(string role, string pageName)
         {
-            if (!pageName.Equals("Hearings Page"))
+            _currentPage = Page.Login;
+            Progress(role, pageName, 0, false);
+        }
+
+        private void Progress(string role, string pageName, int minutes, bool createHearing = true)
+        {
+            if (!pageName.Equals("Hearings Page") && createHearing)
             {
                 _dataSetupSteps.GivenIHaveAHearing(minutes);
                 _dataSetupSteps.GivenIHaveAConference();
@@ -79,19 +102,24 @@ namespace VideoWeb.AcceptanceTests.Steps
                 switch (currentPage.JudgeJourney)
                 {
                     case JudgeJourney.Login:
-                    {
-                        _loginSteps.WhenUserLogsInWithValidCredentials(role);
-                        break;
-                    }
+                        {
+                            _loginSteps.WhenUserLogsInWithValidCredentials(role);
+                            break;
+                        }
                     case JudgeJourney.HearingList:
-                    {
-                        _hearingListSteps.WhenTheUserClicksTheStartButton();
-                        break;
-                    }
+                        {
+                            _hearingListSteps.WhenTheUserClicksTheStartButton();
+                            break;
+                        }
                     case JudgeJourney.WaitingRoom:
-                    {
-                        break;
-                    }
+                        {
+                            WhentheUserClicksTheButtonWithInnertext("Start Hearing");
+                            break;
+                        }
+                    case JudgeJourney.Countdown:
+                        {
+                            break;
+                        }
                     default:
                         throw new InvalidOperationException($"Current page was past the intended page: {currentPage}");
                 }
@@ -105,20 +133,19 @@ namespace VideoWeb.AcceptanceTests.Steps
                 switch (currentPage.VhoJourney)
                 {
                     case VhoJourney.Login:
-                    {
-                        _loginSteps.WhenUserLogsInWithValidCredentials(role);
-                        break;
-                    }
+                        {
+                            _loginSteps.WhenUserLogsInWithValidCredentials(role);
+                            break;
+                        }
                     case VhoJourney.HearingList:
                     {
                         _hearingListSteps.WhenTheVHOSelectsTheHearing();
-                        _hearingListSteps.WhenTheVHOLogsIntoTheAdminPanel();
                         break;
                     }
                     case VhoJourney.AdminPanel:
-                    {
-                        break;
-                    }
+                        {
+                            break;
+                        }
                     default:
                         throw new InvalidOperationException($"Current page was past the intended page: {currentPage}");
                 }
@@ -126,51 +153,58 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _currentPage = currentPage.VhoNextPage(currentPage);
             }
 
-            if (role.Equals("Individual") || role.Equals("Representative"))
+            if (role.Contains("Individual") || role.Contains("Representative"))
             {
                 switch (currentPage.ParticipantJourney)
                 {
                     case ParticipantJourney.Login:
-                    {
-                        _loginSteps.WhenUserLogsInWithValidCredentials(role);
+                        {
+                            _loginSteps.WhenUserLogsInWithValidCredentials(role);
                             break;
-                    }
+                        }
                     case ParticipantJourney.HearingList:
-                    {
-                        _hearingListSteps.WhenTheUserClicksTheStartButton();
+                        {
+                            _hearingListSteps.WhenTheUserClicksTheStartButton();
                             break;
-                    }
+                        }
                     case ParticipantJourney.SwitchOnYourCameraAndMicrophone:
-                    {
-                        WhentheUserClicksTheButton("Switch on");
-                        WhentheUserClicksTheButton("Watch video");
+                        {
+                            WhentheUserClicksTheButton("Switch on");
+                            WhentheUserClicksTheButton("Watch video");
                             break;
-                    }
+                        }
                     case ParticipantJourney.CameraWorking:
                     case ParticipantJourney.MicrophoneWorking:
                     case ParticipantJourney.SeeAndHearVideo:
-                    {
-                        WhenTheUserSelectsTheRadiobutton("Yes");
-                        WhentheUserClicksTheButton("Continue");
+                        {
+                            WhenTheUserSelectsTheRadiobutton("Yes");
+                            WhentheUserClicksTheButton("Continue");
                             break;
-                    }
+                        }
                     case ParticipantJourney.PracticeVideoHearing:
+                    {
+                        _browserContext.NgDriver.WaitUntilElementVisible(_practiceVideoHearingPage.IncomingVideo)
+                            .Displayed.Should().BeTrue();
+                        _browserContext.NgDriver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browserContext.NgDriver.FindElement(CommonLocators.ButtonWithLabel("Continue")));
+                            WhentheUserClicksTheButton("Continue");
+                            break;
+                        }
                     case ParticipantJourney.EquipmentCheck:
                     case ParticipantJourney.Rules:
-                    {
-                        WhentheUserClicksTheButton("Continue");
+                        {
+                            WhentheUserClicksTheButton("Continue");
                             break;
-                    }
+                        }
                     case ParticipantJourney.Declaration:
-                    {
-                        _declarationSteps.WhenTheUserGivesTheirConsent();
-                        WhentheUserClicksTheButton("Continue");
+                        {
+                            _declarationSteps.WhenTheUserGivesTheirConsent();
+                            WhentheUserClicksTheButton("Continue");
                             break;
-                    }
+                        }
                     case ParticipantJourney.WaitingRoom:
-                    {
-                        break;
-                    }
+                        {
+                            break;
+                        }
                     default:
                         throw new InvalidOperationException($"Current page was past the intended page: {currentPage}");
                 }
@@ -186,6 +220,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.ButtonWithLabel(label)).Displayed
                 .Should().BeTrue();
             _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.ButtonWithLabel(label)).Click();
+        }
+
+        [When(@"the user clicks the button with innertext (.*)")]
+        public void WhentheUserClicksTheButtonWithInnertext(string innertext)
+        {
+            _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.ButtonWithInnertext(innertext)).Displayed
+                .Should().BeTrue();
+            _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.ButtonWithInnertext(innertext)).Click();
         }
 
         [When(@"the user selects the (.*) radiobutton")]
@@ -224,6 +266,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                 case "Rules": _commonPages.PageUrl(Page.Rules); break;
                 case "Declaration": _commonPages.PageUrl(Page.Declaration); break;
                 case "Waiting Room": _commonPages.PageUrl(Page.WaitingRoom); break;
+                case "Countdown": _commonPages.PageUrl(Page.Countdown); break;
+                case "Hearing Room": _commonPages.PageUrl(Page.HearingRoom); break;
                 case "Not Found": _commonPages.PageUrl(Page.NotFound); break;
                 case "Unauthorised": _commonPages.PageUrl(Page.Unauthorised); break;
                 case "Admin Panel": _commonPages.PageUrl(Page.AdminPanel); break;
@@ -234,7 +278,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the (.*) error message appears")]
         public void ThenTheErrorMessageAppears(string errorText)
         {
-            _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.ErrorMessage).Text.Replace("Error:","")
+            _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.ErrorMessage).Text.Replace("Error:", "")
                 .Should().Contain(errorText);
         }
 
@@ -244,7 +288,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.ButtonWithLabel(label)).GetAttribute("class")
                 .Should().Contain("disabled");
         }
-
-    }
+   }
 }
 

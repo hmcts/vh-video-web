@@ -22,12 +22,12 @@ namespace VideoWeb.AcceptanceTests.Contexts
             Items = new ContextItems(this);
         }
 
-        public void BrowserSetup(string baseUrl, SeleniumEnvironment environment)
+        public void BrowserSetup(string baseUrl, SeleniumEnvironment environment, string participant)
         {
             if (string.IsNullOrEmpty(baseUrl))
                 throw new ArgumentNullException(nameof(baseUrl));
 
-            var driver = environment.GetDriver();
+            var driver = environment.GetDriver(participant);
             NgDriver = new NgWebDriver(driver);
             TryMaximize();
             NgDriver.IgnoreSynchronization = true;
