@@ -28,7 +28,9 @@
               "src/styles.scss"
             ],
             "scripts": [
-              "src/scripts/pexrtc.js"
+              "src/scripts/pexrtc.js",
+              "src/scripts/EdgePF.js",
+              "src/scripts/IEPF.js"
             ]
           },
           "configurations": {
@@ -82,7 +84,9 @@
               "src/styles.scss"
             ],
             "scripts": [
-              "src/scripts/pexrtc.js"
+              "src/scripts/pexrtc.js",
+              "src/scripts/EdgePF.js",
+              "src/scripts/IEPF.js"
             ],
             "assets": [
               "src/assets"
