@@ -19,7 +19,7 @@ describe('SelectMediaDevicesComponent', () => {
 
   configureTestSuite(() => {
     userMediaStreamServiceSpy = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService',
-      ['requestAccess', 'stopRequestStream', 'stopStream', 'getStreamForCam', 'getStreamForMic']);
+      ['requestAccess', 'stopStream', 'getStreamForCam', 'getStreamForMic']);
     userMediaStreamServiceSpy.requestAccess.and.returnValue(true);
 
     TestBed.configureTestingModule({

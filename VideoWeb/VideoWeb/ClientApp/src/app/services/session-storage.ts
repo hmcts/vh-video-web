@@ -20,7 +20,9 @@ export class SessionStorage<TType> {
     }
 
     set(value: TType) {
-        sessionStorage.setItem(this.storageKey, JSON.stringify(value));
+        if (value) {
+            sessionStorage.setItem(this.storageKey, JSON.stringify(value));
+        }
     }
 
     clear() {

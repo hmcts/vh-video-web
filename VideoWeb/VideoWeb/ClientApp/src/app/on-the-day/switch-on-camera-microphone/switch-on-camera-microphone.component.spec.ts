@@ -69,14 +69,4 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
     component.requestMedia();
   }));
 
-  it('should raise close stream when permission has been granted', async(async () => {
-    spyOn(userMediaStreamService, 'requestAccess').and.callFake(() => Promise.resolve(true));
-    spyOn(userMediaStreamService, 'stopRequestStream').and.callFake(() => { });
-
-    await component.requestMedia();
-    expect(component.mediaAccepted).toBeTruthy();
-    fixture.whenStable().then(() => {
-      expect(userMediaStreamService.stopRequestStream).toHaveBeenCalled();
-    });
-  }));
 });

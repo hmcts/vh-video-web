@@ -50,10 +50,7 @@ export class SelectMediaDevicesComponent implements OnInit {
   }
 
   async requestMedia() {
-    const mediaAccepted = await this.userMediaStreamService.requestAccess();
-    if (mediaAccepted) {
-      this.userMediaStreamService.stopRequestStream();
-    }
+    await this.userMediaStreamService.requestAccess();
   }
 
   private initNewDeviceSelectionForm(): FormGroup {

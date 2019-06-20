@@ -22,6 +22,13 @@ describe('SessionStorage', () => {
     expect(result.property).toBe('value');
   });
 
+  it('should not set null or undefined data', () => {
+    const data = null;
+    storage.set(data);
+    const result = storage.get();
+    expect(result).toBeNull();
+  });
+
   it('removes invalid keys after failing to read', () => {
     sessionStorage.setItem(storageKey, 'invalid json');
 

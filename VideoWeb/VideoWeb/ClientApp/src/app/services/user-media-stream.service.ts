@@ -28,6 +28,7 @@ export class UserMediaStreamService {
             rather than being returned to the client.
             */
             await this.getStream();
+            this.stopRequestStream();
             return true;
         } catch (exception) {
             console.error(`could not get cam and mic access because ${exception}`);
@@ -35,7 +36,7 @@ export class UserMediaStreamService {
         }
     }
 
-    stopRequestStream() {
+    private stopRequestStream() {
         this.stopStream(this.requestStream);
     }
 

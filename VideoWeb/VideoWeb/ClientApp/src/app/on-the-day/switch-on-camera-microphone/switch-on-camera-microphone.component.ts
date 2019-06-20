@@ -43,9 +43,7 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
   async requestMedia() {
     this.mediaAccepted = await this.userMediaStreamService.requestAccess();
     this.userPrompted = true;
-    if (this.mediaAccepted) {
-      this.userMediaStreamService.stopRequestStream();
-    } else {
+    if (!this.mediaAccepted) {
       this.postPermissionDeniedAlert();
     }
   }

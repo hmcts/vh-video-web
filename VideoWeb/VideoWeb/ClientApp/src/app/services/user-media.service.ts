@@ -24,16 +24,16 @@ export class UserMediaService {
     }
 
     async getListOfVideoDevices(): Promise<UserMediaDevice[]> {
-        const devices = await this.updateAvailableDevicesList();
+        const devices = await this.getAvailableDevicesList();
         return devices.filter(x => x.kind === 'videoinput');
     }
 
     async getListOfMicrophoneDevices(): Promise<UserMediaDevice[]> {
-        const devices = await this.updateAvailableDevicesList();
+        const devices = await this.getAvailableDevicesList();
         return devices.filter(x => x.kind === 'audioinput');
     }
 
-    private async updateAvailableDevicesList(): Promise<UserMediaDevice[]> {
+    private async getAvailableDevicesList(): Promise<UserMediaDevice[]> {
         if (!this._navigator.mediaDevices || !this._navigator.mediaDevices.enumerateDevices) {
             console.log('enumerateDevices() not supported.');
             return [];
