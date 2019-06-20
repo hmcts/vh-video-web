@@ -1,19 +1,23 @@
 import { TestBed } from '@angular/core/testing';
-import { ConfigService } from './config.service';
-import { ApiClient, ClientSettingsResponse } from '../clients/api-client';
+import { configureTestSuite } from 'ng-bullet';
 import { Observable } from 'rxjs';
 import { SharedModule } from '../../shared/shared.module';
+import { ApiClient, ClientSettingsResponse } from '../clients/api-client';
+import { ConfigService } from './config.service';
 
-describe('config service', () => {
+describe('ConfigService', () => {
   let apiClientSpy: jasmine.SpyObj<ApiClient>;
   let clientSettings: ClientSettingsResponse;
   let configService: ConfigService;
 
-  beforeEach(() => {
+  configureTestSuite(() => {
     TestBed.configureTestingModule({
       imports: [SharedModule],
       providers: [ConfigService, { provide: ApiClient, useValue: apiClientSpy }]
     });
+  });
+
+  beforeEach(() => {
     apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['getClientConfigurationSettings']);
     clientSettings = new ClientSettingsResponse();
     clientSettings.tenant_id = 'tenantId';

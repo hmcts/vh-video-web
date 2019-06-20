@@ -12,9 +12,6 @@ export class ProfileService {
   constructor(private apiClient: ApiClient) { }
 
   getUserProfile(): Observable<UserProfileResponse> {
-    if (this.profile) {
-      return of(this.profile);
-    }
     return this.apiClient.getUserProfile();
   }
 }
