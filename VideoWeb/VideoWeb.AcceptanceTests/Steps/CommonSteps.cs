@@ -233,8 +233,15 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user selects the (.*) radiobutton")]
         public void WhenTheUserSelectsTheRadiobutton(string label)
         {
-
             _browserContext.NgDriver.WaitUntilElementExists(CommonLocators.RadioButtonWithLabel(label)).Click();
+        }
+
+        [When(@"the user clicks the (.*) link")]
+        public void WhenTheUserClicksTheChangeCameraOrMicrophoneLink(string linktext)
+        {
+            _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.LinkWithText(linktext)).Displayed
+                .Should().BeTrue();
+            _browserContext.NgDriver.WaitUntilElementVisible(CommonLocators.LinkWithText(linktext)).Click();
         }
 
         [Then(@"contact us details are available")]
