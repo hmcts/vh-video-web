@@ -6,9 +6,7 @@ import { EquipmentCheckComponent } from './equipment-check/equipment-check.compo
 import { CameraAndMicrophoneComponent } from './camera-and-microphone/camera-and-microphone.component';
 import { JudgeHearingListComponent } from './judge-hearing-list/judge-hearing-list.component';
 import { ParticipantHearingsComponent } from './participant-hearings/participant-hearings.component';
-import { VhoHearingsComponent } from './vho-hearings/vho-hearings.component';
 import { JudgeGuard } from '../security/judge.guard';
-import { AdminGuard } from '../security/admin.guard';
 import { ParticipantGuard } from '../security/participant.guard';
 import { CameraCheckComponent } from './camera-check/camera-check.component';
 import { MicrophoneCheckComponent } from './microphone-check/microphone-check.component';
@@ -20,7 +18,6 @@ import { SelfTestComponent } from './self-test/self-test.component';
 export const routes: Routes = [
   { path: `${PageUrls.JudgeHearingList}`, component: JudgeHearingListComponent, canActivate: [JudgeGuard] },
   { path: `${PageUrls.ParticipantHearingList}`, component: ParticipantHearingsComponent, canActivate: [ParticipantGuard] },
-  { path: `${PageUrls.AdminHearingList}`, component: VhoHearingsComponent, canActivate: [AdminGuard] },
   { path: `${PageUrls.Declaration}/:conferenceId`, component: DeclarationComponent },
   { path: `${PageUrls.HearingRules}/:conferenceId`, component: HearingRulesComponent },
   { path: `${PageUrls.EquipmentCheck}/:conferenceId`, component: EquipmentCheckComponent },

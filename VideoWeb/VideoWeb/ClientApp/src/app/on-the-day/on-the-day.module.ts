@@ -14,10 +14,6 @@ import { HearingListTableComponent } from './participant-hearings/hearing-list-t
 import { ParticipantHearingsComponent } from './participant-hearings/participant-hearings.component';
 import { SelfTestComponent } from './self-test/self-test.component';
 import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone/switch-on-camera-microphone.component';
-import { ParticipantStatusComponent } from './vho-hearings/participant-status.component';
-import { TasksTableComponent } from './vho-hearings/tasks-table.component';
-import { VhoHearingListComponent } from './vho-hearings/vho-hearing-list.component';
-import { VhoHearingsComponent } from './vho-hearings/vho-hearings.component';
 import { VideoCheckComponent } from './video-check/video-check.component';
 
 @NgModule({
@@ -35,15 +31,11 @@ import { VideoCheckComponent } from './video-check/video-check.component';
     CameraAndMicrophoneComponent,
     JudgeHearingListComponent,
     JudgeHearingTableComponent,
-    VhoHearingsComponent,
     CameraCheckComponent,
     MicrophoneCheckComponent,
     VideoCheckComponent,
     SwitchOnCameraMicrophoneComponent,
-    TasksTableComponent,
-    VhoHearingListComponent,
     SelfTestComponent,
-    ParticipantStatusComponent
   ],
   exports: [
     DeclarationComponent

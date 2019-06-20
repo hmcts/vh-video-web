@@ -1,5 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { ConferenceResponse, ParticipantResponse, UserRole, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { Component, Input, OnInit } from '@angular/core';
+import { ParticipantResponse, ParticipantStatus, UserRole } from 'src/app/services/clients/api-client';
 import { Participant } from 'src/app/shared/models/participant';
 
 @Component({
