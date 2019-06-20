@@ -3,7 +3,7 @@ import * as signalR from '@aspnet/signalr';
 import { AdalService } from 'adal-angular4';
 import { Observable, Subject } from 'rxjs';
 import { ConferenceStatus, ParticipantStatus } from './clients/api-client';
-import { ConfigService } from './config.service';
+import { ConfigService } from './api/config.service';
 import { ConsultationMessage } from './models/consultation-message';
 import { ConferenceStatusMessage } from './models/conference-status-message';
 import { HelpMessage } from './models/help-message';

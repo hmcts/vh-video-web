@@ -1,26 +1,30 @@
 import { TestBed } from '@angular/core/testing';
-import { AuthGuard } from './auth.guard';
-import { MockAdalService } from '../testing/mocks/MockAdalService';
 import { Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AdalService } from 'adal-angular4';
+import { configureTestSuite } from 'ng-bullet';
+import { MockAdalService } from '../testing/mocks/MockAdalService';
+import { AuthGuard } from './auth.guard';
 
 describe('authguard', () => {
     let authGuard: AuthGuard;
     let adalSvc;
     let router: Router;
 
-    beforeEach(() => {
+    configureTestSuite(() => {
         TestBed.configureTestingModule({
             imports: [RouterTestingModule],
             providers: [
-              AuthGuard,
-              { provide: AdalService, useClass: MockAdalService }
+                AuthGuard,
+                { provide: AdalService, useClass: MockAdalService }
             ]
-          }).compileComponents();
-          adalSvc = TestBed.get(AdalService);
-          authGuard = TestBed.get(AuthGuard);
-          router = TestBed.get(Router);
+        });
+    });
+
+    beforeEach(() => {
+        adalSvc = TestBed.get(AdalService);
+        authGuard = TestBed.get(AuthGuard);
+        router = TestBed.get(Router);
     });
 
     describe('when logged in with successful authentication', () => {

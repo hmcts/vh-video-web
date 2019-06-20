@@ -3,20 +3,34 @@
     <p class="govuk-body-l">Please wait to be connected...</p>
   </div>
   <div *ngIf="displayFeed" class="govuk-grid-column-full">
-    <video id="incomingStream" [srcObject]="this.incomingStream" autoplay width="100%" height="auto">
+    <video *ngIf="streamsActive" id="incomingStream" [srcObject]="this.incomingStream" autoplay width="100%"
+      height="auto">
       Your browser does not support video
     </video>
   </div>
 </div>
 
 <div *ngIf="!testComplete" class="govuk-grid-row">
+
   <div class="govuk-grid-column-one-quarter">
-    <video id="outgoingStream" [srcObject]="this.outgoingStream" autoplay width="270" height="auto">
+    <video *ngIf="streamsActive" id="outgoingStream" [muted]="true" [srcObject]="this.outgoingStream" autoplay
+      width="270" height="auto">
       Your browser does not support video
     </video>
   </div>
+
   <div class="govuk-grid-column-full">
-    <app-mic-visualiser *ngIf="displayFeed && this.outgoingStream"></app-mic-visualiser>
+    <app-mic-visualiser *ngIf="displayFeed && streamsActive && preferredMicrophoneStream"
+      [stream]="preferredMicrophoneStream"></app-mic-visualiser>
+  </div>
+
+</div>
+
+<div class="govuk-grid-row">
+  <div *ngIf="hasMultipleDevices" class="govuk-grid-column-full govuk-!-margin-bottom-6">
+    <a id="change-device-link" role="button" (click)="changeDevices()" class="govuk-link"
+      alt="Change camera and microphone for self test">Change
+      camera or microphone</a>
   </div>
 </div>
 
@@ -37,3 +51,7 @@
 </div>
 
 <app-contact-us-folding></app-contact-us-folding>
+
+<app-select-media-devices *ngIf="displayDeviceChangeModal"
+  (cancelMediaDeviceChange)="onMediaDeviceChangeCancelled($event)"
+  (acceptMediaDeviceChange)="onMediaDeviceChangeAccepted($event)"></app-select-media-devices>

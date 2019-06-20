@@ -1,17 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { ErrorService } from 'src/app/services/error.service';
-import { Router, ActivatedRoute } from '@angular/router';
-import { VideoWebService } from 'src/app/services/video-web.service';
-import { ConferenceResponse, ParticipantResponse, TokenResponse } from 'src/app/services/clients/api-client';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
+import { ConferenceResponse, ParticipantResponse, TokenResponse } from 'src/app/services/clients/api-client';
+import { ErrorService } from 'src/app/services/error.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
-import { merge, mergeMap, map } from 'rxjs/operators';
+import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 declare var PexRTC: any;
 
 @Component({
   selector: 'app-self-test',
   templateUrl: './self-test.component.html',
-  styleUrls: ['./self-test.component.css']
+  styleUrls: ['./self-test.component.scss']
 })
 export class SelfTestComponent implements OnInit {
 
@@ -20,12 +22,17 @@ export class SelfTestComponent implements OnInit {
   participant: ParticipantResponse;
   token: TokenResponse;
   pexipAPI: any;
-  incomingStream: any;
-  outgoingStream: any;
+  incomingStream: MediaStream;
+  outgoingStream: MediaStream;
+
+  preferredMicrophoneStream: MediaStream;
 
   testComplete: boolean;
   testScore: string;
   displayFeed: boolean;
+
+  displayDeviceChangeModal: boolean;
+  hasMultipleDevices: boolean;
 
   constructor(
     private router: Router,
@@ -33,13 +40,20 @@ export class SelfTestComponent implements OnInit {
     private adalService: AdalService,
     private videoWebService: VideoWebService,
     private errorService: ErrorService,
+    private userMediaService: UserMediaService,
+    private userMediaStreamService: UserMediaStreamService
   ) {
     this.testComplete = false;
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.displayFeed = false;
+    this.displayDeviceChangeModal = false;
     this.getConference();
+  }
+
+  get streamsActive() {
+    return this.outgoingStream && this.outgoingStream.active && this.incomingStream && this.incomingStream.active;
   }
 
   getConference(): void {
@@ -54,10 +68,10 @@ export class SelfTestComponent implements OnInit {
           this.token = token;
           this.call();
         },
-        (error) => {
-          this.loadingData = false;
-          this.errorService.handleApiError(error);
-        });
+          (error) => {
+            this.loadingData = false;
+            this.errorService.handleApiError(error);
+          });
       },
         (error) => {
           this.loadingData = false;
@@ -65,10 +79,44 @@ export class SelfTestComponent implements OnInit {
         });
   }
 
+  async changeDevices() {
+    this.disconnect();
+    this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
+    this.displayDeviceChangeModal = true;
+  }
+
+  onMediaDeviceChangeCancelled() {
+    this.displayDeviceChangeModal = false;
+    this.call();
+  }
+
+  async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
+    this.displayDeviceChangeModal = false;
+    this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
+    this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
+    await this.updatePexipAudioVideoSource();
+    this.call();
+  }
+
+  async updatePexipAudioVideoSource() {
+    this.hasMultipleDevices = await this.userMediaService.hasMultipleDevices();
+
+    const cam = this.userMediaService.getPreferredCamera();
+    if (cam) {
+      this.pexipAPI.video_source = cam.deviceId;
+    }
+
+    const mic = this.userMediaService.getPreferredMicrophone();
+    if (mic) {
+      this.pexipAPI.audio_source = mic.deviceId;
+    }
+    this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(mic);
+  }
+
   setupPexipClient() {
     const self = this;
     this.pexipAPI = new PexRTC();
-
+    this.updatePexipAudioVideoSource();
     this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
       console.info('running pexip test call setup');
       self.outgoingStream = stream;
@@ -79,7 +127,6 @@ export class SelfTestComponent implements OnInit {
       console.info('successfully connected');
       self.incomingStream = stream;
       self.displayFeed = true;
-      self.mutedOutgoingVideo();
     };
 
     this.pexipAPI.onError = function (reason) {
@@ -97,13 +144,12 @@ export class SelfTestComponent implements OnInit {
     };
   }
 
-  call() {
+  async call() {
     this.testComplete = false;
     this.testScore = null;
     const pexipNode = this.conference.pexip_self_test_node_uri;
     const conferenceAlias = 'testcall2';
     const tokenOptions = btoa(`${this.token.expires_on};${this.participant.id};${this.token.token}`);
-
     this.pexipAPI.makeCall(pexipNode, `${conferenceAlias};${tokenOptions}`, this.participant.id, null);
   }
 
@@ -114,6 +160,8 @@ export class SelfTestComponent implements OnInit {
 
   disconnect() {
     this.pexipAPI.disconnect();
+    this.incomingStream = null;
+    this.outgoingStream = null;
     this.testComplete = true;
   }
 
@@ -131,10 +179,5 @@ export class SelfTestComponent implements OnInit {
       this.disconnect();
     }
     this.router.navigate([PageUrls.CameraWorking, this.conference.id]);
-  }
-
-  mutedOutgoingVideo() {
-    const outgoingVideo = <HTMLVideoElement>document.getElementById('outgoingStream');
-    outgoingVideo.muted = true;
   }
 }

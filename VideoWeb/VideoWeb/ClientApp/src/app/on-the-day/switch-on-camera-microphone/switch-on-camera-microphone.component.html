@@ -22,7 +22,7 @@
 
 <input *ngIf="!userPrompted" type="button" id="switch-on-btn" class="govuk-button govuk-!-margin-bottom-9" role="button"
   value="Switch on" (click)="requestMedia()" alt="Request camera and microphone" />
-
+  
 <input *ngIf="userPrompted && mediaAccepted" type="button" id="watch-video-btn"
   class="govuk-button govuk-!-margin-bottom-9" role="button" value="Watch video" (click)="goVideoTest()"
   alt="Request camera and microphone" />

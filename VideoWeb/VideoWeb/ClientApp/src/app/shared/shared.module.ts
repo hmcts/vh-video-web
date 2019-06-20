@@ -12,6 +12,8 @@ import { ContactUsFoldingComponent } from './contact-us-folding/contact-us-foldi
 import { SnotifyModule, ToastDefaults, SnotifyService } from 'ng-snotify';
 import { ErrorComponent } from './error/error.component';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { SelectMediaDevicesComponent } from './select-media-devices/select-media-devices.component';
+import { MicVisualiserComponent } from '../shared/mic-visualiser/mic-visualiser.component';
 
 @NgModule({
   imports: [
@@ -29,7 +31,9 @@ import { NotFoundComponent } from './not-found/not-found.component';
     PaginationComponent,
     ContactUsFoldingComponent,
     ErrorComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    SelectMediaDevicesComponent,
+    MicVisualiserComponent
   ],
   providers: [
     { provide: 'SnotifyToastConfig', useValue: ToastDefaults},
@@ -41,6 +45,8 @@ import { NotFoundComponent } from './not-found/not-found.component';
     ContactUsComponent,
     ContactUsFoldingComponent,
     PaginationComponent,
+    SelectMediaDevicesComponent,
+    MicVisualiserComponent,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

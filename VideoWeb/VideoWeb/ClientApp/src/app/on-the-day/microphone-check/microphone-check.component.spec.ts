@@ -1,13 +1,14 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AbstractControl } from '@angular/forms';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { PageUrls } from 'src/app/shared/page-url.constants';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MicrophoneCheckComponent } from './microphone-check.component';
 import { RouterTestingModule } from '@angular/router/testing';
+import { configureTestSuite } from 'ng-bullet';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { VideoWebService } from 'src/app/services/video-web.service';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
+import { MicrophoneCheckComponent } from './microphone-check.component';
 
 describe('MicrophoneCheckComponent', () => {
   let component: MicrophoneCheckComponent;
@@ -16,7 +17,7 @@ describe('MicrophoneCheckComponent', () => {
   let router: Router;
   const conference = new ConferenceTestData().getConferenceDetail();
 
-  beforeEach(async(() => {
+  configureTestSuite(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, SharedModule],
       declarations: [MicrophoneCheckComponent],
@@ -31,9 +32,8 @@ describe('MicrophoneCheckComponent', () => {
         },
         { provide: VideoWebService, useClass: MockVideoWebService }
       ]
-    })
-      .compileComponents();
-  }));
+    });
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(MicrophoneCheckComponent);

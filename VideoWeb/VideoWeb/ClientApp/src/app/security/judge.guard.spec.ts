@@ -4,7 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
 
 import { UserProfileResponse, UserRole } from '../services/clients/api-client';
-import { ProfileService } from '../services/profile.service';
+import { ProfileService } from '../services/api/profile.service';
 import { SharedModule } from '../shared/shared.module';
 import { JudgeGuard } from './judge.guard';
 

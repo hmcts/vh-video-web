@@ -1,24 +1,24 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { HearingListTableComponent } from './hearing-list-table.component';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-
-import * as moment from 'moment';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import * as moment from 'moment';
+import { configureTestSuite } from 'ng-bullet';
 import { PageUrls } from 'src/app/shared/page-url.constants';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { HearingListTableComponent } from './hearing-list-table.component';
+
 
 describe('HearingListTableComponent', () => {
   let component: HearingListTableComponent;
   let fixture: ComponentFixture<HearingListTableComponent>;
   let router: Router;
 
-  beforeEach(async(() => {
+  configureTestSuite(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
       declarations: [HearingListTableComponent]
-    })
-      .compileComponents();
-  }));
+    });
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(HearingListTableComponent);

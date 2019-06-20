@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ApiClient, UserProfileResponse } from './clients/api-client';
+import { ApiClient, UserProfileResponse } from '../clients/api-client';
 import { Observable, of } from 'rxjs';
 
 @Injectable({
@@ -12,9 +12,6 @@ export class ProfileService {
   constructor(private apiClient: ApiClient) { }
 
   getUserProfile(): Observable<UserProfileResponse> {
-    if (this.profile) {
-      return of(this.profile);
-    }
     return this.apiClient.getUserProfile();
   }
 }

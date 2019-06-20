@@ -1,7 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-
+import { configureTestSuite } from 'ng-bullet';
 import { HeaderComponent } from './header.component';
+
 
 describe('HeaderComponent', () => {
   let component: HeaderComponent;
@@ -11,15 +12,12 @@ describe('HeaderComponent', () => {
     navigate: jasmine.createSpy('navigate')
   };
 
-  beforeEach(async(() => {
+  configureTestSuite(() => {
     TestBed.configureTestingModule({
       declarations: [HeaderComponent],
       providers: [{ provide: Router, useValue: router }]
-    },
-
-    )
-      .compileComponents();
-  }));
+    });
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(HeaderComponent);
@@ -30,11 +28,13 @@ describe('HeaderComponent', () => {
   it('should create the head component', () => {
     expect(component).toBeTruthy();
   });
+
   it('header component should have top menu items', () => {
     component.topMenuItems = [];
     component.ngOnInit();
     expect(component.topMenuItems.length).toBeGreaterThan(0);
   });
+
   it('selected top menu item has active property set to true, others item active set to false', () => {
     component.topMenuItems = [];
     component.ngOnInit();
@@ -46,9 +46,10 @@ describe('HeaderComponent', () => {
       }
     }
   });
+
   it('user should navigate by selecting top meny item', () => {
     component.ngOnInit();
     component.selectMenuItem(0);
     expect(router.navigate).toHaveBeenCalledWith([component.topMenuItems[0].url]);
-});
+  });
 });

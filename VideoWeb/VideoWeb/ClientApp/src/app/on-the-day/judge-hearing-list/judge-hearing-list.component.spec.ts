@@ -1,14 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { configureTestSuite } from 'ng-bullet';
 import { of, throwError } from 'rxjs';
-import { VideoWebService } from 'src/app/services/video-web.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { ErrorService } from 'src/app/services/error.service';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { JudgeHearingTableStubComponent } from 'src/app/testing/stubs/judge-hearing-list-table-stub';
 import { ConferenceForUserResponse } from '../../services/clients/api-client';
 import { JudgeHearingListComponent } from './judge-hearing-list.component';
-import { ErrorService } from 'src/app/services/error.service';
 
 describe('JudgeHearingListComponent with no conferences for user', () => {
   let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
@@ -16,7 +17,7 @@ describe('JudgeHearingListComponent with no conferences for user', () => {
   let fixture: ComponentFixture<JudgeHearingListComponent>;
   const noConferences: ConferenceForUserResponse[] = [];
 
-  beforeEach(() => {
+  configureTestSuite(() => {
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForUser']);
     videoWebServiceSpy.getConferencesForUser.and.returnValue(of(noConferences));
 
@@ -26,16 +27,13 @@ describe('JudgeHearingListComponent with no conferences for user', () => {
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy }
       ]
-    })
-      .compileComponents();
+    });
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(JudgeHearingListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
   });
 
   it('should show no hearings message', () => {
@@ -50,7 +48,7 @@ describe('JudgeHearingListComponent with conferences for user', () => {
   const conferences = new ConferenceTestData().getTestData();
   let router: Router;
 
-  beforeEach(() => {
+  configureTestSuite(() => {
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForUser']);
     videoWebServiceSpy.getConferencesForUser.and.returnValue(of(conferences));
 
@@ -60,9 +58,10 @@ describe('JudgeHearingListComponent with conferences for user', () => {
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy }
       ]
-    })
-      .compileComponents();
+    });
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(JudgeHearingListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -84,7 +83,7 @@ describe('JudgeHearingListComponent with service error', () => {
   let fixture: ComponentFixture<JudgeHearingListComponent>;
   let errorService: ErrorService;
 
-  beforeEach(() => {
+  configureTestSuite(() => {
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForUser']);
     videoWebServiceSpy.getConferencesForUser.and.returnValue(throwError({ status: 401, isSwaggerException: true }));
 
@@ -94,9 +93,10 @@ describe('JudgeHearingListComponent with service error', () => {
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy }
       ]
-    })
-      .compileComponents();
+    });
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(JudgeHearingListComponent);
     component = fixture.componentInstance;
     errorService = TestBed.get(ErrorService);

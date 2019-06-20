@@ -5,8 +5,9 @@ import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { SharedModule } from '../shared.module';
 import { HttpClientModule } from '@angular/common/http';
-import { VideoWebService } from 'src/app/services/video-web.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { of } from 'rxjs';
+import { configureTestSuite } from 'ng-bullet';
 
 describe('ContactUsFoldingComponent', () => {
   let component: ContactUsFoldingComponent;
@@ -14,7 +15,7 @@ describe('ContactUsFoldingComponent', () => {
   const conference = new ConferenceTestData().getConferenceDetail();
   let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
 
-  beforeEach(async(() => {
+  configureTestSuite(() => {
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
 
     TestBed.configureTestingModule({
@@ -28,12 +29,12 @@ describe('ContactUsFoldingComponent', () => {
             snapshot: {
               paramMap: convertToParamMap({ conferenceId: conference.id })
             }
-          },
+          }
         }
       ]
-    })
-      .compileComponents();
-  }));
+
+    });
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ContactUsFoldingComponent);

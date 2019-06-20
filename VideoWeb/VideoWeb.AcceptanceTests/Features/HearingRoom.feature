@@ -1,4 +1,4 @@
-﻿@VIH-4252
+﻿@VIH-4252 @Chrome
 Feature: HearingRoom
 	In order to conduct a video hearing
 	As a registered user

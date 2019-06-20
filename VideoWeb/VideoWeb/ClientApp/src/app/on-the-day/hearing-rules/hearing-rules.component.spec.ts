@@ -6,8 +6,9 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { HearingRulesComponent } from './hearing-rules.component';
-import { VideoWebService } from 'src/app/services/video-web.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
+import { configureTestSuite } from 'ng-bullet';
 
 describe('HearingRulesComponent', () => {
   let component: HearingRulesComponent;
@@ -16,7 +17,7 @@ describe('HearingRulesComponent', () => {
   let router: Router;
   const conference = new ConferenceTestData().getConferenceDetail();
 
-  beforeEach(async(() => {
+  configureTestSuite(() => {
     TestBed.configureTestingModule({
       declarations: [HearingRulesComponent],
       imports: [RouterTestingModule, SharedModule],
@@ -31,18 +32,14 @@ describe('HearingRulesComponent', () => {
         },
         { provide: VideoWebService, useClass: MockVideoWebService }
       ]
-    })
-      .compileComponents();
+    });
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(HearingRulesComponent);
     debugElement = fixture.debugElement;
     component = debugElement.componentInstance;
     router = TestBed.get(Router);
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(HearingRulesComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
   });
 

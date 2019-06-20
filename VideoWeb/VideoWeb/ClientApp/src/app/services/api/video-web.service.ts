@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ApiClient, ConferenceForUserResponse, ConferenceResponse, ConferenceEventRequest,
-  TaskResponse, AddMediaEventRequest, TestCallScoreResponse, TokenResponse } from './clients/api-client';
+  TaskResponse, AddMediaEventRequest, TestCallScoreResponse, TokenResponse } from '../clients/api-client';
 import { Observable } from 'rxjs';
 
 @Injectable({

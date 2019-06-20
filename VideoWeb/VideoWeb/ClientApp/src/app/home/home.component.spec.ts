@@ -1,10 +1,11 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { configureTestSuite } from 'ng-bullet';
 
 import { HomeComponent } from './home.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
-import { ProfileService } from '../services/profile.service';
+import { ProfileService } from '../services/api/profile.service';
 import { of } from 'rxjs';
 import { UserProfileResponse, UserRole } from '../services/clients/api-client';
 import { PageUrls } from '../shared/page-url.constants';
@@ -15,7 +16,7 @@ describe('HomeComponent', () => {
   let router: Router;
   let profileServiceSpy: jasmine.SpyObj<ProfileService>;
 
-  beforeEach(async(() => {
+  configureTestSuite(() => {
     profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, SharedModule],
@@ -23,9 +24,8 @@ describe('HomeComponent', () => {
       providers: [
         { provide: ProfileService, useValue: profileServiceSpy }
       ]
-    })
-      .compileComponents();
-  }));
+    });
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(HomeComponent);

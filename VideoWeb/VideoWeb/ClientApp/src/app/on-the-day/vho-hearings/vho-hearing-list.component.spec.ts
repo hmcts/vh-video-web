@@ -1,19 +1,19 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { VhoHearingListComponent } from './vho-hearing-list.component';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { configureTestSuite } from 'ng-bullet';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { VhoHearingListComponent } from './vho-hearing-list.component';
+
 
 describe('VhoHearingListComponent', () => {
   let component: VhoHearingListComponent;
   let fixture: ComponentFixture<VhoHearingListComponent>;
 
-  beforeEach(async(() => {
+  configureTestSuite(() => {
     TestBed.configureTestingModule({
       declarations: [ VhoHearingListComponent ]
-    })
-    .compileComponents();
-  }));
+    });
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(VhoHearingListComponent);

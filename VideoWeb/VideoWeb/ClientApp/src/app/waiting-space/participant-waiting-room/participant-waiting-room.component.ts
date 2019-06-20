@@ -4,11 +4,12 @@ import { AdalService } from 'adal-angular4';
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { EventsService } from 'src/app/services/events.service';
-import { VideoWebService } from 'src/app/services/video-web.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ErrorService } from 'src/app/services/error.service';
 import { ClockService as ClockService } from 'src/app/services/clock.service';
 import { Hearing } from '../../shared/models/hearing';
+import { UserMediaService } from 'src/app/services/user-media.service';
 declare var PexRTC: any;
 
 @Component({
@@ -33,13 +34,13 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
     private videoWebService: VideoWebService,
     private eventService: EventsService,
     private ngZone: NgZone,
     private adalService: AdalService,
     private errorService: ErrorService,
-    private clockService: ClockService
+    private clockService: ClockService,
+    private userMediaService: UserMediaService
   ) {
     this.loadingData = true;
   }
@@ -154,6 +155,14 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   setupPexipClient() {
     const self = this;
     this.pexipAPI = new PexRTC();
+
+    if (this.userMediaService.getPreferredCamera()) {
+      this.pexipAPI.video_source = this.userMediaService.getPreferredCamera().deviceId;
+    }
+
+    if (this.userMediaService.getPreferredMicrophone()) {
+      this.pexipAPI.audio_source = this.userMediaService.getPreferredMicrophone().deviceId;
+    }
 
     this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
       console.info('running pexip setup');
