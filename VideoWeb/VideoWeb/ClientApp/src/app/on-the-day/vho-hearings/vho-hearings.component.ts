@@ -1,12 +1,16 @@
 import { Component, HostListener, NgZone, OnInit } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { ConferenceForUserResponse, ConferenceResponse, ConsultationAnswer, TaskResponse } from 'src/app/services/clients/api-client';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import {
+  ConferenceForUserResponse, ConferenceResponse, ConsultationAnswer, ParticipantResponse, TaskResponse
+} from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { HelpMessage } from 'src/app/services/models/help-message';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { NotificationService } from 'src/app/services/notification.service';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { TaskCompleted } from '../models/task-completed';
 
@@ -17,28 +21,32 @@ import { TaskCompleted } from '../models/task-completed';
 })
 export class VhoHearingsComponent implements OnInit {
 
-  selectedConferenceUrl: SafeResourceUrl;
-  conferences: ConferenceForUserResponse[];
-  selectedHearing: Hearing;
-  loadingData: boolean;
   adminFrameWidth: number;
   adminFrameHeight: number;
+
   interval: NodeJS.Timer;
+  loadingData: boolean;
+
+  conferences: ConferenceForUserResponse[];
+  selectedHearing: Hearing;
+  participants: ParticipantResponse[];
+  selectedConferenceUrl: SafeResourceUrl;
+
   pendingTransferRequests: ConsultationMessage[] = [];
   tasks: TaskResponse[];
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
-    this.adminFrameWidth = this.getWidthForFrame();
+    this.updateWidthForAdminFrame();
   }
 
   constructor(
     private videoWebService: VideoWebService,
-    private eventService: EventsService,
-    private ngZone: NgZone,
     public sanitizer: DomSanitizer,
     private notificationService: NotificationService,
-    private errorService: ErrorService
+    private errorService: ErrorService,
+    private ngZone: NgZone,
+    private eventService: EventsService
   ) {
     this.loadingData = true;
     this.adminFrameWidth = 0;
@@ -46,11 +54,26 @@ export class VhoHearingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.setupSubscribers();
     this.retrieveHearingsForVhOfficer();
     this.interval = setInterval(() => {
       this.retrieveHearingsForVhOfficer();
     }, 30000);
+  }
+
+  private setupSubscribers() {
+    this.eventService.start();
+
+    this.eventService.getHearingStatusMessage().subscribe(message => {
+      this.ngZone.run(() => {
+        this.handleConferenceStatusChange(message);
+      });
+    });
+
+    this.eventService.getParticipantStatusMessage().subscribe(message => {
+      this.ngZone.run(() => {
+        this.handleParticipantStatusChange(message);
+      });
+    });
   }
 
   retrieveHearingsForVhOfficer() {
@@ -59,6 +82,7 @@ export class VhoHearingsComponent implements OnInit {
       this.conferences = data;
       if (data && data.length > 0) {
         this.enableFullScreen(true);
+        this.setupSubscribers();
       } else {
         this.enableFullScreen(false);
       }
@@ -82,17 +106,33 @@ export class VhoHearingsComponent implements OnInit {
     return this.selectedHearing !== undefined && this.tasks !== undefined && this.tasks.length > 0;
   }
 
+  isHearingSelected(): boolean {
+    if (this.selectedHearing && this.selectedHearing.getConference()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  clearSelectedConference() {
+    this.selectedHearing = null;
+    this.selectedConferenceUrl = null;
+    this.tasks = [];
+  }
+
   onConferenceSelected(conference: ConferenceForUserResponse) {
     if (!this.isCurrentConference(conference)) {
+      this.clearSelectedConference();
       this.videoWebService.getConferenceById(conference.id)
         .subscribe((data: ConferenceResponse) => {
           this.selectedHearing = new Hearing(data);
+          this.participants = data.participants;
           this.sanitiseAndLoadIframe();
+          this.getTasksForConference(conference.id);
         },
           (error) => {
             this.errorService.handleApiError(error);
           });
-      this.getTasksForConference(conference.id);
     }
   }
 
@@ -100,15 +140,12 @@ export class VhoHearingsComponent implements OnInit {
     return this.selectedHearing != null && this.selectedHearing.getConference().id === conference.id;
   }
 
-  getWidthForFrame(): number {
+  updateWidthForAdminFrame(): void {
     const listColumnElement: HTMLElement = document.getElementById('list-column');
-    let listWidth = 0;
-    if (listColumnElement) {
-      listWidth = listColumnElement.offsetWidth;
-    }
+    const listWidth = listColumnElement.offsetWidth;
     const windowWidth = window.innerWidth;
-    const frameWidth = windowWidth - listWidth - 30;
-    return frameWidth;
+    const frameWidth = windowWidth - listWidth - 350;
+    this.adminFrameWidth = frameWidth;
   }
 
   getHeightForFrame(): number {
@@ -126,26 +163,28 @@ export class VhoHearingsComponent implements OnInit {
 
   private sanitiseAndLoadIframe() {
     const adminUri = this.selectedHearing.getConference().admin_i_frame_uri;
-    this.adminFrameWidth = this.getWidthForFrame();
+    this.updateWidthForAdminFrame();
     this.selectedConferenceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
       adminUri
     );
   }
 
-  private setupSubscribers() {
-    this.eventService.start();
+  handleParticipantStatusChange(message: ParticipantStatusMessage): any {
+    const participantToUpdate = this.participants.find(x => x.username === message.email);
+    if (participantToUpdate) {
+      participantToUpdate.status = message.status;
+    }
+  }
 
-    this.eventService.getConsultationMessage().subscribe(message => {
-      this.ngZone.run(() => {
-        this.handleConsultationMessage(message);
-      });
-    });
-
-    this.eventService.getHelpMessage().subscribe(message => {
-      this.ngZone.run(() => {
-        this.handleHelpMessage(message);
-      });
-    });
+  handleConferenceStatusChange(message: ConferenceStatusMessage) {
+    const conference = this.conferences.find(c => c.id === message.conferenceId);
+    if (!conference) {
+      return;
+    }
+    conference.status = message.status;
+    if (this.isCurrentConference(new ConferenceForUserResponse({ id: message.conferenceId }))) {
+      this.selectedHearing.getConference().status = message.status;
+    }
   }
 
   handleConsultationMessage(message: ConsultationMessage): void {

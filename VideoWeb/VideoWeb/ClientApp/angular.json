@@ -78,8 +78,8 @@
               "src/app/services/clients/**"
             ],
             "styles": [
-              "styles.css",
-              "styles.scss"
+              "src/styles.css",
+              "src/styles.scss"
             ],
             "scripts": [
               "src/scripts/pexrtc.js"

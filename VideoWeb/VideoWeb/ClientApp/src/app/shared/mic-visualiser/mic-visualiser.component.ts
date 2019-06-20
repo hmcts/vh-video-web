@@ -1,6 +1,5 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import 'webrtc-adapter';
-import { UserMediaService } from 'src/app/services/user-media.service';
 
 @Component({
   selector: 'app-mic-visualiser',

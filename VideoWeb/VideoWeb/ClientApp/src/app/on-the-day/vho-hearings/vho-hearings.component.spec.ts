@@ -3,7 +3,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { of, throwError } from 'rxjs';
-import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, ConsultationAnswer } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -13,12 +12,14 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
-import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
-import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
+import { MockEventsNonHttpService } from 'src/app/testing/mocks/MockEventService';
 import { TasksTableStubComponent } from 'src/app/testing/stubs/task-table-stub';
 import { VhoHearingListStubComponent as VhoHearingListStubComponent } from 'src/app/testing/stubs/vho-hearing-list-stub';
+import { VhoParticipantStatusStubComponent } from 'src/app/testing/stubs/vho-participant-status-stub';
 import { TaskCompleted } from '../models/task-completed';
 import { VhoHearingsComponent } from './vho-hearings.component';
+import { ConfigService } from 'src/app/services/api/config.service';
+import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 
 
 describe('VhoHearingsComponent', () => {
@@ -26,7 +27,7 @@ describe('VhoHearingsComponent', () => {
   let fixture: ComponentFixture<VhoHearingsComponent>;
   let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
   let adalService: MockAdalService;
-  let eventService: MockEventsService;
+  let eventService: EventsService;
   const conferences = new ConferenceTestData().getTestData();
   let errorService: ErrorService;
 
@@ -39,12 +40,12 @@ describe('VhoHearingsComponent', () => {
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [VhoHearingsComponent, TasksTableStubComponent, VhoHearingListStubComponent],
+      declarations: [VhoHearingsComponent, TasksTableStubComponent, VhoHearingListStubComponent, VhoParticipantStatusStubComponent],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },
-        { provide: ConfigService, useClass: MockConfigService },
-        { provide: EventsService, useClass: MockEventsService }
+        { provide: EventsService, useClass: MockEventsNonHttpService },
+        { provide: ConfigService, useClass: MockConfigService }
       ]
     });
   });
@@ -58,18 +59,8 @@ describe('VhoHearingsComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-    expect(component.loadingData).toBeFalsy();
-    expect(component.conferences).toBeDefined();
-  });
-
-  it('should return false when there are no conferences', () => {
-    component.conferences = null;
-  });
-
   it('should retrieve conference and sanitise iframe uri', () => {
-    spyOn(component, 'getWidthForFrame').and.returnValue(400);
+    spyOn(component, 'updateWidthForAdminFrame');
     spyOn(component, 'getHeightForFrame').and.returnValue(600);
 
     component.onConferenceSelected(component.conferences[0]);
@@ -124,46 +115,5 @@ describe('VhoHearingsComponent', () => {
 
     component.onTaskCompleted(new TaskCompleted(currentConference.id, 3));
     expect(component.conferences[0].no_of_pending_tasks).toBeLessThan(initPendingTasks);
-  });
-});
-
-describe('VhoHearingsComponent', () => {
-  let component: VhoHearingsComponent;
-  let fixture: ComponentFixture<VhoHearingsComponent>;
-  let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-  let adalService: MockAdalService;
-  let eventService: MockEventsService;
-  let errorService: ErrorService;
-
-  configureTestSuite(() => {
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesToday']);
-    videoWebServiceSpy.getConferencesToday.and.returnValue(throwError({ status: 401, isSwaggerException: true }));
-
-    TestBed.configureTestingModule({
-      imports: [SharedModule, RouterTestingModule],
-      declarations: [VhoHearingsComponent, TasksTableStubComponent, VhoHearingListStubComponent],
-      providers: [
-        { provide: VideoWebService, useValue: videoWebServiceSpy },
-        { provide: AdalService, useClass: MockAdalService },
-        { provide: ConfigService, useClass: MockConfigService },
-        { provide: EventsService, useClass: MockEventsService }
-      ]
-    });
-  });
-
-  beforeEach(() => {
-    adalService = TestBed.get(AdalService);
-    eventService = TestBed.get(EventsService);
-    errorService = TestBed.get(ErrorService);
-    fixture = TestBed.createComponent(VhoHearingsComponent);
-    component = fixture.componentInstance;
-  });
-
-  it('should handle api error with error service', () => {
-    spyOn(errorService, 'handleApiError').and.callFake(() => { Promise.resolve(true); });
-    fixture.detectChanges();
-    expect(component).toBeTruthy();
-    expect(component.loadingData).toBeFalsy();
-    expect(errorService.handleApiError).toHaveBeenCalled();
   });
 });

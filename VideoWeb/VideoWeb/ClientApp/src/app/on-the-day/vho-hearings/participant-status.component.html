@@ -1,0 +1,14 @@
+<div class="participant-status-header">
+  <span class="govuk-!-padding-2 govuk-!-padding-left-4 govuk-heading-s">Participant Status</span>
+</div>
+
+<div id="participant-status-list">
+  <div *ngFor="let participant of nonJugdeParticipants" class="govuk-grid-row">
+    <div id="p-row-{{participant.id}}" class="govuk-grid-column-one-half">
+      <p class="govuk-body-s">{{participant.name}}</p>
+    </div>
+    <div class="govuk-grid-column-one-half">
+      <p class="govuk-body-s govuk-!-font-weight-bold" [ngClass]="getParticipantStatusClass(participant)">{{getParticipantStatusText(participant)}}</p>
+    </div>
+  </div>
+</div>

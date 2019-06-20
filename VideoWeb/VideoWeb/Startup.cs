@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VideoWeb.Common.Configuration;
+using VideoWeb.Extensions;
 using VideoWeb.Security.HashGen;
 
 namespace VideoWeb
@@ -94,6 +95,8 @@ namespace VideoWeb
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
+            app.UseMiddleware<ExceptionMiddleware>();
+            
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
