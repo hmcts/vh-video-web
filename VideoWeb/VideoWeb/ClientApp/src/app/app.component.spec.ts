@@ -3,10 +3,11 @@ import { async, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
+import { configureTestSuite } from 'ng-bullet';
 
 import { AppComponent } from './app.component';
 import { ClientSettingsResponse } from './services/clients/api-client';
-import { ConfigService } from './services/config.service';
+import { ConfigService } from './services/api/config.service';
 import { FooterStubComponent } from './testing/stubs/footer-stub';
 import { HeaderStubComponent } from './testing/stubs/header-stub';
 import { SnotifyStubComponent } from './testing/stubs/snotify-stub';
@@ -33,7 +34,7 @@ describe('AppComponent', () => {
     token: 'token'
   };
 
-  beforeEach(async(() => {
+  configureTestSuite(() => {
     configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['clientSettings', 'getClientSettings', 'loadConfig']);
     configServiceSpy.clientSettings.and.returnValue(clientSettings);
 
@@ -53,8 +54,9 @@ describe('AppComponent', () => {
           { provide: ConfigService, useValue: configServiceSpy },
           { provide: Router, useValue: router }
         ],
-    }).compileComponents();
-  }));
+    });
+  });
+
   it('should create the app', async(() => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;

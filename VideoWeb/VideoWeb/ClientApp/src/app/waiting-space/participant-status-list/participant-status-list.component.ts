@@ -1,13 +1,13 @@
-import { Component, OnInit, Input, NgZone } from '@angular/core';
-import {
-  ConferenceResponse, ParticipantResponse, UserRole,
-  ParticipantStatus, ConsultationAnswer
-} from 'src/app/services/clients/api-client';
+import { Component, Input, NgZone, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
-import { SnotifyService, SnotifyPosition } from 'ng-snotify';
-import { ConsultationService } from 'src/app/services/consultation.service';
+import { SnotifyButton } from 'ng-snotify';
+import {
+  ConferenceResponse, ConsultationAnswer, ParticipantResponse, ParticipantStatus, UserRole
+} from 'src/app/services/clients/api-client';
+import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { EventsService } from 'src/app/services/events.service';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
+import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
   selector: 'app-participant-status-list',
@@ -24,9 +24,9 @@ export class ParticipantStatusListComponent implements OnInit {
   constructor(
     private adalService: AdalService,
     private consultationService: ConsultationService,
-    private snotifyService: SnotifyService,
     private eventService: EventsService,
     private ngZone: NgZone,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit() {
@@ -81,12 +81,7 @@ export class ParticipantStatusListComponent implements OnInit {
       (x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
 
     const message = 'Requesting consultation with ' + requestee.display_name;
-    this.snotifyService.info(message, {
-      position: SnotifyPosition.rightTop,
-      showProgressBar: false,
-      timeout: 5000,
-      closeOnClick: true
-    });
+    this.notificationService.info(message, 5000, true);
 
     this.consultationService.raiseConsultationRequest(this.conference, requester, requestee)
       .subscribe(() => {
@@ -103,28 +98,21 @@ export class ParticipantStatusListComponent implements OnInit {
     const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
 
     const toastMessage = requester.display_name + ' would like to speak to you. Would you like to join a private room?';
-    this.snotifyService.confirm(toastMessage, {
-      position: SnotifyPosition.rightTop,
-      showProgressBar: true,
-      closeOnClick: false,
-      titleMaxLength: 150,
-      timeout: 0,
-      buttons: [
-        {
-          text: 'Accept', bold: true, action: (toast) => {
-            this.snotifyService.remove(toast.id);
-            this.acceptConsultationRequest(requester, requestee);
-          }
-        },
-        {
-          text: 'Reject', action: (toast) => {
-            this.snotifyService.remove(toast.id);
-            this.rejectConsultationRequest(requester, requestee);
-          }
-        },
-      ]
-    });
-
+    const buttons: SnotifyButton[] = [
+      {
+        text: 'Accept', bold: true, action: (toast) => {
+          this.notificationService.clearNotification(toast.id);
+          this.acceptConsultationRequest(requester, requestee);
+        }
+      },
+      {
+        text: 'Reject', action: (toast) => {
+          this.notificationService.clearNotification(toast.id);
+          this.rejectConsultationRequest(requester, requestee);
+        }
+      },
+    ];
+    this.notificationService.confirm(toastMessage, buttons, 0, true);
   }
 
   acceptConsultationRequest(requester: ParticipantResponse, requestee: ParticipantResponse) {
@@ -155,24 +143,14 @@ export class ParticipantStatusListComponent implements OnInit {
     const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
 
     const toastMessage = requestee.display_name + ' accepted your call. Please wait to be transferred.';
-    this.snotifyService.success(toastMessage, {
-      position: SnotifyPosition.rightTop,
-      showProgressBar: false,
-      timeout: 5000,
-      titleMaxLength: 50
-    });
+    this.notificationService.success(toastMessage, 5000);
   }
 
   private handleRejectedConsultationRequest(message: ConsultationMessage) {
     const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
 
     const toastMessage = requestee.display_name + ' rejected your call';
-    this.snotifyService.error(toastMessage, {
-      position: SnotifyPosition.rightTop,
-      showProgressBar: false,
-      timeout: 5000,
-      titleMaxLength: 50
-    });
+    this.notificationService.error(toastMessage, 5000);
   }
 
   private filterNonJudgeParticipants(): void {

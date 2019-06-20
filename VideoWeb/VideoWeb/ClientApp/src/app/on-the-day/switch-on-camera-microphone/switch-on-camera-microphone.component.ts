@@ -1,10 +1,11 @@
-import { Component, OnInit, NgZone } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import 'webrtc-adapter';
-import { PageUrls } from 'src/app/shared/page-url.constants';
-import { VideoWebService } from 'src/app/services/video-web.service';
-import { ConferenceResponse, AddMediaEventRequest } from 'src/app/services/clients/api-client';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
+import { AddMediaEventRequest, ConferenceResponse } from 'src/app/services/clients/api-client';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { PageUrls } from 'src/app/shared/page-url.constants';
+import 'webrtc-adapter';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 
 @Component({
   selector: 'app-switch-on-camera-microphone',
@@ -18,13 +19,12 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
   loadingData: boolean;
   conference: ConferenceResponse;
 
-  _navigator = <any>navigator;
-
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private videoWebService: VideoWebService,
-    private adalService: AdalService
+    private adalService: AdalService,
+    private userMediaStreamService: UserMediaStreamService
   ) {
     this.userPrompted = false;
     this.mediaAccepted = false;
@@ -32,7 +32,6 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
 
   ngOnInit() {
     this.getConference();
-    this._navigator = <any>navigator;
   }
 
   getConference(): void {
@@ -41,38 +40,10 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
       .subscribe((conference) => this.conference = conference);
   }
 
-  requestMedia() {
-    const mediaConstraints = {
-      video: true,
-      audio: true
-    };
-
-    this._navigator.getUserMedia = (this._navigator.getUserMedia || this._navigator.webkitGetUserMedia
-      || this._navigator.mozGetUserMedia || this._navigator.msGetUserMedia);
-
-    this._navigator.mediaDevices
-      .getUserMedia(mediaConstraints)
-      .then(this.successCallback.bind(this), this.errorCallback.bind(this));
-  }
-
-  successCallback(stream: MediaStream) {
+  async requestMedia() {
+    this.mediaAccepted = await this.userMediaStreamService.requestAccess();
     this.userPrompted = true;
-    this.mediaAccepted = true;
-    const tracks = stream.getTracks();
-    tracks.forEach(track => {
-      track.stop();
-    });
-
-    this._navigator.mediaDevices.enumerateDevices()
-      .then((mediaDevice) => {
-        console.log(mediaDevice);
-      });
-  }
-
-  errorCallback(error: MediaStreamError) {
-    this.userPrompted = true;
-    this.mediaAccepted = false;
-    if (error.name === 'NotAllowedError') {
+    if (!this.mediaAccepted) {
       this.postPermissionDeniedAlert();
     }
   }

@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using FluentAssertions;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using TechTalk.SpecFlow;
 using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Contexts;
@@ -36,6 +39,36 @@ namespace VideoWeb.AcceptanceTests.Steps
                 VideoFinishedPlayingTimeout);
         }
 
+        [Then(@"the choose your camera and microphone popup should appear")]
+        public void ThenTheChooseYourCameraAndMicrophonePopupShouldAppear()
+        {
+            _browserContext.NgDriver.WaitUntilElementVisible(
+                _practiceVideoHearingPage.ChangeMicPopup).Displayed.Should().BeTrue();
+        }
+
+        [When(@"the user selects a new microphone")]
+        public void WhenTheUserSelectsANewMicrophone()
+        {
+            _browserContext.NgDriver.WaitUntilElementExists(_practiceVideoHearingPage.MicsList).Displayed.Should()
+                .BeTrue();
+
+            VideoIsPlaying(_practiceVideoHearingPage.PreferredCameraVideo);
+
+            var micOptions = new SelectElement(_browserContext.NgDriver.WaitUntilElementExists(_practiceVideoHearingPage.MicsList));
+            var micOptionsCount = micOptions.Options.Count;
+            micOptionsCount.Should().BeGreaterThan(1);
+            micOptions.SelectByIndex(micOptionsCount -1);
+
+            _browserContext.NgDriver.WaitUntilElementClickable(_practiceVideoHearingPage.ChangeButton).Click();
+        }
+
+        [Then(@"the choose your camera and microphone popup should disappear")]
+        public void ThenTheChooseYourCameraAndMicrophonePopupShouldDisappear()
+        {
+            _browserContext.NgDriver.WaitUntilElementNotVisible(
+                _practiceVideoHearingPage.ChangeMicPopup).Should().BeTrue();
+        }
+
         [Then(@"the incoming and self video should be playing video")]
         public void ThenTheIncomingVideoShouldBePlaying()
         {
@@ -50,8 +83,20 @@ namespace VideoWeb.AcceptanceTests.Steps
             var participantId = _context.Conference.Participants
                 .Find(x => x.Display_name.Equals(_context.CurrentUser.Displayname)).Id;
             _context.Request = _context.Get(endpoint.SelfTestResult(_context.NewConferenceId, participantId));
-            _context.Response = _context.VideoWebClient().Execute(_context.Request);
-            _context.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var found = false;
+            for (var i = 0; i < Retries; i++)
+            {
+                _context.Response = _context.VideoWebClient().Execute(_context.Request);
+                if (_context.Response.StatusCode == HttpStatusCode.OK)
+                {
+                    found = true;
+                    break;
+                }
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+            }
+
+            found.Should().BeTrue();
             _context.Response.IsSuccessful.Should().Be(true);
             var selfScore = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<TestCallScoreResponse>(_context.Response.Content);
             selfScore.Score.ToString().Should().ContainAny("Good", "Okay", "Bad");

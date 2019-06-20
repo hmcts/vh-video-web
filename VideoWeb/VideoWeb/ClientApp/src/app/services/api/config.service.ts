@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ClientSettingsResponse } from '../services/clients/api-client';
+import { ClientSettingsResponse } from '../clients/api-client';
 import { Observable, of } from 'rxjs';
 import { HttpClient, HttpBackend } from '@angular/common/http';
 

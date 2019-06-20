@@ -1,5 +1,9 @@
 # vh-video-web
 
+[![Build Status](https://dev.azure.com/hmctsreform/VirtualHearings/_apis/build/status/hmcts.vh-video-web?branchName=master)](https://dev.azure.com/hmctsreform/VirtualHearings/_build/latest?definitionId=120&branchName=master)
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=vh-video-web&metric=alert_status)](https://sonarcloud.io/dashboard?id=vh-video-web)
+
 ## Updating client code via NSwag
 
 The poject is utilising NSwag to auto-generate client code for the front-end. 

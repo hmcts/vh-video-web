@@ -5,6 +5,7 @@ import { MockAdalService } from '../../testing/mocks/MockAdalService';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReturnUrlService } from '../../services/return-url.service';
+import { configureTestSuite } from 'ng-bullet';
 
 
 describe('LoginComponent', () => {
@@ -12,21 +13,20 @@ describe('LoginComponent', () => {
     let fixture: ComponentFixture<LoginComponent>;
     let adalService: MockAdalService;
     let returnUrlService: ReturnUrlService;
-    let returnUrlServiceSpy: jasmine.SpyObj<ReturnUrlService>;
     let route: ActivatedRoute;
     let router: Router;
 
-    beforeEach(() => {
-        returnUrlServiceSpy = jasmine.createSpyObj<ReturnUrlService>('ReturnUrlService', ['popUrl', 'setUrl']);
-
+    configureTestSuite(() => {
         TestBed.configureTestingModule({
             declarations: [LoginComponent],
             imports: [RouterTestingModule],
             providers: [
-                { provide: AdalService, useClass: MockAdalService },
-                { provide: ReturnUrlService, useValue: returnUrlServiceSpy }
+                { provide: AdalService, useClass: MockAdalService }
             ]
-        }).compileComponents();
+        });
+    });
+
+    beforeEach(() => {
         adalService = TestBed.get(AdalService);
         route = TestBed.get(ActivatedRoute);
         router = TestBed.get(Router);
@@ -41,6 +41,7 @@ describe('LoginComponent', () => {
     });
 
     it('should store return url if supplied', () => {
+        spyOn(returnUrlService, 'setUrl');
         adalService.setAuthenticated(false);
         route.snapshot.queryParams['returnUrl'] = '/returnPath';
         component.ngOnInit();
@@ -49,7 +50,7 @@ describe('LoginComponent', () => {
 
     it('should use saved return url', () => {
         adalService.setAuthenticated(true);
-        returnUrlServiceSpy.popUrl.and.returnValue('testurl');
+        spyOn(returnUrlService, 'popUrl').and.returnValue('testurl');
         spyOn(router, 'navigateByUrl').and.callFake(() => { Promise.resolve(true); });
         component.ngOnInit();
         expect(router.navigateByUrl).toHaveBeenCalledWith('testurl');
@@ -63,6 +64,7 @@ describe('LoginComponent', () => {
     });
 
     it('should fallback to root url if return url is invalid', () => {
+        spyOn(returnUrlService, 'popUrl').and.returnValue('');
         adalService.setAuthenticated(true);
         spyOn(router, 'navigate').and.callFake(() => { });
         spyOn(router, 'navigateByUrl').and.callFake(() => { throw new Error('Invalid URL'); });

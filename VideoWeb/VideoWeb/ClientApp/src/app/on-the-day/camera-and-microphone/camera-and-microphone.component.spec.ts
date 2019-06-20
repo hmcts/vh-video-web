@@ -6,6 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { PageUrls } from 'src/app/shared/page-url.constants';
+import { configureTestSuite } from 'ng-bullet';
 
 describe('CameraAndMicrophoneComponent', () => {
   let component: CameraAndMicrophoneComponent;
@@ -13,7 +14,7 @@ describe('CameraAndMicrophoneComponent', () => {
   let router: Router;
   const conference = new ConferenceTestData().getConferenceDetail();
 
-  beforeEach(async(() => {
+  configureTestSuite(() => {
     TestBed.configureTestingModule({
       declarations: [CameraAndMicrophoneComponent],
       imports: [RouterTestingModule, SharedModule],
@@ -27,9 +28,8 @@ describe('CameraAndMicrophoneComponent', () => {
           },
         }
       ]
-    })
-      .compileComponents();
-  }));
+    });
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(CameraAndMicrophoneComponent);
