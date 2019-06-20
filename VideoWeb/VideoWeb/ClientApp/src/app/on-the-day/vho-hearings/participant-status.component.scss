@@ -1,0 +1,21 @@
+@import "~govuk-frontend/all";
+
+.participant-status-header {
+  background: govuk-colour("grey-3");
+}
+
+.participant-not-signed-in {
+  color: govuk-colour("grey-1");
+}
+
+.participant-disconnected {
+  color: govuk-colour("red");
+}
+
+.participant-available {
+  color: govuk-colour("green");
+}
+
+.participant-default-status {
+  color: govuk-colour("black");
+}

@@ -66,7 +66,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"a participant has failed the self-test")]
         public void WhenAParticipantHasFailedTheSelf_Test()
         {
-            ScenarioContext.Current.Pending();
+            _scenarioContext.Pending();
         }
 
         [When(@"the user selects the (.*) alert")]
@@ -92,7 +92,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheVideoHearingsOfficerUserShouldNotSeeAnAlert()
         {
             _browserContext.NgDriver.Navigate().Refresh();
-            ScenarioContext.Current.Pending();
+
+            _scenarioContext.Pending();
         }
 
         [Then(@"the Video Hearings Officer user should see a (.*) notification and a (.*) alert")]

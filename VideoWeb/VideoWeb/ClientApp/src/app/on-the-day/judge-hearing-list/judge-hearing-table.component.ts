@@ -22,8 +22,7 @@ export class JudgeHearingTableComponent implements OnInit {
 
   getSignInDate(conference: ConferenceForUserResponse): string {
     const today = moment.utc().dayOfYear();
-    const scheduledDate = moment(conference.scheduled_date_time).dayOfYear();
-
+    const scheduledDate = moment(conference.scheduled_date_time).utc().dayOfYear();
     if (today >= scheduledDate) {
       return 'Today';
     } else {

@@ -82,8 +82,8 @@
               "src/app/testing/**"
             ],
             "styles": [
-              "styles.css",
-              "styles.scss"
+              "src/styles.css",
+              "src/styles.scss"
             ],
             "scripts": [
               "src/scripts/pexrtc.js"

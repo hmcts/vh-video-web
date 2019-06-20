@@ -23,16 +23,15 @@ export class AdminGuard implements CanActivate {
     return this.userProfileService.getUserProfile().pipe(
       map((profile: UserProfileResponse) => {
         if (profile.role === UserRole.VideoHearingsOfficer) {
-          console.log('user is an admin');
           return true;
         } else {
           this.router.navigate(['/home']);
-          console.log('user is not an admin');
           return false;
         }
       }),
       catchError((err) => {
-        console.error(`Could not get user identity: ${err}`);
+        console.error(`Could not get user identity.`);
+        console.error(err);
         this.router.navigate(['/logout']);
         return of(false);
       })
