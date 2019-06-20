@@ -16,5 +16,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By AlertByUser => By.XPath("//dd[contains(@class,'task-origin')]/p");
         public By ActionedByTimestamp(string alertType) => By.XPath($"//dd[contains(@class,'task-body')]/p[contains(text(),'{alertType}')]/../..//dd/p[contains(text(),':')]");
         public By ActionedByUser(string alertType) => By.XPath($"//dd[contains(@class,'task-body')]/p[contains(text(),'{alertType}')]/../..//dd/p[contains(text(),'@')]");
+        public By ParticipantStatusTable = By.Id("participant-status");
+        public By ParticipantStatus(string name) => By.XPath($"//p[text()='{name}']/../..//p[text()!='{name}']");
     }
 }

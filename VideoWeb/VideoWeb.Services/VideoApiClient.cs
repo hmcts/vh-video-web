@@ -252,6 +252,7 @@ namespace VideoWeb.Services.Video
         /// <summary>Update existing tasks</summary>
         /// <param name="conferenceId">The id of the conference to update</param>
         /// <param name="taskId">The id of the task to update</param>
+        /// <param name="updateTaskRequest">username of who completed the task</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<TaskResponse> UpdateTaskStatusAsync(System.Guid conferenceId, long taskId, UpdateTaskRequest updateTaskRequest);
@@ -259,6 +260,7 @@ namespace VideoWeb.Services.Video
         /// <summary>Update existing tasks</summary>
         /// <param name="conferenceId">The id of the conference to update</param>
         /// <param name="taskId">The id of the task to update</param>
+        /// <param name="updateTaskRequest">username of who completed the task</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         TaskResponse UpdateTaskStatus(System.Guid conferenceId, long taskId, UpdateTaskRequest updateTaskRequest);
@@ -266,6 +268,7 @@ namespace VideoWeb.Services.Video
         /// <summary>Update existing tasks</summary>
         /// <param name="conferenceId">The id of the conference to update</param>
         /// <param name="taskId">The id of the task to update</param>
+        /// <param name="updateTaskRequest">username of who completed the task</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -1646,6 +1649,7 @@ namespace VideoWeb.Services.Video
         /// <summary>Update existing tasks</summary>
         /// <param name="conferenceId">The id of the conference to update</param>
         /// <param name="taskId">The id of the task to update</param>
+        /// <param name="updateTaskRequest">username of who completed the task</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task<TaskResponse> UpdateTaskStatusAsync(System.Guid conferenceId, long taskId, UpdateTaskRequest updateTaskRequest)
@@ -1656,6 +1660,7 @@ namespace VideoWeb.Services.Video
         /// <summary>Update existing tasks</summary>
         /// <param name="conferenceId">The id of the conference to update</param>
         /// <param name="taskId">The id of the task to update</param>
+        /// <param name="updateTaskRequest">username of who completed the task</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public TaskResponse UpdateTaskStatus(System.Guid conferenceId, long taskId, UpdateTaskRequest updateTaskRequest)
@@ -1666,6 +1671,7 @@ namespace VideoWeb.Services.Video
         /// <summary>Update existing tasks</summary>
         /// <param name="conferenceId">The id of the conference to update</param>
         /// <param name="taskId">The id of the task to update</param>
+        /// <param name="updateTaskRequest">username of who completed the task</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
