@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, HostListener, Output, EventEmitter } from '@angular/core';
 import { TaskResponse, ConferenceResponse, TaskStatus, TaskType } from 'src/app/services/clients/api-client';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { TaskCompleted } from '../models/task-completed';
+import { TaskCompleted } from '../../on-the-day/models/task-completed';
 
 @Component({
   selector: 'app-tasks-table',

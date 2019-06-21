@@ -12,11 +12,11 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
-import { MockEventsNonHttpService } from 'src/app/testing/mocks/MockEventService';
+import { MockEventsNonHttpService, MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { TasksTableStubComponent } from 'src/app/testing/stubs/task-table-stub';
 import { VhoHearingListStubComponent as VhoHearingListStubComponent } from 'src/app/testing/stubs/vho-hearing-list-stub';
 import { VhoParticipantStatusStubComponent } from 'src/app/testing/stubs/vho-participant-status-stub';
-import { TaskCompleted } from '../models/task-completed';
+import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { VhoHearingsComponent } from './vho-hearings.component';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
@@ -27,7 +27,6 @@ describe('VhoHearingsComponent', () => {
   let fixture: ComponentFixture<VhoHearingsComponent>;
   let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
   let adalService: MockAdalService;
-  let eventService: EventsService;
   const conferences = new ConferenceTestData().getTestData();
   let errorService: ErrorService;
 
@@ -44,7 +43,7 @@ describe('VhoHearingsComponent', () => {
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },
-        { provide: EventsService, useClass: MockEventsNonHttpService },
+        { provide: EventsService, useClass: MockEventsService },
         { provide: ConfigService, useClass: MockConfigService }
       ]
     });
@@ -52,7 +51,6 @@ describe('VhoHearingsComponent', () => {
 
   beforeEach(() => {
     adalService = TestBed.get(AdalService);
-    eventService = TestBed.get(EventsService);
     errorService = TestBed.get(ErrorService);
     fixture = TestBed.createComponent(VhoHearingsComponent);
     component = fixture.componentInstance;

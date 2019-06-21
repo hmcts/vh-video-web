@@ -12,7 +12,7 @@ import { HelpMessage } from 'src/app/services/models/help-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { NotificationService } from 'src/app/services/notification.service';
 import { Hearing } from 'src/app/shared/models/hearing';
-import { TaskCompleted } from '../models/task-completed';
+import { TaskCompleted } from '../../on-the-day/models/task-completed';
 
 @Component({
   selector: 'app-vho-hearings',
@@ -82,7 +82,6 @@ export class VhoHearingsComponent implements OnInit {
       this.conferences = data;
       if (data && data.length > 0) {
         this.enableFullScreen(true);
-        this.setupSubscribers();
       } else {
         this.enableFullScreen(false);
       }
@@ -129,6 +128,7 @@ export class VhoHearingsComponent implements OnInit {
           this.participants = data.participants;
           this.sanitiseAndLoadIframe();
           this.getTasksForConference(conference.id);
+          this.setupSubscribers();
         },
           (error) => {
             this.errorService.handleApiError(error);
@@ -142,7 +142,10 @@ export class VhoHearingsComponent implements OnInit {
 
   updateWidthForAdminFrame(): void {
     const listColumnElement: HTMLElement = document.getElementById('list-column');
-    const listWidth = listColumnElement.offsetWidth;
+    let listWidth = 0;
+    if (listColumnElement) {
+      listWidth = listColumnElement.offsetWidth;
+    }
     const windowWidth = window.innerWidth;
     const frameWidth = windowWidth - listWidth - 350;
     this.adminFrameWidth = frameWidth;
