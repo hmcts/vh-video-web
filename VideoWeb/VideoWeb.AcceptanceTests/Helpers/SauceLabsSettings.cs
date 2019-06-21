@@ -17,7 +17,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
             if (RunWithSaucelabs)
             {
-                RemoteServerUrl = "http://" + Username + ":" + AccessKey + "@ondemand.saucelabs.com:80/wd/hub";
+                RemoteServerUrl = "http://" + Username + ":" + AccessKey + "@ondemand.eu-central-1.saucelabs.com:80/wd/hub";
             }
         }
 
