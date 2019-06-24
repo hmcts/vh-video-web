@@ -41,9 +41,4 @@ describe('ParticipantStatusComponent', () => {
         p.status = ParticipantStatus.Joining;
         expect(component.getParticipantStatusClass(p)).toBe('participant-default-status');
     });
-
-    it('should return the participant status text', () => {
-        const p = new ConferenceTestData().getConferenceDetail().participants[0];
-        expect(component.getParticipantStatusText(p)).toBeTruthy();
-    });
 });
