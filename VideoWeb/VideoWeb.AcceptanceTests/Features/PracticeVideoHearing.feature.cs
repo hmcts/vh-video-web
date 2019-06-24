@@ -19,8 +19,8 @@ namespace VideoWeb.AcceptanceTests.Features
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [NUnit.Framework.TestFixtureAttribute()]
     [NUnit.Framework.DescriptionAttribute("Practice video hearing")]
-    [NUnit.Framework.CategoryAttribute("Chrome")]
-    [NUnit.Framework.CategoryAttribute("Video")]
+    [NUnit.Framework.CategoryAttribute("VIH-4133")]
+    [NUnit.Framework.CategoryAttribute("VIH-4355")]
     public partial class PracticeVideoHearingFeature
     {
         
@@ -36,8 +36,8 @@ namespace VideoWeb.AcceptanceTests.Features
             TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Practice video hearing", "\tIn order to check if my camera and microphone is working\r\n\tAs a participant in a" +
                     " video hearing\r\n\tI want to be able to see my microphone and camera are respondin" +
                     "g", ProgrammingLanguage.CSharp, new string[] {
-                        "Chrome",
-                        "Video"});
+                        "VIH-4133",
+                        "VIH-4355"});
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -77,13 +77,15 @@ namespace VideoWeb.AcceptanceTests.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Individual video hearing practice")]
-        [NUnit.Framework.CategoryAttribute("VIH-4133")]
-        [NUnit.Framework.CategoryAttribute("VIH-4355")]
+        [NUnit.Framework.CategoryAttribute("Chrome")]
+        [NUnit.Framework.CategoryAttribute("Firefox")]
+        [NUnit.Framework.CategoryAttribute("Video")]
         public virtual void IndividualVideoHearingPractice()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Individual video hearing practice", null, new string[] {
-                        "VIH-4133",
-                        "VIH-4355"});
+                        "Chrome",
+                        "Firefox",
+                        "Video"});
 #line 8
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
@@ -115,13 +117,15 @@ this.ScenarioInitialize(scenarioInfo);
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Representative video hearing practice")]
-        [NUnit.Framework.CategoryAttribute("VIH-4133")]
-        [NUnit.Framework.CategoryAttribute("VIH-4355")]
+        [NUnit.Framework.CategoryAttribute("Chrome")]
+        [NUnit.Framework.CategoryAttribute("Firefox")]
+        [NUnit.Framework.CategoryAttribute("Video")]
         public virtual void RepresentativeVideoHearingPractice()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Representative video hearing practice", null, new string[] {
-                        "VIH-4133",
-                        "VIH-4355"});
+                        "Chrome",
+                        "Firefox",
+                        "Video"});
 #line 22
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();

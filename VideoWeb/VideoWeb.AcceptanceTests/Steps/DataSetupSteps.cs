@@ -37,7 +37,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             GivenIHaveAHearing();
             GivenIHaveAConference();
         }
-        
+
         [Given(@"I have a hearing and a conference in (.*) minutes time")]
         public void GivenIHaveAHearingAndAConferenceInMinutesTime(int minutes)
         {
@@ -50,107 +50,35 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"I have another hearing and a conference in (.*) days time")]
         public void GivenIHaveAHearingAndAConferenceInDaysTime(int days)
         {
-            var mins = Convert.ToInt32(TimeSpan.FromDays(days).TotalMinutes);
-            GivenIHaveAHearing(mins);
+            var minutesFromDays = Convert.ToInt32(TimeSpan.FromDays(days).TotalMinutes);
+            GivenIHaveAHearing(minutesFromDays);
             GivenIHaveAConference();
         }
 
         [Given(@"I have a hearing")]
         public void GivenIHaveAHearing(int minutes = 0)
         {
-            var request = new CreateHearingRequest();
-            _context.RequestBody = request.BuildRequest();
+            var hearingRequest = new CreateHearingRequest();
+            _context.RequestBody = hearingRequest.BuildRequest();
 
             var participants = new List<ParticipantRequest>();
 
             var judge = _context.GetJudgeUser();
             var individualUsers = _context.GetIndividualUsers();
             var representativeUsers = _context.GetRepresentativeUsers();
-            var videoHearingsOfficer = _context.GetVideoHearingOfficerUser();
 
             AddIndividualParticipants(individualUsers, participants);
-
             AddRepresentativeParticipants(representativeUsers, participants);
-
             AddJudgeParticipant(judge, participants);
 
-            AddVhOfficerParticipant(videoHearingsOfficer, participants);
-
             _context.RequestBody.Participants = participants;
-            _context.RequestBody.Scheduled_date_time = DateTime.Now.AddMinutes(minutes);
+            _context.RequestBody.Scheduled_date_time = DateTime.Now.ToUniversalTime().AddMinutes(minutes);
             _context.RequestBody.Scheduled_duration = HearingDuration;
             _context.Request = _context.Post(_bookingEndpoints.BookNewHearing(), _context.RequestBody);
 
-            // Leaving these out until the bookings api is more stable
-            // WhenISendTheRequestToTheBookingsApiEndpoint();
-            // ThenTheHearingOrConferenceShouldBeCreated();
-            // ThenTheHearingDetailsShouldBeRetrieved();
-            ThenIHaveAFakeHearingModel();
-        }
-
-        private void ThenIHaveAFakeHearingModel()
-        {
-            _context.HearingIsNotInBookingsDb = true;
-
-            var hearing = new HearingDetailsResponse();
-            var request = _context.RequestBody;
-
-            hearing.Id = Guid.NewGuid();
-            hearing.Case_type_name = request.Case_type_name;
-
-            hearing.Cases = new List<CaseResponse>();
-            foreach (var hearingCase in request.Cases)
-            {
-                hearing.Cases.Add(new CaseResponse()
-                {
-                    Is_lead_case = hearingCase.Is_lead_case,
-                    Name = hearingCase.Name,
-                    Number = hearingCase.Number
-                });
-            }
-
-            hearing.Created_by = request.Created_by;
-            hearing.Created_date = DateTime.Now;
-            hearing.Hearing_type_name = request.Hearing_type_name;
-            hearing.Hearing_room_name = request.Hearing_room_name;
-            hearing.Hearing_venue_name = request.Hearing_venue_name;
-            hearing.Other_information = request.Other_information;
-
-            hearing.Participants = new List<ParticipantResponse>();
-            foreach (var participant in request.Participants)
-            {
-                hearing.Participants.Add(new ParticipantResponse()
-                {
-                    Case_role_name = participant.Case_role_name,
-                    Contact_email = participant.Contact_email,
-                    Display_name = participant.Display_name,
-                    First_name = participant.First_name,
-                    Hearing_role_name = participant.Hearing_role_name,
-                    Id = Guid.NewGuid(),
-                    Last_name = participant.Last_name,
-                    Middle_names = participant.Middle_names,                  
-                    Representee = participant.Representee,
-                    Solicitor_reference = participant.Solicitors_reference,
-                    Telephone_number = participant.Telephone_number,
-                    Title = participant.Title,
-                    User_role_name = participant.Last_name.Remove(participant.Last_name.Length - 2),
-                    Username = participant.Username,
-                    House_number = participant.House_number,
-                    Street = participant.Street,
-                    Postcode = participant.Postcode,
-                    City = participant.City,
-                    County = participant.County
-                });
-            }
-
-            hearing.Scheduled_date_time = request.Scheduled_date_time;
-            hearing.Scheduled_duration = request.Scheduled_duration;
-            hearing.Status = HearingDetailsResponseStatus.Created;
-            hearing.Updated_by = null;
-            hearing.Updated_date = null;
-
-            _context.Hearing = hearing;
-            _context.NewHearingId = hearing.Id;
+            WhenISendTheRequestToTheBookingsApiEndpoint();
+            ThenTheHearingOrConferenceShouldBeCreated();
+            ThenTheHearingDetailsShouldBeRetrieved();
         }
 
         [Given(@"I have a conference")]
@@ -250,6 +178,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 Last_name = judge.Lastname,
                 Middle_names = "",
                 Representee = "",
+                Organisation_name = "MoJ",
                 Solicitors_reference = "",
                 Telephone_number = "01234567890",
                 Title = "Mrs",
@@ -259,30 +188,6 @@ namespace VideoWeb.AcceptanceTests.Steps
                 Postcode = "SW1H 9AJ",
                 City = "London",
                 County = "London"
-            });
-        }
-
-        private static void AddVhOfficerParticipant(UserAccount vhOfficer, ICollection<ParticipantRequest> participants)
-        {
-            participants.Add(new ParticipantRequest()
-            {
-                Case_role_name = "Video hearings officer",
-                Contact_email = vhOfficer.AlternativeEmail,
-                Display_name = vhOfficer.Displayname,
-                First_name = vhOfficer.Firstname,
-                Hearing_role_name = "Video hearings officer",
-                Last_name = vhOfficer.Lastname,
-                Middle_names = "",
-                Representee = "",
-                Solicitors_reference = "",
-                Telephone_number = "01234567890",
-                Title = "Mrs",
-                Username = vhOfficer.Username,
-                House_number = "102",
-                Street = "Petty France",
-                Postcode = "SW1H 9AJ",
-                City = "London",
-                County = "London"               
             });
         }
 
@@ -300,6 +205,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                     Last_name = representativeUsers[j].Lastname,
                     Middle_names = "",
                     Representee = representativeUsers[j].Representee,
+                    Organisation_name = "MoJ",
                     Solicitors_reference = "",
                     Telephone_number = "01234567890",
                     Title = "Mrs",
@@ -328,6 +234,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                     Last_name = individualUsers[i].Lastname,
                     Middle_names = "",
                     Representee = "",
+                    Organisation_name = "MoJ",
                     Solicitors_reference = individualUsers[i].SolicitorsReference,
                     Telephone_number = "01234567890",
                     Title = "Mrs",

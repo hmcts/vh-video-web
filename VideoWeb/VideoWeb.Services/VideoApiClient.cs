@@ -2091,24 +2091,35 @@ namespace VideoWeb.Services.Video
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.14.1.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class ConferenceDetailsResponse 
     {
+        /// <summary>The conference's UUID</summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid? Id { get; set; }
     
+        /// <summary>The UUID of the booking</summary>
         [Newtonsoft.Json.JsonProperty("hearing_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid? Hearing_id { get; set; }
     
+        /// <summary>The scheduled start time of a conference</summary>
         [Newtonsoft.Json.JsonProperty("scheduled_date_time", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTime? Scheduled_date_time { get; set; }
     
+        /// <summary>The time a conference was closed</summary>
+        [Newtonsoft.Json.JsonProperty("closed_date_time", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Closed_date_time { get; set; }
+    
+        /// <summary>The case type</summary>
         [Newtonsoft.Json.JsonProperty("case_type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Case_type { get; set; }
     
+        /// <summary>The case number</summary>
         [Newtonsoft.Json.JsonProperty("case_number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Case_number { get; set; }
     
+        /// <summary>The case name</summary>
         [Newtonsoft.Json.JsonProperty("case_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Case_name { get; set; }
     
+        /// <summary>The scheduled duration of a conference in minutes</summary>
         [Newtonsoft.Json.JsonProperty("scheduled_duration", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Scheduled_duration { get; set; }
     
@@ -2116,15 +2127,18 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public ConferenceState? Current_status { get; set; }
     
+        /// <summary>List of participants in conference</summary>
         [Newtonsoft.Json.JsonProperty("participants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.List<ParticipantDetailsResponse> Participants { get; set; }
     
+        /// <summary>The Kinly meeting room details</summary>
         [Newtonsoft.Json.JsonProperty("meeting_room", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public MeetingRoomResponse Meeting_room { get; set; }
     
     
     }
     
+    /// <summary>The current conference status</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.14.1.0 (Newtonsoft.Json v11.0.0.0)")]
     public enum ConferenceState
     {
@@ -2148,18 +2162,23 @@ namespace VideoWeb.Services.Video
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "9.14.1.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class ParticipantDetailsResponse 
     {
+        /// <summary>The participant's UUID</summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid? Id { get; set; }
     
+        /// <summary>The UUID for a participant within Bookings</summary>
         [Newtonsoft.Json.JsonProperty("ref_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid? Ref_id { get; set; }
     
+        /// <summary>The full name of a participant</summary>
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Name { get; set; }
     
+        /// <summary>The display name</summary>
         [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Display_name { get; set; }
     
+        /// <summary>The username</summary>
         [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Username { get; set; }
     
@@ -2167,15 +2186,19 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public UserRole? User_role { get; set; }
     
+        /// <summary>The group participant belongs to (e.g. Claimant of Defendant)</summary>
         [Newtonsoft.Json.JsonProperty("case_type_group", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Case_type_group { get; set; }
     
+        /// <summary>The representee (if participant is a representative)</summary>
         [Newtonsoft.Json.JsonProperty("representee", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Representee { get; set; }
     
+        /// <summary>The current participant status</summary>
         [Newtonsoft.Json.JsonProperty("current_status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ParticipantStatusResponse Current_status { get; set; }
     
+        /// <summary>The self test results (if self-test completed)</summary>
         [Newtonsoft.Json.JsonProperty("self_test_score", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public TestCallScoreResponse Self_test_score { get; set; }
     
@@ -2289,6 +2312,9 @@ namespace VideoWeb.Services.Video
     
         [Newtonsoft.Json.JsonProperty("scheduled_date_time", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTime? Scheduled_date_time { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("closed_date_time", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Closed_date_time { get; set; }
     
         [Newtonsoft.Json.JsonProperty("case_type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Case_type { get; set; }

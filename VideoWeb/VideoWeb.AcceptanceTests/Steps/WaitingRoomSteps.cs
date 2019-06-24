@@ -44,7 +44,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.ContactVho).Displayed
                     .Should().BeTrue();
                 _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.JudgeHearingTime).Text
-                    .Should().Contain(_context.Hearing.Scheduled_date_time?.ToString(DateFormats.JudgeWaitingRoomPageTime));
+                    .Should().Contain(_context.Hearing.Scheduled_date_time?.ToLocalTime().ToString(DateFormats.JudgeWaitingRoomPageTime));
                 _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.ScheduledDuration).Text
                     .Should().Contain($"scheduled for {_context.Hearing.Scheduled_duration?.ToString()} minutes");
             }

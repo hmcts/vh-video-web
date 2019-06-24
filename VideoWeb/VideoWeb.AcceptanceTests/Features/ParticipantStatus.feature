@@ -16,3 +16,7 @@ Scenario Outline: Participants status updates
 	| In Consultation |
 	| Available       |
 	| Disconnected    |
+
+@VIH-4507
+Scenario: Show participant contact details to VHO
+	Given the Video Hearings Officer user has progressed to the Admin Panel page

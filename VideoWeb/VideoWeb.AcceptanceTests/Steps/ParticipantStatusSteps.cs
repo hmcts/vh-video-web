@@ -111,12 +111,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             var participants = _context.Conference.Participants.FindAll(x =>
                 x.User_role == UserRole.Individual || x.User_role == UserRole.Representative);
 
-            foreach (var participant in participants)
-            {
-                _browserContext.NgDriver.WaitUntilElementVisible(_adminPanelPage.ParticipantStatus(participant.Name))
-                    .Text.Should().Be(participantStatus);
-            }  
-            
+            CheckParticipantStatus(participantStatus, participants);
+
             _scenarioContext.Add(ParticipantsKey, participants);
         }
 
@@ -133,11 +129,23 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             var participants = _scenarioContext.Get<List<ParticipantDetailsResponse>>(ParticipantsKey);
 
+            CheckParticipantStatus(participantStatus, participants);
+        }
+
+        private void CheckParticipantStatus(string participantStatus, IEnumerable<ParticipantDetailsResponse> participants)
+        {
             foreach (var participant in participants)
             {
-                _browserContext.NgDriver.WaitUntilElementVisible(_adminPanelPage.ParticipantStatus(participant.Name))
+                var participantName = NameInCorrectFormat(participant);
+
+                _browserContext.NgDriver.WaitUntilElementVisible(_adminPanelPage.ParticipantStatus(participantName))
                     .Text.Should().Be(participantStatus);
             }
+        }
+
+        private static string NameInCorrectFormat(ParticipantDetailsResponse participant)
+        {
+            return $"{participant.Display_name.Substring(0,1)} {participant.Display_name.Split(" ")[1]}";
         }
     }
 }
