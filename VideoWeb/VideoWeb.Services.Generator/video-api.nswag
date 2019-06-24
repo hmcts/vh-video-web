@@ -1,20 +1,18 @@
 ﻿{
   "runtime": "NetCore21",
   "defaultVariables": null,
-  "swaggerGenerator": {
-    "fromSwagger": {
-      "json": null,
+  "documentGenerator": {
+    "fromDocument": {
       "url": "https://localhost:59390/swagger/v1/swagger.json",
       "output": null
     }
   },
   "codeGenerators": {
-    "swaggerToCSharpClient": {
+    "openApiToCSharpClient": {
       "clientBaseClass": null,
       "configurationClass": null,
       "generateClientClasses": true,
       "generateClientInterfaces": true,
-      "generateDtoTypes": true,
       "injectHttpClient": true,
       "disposeHttpClient": true,
       "protectedMethods": [],
@@ -56,6 +54,7 @@
       "requiredPropertiesMustBeDefined": true,
       "dateType": "System.DateTime",
       "jsonConverters": null,
+      "anyType": "object",
       "dateTimeType": "System.DateTime",
       "timeType": "System.TimeSpan",
       "timeSpanType": "System.TimeSpan",
@@ -69,10 +68,16 @@
       "generateDefaultValues": false,
       "generateDataAnnotations": false,
       "excludedTypeNames": [],
+      "excludedParameterNames": [],
       "handleReferences": false,
       "generateImmutableArrayProperties": false,
       "generateImmutableDictionaryProperties": false,
       "jsonSerializerSettingsTransformationMethod": null,
+      "inlineNamedArrays": false,
+      "inlineNamedDictionaries": false,
+      "inlineNamedTuples": true,
+      "inlineNamedAny": false,
+      "generateDtoTypes": true,
       "templateDirectory": null,
       "typeNameGeneratorType": null,
       "propertyNameGeneratorType": null,
