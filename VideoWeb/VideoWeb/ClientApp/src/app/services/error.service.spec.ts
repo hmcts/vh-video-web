@@ -23,21 +23,21 @@ describe('ErrorService', () => {
 
   it('should navigate to unauthorised', inject([ErrorService], (service: ErrorService) => {
     spyOn(router, 'navigate').and.callFake(() => { });
-    const error = { status: 401, isSwaggerException: true };
+    const error = { status: 401, isApiException: true };
     service.handleApiError(error);
     expect(router.navigate).toHaveBeenCalledWith([PageUrls.Unauthorised]);
   }));
 
   it('should navigate to not found', inject([ErrorService], (service: ErrorService) => {
     spyOn(router, 'navigate').and.callFake(() => { });
-    const error = { status: 404, isSwaggerException: true };
+    const error = { status: 404, isApiException: true };
     service.handleApiError(error);
     expect(router.navigate).toHaveBeenCalledWith([PageUrls.NotFound]);
   }));
 
   it('should navigate to service error', inject([ErrorService], (service: ErrorService) => {
     spyOn(router, 'navigate').and.callFake(() => { });
-    const error = { status: 500, isSwaggerException: true };
+    const error = { status: 500, isApiException: true };
     service.handleApiError(error);
     expect(router.navigate).toHaveBeenCalledWith([PageUrls.ServiceError]);
   }));

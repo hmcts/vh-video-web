@@ -126,9 +126,14 @@ export class ConferenceTestData {
         const participants: ParticipantResponse[] = [];
         const participant1 = new ParticipantResponse({
             id: '9F681318-4955-49AF-A887-DED64554429D',
+            contact_email: 'chris@green.com',
+            first_name: 'Chris',
+            last_name: 'Green',
+            contact_telephone: '0123456780',
             name: 'Mr Chris Green',
             status: ParticipantStatus.Available,
             role: UserRole.Individual,
+            case_type_group: 'Defendent',
             display_name: 'Greeno',
             username: 'chris.green@hearings.net',
             tiled_display_name: 'T1;Greeno;9F681318-4955-49AF-A887-DED64554429D'
@@ -136,21 +141,32 @@ export class ConferenceTestData {
 
         const participant2 = new ParticipantResponse({
             id: '9F681318-4955-49AF-A887-DED64554429J',
+            contact_email: 'james@green.com',
+            first_name: 'James',
+            last_name: 'Green',
+            contact_telephone: '0123456781',
             name: 'Mr James Green',
+            representee: 'Chris Green',
             status: ParticipantStatus.NotSignedIn,
-            role: UserRole.Individual,
+            role: UserRole.Representative,
             display_name: 'James Green',
+            case_type_group: 'Defendent',
             username: 'james.green@hearings.net',
             tiled_display_name: 'T2;James Green;9F681318-4955-49AF-A887-DED64554429J'
         });
 
         const participant3 = new ParticipantResponse({
             id: '9F681318-4955-49AF-A887-DED64554429T',
+            contact_email: 'judge@kinly.com',
+            first_name: 'Jeff',
+            last_name: 'Kinly',
+            contact_telephone: '01235468791',
             name: 'Judge Fudge',
             status: ParticipantStatus.Available,
             role: UserRole.Judge,
             display_name: 'Judge Fudge',
             username: 'judge.fudge@hearings.net',
+            case_type_group: 'Judge',
             tiled_display_name: 'T0;Judge Fudge;9F681318-4955-49AF-A887-DED64554429T'
         });
 

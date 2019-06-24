@@ -86,7 +86,7 @@ describe('ParticipantHearingsComponent with service error', () => {
 
   configureTestSuite(() => {
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForUser']);
-    videoWebServiceSpy.getConferencesForUser.and.returnValue(throwError({ status: 401, isSwaggerException: true }));
+    videoWebServiceSpy.getConferencesForUser.and.returnValue(throwError({ status: 401, isApiException: true }));
 
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, SharedModule],

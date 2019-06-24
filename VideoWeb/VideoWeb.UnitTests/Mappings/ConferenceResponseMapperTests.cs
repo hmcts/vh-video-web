@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
@@ -6,6 +7,7 @@ using Testing.Common.Builders;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
+using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
 using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.UnitTests.Mappings
@@ -23,9 +25,16 @@ namespace VideoWeb.UnitTests.Mappings
                 new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").Build(),
                 new ParticipantDetailsResponseBuilder(UserRole.Representative, "Defendant").Build(),
                 new ParticipantDetailsResponseBuilder(UserRole.Judge, "None").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.VideoHearingsOfficer, "None").Build(),
                 new ParticipantDetailsResponseBuilder(UserRole.CaseAdmin, "None").Build()
             };
+
+            var bookingParticipants = Builder<BookingParticipant>.CreateListOfSize(participants.Count)
+                .Build().ToList();
+            participants[0].Ref_id = bookingParticipants[0].Id;
+            participants[1].Ref_id = bookingParticipants[1].Id;
+            participants[2].Ref_id = bookingParticipants[2].Id;
+            participants[3].Ref_id = bookingParticipants[3].Id;
+            participants[4].Ref_id = bookingParticipants[4].Id;
 
             var expectedConferenceStatus = ConferenceStatus.Suspended;
 
@@ -37,7 +46,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Meeting_room = meetingRoom)
                 .Build();
 
-            var response = _mapper.MapConferenceDetailsToResponseModel(conference);
+            var response = _mapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
 
             response.Id.Should().Be(conference.Id.GetValueOrDefault());
             response.CaseName.Should().Be(conference.Case_name);

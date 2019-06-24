@@ -67,7 +67,7 @@ describe('VhoHearingsComponent', () => {
 
   it('should handle api error when retrieving conference fails', () => {
     spyOn(errorService, 'handleApiError').and.callFake(() => { Promise.resolve(true); });
-    videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 401, isSwaggerException: true }));
+    videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 401, isApiException: true }));
     component.onConferenceSelected(component.conferences[0]);
     expect(errorService.handleApiError).toHaveBeenCalled();
   });

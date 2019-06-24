@@ -1,14 +1,17 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Services.Video;
+using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
 using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.Mappings
 {
     public class ConferenceResponseMapper
     {
-        public ConferenceResponse MapConferenceDetailsToResponseModel(ConferenceDetailsResponse conference)
+        public ConferenceResponse MapConferenceDetailsToResponseModel(ConferenceDetailsResponse conference,
+            List<BookingParticipant> bookingParticipants)
         {
             var status = ConferenceStatus.NotStarted;
             if (conference.Current_status != null)
@@ -17,11 +20,12 @@ namespace VideoWeb.Mappings
                     .ToString());
             }
 
-
             var participantMapper = new ParticipantResponseMapper();
             var participants = conference.Participants
                 .OrderBy(x => x.Case_type_group)
-                .Select(x => participantMapper.MapParticipantToResponseModel(x))
+                .Select(x =>
+                    participantMapper.MapParticipantToResponseModel(x,
+                        bookingParticipants.Single(p => x.Ref_id == p.Id)))
                 .ToList();
 
             var response = new ConferenceResponse

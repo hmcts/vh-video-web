@@ -31,9 +31,7 @@ namespace VideoWeb.UnitTests.Mappings
                 new ParticipantSummaryResponseBuilder(ConferenceUserRole.Representative)
                     .WithStatus(ParticipantState.InConsultation).Build(),
                 new ParticipantSummaryResponseBuilder(ConferenceUserRole.Judge)
-                    .WithStatus(ParticipantState.NotSignedIn).Build(),
-                new ParticipantSummaryResponseBuilder(ConferenceUserRole.VideoHearingsOfficer)
-                    .WithStatus(ParticipantState.None).Build(),
+                    .WithStatus(ParticipantState.NotSignedIn).Build()
             };
 
             conference.Participants = participants;

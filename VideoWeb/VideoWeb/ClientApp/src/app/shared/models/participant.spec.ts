@@ -51,4 +51,10 @@ describe('Participant', () => {
     const participant = new Participant(p);
     expect(participant.getStatusAsText()).toBe(ParticipantStatus.Available);
   });
+
+  it('should return first character of first name and full last name', () => {
+    const p = new ConferenceTestData().getConferenceDetail().participants.find(x => x.name === 'Mr James Green');
+    const participant = new Participant(p);
+    expect(participant.initialedName).toBe('J Green');
+  });
 });

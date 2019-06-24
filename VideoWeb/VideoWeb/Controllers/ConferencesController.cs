@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
+using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 using UserRole = VideoWeb.Contract.Responses.UserRole;
+using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
 
 namespace VideoWeb.Controllers
 {
@@ -20,11 +22,14 @@ namespace VideoWeb.Controllers
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IUserApiClient _userApiClient;
+        private readonly IBookingsApiClient _bookingsApiClient;
 
-        public ConferencesController(IVideoApiClient videoApiClient, IUserApiClient userApiClient)
+        public ConferencesController(IVideoApiClient videoApiClient, IUserApiClient userApiClient,
+            IBookingsApiClient bookingsApiClient)
         {
             _videoApiClient = videoApiClient;
             _userApiClient = userApiClient;
+            _bookingsApiClient = bookingsApiClient;
         }
 
         /// <summary>
@@ -138,12 +143,25 @@ namespace VideoWeb.Controllers
             try
             {
                 conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+                
             }
             catch (VideoApiException e)
             {
                 return StatusCode(e.StatusCode, e);
             }
 
+            List<BookingParticipant> bookingParticipants;
+            try
+            {
+                bookingParticipants =
+                    await _bookingsApiClient.GetAllParticipantsInHearingAsync(conference.Hearing_id
+                        .GetValueOrDefault());
+            }
+            catch (BookingsApiException e)
+            {
+                return StatusCode(e.StatusCode, e);
+            }
+            
             if (!isVhOfficer && conference.Participants.All(x => x.Username.ToLower().Trim() != username))
             {
                 return Unauthorized();
@@ -158,7 +176,7 @@ namespace VideoWeb.Controllers
                 .Where(x => displayRoles.Contains((UserRole) x.User_role.GetValueOrDefault())).ToList();
 
             var mapper = new ConferenceResponseMapper();
-            var response = mapper.MapConferenceDetailsToResponseModel(conference);
+            var response = mapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
             return Ok(response);
 
         }

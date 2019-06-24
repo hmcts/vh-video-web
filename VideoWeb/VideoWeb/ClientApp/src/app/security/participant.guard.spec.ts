@@ -72,7 +72,7 @@ describe('ParticipantGuard', () => {
   }));
 
   it('should logout when user profile cannot be retrieved', async(async () => {
-    profileServiceSpy.getUserProfile.and.returnValue(throwError({ status: 404, isSwaggerException: true }));
+    profileServiceSpy.getUserProfile.and.returnValue(throwError({ status: 404, isApiException: true }));
     guard.canActivate(null, null).subscribe((result) => {
       expect(result).toBeFalsy();
       expect(router.navigate).toHaveBeenCalledWith(['/logout']);
