@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -102,7 +103,21 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(userProfile);  
             
-            var conferences = Builder<ConferenceSummaryResponse>.CreateListOfSize(4).Build().ToList();
+            var conferences = Builder<ConferenceSummaryResponse>.CreateListOfSize(10).All()
+                .With(x => x.Scheduled_date_time = DateTime.UtcNow.AddMinutes(-60))
+                .With(x => x.Scheduled_duration = 20)
+                .Random(4).With(x => x.Status = ConferenceState.Closed).Do((response, i) =>
+                {
+                    response.Closed_date_time =
+                        i % 2 == 0 ? DateTime.UtcNow.AddMinutes(-40) : DateTime.UtcNow.AddMinutes(-10);
+                })
+                .Build().ToList();
+
+            var closedAndExpiredConferenceIds = conferences.Where(x =>
+                x.Status == ConferenceState.Closed && x.Closed_date_time > DateTime.UtcNow.AddMinutes(30))
+                .Select(x => x.Id).ToList();
+
+            
             _videoApiClientMock
                 .Setup(x => x.GetConferencesTodayAsync())
                 .ReturnsAsync(conferences);
@@ -114,6 +129,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             
             var conferencesForUser = (List<ConferenceForUserResponse>)typedResult.Value;
             conferencesForUser.Should().NotBeNullOrEmpty();
+            var returnedIds = conferencesForUser.Select(x => x.Id).ToList();
+            returnedIds.Should().NotContain(closedAndExpiredConferenceIds);
         }
 
     }
