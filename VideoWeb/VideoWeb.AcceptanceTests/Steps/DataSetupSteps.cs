@@ -180,14 +180,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                 Representee = "",
                 Organisation_name = "MoJ",
                 Solicitors_reference = "",
-                Telephone_number = "01234567890",
                 Title = "Mrs",
-                Username = judge.Username,
-                House_number = "102",
-                Street = "Petty France",
-                Postcode = "SW1H 9AJ",
-                City = "London",
-                County = "London"
+                Username = judge.Username
             });
         }
 
@@ -207,14 +201,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                     Representee = representativeUsers[j].Representee,
                     Organisation_name = "MoJ",
                     Solicitors_reference = "",
-                    Telephone_number = "01234567890",
                     Title = "Mrs",
-                    Username = representativeUsers[j].Username,
-                    House_number = "102",
-                    Street = "Petty France",
-                    Postcode = "SW1H 9AJ",
-                    City = "London",
-                    County = "London"
+                    Username = representativeUsers[j].Username
                 };
                 participants.Add(participant);
             }
