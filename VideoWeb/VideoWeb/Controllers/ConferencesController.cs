@@ -102,8 +102,8 @@ namespace VideoWeb.Controllers
                 return true;
             }
 
-            var endTime = conference.Scheduled_date_time.GetValueOrDefault()
-                .AddMinutes(conference.Scheduled_duration.GetValueOrDefault() + 30);
+            var startTime = conference.Scheduled_date_time.GetValueOrDefault();
+            var endTime = startTime.AddMinutes(30);
             return DateTime.UtcNow < endTime;
         }
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -106,7 +107,18 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(userProfile);  
             
-            var conferences = Builder<ConferenceSummaryResponse>.CreateListOfSize(4).Build().ToList();
+            var conferences = Builder<ConferenceSummaryResponse>.CreateListOfSize(10).All()
+                .With(x => x.Scheduled_date_time = DateTime.Now.AddMinutes(5))
+                .With(x => x.Scheduled_duration = 20)
+                .Random(3).With(x => x.Status = ConferenceState.Closed)
+                .Build().ToList();
+
+            var closedConferences = conferences.Where(x => x.Status == ConferenceState.Closed);
+            foreach (var conference in closedConferences)
+            {
+                conference.Scheduled_date_time = DateTime.Now.AddMinutes(-100);
+            }
+            
             _videoApiClientMock
                 .Setup(x => x.GetConferencesTodayAsync())
                 .ReturnsAsync(conferences);
@@ -118,6 +130,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             
             var conferencesForUser = (List<ConferenceForUserResponse>)typedResult.Value;
             conferencesForUser.Should().NotBeNullOrEmpty();
+            conferencesForUser.Count.Should().BeLessThan(conferences.Count);
         }
 
     }
