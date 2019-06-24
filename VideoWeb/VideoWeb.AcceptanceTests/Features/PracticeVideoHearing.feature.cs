@@ -20,6 +20,7 @@ namespace VideoWeb.AcceptanceTests.Features
     [NUnit.Framework.TestFixtureAttribute()]
     [NUnit.Framework.DescriptionAttribute("Practice video hearing")]
     [NUnit.Framework.CategoryAttribute("Chrome")]
+    [NUnit.Framework.CategoryAttribute("Video")]
     public partial class PracticeVideoHearingFeature
     {
         
@@ -35,7 +36,8 @@ namespace VideoWeb.AcceptanceTests.Features
             TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Practice video hearing", "\tIn order to check if my camera and microphone is working\r\n\tAs a participant in a" +
                     " video hearing\r\n\tI want to be able to see my microphone and camera are respondin" +
                     "g", ProgrammingLanguage.CSharp, new string[] {
-                        "Chrome"});
+                        "Chrome",
+                        "Video"});
             testRunner.OnFeatureStart(featureInfo);
         }
         

@@ -20,7 +20,6 @@ namespace VideoWeb.AcceptanceTests.Features
     [NUnit.Framework.TestFixtureAttribute()]
     [NUnit.Framework.DescriptionAttribute("HearingRoom")]
     [NUnit.Framework.CategoryAttribute("VIH-4252")]
-    [NUnit.Framework.CategoryAttribute("Chrome")]
     public partial class HearingRoomFeature
     {
         
@@ -35,8 +34,7 @@ namespace VideoWeb.AcceptanceTests.Features
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
             TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "HearingRoom", "\tIn order to conduct a video hearing\r\n\tAs a registered user\r\n\tI want to be able t" +
                     "o access the video hearing room and interact with the controls", ProgrammingLanguage.CSharp, new string[] {
-                        "VIH-4252",
-                        "Chrome"});
+                        "VIH-4252"});
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -76,25 +74,29 @@ namespace VideoWeb.AcceptanceTests.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Judge starts hearing")]
+        [NUnit.Framework.CategoryAttribute("Chrome")]
+        [NUnit.Framework.CategoryAttribute("Video")]
         public virtual void JudgeStartsHearing()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Judge starts hearing", null, ((string[])(null)));
-#line 7
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Judge starts hearing", null, new string[] {
+                        "Chrome",
+                        "Video"});
+#line 8
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 8
- testRunner.Given("the Judge user has progressed to the Waiting Room page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 9
- testRunner.When("the user clicks the button with innertext Start Hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("the Judge user has progressed to the Waiting Room page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 10
- testRunner.Then("the user is on the Countdown page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("the user clicks the button with innertext Start Hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 11
- testRunner.When("the countdown finishes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Then("the user is on the Countdown page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 12
- testRunner.Then("the user is on the Hearing Room page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("the countdown finishes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 13
- testRunner.And("the hearing controls are visible", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.Then("the user is on the Hearing Room page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 14
+ testRunner.And("the hearing controls are visible", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 15
  testRunner.And("the user can see themselves and toggle the view off and on", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -102,30 +104,34 @@ this.ScenarioInitialize(scenarioInfo);
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Two participants join hearing")]
+        [NUnit.Framework.CategoryAttribute("Chrome")]
+        [NUnit.Framework.CategoryAttribute("Video")]
         public virtual void TwoParticipantsJoinHearing()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Two participants join hearing", null, ((string[])(null)));
-#line 16
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Two participants join hearing", null, new string[] {
+                        "Chrome",
+                        "Video"});
+#line 18
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 17
- testRunner.Given("the Individual user has progressed to the Waiting Room page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 18
- testRunner.And("there is a new browser open for Representative01", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 19
+ testRunner.Given("the Individual user has progressed to the Waiting Room page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 20
+ testRunner.And("there is a new browser open for Representative01", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 21
  testRunner.And("the Representative01 user has progressed to the Waiting Room page for the existin" +
                     "g hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 20
- testRunner.And("there is a new browser open for Judge", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 21
- testRunner.And("the Judge user has progressed to the Waiting Room page for the existing hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 22
- testRunner.When("the user clicks the button with innertext Start Hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.And("there is a new browser open for Judge", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 23
- testRunner.Then("the user is on the Countdown page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.And("the Judge user has progressed to the Waiting Room page for the existing hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 24
- testRunner.When("the countdown finishes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("the user clicks the button with innertext Start Hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 25
+ testRunner.Then("the user is on the Countdown page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 26
+ testRunner.When("the countdown finishes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 27
  testRunner.Then("the user is on the Hearing Room page for 1 minute", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -133,40 +139,44 @@ this.ScenarioInitialize(scenarioInfo);
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("Four participants join hearing")]
+        [NUnit.Framework.CategoryAttribute("Chrome")]
+        [NUnit.Framework.CategoryAttribute("Video")]
         public virtual void FourParticipantsJoinHearing()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Four participants join hearing", null, ((string[])(null)));
-#line 27
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Four participants join hearing", null, new string[] {
+                        "Chrome",
+                        "Video"});
+#line 30
 this.ScenarioInitialize(scenarioInfo);
             this.ScenarioStart();
-#line 28
+#line 31
  testRunner.Given("the Individual user has progressed to the Waiting Room page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 29
+#line 32
  testRunner.And("there is a new browser open for Representative01", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 30
+#line 33
  testRunner.And("the Representative01 user has progressed to the Waiting Room page for the existin" +
                     "g hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 31
+#line 34
  testRunner.And("there is a new browser open for Individual02", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 32
+#line 35
  testRunner.And("the Individual02 user has progressed to the Waiting Room page for the existing he" +
                     "aring", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 33
+#line 36
  testRunner.And("there is a new browser open for Representative02", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 34
+#line 37
  testRunner.And("the Representative02 user has progressed to the Waiting Room page for the existin" +
                     "g hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 35
- testRunner.And("there is a new browser open for Judge", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 36
- testRunner.And("the Judge user has progressed to the Waiting Room page for the existing hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
-#line 37
- testRunner.When("the user clicks the button with innertext Start Hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 38
- testRunner.Then("the user is on the Countdown page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.And("there is a new browser open for Judge", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 39
- testRunner.When("the countdown finishes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.And("the Judge user has progressed to the Waiting Room page for the existing hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 40
+ testRunner.When("the user clicks the button with innertext Start Hearing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 41
+ testRunner.Then("the user is on the Countdown page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 42
+ testRunner.When("the countdown finishes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 43
  testRunner.Then("the user is on the Hearing Room page for 2 minutes", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using FluentAssertions;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -41,7 +43,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 case "Representative02": video = Representative2Video; break;
                 default: throw new ArgumentOutOfRangeException($"No user defined; {user}");
             }
-            return _saucelabsSettings.RunWithSaucelabs ? InitSauceLabsDriver(video) : InitLocalDriver(video);
+            return _saucelabsSettings.RunWithSaucelabs ? InitSauceLabsDriver(video) : InitLocalDriver(video,  _scenario);
         }
 
         private IWebDriver InitSauceLabsDriver(string video)
@@ -53,13 +55,13 @@ namespace VideoWeb.AcceptanceTests.Helpers
             switch (_targetBrowser)
             {
                 case TargetBrowser.Firefox:
+                    var profile = new FirefoxProfile();
+                    profile.SetPreference("use-fake-ui-for-media-stream", true);
+                    caps.SetCapability(FirefoxDriver.ProfileCapabilityName, profile);
                     caps.SetCapability("browserName", "Firefox");
                     caps.SetCapability("platform", "Windows 10");
-                    caps.SetCapability("version", "64.0");
-                    var firefoxOptions = new FirefoxOptions();
-                    firefoxOptions.SetPreference("permissions.default.microphone", 1);
-                    firefoxOptions.SetPreference("permissions.default.camera", 1);
-                    caps.SetCapability("moz:firefoxOptions", firefoxOptions.ToCapabilities());
+                    caps.SetCapability("version", "latest");
+                    caps.SetCapability("autoAcceptAlerts", true);
                     break;
                 case TargetBrowser.Safari:
                     caps.SetCapability("browserName", "Safari");
@@ -92,13 +94,16 @@ namespace VideoWeb.AcceptanceTests.Helpers
                     caps.SetCapability("platform", "Windows 10");
                     caps.SetCapability("version", "74.0");
                     caps.SetCapability("autoAcceptAlerts", true);
-                    var chromeOptions = new Dictionary<string, object>();
-                    chromeOptions["args"] = new List<string>
+                    
+                    var chromeOptions = new Dictionary<string, object>
+                    {
+                        ["args"] = new List<string>
                         {
                             "use-fake-ui-for-media-stream",
                             "use-fake-device-for-media-stream",
                             $"use-file-for-fake-video-capture={GetBuildPath}/Videos/{video}.y4m"
-                        };
+                        }
+                    };
                     caps.SetCapability(ChromeOptions.Capability, chromeOptions);
                     break;
             }
@@ -115,14 +120,16 @@ namespace VideoWeb.AcceptanceTests.Helpers
             return new RemoteWebDriver(remoteUrl, caps, commandTimeout);
         }
 
-        private static IWebDriver InitLocalDriver(string video)
+        private static IWebDriver InitLocalDriver(string video, ScenarioInfo scenario)
         {            
             var options = new ChromeOptions();
             options.AddArgument("ignore -certificate-errors");
             options.AddArgument("use-fake-ui-for-media-stream");
             options.AddArgument("use-fake-device-for-media-stream");
-            options.AddArgument($"use-file-for-fake-video-capture={GetBuildPath}/Videos/{video}.y4m");
-
+            if (scenario.Tags.Contains("Video"))
+            {
+                options.AddArgument($"use-file-for-fake-video-capture={GetBuildPath}/Videos/{video}.y4m");
+            }       
             var commandTimeout = TimeSpan.FromSeconds(30);
 
             _targetBrowser = TargetBrowser.Chrome;
