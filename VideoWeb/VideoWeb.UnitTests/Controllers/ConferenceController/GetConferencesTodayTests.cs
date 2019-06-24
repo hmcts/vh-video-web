@@ -113,8 +113,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 })
                 .Build().ToList();
 
-            var closedAndExpiredConferences = conferences.Where(x =>
-                x.Status == ConferenceState.Closed && x.Closed_date_time > DateTime.UtcNow.AddMinutes(30)).ToList();
+            var closedAndExpiredConferenceIds = conferences.Where(x =>
+                x.Status == ConferenceState.Closed && x.Closed_date_time > DateTime.UtcNow.AddMinutes(30))
+                .Select(x => x.Id).ToList();
 
             
             _videoApiClientMock
@@ -128,7 +129,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             
             var conferencesForUser = (List<ConferenceForUserResponse>)typedResult.Value;
             conferencesForUser.Should().NotBeNullOrEmpty();
-            conferencesForUser.Select(x => x.Id).Should().NotContain(closedAndExpiredConferences.Select(x => x.Id));
+            var returnedIds = conferencesForUser.Select(x => x.Id).ToList();
+            returnedIds.Should().NotContain(closedAndExpiredConferenceIds);
         }
 
     }
