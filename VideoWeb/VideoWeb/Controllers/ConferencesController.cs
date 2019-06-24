@@ -102,9 +102,10 @@ namespace VideoWeb.Controllers
                 return true;
             }
 
-            var startTime = conference.Scheduled_date_time.GetValueOrDefault();
-            var endTime = startTime.AddMinutes(30);
-            return DateTime.UtcNow < endTime;
+            // After a conference is closed, VH Officers can still administer conferences until this period of time
+            const int postClosedVisibilityTime = 30;
+            var endTime = conference.Closed_date_time.Value.AddMinutes(postClosedVisibilityTime);
+            return DateTime.UtcNow > endTime;
         }
 
         /// <summary>
