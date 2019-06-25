@@ -102,6 +102,22 @@ this.ScenarioInitialize(scenarioInfo);
 #line hidden
             this.ScenarioCleanup();
         }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("Show participant contact details to VHO")]
+        [NUnit.Framework.CategoryAttribute("VIH-4507")]
+        public virtual void ShowParticipantContactDetailsToVHO()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Show participant contact details to VHO", null, new string[] {
+                        "VIH-4507"});
+#line 21
+this.ScenarioInitialize(scenarioInfo);
+            this.ScenarioStart();
+#line 22
+ testRunner.Given("the Video Hearings Officer user has progressed to the Admin Panel page", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+            this.ScenarioCleanup();
+        }
     }
 }
 #pragma warning restore

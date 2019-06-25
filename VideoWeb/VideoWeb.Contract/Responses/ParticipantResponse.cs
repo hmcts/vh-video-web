@@ -13,6 +13,26 @@ namespace VideoWeb.Contract.Responses
         public Guid Id { get; set; }
         
         /// <summary>
+        /// The participant's first name
+        /// </summary>
+        public string FirstName { get; set; }
+        
+        /// <summary>
+        /// The participant's last name
+        /// </summary>
+        public string LastName { get; set; }
+        
+        /// <summary>
+        /// The participant's contact email
+        /// </summary>
+        public string ContactEmail { get; set; }
+        
+        /// <summary>
+        /// The participant's contact telephone number
+        /// </summary>
+        public string ContactTelephone { get; set; }
+        
+        /// <summary>
         /// The participant's full name
         /// </summary>
         public string Name { get; set; }

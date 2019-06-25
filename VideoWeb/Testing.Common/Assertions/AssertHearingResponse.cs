@@ -31,9 +31,9 @@ namespace Testing.Common.Assertions
                 participant.Hearing_role_name.Should().NotBeNullOrEmpty();
                 participant.Id.Should().NotBeEmpty();
                 participant.Last_name.Should().NotBeNullOrEmpty();
-                participant.Telephone_number.Should().NotBeNullOrEmpty();
                 participant.Title.Should().NotBeNullOrEmpty();
                 participant.User_role_name.Should().NotBeNullOrEmpty();
+                participant.Username.Should().NotBeNullOrEmpty();
             }
 
             hearing.Scheduled_date_time.Should().BeAfter(DateTime.MinValue);

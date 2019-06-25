@@ -14,16 +14,12 @@ export class ParticipantStatusComponent implements OnInit {
     this._participants = participants;
     this.filterNonJudgeParticipants();
   }
-  nonJugdeParticipants: ParticipantResponse[];
+  nonJugdeParticipants: Participant[];
 
   constructor() { }
 
   ngOnInit() {
     this.filterNonJudgeParticipants();
-  }
-
-  getParticipantStatusText(participant: ParticipantResponse): string {
-    return new Participant(participant).getStatusAsText();
   }
 
   getParticipantStatusClass(participant): string {
@@ -41,7 +37,10 @@ export class ParticipantStatusComponent implements OnInit {
   }
 
   private filterNonJudgeParticipants(): void {
-    this.nonJugdeParticipants = this._participants.filter(x => x.role !== UserRole.Judge);
+    this.nonJugdeParticipants = this._participants
+      .filter(x => x.role !== UserRole.Judge)
+      .map(p => new Participant(p));
+      console.log(this.nonJugdeParticipants);
   }
 
 }

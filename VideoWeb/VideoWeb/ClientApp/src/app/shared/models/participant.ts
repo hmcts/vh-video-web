@@ -8,6 +8,10 @@ export class Participant {
         this.participant = participant;
     }
 
+    get initialedName(): string {
+        return `${this.participant.first_name.substr(0, 1)} ${this.participant.last_name}`;
+    }
+
     getStatusAsText(): string {
         switch (this.participant.status) {
             case ParticipantStatus.None:

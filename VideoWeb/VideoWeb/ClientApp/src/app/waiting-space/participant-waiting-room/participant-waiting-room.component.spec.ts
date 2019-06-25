@@ -169,7 +169,7 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
   configureTestSuite(() => {
     conference = new ConferenceTestData().getConferenceFuture();
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
-    videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 404, isSwaggerException: true }));
+    videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 404, isApiException: true }));
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],

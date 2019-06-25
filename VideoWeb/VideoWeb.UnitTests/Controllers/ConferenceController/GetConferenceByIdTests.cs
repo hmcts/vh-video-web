@@ -10,6 +10,7 @@ using Moq;
 using NUnit.Framework;
 using Testing.Common.Helpers;
 using VideoWeb.Controllers;
+using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
@@ -21,12 +22,14 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         private ConferencesController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
         private Mock<IUserApiClient> _userApiClientMock;
+        private Mock<IBookingsApiClient> _bookingsApiClientMock;
         
         [SetUp]
         public void Setup()
         {
             _videoApiClientMock = new Mock<IVideoApiClient>();
             _userApiClientMock = new Mock<IUserApiClient>();
+            _bookingsApiClientMock = new Mock<IBookingsApiClient>();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
             {
@@ -36,7 +39,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 }
             };
             
-            _controller = new ConferencesController(_videoApiClientMock.Object, _userApiClientMock.Object)
+            _controller = new ConferencesController(_videoApiClientMock.Object, _userApiClientMock.Object,
+                _bookingsApiClientMock.Object)
             {
                 ControllerContext = context
             };
