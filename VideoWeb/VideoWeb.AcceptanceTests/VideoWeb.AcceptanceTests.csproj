@@ -12,6 +12,7 @@
     <None Remove="Data\**" />
     <SpecFlowFeatureFiles Remove="Data\**" />
     <SpecFlowObsoleteCodeBehindFiles Remove="Data\**" />
+    <Content Include="Features\*.feature" />
   </ItemGroup>
 
   <ItemGroup>
