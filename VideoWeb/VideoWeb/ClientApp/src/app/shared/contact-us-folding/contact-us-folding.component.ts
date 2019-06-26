@@ -11,6 +11,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 export class ContactUsFoldingComponent implements OnInit {
 
   private conference: ConferenceResponse;
+  expanded: boolean;
 
   contact = {
     phone: '0300 303 0655',
@@ -42,5 +43,9 @@ export class ContactUsFoldingComponent implements OnInit {
     } else {
       return this.conference.case_number;
     }
+  }
+
+  toggle() {
+    this.expanded = !this.expanded;
   }
 }
