@@ -1,9 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ContactUsFoldingComponent } from './contact-us-folding.component';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { SharedModule } from '../shared.module';
 import { HttpClientModule } from '@angular/common/http';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { of } from 'rxjs';
@@ -51,5 +50,13 @@ describe('ContactUsFoldingComponent', () => {
     videoWebServiceSpy.getConferenceById.and.returnValue(of(conference));
     component.ngOnInit();
     expect(component.caseNumber).toBe(conference.case_number);
+  });
+
+  it('should toggle when pressed', () => {
+    component.expanded = false;
+    component.toggle();
+    expect(component.expanded).toBe(true);
+    component.toggle();
+    expect(component.expanded).toBe(false);
   });
 });
