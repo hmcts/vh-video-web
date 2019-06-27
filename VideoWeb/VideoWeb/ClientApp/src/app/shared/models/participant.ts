@@ -1,4 +1,4 @@
-import { ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ParticipantResponse, ParticipantStatus, UserRole } from 'src/app/services/clients/api-client';
 
 export class Participant {
 
@@ -34,6 +34,10 @@ export class Participant {
 
     get status(): ParticipantStatus {
         return this.participant.status;
+    }
+
+    get role(): UserRole {
+        return this.participant.role;
     }
 
     getStatusAsText(): string {
