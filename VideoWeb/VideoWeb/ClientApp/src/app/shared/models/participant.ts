@@ -8,8 +8,32 @@ export class Participant {
         this.participant = participant;
     }
 
+    get id(): string {
+        return this.participant.id;
+    }
+
+    get fullName() {
+        return this.participant.name;
+    }
+
+    get caseGroup() {
+        return this.participant.case_type_group;
+    }
+
+    get contactEmail() {
+        return this.participant.contact_email;
+    }
+
+    get contactTelephone() {
+        return this.participant.contact_telephone;
+    }
+
     get initialedName(): string {
         return `${this.participant.first_name.substr(0, 1)} ${this.participant.last_name}`;
+    }
+
+    get status(): ParticipantStatus {
+        return this.participant.status;
     }
 
     getStatusAsText(): string {

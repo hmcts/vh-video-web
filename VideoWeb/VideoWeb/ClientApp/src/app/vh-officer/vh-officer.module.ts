@@ -5,15 +5,16 @@ import { VhoHearingsComponent } from '../vh-officer/hearings/vho-hearings.compon
 import { ParticipantStatusComponent } from '../vh-officer/participant-status/participant-status.component';
 import { TasksTableComponent } from '../vh-officer/tasks-table/tasks-table.component';
 import { VhoHearingListComponent } from '../vh-officer/vho-hearing-list/vho-hearing-list.component';
+import { ParticipantInfoTooltipComponent } from './participant-info-tooltip/participant-info-tooltip.component';
 import { VhOfficerRoutingModule } from './vh-officer-routing.module';
-
 
 @NgModule({
   declarations: [
     VhoHearingsComponent,
     TasksTableComponent,
     VhoHearingListComponent,
-    ParticipantStatusComponent
+    ParticipantStatusComponent,
+    ParticipantInfoTooltipComponent
   ],
   imports: [
     CommonModule,
