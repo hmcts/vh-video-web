@@ -1,10 +1,10 @@
 <details class="govuk-details">
-  <summary class="govuk-details__summary">
-    <span class="govuk-details__summary-text">
+  <summary class="govuk-details__summary" (click)="toggle()">
+    <span class=" govuk-details__summary-text">
       Contact us for help
     </span>
   </summary>
-  <div class="govuk-details__text">
+  <div class="govuk-details__text" *ngIf="expanded">
     <p class="govuk-body govuk-!-margin-bottom-0"><strong>Telephone: </strong></p>
     <p class="govuk-body govuk-!-margin-bottom-0">Call us on {{ contact.phone }}</p>
     <p><span class="govuk-hint">(available between 9am and 5pm, Monday to Friday)</span></p>
