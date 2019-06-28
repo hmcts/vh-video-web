@@ -14,6 +14,7 @@ import { VideoCheckComponent } from './video-check/video-check.component';
 import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone/switch-on-camera-microphone.component';
 import { PageUrls } from '../shared/page-url.constants';
 import { SelfTestComponent } from './self-test/self-test.component';
+import { IntroductionComponent } from './introduction/introduction.component';
 
 export const routes: Routes = [
   { path: `${PageUrls.JudgeHearingList}`, component: JudgeHearingListComponent, canActivate: [JudgeGuard] },
@@ -25,8 +26,9 @@ export const routes: Routes = [
   { path: `${PageUrls.MicrophoneWorking}/:conferenceId`, component: MicrophoneCheckComponent },
   { path: `${PageUrls.VideoWorking}/:conferenceId`, component: VideoCheckComponent },
   { path: `${PageUrls.CameraAndMicrophone}/:conferenceId`, component: CameraAndMicrophoneComponent },
-  { path: `${PageUrls.SwitchOnCameraMicrophone}/:conferenceId`, component: SwitchOnCameraMicrophoneComponent},
-  { path: `${PageUrls.SelfTestVideo}/:conferenceId`, component: SelfTestComponent},
+  { path: `${PageUrls.SwitchOnCameraMicrophone}/:conferenceId`, component: SwitchOnCameraMicrophoneComponent },
+  { path: `${PageUrls.SelfTestVideo}/:conferenceId`, component: SelfTestComponent },
+  { path: `${PageUrls.Introduction}/:conferenceId`, component: IntroductionComponent },
 ];
 
 @NgModule({
