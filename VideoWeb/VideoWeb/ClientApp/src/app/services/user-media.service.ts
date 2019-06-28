@@ -15,32 +15,46 @@ export class UserMediaService {
     private PREFERRED_CAMERA_KEY = 'vh.preferred.camera';
     private PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
 
+    private availableDeviceList: UserMediaDevice[];
+
     constructor() {
         this.preferredCamCache = new SessionStorage(this.PREFERRED_CAMERA_KEY);
         this.preferredMicCache = new SessionStorage(this.PREFERRED_MICROPHONE_KEY);
 
         this._navigator.getUserMedia = (this._navigator.getUserMedia || this._navigator.webkitGetUserMedia
             || this._navigator.mozGetUserMedia || this._navigator.msGetUserMedia);
+
+        this._navigator.mediaDevices.ondevicechange = async () => {
+            await this.updateAvailableDevicesList();
+        };
     }
 
     async getListOfVideoDevices(): Promise<UserMediaDevice[]> {
-        const devices = await this.getAvailableDevicesList();
-        return devices.filter(x => x.kind === 'videoinput');
+        console.info(`getListOfVideoDevices`);
+        await this.checkDeviceListIsReady();
+        return this.availableDeviceList.filter(x => x.kind === 'videoinput');
     }
 
     async getListOfMicrophoneDevices(): Promise<UserMediaDevice[]> {
-        const devices = await this.getAvailableDevicesList();
-        return devices.filter(x => x.kind === 'audioinput');
+        console.info(`getListOfVideoDevices`);
+        await this.checkDeviceListIsReady();
+        return this.availableDeviceList.filter(x => x.kind === 'audioinput');
     }
 
-    private async getAvailableDevicesList(): Promise<UserMediaDevice[]> {
+    private async checkDeviceListIsReady() {
+        if (!this.availableDeviceList) {
+            await this.updateAvailableDevicesList();
+        }
+    }
+
+    private async updateAvailableDevicesList(): Promise<void> {
         if (!this._navigator.mediaDevices || !this._navigator.mediaDevices.enumerateDevices) {
-            console.log('enumerateDevices() not supported.');
-            return [];
+            console.error('enumerateDevices() not supported.');
+            throw new Error('enumerateDevices() not supported.');
         }
 
         const updatedDevices: MediaDeviceInfo[] = await this._navigator.mediaDevices.enumerateDevices();
-        return Array.from(updatedDevices, device =>
+        this.availableDeviceList = Array.from(updatedDevices, device =>
             new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)
         );
     }
