@@ -51,26 +51,26 @@ export class UserMediaStreamService {
 
     async getStreamForMic(device: UserMediaDevice): Promise<MediaStream> {
         if (device) {
-            console.log(`using preferred mic ${device.label}`);
+            console.info(`using preferred mic ${device.label}`);
             const stream = await this._navigator.mediaDevices.getUserMedia(
                 { audio: { deviceId: { exact: device.deviceId } } }
             );
             return stream;
         } else {
-            console.log(`using default mic`);
+            console.info(`using default mic`);
             return this.getDefaultMicStream();
         }
     }
 
     async getStreamForCam(device: UserMediaDevice): Promise<MediaStream> {
         if (device) {
-            console.log(`using preferred cam ${device.label}`);
+            console.info(`using preferred cam ${device.label}`);
             const stream = await this._navigator.mediaDevices.getUserMedia(
                 { video: { deviceId: { exact: device.deviceId } } }
             );
             return stream;
         } else {
-            console.log(`using default mic`);
+            console.info(`using default mic`);
             return this.getDefaultCamStream();
         }
     }

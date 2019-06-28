@@ -2,6 +2,7 @@ import { Injectable, } from '@angular/core';
 import 'webrtc-adapter';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { SessionStorage } from './session-storage';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -17,6 +18,8 @@ export class UserMediaService {
 
     private availableDeviceList: UserMediaDevice[];
 
+    connectedDevices: BehaviorSubject<UserMediaDevice[]> = new BehaviorSubject([]);
+
     constructor() {
         this.preferredCamCache = new SessionStorage(this.PREFERRED_CAMERA_KEY);
         this.preferredMicCache = new SessionStorage(this.PREFERRED_MICROPHONE_KEY);
@@ -25,6 +28,7 @@ export class UserMediaService {
             || this._navigator.mozGetUserMedia || this._navigator.msGetUserMedia);
 
         this._navigator.mediaDevices.ondevicechange = async () => {
+            console.info('device change detected');
             await this.updateAvailableDevicesList();
         };
     }
@@ -36,7 +40,7 @@ export class UserMediaService {
     }
 
     async getListOfMicrophoneDevices(): Promise<UserMediaDevice[]> {
-        console.info(`getListOfVideoDevices`);
+        console.info(`getListOfMicrophoneDevices`);
         await this.checkDeviceListIsReady();
         return this.availableDeviceList.filter(x => x.kind === 'audioinput');
     }
@@ -53,10 +57,12 @@ export class UserMediaService {
             throw new Error('enumerateDevices() not supported.');
         }
 
-        const updatedDevices: MediaDeviceInfo[] = await this._navigator.mediaDevices.enumerateDevices();
+        let updatedDevices: MediaDeviceInfo[] = await this._navigator.mediaDevices.enumerateDevices();
+        updatedDevices = updatedDevices.filter(x => x.deviceId !== 'default' && x.kind !== 'audiooutput');
         this.availableDeviceList = Array.from(updatedDevices, device =>
             new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)
         );
+        this.connectedDevices.next(this.availableDeviceList);
     }
 
     async hasMultipleDevices(): Promise<boolean> {
@@ -67,11 +73,22 @@ export class UserMediaService {
     }
 
     getPreferredCamera() {
-        return this.preferredCamCache.get();
+        return this.getCachedDeviceIfStillConnected(this.preferredCamCache);
     }
 
     getPreferredMicrophone() {
-        return this.preferredMicCache.get();
+        return this.getCachedDeviceIfStillConnected(this.preferredMicCache);
+    }
+
+    getCachedDeviceIfStillConnected(cache: SessionStorage<UserMediaDevice>){
+        const device = cache.get();
+        if (device) {
+            const stillConnected = this.availableDeviceList.find(x => x.label === device.label);
+            return (stillConnected ? device : null);
+        } else {
+            cache.clear();
+            return null;
+        }
     }
 
     updatePreferredCamera(camera: UserMediaDevice) {
