@@ -80,7 +80,7 @@ export class UserMediaService {
         return this.getCachedDeviceIfStillConnected(this.preferredMicCache);
     }
 
-    getCachedDeviceIfStillConnected(cache: SessionStorage<UserMediaDevice>){
+    getCachedDeviceIfStillConnected(cache: SessionStorage<UserMediaDevice>) {
         const device = cache.get();
         if (device) {
             const stillConnected = this.availableDeviceList.find(x => x.label === device.label);
