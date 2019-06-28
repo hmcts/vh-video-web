@@ -1,54 +1,52 @@
 <div class="govuk-grid-row">
-  <h1 class="govuk-heading-l">Was your microphone working?</h1>
-</div>
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-l">Was your microphone working?</h1>
 
-<form [formGroup]="form" class="govuk-form-group" (ngSubmit)="onSubmit()">
+    <form [formGroup]="form" class="govuk-form-group" (ngSubmit)="onSubmit()">
 
-  <div [ngClass]="showError()
+      <div [ngClass]="showError()
           ? 'govuk-form-group--error'
           : 'govuk-form-group'
       ">
-    <div *ngIf="showError()" class="govuk-error-message">
-      <span class="govuk-visually-hidden">Error:</span>
-      Please answer this question</div>
 
-
-    <fieldset class="govuk-fieldset" aria-describedby="microphone-check-hint">
-      <label class="govuk-body" for="microphoneCheck">
-        Could you see the bar moving when you spoke?
-      </label>
-      <div class="govuk-radios govuk-!-margin-top-5">
-        <div class="govuk-radios__item">
-          <input class="govuk-radios__input" id="microphone-yes" formControlName="microphoneCheck"
-            name="microphoneCheck" type="radio" value="Yes">
-          <label class="govuk-label govuk-radios__label" for="microphone-yes">
-            Yes
-          </label>
+        <div *ngIf="showError()" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span>
+          Please answer this question
         </div>
-        <div class="govuk-radios__item">
-          <input class="govuk-radios__input" id="microphone-no" formControlName="microphoneCheck" name="microphoneCheck"
-            type="radio" value="No">
-          <label class="govuk-label govuk-radios__label" for="microphone-no">
-            No
-            <p *ngIf="!microphoneCheck.pristine && microphoneCheck.invalid" class="govuk-details__text">
-              Make sure the microphone is switched on and try checking your equipment again. If you're still having
-              problems, contact us using the options below.
-            </p>
-          </label>
 
-        </div>
+        <fieldset class="govuk-fieldset" aria-describedby="microphone-check-hint">
+          <label class="govuk-body" for="microphoneCheck">
+            Could you see the bar moving when you spoke?
+          </label>
+          <div class="govuk-radios govuk-!-margin-top-5">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="microphone-yes" formControlName="microphoneCheck"
+                name="microphoneCheck" type="radio" value="Yes">
+              <label class="govuk-label govuk-radios__label" for="microphone-yes">
+                Yes
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="microphone-no" formControlName="microphoneCheck"
+                name="microphoneCheck" type="radio" value="No">
+              <label class="govuk-label govuk-radios__label" for="microphone-no">
+                No
+              </label>
+
+            </div>
+          </div>
+        </fieldset>
       </div>
-    </fieldset>
-  </div>
-  <div class="govuk-!-margin-top-6">
-    <input type="button" id="continue-btn" class="govuk-button govuk-!-margin-right-9" role="button" value="Continue"
-      [ngClass]="!form.pristine && microphoneCheck.invalid ?'govuk-button--disabled':''" (click)="onSubmit()"
-      alt="Microphone Check" />
+      <div class="govuk-!-margin-top-6">
+        <input type="button" id="continue-btn" class="govuk-button govuk-!-margin-right-9" role="button"
+          value="Continue" (click)="onSubmit()" alt="Microphone Check" />
 
-    <input type="button" id="check-equipment-btn" class="govuk-button grey-btn" role="button"
-      [ngClass]="!form.pristine && microphoneCheck.valid ?'govuk-button--disabled':''" value="Check my equipment again"
-      (click)="checkEquipmentAgain()" alt="Microphone Check" />
-  </div>
-</form>
+        <input type="button" id="check-equipment-btn" class="govuk-button grey-btn" role="button"
+          [ngClass]="!form.pristine && microphoneCheck.valid ?'govuk-button--disabled':''"
+          value="Check my equipment again" (click)="checkEquipmentAgain()" alt="Microphone Check" />
+      </div>
+    </form>
 
-<app-contact-us-folding></app-contact-us-folding>
+    <app-contact-us-folding></app-contact-us-folding>
+  </div>
+</div>

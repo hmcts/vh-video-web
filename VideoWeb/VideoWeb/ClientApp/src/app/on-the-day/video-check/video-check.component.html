@@ -1,56 +1,52 @@
 <div class="govuk-grid-row">
-  <h1 class="govuk-heading-l">Could you see and hear the video clearly?</h1>
-</div>
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-l">Could you see and hear the video clearly?</h1>
 
-<form [formGroup]="form" class="govuk-form-group" (ngSubmit)="onSubmit()">
+    <form [formGroup]="form" class="govuk-form-group" (ngSubmit)="onSubmit()">
 
-  <div [ngClass]="showError()
+      <div [ngClass]="showError()
         ? 'govuk-form-group--error'
         : 'govuk-form-group'
-    ">
-    <div *ngIf="showError()" class="govuk-error-message">
-      <span class="govuk-visually-hidden">Error:</span>
-      Please answer this question</div>
+        ">
 
-
-    <fieldset class="govuk-fieldset" aria-describedby="video-check-hint">
-      <label class="govuk-body" for="videoCheck">
-        Could you see and hear the video clearly?
-      </label>
-      <div class="govuk-radios govuk-!-margin-top-5">
-        <div class="govuk-radios__item">
-          <input class="govuk-radios__input" id="video-yes" formControlName="videoCheck" name="videoCheck" type="radio"
-            value="Yes">
-          <label class="govuk-label govuk-radios__label" for="video-yes">
-            Yes
-          </label>
+        <div *ngIf="showError()" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span>
+          Please answer this question
         </div>
-        <div class="govuk-radios__item">
-          <input class="govuk-radios__input" id="video-no" formControlName="videoCheck" name="videoCheck" type="radio"
-            value="No">
-          <label class="govuk-label govuk-radios__label" for="video-no">
-            No
-            <p *ngIf="!videoCheck.pristine && videoCheck.invalid" class="govuk-details__text">
-              Make sure your speakers are on and the volume is turned up. If you couldn't see the videos clearly,
-              it could be because your internet connection is slow. Try moving to a different room and try checking your
-              equipment again.
-              If you're still having problems, contact us using the options below.
-            </p>
-          </label>
 
-        </div>
+        <fieldset class="govuk-fieldset" aria-describedby="video-check-hint">
+          <label class="govuk-body" for="videoCheck">
+            Could you see and hear the video clearly?
+          </label>
+          <div class="govuk-radios govuk-!-margin-top-5">
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="video-yes" formControlName="videoCheck" name="videoCheck"
+                type="radio" value="Yes">
+              <label class="govuk-label govuk-radios__label" for="video-yes">
+                Yes
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input class="govuk-radios__input" id="video-no" formControlName="videoCheck" name="videoCheck"
+                type="radio" value="No">
+              <label class="govuk-label govuk-radios__label" for="video-no">
+                No
+              </label>
+
+            </div>
+          </div>
+        </fieldset>
       </div>
-    </fieldset>
-  </div>
-  <div class="govuk-!-margin-top-6">
-    <input type="button" id="continue-btn" class="govuk-button govuk-!-margin-right-9" role="button" value="Continue"
-      [ngClass]="!form.pristine && videoCheck.invalid ?'govuk-button--disabled':''" (click)="onSubmit()"
-      alt="video Check" />
+      <div class="govuk-!-margin-top-6">
+        <input type="button" id="continue-btn" class="govuk-button govuk-!-margin-right-9" role="button"
+          value="Continue" (click)="onSubmit()" alt="video Check" />
 
-    <input type="button" id="check-equipment-btn" class="govuk-button grey-btn" role="button"
-      [ngClass]="!form.pristine && videoCheck.valid ?'govuk-button--disabled':''" value="Check my equipment again"
-      (click)="checkEquipmentAgain()" alt="video Check" />
-  </div>
-</form>
+        <input type="button" id="check-equipment-btn" class="govuk-button grey-btn" role="button"
+          [ngClass]="!form.pristine && videoCheck.valid ?'govuk-button--disabled':''" value="Check my equipment again"
+          (click)="checkEquipmentAgain()" alt="video Check" />
+      </div>
+    </form>
 
-<app-contact-us-folding></app-contact-us-folding>
+    <app-contact-us-folding></app-contact-us-folding>
+  </div>
+</div>

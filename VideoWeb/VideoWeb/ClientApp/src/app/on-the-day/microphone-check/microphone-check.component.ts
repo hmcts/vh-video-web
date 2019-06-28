@@ -36,6 +36,9 @@ export class MicrophoneCheckComponent implements OnInit {
   onSubmit() {
     this.submitted = true;
     if (this.form.invalid) {
+      if (this.microphoneCheck.value === 'No') {
+        this.router.navigate([PageUrls.EquipmentProblems]);
+      }
       return;
     }
     this.router.navigate([PageUrls.VideoWorking, this.conferenceId]);

@@ -34,6 +34,9 @@ export class CameraCheckComponent implements OnInit {
   onSubmit() {
     this.submitted = true;
     if (this.form.invalid) {
+      if (this.cameraCheck.value === 'No') {
+        this.router.navigate([PageUrls.EquipmentProblems]);
+      }
       return;
     }
     this.router.navigate([PageUrls.MicrophoneWorking, this.conferenceId]);

@@ -48,7 +48,8 @@ describe('VideoCheckComponent', () => {
     videoAnswer.setValue('No');
     component.onSubmit();
     expect(component.form.valid).toBeFalsy();
-    expect(router.navigate).toHaveBeenCalledTimes(0);
+    expect(router.navigate).toHaveBeenCalledTimes(1);
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.EquipmentProblems]);
   });
 
   it('should validate form when "Yes" is selected', () => {

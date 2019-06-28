@@ -14,6 +14,7 @@ import { ErrorComponent } from './error/error.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { SelectMediaDevicesComponent } from './select-media-devices/select-media-devices.component';
 import { MicVisualiserComponent } from '../shared/mic-visualiser/mic-visualiser.component';
+import { EquipmentProblemComponent } from './equipment-problem/equipment-problem.component';
 
 @NgModule({
   imports: [
@@ -33,7 +34,8 @@ import { MicVisualiserComponent } from '../shared/mic-visualiser/mic-visualiser.
     ErrorComponent,
     NotFoundComponent,
     SelectMediaDevicesComponent,
-    MicVisualiserComponent
+    MicVisualiserComponent,
+    EquipmentProblemComponent
   ],
   providers: [
     { provide: 'SnotifyToastConfig', useValue: ToastDefaults},
