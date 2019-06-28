@@ -13,10 +13,10 @@ export class UserMediaService {
 
     private readonly preferredCamCache: SessionStorage<UserMediaDevice>;
     private readonly preferredMicCache: SessionStorage<UserMediaDevice>;
-    private PREFERRED_CAMERA_KEY = 'vh.preferred.camera';
-    private PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
+    readonly PREFERRED_CAMERA_KEY = 'vh.preferred.camera';
+    readonly PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
 
-    private availableDeviceList: UserMediaDevice[];
+    availableDeviceList: UserMediaDevice[];
 
     connectedDevices: BehaviorSubject<UserMediaDevice[]> = new BehaviorSubject([]);
 
@@ -45,13 +45,13 @@ export class UserMediaService {
         return this.availableDeviceList.filter(x => x.kind === 'audioinput');
     }
 
-    private async checkDeviceListIsReady() {
+    async checkDeviceListIsReady() {
         if (!this.availableDeviceList) {
             await this.updateAvailableDevicesList();
         }
     }
 
-    private async updateAvailableDevicesList(): Promise<void> {
+    async updateAvailableDevicesList(): Promise<void> {
         if (!this._navigator.mediaDevices || !this._navigator.mediaDevices.enumerateDevices) {
             console.error('enumerateDevices() not supported.');
             throw new Error('enumerateDevices() not supported.');
@@ -68,7 +68,6 @@ export class UserMediaService {
     async hasMultipleDevices(): Promise<boolean> {
         const camDevices = await this.getListOfVideoDevices();
         const micDevices = await this.getListOfMicrophoneDevices();
-
         return micDevices.length > 1 || camDevices.length > 1;
     }
 
@@ -80,11 +79,15 @@ export class UserMediaService {
         return this.getCachedDeviceIfStillConnected(this.preferredMicCache);
     }
 
-    getCachedDeviceIfStillConnected(cache: SessionStorage<UserMediaDevice>) {
+    getCachedDeviceIfStillConnected(cache: SessionStorage<UserMediaDevice>): UserMediaDevice {
         const device = cache.get();
-        if (device) {
-            const stillConnected = this.availableDeviceList.find(x => x.label === device.label);
-            return (stillConnected ? device : null);
+        if (!device) {
+            return null;
+        }
+
+        const stillConnected = this.availableDeviceList.find(x => x.label === device.label);
+        if (stillConnected) {
+            return device;
         } else {
             cache.clear();
             return null;
