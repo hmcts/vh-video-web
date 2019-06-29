@@ -1,4 +1,4 @@
-﻿Feature: Video Hearing Officer Alerts
+﻿Feature: Hearing Alerts
 	As a video hearings officer user
 	I would like to login and access the hearing details
 	So that I can have an administrate the hearings I am involved in

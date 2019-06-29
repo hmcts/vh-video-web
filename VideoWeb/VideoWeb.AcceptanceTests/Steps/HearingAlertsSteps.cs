@@ -7,6 +7,7 @@ using FluentAssertions;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders;
 using Testing.Common.Helpers;
+using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
@@ -15,7 +16,7 @@ using VideoWeb.Services.Video;
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
-    public sealed class VideoHearingOfficerAlertsSteps
+    public sealed class HearingAlertsSteps
     {
         private readonly BrowserContext _browserContext;
         private readonly TestContext _context;
@@ -26,7 +27,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private const string ParticipantKey = "participant";
         private const string AlertTimeKey = "alert time";
 
-        public VideoHearingOfficerAlertsSteps(BrowserContext browserContext, TestContext context, ScenarioContext scenarioContext,
+        public HearingAlertsSteps(BrowserContext browserContext, TestContext context, ScenarioContext scenarioContext,
             HearingListPage hearingListPage, AdminPanelPage adminPanelPage)
         {
             _browserContext = browserContext;
@@ -39,28 +40,54 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"a participant has chosen to block user media")]
         public void WhenAParticipantHasChosenToBlockUserMedia()
         {
-            GetParticipant(UserRole.Individual);
-            var request = CreateEventRequest();
-            request.Event_type = EventType.MediaPermissionDenied;
-            ExecuteRequest(request);
+            var request = new CreateEventRequestBuilder()
+                .WithConferenceId(_context.NewConferenceId)
+                .WithParticipantId(GetJudgeParticipantId())
+                .WithEventType(EventType.MediaPermissionDenied)
+                .Build();
+
+            new ExecuteEventRequestBuilder()
+                .WithContext(_context)
+                .WithScenarioContext(_scenarioContext)
+                .WithRequest(request)
+                .Execute();
         }
 
         [When(@"the judge has disconnected from the hearing")]
         public void WhenTheJudgeHasSuspendedTheHearing()
         {
-            GetParticipant(UserRole.Judge);
-            var request = CreateEventRequest(RoomType.HearingRoom);
-            request.Event_type = EventType.Disconnected;
-            ExecuteRequest(request);
+            var request = new CreateEventRequestBuilder()
+                .WithConferenceId(_context.NewConferenceId)
+                .WithParticipantId(GetJudgeParticipantId())
+                .WithEventType(EventType.Disconnected)
+                .WithRoomType(RoomType.HearingRoom)
+                .Build();
+
+            new ExecuteEventRequestBuilder()
+                .WithContext(_context)
+                .WithScenarioContext(_scenarioContext)
+                .WithRequest(request)
+                .Execute();
         }
 
         [When(@"a (.*) has disconnected from the (.*)")]
         public void WhenAParticipantHasDisconnectedFromTheHearing(string participant, RoomType room)
         {
-            GetParticipant(participant.Equals("Judge") ? UserRole.Judge : UserRole.Individual);
-            var request = CreateEventRequest(room);
-            request.Event_type = EventType.Disconnected;
-            ExecuteRequest(request);
+            var participantId = participant.Equals("Judge") ? GetJudgeParticipantId() : GetIndividualParticipantId();
+            _scenarioContext.Add(ParticipantKey, participantId);
+
+            var request = new CreateEventRequestBuilder()
+                .WithConferenceId(_context.NewConferenceId)
+                .WithParticipantId(participantId)
+                .WithEventType(EventType.Disconnected)
+                .WithRoomType(room)
+                .Build();
+
+            new ExecuteEventRequestBuilder()
+                .WithContext(_context)
+                .WithScenarioContext(_scenarioContext)
+                .WithRequest(request)
+                .Execute();
         }
 
         [When(@"a participant has failed the self-test")]
@@ -80,10 +107,19 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the hearing has been closed")]
         public void WhenTheHearingHasBeenClosed()
         {
-            GetParticipant(UserRole.Judge);
-            var request = CreateEventRequest(RoomType.HearingRoom);
-            request.Event_type = EventType.Close;
-            ExecuteRequest(request);
+            var request = new CreateEventRequestBuilder()
+                .WithConferenceId(_context.NewConferenceId)
+                .WithParticipantId(GetJudgeParticipantId())
+                .WithEventType(EventType.Close)
+                .WithRoomType(RoomType.HearingRoom)
+                .Build();
+
+            new ExecuteEventRequestBuilder()
+                .WithContext(_context)
+                .WithScenarioContext(_scenarioContext)
+                .WithRequest(request)
+                .Execute();
+
             _scenarioContext.Remove(ParticipantKey);
             _scenarioContext.Remove(AlertTimeKey);
         }
@@ -173,40 +209,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             alert.ActionedBy.Should().Be(_context.CurrentUser.Username.ToLower());
         }
 
-        private void GetParticipant(UserRole role)
+        private string GetJudgeParticipantId()
         {
-            if (role.Equals(UserRole.Judge))
-            {
-                _scenarioContext.Add(ParticipantKey, _context.Conference.Participants.Find(x =>
-                    x.User_role.Equals(UserRole.Judge)));
-            }
-            else
-            {
-                _scenarioContext.Add(ParticipantKey, _context.Conference.Participants.Find(x =>
-                    x.User_role.Equals(UserRole.Individual) || x.User_role.Equals(UserRole.Representative)));
-            }
+            return _context.Conference.Participants.Find(x => x.User_role.Equals(UserRole.Judge)).Id.ToString();
         }
 
-        private ConferenceEventRequest CreateEventRequest(RoomType roomtype = RoomType.WaitingRoom)
+        private string GetIndividualParticipantId()
         {
-            var request = Builder<ConferenceEventRequest>.CreateNew()
-                .With(x => x.Conference_id = _context.NewConferenceId.ToString())
-                .With(x => x.Participant_id = _scenarioContext.Get<ParticipantDetailsResponse>(ParticipantKey).Id.ToString())
-                .With(x => x.Event_id = Guid.NewGuid().ToString())
-                .With(x => x.Transfer_from = roomtype)
-                .With(x => x.Transfer_to = roomtype)
-                .With(x => x.Reason = "Automated")
-                .Build();
-            return request;
-        }
-
-        private void ExecuteRequest(ConferenceEventRequest request)
-        {
-            _context.Request = _context.Post(_callbackEndpoints.Event, request);
-            _context.Response = _context.VideoApiClient().Execute(_context.Request);
-            _scenarioContext.Add(AlertTimeKey, DateTime.Now);
-            _context.Response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-            _context.Response.IsSuccessful.Should().Be(true);
+            return _context.Conference.Participants.Find(x => x.User_role.Equals(UserRole.Individual)).Id.ToString();
         }
 
         private List<Alert> GetAlerts()

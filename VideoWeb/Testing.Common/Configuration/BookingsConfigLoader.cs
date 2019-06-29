@@ -32,8 +32,6 @@ namespace Testing.Common.Configuration
             testSettingsOptions.Value.TestClientSecret.Should().NotBeNullOrEmpty();
             testSettingsOptions.Value.TestUsernameStem.Should().NotBeNullOrEmpty();
             testSettingsOptions.Value.TestUserPassword.Should().NotBeNullOrEmpty();
-            testSettingsOptions.Value.AdminUsername.Should().NotBeNullOrEmpty();
-            testSettingsOptions.Value.AdminPassword.Should().NotBeNullOrEmpty();
             return testSettingsOptions.Value;
         }
 

@@ -36,7 +36,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [When(@"the VHO selects the hearing")]
-        public void WhenTheVHOSelectsTheHearing()
+        public void WhenTheVhoSelectsTheHearing()
         {
             _browserContext.NgDriver
                 .WaitUntilElementVisible(
