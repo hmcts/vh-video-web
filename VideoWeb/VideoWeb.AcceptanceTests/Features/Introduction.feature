@@ -7,6 +7,7 @@
 Scenario: Individual Introduction 
 	Given the Individual user has progressed to the Introduction page
 	Then contact us details are available
+	And the participant status will be updated to Joining
 	When the user clicks the button with innertext Next
 	Then the user is on the Equipment Check page
 
@@ -14,5 +15,6 @@ Scenario: Individual Introduction
 Scenario: Representative Introduction 
 	Given the Representative user has progressed to the Introduction page
 	Then contact us details are available
+	And the participant status will be updated to Joining
 	When the user clicks the button with innertext Next
 	Then the user is on the Equipment Check page
