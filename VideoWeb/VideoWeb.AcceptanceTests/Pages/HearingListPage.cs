@@ -42,6 +42,12 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By ParticipantsStatus(string caseNumber) =>
             By.XPath($"//p[contains(text(),'{caseNumber}')]/../../../../td/p[contains(text(),'Available')]");
 
+        public By ParticipantName(string participantLastName) =>
+            By.XPath($"//div[contains(text(),'{participantLastName}')]");
+
+        public By ParticipantContactDetails(string participantLastName, string expected) => 
+            By.XPath($"//div[contains(text(),'{participantLastName}')]//*[contains(text(),'{expected}')]");
+
         public const string AdminIframeId = "admin-frame";
 
         public By AdminIframe => By.XPath($"//iframe[@id='{AdminIframeId}']");
@@ -50,7 +56,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By AdminUsernameTextfield => CommonLocators.TextfieldWithName("username");
         public By AdminPasswordTextfield => CommonLocators.TextfieldWithName("password");
         public By SignInButton => CommonLocators.ButtonWithInnertext("Sign in");
-        public By WaitingRoomText => CommonLocators.ElementContainingText("Waiting room");
+        public By WaitingRoomText => CommonLocators.ElementContainingText("Waiting");
 
     }
 }
