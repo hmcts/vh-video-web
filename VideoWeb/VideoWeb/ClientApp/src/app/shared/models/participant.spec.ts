@@ -57,4 +57,16 @@ describe('Participant', () => {
     const participant = new Participant(p);
     expect(participant.initialedName).toBe('J Green');
   });
+
+  it('should map participant info', () => {
+    const p = new ConferenceTestData().getConferenceDetail().participants.find(x => x.name === 'Mr James Green');
+    const participant = new Participant(p);
+    expect(participant.id).toBe(p.id);
+    expect(participant.fullName).toBe(p.name);
+    expect(participant.caseGroup).toBe(p.case_type_group);
+    expect(participant.contactEmail).toBe(p.contact_email);
+    expect(participant.contactTelephone).toBe(p.contact_telephone);
+    expect(participant.status).toBe(p.status);
+    expect(participant.role).toBe(p.role);
+  });
 });

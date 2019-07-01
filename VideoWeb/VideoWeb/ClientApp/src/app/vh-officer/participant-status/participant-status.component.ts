@@ -40,7 +40,6 @@ export class ParticipantStatusComponent implements OnInit {
     this.nonJugdeParticipants = this._participants
       .filter(x => x.role !== UserRole.Judge)
       .map(p => new Participant(p));
-      console.log(this.nonJugdeParticipants);
   }
 
 }
