@@ -4,6 +4,7 @@ import { ProfileService } from '../services/api/profile.service';
 import { UserProfileResponse, UserRole } from '../services/clients/api-client';
 import { PageUrls } from '../shared/page-url.constants';
 import { ErrorService } from '../services/error.service';
+import { NavigatorService } from '../services/navigator.service';
 
 @Component({
   selector: 'app-home',
@@ -14,12 +15,20 @@ export class HomeComponent implements OnInit {
   constructor(
     private router: Router,
     private profileService: ProfileService,
-    private errorService: ErrorService
+    private errorService: ErrorService, private navigatorService: NavigatorService
   ) {
   }
 
   ngOnInit() {
-    this.navigateToHearingList();
+    this.checkIsComputer();
+  }
+
+  checkIsComputer() {
+    if (!this.navigatorService.isDeviceComputer()) {
+      this.router.navigate([PageUrls.SignonAComputer]);
+    } else {
+      this.navigateToHearingList();
+    }
   }
 
   navigateToHearingList() {
