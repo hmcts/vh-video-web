@@ -5,7 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-introduction',
   templateUrl: './introduction.component.html',
-  styleUrls: ['./introduction.component.css']
+  styleUrls: ['./introduction.component.scss']
 })
 export class IntroductionComponent implements OnInit {
   conferenceId: string;
