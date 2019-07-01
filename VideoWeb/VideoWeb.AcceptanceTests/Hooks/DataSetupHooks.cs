@@ -5,6 +5,7 @@ using TechTalk.SpecFlow;
 using Testing.Common.Configuration;
 using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Contexts;
+using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.AcceptanceTests.Hooks
@@ -13,15 +14,28 @@ namespace VideoWeb.AcceptanceTests.Hooks
     public static class DataSetupHooks
     {
         [BeforeScenario]
-        public static void WriteTestNameToConsoleBefore(ScenarioContext context)
+        public static void ClearAnyHearings(TestContext context, HearingsEndpoints endpoints)
         {
-            Console.WriteLine($"Starting test : {context.ScenarioInfo.Title}");
+            ClearHearings(context, endpoints, context.GetIndividualUsers());
+            ClearHearings(context, endpoints, context.GetRepresentativeUsers());
         }
 
-        [AfterScenario]
-        public static void WriteTestNameToConsoleAfter(ScenarioContext context)
+        private static void ClearHearings(TestContext context, HearingsEndpoints endpoints, IEnumerable<UserAccount> users)
         {
-            Console.WriteLine($"Finished test: {context.ScenarioInfo.Title}");
+            foreach (var user in users)
+            {
+                context.Request = context.Get(endpoints.GetHearingsByUsername(user.Username));
+                context.Response = context.BookingsApiClient().Execute(context.Request);
+                var hearings =
+                    ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingDetailsResponse>>(context.Response
+                        .Content);
+                foreach (var hearing in hearings)
+                {
+                    context.Request = context.Delete(endpoints.RemoveHearing(hearing.Id));
+                    context.Response = context.BookingsApiClient().Execute(context.Request);
+                    context.Response.IsSuccessful.Should().BeTrue($"Hearing {hearing.Id} has been deleted");
+                }
+            }
         }
 
         [BeforeScenario]
@@ -62,7 +76,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         [AfterScenario]
         public static void RemoveHearing(TestContext context, HearingsEndpoints endpoints)
         {
-            if (context.NewHearingId == Guid.Empty || context.NewHearingId == null || context.HearingIsNotInBookingsDb) return;
+            if (context.NewHearingId == Guid.Empty || context.NewHearingId == null) return;
             context.Request = context.Delete(endpoints.RemoveHearing(context.NewHearingId));
             context.Response = context.BookingsApiClient().Execute(context.Request);
             context.Response.IsSuccessful.Should().BeTrue("New hearing has been deleted after the test");

@@ -129,7 +129,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }        
 
         [Then(@"the VHO can see a list of hearings including the new hearing")]
-        public void ThenTheVHOCanSeeAListOfHearingsIncludingTheNewHearing()
+        public void ThenTheVhoCanSeeAListOfHearingsIncludingTheNewHearing()
         {
             _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage._hearingWithCaseNumber(_context.Hearing.Cases.First().Number)).Displayed
                 .Should().BeTrue();

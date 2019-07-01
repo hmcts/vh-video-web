@@ -5,9 +5,14 @@
 
 @VIH-4195
 Scenario Outline: Video Hearings Officer views hearing status
-	Given the Video Hearings Officer user has progressed to the Admin Panel page
-	When the hearing status changes to <Status>
-	Then the Video Hearings Officer user should see a <Status> notification
+	Given I have a hearing and a conference in 2 minutes time
+	And I have another hearing and a conference
+	And the hearing status changes to <Status>
+	And the login page is open
+	When the Video Hearings Officer attempts to login with valid credentials
+	Then the user is on the Hearings List page
+	And the hearings should be in chronological order
+	And the Video Hearings Officer user should see a <Status> notification
 	Examples: 
 	| Status	  | 
 	| Not Started | 
@@ -18,6 +23,10 @@ Scenario Outline: Video Hearings Officer views hearing status
 
 @VIH-4195
 Scenario: Video Hearings Officer views closed hearings
-	Given the Video Hearings Officer user has progressed to the Admin Panel page
-	When the hearing status changes to Closed
-	Then the closedDate attribute should be populated
+	Given I have a hearing and a conference
+	And the hearing status changes to Closed
+	And the login page is open
+	When the Video Hearings Officer attempts to login with valid credentials
+	Then the user is on the Hearings List page
+	And the closedDate attribute should be populated
+	And the VHO can see a list of hearings including the new hearing
