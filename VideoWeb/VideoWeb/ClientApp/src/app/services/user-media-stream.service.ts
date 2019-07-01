@@ -95,10 +95,7 @@ export class UserMediaStreamService {
             return;
         }
 
-        stream.getAudioTracks().forEach((track) => {
-            track.stop();
-        });
-        stream.getVideoTracks().forEach((track) => {
+        stream.getTracks().forEach((track) => {
             track.stop();
         });
     }
