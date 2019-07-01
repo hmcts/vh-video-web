@@ -62,7 +62,7 @@ describe('HomeComponent', () => {
     expect(router.navigate).toHaveBeenCalledWith([PageUrls.ParticipantHearingList]);
   });
 
-  it('it should redirect to Signon-a-computer screen if on a mobile device', () => {
+  it('should redirect to Signon-a-computer screen if on a mobile device', () => {
     const profile = new UserProfileResponse({ role: UserRole.Representative });
     profileServiceSpy.getUserProfile.and.returnValue(of(profile));
     navigatorServiceSpy.isDeviceComputer.and.returnValue(false);

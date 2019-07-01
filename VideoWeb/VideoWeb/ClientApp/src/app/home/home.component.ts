@@ -15,7 +15,7 @@ export class HomeComponent implements OnInit {
   constructor(
     private router: Router,
     private profileService: ProfileService,
-    private errorService: ErrorService, 
+    private errorService: ErrorService,
     private navigatorService: NavigatorService
   ) {
   }
