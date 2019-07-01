@@ -30,7 +30,9 @@ describe('UserMediaService', () => {
     }));
 
     it('should update device list if empty', inject([UserMediaService], async (service: UserMediaService) => {
-        spyOn(service, 'updateAvailableDevicesList').and.returnValue(testData.getListOfDevices());
+        spyOn(service, 'updateAvailableDevicesList').and.callFake(() => {
+            service.availableDeviceList = testData.getListOfDevices();
+        });
         await service.checkDeviceListIsReady();
         console.log('waiting fot list of mics');
         expect(service.updateAvailableDevicesList).toHaveBeenCalled();
@@ -51,6 +53,9 @@ describe('UserMediaService', () => {
     }));
 
     it('should update the device list', inject([UserMediaService], async (service: UserMediaService) => {
+        spyOn(service, 'updateAvailableDevicesList').and.callFake(() => {
+            service.availableDeviceList = testData.getListOfDevices();
+        });
         await service.updateAvailableDevicesList();
         expect(service.availableDeviceList.length).toBeGreaterThan(0);
     }));
