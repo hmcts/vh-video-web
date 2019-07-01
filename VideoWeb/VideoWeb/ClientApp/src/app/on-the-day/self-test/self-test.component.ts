@@ -101,8 +101,6 @@ export class SelfTestComponent implements OnInit {
 
   setupSubscribers() {
     this.userMediaService.connectedDevices.subscribe(async (devices) => {
-      console.info('getting new list of devices');
-      console.info(devices);
       this.hasMultipleDevices = await this.userMediaService.hasMultipleDevices();
     });
   }
@@ -168,7 +166,9 @@ export class SelfTestComponent implements OnInit {
   }
 
   disconnect() {
-    this.pexipAPI.disconnect();
+    if (this.pexipAPI) {
+      this.pexipAPI.disconnect();
+    }
     this.incomingStream = null;
     this.outgoingStream = null;
     this.testComplete = true;
