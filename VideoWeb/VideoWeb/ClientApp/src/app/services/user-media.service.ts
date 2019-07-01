@@ -28,19 +28,16 @@ export class UserMediaService {
             || this._navigator.mozGetUserMedia || this._navigator.msGetUserMedia);
 
         this._navigator.mediaDevices.ondevicechange = async () => {
-            console.info('device change detected');
             await this.updateAvailableDevicesList();
         };
     }
 
     async getListOfVideoDevices(): Promise<UserMediaDevice[]> {
-        console.info(`getListOfVideoDevices`);
         await this.checkDeviceListIsReady();
         return this.availableDeviceList.filter(x => x.kind === 'videoinput');
     }
 
     async getListOfMicrophoneDevices(): Promise<UserMediaDevice[]> {
-        console.info(`getListOfMicrophoneDevices`);
         await this.checkDeviceListIsReady();
         return this.availableDeviceList.filter(x => x.kind === 'audioinput');
     }
