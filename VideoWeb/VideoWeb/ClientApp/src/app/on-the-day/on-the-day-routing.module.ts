@@ -28,7 +28,7 @@ export const routes: Routes = [
   { path: `${PageUrls.CameraAndMicrophone}/:conferenceId`, component: CameraAndMicrophoneComponent },
   { path: `${PageUrls.SwitchOnCameraMicrophone}/:conferenceId`, component: SwitchOnCameraMicrophoneComponent},
   { path: `${PageUrls.SelfTestVideo}/:conferenceId`, component: SelfTestComponent},
-  { path: `${PageUrls.EquipmentProblems}`, component: EquipmentProblemComponent },
+  { path: `${PageUrls.GetHelp}`, component: EquipmentProblemComponent },
 ];
 
 @NgModule({

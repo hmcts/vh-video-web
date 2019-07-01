@@ -55,7 +55,7 @@ describe('CameraCheckComponent', () => {
     component.onSubmit();
     expect(component.form.valid).toBeFalsy();
     expect(router.navigate).toHaveBeenCalledTimes(1);
-    expect(router.navigate).toHaveBeenCalledWith([PageUrls.EquipmentProblems]);
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.GetHelp]);
   });
 
   it('should validate form when "Yes" is selected', () => {

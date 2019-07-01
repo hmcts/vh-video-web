@@ -35,7 +35,7 @@ export class CameraCheckComponent implements OnInit {
     this.submitted = true;
     if (this.form.invalid) {
       if (this.cameraCheck.value === 'No') {
-        this.router.navigate([PageUrls.EquipmentProblems]);
+        this.router.navigate([PageUrls.GetHelp]);
       }
       return;
     }

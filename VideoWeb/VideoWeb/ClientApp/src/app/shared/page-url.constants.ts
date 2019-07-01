@@ -28,5 +28,5 @@ export let PageUrls = {
   ServiceError: 'service-error',
   NotFound: 'not-found',
   Unauthorised: 'unauthorised',
-  EquipmentProblems: 'equipment-problem'
+  GetHelp: 'get-help'
 };
