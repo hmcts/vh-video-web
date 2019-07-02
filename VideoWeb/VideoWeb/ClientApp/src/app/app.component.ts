@@ -22,7 +22,7 @@ export class AppComponent implements OnInit {
   }
 
   private initAuthentication() {
-    const clientSettings = this.configService.clientSettings;
+    const clientSettings = this.configService.getClientSettings();
     const config = {
       tenant: clientSettings.tenant_id,
       clientId: clientSettings.client_id,
