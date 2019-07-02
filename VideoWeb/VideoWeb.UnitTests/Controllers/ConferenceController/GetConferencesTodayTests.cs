@@ -110,15 +110,20 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var conferences = Builder<ConferenceSummaryResponse>.CreateListOfSize(10).All()
                 .With(x => x.Scheduled_date_time = DateTime.UtcNow.AddMinutes(-60))
                 .With(x => x.Scheduled_duration = 20)
-                .Random(4).With(x => x.Status = ConferenceState.Closed).Do((response, i) =>
+                .With(x => x.Status = ConferenceState.NotStarted)
+                .With(x => x.Closed_date_time = null)
+                .Random(4).Do((response, i) =>
                 {
+                    response.Status = ConferenceState.Closed;
                     response.Closed_date_time =
-                        i % 2 == 0 ? DateTime.UtcNow.AddMinutes(-40) : DateTime.UtcNow.AddMinutes(-10);
+                        i % 2 == 0 ? DateTime.UtcNow.AddMinutes(40) : DateTime.UtcNow.AddMinutes(10);
                 })
                 .Build().ToList();
 
-            var closedAndExpiredConferenceIds = conferences.Where(x =>
-                x.Status == ConferenceState.Closed && x.Closed_date_time > DateTime.UtcNow.AddMinutes(30))
+            var closedConferenceTimeLimit = DateTime.UtcNow.AddMinutes(30);
+            var expectedConferenceIds = conferences.Where(x =>
+                    x.Status != ConferenceState.Closed ||
+                    DateTime.Compare(x.Closed_date_time.Value, closedConferenceTimeLimit) < 0)
                 .Select(x => x.Id).ToList();
 
             
@@ -134,7 +139,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var conferencesForUser = (List<ConferenceForUserResponse>)typedResult.Value;
             conferencesForUser.Should().NotBeNullOrEmpty();
             var returnedIds = conferencesForUser.Select(x => x.Id).ToList();
-            returnedIds.Should().NotContain(closedAndExpiredConferenceIds);
+            returnedIds.Should().Contain(expectedConferenceIds);
         }
 
     }

@@ -105,7 +105,7 @@ namespace VideoWeb.Controllers
             // After a conference is closed, VH Officers can still administer conferences until this period of time
             const int postClosedVisibilityTime = 30;
             var endTime = conference.Closed_date_time.Value.AddMinutes(postClosedVisibilityTime);
-            return DateTime.UtcNow > endTime;
+            return DateTime.UtcNow < endTime;
         }
 
         /// <summary>
