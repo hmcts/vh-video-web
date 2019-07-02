@@ -109,7 +109,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             }
 
             caps.SetCapability("name", _scenario.Title);
-            caps.SetCapability("build", Environment.GetEnvironmentVariable("BUILD_BUILDNUMBER"));
+            caps.SetCapability("build", $"{Environment.GetEnvironmentVariable("Build_DefinitionName")} {Environment.GetEnvironmentVariable("RELEASE_RELEASENAME")}");
 #pragma warning restore 618
 
             // It can take quite a bit of time for some commands to execute remotely so this is higher than default
