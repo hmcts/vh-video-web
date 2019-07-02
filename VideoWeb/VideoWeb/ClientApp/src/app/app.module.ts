@@ -38,7 +38,7 @@ export function getSettings(configService: ConfigService) {
     WaitingSpaceModule,
     OnTheDayModule,
     AppRoutingModule,
-    DeviceDetectorModule,
+    DeviceDetectorModule.forRoot(),
   ],
   providers: [
     { provide: APP_INITIALIZER, useFactory: getSettings, deps: [ConfigService], multi: true },
