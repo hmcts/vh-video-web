@@ -63,6 +63,8 @@ describe('HomeComponent', () => {
   });
 
   it('should redirect to signon-a-computer screen if on a mobile device', () => {
+    const profile = new UserProfileResponse({ role: UserRole.Representative });
+    profileServiceSpy.getUserProfile.and.returnValue(of(profile));
     deviceTypeSpy.isDesktop.and.returnValue(false);
     deviceTypeSpy.isMobile.and.returnValue(true);
     fixture.detectChanges();
@@ -70,6 +72,8 @@ describe('HomeComponent', () => {
   });
 
   it('should redirect to signon-a-computer screen if on a tablet', () => {
+    const profile = new UserProfileResponse({ role: UserRole.Representative });
+    profileServiceSpy.getUserProfile.and.returnValue(of(profile));
     deviceTypeSpy.isDesktop.and.returnValue(false);
     deviceTypeSpy.isTablet.and.returnValue(true);
     fixture.detectChanges();

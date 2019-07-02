@@ -19,11 +19,12 @@ export class HomeComponent implements OnInit {
     private errorService: ErrorService,
     private deviceType: DeviceType
   ) {
-    this.isDesktop = deviceType.isDesktop();
+    this.isDesktop = this.deviceType.isDesktop();
   }
 
   ngOnInit() {
-    if (this.isDesktop) {
+    console.log(this.isDesktop);
+    if (this.deviceType.isDesktop()) {
       this.navigateToHearingList();
     } else {
       this.router.navigate([PageUrls.SignonAComputer]);
