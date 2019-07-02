@@ -23,7 +23,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.deviceType.isDesktop()) {
+    if (this.isDesktop) {
       this.navigateToHearingList();
     } else {
       this.router.navigate([PageUrls.SignonAComputer]);
