@@ -5,10 +5,17 @@
 <div id="participant-status-list">
   <div *ngFor="let participant of nonJugdeParticipants" class="govuk-grid-row">
     <div id="p-row-{{participant.id}}" class="govuk-grid-column-one-half">
-      <p class="govuk-body-s">{{participant.initialedName}}</p>
+      <div class="govuk-body-s tooltip-wrapper">
+        {{participant.initialedName}}
+        <div id="tooltip-{{participant.id}}" class="tooltip">
+          <app-participant-info-tooltip [participant]="participant"></app-participant-info-tooltip>
+        </div>
+      </div>
     </div>
+
     <div class="govuk-grid-column-one-half">
-      <p class="govuk-body-s govuk-!-font-weight-bold" [ngClass]="getParticipantStatusClass(participant)">{{participant.getStatusAsText()}}</p>
+      <p class="govuk-body-s govuk-!-font-weight-bold" [ngClass]="getParticipantStatusClass(participant)">
+        {{participant.getStatusAsText()}}</p>
     </div>
   </div>
 </div>
