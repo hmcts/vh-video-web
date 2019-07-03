@@ -24,7 +24,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   participant: ParticipantResponse;
 
   pexipAPI: any;
-  stream: any;
+  stream: MediaStream;
   connected: boolean;
 
   currentTime: Date;

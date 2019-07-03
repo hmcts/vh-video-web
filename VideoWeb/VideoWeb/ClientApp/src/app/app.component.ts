@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
-
 import { ConfigService } from './services/api/config.service';
 
 @Component({
