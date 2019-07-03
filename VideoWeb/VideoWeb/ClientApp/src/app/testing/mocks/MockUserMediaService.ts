@@ -1,6 +1,7 @@
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { MediaDeviceTestData } from './data/media-device-test-data';
+import { SessionStorage } from 'src/app/services/session-storage';
 
 export class MockUserMediaService extends UserMediaService {
 
@@ -23,6 +24,10 @@ export class MockUserMediaService extends UserMediaService {
     }
 
     async getPreferredCameraStream(): Promise<MediaStream> {
+        return null;
+    }
+
+    getCachedDeviceIfStillConnected(cache: SessionStorage<UserMediaDevice>): UserMediaDevice {
         return null;
     }
 }

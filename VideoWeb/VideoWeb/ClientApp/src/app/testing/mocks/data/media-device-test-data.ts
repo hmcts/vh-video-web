@@ -1,6 +1,25 @@
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 
 export class MediaDeviceTestData {
+    getListOfDevices() {
+        let testData: Array<UserMediaDevice> = [];
+        testData = testData.concat(this.getListOfCameras());
+        testData = testData.concat(this.getListOfMicrophones());
+        const defaultDevice = new UserMediaDevice('camera1', 'default', 'videoinput', 'group1');
+        const soundOutput = new UserMediaDevice('audiooutput1', 'audiooutput1', 'audiooutput', 'group1');
+
+        testData.push(defaultDevice);
+        testData.push(soundOutput);
+        return testData;
+    }
+
+    getListOfSingleCameraAndMicDevices() {
+        const testData: Array<UserMediaDevice> = [];
+        testData.concat(this.getSingleCamera());
+        testData.concat(this.getSingleMicrophone());
+        return testData;
+    }
+
     getSingleCamera(): UserMediaDevice[] {
         const testData: UserMediaDevice[] = [];
         const device = new UserMediaDevice('camera1', 'camId1', 'videoinput', 'group1');
