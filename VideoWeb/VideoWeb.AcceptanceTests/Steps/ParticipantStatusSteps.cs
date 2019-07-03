@@ -27,6 +27,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly ScenarioContext _scenarioContext;
         private readonly AdminPanelPage _adminPanelPage;
         private readonly HearingListPage _hearingListPage;
+        private readonly ConferenceEndpoints _conferenceEndpoints = new VideoApiUriFactory().ConferenceEndpoints;
         private readonly CallbackEndpoints _callbackEndpoints = new VideoApiUriFactory().CallbackEndpoints;
         private const string ParticipantsKey = "participants";
 
@@ -114,6 +115,20 @@ namespace VideoWeb.AcceptanceTests.Steps
             CheckParticipantStatus(participantStatus, participants);
 
             _scenarioContext.Add(ParticipantsKey, participants);
+        }
+
+        [Then(@"the participant status will be updated to Joining")]
+        public void ThenTheParticipantStatusWillBeUpdatedToJoining()
+        {
+            _context.Request =
+                _context.Get(_conferenceEndpoints.GetConferenceDetailsById((Guid) _context.NewConferenceId));
+            _context.Response = _context.VideoApiClient().Execute(_context.Request);
+            _context.Response.IsSuccessful.Should().BeTrue();
+            var conference =
+                ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_context.Response
+                    .Content);
+            conference.Participants.Find(x => x.Username.Equals(_context.CurrentUser.Displayname)).Current_status
+                .Participant_state.Should().Be(ParticipantState.Joining);
         }
 
         [Then(@"the participants statuses should update to (.*)")]
