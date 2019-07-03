@@ -42,6 +42,13 @@ export class SelectMediaDevicesComponent implements OnInit {
     this.availableCameraDevices = await this.userMediaService.getListOfVideoDevices();
     this.availableMicrophoneDevices = await this.userMediaService.getListOfMicrophoneDevices();
 
+    this.userMediaService.connectedDevices.subscribe(async () => {
+      this.availableCameraDevices = await this.userMediaService.getListOfVideoDevices();
+      this.availableMicrophoneDevices = await this.userMediaService.getListOfMicrophoneDevices();
+
+      this.selectedMediaDevicesForm = this.initNewDeviceSelectionForm();
+    });
+
     this.preferredCameraStream = await this.userMediaStreamService.
       getStreamForCam(this.userMediaService.getPreferredCamera());
     this.preferredMicrophoneStream = await this.userMediaStreamService
@@ -56,11 +63,11 @@ export class SelectMediaDevicesComponent implements OnInit {
   private initNewDeviceSelectionForm(): FormGroup {
     let cam = this.availableCameraDevices[0];
     if (this.userMediaService.getPreferredCamera()) {
-      cam = this.availableCameraDevices.find(x => x.deviceId === this.userMediaService.getPreferredCamera().deviceId);
+      cam = this.availableCameraDevices.find(x => x.label === this.userMediaService.getPreferredCamera().label);
     }
     let mic = this.availableMicrophoneDevices[0];
     if (this.userMediaService.getPreferredMicrophone()) {
-      mic = this.availableMicrophoneDevices.find(x => x.deviceId === this.userMediaService.getPreferredMicrophone().deviceId);
+      mic = this.availableMicrophoneDevices.find(x => x.label === this.userMediaService.getPreferredMicrophone().label);
     }
     return this.formBuilder.group({
       camera: [cam, Validators.required],
