@@ -28,7 +28,8 @@ Scenario: Representative see and hear video
 Scenario: Individual does not confirm the equipment is working
 	Given the Individual user has progressed to the See and Hear Video page
 	When the user selects the No radiobutton
-	And the user clicks the Check my equipment again button
+	Then an error appears prompting them to try the camera again
+	When the user clicks the Check my equipment again button
 	Then the user is on the Equipment Check page
 	When the Individual user navigates from the Equipment Check page back to the See and Hear Video page
 	And the user selects the No radiobutton
@@ -40,7 +41,8 @@ Scenario: Individual does not confirm the equipment is working
 Scenario: Representative does not confirm the equipment is working
 	Given the Representative user has progressed to the See and Hear Video page
 	When the user selects the No radiobutton
-	And the user clicks the Check my equipment again button
+	Then an error appears prompting them to try the camera again
+	When the user clicks the Check my equipment again button
 	Then the user is on the Equipment Check page
 	When the Representative user navigates from the Equipment Check page back to the See and Hear Video page
 	And the user selects the No radiobutton

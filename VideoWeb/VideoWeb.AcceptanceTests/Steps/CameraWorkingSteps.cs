@@ -19,5 +19,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserContext = browserContext;
             _cameraWorkingPage = cameraWorkingPage;
         }
+
+        [Then(@"an error appears prompting them to try the camera again")]
+        public void ThenAnErrorAppearsPromptingThemToTryAgain()
+        {
+            _browserContext.NgDriver.WaitUntilElementVisible(_cameraWorkingPage.WarningMessage).Displayed
+                .Should().BeTrue();
+            _browserContext.NgDriver.WaitUntilElementVisible(_cameraWorkingPage.WarningMessage).Text
+                .Should().Contain(CameraWorkingPage.WarningMessageText);
+        }
     }
 }
