@@ -1,30 +1,35 @@
-<div *ngIf="!userPrompted" class="govuk-grid-row">
-  <h1 class="govuk-heading-l">Use your camera and microphone</h1>
-  <p class="govuk-body govuk-!-margin-top-9 govuk-!-margin-bottom-9">Switch on your camera and microphone to watch the
-    video.</p>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+
+    <div *ngIf="!userPrompted">
+      <h1 class="govuk-heading-l">Use your camera and microphone</h1>
+      <p class="govuk-body govuk-!-margin-top-9 govuk-!-margin-bottom-9">
+        Switch on your camera and microphone to watch the video.</p>
+    </div>
+
+    <div *ngIf="userPrompted && mediaAccepted">
+      <h1 class="govuk-heading-l">Your camera and microphone are switched on</h1>
+      <p class="govuk-body govuk-!-margin-top-9 govuk-!-margin-bottom-9">
+        Your camera and microphone are switched on. You can now continue to the video.</p>
+    </div>
+
+    <div *ngIf="userPrompted && !mediaAccepted">
+      <h1 class="govuk-heading-l">Your camera and microphone are blocked</h1>
+      <p class="govuk-body govuk-!-margin-top-9">
+        We're sorry, you can't take part in the hearing without using your camera and microphone.
+      </p>
+      <p class="govuk-body govuk-!-margin-bottom-9">
+        Stay close to your phone and we'll call you within 5 minutes.
+      </p>
+    </div>
+
+    <input *ngIf="!userPrompted" type="button" id="switch-on-btn" class="govuk-button govuk-!-margin-bottom-9"
+      role="button" value="Switch on" (click)="requestMedia()" alt="Request camera and microphone" />
+
+    <input *ngIf="userPrompted && mediaAccepted" type="button" id="watch-video-btn"
+      class="govuk-button govuk-!-margin-bottom-9" role="button" value="Watch video" (click)="goVideoTest()"
+      alt="Request camera and microphone" />
+
+    <app-contact-us-folding></app-contact-us-folding>
+  </div>
 </div>
-
-<div *ngIf="userPrompted && mediaAccepted" class="govuk-grid-row">
-  <h1 class="govuk-heading-l">Your camera and microphone are switched on</h1>
-  <p class="govuk-body govuk-!-margin-top-9 govuk-!-margin-bottom-9">Your camera and microphone are switched on. You can
-    now continue to the video.</p>
-</div>
-
-<div *ngIf="userPrompted && !mediaAccepted" class="govuk-grid-row">
-  <h1 class="govuk-heading-l">Your camera and microphone are blocked</h1>
-  <p class="govuk-body govuk-!-margin-top-9">
-    We're sorry, you can't take part in the hearing without using your camera and microphone.
-  </p>
-  <p class="govuk-body govuk-!-margin-bottom-9">
-    Stay close to your phone and we'll call you within 5 minutes.
-  </p>
-</div>
-
-<input *ngIf="!userPrompted" type="button" id="switch-on-btn" class="govuk-button govuk-!-margin-bottom-9" role="button"
-  value="Switch on" (click)="requestMedia()" alt="Request camera and microphone" />
-  
-<input *ngIf="userPrompted && mediaAccepted" type="button" id="watch-video-btn"
-  class="govuk-button govuk-!-margin-bottom-9" role="button" value="Watch video" (click)="goVideoTest()"
-  alt="Request camera and microphone" />
-
-<app-contact-us-folding></app-contact-us-folding>
