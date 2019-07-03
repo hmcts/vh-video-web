@@ -14,6 +14,7 @@ import { VideoCheckComponent } from './video-check/video-check.component';
 import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone/switch-on-camera-microphone.component';
 import { PageUrls } from '../shared/page-url.constants';
 import { SelfTestComponent } from './self-test/self-test.component';
+import { EquipmentProblemComponent } from '../shared/equipment-problem/equipment-problem.component';
 import { IntroductionComponent } from './introduction/introduction.component';
 
 export const routes: Routes = [
@@ -28,6 +29,7 @@ export const routes: Routes = [
   { path: `${PageUrls.CameraAndMicrophone}/:conferenceId`, component: CameraAndMicrophoneComponent },
   { path: `${PageUrls.SwitchOnCameraMicrophone}/:conferenceId`, component: SwitchOnCameraMicrophoneComponent },
   { path: `${PageUrls.SelfTestVideo}/:conferenceId`, component: SelfTestComponent },
+  { path: `${PageUrls.GetHelp}`, component: EquipmentProblemComponent },
   { path: `${PageUrls.Introduction}/:conferenceId`, component: IntroductionComponent },
 ];
 

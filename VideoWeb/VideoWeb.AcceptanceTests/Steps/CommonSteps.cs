@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
+using System.Timers;
 using FluentAssertions;
+using NUnit.Framework;
 using OpenQA.Selenium.Support.Extensions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Journeys;
 using VideoWeb.AcceptanceTests.Pages;
+using TestContext = VideoWeb.AcceptanceTests.Contexts.TestContext;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -81,6 +85,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             Progress(role, pageName, 0, false);
         }
 
+        [When(@"the (.*) user navigates from the Equipment Check page back to the (.*) page")]
+        public void WhenTheUserNavigatesBackToTheCameraWorkingPage(string role, string pageName)
+        {
+            _currentPage = Page.EquipmentCheck;
+            Progress(role, pageName, 0, false);
+        }
+
         private void Progress(string role, string pageName, int minutes, bool createHearing = true)
         {
             if (!pageName.Equals("Hearings Page") && createHearing)
@@ -89,9 +100,19 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _dataSetupSteps.GivenIHaveAConference();
             }
 
-            while (_currentPage.Name != pageName)
+            var timer = new Stopwatch();
+            timer.Start();
+
+            while (_currentPage.Name != pageName && timer.Elapsed <= TimeSpan.FromSeconds(30))
             {
                 ProgressToNextPage(role, _currentPage);
+            }
+
+            timer.Stop();
+
+            if (timer.Elapsed > TimeSpan.FromSeconds(30))
+            {
+                throw new TimeoutException("The elapsed time exceeded the allowed limit to reach the page");
             }
         }
 
@@ -277,6 +298,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 case "Hearing Room": _commonPages.PageUrl(Page.HearingRoom); break;
                 case "Not Found": _commonPages.PageUrl(Page.NotFound); break;
                 case "Unauthorised": _commonPages.PageUrl(Page.Unauthorised); break;
+                case "Help": _commonPages.PageUrl(Page.Help); break;
                 case "Admin Panel": _commonPages.PageUrl(Page.AdminPanel); break;
                 default: throw new ArgumentOutOfRangeException(page);
             }
