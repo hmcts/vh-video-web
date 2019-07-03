@@ -84,7 +84,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   announceHearingIsAboutToStart(): void {
     this.hearingAlertSound.play()
       .catch(function (reason) {
-        console.log(`caught error ${reason}`);
+        console.error(`caught error ${reason}`);
       });
     this.hearingStartingAnnounced = true;
 

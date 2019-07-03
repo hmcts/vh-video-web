@@ -5,9 +5,15 @@
   <ng-snotify></ng-snotify>
 
   <div class="govuk-width-container" id="master-container">
-    <router-outlet class="govuk-main-wrapper vh-content" id="main-content" role="main" [ngClass]="!loggedIn
+    <!-- <router-outlet class="govuk-main-wrapper vh-content" id="main-content" role="main" [ngClass]="!loggedIn
         ? 'pad-unactivated-router'
-        : ''"></router-outlet>
+        : ''"></router-outlet> -->
+
+    <main class="govuk-main-wrapper" id="main-content" role="main"
+      [ngClass]="!loggedIn ? 'pad-unactivated-router' : ''">
+
+      <router-outlet></router-outlet>
+    </main>
   </div>
 
   <app-footer></app-footer>

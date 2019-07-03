@@ -35,16 +35,15 @@ export class VideoCheckComponent implements OnInit {
   onSubmit() {
     this.submitted = true;
     if (this.form.invalid) {
+      if (this.videoCheck.value === 'No') {
+        this.router.navigate([PageUrls.GetHelp]);
+      }
       return;
     }
     this.router.navigate([PageUrls.HearingRules, this.conferenceId]);
   }
 
   checkEquipmentAgain() {
-    this.submitted = true;
-    if (this.form.pristine || this.videoCheck.valid) {
-      return;
-    }
     this.router.navigate([PageUrls.EquipmentCheck, this.conferenceId]);
   }
 

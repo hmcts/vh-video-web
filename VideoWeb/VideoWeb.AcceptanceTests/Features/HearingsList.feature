@@ -83,7 +83,7 @@ Scenario: Video Hearings Officer has no hearings
 	Then the user is on the Hearings List page
 	And a warning message appears indicating the user has no hearings scheduled
 
-@VIH-4156 @VIH-4507 @smoketest
+@VIH-4156 @VIH-4507
 Scenario: Video Hearings Officer has 1 or more hearings
 	Given I have a hearing and a conference
 	And the login page is open
