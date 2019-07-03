@@ -40,12 +40,11 @@
         </fieldset>
       </div>
       <div class="govuk-!-margin-top-6">
-        <input type="button" id="continue-btn" class="govuk-button govuk-!-margin-right-9" role="button"
+        <input type="button" id="continue-btn" class="govuk-button govuk-!-margin-right-2" role="button"
           value="Continue" (click)="onSubmit()" alt="video Check" />
 
         <input type="button" id="check-equipment-btn" class="govuk-button grey-btn" role="button"
-          [ngClass]="!form.pristine && videoCheck.valid ?'govuk-button--disabled':''" value="Check my equipment again"
-          (click)="checkEquipmentAgain()" alt="video Check" />
+          value="Check my equipment again" (click)="checkEquipmentAgain()" alt="video Check" />
       </div>
     </form>
 

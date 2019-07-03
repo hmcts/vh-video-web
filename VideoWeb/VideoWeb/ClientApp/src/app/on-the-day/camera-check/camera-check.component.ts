@@ -43,10 +43,6 @@ export class CameraCheckComponent implements OnInit {
   }
 
   checkEquipmentAgain() {
-    this.submitted = true;
-    if (this.form.pristine || this.cameraCheck.valid) {
-      return;
-    }
     this.router.navigate([PageUrls.EquipmentCheck, this.conferenceId]);
   }
 }
