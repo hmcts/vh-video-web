@@ -17,6 +17,7 @@
         HearingRoom = 12,
         NotInParticipantJourney = -99,
         NotFound = -1,
-        Unauthorised = -2
+        Unauthorised = -2,
+        Help = -3
     }
 }

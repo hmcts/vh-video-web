@@ -28,6 +28,5 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserContext.NgDriver.WaitUntilElementVisible(_cameraWorkingPage.WarningMessage).Text
                 .Should().Contain(CameraWorkingPage.WarningMessageText);
         }
-
     }
 }
