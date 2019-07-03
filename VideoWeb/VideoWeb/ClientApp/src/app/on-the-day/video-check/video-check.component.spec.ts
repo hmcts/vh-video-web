@@ -75,6 +75,6 @@ describe('VideoCheckComponent', () => {
     component.form.markAsDirty();
     component.checkEquipmentAgain();
     expect(component.form.valid).toBeTruthy();
-    expect(router.navigate).toHaveBeenCalledTimes(0);
+    expect(router.navigate).toHaveBeenCalledTimes(1);
   });
 });
