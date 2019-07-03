@@ -9,6 +9,8 @@ export const LOG_ADAPTER = new InjectionToken<LogAdapter>('LogAdapter');
 })
 export class LoggerService implements Logger {
 
+  constructor(@Inject(LOG_ADAPTER) private adapters: LogAdapter[]) { }
+
   debug(message: string): void {
     this.adapters.forEach(logger => logger.debug(message));
   }
@@ -16,8 +18,6 @@ export class LoggerService implements Logger {
   info(message: string): void {
     this.adapters.forEach(logger => logger.info(message));
   }
-
-  constructor(@Inject(LOG_ADAPTER) private adapters: LogAdapter[]) { }
 
   error(message: string, err: Error, properties?: any) {
     this.adapters.forEach(logger => logger.trackException(message, err, properties));
