@@ -8,8 +8,10 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { IntroductionComponent } from './introduction.component';
+import { AdalService } from 'adal-angular4';
 
 describe('IntroductionComponent', () => {
   let component: IntroductionComponent;
@@ -31,6 +33,7 @@ describe('IntroductionComponent', () => {
             }
           },
         },
+        { provide: AdalService, useClass: MockAdalService },
         { provide: VideoWebService, useClass: MockVideoWebService }
       ]
     });
