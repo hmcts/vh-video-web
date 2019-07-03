@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { ProfileService } from '../services/api/profile.service';
 import { UserProfileResponse, UserRole } from '../services/clients/api-client';
 import { map, catchError } from 'rxjs/operators';
+import { Logger } from '../services/logging/logger-base';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +13,8 @@ export class JudgeGuard implements CanActivate {
 
   constructor(
     private userProfileService: ProfileService,
-    private router: Router) {
-  }
+    private router: Router,
+    private logger: Logger) { }
 
   canActivate(
     next: ActivatedRouteSnapshot,
@@ -28,8 +29,7 @@ export class JudgeGuard implements CanActivate {
         }
       }),
       catchError((err) => {
-        console.error(`Could not get user identity.`);
-        console.error(err);
+        this.logger.error(`Could not get user identity.`, err);
         this.router.navigate(['/logout']);
         return of(false);
       })

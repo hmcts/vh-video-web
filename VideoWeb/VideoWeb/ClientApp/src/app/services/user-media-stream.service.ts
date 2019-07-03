@@ -1,6 +1,7 @@
 import { Injectable, } from '@angular/core';
 import 'webrtc-adapter';
 import { UserMediaDevice } from '../shared/models/user-media-device';
+import { Logger } from './logging/logger-base';
 
 @Injectable({
     providedIn: 'root',
@@ -16,7 +17,7 @@ export class UserMediaStreamService {
 
     private requestStream: MediaStream;
 
-    constructor() {
+    constructor(private logger: Logger) {
         this._navigator.getUserMedia = (this._navigator.getUserMedia || this._navigator.webkitGetUserMedia
             || this._navigator.mozGetUserMedia || this._navigator.msGetUserMedia);
     }
@@ -31,7 +32,7 @@ export class UserMediaStreamService {
             this.stopRequestStream();
             return true;
         } catch (exception) {
-            console.error(`could not get cam and mic access because ${exception}`);
+            this.logger.error('could not get cam and mic access', exception);
             return false;
         }
     }
@@ -51,26 +52,22 @@ export class UserMediaStreamService {
 
     async getStreamForMic(device: UserMediaDevice): Promise<MediaStream> {
         if (device) {
-            console.log(`using preferred mic ${device.label}`);
             const stream = await this._navigator.mediaDevices.getUserMedia(
                 { audio: { deviceId: { exact: device.deviceId } } }
             );
             return stream;
         } else {
-            console.log(`using default mic`);
             return this.getDefaultMicStream();
         }
     }
 
     async getStreamForCam(device: UserMediaDevice): Promise<MediaStream> {
         if (device) {
-            console.log(`using preferred cam ${device.label}`);
             const stream = await this._navigator.mediaDevices.getUserMedia(
                 { video: { deviceId: { exact: device.deviceId } } }
             );
             return stream;
         } else {
-            console.log(`using default mic`);
             return this.getDefaultCamStream();
         }
     }

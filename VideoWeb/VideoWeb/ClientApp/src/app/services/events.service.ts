@@ -8,6 +8,7 @@ import { ConsultationMessage } from './models/consultation-message';
 import { ConferenceStatusMessage } from './models/conference-status-message';
 import { HelpMessage } from './models/help-message';
 import { ParticipantStatusMessage } from './models/participant-status-message';
+import { Logger } from './logging/logger-base';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,8 @@ export class EventsService {
 
   constructor(
     private adalService: AdalService,
-    private configService: ConfigService) {
+    private configService: ConfigService,
+    private logger: Logger) {
     this.connectionStarted = false;
     this.eventServiceBaseUri = this.configService.clientSettings.video_api_url;
     this.connection = new signalR.HubConnectionBuilder()
@@ -44,13 +46,13 @@ export class EventsService {
         })
         .catch(err => {
           this.attemptingConnection = false;
-          console.error(err);
+          this.logger.error('Failed to connect to event hub', err);
         });
     }
   }
 
   stop() {
-    this.connection.stop().catch(err => console.error(err));
+    this.connection.stop().catch(err => this.logger.error('Failed to stop connection to event hub', err));
   }
 
   getParticipantStatusMessage(): Observable<ParticipantStatusMessage> {
