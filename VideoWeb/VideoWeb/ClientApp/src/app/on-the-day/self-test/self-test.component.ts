@@ -49,6 +49,7 @@ export class SelfTestComponent implements OnInit {
   async ngOnInit() {
     this.displayFeed = false;
     this.displayDeviceChangeModal = false;
+    this.setupSubscribers();
     this.getConference();
   }
 
@@ -96,6 +97,12 @@ export class SelfTestComponent implements OnInit {
     this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
     await this.updatePexipAudioVideoSource();
     this.call();
+  }
+
+  setupSubscribers() {
+    this.userMediaService.connectedDevices.subscribe(async (devices) => {
+      this.hasMultipleDevices = await this.userMediaService.hasMultipleDevices();
+    });
   }
 
   async updatePexipAudioVideoSource() {
@@ -159,7 +166,9 @@ export class SelfTestComponent implements OnInit {
   }
 
   disconnect() {
-    this.pexipAPI.disconnect();
+    if (this.pexipAPI) {
+      this.pexipAPI.disconnect();
+    }
     this.incomingStream = null;
     this.outgoingStream = null;
     this.testComplete = true;

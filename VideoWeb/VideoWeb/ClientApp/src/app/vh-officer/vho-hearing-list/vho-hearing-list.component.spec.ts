@@ -43,10 +43,10 @@ describe('VhoHearingListComponent', () => {
     expect(component.getConferenceStatusText(conference)).toBe('Delayed');
   });
 
-  it('should get `Ready` conference status text', () => {
+  it('should get `Not Started` conference status text', () => {
     const conference = new ConferenceTestData().getConferenceNow();
     conference.status = ConferenceStatus.NotStarted;
-    expect(component.getConferenceStatusText(conference)).toBe('Ready');
+    expect(component.getConferenceStatusText(conference)).toBe('Not Started');
   });
 
   it('should get `Suspended` conference status text', () => {
