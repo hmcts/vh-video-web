@@ -3,8 +3,7 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
 import { Router, ActivatedRoute } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
-  UpdateParticipantStatusEventRequest, ConferenceResponse,
-  ParticipantResponse
+  UpdateParticipantStatusEventRequest, ConferenceResponse
 } from 'src/app/services/clients/api-client';
 import { AdalService } from 'adal-angular4';
 
@@ -32,9 +31,10 @@ export class IntroductionComponent implements OnInit {
   getConference() {
     this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
     this.videoWebService.getConferenceById(this.conferenceId)
-      .subscribe((conference) => this.conference = conference);
-
-    this.postParticipantJoiningStatus();
+      .subscribe((conference) => {
+        this.conference = conference;
+        this.postParticipantJoiningStatus();
+      });
   }
 
   goToEquipmentCheck() {
@@ -44,7 +44,7 @@ export class IntroductionComponent implements OnInit {
   postParticipantJoiningStatus() {
     const participant = this.conference.participants.
       find(x => x.username.toLocaleLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
-
+    console.log(participant.id);
     this.videoWebService.raiseParticipantEvent(this.conference.id,
       new UpdateParticipantStatusEventRequest({ participant_id: participant.id.toString() })).subscribe(x => { },
         (error) => {
