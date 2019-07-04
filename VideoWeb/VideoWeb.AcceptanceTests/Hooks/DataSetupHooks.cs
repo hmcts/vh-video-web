@@ -37,7 +37,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             {
                 context.Request = context.Get(endpoints.GetConferenceDetailsByUsername(user.Username));
                 context.Response = context.VideoApiClient().Execute(context.Request);
-                if (context.Response.Content.Equals("[]")) continue;
+                if (context.Response.Content.Equals("[]") || context.Response.IsSuccessful.Equals(false)) continue;
                 var conferences =
                     ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ConferenceDetailsResponse>>(context
                         .Response
