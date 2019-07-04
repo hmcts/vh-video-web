@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using RestSharp.Extensions;
 using TechTalk.SpecFlow;
@@ -38,7 +39,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             {
                 context.Request = context.Get(endpoints.GetConferenceDetailsByUsername(user.Username));
                 context.Response = context.VideoApiClient().Execute(context.Request);
-                if (!context.Response.Content.HasValue()) continue;
+                if (context.Response.Content.Equals("[]")) continue;
                 var conferences =
                     ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ConferenceDetailsResponse>>(context
                         .Response
