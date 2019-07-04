@@ -3,7 +3,14 @@
 </div>
 
 <div *ngIf="!loadingData && hasHearings()" class="govuk-grid-row">
-    <h1 class="govuk-heading-xl">Your video hearings</h1>
+    <h1 class="govuk-heading-xl">Video hearings for {{ courtName }}</h1>
+    <div class="govuk-!-margin-top-4">
+      <input type="button" id="check-equipment-btn" class="govuk-button" role="button" value="Check equipment"
+        (click)="goToEquipmentCheck()" alt="Check equipment" />
+    </div>
+    <div>
+      <p class="govuk-caption-xl">{{ today | date:'fullDate' }}</p>
+    </div>
     <app-judge-hearing-table [conferences]="conferences"></app-judge-hearing-table>
 </div>
 

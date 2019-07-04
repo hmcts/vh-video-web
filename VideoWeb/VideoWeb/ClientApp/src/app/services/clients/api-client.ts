@@ -911,7 +911,9 @@ export enum ConferenceStatus {
 export class ParticipantForUserResponse implements IParticipantForUserResponse {
     username?: string | undefined;
     display_name?: string | undefined;
+    role?: UserRole | undefined;
     status?: ParticipantStatus | undefined;
+    representee?: string | undefined;
 
     constructor(data?: IParticipantForUserResponse) {
         if (data) {
@@ -926,7 +928,9 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
         if (data) {
             this.username = data["username"];
             this.display_name = data["display_name"];
+            this.role = data["role"];
             this.status = data["status"];
+            this.representee = data["representee"];
         }
     }
 
@@ -941,7 +945,9 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
         data = typeof data === 'object' ? data : {};
         data["username"] = this.username;
         data["display_name"] = this.display_name;
+        data["role"] = this.role;
         data["status"] = this.status;
+        data["representee"] = this.representee;
         return data; 
     }
 }
@@ -949,7 +955,19 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
 export interface IParticipantForUserResponse {
     username?: string | undefined;
     display_name?: string | undefined;
+    role?: UserRole | undefined;
     status?: ParticipantStatus | undefined;
+    representee?: string | undefined;
+}
+
+export enum UserRole {
+    None = "None", 
+    CaseAdmin = "CaseAdmin", 
+    VideoHearingsOfficer = "VideoHearingsOfficer", 
+    HearingFacilitationSupport = "HearingFacilitationSupport", 
+    Judge = "Judge", 
+    Individual = "Individual", 
+    Representative = "Representative", 
 }
 
 export enum ParticipantStatus {
@@ -1189,16 +1207,6 @@ export interface IParticipantResponse {
     tiled_display_name?: string | undefined;
     case_type_group?: string | undefined;
     representee?: string | undefined;
-}
-
-export enum UserRole {
-    None = "None", 
-    CaseAdmin = "CaseAdmin", 
-    VideoHearingsOfficer = "VideoHearingsOfficer", 
-    HearingFacilitationSupport = "HearingFacilitationSupport", 
-    Judge = "Judge", 
-    Individual = "Individual", 
-    Representative = "Representative", 
 }
 
 export class ClientSettingsResponse implements IClientSettingsResponse {

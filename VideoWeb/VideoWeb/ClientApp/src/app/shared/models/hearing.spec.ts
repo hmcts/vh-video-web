@@ -6,7 +6,7 @@ describe('Hearing', () => {
   it('should return start time', () => {
     const conference = new ConferenceTestData().getConferenceNow();
     const hearing = new Hearing(conference);
-    const endTime = hearing.getScheduledStartTime();
+    const endTime = hearing.scheduledStartTime;
     expect(endTime.getTime()).toBe(hearing.getConference().scheduled_date_time.getTime());
   });
 
@@ -17,10 +17,29 @@ describe('Hearing', () => {
     expect(participants).toBe(conference.participants);
   });
 
+  it('should retrieve judge', () => {
+    const conference = new ConferenceTestData().getConferenceNow();
+    const hearing = new Hearing(conference);
+    console.log(conference);
+    expect(hearing.judge).toBeDefined();
+  });
+
+  it('should return case type', () => {
+    const conference = new ConferenceTestData().getConferenceNow();
+    const hearing = new Hearing(conference);
+    expect(hearing.caseType).toBe(conference.case_type);
+  });
+
+  it('should return status', () => {
+    const conference = new ConferenceTestData().getConferenceNow();
+    const hearing = new Hearing(conference);
+    expect(hearing.status).toBe(conference.status);
+  });
+
   it('should return end time', () => {
     const conference = new ConferenceTestData().getConferenceNow();
     const hearing = new Hearing(conference);
-    const endTime = hearing.getScheduledEndTime();
+    const endTime = hearing.scheduledEndTime;
     expect(endTime.getTime()).toBeGreaterThan(hearing.getConference().scheduled_date_time.getTime());
   });
 
@@ -165,5 +184,17 @@ describe('Hearing', () => {
     const hearing = new Hearing(conference);
     const result = hearing.getDurationAsText();
     expect(result).toBe('25 minutes');
+  });
+
+  it('should return false when current is more 30 minutes from start time', () => {
+    const conference = new ConferenceTestData().getConferenceFuture();
+    const hearing = new Hearing(conference);
+    expect(hearing.isReadyToStart()).toBeFalsy();
+  });
+
+  it('should return true when current is less than 30 minutes from start time', () => {
+    const conference = new ConferenceTestData().getConferencePast();
+    const hearing = new Hearing(conference);
+    expect(hearing.isReadyToStart()).toBeTruthy();
   });
 });

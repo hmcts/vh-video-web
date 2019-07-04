@@ -14,16 +14,16 @@
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-xl">Your hearing {{ getConferenceStatusText() }}</h1>
 
-    <h2 class="govuk-heading-m">{{hearing.getConference().case_name}}</h2>
+    <h2 class="govuk-heading-m">{{hearing.caseName}}</h2>
 
-    <h3 class="govuk-heading-m">Case number: {{hearing.getConference().case_number}}</h3>
+    <h3 class="govuk-heading-m">Case number: {{hearing.caseNumber}}</h3>
 
     <div class="govuk-!-margin-bottom-9">
       <span class="govuk-body">
         <p class="govuk-!-margin-0" aria-label="date of hearing, scheduled start time and scheduled end time">
-          {{ hearing.getScheduledStartTime() | date: 'EEEE dd MMMM	yyyy' }},
-          <span class="govuk-!-font-weight-bold">{{ hearing.getScheduledStartTime() | date: 'HH:mm a' }} to
-            {{ hearing.getScheduledEndTime() | date: 'HH:mm a' }}</span>
+          {{ hearing.scheduledStartTime | date: 'EEEE dd MMMM	yyyy' }},
+          <span class="govuk-!-font-weight-bold">{{ hearing.scheduledStartTime | date: 'HH:mm a' }} to
+            {{ hearing.scheduledEndTime | date: 'HH:mm a' }}</span>
         </p>
       </span>
     </div>
