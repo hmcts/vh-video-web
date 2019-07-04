@@ -169,7 +169,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var firstParticipantLink = _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.ParticipantName(hearingParticipant.Last_name));
             firstParticipantLink.Displayed.Should().BeTrue();
 
-            var action = new Actions(_browserContext.NgDriver.WrappedDriver);
+            var action = new OpenQA.Selenium.Interactions.Actions(_browserContext.NgDriver.WrappedDriver);
             action.MoveToElement(firstParticipantLink).Perform();
 
             var conferenceParticipant = _context.Conference.Participants.Find(x => x.Name.Contains(user));

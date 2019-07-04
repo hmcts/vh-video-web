@@ -12,7 +12,21 @@ namespace VideoWeb.AcceptanceTests.Actions
                 .WithConferenceId(context.NewConferenceId)
                 .WithParticipantId(participantId)
                 .WithEventType(EventType.Transfer)
+                .FromRoomType(RoomType.WaitingRoom)
                 .ToRoomType(RoomType.HearingRoom)
+                .Build();
+
+            new ExecuteEventRequestBuilder()
+                .WithContext(context)
+                .WithRequest(request)
+                .Execute();
+
+            request = new CreateEventRequestBuilder()
+                .WithConferenceId(context.NewConferenceId)
+                .WithParticipantId(participantId)
+                .WithEventType(EventType.Joined)
+                .FromRoomType(null)
+                .ToRoomType(null)
                 .Build();
 
             new ExecuteEventRequestBuilder()

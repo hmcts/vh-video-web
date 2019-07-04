@@ -24,13 +24,13 @@ namespace VideoWeb.AcceptanceTests.Builders
             return this;
         }
 
-        public CreateEventRequestBuilder FromRoomType(RoomType roomType)
+        public CreateEventRequestBuilder FromRoomType(RoomType? roomType)
         {
             _request.With(x => x.Transfer_from = roomType);
             return this;
         }
 
-        public CreateEventRequestBuilder ToRoomType(RoomType roomType)
+        public CreateEventRequestBuilder ToRoomType(RoomType? roomType)
         {
             _request.With(x => x.Transfer_to = roomType);
             return this;
