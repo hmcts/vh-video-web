@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.Linq;
 using FluentAssertions;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders;
 using VideoWeb.AcceptanceTests.Contexts;
@@ -45,6 +47,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.AdminIframe).Displayed.Should().BeTrue();
             _browserContext.NgDriver.SwitchTo().Frame(HearingListPage.AdminIframeId);
+            _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.WaitingRoomText).Displayed.Should().BeTrue();
         }
 
         [Then(@"a warning message appears indicating the user has no hearings scheduled")]
@@ -149,6 +152,40 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheVHOCanSeeTheHearingView()
         {
             _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.WaitingRoomText).Displayed.Should().BeTrue();
+        }
+
+        [Then(@"the VHO should see the participant contact details")]
+        public void ThenTheVhoShouldSeeTheParticipantContactDetails()
+        {
+            _browserContext.NgDriver.WrappedDriver.SwitchTo().ParentFrame();
+
+            var hearingParticipants = _context.Hearing.Participants.FindAll(x =>
+                x.User_role_name.Equals("Individual") || x.User_role_name.Equals("Representative"));
+
+            var user = hearingParticipants.First().Last_name;
+
+            var hearingParticipant = hearingParticipants.First();
+
+            var firstParticipantLink = _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.ParticipantName(hearingParticipant.Last_name));
+            firstParticipantLink.Displayed.Should().BeTrue();
+
+            var action = new Actions(_browserContext.NgDriver.WrappedDriver);
+            action.MoveToElement(firstParticipantLink).Perform();
+
+            var conferenceParticipant = _context.Conference.Participants.Find(x => x.Name.Contains(user));
+            var participantEmailAndRole = $"{conferenceParticipant.Name} ({conferenceParticipant.Case_type_group})";
+
+            _browserContext.NgDriver
+                .WaitUntilElementVisible(_hearingListPage.ParticipantContactDetails(user, participantEmailAndRole)).Displayed
+                .Should().BeTrue();
+
+            _browserContext.NgDriver
+                .WaitUntilElementVisible(_hearingListPage.ParticipantContactDetails(user, hearingParticipant.Contact_email)).Displayed
+                .Should().BeTrue();
+
+            _browserContext.NgDriver
+                .WaitUntilElementVisible(_hearingListPage.ParticipantContactDetails(user, hearingParticipant.Telephone_number)).Displayed
+                .Should().BeTrue();
         }
 
         private static string GetListedForTimeAsString(TimeSpan timespan)

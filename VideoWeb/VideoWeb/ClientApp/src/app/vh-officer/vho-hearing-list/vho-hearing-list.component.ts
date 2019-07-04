@@ -52,7 +52,7 @@ export class VhoHearingListComponent implements OnInit {
       if (hearing.isDelayed()) {
         return 'Delayed';
       } else {
-        return 'Ready';
+        return 'Not Started';
       }
     } else if (hearing.isSuspended()) {
       return 'Suspended';

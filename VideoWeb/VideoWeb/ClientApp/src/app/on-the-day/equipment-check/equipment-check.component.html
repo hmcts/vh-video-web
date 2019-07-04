@@ -1,17 +1,16 @@
 <div class="govuk-grid-row">
-  <h1 class="govuk-heading-l">Let's confirm your equipment is working</h1>
-</div>
-<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-l">Let's confirm your equipment is working</h1>
 
-  <label class="govuk-label" for="equipment">
-    This short video will help you check that your camera and microphone are
-    working.
-  </label>
+    <p class="govuk-body govuk-!-margin-bottom-4">
+      This short video will help you check that your camera and microphone are working.
+    </p>
 
-  <div class="govuk-!-margin-top-4">
-    <input type="button" id="continue-btn" class="govuk-button" role="button" value="Continue" (click)="goToCameraAndMicCheck()"
-      alt="Equipment Check" />
+    <div class="govuk-!-margin-top-4">
+      <input type="button" id="continue-btn" class="govuk-button" role="button" value="Continue"
+        (click)="goToCameraAndMicCheck()" alt="Equipment Check" />
+    </div>
+
+    <app-contact-us-folding></app-contact-us-folding>
   </div>
-
-  <app-contact-us-folding></app-contact-us-folding>
 </div>
