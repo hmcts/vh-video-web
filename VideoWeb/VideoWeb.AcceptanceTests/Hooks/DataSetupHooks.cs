@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using FluentAssertions;
-using RestSharp.Extensions;
 using TechTalk.SpecFlow;
 using Testing.Common.Configuration;
 using Testing.Common.Helpers;
