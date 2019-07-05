@@ -101,7 +101,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var timer = new Stopwatch();
             timer.Start();
 
-            while (_currentPage.Name != pageName && timer.Elapsed <= TimeSpan.FromSeconds(30))
+            while (_currentPage.Name != pageName && timer.Elapsed <= TimeSpan.FromSeconds(90))
             {
                 ProgressToNextPage(role, _currentPage);
             }
