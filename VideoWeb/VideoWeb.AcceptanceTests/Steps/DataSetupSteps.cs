@@ -25,7 +25,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private const int NumberOfIndividuals = 2;
         private const int NumberOfRepresentatives = 2;
         private const int HearingDuration = 60;
-        private const int WaitForConferenceToBeCreatedRetries = 5;
+        private const int WaitForConferenceToBeCreatedRetries = 10;
 
         public DataSetupSteps(TestContext context)
         {
