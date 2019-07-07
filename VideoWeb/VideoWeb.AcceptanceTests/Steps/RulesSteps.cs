@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using FluentAssertions;
+﻿using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
