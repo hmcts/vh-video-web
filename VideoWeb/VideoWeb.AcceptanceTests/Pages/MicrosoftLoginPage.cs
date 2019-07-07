@@ -17,7 +17,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         private static By Passwordfield => By.XPath("//input[contains(@data-bind,'password')]");
         private static By Next => By.XPath("//input[contains(@data-bind,'Next') and (@value='Next')]");
         private static By SignIn => By.XPath("//input[contains(@data-bind,'SignIn') and (@value='Sign in')]");
-        private static By NoButton => By.XPath("//input[contains(@data-bind,'Splitter') and (@value='No')]");
 
         public void Logon(string participantUsername, string password)
         {
@@ -25,7 +24,6 @@ namespace VideoWeb.AcceptanceTests.Pages
             NextButton();
             EnterPassword(password);
             SignInButton();
-            DontStaySignedIn();
         }
 
         public void EnterUsername(string username)
@@ -45,7 +43,6 @@ namespace VideoWeb.AcceptanceTests.Pages
 
         public void NextButton() => _context.NgDriver.WaitUntilElementVisible(Next).Click();
         public void SignInButton() => _context.NgDriver.WaitUntilElementVisible(SignIn).Click();
-        public void DontStaySignedIn() => _context.NgDriver.WaitUntilElementVisible(NoButton).Click();
 
         public void SignInTitle()
         {

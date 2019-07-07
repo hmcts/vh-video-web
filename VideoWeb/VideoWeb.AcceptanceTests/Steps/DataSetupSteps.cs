@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
+using System.Runtime.Serialization;
+using System.Threading;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using Testing.Common.Assertions;
@@ -24,6 +25,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private const int NumberOfIndividuals = 2;
         private const int NumberOfRepresentatives = 2;
         private const int HearingDuration = 60;
+        private const int WaitForConferenceToBeCreatedRetries = 10;
 
         public DataSetupSteps(TestContext context)
         {
@@ -35,14 +37,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void GivenIHaveAHearingAndAConference()
         {
             GivenIHaveAHearing();
-            GivenIHaveAConference();
+            GetTheNewConferenceDetails(_context.NewHearingId);
         }
 
         [Given(@"I have a hearing and a conference in (.*) minutes time")]
         public void GivenIHaveAHearingAndAConferenceInMinutesTime(int minutes)
         {
             GivenIHaveAHearing(minutes);
-            GivenIHaveAConference();
+            GetTheNewConferenceDetails(_context.NewHearingId);
             _context.DelayedStartTime = minutes;
         }
 
@@ -52,7 +54,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var minutesFromDays = Convert.ToInt32(TimeSpan.FromDays(days).TotalMinutes);
             GivenIHaveAHearing(minutesFromDays);
-            GivenIHaveAConference();
+            GetTheNewConferenceDetails(_context.NewHearingId);
         }
 
         [Given(@"I have a hearing")]
@@ -77,47 +79,29 @@ namespace VideoWeb.AcceptanceTests.Steps
             _context.Request = _context.Post(_bookingEndpoints.BookNewHearing(), _context.RequestBody);
 
             WhenISendTheRequestToTheBookingsApiEndpoint();
-            ThenTheHearingOrConferenceShouldBeCreated();
+            ThenTheHearingOrConferenceShouldBe(HttpStatusCode.Created);
             ThenTheHearingDetailsShouldBeRetrieved();
         }
 
-        [Given(@"I have a conference")]
-        public void GivenIHaveAConference()
+        [Given(@"Get the new conference details")]
+        public void GetTheNewConferenceDetails(Guid hearingId)
         {
-            var participants = new List<VideoWeb.Services.Video.ParticipantRequest>();
-            foreach (var p in _context.Hearing.Participants)
+            _context.Request = _context.Get(_videoEndpoints.GetConferenceByHearingRefId(hearingId));
+            _context.RequestBody = null;
+            var conferenceFound = false;
+            for (var i = 0; i < WaitForConferenceToBeCreatedRetries; i++)
             {
-                Enum.TryParse(p.User_role_name, out UserRole role);
-                var participantsRequest =
-                    new VideoWeb.Services.Video.ParticipantRequest
-                    {
-                        Participant_ref_id = p.Id,
-                        Name = p.Title + " " + p.First_name + " " + p.Last_name,
-                        Display_name = p.Display_name,
-                        Username = p.Username,
-                        User_role = (UserRole?)role,
-                        Case_type_group = p.Case_role_name,
-                        Representee = p.Representee
-                    };
-                participants.Add(participantsRequest);
+                WhenISendTheRequestToTheVideoApiEndpoint();
+                if (_context.Response.StatusCode.Equals(HttpStatusCode.OK))
+                {
+                    conferenceFound = true;
+                    break;
+                }
+                Thread.Sleep(TimeSpan.FromSeconds(1));
             }
 
-            var request = new BookNewConferenceRequest
-            {
-                Hearing_ref_id = _context.Hearing.Id,
-                Case_type = _context.Hearing.Case_type_name,
-                Scheduled_date_time = _context.Hearing.Scheduled_date_time,
-                Scheduled_duration = HearingDuration,
-                Case_number = _context.Hearing.Cases.First().Number,
-                Case_name = _context.Hearing.Cases.First().Name,
-                Participants = participants
-            };
-
-            _context.RequestBody = null;
-            _context.Request = _context.Post(_videoEndpoints.BookNewConference, request);
-
-            WhenISendTheRequestToTheVideoApiEndpoint();
-            ThenTheHearingOrConferenceShouldBeCreated();
+            conferenceFound.Should().BeTrue();
+            _context.Response.Should().NotBeNull();
             ThenTheConferenceDetailsShouldBeRetrieved();
         }
 
@@ -137,11 +121,11 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _context.Json = _context.Response.Content;
         }
 
-        [Then(@"the hearings should be created")]
-        [Then(@"the conference should be created")]
-        public void ThenTheHearingOrConferenceShouldBeCreated()
+        [Then(@"the hearings should be (.*)")]
+        [Then(@"the conference should be (.*)")]
+        public void ThenTheHearingOrConferenceShouldBe(HttpStatusCode status)
         {
-            _context.Response.StatusCode.Should().Be(HttpStatusCode.Created);
+            _context.Response.StatusCode.Should().Be(status);
             _context.Response.IsSuccessful.Should().Be(true);           
         }
 
@@ -152,8 +136,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             hearing.Should().NotBeNull();
             AssertHearingResponse.ForHearing(hearing);
             _context.Hearing = hearing;
-            _context.NewHearingId = hearing.Id;
-            _context.HearingIsNotInBookingsDb = false;
+            if (hearing.Id != null)
+            {
+                _context.NewHearingId = (Guid)hearing.Id;
+            }
+            else
+            {
+                throw new InvalidDataContractException("Hearing Id must be set");
+            }
         }
 
         [Then(@"the conference details should be retrieved")]
