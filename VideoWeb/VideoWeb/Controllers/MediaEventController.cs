@@ -46,5 +46,33 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e);
             }
         }
+
+        [HttpPost("{conferenceId}/mediaproblem")]
+        [SwaggerOperation(OperationId = "AddMediaProblemEventToConference")]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> AddMediaProblemEventToConference(Guid conferenceId, 
+            [FromBody] AddMediaProblemEventRequest addMediaProblemEventRequest)
+        {
+            try
+            {
+                await _videoApiClient.PostEventsAsync(new ConferenceEventRequest
+                {
+                    Conference_id = conferenceId.ToString(),
+                    Participant_id = addMediaProblemEventRequest.ParticipantId.ToString(),
+                    Event_id = Guid.NewGuid().ToString(),
+                    Event_type = addMediaProblemEventRequest.EventType,
+                    Time_stamp_utc = DateTime.UtcNow,
+                    Reason = $"Failed self-test ({ addMediaProblemEventRequest.MediaType })"
+                });
+
+                return NoContent();
+            }
+            catch (VideoApiException e)
+            {
+                return StatusCode(e.StatusCode, e);
+            }
+        }
     }
 }
