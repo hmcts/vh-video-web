@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using TechTalk.SpecFlow;
@@ -10,11 +9,7 @@ using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.Contract.Responses;
-using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
-using ParticipantRequest = VideoWeb.Services.Video.ParticipantRequest;
-using ParticipantResponse = VideoWeb.Contract.Responses.ParticipantResponse;
 using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.AcceptanceTests.Steps
