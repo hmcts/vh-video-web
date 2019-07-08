@@ -47,9 +47,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 case "Joining":
                 {
-                    eventType = EventType.Joined;  
-                    // the joining participant status is not possible yet
-                    ScenarioContext.Current.Pending();
+                    eventType = EventType.Joined; 
                     break;
                 }
                 case "In Hearing":
