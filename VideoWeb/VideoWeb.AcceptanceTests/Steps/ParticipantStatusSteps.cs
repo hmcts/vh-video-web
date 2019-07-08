@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using TechTalk.SpecFlow;
@@ -25,6 +26,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly ConferenceEndpoints _conferenceEndpoints = new VideoApiUriFactory().ConferenceEndpoints;
         private readonly CallbackEndpoints _callbackEndpoints = new VideoApiUriFactory().CallbackEndpoints;
         private const string ParticipantsKey = "participants";
+        private const int MaxRetries = 5;
 
         public ParticipantStatusSteps(TestContext testContext, BrowserContext browserContext,
             ScenarioContext injectedContext, AdminPanelPage adminPanelPage, HearingListPage hearingListPage)
@@ -115,13 +117,36 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _context.Request =
                 _context.Get(_conferenceEndpoints.GetConferenceDetailsById(_context.NewConferenceId));
-            _context.Response = _context.VideoApiClient().Execute(_context.Request);
-            _context.Response.IsSuccessful.Should().BeTrue();
-            var conference =
-                ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_context.Response
-                    .Content);
-            conference.Participants.Find(x => x.Username.Equals(_context.CurrentUser.Displayname)).Current_status
-                .Participant_state.Should().Be(ParticipantState.Joining);
+
+            var participantStatus = ParticipantState.None;
+
+            for (var i = 0; i < MaxRetries; i++)
+            {
+                _context.Response = _context.VideoApiClient().Execute(_context.Request);
+                _context.Response.IsSuccessful.Should().BeTrue();
+                var conference =
+                    ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_context.Response
+                        .Content);
+                conference.Should().NotBeNull();
+
+                var participant = conference.Participants
+                    .Find(x => x.Username.ToLower().Equals(_context.CurrentUser.Username.ToLower()));
+
+                if (participant.Current_status != null)
+                {
+                    var participantState = participant.Current_status
+                        .Participant_state;
+                    if (participantState != null)
+                        participantStatus = (ParticipantState)participantState;
+                    break;
+                }
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+            }
+
+            if (participantStatus != ParticipantState.None)
+            {
+                participantStatus.Should().Be(ParticipantState.Joining);
+            }
         }
 
         [Then(@"the participants statuses should update to (.*)")]
