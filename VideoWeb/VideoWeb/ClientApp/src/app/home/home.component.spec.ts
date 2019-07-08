@@ -9,24 +9,24 @@ import { ProfileService } from '../services/api/profile.service';
 import { of } from 'rxjs';
 import { UserProfileResponse, UserRole } from '../services/clients/api-client';
 import { PageUrls } from '../shared/page-url.constants';
-import { DeviceType } from '../services/device-type';
+import { DeviceTypeService } from '../services/device-type.service';
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   let router: Router;
   let profileServiceSpy: jasmine.SpyObj<ProfileService>;
-  let deviceTypeSpy: jasmine.SpyObj<DeviceType>;
+  let deviceTypeSpy: jasmine.SpyObj<DeviceTypeService>;
 
   configureTestSuite(() => {
     profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-    deviceTypeSpy = jasmine.createSpyObj<DeviceType>(['isMobile', 'isTablet', 'isDesktop']);
+    deviceTypeSpy = jasmine.createSpyObj<DeviceTypeService>(['isMobile', 'isTablet', 'isDesktop']);
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, SharedModule],
       declarations: [HomeComponent],
       providers: [
         { provide: ProfileService, useValue: profileServiceSpy },
-        { provide: DeviceType, useValue: deviceTypeSpy }
+        { provide: DeviceTypeService, useValue: deviceTypeSpy }
       ]
     });
   });

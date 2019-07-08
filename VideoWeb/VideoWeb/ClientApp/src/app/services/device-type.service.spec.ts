@@ -1,5 +1,5 @@
 import { TestBed, inject } from '@angular/core/testing';
-import { DeviceType } from './device-type';
+import { DeviceTypeService } from './device-type.service';
 import { DeviceDetectorService } from 'ngx-device-detector';
 
 describe('DeviceType', () => {
@@ -10,11 +10,11 @@ describe('DeviceType', () => {
   });
 
   it('should return false for a mobile device', inject([DeviceDetectorService], (deviceDetectorService: DeviceDetectorService) => {
-    const deviceType = new DeviceType(deviceDetectorService);
+    const deviceType = new DeviceTypeService(deviceDetectorService);
     expect(deviceType.isMobile()).toBeFalsy();
   }));
   it('should return true for a desktop device', inject([DeviceDetectorService], (deviceDetectorService: DeviceDetectorService) => {
-    const deviceType = new DeviceType(deviceDetectorService);
+    const deviceType = new DeviceTypeService(deviceDetectorService);
     expect(deviceType.isDesktop()).toBeTruthy();
   }));
 });
