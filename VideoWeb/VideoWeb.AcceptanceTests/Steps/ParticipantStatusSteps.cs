@@ -49,7 +49,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 case "Joining":
                 {
-                    eventType = EventType.Joined; 
+                    eventType = EventType.ParticipantJoining;
                     break;
                 }
                 case "In Hearing":
@@ -171,14 +171,17 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 var participantName = NameInCorrectFormat(participant);
 
-                _browserContext.NgDriver.WaitUntilElementVisible(_adminPanelPage.ParticipantStatus(participantName))
-                    .Text.Should().Be(participantStatus);
+                if (participant.Id != null)
+                    _browserContext.NgDriver
+                        .WaitUntilElementVisible(
+                            _adminPanelPage.ParticipantStatus((Guid) participant.Id, participantName))
+                        .Text.Trim().Should().Be(participantStatus);
             }
         }
 
         private static string NameInCorrectFormat(ParticipantDetailsResponse participant)
         {
-            return $"{participant.Display_name.Substring(0,1)} {participant.Display_name.Split(" ")[1]}";
+            return $"{participant.Name} ({participant.Case_type_group})";
         }
     }
 }
