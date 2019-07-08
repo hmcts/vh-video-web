@@ -1816,8 +1816,8 @@ namespace VideoWeb.Services.Video
         [System.Runtime.Serialization.EnumMember(Value = @"MediaPermissionDenied")]
         MediaPermissionDenied = 10,
     
-        [System.Runtime.Serialization.EnumMember(Value = @"Joining")]
-        Joining = 11,
+        [System.Runtime.Serialization.EnumMember(Value = @"ParticipantJoining")]
+        ParticipantJoining = 11,
     
     }
     
