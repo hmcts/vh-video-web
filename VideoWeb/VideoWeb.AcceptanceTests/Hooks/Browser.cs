@@ -87,6 +87,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             testContext.SaucelabsSettings = _saucelabsSettings;
             KillAnyChromeDriverProcesses(_saucelabsSettings);
             testContext.TargetBrowser = GetTargetBrowser();
+            testContext.RunningLocally = !testContext.SaucelabsSettings.RunWithSaucelabs;
 
             testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, testContext.TargetBrowser);
 

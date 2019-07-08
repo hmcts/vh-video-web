@@ -116,7 +116,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheParticipantStatusWillBeUpdatedToJoining()
         {
             _context.Request =
-                _context.Get(_conferenceEndpoints.GetConferenceDetailsById((Guid) _context.NewConferenceId));
+                _context.Get(_conferenceEndpoints.GetConferenceDetailsById(_context.NewConferenceId));
             _context.Response = _context.VideoApiClient().Execute(_context.Request);
             _context.Response.IsSuccessful.Should().BeTrue();
             var conference =

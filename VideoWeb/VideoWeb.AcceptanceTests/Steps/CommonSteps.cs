@@ -95,13 +95,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             if (!pageName.Equals("Hearings Page") && createHearing)
             {
                 _dataSetupSteps.GivenIHaveAHearing(minutes);
-                _dataSetupSteps.GetTheNewConferenceDetails(_context.NewHearingId);
+                _dataSetupSteps.GetTheNewConferenceDetails();
             }
 
             var timer = new Stopwatch();
             timer.Start();
 
-            while (_currentPage.Name != pageName && timer.Elapsed <= TimeSpan.FromSeconds(60))
+            while (_currentPage.Name != pageName && timer.Elapsed <= TimeSpan.FromSeconds(30))
             {
                 ProgressToNextPage(role, _currentPage);
             }
