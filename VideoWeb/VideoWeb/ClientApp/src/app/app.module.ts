@@ -11,6 +11,7 @@ import { AuthGuard } from './security/auth.guard';
 import { SecurityModule } from './security/security.module';
 import { SendVideoEventsComponent } from './send-video-events/send-video-events.component';
 import { ConfigService } from './services/api/config.service';
+import { VhOfficerModule } from './vh-officer/vh-officer.module';
 import { API_BASE_URL } from './services/clients/api-client';
 import { SharedModule } from './shared/shared.module';
 import { WaitingSpaceModule } from './waiting-space/waiting-space.module';
@@ -37,7 +38,7 @@ export function getSettings(configService: ConfigService) {
     SecurityModule,
     WaitingSpaceModule,
     OnTheDayModule,
-    AppRoutingModule,
+    AppRoutingModule
   ],
   providers: [
     { provide: APP_INITIALIZER, useFactory: getSettings, deps: [ConfigService], multi: true },
