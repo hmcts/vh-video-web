@@ -17,7 +17,8 @@ import { OnTheDayModule } from './on-the-day/on-the-day.module';
 import { HomeComponent } from './home/home.component';
 import { WaitingSpaceModule } from './waiting-space/waiting-space.module';
 import { SendVideoEventsComponent } from './send-video-events/send-video-events.component';
-import { VhOfficerModule } from './vh-officer/vh-officer.module';
+import { DeviceDetectorModule } from 'ngx-device-detector';
+
 export function getSettings(configService: ConfigService) {
   return () => configService.loadConfig();
 }
@@ -37,6 +38,7 @@ export function getSettings(configService: ConfigService) {
     WaitingSpaceModule,
     OnTheDayModule,
     AppRoutingModule,
+    DeviceDetectorModule.forRoot(),
   ],
   providers: [
     { provide: APP_INITIALIZER, useFactory: getSettings, deps: [ConfigService], multi: true },
