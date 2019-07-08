@@ -85,8 +85,8 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
                 .Returns(Task.FromResult(default(object)));
 
-            var result = await _controller.AddMediaProblemEventToConference(Guid.NewGuid(), 
-                Builder<AddMediaProblemEventRequest>.CreateNew().Build());
+            var result = await _controller.AddSelfTestFailureEventToConference(Guid.NewGuid(), 
+                Builder<AddSelfTestFailureEventRequest>.CreateNew().Build());
             var typedResult = (NoContentResult)result;
             typedResult.Should().NotBeNull();
         }
@@ -100,8 +100,8 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.AddMediaProblemEventToConference(Guid.NewGuid(), 
-                Builder<AddMediaProblemEventRequest>.CreateNew().Build());
+            var result = await _controller.AddSelfTestFailureEventToConference(Guid.NewGuid(), 
+                Builder<AddSelfTestFailureEventRequest>.CreateNew().Build());
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
@@ -115,8 +115,8 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.AddMediaProblemEventToConference(Guid.NewGuid(), 
-                Builder<AddMediaProblemEventRequest>.CreateNew().Build());
+            var result = await _controller.AddSelfTestFailureEventToConference(Guid.NewGuid(), 
+                Builder<AddSelfTestFailureEventRequest>.CreateNew().Build());
             var typedResult = (ObjectResult)result;
             typedResult.Should().NotBeNull();
         }

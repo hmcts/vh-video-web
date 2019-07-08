@@ -48,23 +48,23 @@ namespace VideoWeb.Controllers
         }
 
         [HttpPost("{conferenceId}/mediaproblem")]
-        [SwaggerOperation(OperationId = "AddMediaProblemEventToConference")]
+        [SwaggerOperation(OperationId = "AddSelfTestFailureEventToConference")]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> AddMediaProblemEventToConference(Guid conferenceId, 
-            [FromBody] AddMediaProblemEventRequest addMediaProblemEventRequest)
+        public async Task<IActionResult> AddSelfTestFailureEventToConference(Guid conferenceId, 
+            [FromBody] AddSelfTestFailureEventRequest addSelfTestFailureEventRequest)
         {
             try
             {
                 await _videoApiClient.PostEventsAsync(new ConferenceEventRequest
                 {
                     Conference_id = conferenceId.ToString(),
-                    Participant_id = addMediaProblemEventRequest.ParticipantId.ToString(),
+                    Participant_id = addSelfTestFailureEventRequest.ParticipantId.ToString(),
                     Event_id = Guid.NewGuid().ToString(),
-                    Event_type = addMediaProblemEventRequest.EventType,
+                    Event_type = addSelfTestFailureEventRequest.EventType,
                     Time_stamp_utc = DateTime.UtcNow,
-                    Reason = $"Failed self-test ({ addMediaProblemEventRequest.MediaType })"
+                    Reason = $"Failed self-test ({ addSelfTestFailureEventRequest.SelfTestFailureReason })"
                 });
 
                 return NoContent();

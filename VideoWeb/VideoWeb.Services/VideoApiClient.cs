@@ -2038,8 +2038,8 @@ namespace VideoWeb.Services.Video
         [System.Runtime.Serialization.EnumMember(Value = @"MediaPermissionDenied")]
         MediaPermissionDenied = 10,
     
-        [System.Runtime.Serialization.EnumMember(Value = @"MediaProblem")]
-        MediaProblem = 11,
+        [System.Runtime.Serialization.EnumMember(Value = @"SelfTestFailed")]
+        SelfTestFailed = 11,
     
     }
     

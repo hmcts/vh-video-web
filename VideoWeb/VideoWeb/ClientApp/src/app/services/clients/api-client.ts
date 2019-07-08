@@ -421,17 +421,17 @@ export class ApiClient {
     }
 
     /**
-     * @param addMediaProblemEventRequest (optional) 
+     * @param addSelfTestFailureEventRequest (optional) 
      * @return Success
      */
-    addMediaProblemEventToConference(conferenceId: string, addMediaProblemEventRequest: AddMediaProblemEventRequest | null | undefined): Observable<void> {
+    addSelfTestFailureEventToConference(conferenceId: string, addSelfTestFailureEventRequest: AddSelfTestFailureEventRequest | null | undefined): Observable<void> {
         let url_ = this.baseUrl + "/conferences/{conferenceId}/mediaproblem";
         if (conferenceId === undefined || conferenceId === null)
             throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace("{conferenceId}", encodeURIComponent("" + conferenceId)); 
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(addMediaProblemEventRequest);
+        const content_ = JSON.stringify(addSelfTestFailureEventRequest);
 
         let options_ : any = {
             body: content_,
@@ -443,11 +443,11 @@ export class ApiClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processAddMediaProblemEventToConference(response_);
+            return this.processAddSelfTestFailureEventToConference(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processAddMediaProblemEventToConference(<any>response_);
+                    return this.processAddSelfTestFailureEventToConference(<any>response_);
                 } catch (e) {
                     return <Observable<void>><any>_observableThrow(e);
                 }
@@ -456,7 +456,7 @@ export class ApiClient {
         }));
     }
 
-    protected processAddMediaProblemEventToConference(response: HttpResponseBase): Observable<void> {
+    protected processAddSelfTestFailureEventToConference(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -1432,15 +1432,15 @@ export enum EventType {
     Consultation = "Consultation",
     JudgeAvailable = "JudgeAvailable",
     MediaPermissionDenied = "MediaPermissionDenied",
-    MediaProblem = "MediaProblem",
+    SelfTestFailed = "SelfTestFailed",
 }
 
-export class AddMediaProblemEventRequest implements IAddMediaProblemEventRequest {
+export class AddSelfTestFailureEventRequest implements IAddSelfTestFailureEventRequest {
     participant_id?: string | undefined;
     event_type?: EventType | undefined;
-    media_type?: MediaType | undefined;
+    self_test_failure_reason?: SelfTestFailureReason | undefined;
 
-    constructor(data?: IAddMediaProblemEventRequest) {
+    constructor(data?: IAddSelfTestFailureEventRequest) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1453,13 +1453,13 @@ export class AddMediaProblemEventRequest implements IAddMediaProblemEventRequest
         if (data) {
             this.participant_id = data["participant_id"];
             this.event_type = data["event_type"];
-            this.media_type = data["media_type"];
+            this.self_test_failure_reason = data["self_test_failure_reason"];
         }
     }
 
-    static fromJS(data: any): AddMediaProblemEventRequest {
+    static fromJS(data: any): AddSelfTestFailureEventRequest {
         data = typeof data === 'object' ? data : {};
-        let result = new AddMediaProblemEventRequest();
+        let result = new AddSelfTestFailureEventRequest();
         result.init(data);
         return result;
     }
@@ -1468,18 +1468,18 @@ export class AddMediaProblemEventRequest implements IAddMediaProblemEventRequest
         data = typeof data === 'object' ? data : {};
         data["participant_id"] = this.participant_id;
         data["event_type"] = this.event_type;
-        data["media_type"] = this.media_type;
+        data["self_test_failure_reason"] = this.self_test_failure_reason;
         return data; 
     }
 }
 
-export interface IAddMediaProblemEventRequest {
+export interface IAddSelfTestFailureEventRequest {
     participant_id?: string | undefined;
     event_type?: EventType | undefined;
-    media_type?: MediaType | undefined;
+    self_test_failure_reason?: SelfTestFailureReason | undefined;
 }
 
-export enum MediaType {
+export enum SelfTestFailureReason {
     Camera = "Camera",
     Microphone = "Microphone",
     Video = "Video",

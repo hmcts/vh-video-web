@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
-import { ApiClient, ConferenceForUserResponse, ConferenceResponse, ConferenceEventRequest,
-  TaskResponse, AddMediaEventRequest, TestCallScoreResponse, TokenResponse, AddMediaProblemEventRequest } from '../clients/api-client';
+import {
+  ApiClient, ConferenceForUserResponse, ConferenceResponse, ConferenceEventRequest,
+  TaskResponse, AddMediaEventRequest, TestCallScoreResponse, TokenResponse,
+  AddSelfTestFailureEventRequest
+} from '../clients/api-client';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -47,7 +50,7 @@ export class VideoWebService {
     return this.apiClient.getToken(participantId);
   }
 
-  raiseMediaProblemEvent(conferenceId: string, addMediaProblemEventRequest: AddMediaProblemEventRequest): Observable<void> {
-    return this.apiClient.addMediaProblemEventToConference(conferenceId, addMediaProblemEventRequest);
+  raiseMediaProblemEvent(conferenceId: string, addSelfTestFailureEventRequest: AddSelfTestFailureEventRequest): Observable<void> {
+    return this.apiClient.addSelfTestFailureEventToConference(conferenceId, addSelfTestFailureEventRequest);
   }
 }

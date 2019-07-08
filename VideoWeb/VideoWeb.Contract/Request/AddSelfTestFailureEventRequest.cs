@@ -3,14 +3,14 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Contract.Request
 {
-    public class AddMediaProblemEventRequest
+    public class AddSelfTestFailureEventRequest
     {
         public Guid ParticipantId { get; set; }
-        public EventType EventType => EventType.MediaProblem;
-        public MediaType MediaType { get; set; }
+        public EventType EventType => EventType.SelfTestFailed;
+        public SelfTestFailureReason SelfTestFailureReason { get; set; }
     }
 
-    public enum MediaType
+    public enum SelfTestFailureReason
     {
         Camera = 0,
         Microphone = 1,

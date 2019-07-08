@@ -3,7 +3,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { VideoWebService } from '../../services/api/video-web.service';
-import { AddMediaProblemEventRequest, ConferenceResponse, MediaType } from 'src/app/services/clients/api-client';
+import {
+  AddSelfTestFailureEventRequest, ConferenceResponse,
+  SelfTestFailureReason
+} from 'src/app/services/clients/api-client';
 import { AdalService } from 'adal-angular4';
 
 @Component({
@@ -52,7 +55,10 @@ export class CameraCheckComponent implements OnInit {
           find(x => x.username.toLocaleLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
 
         this.videoWebService.raiseMediaProblemEvent(this.conferenceId,
-          new AddMediaProblemEventRequest({ participant_id: participant.id.toString(), media_type: MediaType.Camera }))
+          new AddSelfTestFailureEventRequest({
+            participant_id: participant.id.toString(),
+            self_test_failure_reason: SelfTestFailureReason.Camera
+          }))
           .subscribe(x => { },
             (error) => {
               console.error(error);
