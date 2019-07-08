@@ -4,7 +4,7 @@ import { DeviceDetectorService } from 'ngx-device-detector';
 @Injectable({
   providedIn: 'root'
 })
-export class DeviceType {
+export class DeviceTypeService {
 
   constructor(private deviceDetectorService: DeviceDetectorService) {
   }

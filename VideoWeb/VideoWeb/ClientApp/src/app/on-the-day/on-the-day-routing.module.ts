@@ -15,7 +15,7 @@ import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone
 import { PageUrls } from '../shared/page-url.constants';
 import { SelfTestComponent } from './self-test/self-test.component';
 import { EquipmentProblemComponent } from '../shared/equipment-problem/equipment-problem.component';
-import { SignonAComputerComponent } from './signon-a-computer/signon-a-computer.component';
+import { SignonAComputerComponent } from '../shared/signon-a-computer/signon-a-computer.component';
 
 export const routes: Routes = [
   { path: `${PageUrls.JudgeHearingList}`, component: JudgeHearingListComponent, canActivate: [JudgeGuard] },
