@@ -12,6 +12,11 @@ import { Router } from '@angular/router';
 })
 
 export class JudgeHearingListComponent implements OnInit {
+
+  contact = {
+    phone: '0300 303 0655'
+  };
+
   conferences: ConferenceForUserResponse[];
   hearingListForm: FormGroup;
   loadingData: boolean;
