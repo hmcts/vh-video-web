@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DeviceDetectorModule } from 'ngx-device-detector';
 
 import { ContactUsComponent } from './contact-us/contact-us.component';
 import { FooterComponent } from './footer/footer.component';
@@ -23,7 +24,8 @@ import { EquipmentProblemComponent } from './equipment-problem/equipment-problem
     ReactiveFormsModule,
     HttpClientModule,
     SharedRoutingModule,
-    SnotifyModule
+    SnotifyModule,
+    DeviceDetectorModule.forRoot()
   ],
   declarations: [
     HeaderComponent,
@@ -53,7 +55,8 @@ import { EquipmentProblemComponent } from './equipment-problem/equipment-problem
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    SnotifyModule
+    SnotifyModule,
+    DeviceDetectorModule
   ]
 })
 export class SharedModule { }
