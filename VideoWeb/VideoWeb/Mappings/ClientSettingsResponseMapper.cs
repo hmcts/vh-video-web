@@ -14,7 +14,8 @@ namespace VideoWeb.Mappings
                 TenantId = azureAdConfiguration.TenantId,
                 RedirectUri = azureAdConfiguration.RedirectUri,
                 PostLogoutRedirectUri = azureAdConfiguration.PostLogoutRedirectUri,
-                VideoApiUrl = servicesConfiguration.VideoApiUrl
+                VideoApiUrl = servicesConfiguration.VideoApiUrl,
+                AppInsightsInstrumentationKey = azureAdConfiguration.ApplicationInsights.InstrumentationKey
             };
         }
 

@@ -13,7 +13,9 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void should_map_all_properties()
         {
-            var azureAdConfiguration = Builder<AzureAdConfiguration>.CreateNew().Build();
+            var azureAdConfiguration = Builder<AzureAdConfiguration>.CreateNew()
+                .With(x => x.ApplicationInsights = Builder<ApplicationInsightsConfiguration>.CreateNew().Build())
+                .Build();
             var servicesConfiguration = Builder<HearingServicesConfiguration>.CreateNew().Build();
 
             var response = _mapper.MapAppConfigurationToResponseModel(azureAdConfiguration, servicesConfiguration);
@@ -23,6 +25,8 @@ namespace VideoWeb.UnitTests.Mappings
             response.RedirectUri.Should().Be(azureAdConfiguration.RedirectUri);
             response.PostLogoutRedirectUri.Should().Be(azureAdConfiguration.PostLogoutRedirectUri);
             response.VideoApiUrl.Should().Be(servicesConfiguration.VideoApiUrl);
+            response.AppInsightsInstrumentationKey.Should()
+                .Be((azureAdConfiguration.ApplicationInsights.InstrumentationKey));
 
         }
     }

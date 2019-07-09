@@ -46,6 +46,7 @@ namespace Testing.Common.Helpers
     public class HearingsEndpoints
     {
         private static string ApiRoot => "hearings";
+        public string GetHearingsByUsername(string username) => $"{ApiRoot}/?username={username}";
         public string GetHearingDetailsById(Guid hearingId) => $"{ApiRoot}/{hearingId}";
         public string BookNewHearing() => $"{ApiRoot}";
         public string UpdateHearingDetails(Guid hearingId) => $"{ApiRoot}/{hearingId}";
