@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using TechTalk.SpecFlow;
@@ -22,8 +23,10 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly ScenarioContext _scenarioContext;
         private readonly AdminPanelPage _adminPanelPage;
         private readonly HearingListPage _hearingListPage;
+        private readonly ConferenceEndpoints _conferenceEndpoints = new VideoApiUriFactory().ConferenceEndpoints;
         private readonly CallbackEndpoints _callbackEndpoints = new VideoApiUriFactory().CallbackEndpoints;
         private const string ParticipantsKey = "participants";
+        private const int MaxRetries = 5;
 
         public ParticipantStatusSteps(TestContext testContext, BrowserContext browserContext,
             ScenarioContext injectedContext, AdminPanelPage adminPanelPage, HearingListPage hearingListPage)
@@ -46,9 +49,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 case "Joining":
                 {
-                    eventType = EventType.Joined;  
-                    // the joining participant status is not possible yet
-                    ScenarioContext.Current.Pending();
+                    eventType = EventType.ParticipantJoining;
                     break;
                 }
                 case "In Hearing":
@@ -111,6 +112,43 @@ namespace VideoWeb.AcceptanceTests.Steps
             _scenarioContext.Add(ParticipantsKey, participants);
         }
 
+        [Then(@"the participant status will be updated to Joining")]
+        public void ThenTheParticipantStatusWillBeUpdatedToJoining()
+        {
+            _context.Request =
+                _context.Get(_conferenceEndpoints.GetConferenceDetailsById(_context.NewConferenceId));
+
+            var participantStatus = ParticipantState.None;
+
+            for (var i = 0; i < MaxRetries; i++)
+            {
+                _context.Response = _context.VideoApiClient().Execute(_context.Request);
+                _context.Response.IsSuccessful.Should().BeTrue();
+                var conference =
+                    ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_context.Response
+                        .Content);
+                conference.Should().NotBeNull();
+
+                var participant = conference.Participants
+                    .Find(x => x.Username.ToLower().Equals(_context.CurrentUser.Username.ToLower()));
+
+                if (participant.Current_status != null)
+                {
+                    var participantState = participant.Current_status
+                        .Participant_state;
+                    if (participantState != null)
+                        participantStatus = (ParticipantState)participantState;
+                    break;
+                }
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+            }
+
+            if (participantStatus != ParticipantState.None)
+            {
+                participantStatus.Should().Be(ParticipantState.Joining);
+            }
+        }
+
         [Then(@"the participants statuses should update to (.*)")]
         public void ThenTheParticipantsStatusesShouldUpdateToDisconnected(string participantStatus)
         {
@@ -133,14 +171,17 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 var participantName = NameInCorrectFormat(participant);
 
-                _browserContext.NgDriver.WaitUntilElementVisible(_adminPanelPage.ParticipantStatus(participantName))
-                    .Text.Should().Be(participantStatus);
+                if (participant.Id != null)
+                    _browserContext.NgDriver
+                        .WaitUntilElementVisible(
+                            _adminPanelPage.ParticipantStatus((Guid) participant.Id, participantName))
+                        .Text.Trim().Should().Be(participantStatus);
             }
         }
 
         private static string NameInCorrectFormat(ParticipantDetailsResponse participant)
         {
-            return $"{participant.Display_name.Substring(0,1)} {participant.Display_name.Split(" ")[1]}";
+            return $"{participant.Name} ({participant.Case_type_group})";
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using VideoWeb.Contract.Request;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Controllers
@@ -29,6 +30,34 @@ namespace VideoWeb.Controllers
             {
                 var score = await _videoApiClient.GetTestCallResultForParticipantAsync(conferenceId, participantId);
                 return Ok(score);
+            }
+            catch (VideoApiException e)
+            {
+                return StatusCode(e.StatusCode, e);
+            }
+        }
+
+        [HttpPost("{conferenceId}/participantstatus")]
+        [SwaggerOperation(OperationId = "UpdateParticipantStatus")]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> UpdateParticipantStatus(Guid conferenceId, 
+            UpdateParticipantStatusEventRequest updateParticipantStatusEventRequest)
+        {
+            try
+            {
+                await _videoApiClient.PostEventsAsync(new ConferenceEventRequest
+                {
+                    Conference_id = conferenceId.ToString(),
+                    Participant_id = updateParticipantStatusEventRequest.ParticipantId.ToString(),
+                    Event_id = Guid.NewGuid().ToString(),
+                    Event_type = updateParticipantStatusEventRequest.EventType,
+                    Time_stamp_utc = DateTime.UtcNow,
+                    Reason = "participant joining"
+                });
+
+                return NoContent();
             }
             catch (VideoApiException e)
             {

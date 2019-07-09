@@ -95,13 +95,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             if (!pageName.Equals("Hearings Page") && createHearing)
             {
                 _dataSetupSteps.GivenIHaveAHearing(minutes);
-                _dataSetupSteps.GetTheNewConferenceDetails(_context.NewHearingId);
+                _dataSetupSteps.GetTheNewConferenceDetails();
             }
 
             var timer = new Stopwatch();
             timer.Start();
 
-            while (_currentPage.Name != pageName && timer.Elapsed <= TimeSpan.FromSeconds(60))
+            while (_currentPage.Name != pageName && timer.Elapsed <= TimeSpan.FromSeconds(30))
             {
                 ProgressToNextPage(role, _currentPage);
             }
@@ -184,6 +184,11 @@ namespace VideoWeb.AcceptanceTests.Steps
                     case ParticipantJourney.HearingList:
                         {
                             _hearingListSteps.WhenTheUserClicksTheStartButton();
+                            break;
+                        }
+                    case ParticipantJourney.Introduction:
+                        {
+                            WhentheUserClicksTheButtonWithInnertext("Next");
                             break;
                         }
                     case ParticipantJourney.SwitchOnYourCameraAndMicrophone:
@@ -283,6 +288,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 case "Login": _commonPages.PageUrl(Page.Login); break;
                 case "Hearings List": _commonPages.PageUrl(Page.HearingList); break;
+                case "Introduction": _commonPages.PageUrl(Page.Introduction); break;
                 case "Equipment Check": _commonPages.PageUrl(Page.EquipmentCheck); break;
                 case "Switch on your camera and microphone": _commonPages.PageUrl(Page.SwitchOnCamAndMicPage); break;
                 case "Practice video hearing": _commonPages.PageUrl(Page.PracticeVideoHearing); break;

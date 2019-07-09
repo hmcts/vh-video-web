@@ -4,27 +4,24 @@ import { ProfileService } from '../services/api/profile.service';
 import { UserProfileResponse, UserRole } from '../services/clients/api-client';
 import { PageUrls } from '../shared/page-url.constants';
 import { ErrorService } from '../services/error.service';
-import { DeviceType } from '../services/device-type';
+import { DeviceTypeService } from '../services/device-type.service';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html'
 })
 export class HomeComponent implements OnInit {
-  isDesktop = false;
 
   constructor(
     private router: Router,
     private profileService: ProfileService,
     private errorService: ErrorService,
-    private deviceType: DeviceType
+    private deviceTypeService: DeviceTypeService
   ) {
-    this.isDesktop = this.deviceType.isDesktop();
   }
 
   ngOnInit() {
-    console.log(this.isDesktop);
-    if (this.deviceType.isDesktop()) {
+    if (this.deviceTypeService.isDesktop()) {
       this.navigateToHearingList();
     } else {
       this.router.navigate([PageUrls.SignonAComputer]);
