@@ -15,6 +15,8 @@ import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone
 import { PageUrls } from '../shared/page-url.constants';
 import { SelfTestComponent } from './self-test/self-test.component';
 import { EquipmentProblemComponent } from '../shared/equipment-problem/equipment-problem.component';
+import { SignonAComputerComponent } from '../shared/signon-a-computer/signon-a-computer.component';
+import { IntroductionComponent } from './introduction/introduction.component';
 
 export const routes: Routes = [
   { path: `${PageUrls.JudgeHearingList}`, component: JudgeHearingListComponent, canActivate: [JudgeGuard] },
@@ -26,9 +28,11 @@ export const routes: Routes = [
   { path: `${PageUrls.MicrophoneWorking}/:conferenceId`, component: MicrophoneCheckComponent },
   { path: `${PageUrls.VideoWorking}/:conferenceId`, component: VideoCheckComponent },
   { path: `${PageUrls.CameraAndMicrophone}/:conferenceId`, component: CameraAndMicrophoneComponent },
-  { path: `${PageUrls.SwitchOnCameraMicrophone}/:conferenceId`, component: SwitchOnCameraMicrophoneComponent},
-  { path: `${PageUrls.SelfTestVideo}/:conferenceId`, component: SelfTestComponent},
+  { path: `${PageUrls.SwitchOnCameraMicrophone}/:conferenceId`, component: SwitchOnCameraMicrophoneComponent },
+  { path: `${PageUrls.SelfTestVideo}/:conferenceId`, component: SelfTestComponent },
   { path: `${PageUrls.GetHelp}`, component: EquipmentProblemComponent },
+  { path: `${PageUrls.SignonAComputer}`, component: SignonAComputerComponent},
+  { path: `${PageUrls.Introduction}/:conferenceId`, component: IntroductionComponent },
 ];
 
 @NgModule({

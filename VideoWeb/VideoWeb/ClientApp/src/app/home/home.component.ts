@@ -4,6 +4,7 @@ import { ProfileService } from '../services/api/profile.service';
 import { UserProfileResponse, UserRole } from '../services/clients/api-client';
 import { PageUrls } from '../shared/page-url.constants';
 import { ErrorService } from '../services/error.service';
+import { DeviceTypeService } from '../services/device-type.service';
 
 @Component({
   selector: 'app-home',
@@ -14,12 +15,17 @@ export class HomeComponent implements OnInit {
   constructor(
     private router: Router,
     private profileService: ProfileService,
-    private errorService: ErrorService
+    private errorService: ErrorService,
+    private deviceTypeService: DeviceTypeService
   ) {
   }
 
   ngOnInit() {
-    this.navigateToHearingList();
+    if (this.deviceTypeService.isDesktop()) {
+      this.navigateToHearingList();
+    } else {
+      this.router.navigate([PageUrls.SignonAComputer]);
+    }
   }
 
   navigateToHearingList() {

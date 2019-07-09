@@ -51,8 +51,10 @@ namespace VideoWeb.AcceptanceTests.Hooks
             {
                 context.Request = context.Get(endpoints.GetConferenceDetailsByUsername(user.Username));
                 context.Response = context.VideoApiClient().Execute(context.Request);
+                if (context.Response.Content.Equals("[]") || !context.Response.IsSuccessful) continue;
                 var conferences =
-                    ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ConferenceDetailsResponse>>(context.Response
+                    ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ConferenceDetailsResponse>>(context
+                        .Response
                         .Content);
                 foreach (var conference in conferences)
                 {
@@ -66,7 +68,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         [AfterScenario]
         public static void RemoveConference(TestContext context, ConferenceEndpoints endpoints)
         {
-            if (context.NewConferenceId == Guid.Empty || context.NewConferenceId == null) return;
+            if (context.NewConferenceId == Guid.Empty) return;
             context.Request = context.Delete(endpoints.RemoveConference(context.NewConferenceId));
             context.Response = context.VideoApiClient().Execute(context.Request);
             context.Response.IsSuccessful.Should().BeTrue("New conference has been deleted after the test");
@@ -76,7 +78,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         [AfterScenario]
         public static void RemoveHearing(TestContext context, HearingsEndpoints endpoints)
         {
-            if (context.NewHearingId == Guid.Empty || context.NewHearingId == null) return;
+            if (context.NewHearingId == Guid.Empty) return;
             context.Request = context.Delete(endpoints.RemoveHearing(context.NewHearingId));
             context.Response = context.BookingsApiClient().Execute(context.Request);
             context.Response.IsSuccessful.Should().BeTrue("New hearing has been deleted after the test");

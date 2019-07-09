@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Timers;
 using FluentAssertions;
-using NUnit.Framework;
 using OpenQA.Selenium.Support.Extensions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Contexts;
@@ -97,7 +95,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             if (!pageName.Equals("Hearings Page") && createHearing)
             {
                 _dataSetupSteps.GivenIHaveAHearing(minutes);
-                _dataSetupSteps.GivenIHaveAConference();
+                _dataSetupSteps.GetTheNewConferenceDetails();
             }
 
             var timer = new Stopwatch();
@@ -186,6 +184,11 @@ namespace VideoWeb.AcceptanceTests.Steps
                     case ParticipantJourney.HearingList:
                         {
                             _hearingListSteps.WhenTheUserClicksTheStartButton();
+                            break;
+                        }
+                    case ParticipantJourney.Introduction:
+                        {
+                            WhentheUserClicksTheButtonWithInnertext("Next");
                             break;
                         }
                     case ParticipantJourney.SwitchOnYourCameraAndMicrophone:
@@ -285,6 +288,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 case "Login": _commonPages.PageUrl(Page.Login); break;
                 case "Hearings List": _commonPages.PageUrl(Page.HearingList); break;
+                case "Introduction": _commonPages.PageUrl(Page.Introduction); break;
                 case "Equipment Check": _commonPages.PageUrl(Page.EquipmentCheck); break;
                 case "Switch on your camera and microphone": _commonPages.PageUrl(Page.SwitchOnCamAndMicPage); break;
                 case "Practice video hearing": _commonPages.PageUrl(Page.PracticeVideoHearing); break;

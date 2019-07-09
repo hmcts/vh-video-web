@@ -6,3 +6,9 @@
   margin-right: 15px;
   margin-bottom: 10px;
 }
+
+@media only screen and (max-width: 600px) {
+  .govuk-header__logo {
+    width: 100%;
+  }
+}
