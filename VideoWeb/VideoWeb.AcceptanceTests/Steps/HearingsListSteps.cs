@@ -38,7 +38,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [When(@"the VHO selects the hearing")]
-        public void WhenTheVHOSelectsTheHearing()
+        public void WhenTheVhoSelectsTheHearing()
         {
             _browserContext.NgDriver
                 .WaitUntilElementVisible(
@@ -132,7 +132,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }        
 
         [Then(@"the VHO can see a list of hearings including the new hearing")]
-        public void ThenTheVHOCanSeeAListOfHearingsIncludingTheNewHearing()
+        public void ThenTheVhoCanSeeAListOfHearingsIncludingTheNewHearing()
         {
             _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage._hearingWithCaseNumber(_context.Hearing.Cases.First().Number)).Displayed
                 .Should().BeTrue();
@@ -169,7 +169,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var firstParticipantLink = _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.ParticipantName(hearingParticipant.Last_name));
             firstParticipantLink.Displayed.Should().BeTrue();
 
-            var action = new Actions(_browserContext.NgDriver.WrappedDriver);
+            var action = new OpenQA.Selenium.Interactions.Actions(_browserContext.NgDriver.WrappedDriver);
             action.MoveToElement(firstParticipantLink).Perform();
 
             var conferenceParticipant = _context.Conference.Participants.Find(x => x.Name.Contains(user));
