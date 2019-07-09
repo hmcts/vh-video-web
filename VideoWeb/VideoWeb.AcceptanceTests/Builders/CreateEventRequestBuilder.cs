@@ -54,6 +54,12 @@ namespace VideoWeb.AcceptanceTests.Builders
             return this;
         }
 
+        public CreateEventRequestBuilder WithReason(string reason)
+        {
+            _request.With(x => x.Reason = reason);
+            return this;
+        }
+
         public ConferenceEventRequest Build()
         {
             return _request.Build();
