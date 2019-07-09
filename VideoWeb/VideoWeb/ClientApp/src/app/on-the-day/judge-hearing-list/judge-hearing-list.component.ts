@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
+import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceForUserResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
+import { VhContactDetails } from 'src/app/shared/contact-information';
 import { PageUrls } from 'src/app/shared/page-url.constants';
-import { Router } from '@angular/router';
-import { ProfileService } from 'src/app/services/api/profile.service';
 
 @Component({
   selector: 'app-judge-hearing-list',
@@ -15,7 +16,7 @@ import { ProfileService } from 'src/app/services/api/profile.service';
 export class JudgeHearingListComponent implements OnInit {
 
   contact = {
-    phone: '0300 303 0655'
+    phone: VhContactDetails.phone
   };
 
   conferences: ConferenceForUserResponse[];
@@ -58,11 +59,6 @@ export class JudgeHearingListComponent implements OnInit {
 
   get courtName(): string {
     return (this.profile) ? `${this.profile.first_name}, ${this.profile.last_name}` : '';
-    // if (this.profile) {
-    //   return `${this.profile.first_name}, ${this.profile.last_name}`;
-    // } else {
-    //   return '';
-    // }
   }
 
   hasHearings() {
