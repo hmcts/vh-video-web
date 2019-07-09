@@ -51,6 +51,11 @@ export class VideoWebService {
     return this.apiClient.getToken(participantId);
   }
 
+  raiseParticipantEvent(conferenceId: string,
+    updateParticipantStatusEventRequest: UpdateParticipantStatusEventRequest): Observable<void> {
+    return this.apiClient.updateParticipantStatus(conferenceId, updateParticipantStatusEventRequest);
+  }
+
   raiseSelfTestFailureEvent(conferenceId: string, addSelfTestFailureEventRequest: AddSelfTestFailureEventRequest): Observable<void> {
     return this.apiClient.addSelfTestFailureEventToConference(conferenceId, addSelfTestFailureEventRequest);
   }
