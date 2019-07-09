@@ -13,6 +13,8 @@ import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { ContactUsFoldingStubComponent } from 'src/app/testing/stubs/contact-us-stub';
 import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone.component';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 describe('SwitchOnCameraMicrophoneComponent', () => {
   let component: SwitchOnCameraMicrophoneComponent;
@@ -36,7 +38,8 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
           },
         },
         { provide: AdalService, useClass: MockAdalService },
-        { provide: VideoWebService, useClass: MockVideoWebService }
+        { provide: VideoWebService, useClass: MockVideoWebService },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
   });

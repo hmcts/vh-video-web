@@ -10,6 +10,8 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { JudgeHearingTableStubComponent } from 'src/app/testing/stubs/judge-hearing-list-table-stub';
 import { ConferenceForUserResponse } from '../../services/clients/api-client';
 import { JudgeHearingListComponent } from './judge-hearing-list.component';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 
 describe('JudgeHearingListComponent with no conferences for user', () => {
   let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
@@ -25,7 +27,8 @@ describe('JudgeHearingListComponent with no conferences for user', () => {
       imports: [RouterTestingModule, SharedModule],
       declarations: [JudgeHearingListComponent, JudgeHearingTableStubComponent],
       providers: [
-        { provide: VideoWebService, useValue: videoWebServiceSpy }
+        { provide: VideoWebService, useValue: videoWebServiceSpy },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
   });
@@ -56,7 +59,8 @@ describe('JudgeHearingListComponent with conferences for user', () => {
       imports: [SharedModule, RouterTestingModule],
       declarations: [JudgeHearingListComponent, JudgeHearingTableStubComponent],
       providers: [
-        { provide: VideoWebService, useValue: videoWebServiceSpy }
+        { provide: VideoWebService, useValue: videoWebServiceSpy },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
   });
@@ -91,7 +95,8 @@ describe('JudgeHearingListComponent with service error', () => {
       imports: [SharedModule, RouterTestingModule],
       declarations: [JudgeHearingListComponent, JudgeHearingTableStubComponent],
       providers: [
-        { provide: VideoWebService, useValue: videoWebServiceSpy }
+        { provide: VideoWebService, useValue: videoWebServiceSpy },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
   });

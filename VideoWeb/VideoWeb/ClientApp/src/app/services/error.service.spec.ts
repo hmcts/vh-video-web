@@ -1,9 +1,11 @@
-import { TestBed, inject } from '@angular/core/testing';
-
-import { ErrorService } from './error.service';
-import { RouterTestingModule } from '@angular/router/testing';
+import { inject, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { PageUrls } from '../shared/page-url.constants';
+import { MockLogger } from '../testing/mocks/MockLogger';
+import { ErrorService } from './error.service';
+import { Logger } from './logging/logger-base';
+
 
 describe('ErrorService', () => {
   let router: Router;
@@ -11,7 +13,10 @@ describe('ErrorService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
-      providers: [ErrorService]
+      providers: [
+        ErrorService,
+        { provide: Logger, useClass: MockLogger }
+      ]
     });
 
     router = TestBed.get(Router);

@@ -7,6 +7,8 @@ import { UserProfileResponse, UserRole } from '../services/clients/api-client';
 import { ProfileService } from '../services/api/profile.service';
 import { SharedModule } from '../shared/shared.module';
 import { JudgeGuard } from './judge.guard';
+import { Logger } from '../services/logging/logger-base';
+import { MockLogger } from '../testing/mocks/MockLogger';
 
 describe('JudgeGuard', () => {
   let profileServiceSpy: jasmine.SpyObj<ProfileService>;
@@ -22,7 +24,8 @@ describe('JudgeGuard', () => {
       providers: [
         JudgeGuard,
         { provide: Router, useValue: router },
-        { provide: ProfileService, useValue: profileServiceSpy }
+        { provide: ProfileService, useValue: profileServiceSpy },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
     guard = TestBed.get(JudgeGuard);

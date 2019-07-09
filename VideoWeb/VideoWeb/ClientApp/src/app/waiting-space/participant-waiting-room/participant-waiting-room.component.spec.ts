@@ -18,6 +18,8 @@ import { AnalogueClockStubComponent } from 'src/app/testing/stubs/analogue-clock
 import { ParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
 import { Hearing } from '../../shared/models/hearing';
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room.component';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
@@ -48,7 +50,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },
         { provide: ConfigService, useClass: MockConfigService },
-        { provide: EventsService, useClass: MockEventsService }
+        { provide: EventsService, useClass: MockEventsService },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
   });
@@ -186,7 +189,8 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },
         { provide: ConfigService, useClass: MockConfigService },
-        { provide: EventsService, useClass: MockEventsService }
+        { provide: EventsService, useClass: MockEventsService },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
   });

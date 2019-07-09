@@ -2,39 +2,39 @@ import { Injectable } from '@angular/core';
 import { ClientSettingsResponse } from '../clients/api-client';
 import { Observable, of } from 'rxjs';
 import { HttpClient, HttpBackend } from '@angular/common/http';
+import { SessionStorage } from '../session-storage';
 
 @Injectable()
 export class ConfigService {
     clientSettings: ClientSettingsResponse;
-    private settingsSessionKey = 'clientSettings';
+    private SETTINGS_KEY = 'vh.client.settings';
+    private readonly clientSettingCache: SessionStorage<ClientSettingsResponse>;
     private httpClient: HttpClient;
 
     constructor(handler: HttpBackend) {
         this.httpClient = new HttpClient(handler);
+        this.clientSettingCache = new SessionStorage<ClientSettingsResponse>(this.SETTINGS_KEY);
     }
 
-    getClientSettings(): Observable<ClientSettingsResponse> {
-        const settings = sessionStorage.getItem(this.settingsSessionKey);
-        if (!settings) {
-            return this.retrieveConfigFromApi();
-        } else {
-            return of(JSON.parse(settings));
+    async loadConfig() {
+        try {
+            const result_1 = await this.retrieveConfigFromApi();
+            this.clientSettings = result_1;
+            this.clientSettingCache.set(result_1);
+            return Promise.resolve(result_1);
+        } catch (err) {
+            console.error(`failed to read configuration: ${err}`);
+            throw err;
         }
     }
 
-    loadConfig() {
-        return new Promise((resolve, reject) => {
-            this.getClientSettings().subscribe((data: ClientSettingsResponse) => {
-                this.clientSettings = data;
-                sessionStorage.setItem(this.settingsSessionKey, JSON.stringify(data));
-                resolve(true);
-            }, err => resolve(err));
-        });
+    getClientSettings(): ClientSettingsResponse {
+        return this.clientSettingCache.get();
     }
 
-    private retrieveConfigFromApi(): Observable<ClientSettingsResponse> {
+    private retrieveConfigFromApi(): Promise<ClientSettingsResponse> {
         let url = '/config';
         url = url.replace(/[?&]$/, '');
-        return this.httpClient.get<ClientSettingsResponse>(url);
+        return this.httpClient.get<ClientSettingsResponse>(url).toPromise();
     }
 }

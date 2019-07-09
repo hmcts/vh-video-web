@@ -7,6 +7,8 @@ import { ProfileService } from '../services/api/profile.service';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { UserProfileResponse, UserRole } from '../services/clients/api-client';
+import { MockLogger } from '../testing/mocks/MockLogger';
+import { Logger } from '../services/logging/logger-base';
 
 describe('ParticipantGuard', () => {
   let profileServiceSpy: jasmine.SpyObj<ProfileService>;
@@ -22,7 +24,8 @@ describe('ParticipantGuard', () => {
       providers: [
         ParticipantGuard,
         { provide: Router, useValue: router },
-        { provide: ProfileService, useValue: profileServiceSpy }
+        { provide: ProfileService, useValue: profileServiceSpy },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
     guard = TestBed.get(ParticipantGuard);
