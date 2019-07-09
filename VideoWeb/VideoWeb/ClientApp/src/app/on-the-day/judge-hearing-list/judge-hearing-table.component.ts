@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import * as moment from 'moment';
 import { ConferenceForUserResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 
