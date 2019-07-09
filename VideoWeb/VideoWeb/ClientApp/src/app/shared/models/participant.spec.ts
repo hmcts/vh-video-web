@@ -17,13 +17,6 @@ describe('Participant', () => {
     expect(participant.getStatusAsText()).toBe('Not Signed In');
   });
 
-  it('should return `not signed in`', () => {
-    const p = new ConferenceTestData().getConferenceDetail().participants[0];
-    p.status = ParticipantStatus.NotSignedIn;
-    const participant = new Participant(p);
-    expect(participant.getStatusAsText()).toBe('Not Signed In');
-  });
-
   it('should return `In Consulation`', () => {
     const p = new ConferenceTestData().getConferenceDetail().participants[0];
     p.status = ParticipantStatus.InConsultation;

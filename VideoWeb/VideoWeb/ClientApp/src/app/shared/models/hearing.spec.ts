@@ -20,7 +20,6 @@ describe('Hearing', () => {
   it('should retrieve judge', () => {
     const conference = new ConferenceTestData().getConferenceNow();
     const hearing = new Hearing(conference);
-    console.log(conference);
     expect(hearing.judge).toBeDefined();
   });
 

@@ -18,7 +18,7 @@
 
       <!-- Judge-->
       <td class="govuk-table__cell">
-        <p class="govuk-!-margin-0 govuk-!-padding-0">{{ hearing.judge.displayName }}</p>
+        <p class="govuk-!-margin-0 govuk-!-padding-0">{{hearing.judge.displayName}}</p>
       </td>
 
       <!-- Hearing -->
@@ -30,20 +30,24 @@
           {{ hearing.caseType }}
         </p>
         <p class="govuk-!-margin-0 govuk-!-padding-0">
-          Case number: <span class="govuk-!-font-weight-bold"> {{hearing.caseNumber}} </span>
+          Case number: <span class="govuk-!-font-weight-bold">{{hearing.caseNumber}}</span>
         </p>
       </td>
 
       <!-- Participant -->
       <td class="govuk-table__cell">
-        <p>
-          <span class="govuk-!-font-weight-bold">{{ hearing.applicantRepresentative.displayName}}</span> Solicitor for
-          <span class="govuk-!-font-weight-bold">{{ hearing.applicantRepresentative.representee}}</span>
+        <p class="govuk-!-margin-0 govuk-!-padding-0">
+          <span class="govuk-!-font-weight-bold">{{hearing.applicantRepresentative.displayName}}</span> Solicitor
+        </p>
+        <p class="govuk-!-margin-0 govuk-!-padding-0">for <span
+            class="govuk-!-font-weight-bold">{{hearing.applicantRepresentative.representee}}</span>
         </p>
 
-        <p>
-          <span class="govuk-!-font-weight-bold">{{ hearing.defendantRepresentative.displayName}}</span> Solicitor for
-          <span class="govuk-!-font-weight-bold">{{ hearing.defendantRepresentative.representee}}</span>
+        <p class="govuk-!-margin-bottom-0 govuk-!-padding-bottom-0">
+          <span class="govuk-!-font-weight-bold">{{hearing.defendantRepresentative.displayName}}</span> Solicitor
+        </p>
+        <p class="govuk-!-margin-0 govuk-!-padding-0">for <span
+            class="govuk-!-font-weight-bold">{{hearing.defendantRepresentative.representee}}</span>
         </p>
       </td>
 
@@ -60,7 +64,7 @@
         <div *ngIf="showConferenceStatus(hearing)" class="govuk-!-margin-top-3 govuk-!-margin-bottom-3">
           <span class="govuk-!-padding-top-1 govuk-!-padding-bottom-1 govuk-!-padding-right-2 govuk-!-padding-left-2"
             [ngClass]="{'conference-closed': hearing.isClosed(), 'conference-paused': hearing.isPaused(), 
-              'conference-suspended': hearing.isSuspended()}">{{ hearing.status}}</span>
+              'conference-suspended': hearing.isSuspended()}">{{hearing.status}}</span>
         </div>
       </td>
     </tr>

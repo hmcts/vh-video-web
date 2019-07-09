@@ -20,6 +20,8 @@ import { VhoHearingListStubComponent as VhoHearingListStubComponent } from 'src/
 import { VhoParticipantStatusStubComponent } from 'src/app/testing/stubs/vho-participant-status-stub';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { VhoHearingsComponent } from './vho-hearings.component';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 describe('VhoHearingsComponent', () => {
   let component: VhoHearingsComponent;
@@ -43,7 +45,8 @@ describe('VhoHearingsComponent', () => {
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },
         { provide: EventsService, useClass: MockEventsService },
-        { provide: ConfigService, useClass: MockConfigService }
+        { provide: ConfigService, useClass: MockConfigService },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
   });

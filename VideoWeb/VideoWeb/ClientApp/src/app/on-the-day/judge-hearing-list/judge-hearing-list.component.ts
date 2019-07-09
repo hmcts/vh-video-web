@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceForUserResponse } from 'src/app/services/clients/api-client';
+import { ConferenceForUserResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { Router } from '@angular/router';
+import { ProfileService } from 'src/app/services/api/profile.service';
 
 @Component({
   selector: 'app-judge-hearing-list',
@@ -22,16 +23,21 @@ export class JudgeHearingListComponent implements OnInit {
   loadingData: boolean;
   interval: any;
   today = new Date();
+  profile: UserProfileResponse;
 
   constructor(
     private videoWebService: VideoWebService,
     private errorService: ErrorService,
-    private router: Router
+    private router: Router,
+    private profileService: ProfileService
   ) {
     this.loadingData = true;
   }
 
   ngOnInit() {
+    this.profileService.getUserProfile().then((profile) => {
+      this.profile = profile;
+    });
     this.retrieveHearingsForUser();
     this.interval = setInterval(() => {
       this.retrieveHearingsForUser();
@@ -51,7 +57,12 @@ export class JudgeHearingListComponent implements OnInit {
   }
 
   get courtName(): string {
-    return 'Court 11, Taylor House';
+    return (this.profile) ? `${this.profile.first_name}, ${this.profile.last_name}` : '';
+    // if (this.profile) {
+    //   return `${this.profile.first_name}, ${this.profile.last_name}`;
+    // } else {
+    //   return '';
+    // }
   }
 
   hasHearings() {

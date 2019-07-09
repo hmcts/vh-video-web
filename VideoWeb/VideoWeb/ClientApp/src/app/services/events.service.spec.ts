@@ -5,6 +5,8 @@ import { AdalService } from 'adal-angular4';
 import { MockAdalService } from '../testing/mocks/MockAdalService';
 import { ConfigService } from './api/config.service';
 import { MockConfigService } from '../testing/mocks/MockConfigService';
+import { Logger } from './logging/logger-base';
+import { MockLogger } from '../testing/mocks/MockLogger';
 
 describe('EventsService', () => {
   beforeEach(() => {
@@ -12,7 +14,8 @@ describe('EventsService', () => {
       providers: [
         EventsService,
         { provide: AdalService, useClass: MockAdalService },
-        { provide: ConfigService, useClass: MockConfigService }
+        { provide: ConfigService, useClass: MockConfigService },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
   });

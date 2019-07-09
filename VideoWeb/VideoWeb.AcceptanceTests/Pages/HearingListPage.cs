@@ -24,6 +24,8 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By JudgeHearingListedFor(string caseNumber) =>
             By.XPath($"//p[contains(text(),'{caseNumber}')]/../../../../td/p[contains(text(),'listed for')]");
 
+        public By VideoHearingsCaseNumbers =>
+            By.XPath($"//div[@class='govuk-summary-list__row']//p[contains(text(),'/')]");
         public By VideoHearingsOfficerTime(string caseNumber) =>
             By.XPath($"//p[contains(text(),'{caseNumber}')]/../../..//p[contains(text(),':')]");
         public By VideoHearingsOfficerListedFor(string caseNumber) =>

@@ -30,6 +30,7 @@ namespace VideoWeb.AcceptanceTests.Pages
 
         public static Page Login => new Page("Login", "login.microsoftonline.com", ParticipantJourney.Login, NextPageAsJourney(ParticipantJourney.Login), JudgeJourney.Login, NextPageAsJudgeJourney(JudgeJourney.Login), VhoJourney.Login, NextPageAsVhoJourney(VhoJourney.Login));
         public static Page HearingList => new Page("Hearing List", "hearing-list", ParticipantJourney.HearingList, NextPageAsJourney(ParticipantJourney.HearingList), JudgeJourney.HearingList, NextPageAsJudgeJourney(JudgeJourney.HearingList), VhoJourney.HearingList, NextPageAsVhoJourney(VhoJourney.HearingList));
+        public static Page Introduction => new Page("Introduction", "introduction", ParticipantJourney.Introduction, NextPageAsJourney(ParticipantJourney.Introduction), JudgeJourney.NotInJudgeJourney, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJourney), VhoJourney.NotInVhoJourney, NextPageAsVhoJourney(VhoJourney.NotInVhoJourney));
         public static Page EquipmentCheck => new Page("Equipment Check", "equipment-check", ParticipantJourney.EquipmentCheck, NextPageAsJourney(ParticipantJourney.EquipmentCheck), JudgeJourney.NotInJudgeJourney, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJourney), VhoJourney.NotInVhoJourney, NextPageAsVhoJourney(VhoJourney.NotInVhoJourney));
         public static Page SwitchOnCamAndMicPage => new Page("Switch on your camera and microphone", "switch-on-camera-microphone", ParticipantJourney.SwitchOnYourCameraAndMicrophone, NextPageAsJourney(ParticipantJourney.SwitchOnYourCameraAndMicrophone), JudgeJourney.NotInJudgeJourney, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJourney), VhoJourney.NotInVhoJourney, NextPageAsVhoJourney(VhoJourney.NotInVhoJourney));
         public static Page PracticeVideoHearing => new Page("Practice video hearing", "practice-video-hearing", ParticipantJourney.PracticeVideoHearing, NextPageAsJourney(ParticipantJourney.PracticeVideoHearing), JudgeJourney.NotInJudgeJourney, NextPageAsJudgeJourney(JudgeJourney.NotInJudgeJourney), VhoJourney.NotInVhoJourney, NextPageAsVhoJourney(VhoJourney.NotInVhoJourney));        
@@ -69,6 +70,8 @@ namespace VideoWeb.AcceptanceTests.Pages
                     return Login;
                 case ParticipantJourney.HearingList:
                     return HearingList;
+                case ParticipantJourney.Introduction:
+                    return Introduction;
                 case ParticipantJourney.EquipmentCheck:
                     return EquipmentCheck;
                 case ParticipantJourney.SwitchOnYourCameraAndMicrophone:

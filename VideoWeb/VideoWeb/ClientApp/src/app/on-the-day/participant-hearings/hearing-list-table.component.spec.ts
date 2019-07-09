@@ -68,10 +68,10 @@ describe('HearingListTableComponent', () => {
     expect(result).toBe(expectedDateString);
   });
 
-  it('should navigate to equipment check page with conference id', () => {
+  it('should navigate to introduction page with conference id', () => {
     const conference = new ConferenceTestData().getConferenceFuture();
     spyOn(router, 'navigate').and.callFake(() => { });
     component.signIntoConference(conference);
-    expect(router.navigate).toHaveBeenCalledWith([PageUrls.EquipmentCheck, conference.id]);
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.Introduction, conference.id]);
   });
 });

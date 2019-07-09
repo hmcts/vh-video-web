@@ -9,5 +9,11 @@
         public string VhVideoWebResourceId { get; set; }
         public string RedirectUri { get; set; }
         public string PostLogoutRedirectUri { get; set; }
+        public ApplicationInsightsConfiguration ApplicationInsights { get; set; }
+    }
+
+    public class ApplicationInsightsConfiguration
+    {
+        public string InstrumentationKey { get; set; }
     }
 }

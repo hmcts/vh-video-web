@@ -5,6 +5,7 @@ import { ConferenceEventRequest, ConferenceResponse, EventType, ParticipantRespo
 import { VideoWebService } from '../services/api/video-web.service';
 import { PageUrls } from '../shared/page-url.constants';
 import { ErrorService } from '../services/error.service';
+import { Logger } from '../services/logging/logger-base';
 
 @Component({
   selector: 'app-send-video-events',
@@ -19,7 +20,8 @@ export class SendVideoEventsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private videoWebService: VideoWebService,
-    private errorService: ErrorService
+    private errorService: ErrorService,
+    private logger: Logger
   ) {
     this.loadingData = true;
   }
@@ -139,9 +141,9 @@ export class SendVideoEventsComponent implements OnInit {
   private sendEvent(request: ConferenceEventRequest) {
     this.videoWebService.sendEvent(request)
       .subscribe(() => {
-        console.log(request);
+        this.logger.event('Raised video event on test page', request);
       }, error => {
-        console.error(error);
+        this.logger.error('Failed to raise video event on test page', error);
       });
   }
 }

@@ -4,13 +4,14 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
-
 import { AppComponent } from './app.component';
-import { ClientSettingsResponse } from './services/clients/api-client';
 import { ConfigService } from './services/api/config.service';
+import { ClientSettingsResponse } from './services/clients/api-client';
+import { Logger } from './services/logging/logger-base';
 import { FooterStubComponent } from './testing/stubs/footer-stub';
 import { HeaderStubComponent } from './testing/stubs/header-stub';
 import { SnotifyStubComponent } from './testing/stubs/snotify-stub';
+import { MockLogger } from './testing/mocks/MockLogger';
 
 describe('AppComponent', () => {
   const router = {
@@ -36,7 +37,7 @@ describe('AppComponent', () => {
 
   configureTestSuite(() => {
     configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['clientSettings', 'getClientSettings', 'loadConfig']);
-    configServiceSpy.clientSettings.and.returnValue(clientSettings);
+    configServiceSpy.getClientSettings.and.returnValue(clientSettings);
 
     adalServiceSpy = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo']);
     adalServiceSpy.userInfo.and.returnValue(userInfo);
@@ -52,7 +53,8 @@ describe('AppComponent', () => {
         [
           { provide: AdalService, useValue: adalServiceSpy },
           { provide: ConfigService, useValue: configServiceSpy },
-          { provide: Router, useValue: router }
+          { provide: Router, useValue: router },
+          { provide: Logger, useClass: MockLogger }
         ],
     });
   });

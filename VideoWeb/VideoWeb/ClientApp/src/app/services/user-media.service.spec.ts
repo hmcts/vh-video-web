@@ -1,9 +1,11 @@
-import { TestBed, inject } from '@angular/core/testing';
-
-import { UserMediaService } from './user-media.service';
-import { MediaDeviceTestData } from '../testing/mocks/data/media-device-test-data';
+import { inject, TestBed } from '@angular/core/testing';
 import { UserMediaDevice } from '../shared/models/user-media-device';
+import { MediaDeviceTestData } from '../testing/mocks/data/media-device-test-data';
+import { MockLogger } from '../testing/mocks/MockLogger';
+import { Logger } from './logging/logger-base';
 import { SessionStorage } from './session-storage';
+import { UserMediaService } from './user-media.service';
+
 
 describe('UserMediaService', () => {
 
@@ -11,7 +13,10 @@ describe('UserMediaService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [UserMediaService]
+            providers: [
+                UserMediaService,
+                { provide: Logger, useClass: MockLogger }
+            ]
         });
     });
 
@@ -34,7 +39,6 @@ describe('UserMediaService', () => {
             service.availableDeviceList = testData.getListOfDevices();
         });
         await service.checkDeviceListIsReady();
-        console.log('waiting fot list of mics');
         expect(service.updateAvailableDevicesList).toHaveBeenCalled();
     }));
 
