@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
-import { ConferenceResponse, ParticipantResponse, TokenResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ParticipantResponse, TokenResponse, UserRole } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { ProfileService } from 'src/app/services/api/profile.service';
 declare var PexRTC: any;
 
 @Component({
@@ -34,6 +35,8 @@ export class SelfTestComponent implements OnInit {
   displayDeviceChangeModal: boolean;
   hasMultipleDevices: boolean;
 
+  isJudge: boolean;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -41,16 +44,24 @@ export class SelfTestComponent implements OnInit {
     private videoWebService: VideoWebService,
     private errorService: ErrorService,
     private userMediaService: UserMediaService,
-    private userMediaStreamService: UserMediaStreamService
+    private userMediaStreamService: UserMediaStreamService,
+    private profileService: ProfileService
   ) {
     this.testComplete = false;
+    this.isJudge = false;
   }
 
   async ngOnInit() {
     this.displayFeed = false;
     this.displayDeviceChangeModal = false;
+    this.retrieveProfile();
     this.setupSubscribers();
     this.getConference();
+  }
+
+  async retrieveProfile(): Promise<void> {
+    const profile = await this.profileService.getUserProfile();
+    this.isJudge = profile.role === UserRole.Judge;
   }
 
   get streamsActive() {
@@ -187,6 +198,10 @@ export class SelfTestComponent implements OnInit {
     if (!this.testComplete) {
       this.disconnect();
     }
-    this.router.navigate([PageUrls.CameraWorking, this.conference.id]);
+    if (this.isJudge) {
+      this.router.navigate([PageUrls.JudgeHearingList]);
+    } else {
+      this.router.navigate([PageUrls.CameraWorking, this.conference.id]);
+    }
   }
 }

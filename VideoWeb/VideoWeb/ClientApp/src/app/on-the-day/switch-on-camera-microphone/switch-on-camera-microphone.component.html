@@ -13,7 +13,7 @@
         Your camera and microphone are switched on. You can now continue to the video.</p>
     </div>
 
-    <div *ngIf="userPrompted && !mediaAccepted">
+    <div *ngIf="userPrompted && !mediaAccepted && !isJudge">
       <h1 class="govuk-heading-l">Your camera and microphone are blocked</h1>
       <p class="govuk-body govuk-!-margin-top-9">
         We're sorry, you can't take part in the hearing without using your camera and microphone.
@@ -21,6 +21,18 @@
       <p class="govuk-body govuk-!-margin-bottom-9">
         Stay close to your phone and we'll call you within 5 minutes.
       </p>
+    </div>
+
+    <div *ngIf="userPrompted && !mediaAccepted && isJudge">
+      <h1 class="govuk-heading-l">Your camera and microphone are blocked</h1>
+      <p class="govuk-body govuk-!-margin-top-9">
+        We're sorry, the hearing can't go ahead if your camera and microphone are blocked.
+      </p>
+      <p class="govuk-body govuk-!-margin-bottom-5">
+        Please unblock the camera and microphone or call us if there is a problem.
+      </p>
+
+      <h3 class="govuk-heading-m govuk-!-margin-bottom-7">Helpline: {{contact.phone}}</h3>
     </div>
 
     <input *ngIf="!userPrompted" type="button" id="switch-on-btn" class="govuk-button govuk-!-margin-bottom-9"
