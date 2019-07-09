@@ -22,24 +22,22 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     if (this.deviceTypeService.isDesktop()) {
-      this.navigateToHearingList();
+      this.profileService.getUserProfile()
+        .then((profile) => this.navigateToHearingList(profile))
+        .catch((error) => this.errorService.handleApiError(error));
     } else {
       this.router.navigate([PageUrls.SignonAComputer]);
     }
   }
 
-  navigateToHearingList() {
-    this.profileService.getUserProfile().subscribe((data: UserProfileResponse) => {
-      if (data.role === UserRole.Judge) {
-        this.router.navigate([PageUrls.JudgeHearingList]);
-      } else if (data.role === UserRole.VideoHearingsOfficer) {
-        this.router.navigate([PageUrls.AdminHearingList]);
-      } else {
-        this.router.navigate([PageUrls.ParticipantHearingList]);
-      }
-    }, (error) => {
-      this.errorService.handleApiError(error);
-    });
+  navigateToHearingList(userProfile: UserProfileResponse) {
+    if (userProfile.role === UserRole.Judge) {
+      this.router.navigate([PageUrls.JudgeHearingList]);
+    } else if (userProfile.role === UserRole.VideoHearingsOfficer) {
+      this.router.navigate([PageUrls.AdminHearingList]);
+    } else {
+      this.router.navigate([PageUrls.ParticipantHearingList]);
+    }
   }
 
 }

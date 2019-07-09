@@ -34,7 +34,6 @@ describe('UserMediaService', () => {
             service.availableDeviceList = testData.getListOfDevices();
         });
         await service.checkDeviceListIsReady();
-        console.log('waiting fot list of mics');
         expect(service.updateAvailableDevicesList).toHaveBeenCalled();
     }));
 
