@@ -20,6 +20,8 @@ import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { VhoHearingsComponent } from './vho-hearings.component';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 
 describe('VhoHearingsComponent', () => {
@@ -44,7 +46,8 @@ describe('VhoHearingsComponent', () => {
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },
         { provide: EventsService, useClass: MockEventsService },
-        { provide: ConfigService, useClass: MockConfigService }
+        { provide: ConfigService, useClass: MockConfigService },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
   });

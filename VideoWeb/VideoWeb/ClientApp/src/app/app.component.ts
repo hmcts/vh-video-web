@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
-
 import { ConfigService } from './services/api/config.service';
 
 @Component({
@@ -22,7 +21,7 @@ export class AppComponent implements OnInit {
   }
 
   private initAuthentication() {
-    const clientSettings = this.configService.clientSettings;
+    const clientSettings = this.configService.getClientSettings();
     const config = {
       tenant: clientSettings.tenant_id,
       clientId: clientSettings.client_id,

@@ -29,5 +29,10 @@ namespace VideoWeb.Contract.Responses
         /// The uri fot the video api
         /// </summary>
         public string VideoApiUrl { get; set; }
+
+        /// <summary>
+        /// The application insight instrumentation key
+        /// </summary>
+        public string AppInsightsInstrumentationKey { get; set; }
     }
 }
