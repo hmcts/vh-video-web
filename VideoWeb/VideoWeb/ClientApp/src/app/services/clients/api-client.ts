@@ -425,7 +425,7 @@ export class ApiClient {
      * @return Success
      */
     addSelfTestFailureEventToConference(conferenceId: string, addSelfTestFailureEventRequest: AddSelfTestFailureEventRequest | null | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/conferences/{conferenceId}/mediaproblem";
+        let url_ = this.baseUrl + "/conferences/{conferenceId}/selftestfailureevents";
         if (conferenceId === undefined || conferenceId === null)
             throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace("{conferenceId}", encodeURIComponent("" + conferenceId)); 
@@ -1506,6 +1506,7 @@ export enum EventType {
     JudgeAvailable = "JudgeAvailable",
     MediaPermissionDenied = "MediaPermissionDenied",
     ParticipantJoining = "ParticipantJoining",
+    SelfTestFailed = "SelfTestFailed",
 }
 
 export class AddSelfTestFailureEventRequest implements IAddSelfTestFailureEventRequest {

@@ -47,7 +47,7 @@ namespace VideoWeb.Controllers
             }
         }
 
-        [HttpPost("{conferenceId}/mediaproblem")]
+        [HttpPost("{conferenceId}/selftestfailureevents")]
         [SwaggerOperation(OperationId = "AddSelfTestFailureEventToConference")]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
