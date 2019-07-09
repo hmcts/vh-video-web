@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using System;
+using OpenQA.Selenium;
 
 namespace VideoWeb.AcceptanceTests.Pages
 {
@@ -17,6 +18,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By ActionedByTimestamp(string alertType) => By.XPath($"//dd[contains(@class,'task-body')]/p[contains(text(),'{alertType}')]/../..//dd/p[contains(text(),':')]");
         public By ActionedByUser(string alertType) => By.XPath($"//dd[contains(@class,'task-body')]/p[contains(text(),'{alertType}')]/../..//dd/p[contains(text(),'@')]");
         public By ParticipantStatusTable = By.Id("participant-status");
-        public By ParticipantStatus(string name) => By.XPath($"//p[text()='{name}']/../..//p[text()!='{name}']");
+        public By ParticipantStatus(Guid participantId, string name) => By.XPath($"//div[@id='p-row-{participantId}']/..//p[text()!='{name}']");
     }
 }

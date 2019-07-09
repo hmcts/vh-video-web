@@ -18,7 +18,7 @@ export class HearingListTableComponent implements OnInit {
   }
 
   signIntoConference(conference: ConferenceForUserResponse) {
-    this.router.navigate([PageUrls.EquipmentCheck, conference.id]);
+    this.router.navigate([PageUrls.Introduction, conference.id]);
   }
 
   getSignInDate(conference: ConferenceForUserResponse): string {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Net;
 using System.Runtime.Serialization;
 using System.Threading;
@@ -9,6 +10,7 @@ using Testing.Common.Assertions;
 using Testing.Common.Builders;
 using Testing.Common.Configuration;
 using Testing.Common.Helpers;
+using VideoWeb.AcceptanceTests.Configuration;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
@@ -25,7 +27,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         private const int NumberOfIndividuals = 2;
         private const int NumberOfRepresentatives = 2;
         private const int HearingDuration = 60;
-        private const int WaitForConferenceToBeCreatedRetries = 10;
 
         public DataSetupSteps(TestContext context)
         {
@@ -37,14 +38,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void GivenIHaveAHearingAndAConference()
         {
             GivenIHaveAHearing();
-            GetTheNewConferenceDetails(_context.NewHearingId);
+            GetTheNewConferenceDetails();
         }
 
         [Given(@"I have a hearing and a conference in (.*) minutes time")]
         public void GivenIHaveAHearingAndAConferenceInMinutesTime(int minutes)
         {
             GivenIHaveAHearing(minutes);
-            GetTheNewConferenceDetails(_context.NewHearingId);
+            GetTheNewConferenceDetails();
             _context.DelayedStartTime = minutes;
         }
 
@@ -54,7 +55,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var minutesFromDays = Convert.ToInt32(TimeSpan.FromDays(days).TotalMinutes);
             GivenIHaveAHearing(minutesFromDays);
-            GetTheNewConferenceDetails(_context.NewHearingId);
+            GetTheNewConferenceDetails();
         }
 
         [Given(@"I have a hearing")]
@@ -84,39 +85,35 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Given(@"Get the new conference details")]
-        public void GetTheNewConferenceDetails(Guid hearingId)
+        public void GetTheNewConferenceDetails()
         {
-            _context.Request = _context.Get(_videoEndpoints.GetConferenceByHearingRefId(hearingId));
-            _context.RequestBody = null;
-            var conferenceFound = false;
-            for (var i = 0; i < WaitForConferenceToBeCreatedRetries; i++)
+            IConferenceRetriever conferenceRetriever;
+            if (_context.RunningLocally)
             {
-                WhenISendTheRequestToTheVideoApiEndpoint();
-                if (_context.Response.StatusCode.Equals(HttpStatusCode.OK))
-                {
-                    conferenceFound = true;
-                    break;
-                }
-                Thread.Sleep(TimeSpan.FromSeconds(1));
+                conferenceRetriever = new RetrieveConferenceLocally();
             }
+            else
+            {
+                conferenceRetriever = new RetrieveConferenceFromBus();
+            }
+            var conference = conferenceRetriever.GetConference(_context);
+            AssertConferenceDetailsResponse.ForConference(conference);
 
-            conferenceFound.Should().BeTrue();
-            _context.Response.Should().NotBeNull();
-            ThenTheConferenceDetailsShouldBeRetrieved();
+            if (conference.Id != null)
+            {
+                _context.Conference = conference;
+                _context.NewConferenceId = (Guid)conference.Id;
+            }
+            else
+            {
+                throw new DataException("Conference Id has not been set");
+            }
         }
 
         [When(@"I send the requests to the bookings api")]
         public void WhenISendTheRequestToTheBookingsApiEndpoint()
         {
             _context.Response = _context.BookingsApiClient().Execute(_context.Request);
-            if (_context.Response.Content != null)
-                _context.Json = _context.Response.Content;
-        }
-
-        [When(@"I send the requests to the video api")]
-        public void WhenISendTheRequestToTheVideoApiEndpoint()
-        {
-            _context.Response = _context.VideoApiClient().Execute(_context.Request);
             if (_context.Response.Content != null)
                 _context.Json = _context.Response.Content;
         }
@@ -144,16 +141,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 throw new InvalidDataContractException("Hearing Id must be set");
             }
-        }
-
-        [Then(@"the conference details should be retrieved")]
-        public void ThenTheConferenceDetailsShouldBeRetrieved()
-        {
-            var conference = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_context.Json);
-            conference.Should().NotBeNull();
-            AssertConferenceDetailsResponse.ForConference(conference);
-            _context.Conference = conference;
-            _context.NewConferenceId = conference.Id;
         }
 
         private static void AddJudgeParticipant(UserAccount judge, ICollection<ParticipantRequest> participants)
