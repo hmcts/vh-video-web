@@ -41,7 +41,13 @@ namespace VideoWeb
         
         private void RegisterSettings(IServiceCollection services)
         {
-            services.Configure<AzureAdConfiguration>(options => Configuration.Bind("AzureAd",options));
+            
+            services.Configure<AzureAdConfiguration>(options =>
+            {
+                Configuration.Bind("AzureAd", options);
+                options.ApplicationInsights = new ApplicationInsightsConfiguration();
+                Configuration.Bind("ApplicationInsights", options.ApplicationInsights);
+            });
             services.Configure<HearingServicesConfiguration>(options => Configuration.Bind("VhServices",options));
             var customTokenSettings = Configuration.GetSection("CustomToken").Get<CustomTokenSettings>();
             services.AddSingleton(customTokenSettings);

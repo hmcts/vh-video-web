@@ -18,6 +18,8 @@ import { ParticipantStatusListStubComponent } from 'src/app/testing/stubs/partic
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { ErrorService } from 'src/app/services/error.service';
 import { configureTestSuite } from 'ng-bullet';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
   let component: JudgeWaitingRoomComponent;
@@ -49,7 +51,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },
         { provide: ConfigService, useClass: MockConfigService },
-        { provide: EventsService, useClass: MockEventsService }
+        { provide: EventsService, useClass: MockEventsService },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
   });
@@ -164,7 +167,8 @@ describe('JudgeWaitingRoomComponent when conference does not exist', () => {
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },
         { provide: ConfigService, useClass: MockConfigService },
-        { provide: EventsService, useClass: MockEventsService }
+        { provide: EventsService, useClass: MockEventsService },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
   });

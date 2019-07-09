@@ -1280,6 +1280,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     redirect_uri?: string | undefined;
     post_logout_redirect_uri?: string | undefined;
     video_api_url?: string | undefined;
+    app_insights_instrumentation_key?: string | undefined;
 
     constructor(data?: IClientSettingsResponse) {
         if (data) {
@@ -1297,6 +1298,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
             this.redirect_uri = data["redirect_uri"];
             this.post_logout_redirect_uri = data["post_logout_redirect_uri"];
             this.video_api_url = data["video_api_url"];
+            this.app_insights_instrumentation_key = data["app_insights_instrumentation_key"];
         }
     }
 
@@ -1314,6 +1316,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         data["redirect_uri"] = this.redirect_uri;
         data["post_logout_redirect_uri"] = this.post_logout_redirect_uri;
         data["video_api_url"] = this.video_api_url;
+        data["app_insights_instrumentation_key"] = this.app_insights_instrumentation_key;
         return data; 
     }
 }
@@ -1324,6 +1327,7 @@ export interface IClientSettingsResponse {
     redirect_uri?: string | undefined;
     post_logout_redirect_uri?: string | undefined;
     video_api_url?: string | undefined;
+    app_insights_instrumentation_key?: string | undefined;
 }
 
 export class ConsultationRequest implements IConsultationRequest {

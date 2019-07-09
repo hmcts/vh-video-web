@@ -1,15 +1,16 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { configureTestSuite } from 'ng-bullet';
-
-import { HomeComponent } from './home.component';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { SharedModule } from '../shared/shared.module';
-import { ProfileService } from '../services/api/profile.service';
+import { RouterTestingModule } from '@angular/router/testing';
+import { configureTestSuite } from 'ng-bullet';
 import { of } from 'rxjs';
+import { ProfileService } from '../services/api/profile.service';
 import { UserProfileResponse, UserRole } from '../services/clients/api-client';
+import { Logger } from '../services/logging/logger-base';
 import { PageUrls } from '../shared/page-url.constants';
 import { DeviceTypeService } from '../services/device-type.service';
+import { SharedModule } from '../shared/shared.module';
+import { MockLogger } from '../testing/mocks/MockLogger';
+import { HomeComponent } from './home.component';
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -26,7 +27,8 @@ describe('HomeComponent', () => {
       declarations: [HomeComponent],
       providers: [
         { provide: ProfileService, useValue: profileServiceSpy },
-        { provide: DeviceTypeService, useValue: deviceTypeSpy }
+        { provide: DeviceTypeService, useValue: deviceTypeSpy },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
   });

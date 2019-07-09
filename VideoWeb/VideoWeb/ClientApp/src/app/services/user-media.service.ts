@@ -2,6 +2,7 @@ import { Injectable, } from '@angular/core';
 import 'webrtc-adapter';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { SessionStorage } from './session-storage';
+import { Logger } from './logging/logger-base';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
@@ -20,7 +21,7 @@ export class UserMediaService {
 
     connectedDevices: BehaviorSubject<UserMediaDevice[]> = new BehaviorSubject([]);
 
-    constructor() {
+    constructor(private logger: Logger) {
         this.preferredCamCache = new SessionStorage(this.PREFERRED_CAMERA_KEY);
         this.preferredMicCache = new SessionStorage(this.PREFERRED_MICROPHONE_KEY);
 
@@ -50,7 +51,7 @@ export class UserMediaService {
 
     async updateAvailableDevicesList(): Promise<void> {
         if (!this._navigator.mediaDevices || !this._navigator.mediaDevices.enumerateDevices) {
-            console.error('enumerateDevices() not supported.');
+            this.logger.error('enumerateDevices() not supported.', new Error('enumerateDevices() not supported.'));
             throw new Error('enumerateDevices() not supported.');
         }
 
