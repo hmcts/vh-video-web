@@ -54,7 +54,7 @@ export class MicrophoneCheckComponent implements OnInit {
         const participant = this.conference.participants.
           find(x => x.username.toLocaleLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
 
-        this.videoWebService.raiseMediaProblemEvent(this.conferenceId,
+        this.videoWebService.raiseSelfTestFailureEvent(this.conferenceId,
           new AddSelfTestFailureEventRequest({
             participant_id: participant.id.toString(),
             self_test_failure_reason: SelfTestFailureReason.Microphone

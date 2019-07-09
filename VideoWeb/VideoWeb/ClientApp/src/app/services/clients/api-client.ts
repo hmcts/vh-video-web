@@ -1505,7 +1505,7 @@ export enum EventType {
     Consultation = "Consultation",
     JudgeAvailable = "JudgeAvailable",
     MediaPermissionDenied = "MediaPermissionDenied",
-    Joining = "Joining",
+    ParticipantJoining = "ParticipantJoining",
 }
 
 export class AddSelfTestFailureEventRequest implements IAddSelfTestFailureEventRequest {
