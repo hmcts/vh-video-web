@@ -61,4 +61,8 @@ export class JudgeHearingListComponent implements OnInit {
   onConferenceSelected(conference: ConferenceForUserResponse) {
     this.router.navigate([PageUrls.JudgeWaitingRoom, conference.id]);
   }
+
+  goToEquipmentCheck() {
+    this.router.navigate([PageUrls.EquipmentCheck, this.conferences[0].id]);
+  }
 }
