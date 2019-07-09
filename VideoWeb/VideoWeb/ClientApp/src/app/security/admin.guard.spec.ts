@@ -7,6 +7,8 @@ import { ProfileService } from '../services/api/profile.service';
 import { of, throwError } from 'rxjs';
 import { UserProfileResponse, UserRole } from '../services/clients/api-client';
 import { Router } from '@angular/router';
+import { Logger } from '../services/logging/logger-base';
+import { MockLogger } from '../testing/mocks/MockLogger';
 
 describe('AdminGuard', () => {
   let profileServiceSpy: jasmine.SpyObj<ProfileService>;
@@ -22,7 +24,8 @@ describe('AdminGuard', () => {
       providers: [
         AdminGuard,
         { provide: Router, useValue: router },
-        { provide: ProfileService, useValue: profileServiceSpy }
+        { provide: ProfileService, useValue: profileServiceSpy },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
     guard = TestBed.get(AdminGuard);

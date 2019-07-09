@@ -3,16 +3,18 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { configureTestSuite } from 'ng-bullet';
 import { of, throwError } from 'rxjs';
+import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockProfileService } from 'src/app/testing/mocks/MockProfileService';
 import { JudgeHearingTableStubComponent } from 'src/app/testing/stubs/judge-hearing-list-table-stub';
 import { ConferenceForUserResponse } from '../../services/clients/api-client';
 import { JudgeHearingListComponent } from './judge-hearing-list.component';
-import { ProfileService } from 'src/app/services/api/profile.service';
-import { MockProfileService } from 'src/app/testing/mocks/MockProfileService';
-import { PageUrls } from 'src/app/shared/page-url.constants';
 
 describe('JudgeHearingListComponent with no conferences for user', () => {
   let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
@@ -29,7 +31,8 @@ describe('JudgeHearingListComponent with no conferences for user', () => {
       declarations: [JudgeHearingListComponent, JudgeHearingTableStubComponent],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy },
-        { provide: ProfileService, useClass: MockProfileService }
+        { provide: ProfileService, useClass: MockProfileService },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
   });
@@ -62,7 +65,8 @@ describe('JudgeHearingListComponent with conferences for user', () => {
       declarations: [JudgeHearingListComponent, JudgeHearingTableStubComponent],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy },
-        { provide: ProfileService, useClass: MockProfileService }
+        { provide: ProfileService, useClass: MockProfileService },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
   });
@@ -112,7 +116,8 @@ describe('JudgeHearingListComponent with service error', () => {
       declarations: [JudgeHearingListComponent, JudgeHearingTableStubComponent],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy },
-        { provide: ProfileService, useClass: MockProfileService }
+        { provide: ProfileService, useClass: MockProfileService },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
   });

@@ -5,8 +5,10 @@ import { configureTestSuite } from 'ng-bullet';
 import { ProfileService } from '../services/api/profile.service';
 import { UserProfileResponse, UserRole } from '../services/clients/api-client';
 import { DeviceTypeService } from '../services/device-type.service';
+import { Logger } from '../services/logging/logger-base';
 import { PageUrls } from '../shared/page-url.constants';
 import { SharedModule } from '../shared/shared.module';
+import { MockLogger } from '../testing/mocks/MockLogger';
 import { HomeComponent } from './home.component';
 
 
@@ -25,7 +27,8 @@ describe('HomeComponent', () => {
       declarations: [HomeComponent],
       providers: [
         { provide: ProfileService, useValue: profileServiceSpy },
-        { provide: DeviceTypeService, useValue: deviceTypeServiceSpy }
+        { provide: DeviceTypeService, useValue: deviceTypeServiceSpy },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
   });

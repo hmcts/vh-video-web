@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProfileService } from '../services/api/profile.service';
 import { UserProfileResponse, UserRole } from '../services/clients/api-client';
-import { PageUrls } from '../shared/page-url.constants';
-import { ErrorService } from '../services/error.service';
 import { DeviceTypeService } from '../services/device-type.service';
+import { ErrorService } from '../services/error.service';
+import { PageUrls } from '../shared/page-url.constants';
 
 @Component({
   selector: 'app-home',

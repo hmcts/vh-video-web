@@ -7,6 +7,8 @@ import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-tes
 import { MockUserMediaService } from 'src/app/testing/mocks/MockUserMediaService';
 import { MicVisualiserStubComponent } from 'src/app/testing/stubs/mic-visualiser-stub';
 import { SelectMediaDevicesComponent } from './select-media-devices.component';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 
 describe('SelectMediaDevicesComponent', () => {
@@ -29,7 +31,8 @@ describe('SelectMediaDevicesComponent', () => {
       ],
       providers: [
         { provide: UserMediaService, useClass: MockUserMediaService },
-        { provide: UserMediaStreamService, useValue: userMediaStreamServiceSpy }
+        { provide: UserMediaStreamService, useValue: userMediaStreamServiceSpy },
+        { provide: Logger, useClass: MockLogger }
       ],
       declarations: [SelectMediaDevicesComponent, MicVisualiserStubComponent]
     });

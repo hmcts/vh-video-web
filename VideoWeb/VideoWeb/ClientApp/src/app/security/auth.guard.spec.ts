@@ -5,6 +5,8 @@ import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { MockAdalService } from '../testing/mocks/MockAdalService';
 import { AuthGuard } from './auth.guard';
+import { Logger } from '../services/logging/logger-base';
+import { MockLogger } from '../testing/mocks/MockLogger';
 
 describe('authguard', () => {
     let authGuard: AuthGuard;
@@ -16,7 +18,8 @@ describe('authguard', () => {
             imports: [RouterTestingModule],
             providers: [
                 AuthGuard,
-                { provide: AdalService, useClass: MockAdalService }
+                { provide: AdalService, useClass: MockAdalService },
+                { provide: Logger, useClass: MockLogger }
             ]
         });
     });

@@ -15,13 +15,14 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
         {
             var securitySettings = new AzureAdConfiguration
             {
-                ClientId = "ClientId", 
+                ClientId = "ClientId",
                 TenantId = "TenantId",
                 ClientSecret = "ClientSecret",
                 Authority = "Authority",
+                ApplicationInsights = new ApplicationInsightsConfiguration {InstrumentationKey = "AiKey"}
             };
 
-            var servicesConfiguration = new HearingServicesConfiguration()
+            var servicesConfiguration = new HearingServicesConfiguration
             {
                 VideoApiUrl = "https://vh-video-api/"
             };
