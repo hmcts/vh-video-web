@@ -12,7 +12,7 @@ Scenario: Individual has 1 or more hearings
 	And the participant can see a list of hearings including the new hearing
 	And contact us details are available
 	When the user clicks on the Start Hearing button
-	Then the user is on the Equipment Check page
+	Then the user is on the Introduction page
 
 @smoketest
 Scenario: Representative has 1 or more hearings
@@ -23,7 +23,7 @@ Scenario: Representative has 1 or more hearings
 	And the participant can see a list of hearings including the new hearing
 	And contact us details are available
 	When the user clicks on the Start Hearing button
-	Then the user is on the Equipment Check page
+	Then the user is on the Introduction page
 
 Scenario: Individual has a hearing more than 30 minutes in the future
 	Given I have a hearing and a conference in 31 minutes time
@@ -33,7 +33,7 @@ Scenario: Individual has a hearing more than 30 minutes in the future
 	And the new hearing isn't available to join yet
 	And when the hearing is ready to start the hearing button appears
 	When the user clicks on the Start Hearing button
-	Then the user is on the Equipment Check page
+	Then the user is on the Introduction page
 
 Scenario: Representative has a hearing more than 30 minutes in the future
 	Given I have a hearing and a conference in 31 minutes time
@@ -43,7 +43,7 @@ Scenario: Representative has a hearing more than 30 minutes in the future
 	And the new hearing isn't available to join yet
 	And when the hearing is ready to start the hearing button appears
 	When the user clicks on the Start Hearing button
-	Then the user is on the Equipment Check page
+	Then the user is on the Introduction page
 
 Scenario: Individual has no hearings
 	Given the login page is open

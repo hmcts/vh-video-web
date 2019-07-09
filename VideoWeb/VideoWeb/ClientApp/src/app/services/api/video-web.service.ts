@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import {
   ApiClient, ConferenceForUserResponse, ConferenceResponse, ConferenceEventRequest,
   TaskResponse, AddMediaEventRequest, TestCallScoreResponse, TokenResponse,
-  AddSelfTestFailureEventRequest
+  AddSelfTestFailureEventRequest,
+  UpdateParticipantStatusEventRequest
 } from '../clients/api-client';
 import { Observable } from 'rxjs';
 

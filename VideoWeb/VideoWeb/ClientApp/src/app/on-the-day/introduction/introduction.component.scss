@@ -1,0 +1,37 @@
+@import "~govuk-frontend/all";
+
+$crest-image-width: 180px;
+$crest-column-padding: 15px;
+$crest-background-color: #005ea5;
+
+.vh-crest-column {
+    min-width:$crest-image-width + $crest-column-padding;
+}
+
+.vh-crest-column img {
+    width: $crest-image-width;
+}
+
+.panel-blue {
+    background-color: govuk-colour("blue");
+    padding: 30px;
+}
+
+.text-white {
+    color: govuk-colour("white");
+}
+
+.vh-button-white {
+    background-color: govuk-colour("white");
+    color: govuk-colour("black");
+    margin-top: 12px;
+    margin-bottom: 0px;
+    padding: 7px 17px 4px 17px;
+    font-size: 19px;
+    font-size: 1.1875rem;
+}
+
+.vh-button-white:hover {
+    background-color: govuk-colour("white");
+    color: govuk-colour("black");
+}

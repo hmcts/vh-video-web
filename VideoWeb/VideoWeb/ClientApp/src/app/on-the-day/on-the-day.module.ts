@@ -16,6 +16,7 @@ import { SelfTestComponent } from './self-test/self-test.component';
 import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone/switch-on-camera-microphone.component';
 import { VideoCheckComponent } from './video-check/video-check.component';
 import { SignonAComputerComponent } from '../shared/signon-a-computer/signon-a-computer.component';
+import { IntroductionComponent } from './introduction/introduction.component';
 
 @NgModule({
   imports: [
@@ -38,6 +39,7 @@ import { SignonAComputerComponent } from '../shared/signon-a-computer/signon-a-c
     SwitchOnCameraMicrophoneComponent,
     SelfTestComponent,
     SignonAComputerComponent,
+    IntroductionComponent,
   ],
   exports: [
     DeclarationComponent

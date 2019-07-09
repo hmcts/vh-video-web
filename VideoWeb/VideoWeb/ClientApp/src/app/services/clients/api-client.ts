@@ -562,6 +562,79 @@ export class ApiClient {
     }
 
     /**
+     * @param updateParticipantStatusEventRequest (optional) 
+     * @return Success
+     */
+    updateParticipantStatus(conferenceId: string, updateParticipantStatusEventRequest: UpdateParticipantStatusEventRequest | null | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/conferences/{conferenceId}/participantstatus";
+        if (conferenceId === undefined || conferenceId === null)
+            throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace("{conferenceId}", encodeURIComponent("" + conferenceId)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(updateParticipantStatusEventRequest);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateParticipantStatus(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateParticipantStatus(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdateParticipantStatus(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("A server error occurred.", status, _responseText, _headers, result404);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
      * @return Success
      */
     getUserProfile(): Observable<UserProfileResponse> {
@@ -1432,7 +1505,7 @@ export enum EventType {
     Consultation = "Consultation",
     JudgeAvailable = "JudgeAvailable",
     MediaPermissionDenied = "MediaPermissionDenied",
-    SelfTestFailed = "SelfTestFailed",
+    Joining = "Joining",
 }
 
 export class AddSelfTestFailureEventRequest implements IAddSelfTestFailureEventRequest {
@@ -1529,6 +1602,46 @@ export enum TestScore {
     Good = "Good",
     Okay = "Okay",
     Bad = "Bad",
+}
+
+export class UpdateParticipantStatusEventRequest implements IUpdateParticipantStatusEventRequest {
+    participant_id?: string | undefined;
+    event_type?: EventType | undefined;
+
+    constructor(data?: IUpdateParticipantStatusEventRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.participant_id = data["participant_id"];
+            this.event_type = data["event_type"];
+        }
+    }
+
+    static fromJS(data: any): UpdateParticipantStatusEventRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateParticipantStatusEventRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["participant_id"] = this.participant_id;
+        data["event_type"] = this.event_type;
+        return data; 
+    }
+}
+
+export interface IUpdateParticipantStatusEventRequest {
+    participant_id?: string | undefined;
+    event_type?: EventType | undefined;
 }
 
 export class UserProfileResponse implements IUserProfileResponse {
