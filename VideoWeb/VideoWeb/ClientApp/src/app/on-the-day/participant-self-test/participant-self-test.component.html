@@ -1,0 +1,5 @@
+<div *ngIf="!conference && !participant" class="govuk-grid-column-full">
+  <p class="govuk-body-l">Please wait to be connected...</p>
+</div>
+<app-self-test *ngIf="conference && participant" [conference]="conference" [participant]="participant"
+  (testCompleted)="onSelfTestCompleted($event)"></app-self-test>
