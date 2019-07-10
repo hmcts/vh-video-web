@@ -46,7 +46,9 @@ export class IntroductionComponent implements OnInit {
       find(x => x.username.toLocaleLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
     console.log(participant.id);
     this.videoWebService.raiseParticipantEvent(this.conference.id,
-      new UpdateParticipantStatusEventRequest({ participant_id: participant.id.toString() })).subscribe(x => { },
+      new UpdateParticipantStatusEventRequest({
+        participant_id: participant.id.toString()
+      })).subscribe(x => { },
         (error) => {
           console.error(error);
         });

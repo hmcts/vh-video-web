@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using FizzWare.NBuilder;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders;
-using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -23,7 +20,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly ScenarioContext _scenarioContext;
         private readonly HearingListPage _hearingListPage;
         private readonly AdminPanelPage _adminPanelPage;
-        private readonly CallbackEndpoints _callbackEndpoints = new VideoApiUriFactory().CallbackEndpoints;
         private const string ParticipantKey = "participant";
         private const string AlertTimeKey = "alert time";
 
@@ -93,7 +89,34 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"a participant has failed the self-test")]
         public void WhenAParticipantHasFailedTheSelf_Test()
         {
-            _scenarioContext.Pending();
+            var request = new CreateEventRequestBuilder()
+                .WithConferenceId(_context.NewConferenceId)
+                .WithParticipantId(GetIndividualParticipantId())
+                .WithEventType(EventType.SelfTestFailed)
+                .Build();
+
+            new ExecuteEventRequestBuilder()
+                .WithContext(_context)
+                .WithScenarioContext(_scenarioContext)
+                .WithRequest(request)
+                .Execute();
+        }
+
+        [When(@"a participant has failed the self-test with (.*)")]
+        public void WhenAParticipantHasFailedTheSelfTestWithReason(string reason)
+        {
+            var request = new CreateEventRequestBuilder()
+                .WithConferenceId(_context.NewConferenceId)
+                .WithParticipantId(GetIndividualParticipantId())
+                .WithEventType(EventType.SelfTestFailed)
+                .WithReason(reason)
+                .Build();
+
+            new ExecuteEventRequestBuilder()
+                .WithContext(_context)
+                .WithScenarioContext(_scenarioContext)
+                .WithRequest(request)
+                .Execute();
         }
 
         [When(@"the user selects the (.*) alert")]
@@ -145,7 +168,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserContext.NgDriver
                 .WaitUntilElementVisible(
                     _hearingListPage.VideoHearingsOfficerAlertType(_context.Hearing.Cases.First().Number))
-                .Text.Should().Be(notification.Equals("Suspended") ? notification : "Ready");
+                .Text.Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
 
             _browserContext.NgDriver
                 .WaitUntilElementVisible(
