@@ -16,6 +16,7 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { SelectMediaDevicesComponent } from './select-media-devices/select-media-devices.component';
 import { MicVisualiserComponent } from '../shared/mic-visualiser/mic-visualiser.component';
 import { EquipmentProblemComponent } from './equipment-problem/equipment-problem.component';
+import { SelfTestComponent } from './self-test/self-test.component';
 
 @NgModule({
   imports: [
@@ -37,7 +38,8 @@ import { EquipmentProblemComponent } from './equipment-problem/equipment-problem
     NotFoundComponent,
     SelectMediaDevicesComponent,
     MicVisualiserComponent,
-    EquipmentProblemComponent
+    EquipmentProblemComponent,
+    SelfTestComponent
   ],
   providers: [
     { provide: 'SnotifyToastConfig', useValue: ToastDefaults},
@@ -51,6 +53,7 @@ import { EquipmentProblemComponent } from './equipment-problem/equipment-problem
     PaginationComponent,
     SelectMediaDevicesComponent,
     MicVisualiserComponent,
+    SelfTestComponent,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

@@ -6,6 +6,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReturnUrlService } from '../../services/return-url.service';
 import { configureTestSuite } from 'ng-bullet';
+import { MockLogger } from '../../testing/mocks/MockLogger';
+import { Logger } from '../../services/logging/logger-base';
 
 
 describe('LoginComponent', () => {
@@ -21,7 +23,8 @@ describe('LoginComponent', () => {
             declarations: [LoginComponent],
             imports: [RouterTestingModule],
             providers: [
-                { provide: AdalService, useClass: MockAdalService }
+                { provide: AdalService, useClass: MockAdalService },
+              { provide: Logger, useClass: MockLogger }
             ]
         });
     });
