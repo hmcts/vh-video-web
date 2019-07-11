@@ -2,40 +2,58 @@
   <p class="govuk-body">Loading please wait...</p>
 </div>
 
+<div *ngIf="!loadingData">
+  <a id="back-to-hearing-list-link" href="javascript:void()" (click)="goToJudgeHearingList()"
+    routerLinkActive="router-link-active" class="govuk-back-link">Return to video hearing list</a>
+
+  <div class="govuk-!-margin-top-5" *ngIf="isNotStarted()">
+    <input type="button" id="check-equipment-btn" class="govuk-button" role="button" value="Check equipment"
+      (click)="checkEquipment()" alt="Camera Check" />
+  </div>
+
+  <table class="govuk-table vh-fullwidth">
+    <tbody class="govuk-table__body">
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell"> <strong>{{ conference.case_name }}</strong> ({{ conference.case_type }})
+          <span>case number</span>: <strong>{{ conference.case_number }}</strong>
+        </td>
+        <td class="govuk-table__cell" style="text-align:right;">
+          {{ conference.scheduled_date_time | date: 'dd MMMM	yyyy h:mma' }} - {{ hearingEndTime | date: 'h:mma' }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+
 <div *ngIf="!loadingData && conference" class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-xl">{{ getConferenceStatusText() }}</h1>
+    <h1 class="govuk-heading-l" [ngClass]="hearingSuspended() ? 'text-highlight-red' : ''">
+      {{ getConferenceStatusText() }}</h1>
 
-    <h2 class="govuk-heading-m">{{conference.case_name}}</h2>
+    <h2 class="govuk-heading-m" *ngIf="isNotStarted()">Is everyone connected?</h2>
 
-    <h3 class="govuk-heading-m">Case number: {{conference.case_number}}</h3>
+    <p class="govuk-body govuk-!-margin-bottom-3" *ngIf="isNotStarted()">In any participants are not connected, you must
+      call the video hearings team on <strong>0300 606 0355</strong> before you start the hearing.</p>
 
-    <div class="govuk-!-margin-bottom-7">
-      <span class="govuk-body">
-        <p class="govuk-!-margin-0" aria-label="date of hearing">
-          {{ conference.scheduled_date_time | date: 'EEEE dd MMMM	yyyy' }}</p>
+    <p class="govuk-body govuk-!-margin-bottom-3" *ngIf="hearingPaused()">Please call the video hearings team on
+      <strong>0300
+        606 0355</strong> if you're having problems. We'll update the participants.</p>
 
-        <p class="govuk-!-margin-0" aria-label="scheduled time and duration of hearing">
-          {{ conference.scheduled_date_time | date: 'HH:mm' }}
-          (scheduled for {{ conference.scheduled_duration }} minutes) </p>
-      </span>
-    </div>
+    <p class="govuk-body govuk-!-margin-bottom-3" *ngIf="hearingSuspended()">The video hearings team has been alerted
+      and
+      we're informing the participants. Please call us now on <strong>0300 606 0355</strong>.</p>
 
     <div>
-      <button *ngIf="isNotStarted()" type="submit" onc class="govuk-button" (click)="goToHearingPage()">
-        Start Hearing
+      <button *ngIf="isNotStarted()" type="submit" class="govuk-button govuk-button--start" (click)="goToHearingPage()">
+        Start video call
       </button>
-      <button *ngIf="isPaused()" type="submit" class="govuk-button" (click)="goToHearingPage()">
-        Resume Hearing
+      <button *ngIf="hearingPaused() || hearingSuspended()" type="submit" class="govuk-button govuk-button--start"
+        (click)="goToHearingPage()">
+        Resume video call
       </button>
     </div>
-    <div>
-      <a id="back-to-hearing-list-link" href="javascript:void()" (click)="goToJudgeHearingList()"
-        routerLinkActive="router-link-active" class="govuk-link" href="javascript:void(0)">Return to hearing list</a>
-    </div>
-    <div class="govuk-!-margin-top-9">
-      <p class="govuk-body"><strong>Contact video hearings officer: 0300 303 0655</strong></p>
-    </div>
+
   </div>
 
   <div class="govuk-grid-column-one-third">

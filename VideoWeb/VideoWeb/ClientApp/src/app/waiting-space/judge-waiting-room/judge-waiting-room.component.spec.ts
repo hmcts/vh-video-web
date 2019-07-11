@@ -20,6 +20,7 @@ import { ErrorService } from 'src/app/services/error.service';
 import { configureTestSuite } from 'ng-bullet';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { By } from '@angular/platform-browser';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
   let component: JudgeWaitingRoomComponent;
@@ -88,12 +89,12 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
   it('should return correct conference status text when suspended', () => {
     component.conference.status = ConferenceStatus.Suspended;
-    expect(component.getConferenceStatusText()).toBe('Resume the hearing');
+    expect(component.getConferenceStatusText()).toBe('Hearing suspended');
   });
 
   it('should return correct conference status text when paused', () => {
     component.conference.status = ConferenceStatus.Paused;
-    expect(component.getConferenceStatusText()).toBe('Resume the hearing');
+    expect(component.getConferenceStatusText()).toBe('Hearing paused');
   });
 
   it('should return correct conference status text when closed', () => {
@@ -108,7 +109,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
   it('should return correct conference status text when not started', () => {
     component.conference.status = ConferenceStatus.NotStarted;
-    expect(component.getConferenceStatusText()).toBe('Start the hearing');
+    expect(component.getConferenceStatusText()).toBe('Start this hearing');
   });
 
   it('should return true when conference is paused', () => {
@@ -136,6 +137,12 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     component.goToHearingPage();
     expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeHearingRoom, component.conference.id]);
   });
+
+  it('should navigate to check equipment with conference id', () => {
+    spyOn(router, 'navigate').and.callFake(() => { Promise.resolve(true); });
+    component.checkEquipment();
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.EquipmentCheck, component.conference.id]);
+  });
 });
 
 describe('JudgeWaitingRoomComponent when conference does not exist', () => {
@@ -150,7 +157,6 @@ describe('JudgeWaitingRoomComponent when conference does not exist', () => {
     conference = new ConferenceTestData().getConferenceFuture();
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
     videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 401, isApiException: true }));
-
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],

@@ -16,6 +16,7 @@ export class JudgeWaitingRoomComponent implements OnInit {
 
   loadingData: boolean;
   conference: ConferenceResponse;
+  hearingEndTime: Date;
 
   constructor(
     private route: ActivatedRoute,
@@ -40,6 +41,9 @@ export class JudgeWaitingRoomComponent implements OnInit {
         this.conference = data;
 
         this.setupSubscribers();
+        this.hearingEndTime = this.getHearingEndTime();
+
+        this.conference.status = ConferenceStatus.Suspended;
       },
         (error) => {
           this.loadingData = false;
@@ -49,9 +53,9 @@ export class JudgeWaitingRoomComponent implements OnInit {
 
   getConferenceStatusText() {
     switch (this.conference.status) {
-      case ConferenceStatus.NotStarted: return 'Start the hearing';
-      case ConferenceStatus.Suspended: return 'Resume the hearing';
-      case ConferenceStatus.Paused: return 'Resume the hearing';
+      case ConferenceStatus.NotStarted: return 'Start this hearing';
+      case ConferenceStatus.Suspended: return 'Hearing suspended';
+      case ConferenceStatus.Paused: return 'Hearing paused';
       case ConferenceStatus.Closed: return 'Hearing is closed';
       default: return 'Hearing is in session';
     }
@@ -63,6 +67,14 @@ export class JudgeWaitingRoomComponent implements OnInit {
 
   isPaused(): boolean {
     return this.conference.status === ConferenceStatus.Paused || this.conference.status === ConferenceStatus.Suspended;
+  }
+
+  hearingSuspended(): boolean {
+    return this.conference.status === ConferenceStatus.Suspended;
+  }
+
+  hearingPaused(): boolean {
+    return this.conference.status === ConferenceStatus.Paused;
   }
 
   goToHearingPage(): void {
@@ -98,4 +110,17 @@ export class JudgeWaitingRoomComponent implements OnInit {
   handleHearingStatusChange(status: ConferenceStatus) {
     this.conference.status = status;
   }
+
+  checkEquipment() {
+    this.router.navigate([PageUrls.EquipmentCheck, this.conference.id]);
+  }
+
+  getHearingEndTime(): Date {
+    const hearingStartDate = this.conference.scheduled_date_time;
+    const hearingEndDate = new Date(hearingStartDate);
+    hearingEndDate.setMinutes(hearingStartDate.getMinutes() + this.conference.scheduled_duration);
+    return hearingEndDate;
+  }
+
+
 }
