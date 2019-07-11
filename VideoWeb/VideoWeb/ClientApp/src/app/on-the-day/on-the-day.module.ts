@@ -12,11 +12,11 @@ import { MicrophoneCheckComponent } from './microphone-check/microphone-check.co
 import { OnTheDayRoutingModule } from './on-the-day-routing.module';
 import { HearingListTableComponent } from './participant-hearings/hearing-list-table.component';
 import { ParticipantHearingsComponent } from './participant-hearings/participant-hearings.component';
-import { SelfTestComponent } from './self-test/self-test.component';
 import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone/switch-on-camera-microphone.component';
 import { VideoCheckComponent } from './video-check/video-check.component';
 import { SignonAComputerComponent } from '../shared/signon-a-computer/signon-a-computer.component';
 import { IntroductionComponent } from './introduction/introduction.component';
+import { ParticipantSelfTestComponent } from './participant-self-test/participant-self-test.component';
 
 @NgModule({
   imports: [
@@ -37,9 +37,9 @@ import { IntroductionComponent } from './introduction/introduction.component';
     MicrophoneCheckComponent,
     VideoCheckComponent,
     SwitchOnCameraMicrophoneComponent,
-    SelfTestComponent,
     SignonAComputerComponent,
     IntroductionComponent,
+    ParticipantSelfTestComponent,
   ],
   exports: [
     DeclarationComponent

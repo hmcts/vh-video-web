@@ -25,7 +25,7 @@ namespace VideoWeb.Mappings
                 .OrderBy(x => x.Case_type_group)
                 .Select(x =>
                     participantMapper.MapParticipantToResponseModel(x,
-                        bookingParticipants.Single(p => x.Ref_id == p.Id)))
+                        bookingParticipants.SingleOrDefault(p => x.Ref_id == p.Id)))
                 .ToList();
 
             var response = new ConferenceResponse

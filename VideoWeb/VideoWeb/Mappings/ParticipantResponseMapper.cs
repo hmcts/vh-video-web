@@ -11,6 +11,12 @@ namespace VideoWeb.Mappings
         public ParticipantResponse MapParticipantToResponseModel(ParticipantDetailsResponse participant,
             BookingParticipant bookingParticipant)
         {
+            if (bookingParticipant == null)
+            {
+                throw new ArgumentNullException(nameof(bookingParticipant),
+                    $"Could not find participant in bookings for participant ${participant.Id}");
+            }
+            
             var status = ParticipantStatus.None;
             if (participant.Current_status?.Participant_state != null)
             {
