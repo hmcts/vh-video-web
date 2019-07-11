@@ -2065,6 +2065,9 @@ namespace VideoWeb.Services.Video
         [System.Runtime.Serialization.EnumMember(Value = @"ParticipantJoining")]
         ParticipantJoining = 11,
     
+        [System.Runtime.Serialization.EnumMember(Value = @"SelfTestFailed")]
+        SelfTestFailed = 12,
+    
     }
     
     /// <summary>Room from where the participant is transferred from.</summary>

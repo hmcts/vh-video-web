@@ -11,7 +11,7 @@ export const PageUrls = {
   MicrophoneWorking: 'microphone-working',
   VideoWorking: 'see-and-hear-video',
   SwitchOnCameraMicrophone: 'switch-on-camera-microphone',
-  SelfTestVideo: 'practice-video-hearing',
+  ParticipantSelfTestVideo: 'practice-video-hearing',
   SignonAComputer: 'signon-a-computer',
   Introduction: 'introduction',
   // judge

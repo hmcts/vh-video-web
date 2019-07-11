@@ -7,7 +7,7 @@
 Scenario: Video Hearings Officer receieves media blocked alert
 	Given the Video Hearings Officer user has progressed to the Admin Panel page
 	When a participant has chosen to block user media
-	Then the Video Hearings Officer user should see a Ready notification and a Media blocked alert
+	Then the Video Hearings Officer user should see a Not Started notification and a Media blocked alert
 	When the user selects the Media blocked alert
 	Then the Media blocked checkbox is no longer enabled
 	And the Media blocked alert should be updated with the details of the user that actioned the alert
@@ -33,18 +33,23 @@ Scenario Outline: Video Hearings Officer receieves disconnected alert
 	| Participant | Room			  | Notification |
 	| Judge       | WaitingRoom		  | Suspended	 |
 	| Judge       | HearingRoom		  | Suspended	 |
-	| Participant | WaitingRoom       | Ready		 |
-	| Participant | HearingRoom       | Ready		 |
-	| Participant | ConsultationRoom1 | Ready		 |
+	| Participant | WaitingRoom       | Not Started	 |
+	| Participant | HearingRoom       | Not Started	 |
+	| Participant | ConsultationRoom1 | Not Started	 |
 
-@VIH-1630
-Scenario: Video Hearings Officer receieves failed self test alert
+@VIH-1630 @VIH-4416
+Scenario Outline: Video Hearings Officer receieves failed self test alert
 	Given the Video Hearings Officer user has progressed to the Admin Panel page
-	When a participant has failed the self-test
-	Then the Video Hearings Officer user should see a Ready notification and a Failed self test alert
-	When the user selects the Failed self test alert
-	Then the Failed self test checkbox is no longer enabled
-	And the Failed self test alert should be updated with the details of the user that actioned the alert
+	When a participant has failed the self-test with <Reason>
+	Then the Video Hearings Officer user should see a Not Started notification and a <Reason> alert
+	When the user selects the <Reason> alert
+	Then the <Reason> checkbox is no longer enabled
+	And the <Reason> alert should be updated with the details of the user that actioned the alert
+	Examples:
+	| Reason                        |
+	| Failed self-test (Camera)     |
+	| Failed self-test (Microphone) |
+	| Failed self-test (Video)      |
 
 @VIH-4418
 Scenario: Video Hearings Officer does not receive disconnected alert when hearing is closed

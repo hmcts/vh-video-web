@@ -64,7 +64,7 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
   }
 
   goVideoTest() {
-    this.router.navigate([PageUrls.SelfTestVideo, this.conferenceId]);
+    this.router.navigate([PageUrls.ParticipantSelfTestVideo, this.conferenceId]);
   }
 
   postPermissionDeniedAlert() {
