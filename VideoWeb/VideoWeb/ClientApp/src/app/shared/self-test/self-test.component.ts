@@ -1,13 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
-import { ConferenceResponse, ParticipantResponse, TokenResponse } from 'src/app/services/clients/api-client';
-import { ErrorService } from 'src/app/services/error.service';
-import { UserMediaService } from 'src/app/services/user-media.service';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { PageUrls } from 'src/app/shared/page-url.constants';
-import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
+import { ConferenceResponse, ParticipantResponse, TokenResponse, TestCallScoreResponse } from 'src/app/services/clients/api-client';
+import { ErrorService } from 'src/app/services/error.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
+import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
 declare var PexRTC: any;
 
 @Component({
@@ -17,9 +15,11 @@ declare var PexRTC: any;
 })
 export class SelfTestComponent implements OnInit {
 
-  loadingData: boolean;
-  conference: ConferenceResponse;
-  participant: ParticipantResponse;
+  @Input() conference: ConferenceResponse;
+  @Input() participant: ParticipantResponse;
+
+  @Output() testCompleted = new EventEmitter<TestCallScoreResponse>();
+
   token: TokenResponse;
   pexipAPI: any;
   incomingStream: MediaStream;
@@ -27,58 +27,49 @@ export class SelfTestComponent implements OnInit {
 
   preferredMicrophoneStream: MediaStream;
 
-  testComplete: boolean;
-  testScore: string;
+  didTestComplete: boolean;
   displayFeed: boolean;
 
   displayDeviceChangeModal: boolean;
   hasMultipleDevices: boolean;
 
+  testCallResult: TestCallScoreResponse = null;
+
   constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private adalService: AdalService,
+    private logger: Logger,
     private videoWebService: VideoWebService,
     private errorService: ErrorService,
     private userMediaService: UserMediaService,
     private userMediaStreamService: UserMediaStreamService
   ) {
-    this.testComplete = false;
+    this.didTestComplete = false;
   }
 
   async ngOnInit() {
+    this.logger.debug('loading self test');
     this.displayFeed = false;
     this.displayDeviceChangeModal = false;
     this.setupSubscribers();
-    this.getConference();
+    this.setupTestAndCall();
   }
 
   get streamsActive() {
     return this.outgoingStream && this.outgoingStream.active && this.incomingStream && this.incomingStream.active;
   }
 
-  getConference(): void {
-    const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-    this.videoWebService.getConferenceById(conferenceId)
-      .subscribe((data: ConferenceResponse) => {
-        this.loadingData = false;
-        this.conference = data;
-        this.participant = data.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
-        this.setupPexipClient();
-        this.videoWebService.getToken(this.participant.id).subscribe((token: TokenResponse) => {
-          this.token = token;
-          this.call();
-        },
-          (error) => {
-            this.loadingData = false;
-            this.errorService.handleApiError(error);
-          });
-      },
-        (error) => {
-          this.loadingData = false;
-          this.errorService.handleApiError(error);
-        });
+  setupTestAndCall(): void {
+    this.logger.debug('setting up pexip client and call');
+    this.setupPexipClient();
+    this.videoWebService.getToken(this.participant.id).subscribe((token: TokenResponse) => {
+      this.logger.debug('retrieved token for self test');
+      this.token = token;
+      this.call();
+    },
+      (error) => {
+        this.errorService.handleApiError(error);
+      });
   }
+
 
   async changeDevices() {
     this.disconnect();
@@ -152,8 +143,7 @@ export class SelfTestComponent implements OnInit {
   }
 
   async call() {
-    this.testComplete = false;
-    this.testScore = null;
+    this.didTestComplete = false;
     const pexipNode = this.conference.pexip_self_test_node_uri;
     const conferenceAlias = 'testcall2';
     const tokenOptions = btoa(`${this.token.expires_on};${this.participant.id};${this.token.token}`);
@@ -167,26 +157,30 @@ export class SelfTestComponent implements OnInit {
 
   disconnect() {
     if (this.pexipAPI) {
+      this.logger.info('disconnecting from pexip node');
       this.pexipAPI.disconnect();
     }
     this.incomingStream = null;
     this.outgoingStream = null;
-    this.testComplete = true;
+    this.didTestComplete = true;
   }
 
-  retrieveSelfTestScore() {
-    this.testComplete = true;
-    this.videoWebService.getTestCallScore(this.conference.id, this.participant.id)
-      .toPromise()
-      .then((testCallResult) => {
-        this.testScore = testCallResult.score;
-      });
+  async retrieveSelfTestScore() {
+    this.logger.debug('retrieving self test score');
+    this.didTestComplete = true;
+    try {
+      this.testCallResult = await this.videoWebService.getTestCallScore(this.conference.id, this.participant.id).toPromise();
+      this.logger.info(`test call score: ${this.testCallResult.score}`);
+    } catch (err) {
+      this.logger.error('there was a problem retrieving the self test score', err);
+    }
   }
 
-  onTestComplete() {
-    if (!this.testComplete) {
+  publishTestResult(): void {
+    this.logger.info('test call completed');
+    if (!this.didTestComplete) {
       this.disconnect();
     }
-    this.router.navigate([PageUrls.CameraWorking, this.conference.id]);
+    this.testCompleted.emit(this.testCallResult);
   }
 }

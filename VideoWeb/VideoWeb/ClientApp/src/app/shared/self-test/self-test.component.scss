@@ -1,0 +1,9 @@
+#change-device-link {
+  color: govuk-colour("blue");
+  text-decoration-line: none;
+}
+
+#change-device-link:hover {
+  color: govuk-colour("light-blue");
+  text-decoration-line: underline;
+}

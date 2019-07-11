@@ -16,6 +16,8 @@ import { TasksTableStubComponent } from './stubs/task-table-stub';
 import { VhoHearingListStubComponent } from './stubs/vho-hearing-list-stub';
 import { MicVisualiserStubComponent } from './stubs/mic-visualiser-stub';
 import { VhoParticipantStatusStubComponent } from './stubs/vho-participant-status-stub';
+import { SelfTestStubComponent } from './stubs/self-test-stub';
+import { SelectMediaDevicesStubComponent } from './stubs/select-media-devices-stub';
 
 @NgModule({
   imports: [
@@ -38,7 +40,9 @@ import { VhoParticipantStatusStubComponent } from './stubs/vho-participant-statu
     TasksTableStubComponent,
     VhoHearingListStubComponent,
     MicVisualiserStubComponent,
-    VhoParticipantStatusStubComponent
+    VhoParticipantStatusStubComponent,
+    SelfTestStubComponent,
+    SelectMediaDevicesStubComponent
   ]
 })
 export class TestingModule { }
