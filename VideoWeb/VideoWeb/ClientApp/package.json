@@ -65,11 +65,11 @@
     "karma-jasmine": "~1.1.1",
     "karma-jasmine-html-reporter": "^0.2.2",
     "karma-junit-reporter": "^1.2.0",
+    "node-sass": "^4.12.0",
     "puppeteer": "^1.17.0",
     "typescript": "~3.1.1"
   },
   "optionalDependencies": {
-    "node-sass": "^4.9.3",
     "protractor": "~5.4.0",
     "ts-node": "~5.0.1",
     "tslint": "~5.9.1"
