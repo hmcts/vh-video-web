@@ -1,5 +1,5 @@
 <div class="govuk-grid-row">
-  <div *ngIf="!displayFeed && !testComplete" class="govuk-grid-column-full">
+  <div *ngIf="!displayFeed && !didTestComplete" class="govuk-grid-column-full">
     <p class="govuk-body-l">Please wait to be connected...</p>
   </div>
   <div *ngIf="displayFeed" class="govuk-grid-column-full">
@@ -10,7 +10,7 @@
   </div>
 </div>
 
-<div *ngIf="!testComplete" class="govuk-grid-row">
+<div *ngIf="!didTestComplete" class="govuk-grid-row">
 
   <div class="govuk-grid-column-one-quarter">
     <video *ngIf="streamsActive" id="outgoingStream" [muted]="true" [srcObject]="this.outgoingStream" autoplay
@@ -28,8 +28,7 @@
 
 <div class="govuk-grid-row">
   <div *ngIf="hasMultipleDevices" class="govuk-grid-column-full govuk-!-margin-bottom-6">
-    <a id="change-device-link" href="javascript:void(0);" role="button" (click)="changeDevices()" class="govuk-link"
-      alt="Change camera and microphone for self test">Change
+    <a id="change-device-link" href="javascript:void(0);" role="button" (click)="changeDevices()" class="govuk-link">Change
       camera or microphone</a>
   </div>
 </div>
@@ -42,7 +41,7 @@
   </div>
 </div>
 
-<div ng class="govuk-!-margin-top-6">
+<div class="govuk-!-margin-top-6">
   <input type="button" id="continue-btn" class="govuk-button govuk-!-margin-right-9" role="button"
     value="Continue" (click)="publishTestResult()" alt="Continue" />
 
@@ -53,5 +52,5 @@
 <app-contact-us-folding></app-contact-us-folding>
 
 <app-select-media-devices *ngIf="displayDeviceChangeModal"
-  (cancelMediaDeviceChange)="onMediaDeviceChangeCancelled($event)"
+  (cancelMediaDeviceChange)="onMediaDeviceChangeCancelled()"
   (acceptMediaDeviceChange)="onMediaDeviceChangeAccepted($event)"></app-select-media-devices>
