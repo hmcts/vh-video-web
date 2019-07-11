@@ -16,4 +16,8 @@ export class ProfileService {
     }
     return this.profile;
   }
+
+  clearUserProfile(): void {
+    this.profile = null;
+  }
 }

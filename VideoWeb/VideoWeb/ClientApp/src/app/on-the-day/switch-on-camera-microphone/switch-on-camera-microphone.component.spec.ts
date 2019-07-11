@@ -15,16 +15,23 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { ContactUsFoldingStubComponent } from 'src/app/testing/stubs/contact-us-stub';
 import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone.component';
+import { ProfileService } from 'src/app/services/api/profile.service';
+import { UserRole, UserProfileResponse } from 'src/app/services/clients/api-client';
 
 describe('SwitchOnCameraMicrophoneComponent', () => {
   let component: SwitchOnCameraMicrophoneComponent;
   let fixture: ComponentFixture<SwitchOnCameraMicrophoneComponent>;
+  let profileServiceSpy: jasmine.SpyObj<ProfileService>;
   let router: Router;
   let videoWebService: VideoWebService;
   let userMediaStreamService: UserMediaStreamService;
   const conference = new ConferenceTestData().getConferenceDetail();
+  const judgerProfile = new UserProfileResponse({ role: UserRole.Judge });
+  const individualProfile = new UserProfileResponse({ role: UserRole.Individual });
 
   configureTestSuite(() => {
+    profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
+    profileServiceSpy.getUserProfile.and.returnValue(judgerProfile);
     TestBed.configureTestingModule({
       imports: [HttpClientModule, RouterTestingModule],
       declarations: [SwitchOnCameraMicrophoneComponent, ContactUsFoldingStubComponent],
@@ -39,7 +46,8 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
         },
         { provide: AdalService, useClass: MockAdalService },
         { provide: VideoWebService, useClass: MockVideoWebService },
-        { provide: Logger, useClass: MockLogger }
+        { provide: Logger, useClass: MockLogger },
+        { provide: ProfileService, useValue: profileServiceSpy }
       ]
     });
   });
@@ -53,8 +61,17 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should go to video test', async(() => {
+  it('should go to judge self test when profile is judge', async(() => {
     spyOn(router, 'navigate').and.callFake(() => { });
+    component.isJudge = true;
+    component.goVideoTest();
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeSelfTestVideo, component.conference.id]);
+  }));
+
+  it('should go to participant self test when profile is not a judge', async(() => {
+    spyOn(router, 'navigate').and.callFake(() => { });
+    profileServiceSpy.getUserProfile.and.returnValue(individualProfile);
+    component.isJudge = false;
     component.goVideoTest();
     expect(router.navigate).toHaveBeenCalledWith([PageUrls.ParticipantSelfTestVideo, component.conference.id]);
   }));

@@ -1,8 +1,9 @@
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { JudgeHearingTableComponent } from './judge-hearing-table.component';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 
 describe('JudgeHearingTableComponent', () => {
-  const component: JudgeHearingTableComponent = new JudgeHearingTableComponent();
+  const component: JudgeHearingTableComponent = new JudgeHearingTableComponent(new MockLogger());
 
   beforeEach(() => {
     component.conferences = new ConferenceTestData().getTestData();

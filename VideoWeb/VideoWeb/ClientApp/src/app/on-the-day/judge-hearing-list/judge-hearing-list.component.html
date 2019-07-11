@@ -11,7 +11,7 @@
   <div>
     <p class="govuk-caption-xl">{{ today | date:'fullDate' }}</p>
   </div>
-  <app-judge-hearing-table [conferences]="conferences"></app-judge-hearing-table>
+  <app-judge-hearing-table [conferences]="conferences" (selectedConference)="onConferenceSelected($event)"></app-judge-hearing-table>
 </div>
 
 <div *ngIf="!loadingData && !hasHearings()">

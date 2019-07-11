@@ -7,6 +7,7 @@ import { ConferenceForUserResponse, UserProfileResponse } from 'src/app/services
 import { ErrorService } from 'src/app/services/error.service';
 import { VhContactDetails } from 'src/app/shared/contact-information';
 import { PageUrls } from 'src/app/shared/page-url.constants';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 @Component({
   selector: 'app-judge-hearing-list',
@@ -30,7 +31,8 @@ export class JudgeHearingListComponent implements OnInit {
     private videoWebService: VideoWebService,
     private errorService: ErrorService,
     private router: Router,
-    private profileService: ProfileService
+    private profileService: ProfileService,
+    private logger: Logger
   ) {
     this.loadingData = true;
   }
@@ -66,6 +68,7 @@ export class JudgeHearingListComponent implements OnInit {
   }
 
   onConferenceSelected(conference: ConferenceForUserResponse) {
+    this.logger.event('signing into judge waiting room', { conference: conference.id });
     this.router.navigate([PageUrls.JudgeWaitingRoom, conference.id]);
   }
 

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ConferenceForUserResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 @Component({
   selector: 'app-judge-hearing-table',
@@ -19,13 +20,14 @@ export class JudgeHearingTableComponent implements OnInit {
 
   @Output() selectedConference = new EventEmitter<ConferenceForUserResponse>();
 
-  constructor() { }
+  constructor(private logger: Logger) { }
 
   ngOnInit() {
     this.hearings = this._conferences.map(c => new Hearing(c));
   }
 
   signIntoConference(hearing: Hearing) {
+    this.logger.info(`selected conference to sign into: ${hearing.id}`);
     const conference = this._conferences.find(x => x.id === hearing.id);
     this.selectedConference.emit(conference);
   }
