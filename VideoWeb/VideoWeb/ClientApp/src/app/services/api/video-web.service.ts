@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   ApiClient, ConferenceForUserResponse, ConferenceResponse, ConferenceEventRequest,
   TaskResponse, AddMediaEventRequest, TestCallScoreResponse, TokenResponse,
+  AddSelfTestFailureEventRequest,
   UpdateParticipantStatusEventRequest
 } from '../clients/api-client';
 import { Observable } from 'rxjs';
@@ -53,5 +54,9 @@ export class VideoWebService {
   raiseParticipantEvent(conferenceId: string,
     updateParticipantStatusEventRequest: UpdateParticipantStatusEventRequest): Observable<void> {
     return this.apiClient.updateParticipantStatus(conferenceId, updateParticipantStatusEventRequest);
+  }
+
+  raiseSelfTestFailureEvent(conferenceId: string, addSelfTestFailureEventRequest: AddSelfTestFailureEventRequest): Observable<void> {
+    return this.apiClient.addSelfTestFailureEventToConference(conferenceId, addSelfTestFailureEventRequest);
   }
 }

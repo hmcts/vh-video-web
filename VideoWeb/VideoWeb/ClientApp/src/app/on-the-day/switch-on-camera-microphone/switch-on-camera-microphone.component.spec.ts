@@ -6,15 +6,15 @@ import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { of } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { ContactUsFoldingStubComponent } from 'src/app/testing/stubs/contact-us-stub';
 import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone.component';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { Logger } from 'src/app/services/logging/logger-base';
 
 describe('SwitchOnCameraMicrophoneComponent', () => {
   let component: SwitchOnCameraMicrophoneComponent;
@@ -56,7 +56,7 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
   it('should go to video test', async(() => {
     spyOn(router, 'navigate').and.callFake(() => { });
     component.goVideoTest();
-    expect(router.navigate).toHaveBeenCalledWith([PageUrls.SelfTestVideo, component.conference.id]);
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.ParticipantSelfTestVideo, component.conference.id]);
   }));
 
   it('should raise permission denied event on media access rejection', async(() => {

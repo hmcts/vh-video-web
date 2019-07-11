@@ -8,7 +8,9 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
+import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { VideoCheckComponent } from './video-check.component';
+import { AdalService } from 'adal-angular4';
 
 describe('VideoCheckComponent', () => {
   let component: VideoCheckComponent;
@@ -20,7 +22,7 @@ describe('VideoCheckComponent', () => {
   configureTestSuite(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, SharedModule],
-      declarations: [ VideoCheckComponent ],
+      declarations: [VideoCheckComponent],
       providers: [
         {
           provide: ActivatedRoute,
@@ -30,6 +32,7 @@ describe('VideoCheckComponent', () => {
             }
           },
         },
+        { provide: AdalService, useClass: MockAdalService },
         { provide: VideoWebService, useClass: MockVideoWebService }
       ]
     });

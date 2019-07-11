@@ -8,7 +8,9 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
+import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MicrophoneCheckComponent } from './microphone-check.component';
+import { AdalService } from 'adal-angular4';
 
 describe('MicrophoneCheckComponent', () => {
   let component: MicrophoneCheckComponent;
@@ -30,6 +32,7 @@ describe('MicrophoneCheckComponent', () => {
             }
           },
         },
+        { provide: AdalService, useClass: MockAdalService },
         { provide: VideoWebService, useClass: MockVideoWebService }
       ]
     });
