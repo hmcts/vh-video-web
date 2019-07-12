@@ -43,6 +43,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserContext.NgDriver.WaitUntilElementVisible(element, tollerence).Click();
         }
 
+        [When(@"the user clicks on the Check Equipment button")]
+        public void WhenTheUserClicksTheCheckEquipmentButton()
+        {
+            _browserContext.NgDriver.WaitUntilElementClickable(_clerkhearingListPage.CheckEquipmentButton).Click();
+        }
+
         [When(@"the VHO selects the hearing")]
         public void WhenTheVhoSelectsTheHearing()
         {

@@ -24,6 +24,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly PracticeVideoHearingPage _practiceVideoHearingPage;
         private readonly DeclarationSteps _declarationSteps;
         private Page _currentPage = Page.Login;
+        private readonly TimeSpan _timeout = TimeSpan.FromSeconds(30);
 
         public CommonSteps(TestContext context, BrowserContext browserContext, CommonPages commonPages,
             DataSetupSteps dataSetupSteps, LoginSteps loginSteps, HearingsListSteps hearingDetailsSteps,
@@ -102,14 +103,19 @@ namespace VideoWeb.AcceptanceTests.Steps
             var timer = new Stopwatch();
             timer.Start();
 
-            while (_currentPage.Name != pageName && timer.Elapsed <= TimeSpan.FromSeconds(30))
-            {
+            while (_currentPage.Name != pageName && timer.Elapsed <= _timeout)
+            {               
                 ProgressToNextPage(role, _currentPage);
+
+                if (timer.Elapsed <= _timeout)
+                {
+                    timer.Restart();
+                }
             }
 
             timer.Stop();
 
-            if (timer.Elapsed > TimeSpan.FromSeconds(30))
+            if (timer.Elapsed > _timeout)
             {
                 throw new TimeoutException("The elapsed time exceeded the allowed limit to reach the page");
             }
@@ -145,6 +151,43 @@ namespace VideoWeb.AcceptanceTests.Steps
                 }
 
                 _currentPage = currentPage.JudgeNextPage(currentPage);
+
+            }
+
+            if (role.Equals("ClerkSelfTest"))
+            {
+                switch (currentPage.ClerkSelfTestJourney)
+                {
+                    case ClerkSelfTestJourney.Login:
+                    {
+                        _loginSteps.WhenUserLogsInWithValidCredentials("Clerk");
+                        break;
+                    }
+                    case ClerkSelfTestJourney.HearingList:
+                    {
+                        _hearingListSteps.WhenTheUserClicksTheCheckEquipmentButton();
+                        break;
+                    }
+                    case ClerkSelfTestJourney.EquipmentCheck:
+                    {
+                        WhentheUserClicksTheButton("Continue");
+                        break;
+                    }
+                    case ClerkSelfTestJourney.SwitchOnYourCameraAndMicrophone:
+                    {
+                        WhentheUserClicksTheButton("Switch on");
+                        WhentheUserClicksTheButton("Watch video");
+                        break;
+                    }
+                    case ClerkSelfTestJourney.PracticeVideoHearing:
+                    {
+                        break;
+                    }
+                    default:
+                        throw new InvalidOperationException($"Current page was past the intended page: {currentPage}");
+                }
+
+                _currentPage = currentPage.ClerkSelfTestNextPage(currentPage);
 
             }
 

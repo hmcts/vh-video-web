@@ -25,5 +25,6 @@ namespace VideoWeb.AcceptanceTests.Pages
 
         public By ClerkContactUs = CommonLocators.ElementContainingText("Do you need help?");
         public By ClerkPhoneNumber = CommonLocators.ElementContainingText("0300 303 0655");
+        public By CheckEquipmentButton = CommonLocators.ButtonWithLabel("Check equipment");
     }
 }
