@@ -16,6 +16,7 @@ namespace VideoWeb.AcceptanceTests.Steps
     public class CommonSteps
     {
         private readonly TestContext _context;
+        private readonly ScenarioContext _scenario;
         private BrowserContext _browserContext;
         private readonly CommonPages _commonPages;
         private readonly DataSetupSteps _dataSetupSteps;
@@ -24,13 +25,15 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly PracticeVideoHearingPage _practiceVideoHearingPage;
         private readonly DeclarationSteps _declarationSteps;
         private Page _currentPage = Page.Login;
-        private readonly TimeSpan _timeout = TimeSpan.FromSeconds(30);
+        private readonly TimeSpan _shortTimeout = TimeSpan.FromSeconds(30);
+        private readonly TimeSpan _longTimeout = TimeSpan.FromSeconds(90);
 
-        public CommonSteps(TestContext context, BrowserContext browserContext, CommonPages commonPages,
+        public CommonSteps(TestContext context, ScenarioContext scenario, BrowserContext browserContext, CommonPages commonPages,
             DataSetupSteps dataSetupSteps, LoginSteps loginSteps, HearingsListSteps hearingDetailsSteps,
             PracticeVideoHearingPage practiceVideoHearingPage, DeclarationSteps declarationSteps)
         {
             _context = context;
+            _scenario = scenario;
             _browserContext = browserContext;
             _commonPages = commonPages;
             _dataSetupSteps = dataSetupSteps;
@@ -100,14 +103,16 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _dataSetupSteps.GetTheNewConferenceDetails();
             }
 
+            var timeout = _scenario.ScenarioInfo.Tags.Contains("Video") ? _longTimeout : _shortTimeout;
+
             var timer = new Stopwatch();
             timer.Start();
 
-            while (_currentPage.Name != pageName && timer.Elapsed <= _timeout)
+            while (_currentPage.Name != pageName && timer.Elapsed <= timeout)
             {               
                 ProgressToNextPage(role, _currentPage);
 
-                if (timer.Elapsed <= _timeout)
+                if (timer.Elapsed <= timeout)
                 {
                     timer.Restart();
                 }
@@ -115,7 +120,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             timer.Stop();
 
-            if (timer.Elapsed > _timeout)
+            if (timer.Elapsed > timeout)
             {
                 throw new TimeoutException("The elapsed time exceeded the allowed limit to reach the page");
             }
