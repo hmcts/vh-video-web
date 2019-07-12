@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Net;
 using System.Runtime.Serialization;
-using System.Threading;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using Testing.Common.Assertions;
@@ -13,7 +12,6 @@ using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Configuration;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.Services.Bookings;
-using VideoWeb.Services.Video;
 using ParticipantRequest = VideoWeb.Services.Bookings.ParticipantRequest;
 
 namespace VideoWeb.AcceptanceTests.Steps
@@ -23,7 +21,6 @@ namespace VideoWeb.AcceptanceTests.Steps
     {
         private readonly TestContext _context;
         private readonly HearingsEndpoints _bookingEndpoints = new BookingsApiUriFactory().HearingsEndpoints;
-        private readonly ConferenceEndpoints _videoEndpoints = new VideoApiUriFactory().ConferenceEndpoints;
         private const int NumberOfIndividuals = 2;
         private const int NumberOfRepresentatives = 2;
         private const int HearingDuration = 60;
@@ -66,13 +63,13 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             var participants = new List<ParticipantRequest>();
 
-            var judge = _context.GetJudgeUser();
+            var clerk = _context.GetClerkUser();
             var individualUsers = _context.GetIndividualUsers();
             var representativeUsers = _context.GetRepresentativeUsers();
 
             AddIndividualParticipants(individualUsers, participants);
             AddRepresentativeParticipants(representativeUsers, participants);
-            AddJudgeParticipant(judge, participants);
+            AddClerkParticipant(clerk, participants);
 
             _context.RequestBody.Participants = participants;
             _context.RequestBody.Scheduled_date_time = DateTime.Now.ToUniversalTime().AddMinutes(minutes);
@@ -133,6 +130,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             hearing.Should().NotBeNull();
             AssertHearingResponse.ForHearing(hearing);
             _context.Hearing = hearing;
+            _context.Cases = hearing.Cases;
             if (hearing.Id != null)
             {
                 _context.NewHearingId = (Guid)hearing.Id;
@@ -159,6 +157,25 @@ namespace VideoWeb.AcceptanceTests.Steps
                 Solicitors_reference = "",
                 Title = "Mrs",
                 Username = judge.Username
+            });
+        }
+
+        private static void AddClerkParticipant(UserAccount clerk, ICollection<ParticipantRequest> participants)
+        {
+            participants.Add(new ParticipantRequest()
+            {
+                Case_role_name = "Judge",
+                Contact_email = clerk.AlternativeEmail,
+                Display_name = clerk.Displayname,
+                First_name = clerk.Firstname,
+                Hearing_role_name = "Judge",
+                Last_name = clerk.Lastname,
+                Middle_names = "",
+                Representee = "",
+                Organisation_name = "MoJ",
+                Solicitors_reference = "",
+                Title = "Mrs",
+                Username = clerk.Username
             });
         }
 

@@ -5,6 +5,7 @@ using System.Linq;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders;
+using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
