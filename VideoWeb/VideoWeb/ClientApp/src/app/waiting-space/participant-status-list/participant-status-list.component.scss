@@ -1,9 +1,26 @@
 @import "~govuk-frontend/all";
 
 .unavailable {
-    color: govuk-colour("red")
+  color: govuk-colour("red");
 }
 
 .available {
-    color: govuk-colour("green")
+  color: govuk-colour("green");
 }
+
+.label--warning {
+  color: #ffffff;
+  background-color: #b10e1e;
+  padding: 5px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.label--secondary {
+  color: #ffffff;
+  background-color: #6f777b;
+  padding: 5px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+

@@ -8,6 +8,7 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { EventsService } from 'src/app/services/events.service';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { NotificationService } from 'src/app/services/notification.service';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 
 @Component({
   selector: 'app-participant-status-list',
@@ -71,6 +72,12 @@ export class ParticipantStatusListComponent implements OnInit {
         } else {
           this.displayConsultationRequestPopup(message);
         }
+      });
+    });
+
+    this.eventService.getParticipantStatusMessage().subscribe(message => {
+      this.ngZone.run(() => {
+        this.handleParticipantStatusChange(message);
       });
     });
   }
@@ -154,10 +161,17 @@ export class ParticipantStatusListComponent implements OnInit {
   }
 
   private filterNonJudgeParticipants(): void {
-    this.nonJugdeParticipants = this.conference.participants.filter(x => x.role !== UserRole.Judge);
+    this.nonJugdeParticipants = this.conference.participants.filter(x => x.role !== UserRole.Judge
+      && x.role === UserRole.Representative);
   }
 
   private filterJudge(): void {
     this.judge = this.conference.participants.find(x => x.role === UserRole.Judge);
+  }
+
+  handleParticipantStatusChange(message: ParticipantStatusMessage): any {
+    const participant = this.conference.participants.find(p => p.username.toLowerCase().trim() === message.email.toLowerCase().trim());
+    const status = <ParticipantStatus>message.status;
+    participant.status = status;
   }
 }

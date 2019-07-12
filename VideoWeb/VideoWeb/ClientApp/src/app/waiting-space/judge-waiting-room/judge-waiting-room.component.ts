@@ -43,7 +43,7 @@ export class JudgeWaitingRoomComponent implements OnInit {
         this.setupSubscribers();
         this.hearingEndTime = this.getHearingEndTime();
 
-        this.conference.status = ConferenceStatus.Suspended;
+        this.conference.status = ConferenceStatus.NotStarted;
       },
         (error) => {
           this.loadingData = false;
@@ -67,14 +67,6 @@ export class JudgeWaitingRoomComponent implements OnInit {
 
   isPaused(): boolean {
     return this.conference.status === ConferenceStatus.Paused || this.conference.status === ConferenceStatus.Suspended;
-  }
-
-  hearingSuspended(): boolean {
-    return this.conference.status === ConferenceStatus.Suspended;
-  }
-
-  hearingPaused(): boolean {
-    return this.conference.status === ConferenceStatus.Paused;
   }
 
   goToHearingPage(): void {
@@ -122,5 +114,11 @@ export class JudgeWaitingRoomComponent implements OnInit {
     return hearingEndDate;
   }
 
+  hearingSuspended(): boolean {
+    return this.conference.status === ConferenceStatus.Suspended;
+  }
 
+  hearingPaused(): boolean {
+    return this.conference.status === ConferenceStatus.Paused;
+  }
 }
