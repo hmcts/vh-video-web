@@ -22,14 +22,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly BrowserContext _browserContext;
         private readonly ScenarioContext _scenarioContext;
         private readonly AdminPanelPage _adminPanelPage;
-        private readonly HearingListPage _hearingListPage;
+        private readonly VhoHearingListPage _hearingListPage;
         private readonly ConferenceEndpoints _conferenceEndpoints = new VideoApiUriFactory().ConferenceEndpoints;
         private readonly CallbackEndpoints _callbackEndpoints = new VideoApiUriFactory().CallbackEndpoints;
         private const string ParticipantsKey = "participants";
         private const int MaxRetries = 5;
 
         public ParticipantStatusSteps(TestContext testContext, BrowserContext browserContext,
-            ScenarioContext injectedContext, AdminPanelPage adminPanelPage, HearingListPage hearingListPage)
+            ScenarioContext injectedContext, AdminPanelPage adminPanelPage, VhoHearingListPage hearingListPage)
         {
             _context = testContext;
             _browserContext = browserContext;

@@ -42,8 +42,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"there is a new browser open for (.*)")]
         public void GivenAnotherBrowserWindowIsLaunched(string participant)
         {
-            _context.Drivers.Add(_context.TestSettings.UserAccounts.Find(x => x.Lastname.Contains(participant)).Username, _browserContext);
-            _context.WrappedDrivers.Add(_context.TestSettings.UserAccounts.Find(x => x.Lastname.Contains(participant)).Username, _browserContext.NgDriver.WrappedDriver);
+            var username = participant.ToLower().Equals("clerk") ? _context.GetClerkUser().Username : _context.TestSettings.UserAccounts.Find(x => x.Lastname.Contains(participant)).Username;
+            _context.Drivers.Add(username, _browserContext);
+            _context.WrappedDrivers.Add(username, _browserContext.NgDriver.WrappedDriver);
             _browserContext.BrowserSetup(_context.VideoWebUrl, _context.Environment, participant);
             _browserContext.NavigateToPage();
         }
@@ -116,7 +117,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private void ProgressToNextPage(string role, Page currentPage)
         {
-            if (role.Equals("Judge"))
+            if (role.Equals("Judge") || role.Equals("Clerk"))
             {
                 switch (currentPage.JudgeJourney)
                 {

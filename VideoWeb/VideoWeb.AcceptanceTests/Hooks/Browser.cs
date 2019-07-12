@@ -46,7 +46,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
             foreach (var user in testSettings.UserAccounts)
             {
-                user.Username = $"{user.Displayname.Replace(" ", "")}{testSettings.TestUsernameStem}";
+                user.Username = $"{user.Displayname.Replace(" ", "").Replace("ClerkJudge","Clerk")}{testSettings.TestUsernameStem}";
             }
 
             var hearingServiceSettings = new BookingsConfigLoader().ReadHearingServiceSettings();
@@ -92,7 +92,8 @@ namespace VideoWeb.AcceptanceTests.Hooks
             testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, testContext.TargetBrowser);
 
             string participant;
-            if (_scenarioContext.ScenarioInfo.Title.ToLower().Contains("judge"))
+            if (_scenarioContext.ScenarioInfo.Title.ToLower().Contains("judge") ||
+                _scenarioContext.ScenarioInfo.Title.ToLower().Contains("clerk"))
             {
                 participant = "Judge01";
             }

@@ -30,6 +30,7 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public UserAccount CurrentUser { get; set; }
         public int DelayedStartTime { get; set; }
         public HearingDetailsResponse Hearing { get; set; }
+        public List<CaseResponse> Cases { get; set; }
         public Guid NewHearingId { get; set; }
         public ConferenceDetailsResponse Conference { get; set; }
         public Guid NewConferenceId { get; set; }
@@ -45,6 +46,7 @@ namespace VideoWeb.AcceptanceTests.Contexts
         {
             Drivers = new Dictionary<string, BrowserContext>();
             WrappedDrivers = new Dictionary<string, IWebDriver>();
+            Cases = new List<CaseResponse>();
         }
 
         public UserAccount GetJudgeUser()
@@ -75,6 +77,16 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public List<UserAccount> GetRepresentativeUsers()
         {
             return TestSettings.UserAccounts.Where(x => x.Role.StartsWith("Representative")).ToList();
+        }
+
+        public string CaseName()
+        {
+            return Cases.First().Name;
+        }
+
+        public string CaseNumber()
+        {
+            return Cases.First().Number;
         }
 
         public RestClient BookingsApiClient()

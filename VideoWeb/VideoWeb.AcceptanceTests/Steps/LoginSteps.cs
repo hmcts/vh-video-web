@@ -52,11 +52,9 @@ namespace VideoWeb.AcceptanceTests.Steps
             }
 
             _loginPage.Logon(_context.CurrentUser.Username, _context.TestSettings.TestUserPassword);
-            if (!_context.Drivers.ContainsKey(_context.CurrentUser.Username))
-            {
-                _context.Drivers.Add(_context.CurrentUser.Username, _browserContext);
-                _context.WrappedDrivers.Add(_context.CurrentUser.Username, _browserContext.NgDriver.WrappedDriver);
-            }
+            if (_context.Drivers.ContainsKey(_context.CurrentUser.Username)) return;
+            _context.Drivers.Add(_context.CurrentUser.Username, _browserContext);
+            _context.WrappedDrivers.Add(_context.CurrentUser.Username, _browserContext.NgDriver.WrappedDriver);
         }
 
         [Then(@"the sign out link is displayed")]
