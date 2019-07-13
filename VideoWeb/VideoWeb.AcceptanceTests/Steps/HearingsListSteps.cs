@@ -95,12 +95,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Clerk can see a list of hearings including the new hearing")]
         public void ThenTheClerkCanSeeAListOfHearingsIncludingTheNewHearing()
         {
-
             if (_context.Hearing.Scheduled_date_time == null || _context.Hearing.Scheduled_duration == null)
             {
                 throw new DataException("Required hearing values are null");
             }
-           
+
             var scheduledDateTime = (DateTime)_context.Hearing.Scheduled_date_time;
             scheduledDateTime = scheduledDateTime.ToLocalTime();
             var scheduledDuration = (int)_context.Hearing.Scheduled_duration;

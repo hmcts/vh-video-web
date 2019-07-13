@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using OpenQA.Selenium.Support.Extensions;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Pages;
 
@@ -23,6 +24,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
         private void CheckRowIsVisisble()
         {
             _browser.NgDriver.WaitUntilElementVisible(_page.ClerkHearingCaseName(_caseNumber)).Displayed.Should().BeTrue();
+            _browser.NgDriver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browser.NgDriver.FindElement(_page.ClerkHearingCaseName(_caseNumber)));
         }
 
         private void GetTime()
