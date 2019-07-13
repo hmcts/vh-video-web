@@ -46,15 +46,10 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the hearing controls are visible")]
         public void ThenTheHearingControlsAreVisible()
         {
-            _browserContext.NgDriver.WaitUntilElementVisible(_hearingRoomPage.SideMenuArrow).Displayed.Should().BeTrue();
-            _browserContext.NgDriver.WaitUntilElementVisible(_hearingRoomPage.RequestAssistance).Displayed.Should().BeTrue();
-            _browserContext.NgDriver.WaitUntilElementVisible(_hearingRoomPage.PauseHearing).Displayed.Should().BeTrue();
-            _browserContext.NgDriver.WaitUntilElementVisible(_hearingRoomPage.EndHearing).Displayed.Should().BeTrue();
             _browserContext.NgDriver.WaitUntilElementVisible(_hearingRoomPage.ToggleSelfview).Displayed.Should().BeTrue();
-            _browserContext.NgDriver.WaitUntilElementVisible(_hearingRoomPage.MuteCamera).Displayed.Should().BeTrue();
-            _browserContext.NgDriver.WaitUntilElementVisible(_hearingRoomPage.MuteMicrophone).Displayed.Should().BeTrue();
-            _browserContext.NgDriver.WaitUntilElementVisible(_hearingRoomPage.Disconnect).Displayed.Should().BeTrue();
-            _browserContext.NgDriver.WaitUntilElementVisible(_hearingRoomPage.ToggleFullscreen).Displayed.Should().BeTrue();
+            _browserContext.NgDriver.WaitUntilElementVisible(_hearingRoomPage.PauseButton).Displayed.Should().BeTrue();
+            _browserContext.NgDriver.WaitUntilElementVisible(_hearingRoomPage.CloseButton).Displayed.Should().BeTrue();
+            _browserContext.NgDriver.WaitUntilElementVisible(_hearingRoomPage.TechnicalIssues).Displayed.Should().BeTrue();
         }
 
         [Then(@"the user can see themselves and toggle the view off and on")]
