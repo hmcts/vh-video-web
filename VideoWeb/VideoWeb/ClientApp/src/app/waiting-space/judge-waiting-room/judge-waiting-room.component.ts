@@ -42,8 +42,6 @@ export class JudgeWaitingRoomComponent implements OnInit {
 
         this.setupSubscribers();
         this.hearingEndTime = this.getHearingEndTime();
-
-        this.conference.status = ConferenceStatus.NotStarted;
       },
         (error) => {
           this.loadingData = false;

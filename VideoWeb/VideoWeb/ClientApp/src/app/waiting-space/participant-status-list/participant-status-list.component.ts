@@ -74,12 +74,6 @@ export class ParticipantStatusListComponent implements OnInit {
         }
       });
     });
-
-    this.eventService.getParticipantStatusMessage().subscribe(message => {
-      this.ngZone.run(() => {
-        this.handleParticipantStatusChange(message);
-      });
-    });
   }
 
   private raiseConsultationRequestEvent(participant: ParticipantResponse): void {
@@ -167,11 +161,5 @@ export class ParticipantStatusListComponent implements OnInit {
 
   private filterJudge(): void {
     this.judge = this.conference.participants.find(x => x.role === UserRole.Judge);
-  }
-
-  handleParticipantStatusChange(message: ParticipantStatusMessage): any {
-    const participant = this.conference.participants.find(p => p.username.toLowerCase().trim() === message.email.toLowerCase().trim());
-    const status = <ParticipantStatus>message.status;
-    participant.status = status;
   }
 }

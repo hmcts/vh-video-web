@@ -18,7 +18,7 @@
           <strong>{{ conference.case_name }}</strong> ({{ conference.case_type }}) <span>case number</span>:
           <strong>{{ conference.case_number }}</strong>
         </td>
-        <td class="govuk-table__cell" style="text-align:right;">
+        <td class="govuk-table__cell">
           {{ conference.scheduled_date_time | date: 'dd MMMM	yyyy h:mma' }} - {{ hearingEndTime | date: 'h:mma' }}
         </td>
       </tr>

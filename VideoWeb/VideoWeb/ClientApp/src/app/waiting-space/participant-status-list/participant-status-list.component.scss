@@ -8,19 +8,22 @@
   color: govuk-colour("green");
 }
 
-.label--warning {
+.label-status {
   color: #ffffff;
+  padding: 3px 5px 3px 5px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+.label-status--disconnected {
   background-color: #b10e1e;
-  padding: 5px;
-  font-weight: 600;
-  font-size: 0.9rem;
 }
 
-.label--secondary {
-  color: #ffffff;
+.label-status--notsignedin {
   background-color: #6f777b;
-  padding: 5px;
-  font-weight: 600;
-  font-size: 0.9rem;
 }
 
+.label-status--connected {
+  background-color: #00823b;
+}

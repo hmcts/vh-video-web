@@ -6,31 +6,41 @@
   </div>
 
   <div id="p-row-{{judge.id}}" class="govuk-grid-row govuk-!-margin-bottom-1">
-    <div class="govuk-grid-column-two-thirds">
-      <div class="govuk-heading-m govuk-!-margin-bottom-0">Judge</div>
-      <p class="govuk-body-l govuk-!-margin-bottom-0"><strong>{{judge.name}}</strong></p>
-    </div>
-    <div class="govuk-grid-column-one-third">
-      <img src="/assets/images/govuk-crest.png" height="50" width="50" class="govuk-header__logotype-crest"
-        alt="HM Courts &amp; Tribunals Service crest" />
+    <div class="govuk-!-margin-top-4">
+      <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-heading-m govuk-!-margin-bottom-0">Judge</div>
+        <p class="govuk-body-s govuk-!-margin-bottom-0"><strong>{{ judge.name }}</strong></p>
+      </div>
+      <div class="govuk-grid-column-one-third">
+        <img src="/assets/images/govuk-crest.png" height="50" width="50" class="govuk-header__logotype-crest"
+          alt="HM Courts &amp; Tribunals Service crest" />
+      </div>
     </div>
   </div>
   <hr />
 
-  <div *ngFor="let participant of nonJugdeParticipants" class="govuk-grid-row govuk-!-margin-bottom-6">
-    <div id="p-row-{{participant.id}}" class="govuk-grid-column-full">
+  <div *ngFor="let participant of nonJugdeParticipants" class="govuk-grid-row govuk-!-margin-bottom-1">
+    <div id="p-row-{{participant.id}}" class="govuk-grid-column-full govuk-!-margin-top-2">
       <p class="govuk-heading-s govuk-!-margin-bottom-0">{{participant.name}}</p>
       <p class="govuk-body-s govuk-!-margin-bottom-1">
         <strong>
-          {{participant.role === 'Representative' ? 'Solicitor' : ''}}
+          {{ participant.role === 'Representative' ? 'Solicitor' : '' }}
         </strong>
       </p>
       <p *ngIf="participant.representee" class="govuk-body-s govuk-!-margin-bottom-1">
-        Representing {{participant.representee}}
+        Representing {{ participant.representee }}
       </p>
-      <p class="govuk-body-s govuk-!-margin-bottom-1">{{participant.case_type_group}}</p>
+      <p class="govuk-body-s govuk-!-margin-bottom-3">{{ participant.case_type_group }}</p>
 
-      <a *ngIf="canCallParticipant(participant)" id="p-call-{{participant.id}}-btn" href="#"
+      <div class="govuk-body-s govuk-!-margin-bottom-3">
+        <label class="govuk-body-s label-status" [ngClass]="participant.status === 'Available' ? 'label-status--connected' : 
+            participant.status === 'Disconnected' ? 'label-status--disconnected' : 'label-status--notsignedin'">
+          {{ participant.status === 'Available' ? 'CONNECTED' : 
+            participant.status === 'Disconnected' ? 'DISCONNECTED' : 'NOT SIGNED IN' }}
+        </label>
+      </div>
+
+      <a *ngIf=" canCallParticipant(participant)" id="p-call-{{participant.id}}-btn" href="#"
         class="govuk-link govuk-!-margin-bottom-0" href="javascript:void(0)" (click)="begingCallWith(participant)">Speak
         to this person now
       </a>
@@ -38,3 +48,4 @@
       <hr />
     </div>
   </div>
+</div>
