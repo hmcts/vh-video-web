@@ -21,7 +21,7 @@ namespace VideoWeb.AcceptanceTests.Pages
             By.XPath($"{ClerkHearingRow(caseNumber)}//p[contains(text(),'Solicitor')]/span");
         public By ClerkHearingIndividuals(string caseNumber) =>
             By.XPath($"{ClerkHearingRow(caseNumber)}//p[contains(text(),'for')]/span");
-        public By StartHearingButton(string caseNumber) => By.XPath($"{ClerkHearingRow(caseNumber)}//input[@role='button' and @value='Select']");
+        public By StartHearingButton(string caseNumber) => By.XPath($"{ClerkHearingRow(caseNumber)}//input");
 
         public By ClerkContactUs = CommonLocators.ElementContainingText("Do you need help?");
         public By ClerkPhoneNumber = CommonLocators.ElementContainingText("0300 303 0655");
