@@ -40,6 +40,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 case "Representative01": video = Representative1Video; break;
                 case "Individual02": video = Individual2Video; break;
                 case "Representative02": video = Representative2Video; break;
+                case "VideoHearingsOfficer": video = Representative2Video; break;
                 default: throw new ArgumentOutOfRangeException($"No user defined; {user}");
             }
             return _saucelabsSettings.RunWithSaucelabs ? InitSauceLabsDriver(video) : InitLocalDriver(video,  _scenario);

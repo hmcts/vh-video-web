@@ -43,7 +43,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var element = _context.CurrentUser.Role.Equals("Clerk") ? _clerkPage.StartHearingButton(_context.Hearing.Cases.First().Number) : _page.SignInButton(_context.Hearing.Cases.First().Number);
             var tollerence = _context.CurrentUser.Role.Equals("Clerk") ? 30 : TollerenceInMinutes * 60;
             _driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _driver.FindElement(element));
-            _driver.WaitUntilElementVisible(element, tollerence).Click();
+            _driver.WaitUntilElementClickable(element, tollerence).Click();
         }
 
         [When(@"the user clicks on the Check Equipment button")]

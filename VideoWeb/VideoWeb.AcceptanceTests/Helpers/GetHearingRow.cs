@@ -38,7 +38,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             _hearingRow.Judge = _driver.WaitUntilElementVisible(_page.ClerkHearingJudge(_caseNumber, _judgeName)).Text;
         }
 
-        private void GetHearingDetails()
+        private void GetcaseDetails()
         {
             _hearingRow.CaseName = _driver.WaitUntilElementVisible(_page.ClerkHearingCaseName(_caseNumber)).Text;
             _hearingRow.CaseType = _driver.WaitUntilElementVisible(_page.ClerkHearingCaseType(_caseNumber)).Text;
@@ -88,7 +88,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             CheckRowIsVisisble();
             GetTime();
             GetJudge();
-            GetHearingDetails();
+            GetcaseDetails();
             GetParticipants();
 
             return _hearingRow;

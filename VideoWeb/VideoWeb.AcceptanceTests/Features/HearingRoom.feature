@@ -15,6 +15,21 @@ Scenario: Clerk starts hearing
 	And the user can see themselves and toggle the view off and on
 
 @Chrome @Video
+Scenario: Clerk pauses hearing
+	Given the Individual user has progressed to the Waiting Room page
+	And there is a new browser open for VideoHearingsOfficer
+	And the Video Hearings Officer user has progressed to the Hearing List page for the existing hearing
+	And there is a new browser open for Clerk
+	And the Clerk user has progressed to the Waiting Room page for the existing hearing
+	When the user clicks the button with innertext Start Hearing
+	Then the user is on the Countdown page
+	When the countdown finishes
+	Then the user is on the Hearing Room page for 10 seconds
+	When the user clicks pause
+	Then the user is on the Waiting Room page
+	And the user resumes the hearing
+
+@Chrome @Video
 Scenario: Two participants join hearing
 	Given the Individual user has progressed to the Waiting Room page
 	And there is a new browser open for Representative01
