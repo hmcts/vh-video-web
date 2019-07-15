@@ -196,7 +196,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             }
 
-            if (role.Equals("Video Hearings Officer"))
+            if (role.Contains("Officer"))
             {
                 switch (currentPage.VhoJourney)
                 {

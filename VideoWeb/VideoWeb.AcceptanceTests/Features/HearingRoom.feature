@@ -18,7 +18,7 @@ Scenario: Clerk starts hearing
 Scenario: Clerk pauses hearing
 	Given the Individual user has progressed to the Waiting Room page
 	And there is a new browser open for VideoHearingsOfficer
-	And the Video Hearings Officer user has progressed to the Hearing List page for the existing hearing
+	And the Video Hearings Officer user has progressed to the Admin Panel page for the existing hearing
 	And there is a new browser open for Clerk
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
 	When the user clicks the button with innertext Start Hearing

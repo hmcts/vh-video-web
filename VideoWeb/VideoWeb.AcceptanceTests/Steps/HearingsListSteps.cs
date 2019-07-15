@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using FluentAssertions;
 using OpenQA.Selenium.Support.Extensions;
 using Protractor;
@@ -19,7 +20,7 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public sealed class HearingsListSteps
     {
-        private readonly NgWebDriver _driver;
+        private readonly BrowserContext _browser;
         private readonly TestContext _context;
         private readonly HearingListPage _page;
         private readonly ClerkHearingListPage _clerkPage;
@@ -30,7 +31,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public HearingsListSteps(BrowserContext browser, TestContext context, HearingListPage page,
             ClerkHearingListPage clerkPage, VhoHearingListPage vhoPage)
         {
-            _driver = browser.NgDriver;
+            _browser = browser;
             _context = context;
             _page = page;
             _clerkPage = clerkPage;
@@ -42,47 +43,47 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var element = _context.CurrentUser.Role.Equals("Clerk") ? _clerkPage.StartHearingButton(_context.Hearing.Cases.First().Number) : _page.SignInButton(_context.Hearing.Cases.First().Number);
             var tollerence = _context.CurrentUser.Role.Equals("Clerk") ? 30 : TollerenceInMinutes * 60;
-            _driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _driver.FindElement(element));
-            _driver.WaitUntilElementClickable(element, tollerence).Click();
+            _browser.NgDriver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browser.NgDriver.FindElement(element));
+            _browser.NgDriver.WaitUntilElementVisible(element, tollerence).Click();
         }
 
         [When(@"the user clicks on the Check Equipment button")]
         public void WhenTheUserClicksTheCheckEquipmentButton()
         {
-            _driver.WaitUntilElementClickable(_clerkPage.CheckEquipmentButton).Click();
+            _browser.NgDriver.WaitUntilElementClickable(_clerkPage.CheckEquipmentButton).Click();
         }
 
         [When(@"the VHO selects the hearing")]
         public void WhenTheVhoSelectsTheHearing()
         {
-            _driver
+            _browser.NgDriver
                 .WaitUntilElementVisible(
                     _vhoPage.VideoHearingsOfficerSelectHearingButton(_context.Hearing.Cases.First().Number))
                 .Click();
 
-            _driver.WaitUntilElementVisible(_vhoPage.AdminIframe).Displayed.Should().BeTrue();
-            _driver.SwitchTo().Frame(VhoHearingListPage.AdminIframeId);
-            _driver.WaitUntilElementVisible(_vhoPage.WaitingRoomText).Displayed.Should().BeTrue();
+            _browser.NgDriver.WaitUntilElementVisible(_vhoPage.AdminIframe).Displayed.Should().BeTrue();
+            _browser.NgDriver.SwitchTo().Frame(VhoHearingListPage.AdminIframeId);
+            _browser.NgDriver.WaitUntilElementVisible(_vhoPage.WaitingRoomText).Displayed.Should().BeTrue();
         }
 
         [Then(@"a warning message appears indicating the user has no hearings scheduled")]
         public void ThenAWarningMessageAppearsIndicatingTheUserHasNoHearingsScheduled()
         {
-            _driver.WaitUntilElementVisible(_page.NoHearingsWarningMessage).Displayed
+            _browser.NgDriver.WaitUntilElementVisible(_page.NoHearingsWarningMessage).Displayed
                 .Should().BeTrue();
         }
 
         [Then(@"the participant can see a list of hearings including the new hearing")]
         public void ThenTheParticipantCanSeeAListOfHearingsIncludingTheNewHearing()
         {
-            _driver.WaitUntilElementVisible(_page.HearingWithCaseNumber(_context.Hearing.Cases.First().Number)).Displayed
+            _browser.NgDriver.WaitUntilElementVisible(_page.HearingWithCaseNumber(_context.Hearing.Cases.First().Number)).Displayed
                 .Should().BeTrue();
 
-            _driver.WaitUntilElementVisible(_page.ParticipantHearingDate(_context.Hearing.Cases.First().Number)).Text
+            _browser.NgDriver.WaitUntilElementVisible(_page.ParticipantHearingDate(_context.Hearing.Cases.First().Number)).Text
                 .Should().Be(
                     $"{_context.Hearing.Scheduled_date_time?.ToString(DateFormats.HearingListPageDate)}");
 
-            _driver.WaitUntilElementVisible(_page.ParticipantHearingTime(_context.Hearing.Cases.First().Number)).Text
+            _browser.NgDriver.WaitUntilElementVisible(_page.ParticipantHearingTime(_context.Hearing.Cases.First().Number)).Text
                 .Should().Be(
                     $"{_context.Hearing.Scheduled_date_time?.ToLocalTime():HH:mm}");
         }
@@ -90,7 +91,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the user can see their details at the top of the hearing list")]
         public void ThenTheUserCanSeeTheirDetailsAtTheTopOfTheHearingList()
         {
-            _driver.WaitUntilElementVisible(_clerkPage.ClerkHearingListTitle).Text
+            _browser.NgDriver.WaitUntilElementVisible(_clerkPage.ClerkHearingListTitle).Text
                 .Should().Be($"Video hearings for {_context.CurrentUser.Firstname}, {_context.CurrentUser.Lastname}");
         }
 
@@ -110,10 +111,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             var rowData = new GetHearingRow()
                 .ForCaseNumber(_context.CaseNumber())
                 .ForJudge(_context.CurrentUser.Displayname)
-                .WithDriver(_driver)
+                .WithDriver(_browser.NgDriver)
                 .Fetch();
 
-            _driver.WaitUntilElementVisible(
+            _browser.NgDriver.WaitUntilElementVisible(
                     _clerkPage.ClerkHearingDate(scheduledDateTime.ToString(DateFormats.ClerkHearingListDate)))
                 .Displayed.Should().BeTrue();
 
@@ -130,15 +131,15 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"contact us details for the clerk are available")]
         public void ThenContactUsDetailsForTheClerkAreAvailable()
         {
-            _driver.WaitUntilElementVisible(_clerkPage.ClerkContactUs).Displayed.Should().BeTrue();
+            _browser.NgDriver.WaitUntilElementVisible(_clerkPage.ClerkContactUs).Displayed.Should().BeTrue();
 
-            _driver.WaitUntilElementVisible(_clerkPage.ClerkPhoneNumber).Displayed.Should().BeTrue();
+            _browser.NgDriver.WaitUntilElementVisible(_clerkPage.ClerkPhoneNumber).Displayed.Should().BeTrue();
         }
 
         [Then(@"the new hearing isn't available to join yet")]
         public void ThenTheNewHearingIsnTAvailableToJoinYet()
         {
-           var actualTime = _driver
+           var actualTime = _browser.NgDriver
                 .WaitUntilElementVisible(_page.WaitToSignInText(_context.Hearing.Cases.First().Number))
                 .Text;
 
@@ -159,37 +160,37 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"when the hearing is ready to start the hearing button appears")]
         public void ThenWhenTheHearingIsReadyToStartTheHearingButtonAppears()
         {
-            _driver.WaitUntilElementVisible(_page.SignInButton(_context.Hearing.Cases.First().Number), TollerenceInMinutes * 60).Displayed
+            _browser.NgDriver.WaitUntilElementVisible(_page.SignInButton(_context.Hearing.Cases.First().Number), TollerenceInMinutes * 60).Displayed
                 .Should().BeTrue();
         }        
 
         [Then(@"the VHO can see a list of hearings including the new hearing")]
         public void ThenTheVhoCanSeeAListOfHearingsIncludingTheNewHearing()
         {
-            _driver.WaitUntilElementVisible(_vhoPage.HearingWithCaseNumber(_context.Hearing.Cases.First().Number)).Displayed
+            _browser.NgDriver.WaitUntilElementVisible(_vhoPage.HearingWithCaseNumber(_context.Hearing.Cases.First().Number)).Displayed
                 .Should().BeTrue();
 
             Debug.Assert(_context.Hearing.Scheduled_duration != null, "_context.Hearing.Scheduled_duration != null");
             var timespan = TimeSpan.FromMinutes(_context.Hearing.Scheduled_duration.Value);
             var listedFor = GetListedForTimeAsString(timespan);
 
-            _driver.WaitUntilElementVisible(_vhoPage.VideoHearingsOfficerTime(_context.Hearing.Cases.First().Number)).Text
+            _browser.NgDriver.WaitUntilElementVisible(_vhoPage.VideoHearingsOfficerTime(_context.Hearing.Cases.First().Number)).Text
                 .Should().Be($"{_context.Hearing.Scheduled_date_time?.ToLocalTime():HH:mm}");
 
-            _driver.WaitUntilElementVisible(_vhoPage.VideoHearingsOfficerListedFor(_context.Hearing.Cases.First().Number)).Text
+            _browser.NgDriver.WaitUntilElementVisible(_vhoPage.VideoHearingsOfficerListedFor(_context.Hearing.Cases.First().Number)).Text
                 .Should().Be($"{listedFor}");
         }
 
         [Then(@"the VHO can see the hearing view")]
         public void ThenTheVhoCanSeeTheHearingView()
         {
-            _driver.WaitUntilElementVisible(_vhoPage.WaitingRoomText).Displayed.Should().BeTrue();
+            _browser.NgDriver.WaitUntilElementVisible(_vhoPage.WaitingRoomText).Displayed.Should().BeTrue();
         }
 
         [Then(@"the VHO should see the participant contact details")]
         public void ThenTheVhoShouldSeeTheParticipantContactDetails()
         {
-            _driver.WrappedDriver.SwitchTo().ParentFrame();
+            _browser.NgDriver.WrappedDriver.SwitchTo().ParentFrame();
 
             var hearingParticipants = _context.Hearing.Participants.FindAll(x =>
                 x.User_role_name.Equals("Individual") || x.User_role_name.Equals("Representative"));
@@ -198,24 +199,24 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             var hearingParticipant = hearingParticipants.First();
 
-            var firstParticipantLink = _driver.WaitUntilElementVisible(_vhoPage.ParticipantName(hearingParticipant.Last_name));
+            var firstParticipantLink = _browser.NgDriver.WaitUntilElementVisible(_vhoPage.ParticipantName(hearingParticipant.Last_name));
             firstParticipantLink.Displayed.Should().BeTrue();
 
-            var action = new OpenQA.Selenium.Interactions.Actions(_driver.WrappedDriver);
+            var action = new OpenQA.Selenium.Interactions.Actions(_browser.NgDriver.WrappedDriver);
             action.MoveToElement(firstParticipantLink).Perform();
 
             var conferenceParticipant = _context.Conference.Participants.Find(x => x.Name.Contains(user));
             var participantEmailAndRole = $"{conferenceParticipant.Name} ({conferenceParticipant.Case_type_group})";
 
-            _driver
+            _browser.NgDriver
                 .WaitUntilElementVisible(_vhoPage.ParticipantContactDetails(user, participantEmailAndRole)).Displayed
                 .Should().BeTrue();
 
-            _driver
+            _browser.NgDriver
                 .WaitUntilElementVisible(_vhoPage.ParticipantContactDetails(user, hearingParticipant.Contact_email)).Displayed
                 .Should().BeTrue();
 
-            _driver
+            _browser.NgDriver
                 .WaitUntilElementVisible(_vhoPage.ParticipantContactDetails(user, hearingParticipant.Telephone_number)).Displayed
                 .Should().BeTrue();
         }

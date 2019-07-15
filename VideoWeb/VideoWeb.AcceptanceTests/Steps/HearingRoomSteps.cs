@@ -12,14 +12,14 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public sealed class HearingRoomSteps
     {
-        private readonly NgWebDriver _driver;
+        private readonly BrowserContext _browser;
         private readonly HearingRoomPage _page;
         private readonly CommonPages _commonPages;
         private const int CountdownDuration = 30;
 
         public HearingRoomSteps(BrowserContext browser, HearingRoomPage page, CommonPages commonPages)
         {
-            _driver = browser.NgDriver;
+            _browser = browser;
             _page = page;
             _commonPages = commonPages;
         }
@@ -29,17 +29,17 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             Thread.Sleep(TimeSpan.FromSeconds(CountdownDuration));
 
-            _driver.WaitUntilElementVisible(_page.JudgeIframe).Displayed.Should().BeTrue();
-            _driver.SwitchTo().Frame(HearingRoomPage.JudgeIframeId);
+            _browser.NgDriver.WaitUntilElementVisible(_page.JudgeIframe).Displayed.Should().BeTrue();
+            _browser.NgDriver.SwitchTo().Frame(HearingRoomPage.JudgeIframeId);
 
-            Convert.ToDouble(_driver.WaitUntilElementVisible(_page.IncomingVideo)
+            Convert.ToDouble(_browser.NgDriver.WaitUntilElementVisible(_page.IncomingVideo)
                 .GetAttribute("currentTime")).Should().BeGreaterThan(0);
         }
 
         [When(@"the user clicks pause")]
         public void WhenTheUserClicksPause()
         {
-            _driver.WaitUntilElementClickable(_page.PauseButton).Click();
+            _browser.NgDriver.WaitUntilElementClickable(_page.PauseButton).Click();
         }
 
         [Then(@"the user resumes the hearing")]
@@ -66,20 +66,20 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the hearing controls are visible")]
         public void ThenTheHearingControlsAreVisible()
         {
-            _driver.WaitUntilElementVisible(_page.ToggleSelfview).Displayed.Should().BeTrue();
-            _driver.WaitUntilElementVisible(_page.PauseButton).Displayed.Should().BeTrue();
-            _driver.WaitUntilElementVisible(_page.CloseButton).Displayed.Should().BeTrue();
-            _driver.WaitUntilElementVisible(_page.TechnicalIssues).Displayed.Should().BeTrue();
+            _browser.NgDriver.WaitUntilElementVisible(_page.ToggleSelfview).Displayed.Should().BeTrue();
+            _browser.NgDriver.WaitUntilElementVisible(_page.PauseButton).Displayed.Should().BeTrue();
+            _browser.NgDriver.WaitUntilElementVisible(_page.CloseButton).Displayed.Should().BeTrue();
+            _browser.NgDriver.WaitUntilElementVisible(_page.TechnicalIssues).Displayed.Should().BeTrue();
         }
 
         [Then(@"the user can see themselves and toggle the view off and on")]
         public void ThenTheUserCanSeeThemselvesAndToggleTheViewOffAndOn()
         {
-            _driver.WaitUntilElementVisible(_page.SelfView).Displayed.Should().BeTrue();
-            _driver.WaitUntilElementVisible(_page.ToggleSelfview).Click();
-            _driver.WaitUntilElementNotVisible(_page.SelfView).Should().BeTrue();
-            _driver.WaitUntilElementVisible(_page.ToggleSelfview).Click();
-            _driver.WaitUntilElementVisible(_page.SelfView).Displayed.Should().BeTrue();
+            _browser.NgDriver.WaitUntilElementVisible(_page.SelfView).Displayed.Should().BeTrue();
+            _browser.NgDriver.WaitUntilElementVisible(_page.ToggleSelfview).Click();
+            _browser.NgDriver.WaitUntilElementNotVisible(_page.SelfView).Should().BeTrue();
+            _browser.NgDriver.WaitUntilElementVisible(_page.ToggleSelfview).Click();
+            _browser.NgDriver.WaitUntilElementVisible(_page.SelfView).Displayed.Should().BeTrue();
         }
     }
 }
