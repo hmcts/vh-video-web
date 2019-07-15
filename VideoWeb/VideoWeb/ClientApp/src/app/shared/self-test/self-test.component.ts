@@ -18,6 +18,7 @@ export class SelfTestComponent implements OnInit {
   @Input() conference: ConferenceResponse;
   @Input() participant: ParticipantResponse;
 
+  @Output() testStarted = new EventEmitter();
   @Output() testCompleted = new EventEmitter<TestCallScoreResponse>();
 
   token: TokenResponse;
@@ -116,26 +117,27 @@ export class SelfTestComponent implements OnInit {
     this.pexipAPI = new PexRTC();
     this.updatePexipAudioVideoSource();
     this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
-      console.info('running pexip test call setup');
+      self.logger.info('running pexip test call setup');
       self.outgoingStream = stream;
       this.connect('0000', null);
     };
 
     this.pexipAPI.onConnect = function (stream) {
-      console.info('successfully connected');
+      self.logger.info('successfully connected');
       self.incomingStream = stream;
       self.displayFeed = true;
+      self.testStarted.emit();
     };
 
     this.pexipAPI.onError = function (reason) {
       self.displayFeed = false;
-      console.warn('Error from pexip. Reason : ' + reason);
+      self.logger.error('Error from pexip. Reason : ' + reason, reason);
       self.errorService.goToServiceError();
     };
 
     this.pexipAPI.onDisconnect = function (reason) {
       self.displayFeed = false;
-      console.info('Disconnected from pexip. Reason : ' + reason);
+      self.logger.info('Disconnected from pexip. Reason : ' + reason);
       if (reason === 'Conference terminated by another participant') {
         self.retrieveSelfTestScore();
       }
@@ -151,7 +153,8 @@ export class SelfTestComponent implements OnInit {
   }
 
   replayVideo() {
-    this.pexipAPI.disconnect();
+    this.logger.debug('replaying self test video');
+    this.disconnect();
     this.call();
   }
 
@@ -163,6 +166,7 @@ export class SelfTestComponent implements OnInit {
     this.incomingStream = null;
     this.outgoingStream = null;
     this.didTestComplete = true;
+    this.displayFeed = false;
   }
 
   async retrieveSelfTestScore() {

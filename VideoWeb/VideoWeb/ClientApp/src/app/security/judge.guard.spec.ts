@@ -33,26 +33,23 @@ describe('JudgeGuard', () => {
 
   it('should not be able to activate component if role is not Judge', async(async () => {
     const profile = new UserProfileResponse({ role: UserRole.VideoHearingsOfficer });
-    profileServiceSpy.getUserProfile.and.returnValue(of(profile));
-    guard.canActivate(null, null).subscribe((result) => {
-      expect(result).toBeFalsy();
-      expect(router.navigate).toHaveBeenCalledWith(['/home']);
-    });
+    profileServiceSpy.getUserProfile.and.returnValue(profile);
+    const result = await guard.canActivate(null, null);
+    expect(result).toBeFalsy();
+    expect(router.navigate).toHaveBeenCalledWith(['/home']);
   }));
 
   it('should be able to activate component if role is Judge', async(async () => {
     const profile = new UserProfileResponse({ role: UserRole.Judge });
-    profileServiceSpy.getUserProfile.and.returnValue(of(profile));
-    guard.canActivate(null, null).subscribe((result) => {
-      expect(result).toBeTruthy();
-    });
+    profileServiceSpy.getUserProfile.and.returnValue(profile);
+    const result = await guard.canActivate(null, null);
+    expect(result).toBeTruthy();
   }));
 
   it('should logout when user profile cannot be retrieved', async(async () => {
-    profileServiceSpy.getUserProfile.and.returnValue(throwError({ status: 404, isApiException: true }));
-    guard.canActivate(null, null).subscribe((result) => {
-      expect(result).toBeFalsy();
-      expect(router.navigate).toHaveBeenCalledWith(['/logout']);
-    });
+    profileServiceSpy.getUserProfile.and.returnValue(Promise.reject({ status: 404, isApiException: true }));
+    const result = await guard.canActivate(null, null);
+    expect(result).toBeFalsy();
+    expect(router.navigate).toHaveBeenCalledWith(['/logout']);
   }));
 });

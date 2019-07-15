@@ -102,6 +102,16 @@ namespace VideoWeb.AcceptanceTests.Steps
             selfScore.Score.ToString().Should().ContainAny("Good", "Okay", "Bad");
         }
 
+        [Then(@"the user can see contact details to help resolve the issues")]
+        public void ThenTheUserCanSeeContactDetailsToHelpResolveTheIssues()
+        {
+            _browserContext.NgDriver.WaitUntilElementVisible(_practiceVideoHearingPage.ProblemsTitle).Displayed.Should()
+                .BeTrue();
+
+            _browserContext.NgDriver.WaitUntilElementVisible(_practiceVideoHearingPage.TellParticipantsText).Displayed.Should()
+                .BeTrue();
+        }
+
         private void VideoIsPlaying(By element)
         {
             _browserContext.NgDriver.WaitUntilElementVisible(element);

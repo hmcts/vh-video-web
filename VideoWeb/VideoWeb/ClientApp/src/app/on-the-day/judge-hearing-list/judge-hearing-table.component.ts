@@ -1,8 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ConferenceForUserResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
-import * as moment from 'moment';
-import { Router } from '@angular/router';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { Hearing } from 'src/app/shared/models/hearing';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 @Component({
   selector: 'app-judge-hearing-table',
@@ -10,69 +9,32 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
   styleUrls: ['./judge-hearing-table.component.scss']
 })
 export class JudgeHearingTableComponent implements OnInit {
-  @Input() conferences: ConferenceForUserResponse[];
 
-  constructor(private router: Router) { }
+  private _conferences: ConferenceForUserResponse[];
+  hearings: Hearing[];
 
-  ngOnInit() { }
-
-  signIntoConference(conference: ConferenceForUserResponse) {
-    this.router.navigate([PageUrls.JudgeWaitingRoom, conference.id]);
+  @Input() set conferences(conferences: ConferenceForUserResponse[]) {
+    this._conferences = conferences;
+    this.hearings = conferences.map(c => new Hearing(c));
   }
 
-  getSignInDate(conference: ConferenceForUserResponse): string {
-    const today = moment.utc().dayOfYear();
-    const scheduledDate = moment(conference.scheduled_date_time).utc().dayOfYear();
-    if (today >= scheduledDate) {
-      return 'Today';
-    } else {
-      const dateString = moment(conference.scheduled_date_time).format(
-        'Do MMM'
-      );
-      return 'on ' + dateString;
-    }
+  @Output() selectedConference = new EventEmitter<ConferenceForUserResponse>();
+
+  constructor(private logger: Logger) { }
+
+  ngOnInit() {
+    this.hearings = this._conferences.map(c => new Hearing(c));
   }
 
-  getSignInTime(conference: ConferenceForUserResponse): Date {
-    return moment(conference.scheduled_date_time)
-      .subtract(30, 'minute')
-      .toDate();
+  signIntoConference(hearing: Hearing) {
+    this.logger.info(`selected conference to sign into: ${hearing.id}`);
+    const conference = this._conferences.find(x => x.id === hearing.id);
+    this.selectedConference.emit(conference);
   }
 
-  canStartHearing(conference: ConferenceForUserResponse): boolean {
-    const currentDateTime = new Date(new Date().getTime());
-    const difference = moment(conference.scheduled_date_time).diff(
-      moment(currentDateTime),
-      'minutes'
-    );
-    return difference < 30;
-  }
-
-  hasAvailableParticipants(conference: ConferenceForUserResponse): boolean {
-    return conference.no_of_participants_available > 0;
-  }
-
-  hasUnavailableParticipants(conference: ConferenceForUserResponse): boolean {
-    return conference.no_of_participants_unavailable > 0;
-  }
-
-  hasInConsultationParticipants(conference: ConferenceForUserResponse): boolean {
-    return conference.no_of_participants_in_consultation > 0;
-  }
-
-  isPausedOrSuspended(conference: ConferenceForUserResponse): boolean {
-    return conference.status === ConferenceStatus.Paused || conference.status === ConferenceStatus.Suspended;
-  }
-
-  getDuration(duration: number): string {
-    const h = Math.floor(duration / 60);
-    const m = duration % 60;
-    const hours = h < 1 ? `${h} hours` : `${h} hour`;
-    const minutes = `${m} minutes`;
-    if (h > 0) {
-      return `${hours} and ${minutes}`;
-    } else {
-      return `${minutes}`;
-    }
+  showConferenceStatus(hearing: Hearing): boolean {
+    return hearing.status === ConferenceStatus.Paused ||
+      hearing.status === ConferenceStatus.Suspended ||
+      hearing.status === ConferenceStatus.Closed;
   }
 }

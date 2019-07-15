@@ -22,14 +22,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly BrowserContext _browserContext;
         private readonly ScenarioContext _scenarioContext;
         private readonly AdminPanelPage _adminPanelPage;
-        private readonly HearingListPage _hearingListPage;
+        private readonly VhoHearingListPage _hearingListPage;
         private readonly ConferenceEndpoints _conferenceEndpoints = new VideoApiUriFactory().ConferenceEndpoints;
         private readonly CallbackEndpoints _callbackEndpoints = new VideoApiUriFactory().CallbackEndpoints;
         private const string ParticipantsKey = "participants";
         private const int MaxRetries = 5;
 
         public ParticipantStatusSteps(TestContext testContext, BrowserContext browserContext,
-            ScenarioContext injectedContext, AdminPanelPage adminPanelPage, HearingListPage hearingListPage)
+            ScenarioContext injectedContext, AdminPanelPage adminPanelPage, VhoHearingListPage hearingListPage)
         {
             _context = testContext;
             _browserContext = browserContext;
@@ -112,8 +112,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             _scenarioContext.Add(ParticipantsKey, participants);
         }
 
-        [Then(@"the participant status will be updated to Joining")]
-        public void ThenTheParticipantStatusWillBeUpdatedToJoining()
+        [Then(@"the participant status will be updated to (.*)")]
+        public void ThenTheParticipantStatusWillBeUpdatedToJoining(ParticipantState expectedState)
         {
             _context.Request =
                 _context.Get(_conferenceEndpoints.GetConferenceDetailsById(_context.NewConferenceId));
@@ -132,12 +132,10 @@ namespace VideoWeb.AcceptanceTests.Steps
                 var participant = conference.Participants
                     .Find(x => x.Username.ToLower().Equals(_context.CurrentUser.Username.ToLower()));
 
-                if (participant.Current_status != null)
+                var participantState = participant.Current_status?.Participant_state;
+                if (participantState != null && participantState.Equals(expectedState))
                 {
-                    var participantState = participant.Current_status
-                        .Participant_state;
-                    if (participantState != null)
-                        participantStatus = (ParticipantState)participantState;
+                    participantStatus = (ParticipantState)participantState;
                     break;
                 }
                 Thread.Sleep(TimeSpan.FromSeconds(1));
@@ -145,7 +143,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             if (participantStatus != ParticipantState.None)
             {
-                participantStatus.Should().Be(ParticipantState.Joining);
+                participantStatus.Should().Be(expectedState);
             }
         }
 

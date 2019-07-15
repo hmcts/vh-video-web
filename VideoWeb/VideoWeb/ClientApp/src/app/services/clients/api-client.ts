@@ -1057,7 +1057,9 @@ export enum ConferenceStatus {
 export class ParticipantForUserResponse implements IParticipantForUserResponse {
     username?: string | undefined;
     display_name?: string | undefined;
+    role?: UserRole | undefined;
     status?: ParticipantStatus | undefined;
+    representee?: string | undefined;
 
     constructor(data?: IParticipantForUserResponse) {
         if (data) {
@@ -1072,7 +1074,9 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
         if (data) {
             this.username = data["username"];
             this.display_name = data["display_name"];
+            this.role = data["role"];
             this.status = data["status"];
+            this.representee = data["representee"];
         }
     }
 
@@ -1087,7 +1091,9 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
         data = typeof data === 'object' ? data : {};
         data["username"] = this.username;
         data["display_name"] = this.display_name;
+        data["role"] = this.role;
         data["status"] = this.status;
+        data["representee"] = this.representee;
         return data; 
     }
 }
@@ -1095,7 +1101,19 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
 export interface IParticipantForUserResponse {
     username?: string | undefined;
     display_name?: string | undefined;
+    role?: UserRole | undefined;
     status?: ParticipantStatus | undefined;
+    representee?: string | undefined;
+}
+
+export enum UserRole {
+    None = "None",
+    CaseAdmin = "CaseAdmin",
+    VideoHearingsOfficer = "VideoHearingsOfficer",
+    HearingFacilitationSupport = "HearingFacilitationSupport",
+    Judge = "Judge",
+    Individual = "Individual",
+    Representative = "Representative",
 }
 
 export enum ParticipantStatus {
@@ -1335,16 +1353,6 @@ export interface IParticipantResponse {
     tiled_display_name?: string | undefined;
     case_type_group?: string | undefined;
     representee?: string | undefined;
-}
-
-export enum UserRole {
-    None = "None",
-    CaseAdmin = "CaseAdmin",
-    VideoHearingsOfficer = "VideoHearingsOfficer",
-    HearingFacilitationSupport = "HearingFacilitationSupport",
-    Judge = "Judge",
-    Individual = "Individual",
-    Representative = "Representative",
 }
 
 export class ClientSettingsResponse implements IClientSettingsResponse {
@@ -1651,6 +1659,9 @@ export interface IUpdateParticipantStatusEventRequest {
 
 export class UserProfileResponse implements IUserProfileResponse {
     role?: UserRole | undefined;
+    first_name?: string | undefined;
+    last_name?: string | undefined;
+    display_name?: string | undefined;
 
     constructor(data?: IUserProfileResponse) {
         if (data) {
@@ -1664,6 +1675,9 @@ export class UserProfileResponse implements IUserProfileResponse {
     init(data?: any) {
         if (data) {
             this.role = data["role"];
+            this.first_name = data["first_name"];
+            this.last_name = data["last_name"];
+            this.display_name = data["display_name"];
         }
     }
 
@@ -1677,12 +1691,18 @@ export class UserProfileResponse implements IUserProfileResponse {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["role"] = this.role;
+        data["first_name"] = this.first_name;
+        data["last_name"] = this.last_name;
+        data["display_name"] = this.display_name;
         return data; 
     }
 }
 
 export interface IUserProfileResponse {
     role?: UserRole | undefined;
+    first_name?: string | undefined;
+    last_name?: string | undefined;
+    display_name?: string | undefined;
 }
 
 export class TaskResponse implements ITaskResponse {

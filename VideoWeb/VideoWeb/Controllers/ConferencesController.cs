@@ -46,6 +46,7 @@ namespace VideoWeb.Controllers
             try
             {
                 var conferences = await _videoApiClient.GetConferencesForUsernameAsync(username);
+                conferences  = conferences.OrderBy(x => x.Closed_date_time).ToList();
                 var mapper = new ConferenceForUserResponseMapper();
                 var response = conferences.Select(x => mapper.MapConferenceSummaryToResponseModel(x)).ToList();
                 return Ok(response);
@@ -85,6 +86,7 @@ namespace VideoWeb.Controllers
             {
                 var conferences = await _videoApiClient.GetConferencesTodayAsync();
                 conferences = conferences.Where(HasNotPassed).ToList();
+                conferences  = conferences.OrderBy(x => x.Closed_date_time).ToList();
                 var mapper = new ConferenceForUserResponseMapper();
                 var response = conferences.Select(x => mapper.MapConferenceSummaryToResponseModel(x)).ToList();
                 return Ok(response);

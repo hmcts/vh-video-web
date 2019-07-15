@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using FluentAssertions;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
@@ -36,11 +35,12 @@ namespace VideoWeb.AcceptanceTests.Helpers
             string video;
             switch (user)
             {
-                case "Judge": case "Judge01": video = JudgeVideo; break;
+                case "Judge": case "Judge01": case "Clerk": case "Clerk01": video = JudgeVideo; break;
                 case "Individual01": video = Individual1Video; break;
                 case "Representative01": video = Representative1Video; break;
                 case "Individual02": video = Individual2Video; break;
                 case "Representative02": video = Representative2Video; break;
+                case "VideoHearingsOfficer": video = Representative2Video; break;
                 default: throw new ArgumentOutOfRangeException($"No user defined; {user}");
             }
             return _saucelabsSettings.RunWithSaucelabs ? InitSauceLabsDriver(video) : InitLocalDriver(video,  _scenario);

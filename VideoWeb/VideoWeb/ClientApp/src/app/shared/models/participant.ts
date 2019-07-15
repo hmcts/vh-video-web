@@ -40,6 +40,14 @@ export class Participant {
         return this.participant.role;
     }
 
+    get displayName(): string {
+        return this.participant.display_name;
+    }
+
+    get representee(): string {
+        return this.participant.representee;
+    }
+
     getStatusAsText(): string {
         switch (this.participant.status) {
             case ParticipantStatus.None:

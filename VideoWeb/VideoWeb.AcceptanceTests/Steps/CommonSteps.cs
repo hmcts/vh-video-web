@@ -16,6 +16,7 @@ namespace VideoWeb.AcceptanceTests.Steps
     public class CommonSteps
     {
         private readonly TestContext _context;
+        private readonly ScenarioContext _scenario;
         private BrowserContext _browserContext;
         private readonly CommonPages _commonPages;
         private readonly DataSetupSteps _dataSetupSteps;
@@ -24,12 +25,15 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly PracticeVideoHearingPage _practiceVideoHearingPage;
         private readonly DeclarationSteps _declarationSteps;
         private Page _currentPage = Page.Login;
+        private readonly TimeSpan _shortTimeout = TimeSpan.FromSeconds(30);
+        private readonly TimeSpan _longTimeout = TimeSpan.FromSeconds(90);
 
-        public CommonSteps(TestContext context, BrowserContext browserContext, CommonPages commonPages,
+        public CommonSteps(TestContext context, ScenarioContext scenario, BrowserContext browserContext, CommonPages commonPages,
             DataSetupSteps dataSetupSteps, LoginSteps loginSteps, HearingsListSteps hearingDetailsSteps,
             PracticeVideoHearingPage practiceVideoHearingPage, DeclarationSteps declarationSteps)
         {
             _context = context;
+            _scenario = scenario;
             _browserContext = browserContext;
             _commonPages = commonPages;
             _dataSetupSteps = dataSetupSteps;
@@ -42,8 +46,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"there is a new browser open for (.*)")]
         public void GivenAnotherBrowserWindowIsLaunched(string participant)
         {
-            _context.Drivers.Add(_context.TestSettings.UserAccounts.Find(x => x.Lastname.Contains(participant)).Username, _browserContext);
-            _context.WrappedDrivers.Add(_context.TestSettings.UserAccounts.Find(x => x.Lastname.Contains(participant)).Username, _browserContext.NgDriver.WrappedDriver);
+            var username = participant.ToLower().Equals("clerk") ? _context.GetClerkUser().Username : _context.TestSettings.UserAccounts.Find(x => x.Lastname.Contains(participant)).Username;
+            _context.Drivers.Add(username, _browserContext);
+            _context.WrappedDrivers.Add(username, _browserContext.NgDriver.WrappedDriver);
             _browserContext.BrowserSetup(_context.VideoWebUrl, _context.Environment, participant);
             _browserContext.NavigateToPage();
         }
@@ -98,17 +103,24 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _dataSetupSteps.GetTheNewConferenceDetails();
             }
 
+            var timeout = _scenario.ScenarioInfo.Tags.Contains("Video") ? _longTimeout : _shortTimeout;
+
             var timer = new Stopwatch();
             timer.Start();
 
-            while (_currentPage.Name != pageName && timer.Elapsed <= TimeSpan.FromSeconds(30))
-            {
+            while (_currentPage.Name != pageName && timer.Elapsed <= timeout)
+            {               
                 ProgressToNextPage(role, _currentPage);
+
+                if (timer.Elapsed <= timeout)
+                {
+                    timer.Restart();
+                }
             }
 
             timer.Stop();
 
-            if (timer.Elapsed > TimeSpan.FromSeconds(30))
+            if (timer.Elapsed > timeout)
             {
                 throw new TimeoutException("The elapsed time exceeded the allowed limit to reach the page");
             }
@@ -116,7 +128,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private void ProgressToNextPage(string role, Page currentPage)
         {
-            if (role.Equals("Judge"))
+            if (role.Equals("Judge") || role.Equals("Clerk"))
             {
                 switch (currentPage.JudgeJourney)
                 {
@@ -147,7 +159,44 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             }
 
-            if (role.Equals("Video Hearings Officer"))
+            if (role.Equals("ClerkSelfTest"))
+            {
+                switch (currentPage.ClerkSelfTestJourney)
+                {
+                    case ClerkSelfTestJourney.Login:
+                    {
+                        _loginSteps.WhenUserLogsInWithValidCredentials("Clerk");
+                        break;
+                    }
+                    case ClerkSelfTestJourney.HearingList:
+                    {
+                        _hearingListSteps.WhenTheUserClicksTheCheckEquipmentButton();
+                        break;
+                    }
+                    case ClerkSelfTestJourney.EquipmentCheck:
+                    {
+                        WhentheUserClicksTheButton("Continue");
+                        break;
+                    }
+                    case ClerkSelfTestJourney.SwitchOnYourCameraAndMicrophone:
+                    {
+                        WhentheUserClicksTheButton("Switch on");
+                        WhentheUserClicksTheButton("Watch video");
+                        break;
+                    }
+                    case ClerkSelfTestJourney.PracticeVideoHearing:
+                    {
+                        break;
+                    }
+                    default:
+                        throw new InvalidOperationException($"Current page was past the intended page: {currentPage}");
+                }
+
+                _currentPage = currentPage.ClerkSelfTestNextPage(currentPage);
+
+            }
+
+            if (role.Contains("Officer"))
             {
                 switch (currentPage.VhoJourney)
                 {

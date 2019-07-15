@@ -4,6 +4,7 @@ import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { MockAdalService } from '../../testing/mocks/MockAdalService';
 import { LogoutComponent } from './logout.component';
+import { HttpClientModule } from '@angular/common/http';
 
 
 describe('LogoutComponent', () => {
@@ -14,7 +15,7 @@ describe('LogoutComponent', () => {
     configureTestSuite(() => {
         TestBed.configureTestingModule({
             declarations: [LogoutComponent],
-            imports: [RouterTestingModule],
+            imports: [RouterTestingModule, HttpClientModule],
             providers: [
                 { provide: AdalService, useClass: MockAdalService }
             ]
