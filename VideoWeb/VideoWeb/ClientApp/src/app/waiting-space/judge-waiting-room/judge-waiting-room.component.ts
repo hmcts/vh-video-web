@@ -112,6 +112,17 @@ export class JudgeWaitingRoomComponent implements OnInit {
     return hearingEndDate;
   }
 
+  getScheduledStartTime(): Date {
+    const startTime = new Date(this.conference.scheduled_date_time.getTime());
+    return startTime;
+  }
+
+  getScheduledEndTime(): Date {
+    const endTime = new Date(this.conference.scheduled_date_time.getTime());
+    endTime.setUTCMinutes(endTime.getUTCMinutes() + this.conference.scheduled_duration);
+    return endTime;
+  }
+
   hearingSuspended(): boolean {
     return this.conference.status === ConferenceStatus.Suspended;
   }
