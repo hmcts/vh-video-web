@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -8,6 +8,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { BaseSelfTestComponent } from '../models/base-self-test.component';
 import { VhContactDetails } from 'src/app/shared/contact-information';
+import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
 
 @Component({
   selector: 'app-judge-self-test',
@@ -15,6 +16,9 @@ import { VhContactDetails } from 'src/app/shared/contact-information';
   styleUrls: ['./judge-self-test.component.scss']
 })
 export class JudgeSelfTestComponent extends BaseSelfTestComponent {
+
+  @ViewChild(SelfTestComponent)
+  selfTestComponent: SelfTestComponent;
 
   showEquipmentFaultMessage: boolean;
   contact = {
@@ -52,5 +56,6 @@ export class JudgeSelfTestComponent extends BaseSelfTestComponent {
     this.logger.debug('restarting judge self-test');
     super.restartTest();
     this.showEquipmentFaultMessage = false;
+    this.selfTestComponent.replayVideo();
   }
 }

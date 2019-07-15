@@ -13,6 +13,7 @@ import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { PageUrls } from 'src/app/shared/page-url.constants';
+import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
 
 
 describe('JudgeSelfTestComponent', () => {
@@ -46,6 +47,7 @@ describe('JudgeSelfTestComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(JudgeSelfTestComponent);
     component = fixture.componentInstance;
+    component.selfTestComponent = TestBed.createComponent(SelfTestStubComponent).componentInstance as SelfTestComponent;
     router = TestBed.get(Router);
     fixture.detectChanges();
   });
