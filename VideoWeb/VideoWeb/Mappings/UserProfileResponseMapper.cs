@@ -9,6 +9,9 @@ namespace VideoWeb.Mappings
         public UserProfileResponse MapToResponseModel(UserProfile profile)
         {
             var response = new UserProfileResponse();
+            response.FirstName = profile.First_name;
+            response.LastName = profile.Last_name;
+            response.DisplayName = profile.Display_name;
 
             var userRole = profile.User_role;
             switch (userRole)

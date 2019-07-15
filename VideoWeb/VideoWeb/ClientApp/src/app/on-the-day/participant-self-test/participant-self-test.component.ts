@@ -1,54 +1,45 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, ParticipantResponse, TestCallScoreResponse } from 'src/app/services/clients/api-client';
+import { TestCallScoreResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { PageUrls } from 'src/app/shared/page-url.constants';
+import { BaseSelfTestComponent } from '../models/base-self-test.component';
+import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
 
 @Component({
   selector: 'app-participant-self-test',
   templateUrl: './participant-self-test.component.html',
   styleUrls: ['./participant-self-test.component.scss']
 })
-export class ParticipantSelfTestComponent implements OnInit {
+export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
 
-  loadingData: boolean;
-  conference: ConferenceResponse;
-  participant: ParticipantResponse;
+  @ViewChild(SelfTestComponent) selfTestComponent: SelfTestComponent;
 
   constructor(private router: Router,
-    private route: ActivatedRoute,
-    private videoWebService: VideoWebService,
-    private errorService: ErrorService,
-    private adalService: AdalService,
-    private logger: Logger
-  ) { }
-
-  ngOnInit() {
-    this.getConference();
-  }
-
-  getConference(): void {
-    const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-    this.logger.debug(`retrieving conference ${conferenceId}`);
-    this.videoWebService.getConferenceById(conferenceId).
-      subscribe((response) => {
-        this.logger.debug(`retrieved conference ${conferenceId} successfully`);
-        this.loadingData = false;
-        this.conference = response;
-        this.participant = response.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
-      }, (error) => {
-        this.loadingData = false;
-        this.errorService.handleApiError(error);
-      });
+    protected route: ActivatedRoute,
+    protected videoWebService: VideoWebService,
+    protected errorService: ErrorService,
+    protected adalService: AdalService,
+    protected logger: Logger) {
+    super(route, videoWebService, errorService, adalService, logger);
   }
 
   onSelfTestCompleted(testcallScore: TestCallScoreResponse): void {
     this.logger.debug(`participant self test completed`);
     if (testcallScore) { this.logger.debug(testcallScore.toJSON()); }
+    this.continueParticipantJourney();
+  }
+
+  continueParticipantJourney() {
     this.router.navigate([PageUrls.CameraWorking, this.conference.id]);
+  }
+
+  restartTest() {
+    this.logger.debug('restarting participant self-test');
+    this.selfTestComponent.replayVideo();
   }
 
 }

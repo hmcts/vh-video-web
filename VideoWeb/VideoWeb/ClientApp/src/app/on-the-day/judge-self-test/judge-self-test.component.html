@@ -1,0 +1,36 @@
+<div *ngIf="!conference && !participant" class="govuk-grid-column-full">
+  <p class="govuk-body-l">Please wait to be connected...</p>
+</div>
+<app-self-test *ngIf="conference && participant && !hideSelfTest" [conference]="conference" [participant]="participant"
+  (testCompleted)="onSelfTestCompleted($event)" (testStarted)="onTestStarted()"></app-self-test>
+
+<div *ngIf="!showEquipmentFaultMessage" class="govuk-!-margin-top-6">
+  <input type="button" id="equipment-works-btn" class="govuk-button govuk-!-margin-right-4" role="button"
+    value="Equipment is working" (click)="equipmentWorksHandler()"
+    alt="Equipment is working and return to hearing list" />
+
+  <input type="button" id="equipment-faulty-btn" class="govuk-button red-btn" role="button" value="Equipment is faulty"
+    (click)="equipmentFaultyHandler()" alt="Equipment is faulty and notify admin" />
+</div>
+
+<div *ngIf="showEquipmentFaultMessage" class="govuk-!-margin-top-6">
+  <h1 class="govuk-heading-l">Problems with your equipment?</h1>
+  <p class="govuk-body govuk-!-margin-top-7">
+    Please call the video hearings team on <span class="govuk-!-font-weight-bold">{{contact.phone}}</span> to let us
+    know.
+  </p>
+
+  <p class="govuk-body">
+    We'll tell the participants their hearing may be delayed.
+  </p>
+</div>
+
+<div>
+  <input *ngIf="showEquipmentFaultMessage" type="button" id="continue-btn" class="govuk-button govuk-!-margin-right-4"
+    role="button" value="Continue" (click)="equipmentWorksHandler()" alt="Continue" />
+
+  <input type="button" id="check-equipment-btn" class="govuk-button grey-btn" role="button"
+    value="Check equipment again" (click)="restartTest()" alt="Re-play the video message" />
+</div>
+
+<app-contact-us-folding></app-contact-us-folding>

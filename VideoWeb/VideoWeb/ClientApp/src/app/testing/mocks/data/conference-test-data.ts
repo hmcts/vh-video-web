@@ -100,25 +100,46 @@ export class ConferenceTestData {
 
         const participant1 = new ParticipantForUserResponse({
             status: ParticipantStatus.Available,
-            display_name: 'Greeno',
+            display_name: 'C Green',
             username: 'chris.green@hearings.net',
+            role: UserRole.Representative,
+            representee: 'James Green'
         });
 
         const participant2 = new ParticipantForUserResponse({
             status: ParticipantStatus.NotSignedIn,
-            display_name: 'James Green',
-            username: 'james.green@hearings.net'
+            display_name: 'J Green',
+            username: 'james.green@hearings.net',
+            role: UserRole.Individual,
         });
 
         const participant3 = new ParticipantForUserResponse({
             status: ParticipantStatus.Available,
             display_name: 'Judge Fudge',
-            username: 'judge.fudge@hearings.net'
+            username: 'judge.fudge@hearings.net',
+            role: UserRole.Judge
+        });
+
+        const participant4 = new ParticipantForUserResponse({
+            status: ParticipantStatus.Available,
+            display_name: 'J Doe',
+            username: 'john.doe@hearings.net',
+            role: UserRole.Representative,
+            representee: 'J Doe'
+        });
+
+        const participant5 = new ParticipantForUserResponse({
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'J Doe',
+            username: 'jane.doe@hearings.net',
+            role: UserRole.Individual,
         });
 
         participants.push(participant1);
         participants.push(participant2);
         participants.push(participant3);
+        participants.push(participant4);
+        participants.push(participant5);
         return participants;
     }
 

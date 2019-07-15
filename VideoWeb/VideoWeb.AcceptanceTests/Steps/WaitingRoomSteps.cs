@@ -5,6 +5,7 @@ using System.Linq;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using Testing.Common.Builders;
+using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
@@ -37,7 +38,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.HearingDate).Text
                 .Should().Contain(_context.Hearing.Scheduled_date_time?.ToString(DateFormats.WaitingRoomPageDate));
 
-            if (_context.CurrentUser.Role.Equals("Judge"))
+            if (_context.CurrentUser.Role.Equals("Judge") || _context.CurrentUser.Role.Equals("Clerk"))
             {
                 _browserContext.NgDriver.WaitUntilElementVisible(_waitingRoomPage.ReturnToHearingRoomLink).Displayed
                     .Should().BeTrue();

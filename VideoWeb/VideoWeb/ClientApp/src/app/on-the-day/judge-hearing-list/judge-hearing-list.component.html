@@ -3,15 +3,26 @@
 </div>
 
 <div *ngIf="!loadingData && hasHearings()">
-  <h1 class="govuk-heading-xl">Your video hearings</h1>
-  <app-judge-hearing-table [conferences]="conferences"></app-judge-hearing-table>
+  <h1 class="govuk-heading-xl">Video hearings for {{courtName}}</h1>
+  <div class="govuk-!-margin-top-4">
+    <input type="button" id="check-equipment-btn" class="govuk-button" role="button" value="Check equipment"
+      (click)="goToEquipmentCheck()" alt="Check equipment" />
+  </div>
+  <div>
+    <p class="govuk-caption-xl">{{ today | date:'fullDate' }}</p>
+  </div>
+  <app-judge-hearing-table [conferences]="conferences" (selectedConference)="onConferenceSelected($event)"></app-judge-hearing-table>
 </div>
 
 <div *ngIf="!loadingData && !hasHearings()">
-  <h1 class="govuk-heading-xl">Video hearings</h1>
+  <h1 class="govuk-heading-xl">Video hearings for {{courtName}}</h1>
   <h3 class="govuk-heading-m"> You have no video hearings</h3>
   <p class="govuk-body">If you are expecting to see details of your hearing listed here, please contact us using the
     options below.</p>
 </div>
 
-<app-contact-us-folding *ngIf="!loadingData"></app-contact-us-folding>
+<div *ngIf="!loadingData">
+  <h3 class="govuk-heading-m govuk-!-margin-top-8 govuk-!-margin-bottom-1">Do you need help?</h3>
+  <p class="govuk-body">Call the video hearings team on <span class="govuk-!-font-weight-bold">{{contact.phone}}</span>
+  </p>
+</div>

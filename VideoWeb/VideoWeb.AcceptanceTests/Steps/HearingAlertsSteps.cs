@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using TechTalk.SpecFlow;
-using Testing.Common.Builders;
+using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -18,13 +18,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly BrowserContext _browserContext;
         private readonly TestContext _context;
         private readonly ScenarioContext _scenarioContext;
-        private readonly HearingListPage _hearingListPage;
+        private readonly VhoHearingListPage _hearingListPage;
         private readonly AdminPanelPage _adminPanelPage;
         private const string ParticipantKey = "participant";
         private const string AlertTimeKey = "alert time";
 
         public HearingAlertsSteps(BrowserContext browserContext, TestContext context, ScenarioContext scenarioContext,
-            HearingListPage hearingListPage, AdminPanelPage adminPanelPage)
+            VhoHearingListPage hearingListPage, AdminPanelPage adminPanelPage)
         {
             _browserContext = browserContext;
             _context = context;
@@ -217,7 +217,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Video Hearings Officer should only see (.*) hearings")]
         public void ThenTheVideoHearingsOfficerShouldOnlySeeHearing(int count)
         {
-            _browserContext.NgDriver.WaitUntilElementsVisible(_hearingListPage.VHOHearingRows).Count.Should().Be(count);
+            _browserContext.NgDriver.WaitUntilElementsVisible(_hearingListPage.VhoHearingRows).Count.Should().Be(count);
         }
 
         [Then(@"the (.*) alert should be updated with the details of the user that actioned the alert")]

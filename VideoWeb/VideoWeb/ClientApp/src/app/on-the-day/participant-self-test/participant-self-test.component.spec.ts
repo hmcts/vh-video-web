@@ -1,29 +1,29 @@
+import { HttpClientModule } from '@angular/common/http';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { ParticipantSelfTestComponent } from './participant-self-test.component';
-import { SelfTestStubComponent } from 'src/app/testing/stubs/self-test-stub';
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { SharedModule } from 'src/app/shared/shared.module';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { AdalService } from 'adal-angular4';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { TestingModule } from 'src/app/testing/testing.module';
-import { HttpClientModule } from '@angular/common/http';
+import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
+import { SelfTestStubComponent } from 'src/app/testing/stubs/self-test-stub';
+import { ParticipantSelfTestComponent } from './participant-self-test.component';
+import { ContactUsFoldingStubComponent } from 'src/app/testing/stubs/contact-us-stub';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 
 describe('ParticipantSelfTestComponent', () => {
   let component: ParticipantSelfTestComponent;
   let fixture: ComponentFixture<ParticipantSelfTestComponent>;
   const conference = new ConferenceTestData().getConferenceDetail();
+  let router: Router;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, HttpClientModule],
-      declarations: [ParticipantSelfTestComponent, SelfTestStubComponent],
+      declarations: [ParticipantSelfTestComponent, SelfTestStubComponent, ContactUsFoldingStubComponent],
       providers: [
         {
           provide: ActivatedRoute,
@@ -44,10 +44,13 @@ describe('ParticipantSelfTestComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ParticipantSelfTestComponent);
     component = fixture.componentInstance;
+    router = TestBed.get(Router);
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should navigate to camera working screen', () => {
+    spyOn(router, 'navigate').and.callFake(() => { });
+    component.continueParticipantJourney();
+    expect(router.navigate).toHaveBeenCalledWith([PageUrls.CameraWorking, conference.id]);
   });
 });

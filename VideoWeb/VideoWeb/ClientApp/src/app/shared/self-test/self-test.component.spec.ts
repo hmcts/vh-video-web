@@ -1,21 +1,20 @@
-import { SelfTestComponent } from './self-test.component';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
+import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { configureTestSuite } from 'ng-bullet';
-import { UserMediaService } from 'src/app/services/user-media.service';
-import { MockUserMediaService } from 'src/app/testing/mocks/MockUserMediaService';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { TestCallScoreResponse, TestScore } from 'src/app/services/clients/api-client';
-import { MicVisualiserStubComponent } from 'src/app/testing/stubs/mic-visualiser-stub';
-import { ContactUsFoldingStubComponent } from 'src/app/testing/stubs/contact-us-stub';
-import { SelectMediaDevicesComponent } from '../select-media-devices/select-media-devices.component';
-import { SelectMediaDevicesStubComponent } from 'src/app/testing/stubs/select-media-devices-stub';
-import { HttpClientModule } from '@angular/common/http';
-import { RouterTestingModule } from '@angular/router/testing';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockUserMediaService } from 'src/app/testing/mocks/MockUserMediaService';
+import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
+import { ContactUsFoldingStubComponent } from 'src/app/testing/stubs/contact-us-stub';
+import { MicVisualiserStubComponent } from 'src/app/testing/stubs/mic-visualiser-stub';
+import { SelectMediaDevicesStubComponent } from 'src/app/testing/stubs/select-media-devices-stub';
+import { SelfTestComponent } from './self-test.component';
 
 describe('SelfTestComponent', () => {
     let component: SelfTestComponent;

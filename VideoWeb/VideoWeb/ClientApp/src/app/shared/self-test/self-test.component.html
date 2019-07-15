@@ -33,24 +33,6 @@
   </div>
 </div>
 
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <p class="govuk-body">
-      When the video has ended, answer a few questions to confirm your microphone and camera are working.
-    </p>
-  </div>
-</div>
-
-<div class="govuk-!-margin-top-6">
-  <input type="button" id="continue-btn" class="govuk-button govuk-!-margin-right-9" role="button"
-    value="Continue" (click)="publishTestResult()" alt="Continue" />
-
-  <input type="button" id="check-equipment-btn" class="govuk-button grey-btn" role="button"
-    value="Re-play the video message" (click)="replayVideo()" alt="Re-play the video message" />
-</div>
-
-<app-contact-us-folding></app-contact-us-folding>
-
 <app-select-media-devices *ngIf="displayDeviceChangeModal"
   (cancelMediaDeviceChange)="onMediaDeviceChangeCancelled()"
   (acceptMediaDeviceChange)="onMediaDeviceChangeAccepted($event)"></app-select-media-devices>

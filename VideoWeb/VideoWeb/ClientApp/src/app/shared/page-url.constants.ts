@@ -1,4 +1,4 @@
-export let PageUrls = {
+export const PageUrls = {
   // shared
   Home: 'home',
   ContactUs: 'contact-us',
@@ -18,6 +18,7 @@ export let PageUrls = {
   JudgeHearingList: 'judge/hearing-list',
   JudgeHearingRoom: 'judge/hearing-room',
   JudgeWaitingRoom: 'judge/waiting-room',
+  JudgeSelfTestVideo: 'judge/practice-video-hearing',
   // participant
   ParticipantHearingList: 'participant/hearing-list',
   ParticipantWaitingRoom: 'participant/waiting-room',

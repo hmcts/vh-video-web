@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -50,7 +51,19 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         [Test]
         public async Task should_return_ok_with_list_of_conferences()
         {
-            var conferences = Builder<ConferenceSummaryResponse>.CreateListOfSize(4).Build().ToList();
+            var conferences = Builder<ConferenceSummaryResponse>.CreateListOfSize(10).All()
+                .With(x => x.Scheduled_date_time = DateTime.UtcNow.AddMinutes(-60))
+                .With(x => x.Scheduled_duration = 20)
+                .With(x => x.Status = ConferenceState.NotStarted)
+                .With(x => x.Closed_date_time = null)
+                .Random(4).Do((response, i) =>
+                {
+                    response.Status = ConferenceState.Closed;
+                    response.Closed_date_time =
+                        i % 2 == 0 ? DateTime.UtcNow.AddMinutes(40) : DateTime.UtcNow.AddMinutes(10);
+                })
+                .Build().ToList();
+
             _videoApiClientMock
                 .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
                 .ReturnsAsync(conferences);

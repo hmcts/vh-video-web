@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { VhContactDetails } from '../contact-information';
 
 @Component({
   selector: 'app-contact-us',
@@ -7,8 +8,8 @@ import { Component } from '@angular/core';
 })
 export class ContactUsComponent {
   contact = {
-    phone: '0300 303 0655',
-    email: 'admin@videohearings.hmcts.net'
+    phone: VhContactDetails.phone,
+    email: VhContactDetails.adminEmail
   };
   constructor() {
 

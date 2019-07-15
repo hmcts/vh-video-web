@@ -1,5 +1,6 @@
 import { OnInit, Component, Injectable } from '@angular/core';
 import { AdalService } from 'adal-angular4';
+import { ProfileService } from 'src/app/services/api/profile.service';
 
 @Component({
     selector: 'app-logout',
@@ -8,11 +9,13 @@ import { AdalService } from 'adal-angular4';
 
 @Injectable()
 export class LogoutComponent implements OnInit {
-    constructor(private adalSvc: AdalService) {
+    constructor(private adalSvc: AdalService,
+        private profileService: ProfileService) {
     }
 
     ngOnInit() {
         if (this.adalSvc.userInfo.authenticated) {
+            this.profileService.clearUserProfile();
             this.adalSvc.logOut();
         }
     }

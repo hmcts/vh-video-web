@@ -59,20 +59,23 @@ Scenario: Representative has no hearings
 	And a warning message appears indicating the user has no hearings scheduled
 	And contact us details are available
 
-Scenario: Judge has no hearings
+@VIH-4607
+Scenario: Clerk has no hearings
 	Given the login page is open
-	When the Judge with no hearings attempts to login with valid credentials
+	When the Clerk with no hearings attempts to login with valid credentials
 	Then the user is on the Hearings List page
 	And a warning message appears indicating the user has no hearings scheduled
-	And contact us details are available
+	And contact us details for the clerk are available
 
-Scenario: Judge has 1 or more hearings
+@VIH-4607
+Scenario: Clerk has 1 or more hearings
 	Given I have a hearing and a conference
 	And the login page is open
-	When the Judge attempts to login with valid credentials
+	When the Clerk attempts to login with valid credentials
 	Then the user is on the Hearings List page
-	And the Judge can see a list of hearings including the new hearing
-	And contact us details are available
+	And the user can see their details at the top of the hearing list 
+	And the Clerk can see a list of hearings including the new hearing
+	And contact us details for the clerk are available
 	When the user clicks on the Start Hearing button
 	Then the user is on the Waiting Room page
 

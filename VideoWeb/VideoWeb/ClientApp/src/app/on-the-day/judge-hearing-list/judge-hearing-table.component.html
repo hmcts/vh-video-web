@@ -4,67 +4,70 @@
     <table class="govuk-table">
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
-          <th class="govuk-table__header" scope="col">Date & time</th>
-          <th class="govuk-table__header" scope="col">Video hearing details</th>
+      <th class="govuk-table__header" scope="col">Time</th>
+      <th class="govuk-table__header" scope="col">Judge</th>
+      <th class="govuk-table__header" scope="col">Hearing</th>
           <th class="govuk-table__header" scope="col">Participants</th>
           <th class="govuk-table__header" scope="col">Status</th>
         </tr>
       </thead>
       <tbody class="govuk-table__body">
-        <tr *ngFor="let conference of conferences" id="judges-list" class="govuk-table__row">
-          <!-- Date & Time -->
+    <tr *ngFor="let hearing of hearings" id="judges-list" class="govuk-table__row">
+      <!-- Time -->
           <td class="govuk-table__cell">
-            <p class="govuk-!-margin-0 govuk-!-padding-0">{{conference.scheduled_date_time | date:'dd MMM yyyy' }}</p>
-            <p class="govuk-!-margin-0 govuk-!-padding-0">{{conference.scheduled_date_time | date:'HH:mm' }}</p>
-            <p id="with-hint-hint" class="govuk-hint govuk-!-margin-0 govuk-!-padding-0">
-              listed for {{ getDuration(conference.scheduled_duration) }}
-            </p>
+        <p class="govuk-!-margin-0 govuk-!-padding-0">{{hearing.scheduledStartTime | date:'HH:mm' }} -
+          {{hearing.scheduledEndTime | date:'HH:mm' }}</p>
           </td>
 
-          <!-- Video Hearing Details -->
+      <!-- Judge-->
           <td class="govuk-table__cell">
-            <p class="govuk-!-margin-0 govuk-!-padding-0">
-              <strong>
-                <p class="govuk-!-margin-0 govuk-!-padding-0">{{conference.case_number}}</p>
-                <p class="govuk-!-margin-0 govuk-!-padding-0">{{conference.case_name}}</p>
-              </strong>
+        <p class="govuk-!-margin-0 govuk-!-padding-0">{{hearing.judge.displayName}}</p>
+      </td>
+
+      <!-- Hearing -->
+      <td class="govuk-table__cell">
+        <p class="govuk-!-margin-0 govuk-!-padding-0 govuk-!-font-weight-bold">
+          {{hearing.caseName}}
             </p>
             <p class="govuk-!-margin-0">
-              {{ conference.case_type }}
+          {{ hearing.caseType }}
+        </p>
+        <p class="govuk-!-margin-0 govuk-!-padding-0">
+          Case number: <span class="govuk-!-font-weight-bold">{{hearing.caseNumber}}</span>
             </p>
           </td>
 
-          <!-- Participant Statuses -->
+      <!-- Participant -->
           <td class="govuk-table__cell">
-            <p *ngIf="hasUnavailableParticipants(conference)" class="unavailable govuk-!-margin-0 govuk-!-padding-0">
-              {{ conference.no_of_participants_unavailable }} Not Available
+        <p class="govuk-!-margin-0 govuk-!-padding-0">
+          <span class="govuk-!-font-weight-bold">{{hearing.applicantRepresentative.displayName}}</span> Solicitor
             </p>
-            <p *ngIf="hasAvailableParticipants(conference)" class="available govuk-!-margin-0 govuk-!-padding-0">
-              {{ conference.no_of_participants_available }} Available
+        <p class="govuk-!-margin-0 govuk-!-padding-0">for <span
+            class="govuk-!-font-weight-bold">{{hearing.applicantRepresentative.representee}}</span>
             </p>
-            <p *ngIf="hasInConsultationParticipants(conference)" class="available govuk-!-margin-0 govuk-!-padding-0">
-              {{ conference.no_of_participants_in_consultation }} In consultation
+
+        <p class="govuk-!-margin-bottom-0 govuk-!-padding-bottom-0">
+          <span class="govuk-!-font-weight-bold">{{hearing.defendantRepresentative.displayName}}</span> Solicitor
+        </p>
+        <p class="govuk-!-margin-0 govuk-!-padding-0">for <span
+            class="govuk-!-font-weight-bold">{{hearing.defendantRepresentative.representee}}</span>
             </p>
           </td>
 
           <!-- Conference Status -->
           <td class="govuk-table__cell">
-            <div *ngIf="isPausedOrSuspended(conference) && canStartHearing(conference)">
-              <p class="unavailable govuk-!-margin-bottom-0"><strong>{{ conference.status }}</strong></p>
-
-              <input type="button" id="start-hearing-btn-{{ conference.id }}" class="govuk-button govuk-!-margin-top-3"
-                role="button" value="Resume hearing" (click)="signIntoConference(conference)"
-                alt="Sign into the conference" />
+        <div *ngIf="!hearing.isClosed() && hearing.isReadyToStart()">
+          <input type="button" id="start-hearing-btn-{{ hearing.id }}"
+            class="govuk-button govuk-!-margin-top-3 govuk-!-margin-bottom-3" role="button" value="Select"
+            (click)="signIntoConference(hearing)" alt="Sign into the conference" />
             </div>
-
-            <div *ngIf="!isPausedOrSuspended(conference) && canStartHearing(conference)">
-              <input type="button" id="start-hearing-btn-{{ conference.id }}"
-                class="govuk-button govuk-!-margin-top-3 govuk-!-margin-bottom-3" role="button" value="Start hearing"
-                (click)="signIntoConference(conference)" alt="Sign into the conference" />
-            </div>
-
-            <div *ngIf="!canStartHearing(conference)">
+        <div *ngIf="!hearing.isClosed() && !hearing.isReadyToStart()">
               Not ready to start
+        </div>
+        <div *ngIf="showConferenceStatus(hearing)" class="govuk-!-margin-top-3 govuk-!-margin-bottom-3">
+          <span class="govuk-!-padding-top-1 govuk-!-padding-bottom-1 govuk-!-padding-right-2 govuk-!-padding-left-2"
+            [ngClass]="{'conference-closed': hearing.isClosed(), 'conference-paused': hearing.isPaused(), 
+              'conference-suspended': hearing.isSuspended()}">{{hearing.status}}</span>
             </div>
           </td>
         </tr>

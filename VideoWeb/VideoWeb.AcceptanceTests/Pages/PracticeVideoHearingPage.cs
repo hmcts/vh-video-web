@@ -14,6 +14,8 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By ChangeMicPopup => CommonLocators.ElementContainingText(PopupHeaderText);
         public By MicsList = By.Id("available-mics-list");
         public By ChangeButton => CommonLocators.ButtonWithLabel("Change");
+        public By ProblemsTitle => CommonLocators.ElementContainingText("Problems with your equipment?");
+        public By TellParticipantsText => CommonLocators.ElementContainingText("We'll tell the participants their hearing may be delayed");
         public By PreferredCameraVideo = By.Id("preferredCameraStream");
     }
 }

@@ -7,4 +7,6 @@ export class SelfTestStubComponent {
     @Input() participant: ParticipantResponse;
 
     @Output() testCompleted = new EventEmitter<TestCallScoreResponse>();
+
+    replayVideo() { }
 }
