@@ -36,32 +36,11 @@
 
   <div class="govuk-grid-column-two-thirds">
 
-    <!-- 
-      <h2 class="govuk-heading-m">{{hearing.getConference().case_name}}</h2>
-  
-      <h3 class="govuk-heading-m">Case number: {{hearing.getConference().case_number}}</h3>
-  
-      <div class="govuk-!-margin-bottom-9">
-        <span class="govuk-body">
-          <p class="govuk-!-margin-0" aria-label="date of hearing, scheduled start time and scheduled end time">
-            {{ hearing.getScheduledStartTime() | date: 'EEEE dd MMMM	yyyy' }},
-            <span class="govuk-!-font-weight-bold">{{ hearing.getScheduledStartTime() | date: 'HH:mm a' }} to
-              {{ hearing.getScheduledEndTime() | date: 'HH:mm a' }}</span>
-          </p>
-        </span>
-      </div> -->
-
     <div *ngIf="hearing.isClosed()">
       <p class="govuk-body">
         This hearing is finished. You may now sign out.
       </p>
     </div>
-
-    <!--     <div *ngIf="hearing.isPaused()">
-        <p class="govuk-body">
-          Please wait here. The judge will resume the hearing shortly.
-        </p>
-      </div> -->
 
     <div *ngIf="hearing.isSuspended()" class="govuk-warning-text govuk-!-padding-right-6">
       <span class="govuk-warning-text__icon" style="top:20px" aria-hidden="true">!</span>
@@ -97,7 +76,7 @@
             have given us.</p>
         </div>
 
-        <div *ngIf="hearing.isPaused()">
+        <div *ngIf="hearing.isPaused()" class="hearing-title-mt--20">
           <p>The judge will re-start the hearing when they are ready. Please stay near your screen.</p>
         </div>
 
