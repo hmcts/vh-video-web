@@ -17,6 +17,7 @@ import { VideoCheckComponent } from './video-check/video-check.component';
 import { SignonAComputerComponent } from '../shared/signon-a-computer/signon-a-computer.component';
 import { IntroductionComponent } from './introduction/introduction.component';
 import { ParticipantSelfTestComponent } from './participant-self-test/participant-self-test.component';
+import { JudgeSelfTestComponent } from './judge-self-test/judge-self-test.component';
 
 @NgModule({
   imports: [
@@ -40,6 +41,7 @@ import { ParticipantSelfTestComponent } from './participant-self-test/participan
     SignonAComputerComponent,
     IntroductionComponent,
     ParticipantSelfTestComponent,
+    JudgeSelfTestComponent,
   ],
   exports: [
     DeclarationComponent

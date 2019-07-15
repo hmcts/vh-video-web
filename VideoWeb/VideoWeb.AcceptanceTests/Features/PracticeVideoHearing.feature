@@ -31,3 +31,38 @@ Scenario: Representative video hearing practice
 	Then the choose your camera and microphone popup should appear
 	When the user selects a new microphone
 	Then the choose your camera and microphone popup should disappear
+
+@VIH-4671 @Chrome @Firefox @Video
+Scenario: Clerk video hearing practice
+	Given the ClerkSelfTest user has progressed to the Practice video hearing page
+	Then the incoming and self video should be playing video
+	And contact us details are available
+	When the video has ended
+	Then the test score should be produced
+	When the user clicks the Check equipment again button
+	Then the incoming and self video should be playing video
+	When the user clicks the Change camera or microphone link
+	Then the choose your camera and microphone popup should appear
+	When the user selects a new microphone
+	Then the choose your camera and microphone popup should disappear
+
+@VIH-4671 @Chrome @Firefox @Video
+Scenario: Clerk confirms the equipment is working
+	Given the ClerkSelfTest user has progressed to the Practice video hearing page
+	Then the incoming and self video should be playing video
+	When the user clicks the Equipment is working button
+	Then the user is on the Hearings List page
+
+@VIH-4671 @Chrome @Firefox @Video
+Scenario: Clerk does not confirm the equipment is working
+	Given the ClerkSelfTest user has progressed to the Practice video hearing page
+	Then the incoming and self video should be playing video
+	When the user clicks the Equipment is faulty button
+	Then the user can see contact details to help resolve the issues
+	And contact us details are available
+	When the user clicks the Check equipment again button
+	Then the user is on the Practice video hearing page
+	When the user clicks the Check equipment again button
+	And the user clicks the Equipment is faulty button
+	When the user clicks the Continue button
+	Then the user is on the Hearings List page

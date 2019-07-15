@@ -1,11 +1,45 @@
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, ParticipantResponse, UserRole } from 'src/app/services/clients/api-client';
 import * as moment from 'moment';
+import { Participant } from './participant';
 
 export class Hearing {
     private conference: ConferenceResponse;
+    private participants: Participant[];
 
     constructor(conference: ConferenceResponse) {
         this.conference = conference;
+        if (conference.participants) {
+            this.participants = this.conference.participants
+                .map(p => new Participant(p));
+        }
+    }
+
+    get id(): string {
+        return this.conference.id;
+    }
+
+    get judge(): Participant {
+        return this.participants.find(x => x.role === UserRole.Judge);
+    }
+
+    get caseType(): string {
+        return this.conference.case_type;
+    }
+
+    get caseNumber(): string {
+        return this.conference.case_number;
+    }
+
+    get caseName(): string {
+        return this.conference.case_name;
+    }
+
+    get applicantRepresentative(): Participant {
+        return this.participants.filter(x => x.role === UserRole.Representative)[0];
+    }
+
+    get defendantRepresentative(): Participant {
+        return this.participants.filter(x => x.role === UserRole.Representative)[1];
     }
 
     getConference(): ConferenceResponse {
@@ -16,15 +50,19 @@ export class Hearing {
         return this.conference.participants;
     }
 
-    getScheduledStartTime(): Date {
+    get scheduledStartTime(): Date {
         const startTime = new Date(this.conference.scheduled_date_time.getTime());
         return startTime;
     }
 
-    getScheduledEndTime(): Date {
+    get scheduledEndTime(): Date {
         const endTime = new Date(this.conference.scheduled_date_time.getTime());
         endTime.setUTCMinutes(endTime.getUTCMinutes() + this.conference.scheduled_duration);
         return endTime;
+    }
+
+    get status(): ConferenceStatus {
+        return this.conference.status;
     }
 
     getDurationAsText(): string {
@@ -40,6 +78,15 @@ export class Hearing {
         } else {
             return `${minutes}`;
         }
+    }
+
+    isReadyToStart(): boolean {
+        const currentDateTime = new Date(new Date().getTime());
+        const difference = moment(this.conference.scheduled_date_time).diff(
+            moment(currentDateTime),
+            'minutes'
+        );
+        return difference < 30;
     }
 
     isOnTime(): boolean {

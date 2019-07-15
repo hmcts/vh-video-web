@@ -19,3 +19,12 @@ Scenario: Representative switch on camera and microphone
 	Then the camera and microphone turned on success message appears
 	When the user clicks the Watch video button
 	Then the user is on the Camera Working page
+
+@VIH-4671 
+Scenario: Clerk switch on camera and microphone
+	Given the ClerkSelfTest user has progressed to the Switch on your camera and microphone page
+	Then contact us details are available
+	When the user clicks the Switch on button
+	Then the camera and microphone turned on success message appears
+	When the user clicks the Watch video button
+	Then the user is on the Practice video hearing page

@@ -12,15 +12,10 @@ namespace VideoWeb.AcceptanceTests.Pages
 
         public By JudgeIframe => By.XPath($"//iframe[@id='{JudgeIframeId}']");
 
-        public By SideMenuArrow = CommonLocators.IframeButtonWithTooltip("Sidemenu");
-        public By RequestAssistance = CommonLocators.IframeButtonWithTooltip("Request assistance");
-        public By PauseHearing = CommonLocators.IframeButtonWithTooltip("Pause hearing");
-        public By EndHearing = CommonLocators.IframeButtonWithTooltip("End hearing");
-        public By ToggleSelfview = CommonLocators.IframeButtonWithTooltip("Toggle selfview");
-        public By MuteCamera = CommonLocators.IframeButtonWithTooltip("Mute camera");
-        public By MuteMicrophone = CommonLocators.IframeButtonWithTooltip("Mute microphone");
-        public By Disconnect = CommonLocators.IframeButtonWithTooltip("Disconnect");
-        public By ToggleFullscreen = CommonLocators.IframeButtonWithTooltip("Toggle fullscreen");
+        public By TechnicalIssues = By.Id("technicalIssuesButton");
+        public By PauseButton = By.Id("pauseButton");
+        public By CloseButton = By.Id("closeButton");
+        public By ToggleSelfview = By.Id("selfViewButton");
 
         public By IncomingVideo = By.Id("incomingVideo");
         public By SelfView = By.Id("selfviewVideo");

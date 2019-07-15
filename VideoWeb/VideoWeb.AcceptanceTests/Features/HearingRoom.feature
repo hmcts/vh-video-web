@@ -5,8 +5,8 @@ Feature: HearingRoom
 	I want to be able to access the video hearing room and interact with the controls
 
 @Chrome @Video
-Scenario: Judge starts hearing
-	Given the Judge user has progressed to the Waiting Room page
+Scenario: Clerk starts hearing
+	Given the Clerk user has progressed to the Waiting Room page
 	When the user clicks the button with innertext Start Hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
@@ -15,12 +15,27 @@ Scenario: Judge starts hearing
 	And the user can see themselves and toggle the view off and on
 
 @Chrome @Video
+Scenario: Clerk pauses hearing
+	Given the Individual user has progressed to the Waiting Room page
+	And there is a new browser open for VideoHearingsOfficer
+	And the Video Hearings Officer user has progressed to the Admin Panel page for the existing hearing
+	And there is a new browser open for Clerk
+	And the Clerk user has progressed to the Waiting Room page for the existing hearing
+	When the user clicks the button with innertext Start Hearing
+	Then the user is on the Countdown page
+	When the countdown finishes
+	Then the user is on the Hearing Room page for 10 seconds
+	When the user clicks pause
+	Then the user is on the Waiting Room page
+	And the user resumes the hearing
+
+@Chrome @Video
 Scenario: Two participants join hearing
 	Given the Individual user has progressed to the Waiting Room page
 	And there is a new browser open for Representative01
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
-	And there is a new browser open for Judge
-	And the Judge user has progressed to the Waiting Room page for the existing hearing
+	And there is a new browser open for Clerk
+	And the Clerk user has progressed to the Waiting Room page for the existing hearing
 	When the user clicks the button with innertext Start Hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
@@ -35,8 +50,8 @@ Scenario: Four participants join hearing
 	And the Individual02 user has progressed to the Waiting Room page for the existing hearing
 	And there is a new browser open for Representative02
 	And the Representative02 user has progressed to the Waiting Room page for the existing hearing
-	And there is a new browser open for Judge
-	And the Judge user has progressed to the Waiting Room page for the existing hearing
+	And there is a new browser open for Clerk
+	And the Clerk user has progressed to the Waiting Room page for the existing hearing
 	When the user clicks the button with innertext Start Hearing
 	Then the user is on the Countdown page
 	When the countdown finishes

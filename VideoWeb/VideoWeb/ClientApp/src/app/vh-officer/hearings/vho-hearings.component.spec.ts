@@ -3,6 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { of, throwError } from 'rxjs';
+import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, ConsultationAnswer } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -12,17 +13,15 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
-import { MockEventsNonHttpService, MockEventsService } from 'src/app/testing/mocks/MockEventService';
+import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
+import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { TasksTableStubComponent } from 'src/app/testing/stubs/task-table-stub';
 import { VhoHearingListStubComponent as VhoHearingListStubComponent } from 'src/app/testing/stubs/vho-hearing-list-stub';
 import { VhoParticipantStatusStubComponent } from 'src/app/testing/stubs/vho-participant-status-stub';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { VhoHearingsComponent } from './vho-hearings.component';
-import { ConfigService } from 'src/app/services/api/config.service';
-import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { Logger } from 'src/app/services/logging/logger-base';
-
 
 describe('VhoHearingsComponent', () => {
   let component: VhoHearingsComponent;

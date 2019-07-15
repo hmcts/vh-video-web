@@ -18,9 +18,9 @@ namespace VideoWeb.AcceptanceTests.Steps
     {
         private readonly TestContext _context;
         private readonly BrowserContext _browserContext;
-        private readonly HearingListPage _hearingListPage;
+        private readonly VhoHearingListPage _hearingListPage;
 
-        public HearingsStatusSteps(TestContext context, BrowserContext browserContext, HearingListPage hearingListPage)
+        public HearingsStatusSteps(TestContext context, BrowserContext browserContext, VhoHearingListPage hearingListPage)
         {
             _context = context;
             _browserContext = browserContext;

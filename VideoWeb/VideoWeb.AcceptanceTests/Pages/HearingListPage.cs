@@ -4,39 +4,12 @@ namespace VideoWeb.AcceptanceTests.Pages
 {
     public class HearingListPage
     {
-        public HearingListPage()
-        {
-        }
-
         public By NoHearingsWarningMessage => CommonLocators.ElementContainingText("You have no video hearings");
-        public By _hearingWithCaseNumber(string caseNumber) => CommonLocators.ElementContainingText(caseNumber);
-        public By _waitToSignInText(string caseNumber) => By.XPath($"//tr//*[contains(text(),'{caseNumber}')]/../../..//td//p[contains(text(),'Sign in Today')]/../p[contains(text(),':')]");
-        public By _signInButton(string caseNumber) => By.XPath($"//tr//*[contains(text(),'{caseNumber}')]/../../../..//input[@role='button' and @value='Sign into hearing']");        
-        public By _startHearingButton(string caseNumber) => By.XPath($"//tr//*[contains(text(),'{caseNumber}')]/../../../..//input[@role='button' and @value='Start hearing']");
-
+        public By HearingWithCaseNumber(string caseNumber) => CommonLocators.ElementContainingText(caseNumber);
+        public By WaitToSignInText(string caseNumber) => By.XPath($"//tr//*[contains(text(),'{caseNumber}')]/../../..//td//p[contains(text(),'Sign in Today')]/../p[contains(text(),':')]");
+        public By SignInButton(string caseNumber) => By.XPath($"//tr//*[contains(text(),'{caseNumber}')]/../../../..//input[@role='button' and @value='Sign into hearing']");        
         public By ParticipantHearingDate(string caseNumber) => By.XPath($"//strong[contains(text(),'{caseNumber}')]/../../..//td/p[contains(text(),'20')]");
         public By ParticipantHearingTime(string caseNumber) => By.XPath($"//strong[contains(text(),'{caseNumber}')]/../../..//td/p[contains(text(),':')]");
-
-        public By JudgeHearingDate(string caseNumber) =>
-            By.XPath($"//p[contains(text(),'{caseNumber}')]/../../../../td/p[contains(text(),'20')]");
-        public By JudgeHearingTime(string caseNumber) =>
-            By.XPath($"//p[contains(text(),'{caseNumber}')]/../../../../td/p[contains(text(),':')]");
-        public By JudgeHearingListedFor(string caseNumber) =>
-            By.XPath($"//p[contains(text(),'{caseNumber}')]/../../../../td/p[contains(text(),'listed for')]");
-
-        public By VideoHearingsCaseNumbers =>
-            By.XPath($"//div[@class='govuk-summary-list__row']//p[contains(text(),'/')]");
-        public By VideoHearingsOfficerTime(string caseNumber) =>
-            By.XPath($"//p[contains(text(),'{caseNumber}')]/../../..//p[contains(text(),':')]");
-        public By VideoHearingsOfficerListedFor(string caseNumber) =>
-            By.XPath($"//p[contains(text(),'{caseNumber}')]/../../..//span[contains(text(),'hour') or contains(text(),'minute')]");
-        public By VideoHearingsOfficerNumberofAlerts(string caseNumber) =>
-            By.XPath($"//p[contains(text(),'{caseNumber}')]/../../..//p[contains(text(),'Alert')]");
-        public By VideoHearingsOfficerAlertType(string caseNumber) =>
-            By.XPath($"//p[contains(text(),'{caseNumber}')]/../..//span");
-        
-        public By VideoHearingsOfficerSelectHearingButton(string caseNumber) =>
-            By.XPath($"//p[contains(text(),'{caseNumber}')]/../..//span");
 
         public By CaseType(string caseNumber, string caseType) =>
             By.XPath($"//p[contains(text(),'{caseNumber}')]/../../../p[contains(text(),'{caseType}')]");
@@ -48,17 +21,6 @@ namespace VideoWeb.AcceptanceTests.Pages
             By.XPath($"//div[contains(text(),'{participantLastName}')]");
 
         public By ParticipantContactDetails(string participantLastName, string expected) => 
-            By.XPath($"//div[contains(text(),'{participantLastName}')]//*[contains(text(),'{expected}')]");
-
-        public const string AdminIframeId = "admin-frame";
-
-        public By AdminIframe => By.XPath($"//iframe[@id='{AdminIframeId}']");
-        public By VHOHearingRows => By.XPath("//div[contains(@class,'govuk-summary-list__row')]");
-
-        public By AdminUsernameTextfield => CommonLocators.TextfieldWithName("username");
-        public By AdminPasswordTextfield => CommonLocators.TextfieldWithName("password");
-        public By SignInButton => CommonLocators.ButtonWithInnertext("Sign in");
-        public By WaitingRoomText => CommonLocators.ElementContainingText("Waiting");
-
+            By.XPath($"//div[contains(text(),'{participantLastName}')]//*[contains(text(),'{expected}')]");        
     }
 }

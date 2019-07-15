@@ -17,6 +17,7 @@ import { ParticipantHearingsComponent } from './participant-hearings/participant
 import { ParticipantSelfTestComponent } from './participant-self-test/participant-self-test.component';
 import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone/switch-on-camera-microphone.component';
 import { VideoCheckComponent } from './video-check/video-check.component';
+import { JudgeSelfTestComponent } from './judge-self-test/judge-self-test.component';
 
 export const routes: Routes = [
   { path: `${PageUrls.JudgeHearingList}`, component: JudgeHearingListComponent, canActivate: [JudgeGuard] },
@@ -30,6 +31,7 @@ export const routes: Routes = [
   { path: `${PageUrls.CameraAndMicrophone}/:conferenceId`, component: CameraAndMicrophoneComponent },
   { path: `${PageUrls.SwitchOnCameraMicrophone}/:conferenceId`, component: SwitchOnCameraMicrophoneComponent },
   { path: `${PageUrls.ParticipantSelfTestVideo}/:conferenceId`, component: ParticipantSelfTestComponent },
+  { path: `${PageUrls.JudgeSelfTestVideo}/:conferenceId`, component: JudgeSelfTestComponent },
   { path: `${PageUrls.GetHelp}`, component: EquipmentProblemComponent },
   { path: `${PageUrls.SignonAComputer}`, component: SignonAComputerComponent},
   { path: `${PageUrls.Introduction}/:conferenceId`, component: IntroductionComponent },

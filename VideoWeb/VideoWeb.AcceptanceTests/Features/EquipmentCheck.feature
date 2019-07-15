@@ -15,3 +15,10 @@ Scenario: Representative equipment check
 	Then contact us details are available
 	When the user clicks the Continue button
 	Then the user is on the Switch on your camera and microphone page
+
+@VIH-4671
+Scenario: Clerk equipment check
+	Given the ClerkSelfTest user has progressed to the Equipment Check page
+	Then contact us details are available
+	When the user clicks the Continue button
+	Then the user is on the Switch on your camera and microphone page

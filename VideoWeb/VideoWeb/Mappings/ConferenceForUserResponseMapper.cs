@@ -4,6 +4,7 @@ using System.Linq;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Services.Video;
 using ConferenceUserRole = VideoWeb.Services.Video.UserRole;
+using UserRole = VideoWeb.Contract.Responses.UserRole;
 
 namespace VideoWeb.Mappings
 {
@@ -58,7 +59,9 @@ namespace VideoWeb.Mappings
                 {
                     Username = participant.Username,
                     DisplayName = participant.Display_name,
-                    Status = MapParticipantStatus(participant.Status)
+                    Status = MapParticipantStatus(participant.Status),
+                    Role = Enum.Parse<UserRole>(participant.User_role.ToString()),
+                    Representee = participant.Representee
                 };
                 participantSummaryList.Add(participantResponse);
             }

@@ -10,6 +10,13 @@ Scenario: Judge login
 	Then the user is on the Hearings List page
 	And the sign out link is displayed
 
+Scenario: Clerk login
+	Given I have a hearing and a conference
+	And the login page is open
+	When the Clerk attempts to login with valid credentials
+	Then the user is on the Hearings List page
+	And the sign out link is displayed
+
 Scenario: Individual login
 	Given I have a hearing and a conference
 	And the login page is open
