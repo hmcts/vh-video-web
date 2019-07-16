@@ -31,5 +31,6 @@ export const PageUrls = {
   ServiceError: 'service-error',
   NotFound: 'not-found',
   Unauthorised: 'unauthorised',
-  GetHelp: 'get-help'
+  GetHelp: 'get-help',
+  UnsupportedBrowser: 'unsupported-browser'
 };

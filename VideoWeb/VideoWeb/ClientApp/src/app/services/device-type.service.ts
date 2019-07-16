@@ -9,15 +9,25 @@ export class DeviceTypeService {
   constructor(private deviceDetectorService: DeviceDetectorService) {
   }
 
-  isMobile() {
+  isMobile(): boolean {
     return this.deviceDetectorService.isMobile();
   }
 
-  isTablet() {
+  isTablet(): boolean {
     return this.deviceDetectorService.isTablet();
   }
 
-  isDesktop() {
+  isDesktop(): boolean {
     return this.deviceDetectorService.isDesktop();
+  }
+
+  isSupportedBrowser(): boolean {
+    const supportedBrowsers = ['Firefox', 'Safari', 'Chrome', 'Edge'];
+    const browser = this.deviceDetectorService.browser;
+    return supportedBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) > -1;
+  }
+
+  getBrowserName(): string {
+    return this.deviceDetectorService.browser;
   }
 }

@@ -14,6 +14,7 @@ import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
+import { configureTestSuite } from 'ng-bullet';
 
 
 describe('JudgeSelfTestComponent', () => {
@@ -22,7 +23,7 @@ describe('JudgeSelfTestComponent', () => {
   const conference = new ConferenceTestData().getConferenceDetail();
   let router: Router;
 
-  beforeEach(async(() => {
+  configureTestSuite(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, HttpClientModule],
       declarations: [JudgeSelfTestComponent, SelfTestStubComponent, ContactUsFoldingStubComponent],
@@ -42,7 +43,7 @@ describe('JudgeSelfTestComponent', () => {
       ]
     })
       .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(JudgeSelfTestComponent);

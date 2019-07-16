@@ -13,6 +13,7 @@ import { SelfTestStubComponent } from 'src/app/testing/stubs/self-test-stub';
 import { ParticipantSelfTestComponent } from './participant-self-test.component';
 import { ContactUsFoldingStubComponent } from 'src/app/testing/stubs/contact-us-stub';
 import { PageUrls } from 'src/app/shared/page-url.constants';
+import { configureTestSuite } from 'ng-bullet';
 
 describe('ParticipantSelfTestComponent', () => {
   let component: ParticipantSelfTestComponent;
@@ -20,7 +21,7 @@ describe('ParticipantSelfTestComponent', () => {
   const conference = new ConferenceTestData().getConferenceDetail();
   let router: Router;
 
-  beforeEach(async(() => {
+  configureTestSuite(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, HttpClientModule],
       declarations: [ParticipantSelfTestComponent, SelfTestStubComponent, ContactUsFoldingStubComponent],
@@ -39,7 +40,7 @@ describe('ParticipantSelfTestComponent', () => {
       ]
     })
       .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ParticipantSelfTestComponent);
