@@ -25,8 +25,8 @@
           <td class="govuk-table__cell hearing-details-col2-width">
             {{ hearing.conference.scheduled_date_time | date: 'dd MMMM	yyyy' }}
             <span class="govuk-!-font-weight-bold">
-              {{ hearing.getScheduledStartTime() | date: 'HH:mm a' }} to
-              {{ hearing.getScheduledEndTime() | date: 'HH:mm a' }}
+              {{ hearing.scheduledStartTime | date: 'HH:mm a' }} to
+              {{ hearing.scheduledEndTime | date: 'HH:mm a' }}
             </span>
           </td>
         </tr>
