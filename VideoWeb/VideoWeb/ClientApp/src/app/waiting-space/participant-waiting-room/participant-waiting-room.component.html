@@ -42,14 +42,12 @@
       </p>
     </div>
 
-    <div *ngIf="!showVideo() && currentTime && ( hearing.isNotStarted() || hearing.isPaused() || hearing.isSuspended() )" class="govuk-panel"
-      [ngClass]="{'hearing-on-time': hearing.isOnTime() || hearing.isPaused(), 
-      'hearing-near-start': hearing.isStarting(), 
-      'hearing-delayed': hearing.isDelayed() || hearing.isSuspended()}">
-      <div class="govuk-body govuk-!-margin-bottom-0"
-        [ngClass]="{'hearing-on-time': hearing.isOnTime() || hearing.isPaused(), 
-        'hearing-near-start': hearing.isStarting(), 
-        'hearing-delayed': hearing.isDelayed() || hearing.isSuspended()}">
+    <div
+      *ngIf="!showVideo() && currentTime && ( hearing.isNotStarted() || hearing.isPaused() || hearing.isSuspended() )"
+      class="govuk-panel" [ngClass]="{'hearing-on-time': hearing.isOnTime() || hearing.isPaused(), 
+      'hearing-near-start': hearing.isStarting(), 'hearing-delayed': hearing.isDelayed() || hearing.isSuspended()}">
+      <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="{'hearing-on-time': hearing.isOnTime() || hearing.isPaused(), 
+        'hearing-near-start': hearing.isStarting(), 'hearing-delayed': hearing.isDelayed() || hearing.isSuspended()}">
 
         <div *ngIf="hearing.isOnTime()">
           <h3 class="govuk-heading-m white">Please keep an eye on the time</h3>
