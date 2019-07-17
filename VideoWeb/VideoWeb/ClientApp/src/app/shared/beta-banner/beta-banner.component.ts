@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
+import 'rxjs/add/operator/filter';
 
 @Component({
   selector: 'app-beta-banner',
@@ -10,6 +11,7 @@ export class BetaBannerComponent {
 
   constructor(private router: Router) {
     this.router.events
+      .filter(event => event instanceof NavigationEnd)
       .subscribe((event: NavigationEnd) => {
         this.pageUrl = router.url;
       });
