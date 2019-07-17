@@ -32,5 +32,6 @@ export const PageUrls = {
   NotFound: 'not-found',
   Unauthorised: 'unauthorised',
   GetHelp: 'get-help',
-  UnsupportedBrowser: 'unsupported-browser'
+  UnsupportedBrowser: 'unsupported-browser',
+  PrivacyPolicy: 'privacy-policy'
 };
