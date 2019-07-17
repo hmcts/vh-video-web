@@ -46,7 +46,7 @@ namespace VideoWeb.Controllers
             try
             {
                 var conferences = await _videoApiClient.GetConferencesForUsernameAsync(username);
-                conferences  = conferences.OrderBy(x => x.Closed_date_time).ToList();
+                conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();
                 var mapper = new ConferenceForUserResponseMapper();
                 var response = conferences.Select(x => mapper.MapConferenceSummaryToResponseModel(x)).ToList();
                 return Ok(response);
@@ -56,7 +56,7 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e);
             }
         }
-        
+
         /// <summary>
         /// Get conferences for user
         /// </summary>
@@ -81,12 +81,12 @@ namespace VideoWeb.Controllers
             {
                 return StatusCode(e.StatusCode, e);
             }
-            
+
             try
             {
                 var conferences = await _videoApiClient.GetConferencesTodayAsync();
                 conferences = conferences.Where(HasNotPassed).ToList();
-                conferences  = conferences.OrderBy(x => x.Closed_date_time).ToList();
+                conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();
                 var mapper = new ConferenceForUserResponseMapper();
                 var response = conferences.Select(x => mapper.MapConferenceSummaryToResponseModel(x)).ToList();
                 return Ok(response);
@@ -127,30 +127,33 @@ namespace VideoWeb.Controllers
                 ModelState.AddModelError(nameof(conferenceId), $"Please provide a valid {nameof(conferenceId)}");
                 return BadRequest(ModelState);
             }
+
             var username = User.Identity.Name.ToLower().Trim();
             bool isVhOfficer;
             try
             {
-                
                 var profile = await _userApiClient.GetUserByAdUserNameAsync(username);
                 var profileResponse = new UserProfileResponseMapper().MapToResponseModel(profile);
-                isVhOfficer = profileResponse.Role == UserRole.VideoHearingsOfficer; 
-                
+                isVhOfficer = profileResponse.Role == UserRole.VideoHearingsOfficer;
             }
             catch (UserApiException e)
             {
                 return StatusCode(e.StatusCode, e);
             }
-            
+
             ConferenceDetailsResponse conference;
             try
             {
                 conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-                
             }
             catch (VideoApiException e)
             {
                 return StatusCode(e.StatusCode, e);
+            }
+
+            if (!isVhOfficer && conference.Participants.All(x => x.Username.ToLower().Trim() != username))
+            {
+                return Unauthorized();
             }
 
             List<BookingParticipant> bookingParticipants;
@@ -164,11 +167,16 @@ namespace VideoWeb.Controllers
             {
                 return StatusCode(e.StatusCode, e);
             }
-            
-            if (!isVhOfficer && conference.Participants.All(x => x.Username.ToLower().Trim() != username))
+
+            try
             {
-                return Unauthorized();
+                ValidateConferenceAndBookingParticipantsMatch(conference.Participants, bookingParticipants);
             }
+            catch (AggregateException e)
+            {
+                return StatusCode((int) HttpStatusCode.ExpectationFailed, e);
+            }
+
 
             // these are roles that are filtered against when lists participants on the UI
             var displayRoles = new List<UserRole>
@@ -181,7 +189,25 @@ namespace VideoWeb.Controllers
             var mapper = new ConferenceResponseMapper();
             var response = mapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
             return Ok(response);
+        }
 
+        private static void ValidateConferenceAndBookingParticipantsMatch(List<ParticipantDetailsResponse> participants,
+            List<BookingParticipant> bookingParticipants)
+        {
+            List<Exception> missingBookingParticipantIds = new List<Exception>();
+            foreach (var participant in participants)
+            {
+                if (bookingParticipants.SingleOrDefault(p => p.Id == participant.Ref_id) == null)
+                {
+                    missingBookingParticipantIds.Add(new ArgumentNullException(
+                        $"Unable to find a participant in bookings api with id ${participant.Ref_id}"));
+                }
+            }
+
+            if (missingBookingParticipantIds.Any())
+            {
+                throw new AggregateException(missingBookingParticipantIds);
+            }
         }
     }
 }
