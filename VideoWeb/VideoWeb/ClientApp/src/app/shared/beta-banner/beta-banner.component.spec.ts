@@ -4,6 +4,10 @@ import { Component } from '@angular/core';
 import { BetaBannerComponent } from './beta-banner.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ProfileService } from 'src/app/services/api/profile.service';
+import { UserProfileResponse, UserRole } from 'src/app/services/clients/api-client';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 @Component({ selector: 'app-mock-component', template: '' })
 class Mock1Component {
@@ -24,6 +28,10 @@ describe('BetaBannerComponent',
     let component: BetaBannerComponent;
     let fixture: ComponentFixture<BetaBannerComponent>;
     let router: Router;
+    let profileServiceSpy: jasmine.SpyObj<ProfileService>;
+    profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
+    const profile = new UserProfileResponse({ role: UserRole.Representative });
+    profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
 
     beforeEach(async(() => {
       TestBed.configureTestingModule({
@@ -34,6 +42,10 @@ describe('BetaBannerComponent',
         ],
         imports: [
           RouterTestingModule.withRoutes(routes)
+        ],
+        providers: [
+          { provide: ProfileService, useValue: profileServiceSpy },
+          { provide: Logger, useClass: MockLogger }
         ],
         schemas: [NO_ERRORS_SCHEMA]
 
