@@ -14,6 +14,10 @@ import { MockLogger } from './testing/mocks/MockLogger';
 import { FooterStubComponent } from './testing/stubs/footer-stub';
 import { HeaderStubComponent } from './testing/stubs/header-stub';
 import { SnotifyStubComponent } from './testing/stubs/snotify-stub';
+import { Component } from '@angular/core';
+
+@Component({ selector: 'app-beta-banner', template: '' })
+export class BetaBannerStubComponent { }
 
 describe('AppComponent', () => {
   let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -53,7 +57,8 @@ describe('AppComponent', () => {
         AppComponent,
         HeaderStubComponent,
         FooterStubComponent,
-        SnotifyStubComponent
+        SnotifyStubComponent,
+        BetaBannerStubComponent
       ],
       providers:
         [

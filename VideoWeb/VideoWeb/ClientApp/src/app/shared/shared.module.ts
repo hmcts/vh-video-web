@@ -18,6 +18,7 @@ import { MicVisualiserComponent } from '../shared/mic-visualiser/mic-visualiser.
 import { EquipmentProblemComponent } from './equipment-problem/equipment-problem.component';
 import { SelfTestComponent } from './self-test/self-test.component';
 import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-browser.component';
+import { BetaBannerComponent } from './beta-banner/beta-banner.component';
 
 @NgModule({
   imports: [
@@ -41,7 +42,8 @@ import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-b
     MicVisualiserComponent,
     EquipmentProblemComponent,
     SelfTestComponent,
-    UnsupportedBrowserComponent
+    UnsupportedBrowserComponent,
+    BetaBannerComponent
   ],
   providers: [
     { provide: 'SnotifyToastConfig', useValue: ToastDefaults},
@@ -61,7 +63,8 @@ import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-b
     ReactiveFormsModule,
     HttpClientModule,
     SnotifyModule,
-    DeviceDetectorModule
+    DeviceDetectorModule,
+    BetaBannerComponent
   ]
 })
 export class SharedModule { }
