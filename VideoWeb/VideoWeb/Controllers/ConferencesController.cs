@@ -58,7 +58,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError("Unable to get conferences for user", e);
+                _logger.LogError(e, "Unable to get conferences for user", null);
                 return StatusCode(e.StatusCode, e);
             }
         }
@@ -149,7 +149,7 @@ namespace VideoWeb.Controllers
             }
             catch (UserApiException e)
             {
-                _logger.LogError("Unable to retrieve user profile", e);
+                _logger.LogError(e, "Unable to retrieve user profile", null);
                 return StatusCode(e.StatusCode, e);
             }
             
@@ -162,7 +162,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError($"Unable to retrieve conference: ${conferenceId}", e);
+                _logger.LogError(e, $"Unable to retrieve conference: ${conferenceId}", null);
                 return StatusCode(e.StatusCode, e);
             }
 
@@ -176,7 +176,8 @@ namespace VideoWeb.Controllers
             }
             catch (BookingsApiException e)
             {
-                _logger.LogError($"Unable to retrieve booking participants for hearing ${conference.Hearing_id}", e);
+                _logger.LogError(e, $"Unable to retrieve booking participants for hearing ${conference.Hearing_id}",
+                    null);
                 return StatusCode(e.StatusCode, e);
             }
 
