@@ -41,6 +41,7 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public SauceLabsSettings SaucelabsSettings { get; set; }
         public TargetBrowser TargetBrowser { get; set; }
         public bool RunningLocally { get; set; }
+        public BookNewHearingRequest HearingRequest { get; set; }
 
         public TestContext()
         {

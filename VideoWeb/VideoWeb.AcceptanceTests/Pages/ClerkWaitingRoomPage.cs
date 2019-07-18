@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using System;
+using OpenQA.Selenium;
 
 namespace VideoWeb.AcceptanceTests.Pages
 {
@@ -10,5 +11,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By HearingDateTime => By.XPath("//span[contains(text(),'to')]/ancestor::td");
         public By StartHearingText => CommonLocators.ElementContainingText("Start this hearing");
         public By IsEveryoneConnectedText => CommonLocators.ElementContainingText("Is everyone connected?");
+        public By ParticipantStatus(Guid participantId) => By.XPath($"//div[@id='p-row-{participantId}']//label");
     }
 }
