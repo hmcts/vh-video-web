@@ -59,8 +59,19 @@ export class JudgeHearingPageComponent implements OnInit {
 
     const preferredCam = this.userMediaService.getPreferredCamera();
     const preferredMic = this.userMediaService.getPreferredMicrophone();
-    const cam = (preferredCam) ? preferredCam.deviceId : '';
-    const mic = (preferredMic) ? preferredMic.deviceId : '';
+
+    let cam = '';
+    let mic = (preferredMic) ? preferredMic.deviceId : '';
+
+    if (preferredCam) {
+      this.logger.info(`judge using camera ${preferredCam.label}`);
+      cam = preferredCam.deviceId;
+    }
+
+    if (preferredMic) {
+      this.logger.info(`judge using microphone ${preferredMic.label}`);
+      mic = preferredMic.deviceId;
+    }
 
     const judgeUri = `${this.conference.judge_i_frame_uri}?display_name=${encodedDisplayName}&cam=${cam}&mic=${mic}`;
     this.selectedHearingUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
