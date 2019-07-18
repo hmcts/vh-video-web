@@ -19,6 +19,10 @@ export class LoggerService implements Logger {
     this.adapters.forEach(logger => logger.info(message));
   }
 
+  warn(message: string): void {
+    this.adapters.forEach(logger => logger.warn(message));
+  }
+
   error(message: string, err: Error, properties?: any) {
     this.adapters.forEach(logger => logger.trackException(message, err, properties));
   }
