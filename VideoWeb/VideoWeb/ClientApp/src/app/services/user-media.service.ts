@@ -80,6 +80,7 @@ export class UserMediaService {
     getCachedDeviceIfStillConnected(cache: SessionStorage<UserMediaDevice>): UserMediaDevice {
         const device = cache.get();
         if (!device) {
+            this.logger.warn(`Preferred device is no longer connected`);
             return null;
         }
 
@@ -94,9 +95,11 @@ export class UserMediaService {
 
     updatePreferredCamera(camera: UserMediaDevice) {
         this.preferredCamCache.set(camera);
+        this.logger.info(`Updating preferred camera to ${camera.label}`);
     }
 
     updatePreferredMicrophone(microphone: UserMediaDevice) {
         this.preferredMicCache.set(microphone);
+        this.logger.info(`Updating preferred microphone to ${microphone.label}`);
     }
 }

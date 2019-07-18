@@ -1,12 +1,17 @@
 import { LogAdapter } from '../log-adapter';
 
 export class ConsoleLogger implements LogAdapter {
+
     debug(message: string): void {
         console.debug(message);
     }
 
     info(message: string): void {
         console.info(message);
+    }
+
+    warn(message: string): void {
+        console.warn(message);
     }
 
     trackEvent(eventName: string, properties: any = null) {
