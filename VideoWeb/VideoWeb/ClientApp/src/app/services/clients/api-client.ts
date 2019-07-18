@@ -348,6 +348,65 @@ export class ApiClient {
     }
 
     /**
+     * Check Service Health
+     * @return Success
+     */
+    checkServiceHealth(): Observable<HealthCheckResponse> {
+        let url_ = this.baseUrl + "/HealthCheck/health";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCheckServiceHealth(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCheckServiceHealth(<any>response_);
+                } catch (e) {
+                    return <Observable<HealthCheckResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<HealthCheckResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCheckServiceHealth(response: HttpResponseBase): Observable<HealthCheckResponse> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = HealthCheckResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result500: any = null;
+            let resultData500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result500 = HealthCheckResponse.fromJS(resultData500);
+            return throwException("A server error occurred.", status, _responseText, _headers, result500);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<HealthCheckResponse>(<any>null);
+    }
+
+    /**
      * @param addMediaEventRequest (optional) 
      * @return Success
      */
@@ -1463,6 +1522,106 @@ export enum ConsultationAnswer {
     None = "None",
     Accepted = "Accepted",
     Rejected = "Rejected",
+}
+
+export class HealthCheckResponse implements IHealthCheckResponse {
+    bookings_api_health?: HealthCheck | undefined;
+    user_api_health?: HealthCheck | undefined;
+    video_api_health?: HealthCheck | undefined;
+
+    constructor(data?: IHealthCheckResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.bookings_api_health = data["bookings_api_health"] ? HealthCheck.fromJS(data["bookings_api_health"]) : <any>undefined;
+            this.user_api_health = data["user_api_health"] ? HealthCheck.fromJS(data["user_api_health"]) : <any>undefined;
+            this.video_api_health = data["video_api_health"] ? HealthCheck.fromJS(data["video_api_health"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): HealthCheckResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new HealthCheckResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["bookings_api_health"] = this.bookings_api_health ? this.bookings_api_health.toJSON() : <any>undefined;
+        data["user_api_health"] = this.user_api_health ? this.user_api_health.toJSON() : <any>undefined;
+        data["video_api_health"] = this.video_api_health ? this.video_api_health.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface IHealthCheckResponse {
+    bookings_api_health?: HealthCheck | undefined;
+    user_api_health?: HealthCheck | undefined;
+    video_api_health?: HealthCheck | undefined;
+}
+
+export class HealthCheck implements IHealthCheck {
+    successful?: boolean | undefined;
+    error_message?: string | undefined;
+    data?: { [key: string] : any; } | undefined;
+
+    constructor(data?: IHealthCheck) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.successful = data["successful"];
+            this.error_message = data["error_message"];
+            if (data["data"]) {
+                this.data = {} as any;
+                for (let key in data["data"]) {
+                    if (data["data"].hasOwnProperty(key))
+                        this.data![key] = data["data"][key];
+                }
+            }
+        }
+    }
+
+    static fromJS(data: any): HealthCheck {
+        data = typeof data === 'object' ? data : {};
+        let result = new HealthCheck();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["successful"] = this.successful;
+        data["error_message"] = this.error_message;
+        if (this.data) {
+            data["data"] = {};
+            for (let key in this.data) {
+                if (this.data.hasOwnProperty(key))
+                    data["data"][key] = this.data[key];
+            }
+        }
+        return data; 
+    }
+}
+
+export interface IHealthCheck {
+    successful?: boolean | undefined;
+    error_message?: string | undefined;
+    data?: { [key: string] : any; } | undefined;
 }
 
 export class AddMediaEventRequest implements IAddMediaEventRequest {
