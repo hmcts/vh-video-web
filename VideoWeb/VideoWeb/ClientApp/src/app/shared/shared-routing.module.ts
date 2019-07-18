@@ -7,13 +7,15 @@ import { ErrorComponent } from './error/error.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { PageUrls } from './page-url.constants';
 import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-browser.component';
+import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 
 
 export const routes: Routes = [
   { path: `${PageUrls.ContactUs}`, component: ContactUsComponent, canActivate: [AuthGuard] },
   { path: `${PageUrls.ServiceError}`, component: ErrorComponent, },
   { path: `${PageUrls.NotFound}`, component: NotFoundComponent },
-  { path: `${PageUrls.UnsupportedBrowser}`, component: UnsupportedBrowserComponent }
+  { path: `${PageUrls.UnsupportedBrowser}`, component: UnsupportedBrowserComponent },
+  { path: `${PageUrls.PrivacyPolicy}`, component: PrivacyPolicyComponent }
 ];
 
 @NgModule({

@@ -6,17 +6,18 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { ErrorService } from 'src/app/services/error.service';
+import { Hearing } from 'src/app/shared/models/hearing';
 
 @Component({
   selector: 'app-judge-waiting-room',
   templateUrl: './judge-waiting-room.component.html',
-  styleUrls: ['./judge-waiting-room.component.css']
+  styleUrls: ['./judge-waiting-room.component.scss']
 })
 export class JudgeWaitingRoomComponent implements OnInit {
 
   loadingData: boolean;
   conference: ConferenceResponse;
-  hearingEndTime: Date;
+  hearing: Hearing;
 
   constructor(
     private route: ActivatedRoute,
@@ -41,7 +42,7 @@ export class JudgeWaitingRoomComponent implements OnInit {
         this.conference = data;
 
         this.setupSubscribers();
-        this.hearingEndTime = this.getHearingEndTime();
+        this.hearing = new Hearing(data);
       },
         (error) => {
           this.loadingData = false;
@@ -103,24 +104,6 @@ export class JudgeWaitingRoomComponent implements OnInit {
 
   checkEquipment() {
     this.router.navigate([PageUrls.EquipmentCheck, this.conference.id]);
-  }
-
-  getHearingEndTime(): Date {
-    const hearingStartDate = this.conference.scheduled_date_time;
-    const hearingEndDate = new Date(hearingStartDate);
-    hearingEndDate.setMinutes(hearingStartDate.getMinutes() + this.conference.scheduled_duration);
-    return hearingEndDate;
-  }
-
-  getScheduledStartTime(): Date {
-    const startTime = new Date(this.conference.scheduled_date_time.getTime());
-    return startTime;
-  }
-
-  getScheduledEndTime(): Date {
-    const endTime = new Date(this.conference.scheduled_date_time.getTime());
-    endTime.setUTCMinutes(endTime.getUTCMinutes() + this.conference.scheduled_duration);
-    return endTime;
   }
 
   hearingSuspended(): boolean {

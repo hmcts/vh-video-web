@@ -21,22 +21,37 @@
 
   <div *ngFor="let participant of nonJugdeParticipants" class="govuk-grid-row govuk-!-margin-bottom-1">
     <div id="p-row-{{participant.id}}" class="govuk-grid-column-full govuk-!-margin-top-2">
-      <p class="govuk-heading-s govuk-!-margin-bottom-0">{{participant.name}}</p>
-      <p class="govuk-body-s govuk-!-margin-bottom-1">
-        <strong>
-          {{ participant.role === 'Representative' ? 'Solicitor' : '' }}
-        </strong>
-      </p>
-      <p *ngIf="participant.representee" class="govuk-body-s govuk-!-margin-bottom-1">
-        Representing {{ participant.representee }}
-      </p>
-      <p class="govuk-body-s govuk-!-margin-bottom-3">{{ participant.case_type_group }}</p>
 
-      <div class="govuk-body-s govuk-!-margin-bottom-3">
-        <label class="govuk-body-s label-status" [ngClass]="participant.status === 'Available' ? 'label-status--connected' : 
-            participant.status === 'Disconnected' ? 'label-status--disconnected' : 'label-status--notsignedin'">
-          {{ participant.status === 'Available' ? 'CONNECTED' : 
-            participant.status === 'Disconnected' ? 'DISCONNECTED' : 'NOT SIGNED IN' }}
+      <!-- SOLICITOR EXISTS -->
+      <div *ngIf="participant.role === 'Representative'">
+        <p class="govuk-heading-s govuk-!-margin-bottom-0">
+          {{participant.name}}
+        </p>
+        <p class="govuk-body-s govuk-!-margin-bottom-1">
+          <strong>
+            {{ participant.role === 'Representative' ? 'Solicitor' : '' }}
+          </strong>
+        </p>
+        <p *ngIf="participant.representee" class="govuk-body-s govuk-!-margin-bottom-1">
+          Representing {{ participant.representee }}
+        </p>
+        <p class="govuk-body-s govuk-!-margin-bottom-3">
+          {{ participant.case_type_group }}
+        </p>
+      </div>
+      <!-- NO SOLICITOR EXISTS -->
+      <div *ngIf="participant.role !== 'Representative'">
+        <p class="govuk-heading-s govuk-!-margin-bottom-0">
+          {{ participant.case_type_group }}
+        </p>
+        <p class="govuk-body-m govuk-!-margin-bottom-1">
+          {{ participant.name }}
+        </p>
+      </div>
+
+      <div class="govuk-body-s govuk-!-margin-bottom-3" *ngIf="isUserJudge()">
+        <label class="govuk-body-s label-status label-status--{{getParticipantStatus(participant)}}">
+          {{ getParticipantStatus(participant) }}
         </label>
       </div>
 

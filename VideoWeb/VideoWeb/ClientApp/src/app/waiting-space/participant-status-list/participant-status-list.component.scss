@@ -17,13 +17,18 @@
 }
 
 .label-status--disconnected {
-  background-color: #b10e1e;
+  background-color: govuk-colour("red");
+  text-transform: uppercase;
 }
 
 .label-status--notsignedin {
-  background-color: #6f777b;
+  background-color: govuk-colour("grey-1");
+  text-transform: uppercase;
 }
 
-.label-status--connected {
-  background-color: #00823b;
+.label-status--connected,
+.label-status--inconsultation,
+.label-status--inahearing {
+  background-color: govuk-colour("green");
+  text-transform: uppercase;
 }

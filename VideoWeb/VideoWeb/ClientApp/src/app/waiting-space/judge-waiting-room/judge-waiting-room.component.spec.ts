@@ -20,7 +20,6 @@ import { ErrorService } from 'src/app/services/error.service';
 import { configureTestSuite } from 'ng-bullet';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { By } from '@angular/platform-browser';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
   let component: JudgeWaitingRoomComponent;
