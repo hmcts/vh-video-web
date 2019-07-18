@@ -6,6 +6,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
+import { UserMediaService } from 'src/app/services/user-media.service';
 
 @Component({
   selector: 'app-judge-hearing-page',
@@ -25,7 +26,8 @@ export class JudgeHearingPageComponent implements OnInit {
     private eventService: EventsService,
     private ngZone: NgZone,
     public sanitizer: DomSanitizer,
-    private errorService: ErrorService
+    private errorService: ErrorService,
+    private userMediaService: UserMediaService
   ) {
     this.loadingData = true;
   }
@@ -52,7 +54,9 @@ export class JudgeHearingPageComponent implements OnInit {
   sanitiseIframeUrl(): void {
     const judge = this.conference.participants.find(x => x.role === UserRole.Judge);
     const encodedDisplayName = encodeURIComponent(judge.tiled_display_name);
-    const judgeUri = this.conference.judge_i_frame_uri + '?display_name=' + encodedDisplayName + '';
+    const cam = (this.userMediaService.getPreferredCamera()) ? this.userMediaService.getPreferredCamera().deviceId : '';
+    const mic = (this.userMediaService.getPreferredMicrophone()) ? this.userMediaService.getPreferredMicrophone().deviceId : '';
+    const judgeUri = `${this.conference.judge_i_frame_uri}?display_name=${encodedDisplayName}&cam=${cam}&mic=${mic}`;
     this.selectedHearingUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
       judgeUri
     );
