@@ -11,6 +11,7 @@ using Testing.Common.Configuration;
 using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Configuration;
 using VideoWeb.AcceptanceTests.Contexts;
+using VideoWeb.Common.Helpers;
 using VideoWeb.Services.Bookings;
 using ParticipantRequest = VideoWeb.Services.Bookings.ParticipantRequest;
 

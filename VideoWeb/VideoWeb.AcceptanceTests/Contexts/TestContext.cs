@@ -6,6 +6,7 @@ using RestSharp;
 using Testing.Common.Configuration;
 using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Helpers;
+using VideoWeb.Common.Helpers;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
 using TestSettings = Testing.Common.Configuration.TestSettings;

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Request;
+using VideoWeb.Services;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Controllers
@@ -14,10 +15,12 @@ namespace VideoWeb.Controllers
     public class ParticipantsController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
+        private readonly IEventsServiceClient _eventsServiceClient;
 
-        public ParticipantsController(IVideoApiClient videoApiClient)
+        public ParticipantsController(IVideoApiClient videoApiClient, IEventsServiceClient eventsServiceClient)
         {
             _videoApiClient = videoApiClient;
+            _eventsServiceClient = eventsServiceClient;
         }
 
         [HttpGet("{conferenceId}/participants/{participantId}/selftestresult")]
@@ -47,7 +50,7 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                await _videoApiClient.PostEventsAsync(new ConferenceEventRequest
+                await _eventsServiceClient.PostEventsAsync(new ConferenceEventRequest
                 {
                     Conference_id = conferenceId.ToString(),
                     Participant_id = updateParticipantStatusEventRequest.ParticipantId.ToString(),

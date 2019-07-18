@@ -1,6 +1,7 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using VideoWeb.Common.Security.HashGen;
 
@@ -22,7 +23,7 @@ namespace VideoWeb.Common.Security
 
         public string GenerateToken(string claims, int expiresInMinutes)
         {
-            byte[] key = Convert.FromBase64String(_customTokenSettings.ThirdPartySecret);
+            byte[] key = new ASCIIEncoding().GetBytes(_customTokenSettings.ThirdPartySecret);
             return BuildToken(claims, expiresInMinutes, key);
         }
 
