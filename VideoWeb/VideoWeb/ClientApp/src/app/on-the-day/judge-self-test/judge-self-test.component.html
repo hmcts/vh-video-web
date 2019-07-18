@@ -9,7 +9,7 @@
     value="Equipment is working" (click)="equipmentWorksHandler()"
     alt="Equipment is working and return to hearing list" />
 
-  <input type="button" id="equipment-faulty-btn" class="govuk-button red-btn" role="button" value="Equipment is faulty"
+  <input type="button" id="equipment-faulty-btn" class="govuk-button govuk-button--warning" role="button" value="Equipment is faulty"
     (click)="equipmentFaultyHandler()" alt="Equipment is faulty and notify admin" />
 </div>
 
@@ -29,7 +29,7 @@
   <input *ngIf="showEquipmentFaultMessage" type="button" id="continue-btn" class="govuk-button govuk-!-margin-right-4"
     role="button" value="Continue" (click)="equipmentWorksHandler()" alt="Continue" />
 
-  <input type="button" id="check-equipment-btn" class="govuk-button grey-btn" role="button"
+  <input type="button" id="check-equipment-btn" class="govuk-button govuk-button--secondary" role="button"
     value="Check equipment again" (click)="restartTest()" alt="Re-play the video message" />
 </div>
 
