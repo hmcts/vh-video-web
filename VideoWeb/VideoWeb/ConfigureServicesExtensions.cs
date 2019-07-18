@@ -12,7 +12,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security;
-using VideoWeb.Security.HashGen;
+using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
@@ -61,6 +61,7 @@ namespace VideoWeb
             services.AddTransient<VideoApiTokenHandler>();
             services.AddTransient<UserApiTokenHandler>();
             services.AddScoped<ITokenProvider, TokenProvider>();
+            services.AddScoped<ICustomJwtTokenProvider, CustomJwtTokenProvider>();
             services.AddScoped<IHashGenerator, HashGenerator>();
 
             var container = services.BuildServiceProvider();

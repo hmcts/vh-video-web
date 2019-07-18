@@ -6,6 +6,7 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using Testing.Common.Helpers;
@@ -23,6 +24,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         private Mock<IVideoApiClient> _videoApiClientMock;
         private Mock<IUserApiClient> _userApiClientMock;
         private Mock<IBookingsApiClient> _bookingsApiClientMock;
+        private Mock<ILogger<ConferencesController>> _mockLogger;
         
         [SetUp]
         public void Setup()
@@ -30,6 +32,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             _videoApiClientMock = new Mock<IVideoApiClient>();
             _userApiClientMock = new Mock<IUserApiClient>();
             _bookingsApiClientMock = new Mock<IBookingsApiClient>();
+            _mockLogger = new Mock<ILogger<ConferencesController>>();
+            
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
             {
@@ -40,7 +44,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             };
             
             _controller = new ConferencesController(_videoApiClientMock.Object, _userApiClientMock.Object,
-                _bookingsApiClientMock.Object)
+                _bookingsApiClientMock.Object, _mockLogger.Object)
             {
                 ControllerContext = context
             };

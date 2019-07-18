@@ -1,9 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace VideoWeb.Security.HashGen
+namespace VideoWeb.Common.Security.HashGen
 {
     public interface IHashGenerator
     {
