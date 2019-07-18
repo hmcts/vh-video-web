@@ -155,11 +155,34 @@ export class ParticipantStatusListComponent implements OnInit {
   }
 
   private filterNonJudgeParticipants(): void {
-    this.nonJugdeParticipants = this.conference.participants.filter(x => x.role !== UserRole.Judge
-      && x.role === UserRole.Representative);
+    this.nonJugdeParticipants = this.conference.participants.filter(x => x.role !== UserRole.Judge);
   }
 
   private filterJudge(): void {
     this.judge = this.conference.participants.find(x => x.role === UserRole.Judge);
+  }
+
+  getParticipantStatus(participant: ParticipantResponse): string {
+    if (participant.status === ParticipantStatus.Available) {
+      return 'connected';
+    } else if (participant.status === ParticipantStatus.Disconnected) {
+      return 'disconnected';
+    } else if (participant.status === ParticipantStatus.InConsultation) {
+      return 'in consultation';
+    } else if (participant.status === ParticipantStatus.InHearing) {
+      return 'in a hearing';
+    } else if (participant.status === ParticipantStatus.Joining) {
+      return 'joining';
+    } else if (participant.status === ParticipantStatus.NotSignedIn) {
+      return 'not signed in';
+    } else if (participant.status === ParticipantStatus.UnableToJoin) {
+      return 'unable to join';
+    }
+  }
+
+  isUserJudge(): boolean {
+    const participant = this.conference.participants.find
+      (x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
+    return (participant.role === UserRole.Judge);
   }
 }

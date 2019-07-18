@@ -3,10 +3,11 @@
 </div>
 
 <div *ngIf="!loadingData && conference">
-  <a id="back-to-hearing-list-link" href="javascript:void()" (click)="goToJudgeHearingList()"
-    routerLinkActive="router-link-active" class="govuk-back-link">Return to video hearing list</a>
+  <a id="back-to-hearing-list-link" href="javascript:void(0)" (click)="goToJudgeHearingList()" class="govuk-back-link">
+    Return to video hearing list
+  </a>
 
-  <div class="govuk-!-margin-top-5" *ngIf="isNotStarted()">
+  <div class="govuk-!-margin-top-5" *ngIf="isNotStarted() || isPaused()">
     <input type="button" id="check-equipment-btn" class="govuk-button" role="button" value="Check equipment"
       (click)="checkEquipment()" alt="Camera Check" />
   </div>
@@ -19,10 +20,10 @@
           <strong>{{ conference.case_number }}</strong>
         </td>
         <td class="govuk-table__cell hearing-details-col2-width">
-          {{ conference.scheduled_date_time | date: 'dd MMMM	yyyy' }}
+          {{ hearing.scheduledStartTime | date: 'dd MMMM	yyyy' }}
           <span class="govuk-!-font-weight-bold">
-            {{ getScheduledStartTime() | date: 'HH:mm a' }} to
-            {{ getScheduledEndTime() | date: 'HH:mm a' }}
+            {{ hearing.scheduledStartTime | date: 'HH:mm a' }} to
+            {{ hearing.scheduledEndTime | date: 'HH:mm a' }}
           </span>
         </td>
       </tr>
@@ -32,7 +33,7 @@
 
 <div *ngIf="!loadingData && conference" class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l" [ngClass]="hearingSuspended() ? 'text-highlight-red' : ''">
+    <h1 class="govuk-heading-l" [ngClass]="hearingSuspended() ? 'text-highlight-red' : 'text-highlight-red'">
       {{ getConferenceStatusText() }}</h1>
 
     <h2 class="govuk-heading-m" *ngIf="isNotStarted()">Is everyone connected?</h2>
