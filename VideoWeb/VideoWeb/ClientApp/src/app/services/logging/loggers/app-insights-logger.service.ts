@@ -39,12 +39,16 @@ export class AppInsightsLoggerService implements LogAdapter {
   }
 
   debug(message: string): void {
-    AppInsights.trackTrace(message, null, 0);
+    AppInsights.trackTrace(message, null, AI.SeverityLevel.Verbose);
   }
 
   info(message: string): void {
-    AppInsights.trackTrace(message, null, 1);
+    AppInsights.trackTrace(message, null, AI.SeverityLevel.Information);
     console.info(`${this.router.url}`);
+  }
+
+  warn(message: string): void {
+    AppInsights.trackTrace(message, null, AI.SeverityLevel.Warning);
   }
 
   trackEvent(eventName: string, properties: any) {
