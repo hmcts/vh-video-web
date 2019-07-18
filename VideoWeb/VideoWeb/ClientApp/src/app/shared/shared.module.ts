@@ -44,7 +44,7 @@ import { BetaBannerComponent } from './beta-banner/beta-banner.component';
     EquipmentProblemComponent,
     SelfTestComponent,
     UnsupportedBrowserComponent,
-    PrivacyPolicyComponent
+    PrivacyPolicyComponent,
     BetaBannerComponent
   ],
   providers: [
