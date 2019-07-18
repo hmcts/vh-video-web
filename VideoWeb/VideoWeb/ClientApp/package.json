@@ -7,7 +7,7 @@
     "build": "ng build",
     "build-prod": "ng build --prod",
     "build:ssr": "ng run VideoWeb:server:dev",
-    "test": "ng test --code-coverage --source-map=false",
+    "test": "ng test --code-coverage",
     "test-once": "ng test --watch=false --code-coverage",
     "test-once-ci": "ng test --browsers=ChromeHeadless --watch=false --code-coverage",
     "lint": "ng lint"
