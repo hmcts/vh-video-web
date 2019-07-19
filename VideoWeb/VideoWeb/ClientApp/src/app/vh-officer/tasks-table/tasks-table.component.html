@@ -2,32 +2,27 @@
   <span class="govuk-!-padding-2 govuk-!-padding-left-4 govuk-heading-s">Alerts for this hearing</span>
 </div>
 <div id="tasks-list" [style.width.px]="taskDivWidth">
-  <dl class="govuk-summary-list govuk-summary-list--no-border">
-    <div *ngFor="let task of tasks" class="govuk-summary-list__row">
-      <dd class="govuk-summary-list__value task-checkbox-and-time govuk-!-padding-left-4">
-        <div class="govuk-checkboxes">
-          <div class="govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input" type="checkbox" [checked]="task.status === 'Done'"
-              [disabled]="task.status === 'Done'" (click)="completeTask(task)">
-            <label class="govuk-label govuk-checkboxes__label govuk-!-padding-left-6" for="waste-1">
-              <p class="govuk-body-s">{{task.created | date:'HH:mm' }}</p>
-            </label>
-          </div>
-        </div>
-      </dd>
-      <dd class="govuk-summary-list__value task-body">
-        <p class="govuk-body pending-alert-text" [ngClass]="{'task-completed': task.status === 'Done'}">{{task.body}}
-        </p>
-      </dd>
-      <dd class="govuk-summary-list__value task-origin">
-        <p class="govuk-body-s" [ngClass]="{'task-completed': task.status === 'Done'}">{{getOriginName(task)}}
-        </p>
-      </dd>
-      <dd class="govuk-summary-list__value task-updated">
-        <p class="govuk-body-s" [ngClass]="{'task-completed': task.status === 'Done'}">{{task.updated | date:'HH:mm'}}
-        </p>
-        <p class="govuk-body-s" [ngClass]="{'task-completed': task.status === 'Done'}">{{task.updated_by}}</p>
-      </dd>
+  <div *ngFor="let task of tasks" class="govuk-grid-row">
+    <div class="govuk-grid-column-one-quarter task-checkbox-and-time">
+      <div class="govuk-checkboxes__item">
+        <input class="govuk-checkboxes__input" type="checkbox" [checked]="task.status === 'Done'"
+          [disabled]="task.status === 'Done'" (click)="completeTask(task)">
+        <label class="govuk-label govuk-checkboxes__label govuk-!-padding-left-2" for="task-created">
+          <p id="task-created" class="govuk-body-s">{{task.created | date:'HH:mm' }}</p>
+        </label>
+      </div>
     </div>
-  </dl>
+    <div class="govuk-grid-column-one-quarter task-body">
+      <p class="govuk-body govuk-body-s pending-alert-text" [ngClass]="{'task-completed': task.status === 'Done'}">{{task.body}}
+      </p>
+    </div>
+    <div class="govuk-grid-column-one-quarter task-origin">
+      <p class="govuk-body-s" [ngClass]="{'task-completed': task.status === 'Done'}">{{getOriginName(task)}}
+      </p>
+    </div>
+    <div class="govuk-grid-column-one-quarter task-updated">
+      <p class="govuk-body-s" [ngClass]="{'task-completed': task.status === 'Done'}">{{task.updated_by}} {{task.updated | date:'HH:mm'}}
+        </p>
+    </div>
+  </div>
 </div>

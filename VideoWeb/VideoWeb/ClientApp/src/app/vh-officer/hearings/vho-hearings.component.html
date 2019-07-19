@@ -8,11 +8,11 @@
   <div class="govuk-grid-row">
     <div *ngIf="!loadingData && isHearingSelected()" id="conference-frame" class="govuk-grid-column-one-half">
 
-      <div id="participant-status" class="govuk-grid-column-two-thirds">
+      <div id="participant-status" class="govuk-grid-column-two-thirds govuk-!-padding-0">
         <app-participant-status [participants]="participants"></app-participant-status>
       </div>
 
-      <div id="vho-admin-view" class="govuk-grid-column-one-third">
+      <div id="vho-admin-view" class="govuk-grid-column-one-third govuk-!-padding-0">
             <iframe id="admin-frame" [width]='adminFrameWidth' [height]="adminFrameHeight" [src]='selectedConferenceUrl'
               allowfullscreen frameborder="0" webkitallowfullscreen mozallowfullscreen>
             </iframe>
