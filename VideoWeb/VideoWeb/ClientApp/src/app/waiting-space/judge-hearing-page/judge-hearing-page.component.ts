@@ -6,6 +6,8 @@ import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
+import { UserMediaService } from 'src/app/services/user-media.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 @Component({
   selector: 'app-judge-hearing-page',
@@ -25,7 +27,9 @@ export class JudgeHearingPageComponent implements OnInit {
     private eventService: EventsService,
     private ngZone: NgZone,
     public sanitizer: DomSanitizer,
-    private errorService: ErrorService
+    private errorService: ErrorService,
+    private userMediaService: UserMediaService,
+    private logger: Logger
   ) {
     this.loadingData = true;
   }
@@ -52,7 +56,24 @@ export class JudgeHearingPageComponent implements OnInit {
   sanitiseIframeUrl(): void {
     const judge = this.conference.participants.find(x => x.role === UserRole.Judge);
     const encodedDisplayName = encodeURIComponent(judge.tiled_display_name);
-    const judgeUri = this.conference.judge_i_frame_uri + '?display_name=' + encodedDisplayName + '';
+
+    const preferredCam = this.userMediaService.getPreferredCamera();
+    const preferredMic = this.userMediaService.getPreferredMicrophone();
+
+    let cam = '';
+    let mic = (preferredMic) ? preferredMic.deviceId : '';
+
+    if (preferredCam) {
+      this.logger.info(`judge using camera ${preferredCam.label}`);
+      cam = preferredCam.deviceId;
+    }
+
+    if (preferredMic) {
+      this.logger.info(`judge using microphone ${preferredMic.label}`);
+      mic = preferredMic.deviceId;
+    }
+
+    const judgeUri = `${this.conference.judge_i_frame_uri}?display_name=${encodedDisplayName}&cam=${cam}&mic=${mic}`;
     this.selectedHearingUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
       judgeUri
     );
@@ -69,13 +90,21 @@ export class JudgeHearingPageComponent implements OnInit {
   }
 
   handleHearingStatusChange(status: ConferenceStatus) {
+    const judge = this.conference.participants.find(x => x.role === UserRole.Judge);
+    const properties = {
+      conferenceId: this.conference.id,
+      user: judge.id
+    };
+
     if (status === ConferenceStatus.Closed) {
       this.selectedHearingUrl = '';
+      this.logger.event(`Conference closed, navigating back to hearing list`, properties);
       this.router.navigate([PageUrls.JudgeHearingList]);
     }
 
     if (status === ConferenceStatus.Paused || status === ConferenceStatus.Suspended) {
       this.selectedHearingUrl = '';
+      this.logger.event(`Conference closed, navigating back to waiting room`, properties);
       this.router.navigate([PageUrls.JudgeWaitingRoom, this.conference.id]);
     }
   }
