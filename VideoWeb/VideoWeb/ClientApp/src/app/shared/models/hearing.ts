@@ -42,6 +42,18 @@ export class Hearing {
         return this.participants.filter(x => x.role === UserRole.Representative)[1];
     }
 
+    get applicants(): Participant[] {
+        return this.participants
+        .filter(x => x.caseGroup !== '')
+        .filter(x => x.caseGroup.toLowerCase() === 'applicant' || x.caseGroup.toLowerCase() === 'claimant');
+    }
+
+    get respondents(): Participant[] {
+        return this.participants
+        .filter(x => x.caseGroup !== '')
+        .filter(x => x.caseGroup.toLowerCase() === 'respondent' || x.caseGroup.toLowerCase() === 'defendant');
+    }
+
     getConference(): ConferenceResponse {
         return this.conference;
     }
