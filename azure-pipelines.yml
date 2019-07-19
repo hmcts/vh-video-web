@@ -4,7 +4,7 @@ variables:
   apiDirectory: 'VideoWeb/VideoWeb'
   solutionType: angularDotNetCore # angularDotNetCore, dotNetCore
   sonarCloudPrepareExtraProperties: |  
-    sonar.exclusions=**/node_modules/**,**/*.spec.ts, *.spec.ts, **/ClientApp/src/**, **/ClientApp/coverage/**/**, **/ConfigureServicesExtensions.cs, **/Startup.cs, **/Program.cs, **/Testing.Common/**, **/VideoWeb.UnitTests/**, **/VideoWeb.Common/**, **/VideoWeb/Swagger/**, **/VideoWeb/Extensions/**
+    sonar.exclusions=**/node_modules/**,**/*.spec.ts, *.spec.ts, **/ClientApp/src/**, **/ClientApp/coverage/**/**, **/ConfigureServicesExtensions.cs, **/Startup.cs, **/Program.cs, **/Testing.Common/**, **/VideoWeb.UnitTests/**, **/VideoWeb.Common/**, **/VideoWeb/Swagger/**, **/VideoWeb/Extensions/**, **/VideoWeb.Common/**, **/VideoWeb.Services/**
     sonar.typescript.lcov.reportPaths=$(System.DefaultWorkingDirectory)/*/ClientApp/coverage/lcov.info,**/lcov.info
     sonar.typescript.exclusions=**/node_modules/**,**/typings.d.ts,**/main.ts,**/environments/environment*.ts,**/*routing.module.ts,**/api-client.ts
     sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)\Coverage\coverage.opencover.xml
@@ -15,7 +15,8 @@ variables:
     "AzureAd/VhVideoWebResourceId":"$(vh-video-web-identifieruris)",
     "Testing/TestClientId":"$(vh-admin-web-appid)",
     "Testing/TestClientSecret":"$(vh-admin-web-key)",
-    "CustomToken/Secret":"$(hmac-secret-key)"
+    "CustomToken/Secret":"$(hmac-secret-key)",
+    "CustomToken/ThirdPartySecret":"$(ThirdPartySecret)"
     '
   keyVaultName: vhcoreinfrahtdev # Used to get secrets for integration tests
   secretsFilter: 'tenantid,hmac-secret-key,vh-video-web-appid,vh-video-web-key,vh-video-web-identifieruris,vh-admin-web-appid,vh-admin-web-key' # filters out secrets returned from key vault

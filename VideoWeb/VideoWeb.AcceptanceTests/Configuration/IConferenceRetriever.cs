@@ -6,6 +6,7 @@ using System.Threading;
 using FluentAssertions;
 using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Contexts;
+using VideoWeb.Common.Helpers;
 using VideoWeb.Services.Video;
 using UserRole = VideoWeb.Services.Video.UserRole;
 

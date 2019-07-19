@@ -1,7 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Testing.Common.Helpers
+namespace VideoWeb.Common.Helpers
 {
     public static class ApiRequestHelper
     {
