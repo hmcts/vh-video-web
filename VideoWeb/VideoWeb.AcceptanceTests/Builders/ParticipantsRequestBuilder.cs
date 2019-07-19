@@ -16,7 +16,7 @@ namespace VideoWeb.AcceptanceTests.Builders
 
         public ParticipantsRequestBuilder AddClerkOrJudge()
         {
-            _request 
+            _request
                 .With(x => x.Representee = "")
                 .With(x => x.Solicitors_reference = "")
                 .With(x => x.Case_role_name = "Judge")
@@ -71,6 +71,7 @@ namespace VideoWeb.AcceptanceTests.Builders
                 .With(x => x.First_name = _user.Firstname)
                 .With(x => x.Last_name = _user.Lastname)
                 .With(x => x.Middle_names = "")
+                .With(x => x.Telephone_number = "01234567890")
                 .With(x => x.Telephone_number = $"+44(0)7{Faker.RandomNumber.Next(900000000, 999999999)}")
                 .With(x => x.Title = "Mrs")
                 .With(x => x.Username = _user.Username);
