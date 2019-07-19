@@ -12,7 +12,8 @@ using Swashbuckle.AspNetCore.Swagger;
 using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security;
-using VideoWeb.Security.HashGen;
+using VideoWeb.Common.Security.HashGen;
+using VideoWeb.Services;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
@@ -60,7 +61,10 @@ namespace VideoWeb
             services.AddTransient<BookingsApiTokenHandler>();
             services.AddTransient<VideoApiTokenHandler>();
             services.AddTransient<UserApiTokenHandler>();
+            services.AddScoped<VideoCallbackTokenHandler>();
+            
             services.AddScoped<ITokenProvider, TokenProvider>();
+            services.AddScoped<ICustomJwtTokenProvider, CustomJwtTokenProvider>();
             services.AddScoped<IHashGenerator, HashGenerator>();
 
             var container = services.BuildServiceProvider();
@@ -78,6 +82,9 @@ namespace VideoWeb
             services.AddHttpClient<IUserApiClient, UserApiClient>()
                 .AddHttpMessageHandler(() => container.GetService<UserApiTokenHandler>())
                 .AddTypedClient(httpClient => BuildUserApiClient(httpClient, servicesConfiguration));
+
+            services.AddHttpClient<IEventsServiceClient, EventServiceClient>()
+                .AddHttpMessageHandler<VideoCallbackTokenHandler>();
             
             return services;
         }

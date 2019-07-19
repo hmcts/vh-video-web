@@ -8,6 +8,7 @@ using Moq;
 using NUnit.Framework;
 using Testing.Common.Helpers;
 using VideoWeb.Controllers;
+using VideoWeb.Services;
 using VideoWeb.Services.Video;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
@@ -16,12 +17,12 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
     public class SendHearingEventTests
     {
         private VideoEventsController _controller;
-        private Mock<IVideoApiClient> _videoApiClientMock;
+        private Mock<IEventsServiceClient> _videoApiClientMock;
         
         [SetUp]
         public void Setup()
         {
-            _videoApiClientMock = new Mock<IVideoApiClient>();
+            _videoApiClientMock = new Mock<IEventsServiceClient>();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
             {
