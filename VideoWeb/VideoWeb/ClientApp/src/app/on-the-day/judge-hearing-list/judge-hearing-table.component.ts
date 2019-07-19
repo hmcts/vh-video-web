@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ConferenceForUserResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { Participant } from 'src/app/shared/models/participant';
 
 @Component({
   selector: 'app-judge-hearing-table',
@@ -16,6 +17,7 @@ export class JudgeHearingTableComponent implements OnInit {
   @Input() set conferences(conferences: ConferenceForUserResponse[]) {
     this._conferences = conferences;
     this.hearings = conferences.map(c => new Hearing(c));
+    console.log(this.hearings);
   }
 
   @Output() selectedConference = new EventEmitter<ConferenceForUserResponse>();
@@ -24,6 +26,14 @@ export class JudgeHearingTableComponent implements OnInit {
 
   ngOnInit() {
     this.hearings = this._conferences.map(c => new Hearing(c));
+  }
+
+  getRepresentative(participants: Participant[]): Participant {
+    return participants.find(x => x.representee !== null);
+  }
+
+  getIndividual(participants: Participant[]): Participant {
+    return participants.find(x => x.representee === null);
   }
 
   signIntoConference(hearing: Hearing) {
