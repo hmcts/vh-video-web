@@ -66,6 +66,7 @@ namespace VideoWeb.UnitTests.Mappings
                 response[index].Role.Should().BeEquivalentTo(participant.User_role);
                 response[index].Status.ToString().Should().BeEquivalentTo(participant.Status.ToString());
                 response[index].Representee.Should().BeEquivalentTo(participant.Representee);
+                response[index].CaseTypeGroup.Should().BeEquivalentTo(participant.Case_group);
             }
         }
 

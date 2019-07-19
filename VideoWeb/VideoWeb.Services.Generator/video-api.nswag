@@ -3,7 +3,7 @@
   "defaultVariables": null,
   "documentGenerator": {
     "fromDocument": {
-      "url": "https://vh-video-api-dev.azurewebsites.net/swagger/v1/swagger.json",
+      "url": "https://localhost:59390/swagger/v1/swagger.json",
       "output": null
     }
   },
