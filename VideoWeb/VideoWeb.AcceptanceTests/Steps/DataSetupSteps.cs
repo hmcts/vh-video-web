@@ -9,6 +9,7 @@ using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Configuration;
 using VideoWeb.AcceptanceTests.Contexts;
+using VideoWeb.Common.Helpers;
 using VideoWeb.Services.Bookings;
 
 namespace VideoWeb.AcceptanceTests.Steps

@@ -10,6 +10,7 @@ using VideoWeb.AcceptanceTests.Actions;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.Common.Helpers;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.AcceptanceTests.Steps
