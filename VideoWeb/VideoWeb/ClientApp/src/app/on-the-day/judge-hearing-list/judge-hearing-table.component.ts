@@ -17,7 +17,6 @@ export class JudgeHearingTableComponent implements OnInit {
   @Input() set conferences(conferences: ConferenceForUserResponse[]) {
     this._conferences = conferences;
     this.hearings = conferences.map(c => new Hearing(c));
-    console.log(this.hearings);
   }
 
   @Output() selectedConference = new EventEmitter<ConferenceForUserResponse>();
