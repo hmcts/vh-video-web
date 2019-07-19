@@ -7,11 +7,11 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
+using HealthCheckResponse = VideoWeb.Contract.Responses.HealthCheckResponse;
 
 namespace VideoWeb.UnitTests.Controllers.HealthController
 {

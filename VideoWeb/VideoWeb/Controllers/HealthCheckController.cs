@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using VideoWeb.Contract.Responses;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
+using HealthCheckResponse = VideoWeb.Contract.Responses.HealthCheckResponse;
 
 namespace VideoWeb.Controllers
 {
