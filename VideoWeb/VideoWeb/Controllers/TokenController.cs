@@ -3,8 +3,8 @@ using System.Globalization;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Security.HashGen;
 
 namespace VideoWeb.Controllers
 {

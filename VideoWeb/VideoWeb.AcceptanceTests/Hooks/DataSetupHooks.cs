@@ -5,6 +5,7 @@ using TechTalk.SpecFlow;
 using Testing.Common.Configuration;
 using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Contexts;
+using VideoWeb.Common.Helpers;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
 
