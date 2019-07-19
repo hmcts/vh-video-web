@@ -2,6 +2,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using VideoWeb.Services;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Controllers
@@ -11,11 +12,11 @@ namespace VideoWeb.Controllers
     [Route("events")]
     public class VideoEventsController : Controller
     {
-        private readonly IVideoApiClient _videoApiClient;
+        private readonly IEventsServiceClient _eventsServiceClient;
 
-        public VideoEventsController(IVideoApiClient videoApiClient)
+        public VideoEventsController(IEventsServiceClient eventsServiceClient)
         {
-            _videoApiClient = videoApiClient;
+            _eventsServiceClient = eventsServiceClient;
         }
 
         [HttpPost]
@@ -26,7 +27,7 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                await _videoApiClient.PostEventsAsync(request);
+                await _eventsServiceClient.PostEventsAsync(request);
                 return NoContent();
             }
             catch (VideoApiException e)

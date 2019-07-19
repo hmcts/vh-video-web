@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using VideoWeb.Common.Configuration;
+using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Extensions;
-using VideoWeb.Security.HashGen;
 
 namespace VideoWeb
 {

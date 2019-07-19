@@ -7,6 +7,7 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using Testing.Common.Helpers;
@@ -25,6 +26,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         private Mock<IVideoApiClient> _videoApiClientMock;
         private Mock<IUserApiClient> _userApiClientMock;
         private Mock<IBookingsApiClient> _bookingsApiClientMock;
+        private Mock<ILogger<ConferencesController>> _mockLogger;
 
         [SetUp]
         public void Setup()
@@ -32,6 +34,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             _videoApiClientMock = new Mock<IVideoApiClient>();
             _userApiClientMock = new Mock<IUserApiClient>();
             _bookingsApiClientMock = new Mock<IBookingsApiClient>();
+            _mockLogger = new Mock<ILogger<ConferencesController>>(MockBehavior.Loose);
+
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
             {
@@ -42,7 +46,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             };
 
             _controller = new ConferencesController(_videoApiClientMock.Object, _userApiClientMock.Object,
-                _bookingsApiClientMock.Object)
+                _bookingsApiClientMock.Object, _mockLogger.Object)
             {
                 ControllerContext = context
             };
@@ -51,6 +55,48 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             _userApiClientMock
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(userProfile);
+        }
+
+        [Test]
+        public async Task should_return_error_when_unable_to_retrieve_profile()
+        {
+            var apiException = new UserApiException<ProblemDetails>("User not found", (int) HttpStatusCode.NotFound,
+                "User Not Found", null, default(ProblemDetails), null);
+            _userApiClientMock
+                .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
+                .ThrowsAsync(apiException);
+
+            var conference = CreateValidConferenceResponse(null);
+            _videoApiClientMock
+                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(conference);
+
+            var result = await _controller.GetConferenceById(conference.Id.GetValueOrDefault());
+            var typedResult = result.Value;
+            typedResult.Should().BeNull();
+            var objectResult = (ObjectResult) result.Result;
+            objectResult.StatusCode.Should().Be(apiException.StatusCode);
+        }
+        
+        [Test]
+        public async Task should_return_error_when_unable_to_retrieve_booking_participants()
+        {
+            var apiException = new BookingsApiException("Hearing does not exist", (int) HttpStatusCode.NotFound,
+                "Invalid Hearing Id", null, null);
+            _bookingsApiClientMock
+                .Setup(x => x.GetAllParticipantsInHearingAsync(It.IsAny<Guid>()))
+                .ThrowsAsync(apiException);
+
+            var conference = CreateValidConferenceResponse();
+            _videoApiClientMock
+                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(conference);
+
+            var result = await _controller.GetConferenceById(conference.Id.GetValueOrDefault());
+            var typedResult = result.Value;
+            typedResult.Should().BeNull();
+            var objectResult = (ObjectResult) result.Result;
+            objectResult.StatusCode.Should().Be(apiException.StatusCode);
         }
 
 
