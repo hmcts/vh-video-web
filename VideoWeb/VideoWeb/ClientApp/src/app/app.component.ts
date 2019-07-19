@@ -27,6 +27,7 @@ export class AppComponent implements OnInit {
     private errorService: ErrorService
   ) {
     this.loggedIn = false;
+    this.isRepresentativeOrIndividual = false;
     this.initAuthentication();
   }
 
