@@ -52,28 +52,23 @@ namespace VideoWeb.AcceptanceTests.Builders
             _representatives.AddRange(_context.GetRepresentativeUsers());
 
             _participants.Add(new ParticipantsRequestBuilder()
-                .AddIndividual()
-                .ForUser(_individuals[0])
+                .AddIndividual().WithUser(_individuals[0])
                 .Build());
 
             _participants.Add(new ParticipantsRequestBuilder()
-                .AddRepresentative()
-                .ForUser(_representatives[0])
+                .AddRepresentative().WithUser(_representatives[0])
                 .Build());
 
             _participants.Add(new ParticipantsRequestBuilder()
-                .AddIndividual()
-                .ForUser(_individuals[1])
+                .AddIndividual().WithUser(_individuals[1])
                 .Build());
 
             _participants.Add(new ParticipantsRequestBuilder()
-                .AddRepresentative()
-                .ForUser(_representatives[1])
+                .AddRepresentative().WithUser(_representatives[1])
                 .Build());
 
             _participants.Add(new ParticipantsRequestBuilder()
-                .AddClerkOrJudge()
-                .ForUser(_context.GetClerkUser())
+                .AddClerkOrJudge().WithUser(_context.GetClerkUser())
                 .Build());           
 
             var cases = Builder<CaseRequest>.CreateListOfSize(1).Build().ToList();

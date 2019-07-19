@@ -8,13 +8,13 @@ namespace VideoWeb.AcceptanceTests.Actions
     {
         public void Execute(TestContext context, string participantId)
         {
-            var request = new CreateEventRequestBuilder()
+            var request = new EventRequestBuilder()
                 .WithConferenceId(context.NewConferenceId)
                 .WithParticipantId(participantId)
                 .WithEventType(EventType.JudgeAvailable)
                 .Build();
 
-            new ExecuteEventRequestBuilder()
+            new ExecuteEventBuilder()
                 .WithContext(context)
                 .WithRequest(request)
                 .Execute();

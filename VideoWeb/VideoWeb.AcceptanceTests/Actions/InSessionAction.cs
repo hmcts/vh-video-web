@@ -8,7 +8,7 @@ namespace VideoWeb.AcceptanceTests.Actions
     {
         public void Execute(TestContext context, string participantId)
         {
-            var request = new CreateEventRequestBuilder()
+            var request = new EventRequestBuilder()
                 .WithConferenceId(context.NewConferenceId)
                 .WithParticipantId(participantId)
                 .WithEventType(EventType.Transfer)
@@ -16,12 +16,12 @@ namespace VideoWeb.AcceptanceTests.Actions
                 .ToRoomType(RoomType.HearingRoom)
                 .Build();
 
-            new ExecuteEventRequestBuilder()
+            new ExecuteEventBuilder()
                 .WithContext(context)
                 .WithRequest(request)
                 .Execute();
 
-            request = new CreateEventRequestBuilder()
+            request = new EventRequestBuilder()
                 .WithConferenceId(context.NewConferenceId)
                 .WithParticipantId(participantId)
                 .WithEventType(EventType.Joined)
@@ -29,7 +29,7 @@ namespace VideoWeb.AcceptanceTests.Actions
                 .ToRoomType(null)
                 .Build();
 
-            new ExecuteEventRequestBuilder()
+            new ExecuteEventBuilder()
                 .WithContext(context)
                 .WithRequest(request)
                 .Execute();

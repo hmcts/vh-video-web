@@ -12,6 +12,7 @@ namespace VideoWeb.AcceptanceTests.Builders
         public ParticipantsRequestBuilder()
         {
             _request = Builder<ParticipantRequest>.CreateNew();
+            _request.BuilderSettings.AutoNameProperties = false;
         }
 
         public ParticipantsRequestBuilder AddClerkOrJudge()
@@ -23,8 +24,7 @@ namespace VideoWeb.AcceptanceTests.Builders
                 .With(x => x.Hearing_role_name = "Judge")
                 .With(x => x.Organisation_name = "");
 
-            _request = RemoveAddress(_request);
-            _request = AddUser();
+            _request = AddSharedProperties();
 
             return this;
         }
@@ -43,7 +43,7 @@ namespace VideoWeb.AcceptanceTests.Builders
                 .With(x => x.City = "London")
                 .With(x => x.County = "Greater London");
 
-            _request = AddUser();
+            _request = AddSharedProperties();
 
             return this;
         }
@@ -57,13 +57,12 @@ namespace VideoWeb.AcceptanceTests.Builders
                 .With(x => x.Solicitors_reference = "")
                 .With(x => x.Organisation_name = "MoJ");
 
-            _request = RemoveAddress(_request);
-            _request = AddUser();
+            _request = AddSharedProperties();
 
             return this;
         }
 
-        private ISingleObjectBuilder<ParticipantRequest> AddUser()
+        private ISingleObjectBuilder<ParticipantRequest> AddSharedProperties()
         {
             return _request
                 .With(x => x.Contact_email = _user.AlternativeEmail)
@@ -76,17 +75,7 @@ namespace VideoWeb.AcceptanceTests.Builders
                 .With(x => x.Username = _user.Username);
         }
 
-        private static ISingleObjectBuilder<ParticipantRequest> RemoveAddress(ISingleObjectBuilder<ParticipantRequest> request)
-        {
-            return request
-                .With(x => x.House_number = "")
-                .With(x => x.Street = "")
-                .With(x => x.Postcode = "")
-                .With(x => x.City = "")
-                .With(x => x.County = "");
-        }
-
-        public ParticipantsRequestBuilder ForUser(UserAccount user)
+        public ParticipantsRequestBuilder WithUser(UserAccount user)
         {
             _user = user;
             return this;
