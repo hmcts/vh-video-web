@@ -1119,6 +1119,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     role?: UserRole | undefined;
     status?: ParticipantStatus | undefined;
     representee?: string | undefined;
+    case_type_group?: string | undefined;
 
     constructor(data?: IParticipantForUserResponse) {
         if (data) {
@@ -1136,6 +1137,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
             this.role = data["role"];
             this.status = data["status"];
             this.representee = data["representee"];
+            this.case_type_group = data["case_type_group"];
         }
     }
 
@@ -1153,6 +1155,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
         data["role"] = this.role;
         data["status"] = this.status;
         data["representee"] = this.representee;
+        data["case_type_group"] = this.case_type_group;
         return data; 
     }
 }
@@ -1163,6 +1166,7 @@ export interface IParticipantForUserResponse {
     role?: UserRole | undefined;
     status?: ParticipantStatus | undefined;
     representee?: string | undefined;
+    case_type_group?: string | undefined;
 }
 
 export enum UserRole {
