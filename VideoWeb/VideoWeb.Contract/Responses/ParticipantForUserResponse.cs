@@ -1,5 +1,3 @@
-using System;
-
 namespace VideoWeb.Contract.Responses
 {
     public class ParticipantForUserResponse
@@ -28,5 +26,10 @@ namespace VideoWeb.Contract.Responses
         /// The representee (if participant is a representative)
         /// </summary>
         public string Representee { get; set; }
+        
+        /// <summary>
+        /// The group a participant belongs to
+        /// </summary>
+        public string CaseTypeGroup { get; set; }
     }
 }
