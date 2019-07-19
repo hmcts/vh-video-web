@@ -43,6 +43,7 @@ export class EventsService {
         .then(() => {
           this.connectionStarted = true;
           this.attemptingConnection = false;
+          this.logger.info('Successfully connected to event hub');
         })
         .catch(err => {
           this.attemptingConnection = false;
@@ -57,7 +58,9 @@ export class EventsService {
 
   getParticipantStatusMessage(): Observable<ParticipantStatusMessage> {
     this.connection.on('ParticipantStatusMessage', (email: string, status: ParticipantStatus) => {
-      this.participantStatusSubject.next(new ParticipantStatusMessage(email, status));
+      const message = new ParticipantStatusMessage(email, status);
+      this.logger.event('ParticipantStatusMessage received', message);
+      this.participantStatusSubject.next(message);
     });
 
     return this.participantStatusSubject.asObservable();
@@ -65,7 +68,9 @@ export class EventsService {
 
   getHearingStatusMessage(): Observable<ConferenceStatusMessage> {
     this.connection.on('ConferenceStatusMessage', (conferenceId: string, status: ConferenceStatus) => {
-      this.hearingStatusSubject.next(new ConferenceStatusMessage(conferenceId, status));
+      const message = new ConferenceStatusMessage(conferenceId, status);
+      this.logger.event('ConferenceStatusMessage received', message);
+      this.hearingStatusSubject.next(message);
     });
 
     return this.hearingStatusSubject.asObservable();
@@ -73,7 +78,9 @@ export class EventsService {
 
   getHelpMessage(): Observable<HelpMessage> {
     this.connection.on('HelpMessage', (conferenceId: string, participantName: string) => {
-      this.helpMessageSubject.next(new HelpMessage(conferenceId, participantName));
+      const message = new HelpMessage(conferenceId, participantName);
+      this.logger.event('HelpMessage received', message);
+      this.helpMessageSubject.next(message);
     });
 
     return this.helpMessageSubject.asObservable();
@@ -81,7 +88,9 @@ export class EventsService {
 
   getConsultationMessage(): Observable<ConsultationMessage> {
     this.connection.on('ConsultationMessage', (conferenceId: string, requestedBy: string, requestedFor: string, result: string) => {
-      this.consultationMessageSubject.next(new ConsultationMessage(conferenceId, requestedBy, requestedFor, result));
+      const message = new ConsultationMessage(conferenceId, requestedBy, requestedFor, result);
+      this.logger.event('ConsultationMessage received', message);
+      this.consultationMessageSubject.next(message);
     });
 
     return this.consultationMessageSubject.asObservable();

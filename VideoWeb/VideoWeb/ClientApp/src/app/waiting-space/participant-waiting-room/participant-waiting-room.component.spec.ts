@@ -15,7 +15,7 @@ import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { AnalogueClockStubComponent } from 'src/app/testing/stubs/analogue-clock-stub';
-import { ParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
+import { IndividualParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
 import { Hearing } from '../../shared/models/hearing';
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room.component';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -37,7 +37,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [ParticipantWaitingRoomComponent, ParticipantStatusListStubComponent, AnalogueClockStubComponent],
+      declarations: [ParticipantWaitingRoomComponent, IndividualParticipantStatusListStubComponent, AnalogueClockStubComponent],
       providers: [
         {
           provide: ActivatedRoute,
@@ -176,7 +176,7 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [ParticipantWaitingRoomComponent, ParticipantStatusListStubComponent, AnalogueClockStubComponent],
+      declarations: [ParticipantWaitingRoomComponent, IndividualParticipantStatusListStubComponent, AnalogueClockStubComponent],
       providers: [
         {
           provide: ActivatedRoute,

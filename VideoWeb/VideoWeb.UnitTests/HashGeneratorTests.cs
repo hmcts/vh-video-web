@@ -1,7 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
-using VideoWeb.Security.HashGen;
+using VideoWeb.Common.Security.HashGen;
 
 namespace VideoWeb.UnitTests
 {
