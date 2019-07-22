@@ -6,7 +6,7 @@ import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { AppComponent } from './app.component';
 import { ConfigService } from './services/api/config.service';
-import { ClientSettingsResponse } from './services/clients/api-client';
+import { ClientSettingsResponse, UserProfileResponse, UserRole } from './services/clients/api-client';
 import { DeviceTypeService } from './services/device-type.service';
 import { Logger } from './services/logging/logger-base';
 import { PageUrls } from './shared/page-url.constants';
@@ -14,15 +14,14 @@ import { MockLogger } from './testing/mocks/MockLogger';
 import { FooterStubComponent } from './testing/stubs/footer-stub';
 import { HeaderStubComponent } from './testing/stubs/header-stub';
 import { SnotifyStubComponent } from './testing/stubs/snotify-stub';
-import { Component } from '@angular/core';
-
-@Component({ selector: 'app-beta-banner', template: '' })
-export class BetaBannerStubComponent { }
+import { ProfileService } from './services/api/profile.service';
+import { BetaBannerStubComponent } from './testing/stubs/beta-banner-stub';
 
 describe('AppComponent', () => {
   let configServiceSpy: jasmine.SpyObj<ConfigService>;
   let adalServiceSpy: jasmine.SpyObj<AdalService>;
   let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
+  let profileServiceSpy: jasmine.SpyObj<ProfileService>;
 
   const clientSettings = new ClientSettingsResponse({
     tenant_id: 'tenantid',
@@ -51,6 +50,10 @@ describe('AppComponent', () => {
 
     deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isSupportedBrowser']);
 
+    profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
+    const profile = new UserProfileResponse({ role: UserRole.Representative });
+    profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
+
     TestBed.configureTestingModule({
       imports: [HttpClientModule, RouterTestingModule],
       declarations: [
@@ -65,7 +68,8 @@ describe('AppComponent', () => {
           { provide: AdalService, useValue: adalServiceSpy },
           { provide: ConfigService, useValue: configServiceSpy },
           { provide: Logger, useClass: MockLogger },
-          { provide: DeviceTypeService, useValue: deviceTypeServiceSpy }
+          { provide: DeviceTypeService, useValue: deviceTypeServiceSpy },
+          { provide: ProfileService, useValue: profileServiceSpy }
         ],
     });
   });

@@ -48,7 +48,7 @@ import { BetaBannerComponent } from './beta-banner/beta-banner.component';
     BetaBannerComponent
   ],
   providers: [
-    { provide: 'SnotifyToastConfig', useValue: ToastDefaults},
+    { provide: 'SnotifyToastConfig', useValue: ToastDefaults },
     SnotifyService
   ],
   exports: [
