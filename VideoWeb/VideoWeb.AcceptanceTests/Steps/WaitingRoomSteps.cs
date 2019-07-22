@@ -4,7 +4,6 @@ using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using TechTalk.SpecFlow;
-using Testing.Common.Builders;
 using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -34,6 +33,20 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenTheUserNavigatesBackToTheHearingList()
         {
             _browser.NgDriver.ClickAndWaitForPageToLoad(_clerkPage.ReturnToHearingRoomLink);
+        }
+
+        [Then(@"the first participant status is displayed as (.*)")]
+        public void ThenTheFirstParticipantStatusIsDisplayedAsNotSignedIn(string status)
+        {
+            var participant = _context.Conference.Participants.First(x => x.User_role == UserRole.Representative);
+            if (participant.Id != null)
+            {
+                _browser.NgDriver.WaitUntilElementVisible(_clerkPage.ParticipantStatus((Guid)participant.Id)).Text.Should().Be(status.ToUpper());
+            }
+            else
+            {
+                throw new DataMisalignedException("Participant id is not set");
+            }
         }
 
         [Then(@"the Clerk can see information about their case")]
