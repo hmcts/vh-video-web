@@ -21,6 +21,9 @@ export class ParticipantStatusListComponent implements OnInit {
 
   nonJugdeParticipants: ParticipantResponse[];
   judge: ParticipantResponse;
+  representativeParticipants: ParticipantResponse[];
+  litigantInPerson: boolean;
+  individualParticipants: ParticipantResponse[];
 
   constructor(
     private adalService: AdalService,
@@ -34,6 +37,8 @@ export class ParticipantStatusListComponent implements OnInit {
     this.filterNonJudgeParticipants();
     this.filterJudge();
     this.setupSubscribers();
+
+    this.filterRepresentatives();
   }
 
   isParticipantAvailable(participant: ParticipantResponse): boolean {
@@ -184,5 +189,13 @@ export class ParticipantStatusListComponent implements OnInit {
     const participant = this.conference.participants.find
       (x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
     return (participant.role === UserRole.Judge);
+  }
+
+  private filterRepresentatives(): void {
+    this.representativeParticipants = this.conference.participants.filter(x => x.role === UserRole.Representative);
+    this.litigantInPerson = (this.representativeParticipants.length === 0);
+    this.individualParticipants = this.conference.participants.filter(x => x.role === UserRole.Individual);
+    console.log(this.representativeParticipants.length);
+    console.log(this.litigantInPerson);
   }
 }
