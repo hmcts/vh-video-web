@@ -217,18 +217,20 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
   updateShowVideo(): void {
     if (!this.connected) {
-      this.logger.debug('Not showing video because user is not connected to call');
       this.showVideo = false;
+      return;
     }
 
     if (this.hearing.isInSession()) {
       this.logger.debug('Showing video because hearing is in session');
       this.showVideo = true;
+      return;
     }
 
     if (this.participant.status === ParticipantStatus.InConsultation) {
       this.logger.debug('Showing video because hearing is in session');
       this.showVideo = true;
+      return;
     }
   }
 }
