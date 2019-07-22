@@ -1,4 +1,4 @@
-<div id="list-column" class="govuk-grid-column-one-half">
+<div id="list-column" class="govuk-grid-column-one-half govuk-!-padding-0">
     <dl id="conferences-list" class="govuk-summary-list">
       <div class="govuk-summary-list__row" [ngClass]="{'selected-conference': isCurrentConference(conference)}"
         *ngFor="let conference of conferences" (click)="selectConference(conference)">
