@@ -1,0 +1,34 @@
+@import "~govuk-frontend/all";
+
+.unavailable {
+  color: govuk-colour("red");
+}
+
+.available {
+  color: govuk-colour("green");
+}
+
+.label-status {
+  color: govuk-colour("white");
+  padding: 3px 5px 3px 5px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+.label-status--disconnected {
+  background-color: govuk-colour("red");
+  text-transform: uppercase;
+}
+
+.label-status--notsignedin {
+  background-color: govuk-colour("grey-1");
+  text-transform: uppercase;
+}
+
+.label-status--connected,
+.label-status--inconsultation,
+.label-status--inahearing {
+  background-color: govuk-colour("green");
+  text-transform: uppercase;
+}
