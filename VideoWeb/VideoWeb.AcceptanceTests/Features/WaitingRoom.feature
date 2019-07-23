@@ -9,7 +9,7 @@ Scenario: Individual waiting room
 	Given the Individual user has progressed to the Waiting Room page
 	Then the user is on the Waiting Room page
 	And the participant status will be updated to Available
-	And the user can see information about their case
+	And the participant can see information about their case
 	And the user can see a list of participants and their representatives
 	And the user can see the hearing is about to begin title
 	And the user can see a black box and an about to begin message
@@ -19,20 +19,20 @@ Scenario: Representative waiting room
 	Given the Representative user has progressed to the Waiting Room page
 	Then the user is on the Waiting Room page
 	And the participant status will be updated to Available
-	And the user can see information about their case 
+	And the participant can see information about their case 
 	And the user can see a list of participants and their representatives
 	And the user can see the hearing is about to begin title
 	And the user can see a black box and an about to begin message
 
-@smoketest
+@smoketest @VIH-4610
 Scenario: Clerk waiting room
 	Given the Clerk user has progressed to the Waiting Room page
 	Then the user is on the Waiting Room page
 	And the participant status will be updated to Joining
-	And the user can see information about their case 
+	And the Clerk can see information about their case 
 	And the user can see other participants status
 	And the participant status will be updated to Available
-	When the user clicks the Return to hearing list link
+	When the user navigates back to the hearing list
 	Then the user is on the Hearings List page
 	And the participant status will be updated to Joining
 

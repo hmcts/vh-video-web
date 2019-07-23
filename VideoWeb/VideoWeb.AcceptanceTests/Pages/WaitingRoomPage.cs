@@ -4,17 +4,14 @@ namespace VideoWeb.AcceptanceTests.Pages
 {
     public class WaitingRoomPage
     {
-        public WaitingRoomPage()
-        {
-        }
-
         public By HearingName = By.XPath("//h1[contains(text(),'hearing')]/..//h2[@class='govuk-heading-m']");
         public By CaseNumber = By.XPath("//h1[contains(text(),'hearing')]/..//h3[@class='govuk-heading-m']");
         public By HearingDate = By.XPath("//p[contains(@aria-label,'date of hearing')]");
         public By JudgeHearingTime = By.XPath("//p[contains(@aria-label,'scheduled time and duration of hearing')]");
         public By ScheduledDuration = By.XPath("//p[@aria-label='scheduled time and duration of hearing']");
+        public By ContactHelpline => CommonLocators.ElementContainingText("helpline");
 
-        public By ParticipantStatus(string displayName) =>
+        public By OtherParticipantsStatus(string displayName) =>
             By.XPath(
                 $"//div[@class='govuk-grid-row']//strong[contains(text(), '{displayName}')]/../../div");
 
@@ -22,10 +19,6 @@ namespace VideoWeb.AcceptanceTests.Pages
             By.XPath("//app-participant-status-list/div//div[contains(@class,'govuk-grid-row')]//div[contains(@class,'govuk-grid-column')]");
 
         public By RowInformation(string id) => By.XPath($"//div[@id='{id}']/p");
-
-        public By ReturnToHearingRoomLink = By.LinkText("Return to hearing list");
-        public By ContactVho => CommonLocators.ElementContainingText("Contact video hearings officer");
-        public By ContactHelpline => CommonLocators.ElementContainingText("helpline");
 
         public By AboutToBeginHeader => CommonLocators.ElementContainingText("Your hearing is about to begin");
         public By AboutToBeginText => CommonLocators.ElementContainingText("Please stay near your screen");

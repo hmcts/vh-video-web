@@ -8,7 +8,7 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.AcceptanceTests.Builders
 {
-    internal class ExecuteEventRequestBuilder
+    internal class ExecuteEventBuilder
     {
         private const string AlertTimeKey = "alert time";
         private readonly CallbackEndpoints _callbackEndpoints = new VideoApiUriFactory().CallbackEndpoints;
@@ -16,20 +16,20 @@ namespace VideoWeb.AcceptanceTests.Builders
         private ScenarioContext _scenarioContext;
         private ConferenceEventRequest _request;
 
-        public ExecuteEventRequestBuilder WithContext(TestContext context)
+        public ExecuteEventBuilder WithContext(TestContext context)
         {
             _context = context;
             return this;
         }
 
-        public ExecuteEventRequestBuilder WithScenarioContext(ScenarioContext scenarioContext)
+        public ExecuteEventBuilder WithScenarioContext(ScenarioContext scenarioContext)
         {
             _scenarioContext = scenarioContext;
             _scenarioContext.Add(AlertTimeKey, DateTime.Now);
             return this;
         }
 
-        public ExecuteEventRequestBuilder WithRequest(ConferenceEventRequest request)
+        public ExecuteEventBuilder WithRequest(ConferenceEventRequest request)
         {
             _request = request;
             return this;

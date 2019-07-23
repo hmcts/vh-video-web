@@ -4,6 +4,7 @@ namespace VideoWeb.AcceptanceTests.Pages
 {
     public class HearingListPage
     {
+        public By HearingListPageTitle => By.XPath("//*[contains(text(), 'Video hearings for') or contains(text(),'Your hearings')]");
         public By NoHearingsWarningMessage => CommonLocators.ElementContainingText("You have no video hearings");
         public By HearingWithCaseNumber(string caseNumber) => CommonLocators.ElementContainingText(caseNumber);
         public By WaitToSignInText(string caseNumber) => By.XPath($"//tr//*[contains(text(),'{caseNumber}')]/../../..//td//p[contains(text(),'Sign in Today')]/../p[contains(text(),':')]");

@@ -6,16 +6,18 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { ErrorService } from 'src/app/services/error.service';
+import { Hearing } from 'src/app/shared/models/hearing';
 
 @Component({
   selector: 'app-judge-waiting-room',
   templateUrl: './judge-waiting-room.component.html',
-  styleUrls: ['./judge-waiting-room.component.css']
+  styleUrls: ['./judge-waiting-room.component.scss']
 })
 export class JudgeWaitingRoomComponent implements OnInit {
 
   loadingData: boolean;
   conference: ConferenceResponse;
+  hearing: Hearing;
 
   constructor(
     private route: ActivatedRoute,
@@ -40,6 +42,7 @@ export class JudgeWaitingRoomComponent implements OnInit {
         this.conference = data;
 
         this.setupSubscribers();
+        this.hearing = new Hearing(data);
       },
         (error) => {
           this.loadingData = false;
@@ -49,9 +52,9 @@ export class JudgeWaitingRoomComponent implements OnInit {
 
   getConferenceStatusText() {
     switch (this.conference.status) {
-      case ConferenceStatus.NotStarted: return 'Start the hearing';
-      case ConferenceStatus.Suspended: return 'Resume the hearing';
-      case ConferenceStatus.Paused: return 'Resume the hearing';
+      case ConferenceStatus.NotStarted: return 'Start this hearing';
+      case ConferenceStatus.Suspended: return 'Hearing suspended';
+      case ConferenceStatus.Paused: return 'Hearing paused';
       case ConferenceStatus.Closed: return 'Hearing is closed';
       default: return 'Hearing is in session';
     }
@@ -97,5 +100,17 @@ export class JudgeWaitingRoomComponent implements OnInit {
 
   handleHearingStatusChange(status: ConferenceStatus) {
     this.conference.status = status;
+  }
+
+  checkEquipment() {
+    this.router.navigate([PageUrls.EquipmentCheck, this.conference.id]);
+  }
+
+  hearingSuspended(): boolean {
+    return this.conference.status === ConferenceStatus.Suspended;
+  }
+
+  hearingPaused(): boolean {
+    return this.conference.status === ConferenceStatus.Paused;
   }
 }
