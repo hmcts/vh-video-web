@@ -31,8 +31,8 @@ export class SelectMediaDevicesComponent implements OnInit {
   async ngOnInit() {
     await this.requestMedia()
       .then(() => {
-        this.updateDeviceList().then(() => {
-          this.selectedMediaDevicesForm = this.initNewDeviceSelectionForm();
+        this.updateDeviceList().then(async () => {
+          this.selectedMediaDevicesForm = await this.initNewDeviceSelectionForm();
           this.subscribeToDeviceSelectionChange();
         });
       });
@@ -45,14 +45,15 @@ export class SelectMediaDevicesComponent implements OnInit {
     this.userMediaService.connectedDevices.subscribe(async () => {
       this.availableCameraDevices = await this.userMediaService.getListOfVideoDevices();
       this.availableMicrophoneDevices = await this.userMediaService.getListOfMicrophoneDevices();
-
-      this.selectedMediaDevicesForm = this.initNewDeviceSelectionForm();
+      this.selectedMediaDevicesForm = await this.initNewDeviceSelectionForm();
     });
 
+    const preferredCamera = await this.userMediaService.getPreferredCamera();
+    const preferredMicrophone = await this.userMediaService.getPreferredMicrophone();
     this.preferredCameraStream = await this.userMediaStreamService.
-      getStreamForCam(this.userMediaService.getPreferredCamera());
+      getStreamForCam(preferredCamera);
     this.preferredMicrophoneStream = await this.userMediaStreamService
-      .getStreamForMic(this.userMediaService.getPreferredMicrophone());
+      .getStreamForMic(preferredMicrophone);
 
   }
 
@@ -60,14 +61,17 @@ export class SelectMediaDevicesComponent implements OnInit {
     await this.userMediaStreamService.requestAccess();
   }
 
-  private initNewDeviceSelectionForm(): FormGroup {
+  private async initNewDeviceSelectionForm(): Promise<FormGroup> {
     let cam = this.availableCameraDevices[0];
-    if (this.userMediaService.getPreferredCamera()) {
-      cam = this.availableCameraDevices.find(x => x.label === this.userMediaService.getPreferredCamera().label);
+    const preferredCamera = await this.userMediaService.getPreferredCamera();
+    if (preferredCamera) {
+      cam = this.availableCameraDevices.find(x => x.label === preferredCamera.label);
     }
+
     let mic = this.availableMicrophoneDevices[0];
-    if (this.userMediaService.getPreferredMicrophone()) {
-      mic = this.availableMicrophoneDevices.find(x => x.label === this.userMediaService.getPreferredMicrophone().label);
+    const preferredMicrophone = await this.userMediaService.getPreferredMicrophone();
+    if (preferredMicrophone) {
+      mic = this.availableMicrophoneDevices.find(x => x.label === preferredMicrophone.label);
     }
     return this.formBuilder.group({
       camera: [cam, Validators.required],
