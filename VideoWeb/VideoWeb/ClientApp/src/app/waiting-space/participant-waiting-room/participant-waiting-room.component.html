@@ -11,6 +11,7 @@
 </div>
 
 <div *ngIf="!loadingData && hearing" class="govuk-grid-row">
+
   <div class="govuk-grid-column-full">
     <h1 class="govuk-heading-xl">Your video hearing {{ getConferenceStatusText() }}</h1>
 
@@ -18,8 +19,8 @@
       <tbody class="govuk-table__body">
         <tr class="govuk-table__row">
           <td class="govuk-table__cell hearing-details-col1-width">
-            <strong>{{ hearing.conference.case_name }}</strong>
-            ({{ hearing.conference.case_type }}) <span>case number</span>:
+            <strong>{{ hearing.conference.case_name }}</strong> ({{ hearing.conference.case_type }}) <span>case
+              number</span>:
             <strong>{{ hearing.conference.case_number }}</strong>
           </td>
           <td class="govuk-table__cell hearing-details-col2-width">
@@ -35,6 +36,23 @@
   </div>
 
   <div class="govuk-grid-column-two-thirds">
+    <!--     <h1 class="govuk-heading-xl">Your hearing {{ getConferenceStatusText() }}</h1>
+  
+      <h2 class="govuk-heading-m">{{hearing.caseName}}</h2>
+  
+      <h3 class="govuk-heading-m">Case number: {{hearing.caseNumber}}</h3>
+  
+      <div class="govuk-!-margin-bottom-9">
+        <span class="govuk-body">
+          <p class="govuk-!-margin-0" aria-label="date of hearing, scheduled start time and scheduled end time">
+            {{ hearing.scheduledStartTime | date: 'EEEE dd MMMM	yyyy' }},
+            <span class="govuk-!-font-weight-bold">
+              {{ hearing.scheduledStartTime | date: 'HH:mm a' }} to
+              {{ hearing.scheduledEndTime | date: 'HH:mm a' }}
+            </span>
+          </p>
+        </span>
+      </div> -->
 
     <div *ngIf="hearing.isClosed()">
       <p class="govuk-body">
@@ -43,10 +61,10 @@
     </div>
 
     <div *ngIf="!showVideo && currentTime && ( hearing.isNotStarted() || hearing.isPaused() || hearing.isSuspended() )"
-      class="govuk-panel" [ngClass]="{'hearing-on-time': hearing.isOnTime() || hearing.isPaused(), 
-      'hearing-near-start': hearing.isStarting(), 'hearing-delayed': hearing.isDelayed() || hearing.isSuspended()}">
-      <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="{'hearing-on-time': hearing.isOnTime() || hearing.isPaused(), 
-        'hearing-near-start': hearing.isStarting(), 'hearing-delayed': hearing.isDelayed() || hearing.isSuspended()}">
+      class="govuk-panel"
+      [ngClass]="{'hearing-on-time': hearing.isOnTime() || hearing.isPaused(), 'hearing-near-start': hearing.isStarting(), 'hearing-delayed': hearing.isDelayed() || hearing.isSuspended()}">
+      <div class="govuk-body govuk-!-margin-bottom-0"
+        [ngClass]="{'hearing-on-time': hearing.isOnTime() || hearing.isPaused(), 'hearing-near-start': hearing.isStarting(), 'hearing-delayed': hearing.isDelayed() || hearing.isSuspended()}">
 
         <div *ngIf="hearing.isOnTime()">
           <h3 class="govuk-heading-m white">Please keep an eye on the time</h3>
@@ -60,8 +78,10 @@
 
         <div *ngIf="hearing.isDelayed()">
           <h3 class="govuk-heading-m">We're really sorry your hearing is delayed</h3>
-          <p>Please stand by and one of the video hearing team will call you in the next 5 minutes on the number you
-            have given us.</p>
+          <p>
+            Please stand by and one of the video hearing team will call you in the next 5 minutes on the number you
+            have given us.
+          </p>
         </div>
 
         <div *ngIf="hearing.isPaused()" class="hearing-title-mt--20">
@@ -70,9 +90,10 @@
 
         <div *ngIf="hearing.isSuspended()">
           <h3 class="govuk-heading-m">We're having technical issues</h3>
-          <p>Please wait while we try to re-start the hearing. All participants are affected. We'll call to update you
-            -
-            there's no need to call us.</p>
+          <p>
+            Please wait while we try to re-start the hearing. All participants are affected. We'll call to update you
+            - there's no need to call us.
+          </p>
         </div>
 
       </div>
@@ -83,11 +104,12 @@
           </div>
         </div>
         <div class="govuk-grid-column-one-half">
-          <div class="govuk-body" [ngClass]="{'hearing-on-time': hearing.isOnTime(), 'hearing-near-start': hearing.isStarting(), 
-                'hearing-delayed': hearing.isDelayed(), 'hearing-on-time': hearing.isPaused()}">
+          <div class="govuk-body"
+            [ngClass]="{'hearing-on-time': hearing.isOnTime() || hearing.isPaused(), 'hearing-near-start': hearing.isStarting(), 'hearing-delayed': hearing.isDelayed() || hearing.isSuspended()}">
             <p class="govuk-!-margin-bottom-4">The time now is:</p>
             <p class="govuk-panel__body govuk-!-margin-top-4 govuk-!-font-size-80">
-              <strong>{{ currentTime | date:'HH:mm' }}</strong></p>
+              <strong>{{ currentTime | date:'HH:mm' }}</strong>
+            </p>
           </div>
         </div>
       </div>
@@ -97,11 +119,9 @@
       <p class="govuk-body"><strong>Video hearings team: 0300 303 0655</strong></p>
     </div>
   </div>
-</div>
 
-<div class="govuk-grid-column-one-third">
-  <app-individual-participant-status-list aria-label="list of participants in hearing"
-    [conference]="hearing.getConference()">
-  </app-individual-participant-status-list>
-</div>
+  <div class="govuk-grid-column-one-third">
+    <app-participant-status-list aria-label="list of participants in hearing" [conference]="hearing.getConference()">
+    </app-participant-status-list>
+  </div>
 </div>
