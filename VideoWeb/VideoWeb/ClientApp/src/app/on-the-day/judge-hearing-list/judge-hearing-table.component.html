@@ -58,7 +58,7 @@
 
         <!-- Respondents -->
         <span *ngIf="getRepresentative(hearing.respondents)">
-            <p class="govuk-!-margin-0 govuk-!-padding-0">
+            <p class="govuk-!-margin-0 govuk-!-margin-top-3 govuk-!-padding-0">
               <span class="govuk-!-font-weight-bold">{{getRepresentative(hearing.respondents).displayName}}</span>
               Solicitor
             </p>
@@ -66,8 +66,8 @@
                 {{getRepresentative(hearing.respondents).representee}}</span>
             </p>
           </span>
-          <span *ngIf="!getRepresentative(hearing.applicants)">
-            <p class="govuk-!-margin-0 govuk-!-padding-0 govuk-!-font-weight-bold">
+          <span *ngIf="!getRepresentative(hearing.respondents)">
+            <p class="govuk-!-margin-0 govuk-!-margin-top-3 govuk-!-padding-0 govuk-!-font-weight-bold">
               {{getIndividual(hearing.respondents).displayName}} ({{getIndividual(hearing.respondents).caseGroup}})
             </p>
           </span>
