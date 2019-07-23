@@ -49,7 +49,6 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     this.connected = false;
     this.initHearingAlert();
     this.getConference();
-
   }
 
   initHearingAlert() {
@@ -87,7 +86,6 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         console.error(`caught error ${reason}`);
       });
     this.hearingStartingAnnounced = true;
-
   }
 
   getConference(): void {
