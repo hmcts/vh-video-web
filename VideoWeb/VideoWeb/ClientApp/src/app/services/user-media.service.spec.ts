@@ -68,7 +68,7 @@ describe('UserMediaService', () => {
         const sessionStorage = new SessionStorage<UserMediaDevice>(service.PREFERRED_CAMERA_KEY);
         service.availableDeviceList = testData.getListOfDevices();
         sessionStorage.clear();
-        const result = service.getCachedDeviceIfStillConnected(sessionStorage);
+        const result = await service.getCachedDeviceIfStillConnected(sessionStorage);
 
         expect(result).toBeNull();
     }));
@@ -77,7 +77,7 @@ describe('UserMediaService', () => {
         const sessionStorage = new SessionStorage<UserMediaDevice>(service.PREFERRED_CAMERA_KEY);
         service.availableDeviceList = testData.getListOfDevices();
         service.updatePreferredCamera(new UserMediaDevice('test', 'test', 'test', 'test'));
-        const result = service.getCachedDeviceIfStillConnected(sessionStorage);
+        const result = await service.getCachedDeviceIfStillConnected(sessionStorage);
 
         expect(result).toBeNull();
     }));

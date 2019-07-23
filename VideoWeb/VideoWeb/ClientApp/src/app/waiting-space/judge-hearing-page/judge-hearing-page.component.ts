@@ -53,12 +53,12 @@ export class JudgeHearingPageComponent implements OnInit {
         });
   }
 
-  sanitiseIframeUrl(): void {
+  async sanitiseIframeUrl(): Promise<void> {
     const judge = this.conference.participants.find(x => x.role === UserRole.Judge);
     const encodedDisplayName = encodeURIComponent(judge.tiled_display_name);
 
-    const preferredCam = this.userMediaService.getPreferredCamera();
-    const preferredMic = this.userMediaService.getPreferredMicrophone();
+    const preferredCam = await this.userMediaService.getPreferredCamera();
+    const preferredMic = await this.userMediaService.getPreferredMicrophone();
 
     let cam = '';
     let mic = (preferredMic) ? preferredMic.deviceId : '';
