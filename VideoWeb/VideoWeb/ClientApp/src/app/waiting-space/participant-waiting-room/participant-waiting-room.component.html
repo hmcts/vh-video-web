@@ -36,24 +36,6 @@
   </div>
 
   <div class="govuk-grid-column-two-thirds">
-    <!--     <h1 class="govuk-heading-xl">Your hearing {{ getConferenceStatusText() }}</h1>
-  
-      <h2 class="govuk-heading-m">{{hearing.caseName}}</h2>
-  
-      <h3 class="govuk-heading-m">Case number: {{hearing.caseNumber}}</h3>
-  
-      <div class="govuk-!-margin-bottom-9">
-        <span class="govuk-body">
-          <p class="govuk-!-margin-0" aria-label="date of hearing, scheduled start time and scheduled end time">
-            {{ hearing.scheduledStartTime | date: 'EEEE dd MMMM	yyyy' }},
-            <span class="govuk-!-font-weight-bold">
-              {{ hearing.scheduledStartTime | date: 'HH:mm a' }} to
-              {{ hearing.scheduledEndTime | date: 'HH:mm a' }}
-            </span>
-          </p>
-        </span>
-      </div> -->
-
     <div *ngIf="hearing.isClosed()">
       <p class="govuk-body">
         This hearing is finished. You may now sign out.
@@ -121,7 +103,8 @@
   </div>
 
   <div class="govuk-grid-column-one-third">
-    <app-participant-status-list aria-label="list of participants in hearing" [conference]="hearing.getConference()">
-    </app-participant-status-list>
+    <app-individual-participant-status-list aria-label="list of participants in hearing"
+      [conference]="hearing.getConference()">
+    </app-individual-participant-status-list>
   </div>
 </div>

@@ -17,7 +17,6 @@ import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { AnalogueClockStubComponent } from 'src/app/testing/stubs/analogue-clock-stub';
 import {
   IndividualParticipantStatusListStubComponent
-
 } from 'src/app/testing/stubs/participant-status-list-stub';
 import { Hearing } from '../../shared/models/hearing';
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room.component';
