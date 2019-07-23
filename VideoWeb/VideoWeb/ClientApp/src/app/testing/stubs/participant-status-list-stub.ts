@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { ConferenceResponse } from 'src/app/services/clients/api-client';
 
-@Component({ selector: 'app-participant-status-list', template: '' })
-export class ParticipantStatusListStubComponent {
+@Component({ selector: 'app-judge-participant-status-list', template: '' })
+export class JudgeParticipantStatusListStubComponent {
     @Input() conference: ConferenceResponse[];
 }
 

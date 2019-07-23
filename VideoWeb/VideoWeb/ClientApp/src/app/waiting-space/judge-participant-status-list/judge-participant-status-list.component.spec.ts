@@ -9,19 +9,19 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
-import { ParticipantStatusListComponent } from './participant-status-list.component';
+import { JudgeParticipantStatusListComponent } from './judge-participant-status-list.component';
 
 
 describe('ParticipantStatusListComponent', () => {
-  let component: ParticipantStatusListComponent;
-  let fixture: ComponentFixture<ParticipantStatusListComponent>;
+  let component: JudgeParticipantStatusListComponent;
+  let fixture: ComponentFixture<JudgeParticipantStatusListComponent>;
   let adalService: MockAdalService;
   let eventService: MockEventsService;
 
   configureTestSuite(() => {
     TestBed.configureTestingModule({
       imports: [SharedModule],
-      declarations: [ParticipantStatusListComponent],
+      declarations: [JudgeParticipantStatusListComponent],
       providers: [
         { provide: AdalService, useClass: MockAdalService },
         { provide: ConfigService, useClass: MockConfigService },
@@ -33,7 +33,7 @@ describe('ParticipantStatusListComponent', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ParticipantStatusListComponent);
+    fixture = TestBed.createComponent(JudgeParticipantStatusListComponent);
     component = fixture.componentInstance;
     component.conference = new ConferenceTestData().getConferenceDetail();
     fixture.detectChanges();
