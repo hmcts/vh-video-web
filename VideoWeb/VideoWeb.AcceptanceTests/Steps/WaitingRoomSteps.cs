@@ -35,13 +35,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browser.NgDriver.ClickAndWaitForPageToLoad(_clerkPage.ReturnToHearingRoomLink);
         }
 
-        [Then(@"the first participant status is displayed as (.*)")]
-        public void ThenTheFirstParticipantStatusIsDisplayedAsNotSignedIn(string status)
+        [Then(@"the participant status for (.*) is displayed as (.*)")]
+        public void ThenTheFirstParticipantStatusIsDisplayedAsNotSignedIn(string name, string status)
         {
-            var participant = _context.Conference.Participants.First(x => x.User_role == UserRole.Representative);
+            var participant = _context.Conference.Participants.First(x => x.Name.Contains(name));
             if (participant.Id != null)
             {
-                _browser.NgDriver.WaitUntilElementVisible(_clerkPage.ParticipantStatus((Guid)participant.Id)).Text.Should().Be(status.ToUpper());
+                _browser.NgDriver.WaitUntilElementVisible(_clerkPage.ParticipantStatus((Guid)participant.Id)).Text.ToUpper().Trim().Should().Be(status.ToUpper());
             }
             else
             {
@@ -148,7 +148,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 if (participant.Hearing_role_name.Equals("Individual") ||
                     participant.Hearing_role_name.Equals("Representative"))
                 {
-                    _browser.NgDriver.WaitUntilElementVisible(_page.ParticipantStatus(participant.Display_name)).Text
+                    _browser.NgDriver.WaitUntilElementVisible(_page.OtherParticipantsStatus(participant.Display_name)).Text
                         .Should().Be("Unavailable");
                 }
             }

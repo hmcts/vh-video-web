@@ -11,7 +11,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By ScheduledDuration = By.XPath("//p[@aria-label='scheduled time and duration of hearing']");
         public By ContactHelpline => CommonLocators.ElementContainingText("helpline");
 
-        public By ParticipantStatus(string displayName) =>
+        public By OtherParticipantsStatus(string displayName) =>
             By.XPath(
                 $"//div[@class='govuk-grid-row']//strong[contains(text(), '{displayName}')]/../../div");
 

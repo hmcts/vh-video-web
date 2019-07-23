@@ -8,7 +8,7 @@ Feature: HearingRoom
 Scenario: Clerk starts hearing
 	Given the Clerk user has progressed to the Waiting Room page
 	Then the hearing status changed to NotStarted
-	And the first participant status is displayed as Not signed in
+	And the participant status for Individual01 is displayed as Not signed in
 	When the user clicks the button with innertext Start video call
 	Then the user is on the Countdown page
 	When the countdown finishes
@@ -22,7 +22,7 @@ Scenario: Clerk pauses hearing
 	Given the Individual user has progressed to the Waiting Room page
 	And there is a new browser open for Clerk
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
-	Then the first participant status is displayed as Connected
+	Then the participant status for Individual01 is displayed as Connected
 	When the user clicks the button with innertext Start video call
 	Then the user is on the Countdown page
 	When the countdown finishes
