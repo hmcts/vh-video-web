@@ -87,7 +87,7 @@ describe('UserMediaService', () => {
         service.availableDeviceList = testData.getListOfDevices();
         const cachedDevice = testData.getListOfDevices()[0];
         service.updatePreferredCamera(cachedDevice);
-        const result = service.getCachedDeviceIfStillConnected(sessionStorage);
+        const result = await service.getCachedDeviceIfStillConnected(sessionStorage);
 
         expect(result.deviceId).toBe(cachedDevice.deviceId);
     }));
