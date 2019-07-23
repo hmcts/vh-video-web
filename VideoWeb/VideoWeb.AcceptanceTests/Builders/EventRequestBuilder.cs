@@ -4,11 +4,11 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.AcceptanceTests.Builders
 {
-    internal class CreateEventRequestBuilder
+    internal class EventRequestBuilder
     {
         private readonly ISingleObjectBuilder<ConferenceEventRequest> _request;
 
-        public CreateEventRequestBuilder()
+        public EventRequestBuilder()
         {
             _request = Builder<ConferenceEventRequest>.CreateNew()
                 .With(x => x.Event_id = Guid.NewGuid().ToString())
@@ -17,44 +17,44 @@ namespace VideoWeb.AcceptanceTests.Builders
                 .With(x => x.Reason = "Automated");
         }
 
-        public CreateEventRequestBuilder WithRoomType(RoomType roomType)
+        public EventRequestBuilder WithRoomType(RoomType roomType)
         {
             _request.With(x => x.Transfer_from = RoomType.WaitingRoom);
             _request.With(x => x.Transfer_to = RoomType.WaitingRoom);
             return this;
         }
 
-        public CreateEventRequestBuilder FromRoomType(RoomType? roomType)
+        public EventRequestBuilder FromRoomType(RoomType? roomType)
         {
             _request.With(x => x.Transfer_from = roomType);
             return this;
         }
 
-        public CreateEventRequestBuilder ToRoomType(RoomType? roomType)
+        public EventRequestBuilder ToRoomType(RoomType? roomType)
         {
             _request.With(x => x.Transfer_to = roomType);
             return this;
         }
 
-        public CreateEventRequestBuilder WithConferenceId(Guid? conferenceId)
+        public EventRequestBuilder WithConferenceId(Guid? conferenceId)
         {
             _request.With(x => x.Conference_id = conferenceId.ToString());
             return this;
         }
 
-        public CreateEventRequestBuilder WithParticipantId(string participantId)
+        public EventRequestBuilder WithParticipantId(string participantId)
         {
             _request.With(x => x.Participant_id = participantId);
             return this;
         }
 
-        public CreateEventRequestBuilder WithEventType(EventType eventType)
+        public EventRequestBuilder WithEventType(EventType eventType)
         {
             _request.With(x => x.Event_type = eventType);
             return this;
         }
 
-        public CreateEventRequestBuilder WithReason(string reason)
+        public EventRequestBuilder WithReason(string reason)
         {
             _request.With(x => x.Reason = reason);
             return this;
