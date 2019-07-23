@@ -215,6 +215,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
   updateShowVideo(): void {
     if (!this.connected) {
+      this.logger.debug('Not showing video because not connecting to node');
       this.showVideo = false;
       return;
     }
@@ -230,5 +231,8 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       this.showVideo = true;
       return;
     }
+
+    this.logger.debug('Not showing video because hearing is not in session and user is not in consultation');
+    this.showVideo = false;
   }
 }
