@@ -6,6 +6,14 @@ import { LogAdapter } from '../log-adapter';
 import { Router, ResolveEnd, ActivatedRouteSnapshot } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
+enum SeverityLevel {
+  Verbose = 0,
+  Information = 1,
+  Warning = 2,
+  Error = 3,
+  Critical = 4
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -39,16 +47,16 @@ export class AppInsightsLoggerService implements LogAdapter {
   }
 
   debug(message: string): void {
-    AppInsights.trackTrace(message, null, AI.SeverityLevel.Verbose);
+    AppInsights.trackTrace(message, null, SeverityLevel.Verbose);
   }
 
   info(message: string): void {
-    AppInsights.trackTrace(message, null, AI.SeverityLevel.Information);
+    AppInsights.trackTrace(message, null, SeverityLevel.Information);
     console.info(`${this.router.url}`);
   }
 
   warn(message: string): void {
-    AppInsights.trackTrace(message, null, AI.SeverityLevel.Warning);
+    AppInsights.trackTrace(message, null, SeverityLevel.Warning);
   }
 
   trackEvent(eventName: string, properties: any) {
