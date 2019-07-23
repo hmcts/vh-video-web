@@ -128,27 +128,31 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
   it('should not show video stream when user is not connected to call', () => {
     component.connected = false;
-    expect(component.showVideo()).toBeFalsy();
+    component.updateShowVideo();
+    expect(component.showVideo).toBeFalsy();
   });
 
   it('should show video stream when conference is in session', () => {
     component.connected = true;
     component.hearing.getConference().status = ConferenceStatus.InSession;
-    expect(component.showVideo()).toBeTruthy();
+    component.updateShowVideo();
+    expect(component.showVideo).toBeTruthy();
   });
 
   it('should show video stream when participant is in consultation', () => {
     component.connected = true;
     component.hearing.getConference().status = ConferenceStatus.Paused;
     component.participant.status = ParticipantStatus.InConsultation;
-    expect(component.showVideo()).toBeTruthy();
+    component.updateShowVideo();
+    expect(component.showVideo).toBeTruthy();
   });
 
   it('should not show video stream when hearing is not in session and participant is not in consultation', () => {
     component.connected = true;
     component.hearing.getConference().status = ConferenceStatus.Paused;
     component.participant.status = ParticipantStatus.Available;
-    expect(component.showVideo()).toBeFalsy();
+    component.updateShowVideo();
+    expect(component.showVideo).toBeFalsy();
   });
 
   it('should not announce hearing is starting when already announced', () => {

@@ -2,7 +2,7 @@
   <p class="govuk-body">Loading please wait...</p>
 </div>
 
-<div *ngIf="showVideo()" class="govuk-grid-row">
+<div *ngIf="showVideo" class="govuk-grid-row">
   <div class="govuk-grid-column-one-half">
     <video id="incomingFeed" [srcObject]="this.stream" autoplay width="1000px" height="auto">
       Your browser does not support Video
@@ -18,7 +18,7 @@
       <tbody class="govuk-table__body">
         <tr class="govuk-table__row">
           <td class="govuk-table__cell hearing-details-col1-width">
-            <strong>{{ hearing.conference.case_name }}</strong> 
+            <strong>{{ hearing.conference.case_name }}</strong>
             ({{ hearing.conference.case_type }}) <span>case number</span>:
             <strong>{{ hearing.conference.case_number }}</strong>
           </td>
@@ -42,11 +42,11 @@
       </p>
     </div>
 
-    <div *ngIf="!showVideo() && currentTime && ( hearing.isNotStarted() || hearing.isPaused() )" class="govuk-panel"
-      [ngClass]="{'hearing-on-time': hearing.isOnTime(), 'hearing-near-start': hearing.isStarting(), 
-          'hearing-delayed': hearing.isDelayed(), 'hearing-on-time': hearing.isPaused()}">
-      <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="{'hearing-on-time': hearing.isOnTime(), 'hearing-near-start': hearing.isStarting(), 
-          'hearing-delayed': hearing.isDelayed(), 'hearing-on-time': hearing.isPaused()}">
+    <div *ngIf="!showVideo && currentTime && ( hearing.isNotStarted() || hearing.isPaused() || hearing.isSuspended() )"
+      class="govuk-panel" [ngClass]="{'hearing-on-time': hearing.isOnTime() || hearing.isPaused(), 
+      'hearing-near-start': hearing.isStarting(), 'hearing-delayed': hearing.isDelayed() || hearing.isSuspended()}">
+      <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="{'hearing-on-time': hearing.isOnTime() || hearing.isPaused(), 
+        'hearing-near-start': hearing.isStarting(), 'hearing-delayed': hearing.isDelayed() || hearing.isSuspended()}">
 
         <div *ngIf="hearing.isOnTime()">
           <h3 class="govuk-heading-m white">Please keep an eye on the time</h3>
@@ -70,7 +70,8 @@
 
         <div *ngIf="hearing.isSuspended()">
           <h3 class="govuk-heading-m">We're having technical issues</h3>
-          <p>Please wait while we try to re-start the hearing. All participants are affected. We'll call to update you -
+          <p>Please wait while we try to re-start the hearing. All participants are affected. We'll call to update you
+            -
             there's no need to call us.</p>
         </div>
 
@@ -96,9 +97,11 @@
       <p class="govuk-body"><strong>Video hearings team: 0300 303 0655</strong></p>
     </div>
   </div>
+</div>
 
-  <div class="govuk-grid-column-one-third">
-    <app-individual-participant-status-list aria-label="list of participants in hearing" [conference]="hearing.getConference()">
-    </app-individual-participant-status-list>
-  </div>
+<div class="govuk-grid-column-one-third">
+  <app-individual-participant-status-list aria-label="list of participants in hearing"
+    [conference]="hearing.getConference()">
+  </app-individual-participant-status-list>
+</div>
 </div>
