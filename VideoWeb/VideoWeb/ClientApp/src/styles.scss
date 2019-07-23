@@ -20,20 +20,10 @@
   box-shadow: 0 2px 0 govuk-colour("grey-1");
 }
 
-.red-btn {
-  background-color: govuk-colour("red");
-  color: govuk-colour("white");
-  box-shadow: 0 2px 0 govuk-colour("bright-red");
+.hearing-details-col1-width {
+  width: 69%;
 }
 
-.red-btn:hover {
-  background-color: govuk-colour("red");
-  color: govuk-colour("white");
-  box-shadow: 0 2px 0 govuk-colour("bright-red");
-}
-
-.red-btn:focus {
-  background-color: govuk-colour("red");
-  color: govuk-colour("white");
-  box-shadow: 0 2px 0 govuk-colour("bright-red");
+.hearing-details-col2-width {
+  width: 31%;
 }

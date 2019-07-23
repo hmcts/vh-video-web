@@ -13,6 +13,7 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 import { NotificationService } from 'src/app/services/notification.service';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 @Component({
   selector: 'app-vho-hearings',
@@ -46,7 +47,8 @@ export class VhoHearingsComponent implements OnInit {
     private notificationService: NotificationService,
     private errorService: ErrorService,
     private ngZone: NgZone,
-    private eventService: EventsService
+    private eventService: EventsService,
+    private logger: Logger
   ) {
     this.loadingData = true;
     this.adminFrameWidth = 0;
@@ -54,21 +56,26 @@ export class VhoHearingsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.logger.info('Loading VH Officer Dashboard');
     this.retrieveHearingsForVhOfficer();
     this.interval = setInterval(() => {
       this.retrieveHearingsForVhOfficer();
     }, 30000);
+    this.setupSubscribers();
   }
 
   private setupSubscribers() {
+    this.logger.debug('Setting up VH Officer event subscribers');
     this.eventService.start();
 
+    this.logger.debug('Subscribing to conference status changes...');
     this.eventService.getHearingStatusMessage().subscribe(message => {
       this.ngZone.run(() => {
         this.handleConferenceStatusChange(message);
       });
     });
 
+    this.logger.debug('Subscribing to participant status changes...');
     this.eventService.getParticipantStatusMessage().subscribe(message => {
       this.ngZone.run(() => {
         this.handleParticipantStatusChange(message);
@@ -81,16 +88,20 @@ export class VhoHearingsComponent implements OnInit {
       this.loadingData = false;
       this.conferences = data;
       if (data && data.length > 0) {
+        this.logger.debug('VH Officer has conferences');
         this.enableFullScreen(true);
       } else {
+        this.logger.debug('VH Officer has no conferences');
         this.enableFullScreen(false);
       }
 
       if (this.selectedHearing) {
+        this.logger.debug(`Retrieving tasks for conference ${this.selectedHearing.id}`);
         this.getTasksForConference(this.selectedHearing.getConference().id);
       }
     },
       (error) => {
+        this.logger.error('There was an error setting up VH Officer dashboard', error);
         this.loadingData = false;
         this.enableFullScreen(false);
         this.errorService.handleApiError(error);
@@ -120,6 +131,7 @@ export class VhoHearingsComponent implements OnInit {
   }
 
   onConferenceSelected(conference: ConferenceForUserResponse) {
+    this.logger.info(`Conference ${conference.id} selected`);
     if (!this.isCurrentConference(conference)) {
       this.clearSelectedConference();
       this.videoWebService.getConferenceById(conference.id)
@@ -128,9 +140,9 @@ export class VhoHearingsComponent implements OnInit {
           this.participants = data.participants;
           this.sanitiseAndLoadIframe();
           this.getTasksForConference(conference.id);
-          this.setupSubscribers();
         },
           (error) => {
+            this.logger.error(`There was an error when selecting conference ${conference.id}`, error);
             this.errorService.handleApiError(error);
           });
     }
@@ -160,6 +172,7 @@ export class VhoHearingsComponent implements OnInit {
   }
 
   onTaskCompleted(taskCompleted: TaskCompleted) {
+    this.logger.info(`task completed for conference ${taskCompleted.conferenceId}`);
     const conference = this.conferences.find(x => x.id === taskCompleted.conferenceId);
     conference.no_of_pending_tasks = taskCompleted.pendingTasks;
   }
@@ -173,6 +186,9 @@ export class VhoHearingsComponent implements OnInit {
   }
 
   handleParticipantStatusChange(message: ParticipantStatusMessage): any {
+    if (!this.participants) {
+      return;
+    }
     const participantToUpdate = this.participants.find(x => x.username === message.email);
     if (participantToUpdate) {
       participantToUpdate.status = message.status;

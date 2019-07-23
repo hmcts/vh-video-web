@@ -8,7 +8,10 @@ import { DashboardStubComponent } from './stubs/dashboard-stub';
 import { FooterStubComponent } from './stubs/footer-stub';
 import { HeaderStubComponent } from './stubs/header-stub';
 import { HearingListTableStubComponent } from './stubs/hearing-list-table-stub';
-import { ParticipantStatusListStubComponent } from './stubs/participant-status-list-stub';
+import {
+  JudgeParticipantStatusListStubComponent,
+  IndividualParticipantStatusListStubComponent
+} from './stubs/participant-status-list-stub';
 import { JudgeHearingTableStubComponent } from './stubs/judge-hearing-list-table-stub';
 import { SnotifyStubComponent } from './stubs/snotify-stub';
 import { AnalogueClockStubComponent } from './stubs/analogue-clock-stub';
@@ -32,7 +35,7 @@ import { SelectMediaDevicesStubComponent } from './stubs/select-media-devices-st
     FooterStubComponent,
     HeaderStubComponent,
     HearingListTableStubComponent,
-    ParticipantStatusListStubComponent,
+    JudgeParticipantStatusListStubComponent,
     JudgeHearingTableStubComponent,
     SnotifyStubComponent,
     ContactUsFoldingStubComponent,
@@ -42,7 +45,8 @@ import { SelectMediaDevicesStubComponent } from './stubs/select-media-devices-st
     MicVisualiserStubComponent,
     VhoParticipantStatusStubComponent,
     SelfTestStubComponent,
-    SelectMediaDevicesStubComponent
+    SelectMediaDevicesStubComponent,
+    IndividualParticipantStatusListStubComponent
   ]
 })
 export class TestingModule { }

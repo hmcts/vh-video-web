@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Net;
 using System.Runtime.Serialization;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using Testing.Common.Assertions;
-using Testing.Common.Builders;
-using Testing.Common.Configuration;
 using Testing.Common.Helpers;
+using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Configuration;
 using VideoWeb.AcceptanceTests.Contexts;
+using VideoWeb.Common.Helpers;
 using VideoWeb.Services.Bookings;
-using ParticipantRequest = VideoWeb.Services.Bookings.ParticipantRequest;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -21,8 +19,6 @@ namespace VideoWeb.AcceptanceTests.Steps
     {
         private readonly TestContext _context;
         private readonly HearingsEndpoints _bookingEndpoints = new BookingsApiUriFactory().HearingsEndpoints;
-        private const int NumberOfIndividuals = 2;
-        private const int NumberOfRepresentatives = 2;
         private const int HearingDuration = 60;
 
         public DataSetupSteps(TestContext context)
@@ -58,22 +54,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"I have a hearing")]
         public void GivenIHaveAHearing(int minutes = 0)
         {
-            var hearingRequest = new CreateHearingRequest();
-            _context.RequestBody = hearingRequest.BuildRequest();
+            var hearingRequest = new HearingRequestBuilder()
+                .WithScheduledTime(DateTime.Now.ToUniversalTime().AddMinutes(minutes))
+                .WithScheduledDuration(HearingDuration)
+                .WithContext(_context);
 
-            var participants = new List<ParticipantRequest>();
-
-            var clerk = _context.GetClerkUser();
-            var individualUsers = _context.GetIndividualUsers();
-            var representativeUsers = _context.GetRepresentativeUsers();
-
-            AddIndividualParticipants(individualUsers, participants);
-            AddRepresentativeParticipants(representativeUsers, participants);
-            AddClerkParticipant(clerk, participants);
-
-            _context.RequestBody.Participants = participants;
-            _context.RequestBody.Scheduled_date_time = DateTime.Now.ToUniversalTime().AddMinutes(minutes);
-            _context.RequestBody.Scheduled_duration = HearingDuration;
+            _context.RequestBody = hearingRequest.Build();
             _context.Request = _context.Post(_bookingEndpoints.BookNewHearing(), _context.RequestBody);
 
             WhenISendTheRequestToTheBookingsApiEndpoint();
@@ -138,96 +124,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             else
             {
                 throw new InvalidDataContractException("Hearing Id must be set");
-            }
-        }
-
-        private static void AddJudgeParticipant(UserAccount judge, ICollection<ParticipantRequest> participants)
-        {
-            participants.Add(new ParticipantRequest()
-            {
-                Case_role_name = "Judge",
-                Contact_email = judge.AlternativeEmail,
-                Display_name = judge.Displayname,
-                First_name = judge.Firstname,
-                Hearing_role_name = "Judge",
-                Last_name = judge.Lastname,
-                Middle_names = "",
-                Representee = "",
-                Organisation_name = "MoJ",
-                Solicitors_reference = "",
-                Title = "Mrs",
-                Username = judge.Username
-            });
-        }
-
-        private static void AddClerkParticipant(UserAccount clerk, ICollection<ParticipantRequest> participants)
-        {
-            participants.Add(new ParticipantRequest()
-            {
-                Case_role_name = "Judge",
-                Contact_email = clerk.AlternativeEmail,
-                Display_name = clerk.Displayname,
-                First_name = clerk.Firstname,
-                Hearing_role_name = "Judge",
-                Last_name = clerk.Lastname,
-                Middle_names = "",
-                Representee = "",
-                Organisation_name = "MoJ",
-                Solicitors_reference = "",
-                Title = "Mrs",
-                Username = clerk.Username
-            });
-        }
-
-        private static void AddRepresentativeParticipants(IReadOnlyList<UserAccount> representativeUsers, ICollection<ParticipantRequest> participants)
-        {
-            for (var j = 0; j < NumberOfRepresentatives; j++)
-            {
-                var participant = new ParticipantRequest
-                {
-                    Case_role_name = representativeUsers[j].CaseRoleName,
-                    Contact_email = representativeUsers[j].AlternativeEmail,
-                    Display_name = representativeUsers[j].Displayname,
-                    First_name = representativeUsers[j].Firstname,
-                    Hearing_role_name = representativeUsers[j].HearingRoleName,
-                    Last_name = representativeUsers[j].Lastname,
-                    Middle_names = "",
-                    Representee = representativeUsers[j].Representee,
-                    Organisation_name = "MoJ",
-                    Solicitors_reference = "",
-                    Title = "Mrs",
-                    Username = representativeUsers[j].Username
-                };
-                participants.Add(participant);
-            }
-        }
-
-        private static void AddIndividualParticipants(IReadOnlyList<UserAccount> individualUsers, ICollection<ParticipantRequest> participants)
-        {
-            for (var i = 0; i < NumberOfIndividuals; i++)
-            {
-                var participant = new ParticipantRequest
-                {
-                    Case_role_name = individualUsers[i].CaseRoleName,
-                    Contact_email = individualUsers[i].AlternativeEmail,
-                    Display_name = individualUsers[i].Displayname,
-                    First_name = individualUsers[i].Firstname,
-                    Hearing_role_name = individualUsers[i].HearingRoleName,
-                    Last_name = individualUsers[i].Lastname,
-                    Middle_names = "",
-                    Representee = "",
-                    Organisation_name = "MoJ",
-                    Solicitors_reference = individualUsers[i].SolicitorsReference,
-                    Telephone_number = "01234567890",
-                    Title = "Mrs",
-                    Username = individualUsers[i].Username,
-                    House_number = "102",
-                    Street = "Petty France",
-                    Postcode = "SW1H 9AJ",
-                    City = "London",
-                    County = "London"
-                };
-                participants.Add(participant);
             }
         }
     }

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using FluentAssertions;
 using OpenQA.Selenium;
@@ -11,6 +9,7 @@ using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.Common.Helpers;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.AcceptanceTests.Steps

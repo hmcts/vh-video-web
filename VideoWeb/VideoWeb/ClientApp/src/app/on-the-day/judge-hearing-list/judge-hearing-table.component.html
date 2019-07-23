@@ -1,23 +1,26 @@
-<table class="govuk-table">
-  <thead class="govuk-table__head">
-    <tr class="govuk-table__row">
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+
+    <table class="govuk-table">
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
       <th class="govuk-table__header" scope="col">Time</th>
       <th class="govuk-table__header" scope="col">Judge</th>
       <th class="govuk-table__header" scope="col">Hearing</th>
-      <th class="govuk-table__header" scope="col">Participants</th>
-      <th class="govuk-table__header" scope="col">Status</th>
-    </tr>
-  </thead>
-  <tbody class="govuk-table__body">
+          <th class="govuk-table__header" scope="col">Participants</th>
+          <th class="govuk-table__header" scope="col">Status</th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
     <tr *ngFor="let hearing of hearings" id="judges-list" class="govuk-table__row">
       <!-- Time -->
-      <td class="govuk-table__cell">
+          <td class="govuk-table__cell">
         <p class="govuk-!-margin-0 govuk-!-padding-0">{{hearing.scheduledStartTime | date:'HH:mm' }} -
           {{hearing.scheduledEndTime | date:'HH:mm' }}</p>
-      </td>
+          </td>
 
       <!-- Judge-->
-      <td class="govuk-table__cell">
+          <td class="govuk-table__cell">
         <p class="govuk-!-margin-0 govuk-!-padding-0">{{hearing.judge.displayName}}</p>
       </td>
 
@@ -25,48 +28,71 @@
       <td class="govuk-table__cell">
         <p class="govuk-!-margin-0 govuk-!-padding-0 govuk-!-font-weight-bold">
           {{hearing.caseName}}
-        </p>
-        <p class="govuk-!-margin-0">
+            </p>
+            <p class="govuk-!-margin-0">
           {{ hearing.caseType }}
         </p>
         <p class="govuk-!-margin-0 govuk-!-padding-0">
           Case number: <span class="govuk-!-font-weight-bold">{{hearing.caseNumber}}</span>
-        </p>
-      </td>
+            </p>
+          </td>
 
       <!-- Participant -->
-      <td class="govuk-table__cell">
-        <p class="govuk-!-margin-0 govuk-!-padding-0">
-          <span class="govuk-!-font-weight-bold">{{hearing.applicantRepresentative.displayName}}</span> Solicitor
-        </p>
-        <p class="govuk-!-margin-0 govuk-!-padding-0">for <span
-            class="govuk-!-font-weight-bold">{{hearing.applicantRepresentative.representee}}</span>
-        </p>
+          <td class="govuk-table__cell">
+        <!-- Applicants -->
 
-        <p class="govuk-!-margin-bottom-0 govuk-!-padding-bottom-0">
-          <span class="govuk-!-font-weight-bold">{{hearing.defendantRepresentative.displayName}}</span> Solicitor
-        </p>
-        <p class="govuk-!-margin-0 govuk-!-padding-0">for <span
-            class="govuk-!-font-weight-bold">{{hearing.defendantRepresentative.representee}}</span>
-        </p>
-      </td>
+        <span *ngIf="getRepresentative(hearing.applicants)">
+          <p class="govuk-!-margin-0 govuk-!-padding-0">
+            <span class="govuk-!-font-weight-bold">{{getRepresentative(hearing.applicants).displayName}}</span>
+            Solicitor
+          </p>
+          <p class="govuk-!-margin-0 govuk-!-padding-0">for <span class="govuk-!-font-weight-bold">
+              {{getRepresentative(hearing.applicants).representee}}</span>
+          </p>
+        </span>
+        <span *ngIf="!getRepresentative(hearing.applicants)">
+          <p class="govuk-!-margin-0 govuk-!-padding-0 govuk-!-font-weight-bold">
+            {{getIndividual(hearing.applicants).displayName}} ({{getIndividual(hearing.applicants).caseGroup}})
+          </p>
+        </span>
 
-      <!-- Conference Status -->
-      <td class="govuk-table__cell">
+        <!-- Respondents -->
+        <span *ngIf="getRepresentative(hearing.respondents)">
+            <p class="govuk-!-margin-0 govuk-!-padding-0">
+              <span class="govuk-!-font-weight-bold">{{getRepresentative(hearing.respondents).displayName}}</span>
+              Solicitor
+            </p>
+            <p class="govuk-!-margin-0 govuk-!-padding-0">for <span class="govuk-!-font-weight-bold">
+                {{getRepresentative(hearing.respondents).representee}}</span>
+            </p>
+          </span>
+          <span *ngIf="!getRepresentative(hearing.applicants)">
+            <p class="govuk-!-margin-0 govuk-!-padding-0 govuk-!-font-weight-bold">
+              {{getIndividual(hearing.respondents).displayName}} ({{getIndividual(hearing.respondents).caseGroup}})
+            </p>
+          </span>
+
+          </td>
+
+          <!-- Conference Status -->
+          <td class="govuk-table__cell">
         <div *ngIf="!hearing.isClosed() && hearing.isReadyToStart()">
           <input type="button" id="start-hearing-btn-{{ hearing.id }}"
             class="govuk-button govuk-!-margin-top-3 govuk-!-margin-bottom-3" role="button" value="Select"
             (click)="signIntoConference(hearing)" alt="Sign into the conference" />
-        </div>
+            </div>
         <div *ngIf="!hearing.isClosed() && !hearing.isReadyToStart()">
-          Not ready to start
+              Not ready to start
         </div>
         <div *ngIf="showConferenceStatus(hearing)" class="govuk-!-margin-top-3 govuk-!-margin-bottom-3">
           <span class="govuk-!-padding-top-1 govuk-!-padding-bottom-1 govuk-!-padding-right-2 govuk-!-padding-left-2"
             [ngClass]="{'conference-closed': hearing.isClosed(), 'conference-paused': hearing.isPaused(), 
               'conference-suspended': hearing.isSuspended()}">{{hearing.status}}</span>
-        </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+</div>

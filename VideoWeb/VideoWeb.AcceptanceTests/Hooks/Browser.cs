@@ -91,21 +91,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
             testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, testContext.TargetBrowser);
 
-            string participant;
-            if (_scenarioContext.ScenarioInfo.Title.ToLower().Contains("judge") ||
-                _scenarioContext.ScenarioInfo.Title.ToLower().Contains("clerk"))
-            {
-                participant = "Judge01";
-            }
-            else if (_scenarioContext.ScenarioInfo.Title.ToLower().Contains("representative"))
-            {
-                participant = "Representative01";
-            }
-            else
-            {
-                participant = "Individual01";
-            }
-            _browserContext.BrowserSetup(testContext.VideoWebUrl, testContext.Environment, participant);
+            _browserContext.BrowserSetup(testContext.VideoWebUrl, testContext.Environment);
             _browserContext.NavigateToPage();
         }
 
