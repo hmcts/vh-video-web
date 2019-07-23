@@ -86,7 +86,6 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         console.error(`caught error ${reason}`);
       });
     this.hearingStartingAnnounced = true;
-
   }
 
   getConference(): void {

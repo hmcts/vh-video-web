@@ -42,18 +42,6 @@
       </p>
     </div>
 
-    <div *ngIf="hearing.isSuspended()" class="govuk-warning-text govuk-!-padding-right-6">
-      <span class="govuk-warning-text__icon" style="top:20px" aria-hidden="true">!</span>
-      <strong class="govuk-warning-text__text">
-        <span class="govuk-warning-text__assistive">Warning</span>
-        <p>We are experiencing some technical difficulties.</p>
-        <p>
-          Please wait here, the judge will resume the hearing as soon
-          as these issues have been resolved.
-        </p>
-      </strong>
-    </div>
-
     <div *ngIf="!showVideo() && currentTime && ( hearing.isNotStarted() || hearing.isPaused() )" class="govuk-panel"
       [ngClass]="{'hearing-on-time': hearing.isOnTime(), 'hearing-near-start': hearing.isStarting(), 
           'hearing-delayed': hearing.isDelayed(), 'hearing-on-time': hearing.isPaused()}">
@@ -78,6 +66,12 @@
 
         <div *ngIf="hearing.isPaused()" class="hearing-title-mt--20">
           <p>The judge will re-start the hearing when they are ready. Please stay near your screen.</p>
+        </div>
+
+        <div *ngIf="hearing.isSuspended()">
+          <h3 class="govuk-heading-m">We're having technical issues</h3>
+          <p>Please wait while we try to re-start the hearing. All participants are affected. We'll call to update you -
+            there's no need to call us.</p>
         </div>
 
       </div>
