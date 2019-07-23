@@ -8,14 +8,13 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { EventsService } from 'src/app/services/events.service';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { NotificationService } from 'src/app/services/notification.service';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 
 @Component({
-  selector: 'app-participant-status-list',
-  templateUrl: './participant-status-list.component.html',
-  styleUrls: ['./participant-status-list.component.scss']
+  selector: 'app-judge-participant-status-list',
+  templateUrl: './judge-participant-status-list.component.html',
+  styleUrls: ['./judge-participant-status-list.component.scss']
 })
-export class ParticipantStatusListComponent implements OnInit {
+export class JudgeParticipantStatusListComponent implements OnInit {
 
   @Input() conference: ConferenceResponse;
 
@@ -195,7 +194,5 @@ export class ParticipantStatusListComponent implements OnInit {
     this.representativeParticipants = this.conference.participants.filter(x => x.role === UserRole.Representative);
     this.litigantInPerson = (this.representativeParticipants.length === 0);
     this.individualParticipants = this.conference.participants.filter(x => x.role === UserRole.Individual);
-    console.log(this.representativeParticipants.length);
-    console.log(this.litigantInPerson);
   }
 }

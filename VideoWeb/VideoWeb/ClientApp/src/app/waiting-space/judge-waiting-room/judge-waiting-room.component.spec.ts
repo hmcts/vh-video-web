@@ -14,7 +14,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { ParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
+import { JudgeParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { ErrorService } from 'src/app/services/error.service';
 import { configureTestSuite } from 'ng-bullet';
@@ -38,7 +38,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [JudgeWaitingRoomComponent, ParticipantStatusListStubComponent],
+      declarations: [JudgeWaitingRoomComponent, JudgeParticipantStatusListStubComponent],
       providers: [
         {
           provide: ActivatedRoute,
@@ -159,7 +159,7 @@ describe('JudgeWaitingRoomComponent when conference does not exist', () => {
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [JudgeWaitingRoomComponent, ParticipantStatusListStubComponent],
+      declarations: [JudgeWaitingRoomComponent, JudgeParticipantStatusListStubComponent],
       providers: [
         {
           provide: ActivatedRoute,
