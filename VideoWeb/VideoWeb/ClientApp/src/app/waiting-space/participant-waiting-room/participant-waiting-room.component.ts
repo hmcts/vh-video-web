@@ -97,14 +97,14 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   getConference(): void {
     const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
     this.videoWebService.getConferenceById(conferenceId)
-      .subscribe((data: ConferenceResponse) => {
+      .subscribe(async (data: ConferenceResponse) => {
         this.loadingData = false;
         this.hearing = new Hearing(data);
         this.participant = data.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
         this.logger.info(`Participant waiting room for conference: ${conferenceId} and participant: ${this.participant.id}`);
         this.subscribeToClock();
         this.setupSubscribers();
-        this.setupPexipClient();
+        await this.setupPexipClient();
         this.call();
       },
         (error) => {
@@ -162,18 +162,18 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     this.hearing.getConference().status = message.status;
   }
 
-  setupPexipClient() {
+  async setupPexipClient() {
     this.logger.debug('Setting up pexip client...');
     const self = this;
     this.pexipAPI = new PexRTC();
 
-    const preferredCam = this.userMediaService.getPreferredCamera();
+    const preferredCam = await this.userMediaService.getPreferredCamera();
     if (preferredCam) {
       this.pexipAPI.video_source = preferredCam.deviceId;
       self.logger.info(`Using preferred camera: ${preferredCam.label}`);
     }
 
-    const preferredMic = this.userMediaService.getPreferredMicrophone();
+    const preferredMic = await this.userMediaService.getPreferredMicrophone();
     if (preferredMic) {
       this.pexipAPI.audio_source = preferredMic.deviceId;
       self.logger.info(`Using preferred microphone: ${preferredMic.label}`);
