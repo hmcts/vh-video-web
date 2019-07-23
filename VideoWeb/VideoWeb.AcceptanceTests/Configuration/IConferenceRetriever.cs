@@ -82,7 +82,7 @@ namespace VideoWeb.AcceptanceTests.Configuration
                 Thread.Sleep(TimeSpan.FromSeconds(1));
             }
 
-            conferenceFound.Should().BeTrue();
+            conferenceFound.Should().BeTrue("Conference created from the hearing");
             context.Response.Should().NotBeNull();
             var conference = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(context.Json);
             conference.Should().NotBeNull();
