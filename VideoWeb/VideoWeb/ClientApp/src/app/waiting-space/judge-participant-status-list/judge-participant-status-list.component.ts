@@ -10,16 +10,19 @@ import { ConsultationMessage } from 'src/app/services/models/consultation-messag
 import { NotificationService } from 'src/app/services/notification.service';
 
 @Component({
-  selector: 'app-participant-status-list',
-  templateUrl: './participant-status-list.component.html',
-  styleUrls: ['./participant-status-list.component.scss']
+  selector: 'app-judge-participant-status-list',
+  templateUrl: './judge-participant-status-list.component.html',
+  styleUrls: ['./judge-participant-status-list.component.scss']
 })
-export class ParticipantStatusListComponent implements OnInit {
+export class JudgeParticipantStatusListComponent implements OnInit {
 
   @Input() conference: ConferenceResponse;
 
   nonJugdeParticipants: ParticipantResponse[];
   judge: ParticipantResponse;
+  representativeParticipants: ParticipantResponse[];
+  litigantInPerson: boolean;
+  individualParticipants: ParticipantResponse[];
 
   constructor(
     private adalService: AdalService,
@@ -33,6 +36,8 @@ export class ParticipantStatusListComponent implements OnInit {
     this.filterNonJudgeParticipants();
     this.filterJudge();
     this.setupSubscribers();
+
+    this.filterRepresentatives();
   }
 
   isParticipantAvailable(participant: ParticipantResponse): boolean {
@@ -159,5 +164,35 @@ export class ParticipantStatusListComponent implements OnInit {
 
   private filterJudge(): void {
     this.judge = this.conference.participants.find(x => x.role === UserRole.Judge);
+  }
+
+  getParticipantStatus(participant: ParticipantResponse): string {
+    if (participant.status === ParticipantStatus.Available) {
+      return 'connected';
+    } else if (participant.status === ParticipantStatus.Disconnected) {
+      return 'disconnected';
+    } else if (participant.status === ParticipantStatus.InConsultation) {
+      return 'in consultation';
+    } else if (participant.status === ParticipantStatus.InHearing) {
+      return 'in a hearing';
+    } else if (participant.status === ParticipantStatus.Joining) {
+      return 'joining';
+    } else if (participant.status === ParticipantStatus.NotSignedIn) {
+      return 'not signed in';
+    } else if (participant.status === ParticipantStatus.UnableToJoin) {
+      return 'unable to join';
+    }
+  }
+
+  isUserJudge(): boolean {
+    const participant = this.conference.participants.find
+      (x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
+    return (participant.role === UserRole.Judge);
+  }
+
+  private filterRepresentatives(): void {
+    this.representativeParticipants = this.conference.participants.filter(x => x.role === UserRole.Representative);
+    this.litigantInPerson = (this.representativeParticipants.length === 0);
+    this.individualParticipants = this.conference.participants.filter(x => x.role === UserRole.Individual);
   }
 }

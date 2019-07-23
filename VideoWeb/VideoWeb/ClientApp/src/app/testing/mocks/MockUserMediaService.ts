@@ -27,7 +27,7 @@ export class MockUserMediaService extends UserMediaService {
         return null;
     }
 
-    getCachedDeviceIfStillConnected(cache: SessionStorage<UserMediaDevice>): UserMediaDevice {
+    async getCachedDeviceIfStillConnected(cache: SessionStorage<UserMediaDevice>): Promise<UserMediaDevice> {
         return null;
     }
 }
