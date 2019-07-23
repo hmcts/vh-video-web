@@ -22,7 +22,7 @@ namespace VideoWeb.AcceptanceTests.Contexts
             Items = new ContextItems(this);
         }
 
-        public void BrowserSetup(string baseUrl, SeleniumEnvironment environment, string participant)
+        public void BrowserSetup(string baseUrl, SeleniumEnvironment environment, string participant = "Individual01")
         {
             if (string.IsNullOrEmpty(baseUrl))
                 throw new ArgumentNullException(nameof(baseUrl));

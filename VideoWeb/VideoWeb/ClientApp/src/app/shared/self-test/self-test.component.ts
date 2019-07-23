@@ -100,12 +100,12 @@ export class SelfTestComponent implements OnInit {
   async updatePexipAudioVideoSource() {
     this.hasMultipleDevices = await this.userMediaService.hasMultipleDevices();
 
-    const cam = this.userMediaService.getPreferredCamera();
+    const cam = await this.userMediaService.getPreferredCamera();
     if (cam) {
       this.pexipAPI.video_source = cam.deviceId;
     }
 
-    const mic = this.userMediaService.getPreferredMicrophone();
+    const mic = await this.userMediaService.getPreferredMicrophone();
     if (mic) {
       this.pexipAPI.audio_source = mic.deviceId;
     }

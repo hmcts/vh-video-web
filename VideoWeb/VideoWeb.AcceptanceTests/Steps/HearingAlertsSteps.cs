@@ -36,13 +36,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"a participant has chosen to block user media")]
         public void WhenAParticipantHasChosenToBlockUserMedia()
         {
-            var request = new CreateEventRequestBuilder()
+            var request = new EventRequestBuilder()
                 .WithConferenceId(_context.NewConferenceId)
                 .WithParticipantId(GetJudgeParticipantId())
                 .WithEventType(EventType.MediaPermissionDenied)
                 .Build();
 
-            new ExecuteEventRequestBuilder()
+            new ExecuteEventBuilder()
                 .WithContext(_context)
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
@@ -52,14 +52,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the judge has disconnected from the hearing")]
         public void WhenTheJudgeHasSuspendedTheHearing()
         {
-            var request = new CreateEventRequestBuilder()
+            var request = new EventRequestBuilder()
                 .WithConferenceId(_context.NewConferenceId)
                 .WithParticipantId(GetJudgeParticipantId())
                 .WithEventType(EventType.Disconnected)
                 .WithRoomType(RoomType.HearingRoom)
                 .Build();
 
-            new ExecuteEventRequestBuilder()
+            new ExecuteEventBuilder()
                 .WithContext(_context)
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
@@ -72,14 +72,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             var participantId = participant.Equals("Judge") ? GetJudgeParticipantId() : GetIndividualParticipantId();
             _scenarioContext.Add(ParticipantKey, participantId);
 
-            var request = new CreateEventRequestBuilder()
+            var request = new EventRequestBuilder()
                 .WithConferenceId(_context.NewConferenceId)
                 .WithParticipantId(participantId)
                 .WithEventType(EventType.Disconnected)
                 .WithRoomType(room)
                 .Build();
 
-            new ExecuteEventRequestBuilder()
+            new ExecuteEventBuilder()
                 .WithContext(_context)
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
@@ -89,13 +89,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"a participant has failed the self-test")]
         public void WhenAParticipantHasFailedTheSelf_Test()
         {
-            var request = new CreateEventRequestBuilder()
+            var request = new EventRequestBuilder()
                 .WithConferenceId(_context.NewConferenceId)
                 .WithParticipantId(GetIndividualParticipantId())
                 .WithEventType(EventType.SelfTestFailed)
                 .Build();
 
-            new ExecuteEventRequestBuilder()
+            new ExecuteEventBuilder()
                 .WithContext(_context)
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
@@ -105,14 +105,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"a participant has failed the self-test with (.*)")]
         public void WhenAParticipantHasFailedTheSelfTestWithReason(string reason)
         {
-            var request = new CreateEventRequestBuilder()
+            var request = new EventRequestBuilder()
                 .WithConferenceId(_context.NewConferenceId)
                 .WithParticipantId(GetIndividualParticipantId())
                 .WithEventType(EventType.SelfTestFailed)
                 .WithReason(reason)
                 .Build();
 
-            new ExecuteEventRequestBuilder()
+            new ExecuteEventBuilder()
                 .WithContext(_context)
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
@@ -130,14 +130,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the hearing has been closed")]
         public void WhenTheHearingHasBeenClosed()
         {
-            var request = new CreateEventRequestBuilder()
+            var request = new EventRequestBuilder()
                 .WithConferenceId(_context.NewConferenceId)
                 .WithParticipantId(GetJudgeParticipantId())
                 .WithEventType(EventType.Close)
                 .WithRoomType(RoomType.HearingRoom)
                 .Build();
 
-            new ExecuteEventRequestBuilder()
+            new ExecuteEventBuilder()
                 .WithContext(_context)
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
