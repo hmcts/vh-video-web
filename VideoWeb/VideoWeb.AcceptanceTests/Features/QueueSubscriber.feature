@@ -32,15 +32,15 @@ Scenario: Hearing Is Ready For Video Updates the main hearing details
 
 Scenario: Participant Added
 	Given I have a hearing and a conference
-	When I add a participant from the hearing
-	Then the participant details have been updated
+	When I add a participant to the hearing
+	Then the participant has been added
 
 Scenario: Participant Updated
 	Given I have a hearing and a conference
 	When I update a participant from the hearing
-	Then the participant details have been updated
+	Then the participant has been updated
 
 Scenario: Participant Removed
 	Given I have a hearing and a conference
 	When I remove a participant from the hearing
-	Then the participant details have been updated
+	Then the participant has been removed

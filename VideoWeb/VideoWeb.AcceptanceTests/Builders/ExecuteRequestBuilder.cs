@@ -7,7 +7,7 @@ namespace VideoWeb.AcceptanceTests.Builders
     public class ExecuteRequestBuilder
     {
         private TestContext _context;
-        private HttpStatusCode _status = HttpStatusCode.OK;
+        private HttpStatusCode _status;
 
         public ExecuteRequestBuilder WithContext(TestContext context)
         {
@@ -25,17 +25,19 @@ namespace VideoWeb.AcceptanceTests.Builders
         {
             _context.Response = _context.BookingsApiClient().Execute(_context.Request);
             GetTheResponse();
+            VerifyTheResponse();
         }
 
         public void SendToVideoApi()
         {
             _context.Response = _context.VideoApiClient().Execute(_context.Request);
             GetTheResponse();
+            VerifyTheResponse();
         }
 
         public void SendAndVerifyTheResponseIs(HttpStatusCode status)
         {
-            SendToVideoApi();
+            _context.Response = _context.VideoApiClient().Execute(_context.Request);
             GetTheResponse();
             _context.Response.StatusCode.Should().Be(status);
         }
@@ -44,6 +46,11 @@ namespace VideoWeb.AcceptanceTests.Builders
         {
             if (_context.Response.Content != null)
                 _context.Json = _context.Response.Content;
+        }
+
+        private void VerifyTheResponse()
+        {
+            _context.Response.StatusCode.Should().Be(_status);
         }
     }
 }

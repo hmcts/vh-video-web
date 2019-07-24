@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using OpenQA.Selenium;
 using RestSharp;
@@ -79,6 +80,20 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public List<UserAccount> GetRepresentativeUsers()
         {
             return TestSettings.UserAccounts.Where(x => x.Role.StartsWith("Representative")).ToList();
+        }
+
+        public UserAccount GetIndividualNotInHearing(List<ParticipantResponse> hearingParticipants)
+        {
+            var allIndividuals = GetIndividualUsers();
+
+            foreach (var individual in allIndividuals)
+            {
+                if (hearingParticipants.Any(x => x.Username.Equals(individual.Username)))
+                {
+                    return individual;
+                }
+            }
+            throw new DataException("All individuals are participants in the hearing");
         }
 
         public string CaseName()
