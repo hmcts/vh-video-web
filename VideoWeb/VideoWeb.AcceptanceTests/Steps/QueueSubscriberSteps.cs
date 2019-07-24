@@ -164,6 +164,9 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithContext(_context)
                 .WithExpectedStatusCode(HttpStatusCode.NotFound)
                 .SendToVideoApi();
+
+            _context.NewHearingId = Guid.Empty;
+            _context.NewConferenceId = Guid.Empty;
         }
 
         [Then(@"the participant has been added")]
