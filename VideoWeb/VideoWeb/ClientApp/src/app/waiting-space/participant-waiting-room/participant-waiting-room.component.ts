@@ -10,6 +10,7 @@ import { ErrorService } from 'src/app/services/error.service';
 import { ClockService as ClockService } from 'src/app/services/clock.service';
 import { Hearing } from '../../shared/models/hearing';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 declare var PexRTC: any;
 
 @Component({
@@ -32,6 +33,8 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   currentPlayCount: number;
   hearingAlertSound: HTMLAudioElement;
 
+  showVideo: boolean;
+
   constructor(
     private route: ActivatedRoute,
     private videoWebService: VideoWebService,
@@ -40,16 +43,18 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     private adalService: AdalService,
     private errorService: ErrorService,
     private clockService: ClockService,
-    private userMediaService: UserMediaService
+    private userMediaService: UserMediaService,
+    private logger: Logger
   ) {
     this.loadingData = true;
+    this.showVideo = false;
   }
 
   ngOnInit() {
+    this.logger.debug('Loading participant waiting room');
     this.connected = false;
     this.initHearingAlert();
     this.getConference();
-
   }
 
   initHearingAlert() {
@@ -87,22 +92,23 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         console.error(`caught error ${reason}`);
       });
     this.hearingStartingAnnounced = true;
-
   }
 
   getConference(): void {
     const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
     this.videoWebService.getConferenceById(conferenceId)
-      .subscribe((data: ConferenceResponse) => {
+      .subscribe(async (data: ConferenceResponse) => {
         this.loadingData = false;
         this.hearing = new Hearing(data);
         this.participant = data.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
+        this.logger.info(`Participant waiting room for conference: ${conferenceId} and participant: ${this.participant.id}`);
         this.subscribeToClock();
         this.setupSubscribers();
-        this.setupPexipClient();
+        await this.setupPexipClient();
         this.call();
       },
         (error) => {
+          this.logger.error(`There was an error getting a confernce ${conferenceId}`, error);
           this.loadingData = false;
           this.errorService.handleApiError(error);
         });
@@ -130,15 +136,19 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   private setupSubscribers() {
     this.eventService.start();
 
+    this.logger.debug('Subscribing to conference status changes...');
     this.eventService.getHearingStatusMessage().subscribe(message => {
       this.ngZone.run(() => {
         this.handleConferenceStatusChange(message);
+        this.updateShowVideo();
       });
     });
 
+    this.logger.debug('Subscribing to participant status changes...');
     this.eventService.getParticipantStatusMessage().subscribe(message => {
       this.ngZone.run(() => {
         this.handleParticipantStatusChange(message);
+        this.updateShowVideo();
       });
     });
   }
@@ -152,38 +162,46 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     this.hearing.getConference().status = message.status;
   }
 
-  setupPexipClient() {
+  async setupPexipClient() {
+    this.logger.debug('Setting up pexip client...');
     const self = this;
     this.pexipAPI = new PexRTC();
 
-    if (this.userMediaService.getPreferredCamera()) {
-      this.pexipAPI.video_source = this.userMediaService.getPreferredCamera().deviceId;
+    const preferredCam = await this.userMediaService.getPreferredCamera();
+    if (preferredCam) {
+      this.pexipAPI.video_source = preferredCam.deviceId;
+      self.logger.info(`Using preferred camera: ${preferredCam.label}`);
     }
 
-    if (this.userMediaService.getPreferredMicrophone()) {
-      this.pexipAPI.audio_source = this.userMediaService.getPreferredMicrophone().deviceId;
+    const preferredMic = await this.userMediaService.getPreferredMicrophone();
+    if (preferredMic) {
+      this.pexipAPI.audio_source = preferredMic.deviceId;
+      self.logger.info(`Using preferred microphone: ${preferredMic.label}`);
     }
 
     this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
-      console.info('running pexip setup');
+      self.logger.info('running pexip setup');
       this.connect('0000', null);
     };
 
     this.pexipAPI.onConnect = function (stream) {
       self.connected = true;
-      console.info('successfully connected');
+      self.updateShowVideo();
+      self.logger.info('successfully connected to call');
       self.stream = stream;
     };
 
     this.pexipAPI.onError = function (reason) {
       self.connected = false;
-      console.warn('Error from pexip. Reason : ' + reason);
+      self.updateShowVideo();
+      self.logger.error(`Error from pexip. Reason : ${reason}`, reason);
       self.errorService.goToServiceError();
     };
 
     this.pexipAPI.onDisconnect = function (reason) {
       self.connected = false;
-      console.info('Disconnected from pexip. Reason : ' + reason);
+      self.updateShowVideo();
+      self.logger.info(`Disconnected from pexip. Reason : ${reason}`);
     };
   }
 
@@ -191,20 +209,30 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     const pexipNode = this.hearing.getConference().pexip_node_uri;
     const conferenceAlias = this.hearing.getConference().participant_uri;
     const displayName = this.participant.tiled_display_name;
+    this.logger.debug(`Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`);
     this.pexipAPI.makeCall(pexipNode, conferenceAlias, displayName, null);
   }
 
-  showVideo(): boolean {
+  updateShowVideo(): void {
     if (!this.connected) {
-      return false;
+      this.logger.debug('Not showing video because not connecting to node');
+      this.showVideo = false;
+      return;
     }
 
     if (this.hearing.isInSession()) {
-      return true;
+      this.logger.debug('Showing video because hearing is in session');
+      this.showVideo = true;
+      return;
     }
 
     if (this.participant.status === ParticipantStatus.InConsultation) {
-      return true;
+      this.logger.debug('Showing video because hearing is in session');
+      this.showVideo = true;
+      return;
     }
+
+    this.logger.debug('Not showing video because hearing is not in session and user is not in consultation');
+    this.showVideo = false;
   }
 }

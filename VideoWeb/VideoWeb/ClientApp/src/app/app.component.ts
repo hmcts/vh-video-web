@@ -44,23 +44,29 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.checkBrowser();
-    const currentUrl = window.location.href;
-    this.adalService.handleWindowCallback();
-    this.loggedIn = this.adalService.userInfo.authenticated;
-    if (!this.loggedIn) {
-      this.router.navigate(['/login'], { queryParams: { returnUrl: currentUrl } });
+    this.checkAuth();
+  }
+
+  checkBrowser(): void {
+    if (!this.deviceTypeService.isSupportedBrowser()) {
+      this.router.navigateByUrl(PageUrls.UnsupportedBrowser);
     }
+  }
+
+  checkAuth(): void {
+    const currentUrl = window.location.href;
+    if (window.location.pathname !== `/${PageUrls.Logout}`) {
+      this.adalService.handleWindowCallback();
+      this.loggedIn = this.adalService.userInfo.authenticated;
+      if (!this.loggedIn) {
+        this.router.navigate(['/login'], { queryParams: { returnUrl: currentUrl } });
+      }
 
     this.profileService.getUserProfile()
       .then((profile) => {
         this.isRepresentativeOrIndividual = (profile.role === (UserRole.Individual || UserRole.Representative));
       })
       .catch((error) => this.errorService.handleApiError(error));
-  }
-
-  checkBrowser(): void {
-    if (!this.deviceTypeService.isSupportedBrowser()) {
-      this.router.navigateByUrl(PageUrls.UnsupportedBrowser);
     }
   }
 
