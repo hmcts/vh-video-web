@@ -26,6 +26,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             _context = context;
         }
 
+        [Given(@"I have a hearing")]
+        public void GivenIHaveAHearingOnly()
+        {
+            GivenIHaveAHearing();
+        }
+
         [Given(@"I have a hearing and a conference")]
         [Given(@"I have another hearing and a conference")]
         public void GivenIHaveAHearingAndAConference()
@@ -51,7 +57,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             GetTheNewConferenceDetails();
         }
 
-        [Given(@"I have a hearing")]
         public void GivenIHaveAHearing(int minutes = 0)
         {
             var hearingRequest = new HearingRequestBuilder()
@@ -68,6 +73,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Given(@"Get the new conference details")]
+        [When(@"I attempt to retrieve the new conference details from the video api")]
         public void GetTheNewConferenceDetails()
         {
             IConferenceRetriever conferenceRetriever;

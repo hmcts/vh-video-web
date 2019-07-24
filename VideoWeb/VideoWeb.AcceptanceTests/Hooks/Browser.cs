@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
@@ -89,8 +90,13 @@ namespace VideoWeb.AcceptanceTests.Hooks
             testContext.TargetBrowser = GetTargetBrowser();
             testContext.RunningLocally = testContext.VideoApiBaseUrl.Contains("localhost");
 
-            testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, testContext.TargetBrowser);
+            testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, testContext.TargetBrowser);            
+        }
 
+        [BeforeScenario]
+        public void LaunchBrowser(TestContext testContext, ScenarioContext scenarioContext)
+        {
+            if (!scenarioContext.ScenarioInfo.Tags.Contains("ApiOnly")) return;
             _browserContext.BrowserSetup(testContext.VideoWebUrl, testContext.Environment);
             _browserContext.NavigateToPage();
         }
@@ -146,6 +152,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 SaucelabsResult.LogPassed(passed, _browserContext.NgDriver);
             }
 
+            if (!_scenarioContext.ScenarioInfo.Tags.Contains("ApiOnly")) return;
             _browserContext.NgDriver.Quit();
             _browserContext.NgDriver.Dispose();
 

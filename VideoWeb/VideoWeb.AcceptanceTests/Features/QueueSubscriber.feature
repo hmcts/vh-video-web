@@ -1,4 +1,4 @@
-﻿@VIH-4256
+﻿@VIH-4256 @ApiOnly
 Feature: QueueSubscriber
 	In order to not duplicate data and keep the video-api in sync with the bookings-api
 	As a queue subscriber service
@@ -17,7 +17,7 @@ Scenario: Hearing Details Updated
 Scenario: Hearing Cancelled
 	Given I have a hearing and a conference
 	When I attempt to cancel the hearing
-	Then the conference has been cancelled
+	Then the conference has been deleted 
 	
 @VIH-4702
 Scenario: Hearing Deleted
