@@ -79,7 +79,7 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
         public async Task Should_return_internal_server_error_result_when_video_api_not_reachable()
         {
             var exception = new VideoApiException<ProblemDetails>("Bad token", (int) HttpStatusCode.InternalServerError,
-                "Please provide a valid conference Id", null, default, null);
+                "Please provide a valid conference Id", null, default(ProblemDetails), null);
 
             _videoApiClientMock
                 .Setup(x => x.GetConferencesTodayAsync())
@@ -97,7 +97,7 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
         public async Task Should_return_internal_server_error_result_when_event_callback_not_reachable()
         {
             var exception = new VideoApiException<ProblemDetails>("Bad token", (int) HttpStatusCode.InternalServerError,
-                "Please provide a valid conference Id", null, default, null);
+                "Please provide a valid conference Id", null, default(ProblemDetails), null);
 
             _eventsServiceClientMock
                 .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
