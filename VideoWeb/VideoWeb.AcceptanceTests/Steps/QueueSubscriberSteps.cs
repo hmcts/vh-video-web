@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using Testing.Common.Configuration;
@@ -12,6 +14,7 @@ using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.Common.Helpers;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
+using ParticipantRequest = VideoWeb.Services.Bookings.ParticipantRequest;
 using ParticipantResponse = VideoWeb.Services.Bookings.ParticipantResponse;
 using UpdateParticipantRequest = VideoWeb.Services.Bookings.UpdateParticipantRequest;
 using UserRole = VideoWeb.Contract.Responses.UserRole;
@@ -25,6 +28,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly HearingsEndpoints _hearingsEndpoints = new BookingsApiUriFactory().HearingsEndpoints;
         private readonly BookingsParticipantsEndpoints _bookingParticipantsEndpoints = new BookingsApiUriFactory().BookingsParticipantsEndpoints;
         private readonly ConferenceEndpoints _conferenceEndpoints = new VideoApiUriFactory().ConferenceEndpoints;
+        private const int MaxRetries = 5;
         private const string UpdatedWord = "Updated";
         private const int UpdatedTimeInMins = 1;
         private UserAccount _addedUser;
@@ -87,12 +91,15 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenIAttemptToAddAParticipantToTheHearing()
         {
             _addedUser = _context.GetIndividualNotInHearing(_context.Hearing.Participants);
+
             var request = new ParticipantsRequestBuilder()
                 .AddIndividual()
                 .WithUser(_addedUser)
                 .Build();
 
-            _context.Request = _context.Post(_bookingParticipantsEndpoints.AddParticipantsToHearing(_context.NewHearingId), request);
+            var list = new AddParticipantsToHearingRequest() {Participants = new List<ParticipantRequest>() {request}};
+
+            _context.Request = _context.Post(_bookingParticipantsEndpoints.AddParticipantsToHearing(_context.NewHearingId), list);
 
             new ExecuteRequestBuilder()
                 .WithContext(_context)
@@ -160,18 +167,18 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheConferenceHasBeenDeleted()
         {
             _context.Request = _context.Get(_conferenceEndpoints.GetConferenceDetailsById(_context.NewConferenceId));
-            new ExecuteRequestBuilder()
-                .WithContext(_context)
-                .WithExpectedStatusCode(HttpStatusCode.NotFound)
-                .SendToVideoApi();
 
             _context.NewHearingId = Guid.Empty;
             _context.NewConferenceId = Guid.Empty;
+
+            PollForExpectedStatus(HttpStatusCode.NotFound).Should().BeTrue();
         }
 
         [Then(@"the participant has been added")]
         public void ThenTheParticipantHasBeenAdded()
         {
+            PollForParticipant(_addedUser.Username).Should().BeTrue("Participant found");
+
             var conference = GetTheConferenceDetails();
             var participants = conference.Participants;
             participants.Count.Should().Be(_context.Hearing.Participants.Count + 1);
@@ -191,9 +198,32 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the participant has been removed")]
         public void ThenTheParticipantHasBeenRemoved()
         {
+            PollForParticipantRemoved(_deletedUser.Username).Should().BeTrue("Participant removed");
             var conference = GetTheConferenceDetails();
             conference.Participants.Any(x => x.Ref_id.Equals(_deletedUser.Id)).Should().BeFalse();
             conference.Participants.Count.Should().Be(_context.Hearing.Participants.Count - 1);
+        }
+
+        [AfterScenario("UpdateParticipant")]
+        public static void ResetUpdatedParticipant(TestContext context, BookingsParticipantsEndpoints endpoints)
+        {
+            var updatedUser = context.Hearing.Participants.First();
+            var updatedRequest = new UpdateParticipantBuilder()
+                .ForParticipant(updatedUser)
+                .AddWordToStrings(UpdatedWord)
+                .Reset();
+
+            if (updatedUser.Id == null)
+            {
+                throw new DataException("Participant Id must be set");
+            }
+
+            context.Request = context.Put(endpoints.UpdateParticipantDetails(context.NewHearingId, (Guid)updatedUser.Id), updatedRequest);
+
+            new ExecuteRequestBuilder()
+                .WithContext(context)
+                .WithExpectedStatusCode(HttpStatusCode.OK)
+                .SendToBookingsApi();
         }
 
         private ConferenceDetailsResponse GetTheConferenceDetails()
@@ -206,6 +236,73 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .SendToVideoApi();
 
             return ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_context.Response.Content);
+        }
+
+        private bool PollForParticipant(string username)
+        {
+            _context.Request = _context.Get(_conferenceEndpoints.GetConferenceDetailsById(_context.NewConferenceId));
+
+            for (var i = 0; i < MaxRetries; i++)
+            {
+                new ExecuteRequestBuilder()
+                    .WithContext(_context)
+                    .SendWithoutVerification();
+                if (_context.Response.StatusCode.Equals(HttpStatusCode.OK))
+                {
+                    var conference =
+                        ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_context.Response
+                            .Content);
+                    if (conference.Participants.Any(x => x.Username.ToLower().Equals(username.ToLower())))
+                    {
+                        return true;
+                    }
+                }
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+            }
+
+            return false;
+        }
+
+        private bool PollForParticipantRemoved(string username)
+        {
+            _context.Request = _context.Get(_conferenceEndpoints.GetConferenceDetailsById(_context.NewConferenceId));
+
+            for (var i = 0; i < MaxRetries; i++)
+            {
+                new ExecuteRequestBuilder()
+                    .WithContext(_context)
+                    .SendWithoutVerification();
+                if (_context.Response.StatusCode.Equals(HttpStatusCode.OK))
+                {
+                    var conference =
+                        ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_context.Response
+                            .Content);
+                    if (!conference.Participants.Any(x => x.Username.ToLower().Equals(username.ToLower())))
+                    {
+                        return true;
+                    }
+                }
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+            }
+
+            return false;
+        }
+
+        private bool PollForExpectedStatus(HttpStatusCode status)
+        {
+            for (var i = 0; i < MaxRetries; i++)
+            {
+                new ExecuteRequestBuilder()
+                    .WithContext(_context)
+                    .SendWithoutVerification();
+                if (_context.Response.StatusCode.Equals(status))
+                {
+                    return true;
+                }
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+            }
+
+            return false;
         }
     }
 }

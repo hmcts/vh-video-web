@@ -40,8 +40,8 @@
       "Lastname": "Individual03",
       "Displayname": "Automation01 Individual03",
       "AlternativeEmail": "a44@a.com",
-      "CaseRoleName": "Applicant",
-      "HearingRoleName": "Applicant LIP",
+      "CaseRoleName": "Claimant",
+      "HearingRoleName": "Claimant LIP",
       "SolicitorsReference": "Automation01 Representative03"
     },
     {
@@ -50,8 +50,8 @@
       "Lastname": "Individual04",
       "Displayname": "Automation01 Individual04",
       "AlternativeEmail": "a45@a.com",
-      "CaseRoleName": "Respondent",
-      "HearingRoleName": "Respondent LIP",
+      "CaseRoleName": "Defendant",
+      "HearingRoleName": "Defendant LIP",
       "SolicitorsReference": "Automation01 Representative04"
     },
     {
@@ -60,8 +60,8 @@
       "Lastname": "Individual05",
       "Displayname": "Automation01 Individual05",
       "AlternativeEmail": "a52@a.com",
-      "CaseRoleName": "Respondent",
-      "HearingRoleName": "Respondent LIP",
+      "CaseRoleName": "Claimant",
+      "HearingRoleName": "Claimant LIP",
       "SolicitorsReference": "Automation01 Representative04"
     },
     {
@@ -104,7 +104,7 @@
       "Lastname": "Representative03",
       "Displayname": "Automation01 Representative03",
       "AlternativeEmail": "a50@a.com",
-      "CaseRoleName": "Applicant",
+      "CaseRoleName": "Claimant",
       "HearingRoleName": "Solicitor",
       "Representee": "Automation01 Individual03"
     },
@@ -114,7 +114,7 @@
       "Lastname": "Representative04",
       "Displayname": "Automation01 Representative04",
       "AlternativeEmail": "a51@a.com",
-      "CaseRoleName": "Respondent",
+      "CaseRoleName": "Defendant",
       "HearingRoleName": "Solicitor",
       "Representee": "Automation01 Individual04"
     },
@@ -124,7 +124,7 @@
       "Lastname": "Representative05",
       "Displayname": "Automation01 Representative05",
       "AlternativeEmail": "a53@a.com",
-      "CaseRoleName": "Respondent",
+      "CaseRoleName": "Claimant",
       "HearingRoleName": "Solicitor",
       "Representee": "Automation01 Individual04"
     }

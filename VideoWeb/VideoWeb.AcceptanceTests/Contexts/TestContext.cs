@@ -88,7 +88,7 @@ namespace VideoWeb.AcceptanceTests.Contexts
 
             foreach (var individual in allIndividuals)
             {
-                if (hearingParticipants.Any(x => x.Username.Equals(individual.Username)))
+                if (!hearingParticipants.Any(x => x.Username.Equals(individual.Username)))
                 {
                     return individual;
                 }

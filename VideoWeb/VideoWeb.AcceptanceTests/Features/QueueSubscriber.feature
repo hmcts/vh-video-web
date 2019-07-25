@@ -35,6 +35,7 @@ Scenario: Participant Added
 	When I add a participant to the hearing
 	Then the participant has been added
 
+@UpdateParticipant
 Scenario: Participant Updated
 	Given I have a hearing and a conference
 	When I update a participant from the hearing

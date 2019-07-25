@@ -25,7 +25,6 @@ namespace VideoWeb.AcceptanceTests.Assertions
             _conference.Case_type.Should().Be(hearing.Case_type_name);
             _conference.Current_status.Should().Be(ConferenceState.NotStarted);
             _conference.Hearing_id.Should().Be(hearing.Id);
-            _conference.Meeting_room.Should().NotBeNull();
             _conference.Scheduled_date_time.Should().Be(hearing.Scheduled_date_time);
             _conference.Scheduled_duration.Should().Be(hearing.Scheduled_duration);
 

@@ -35,11 +35,10 @@ namespace VideoWeb.AcceptanceTests.Builders
             VerifyTheResponse();
         }
 
-        public void SendAndVerifyTheResponseIs(HttpStatusCode status)
+        public void SendWithoutVerification()
         {
             _context.Response = _context.VideoApiClient().Execute(_context.Request);
             GetTheResponse();
-            _context.Response.StatusCode.Should().Be(status);
         }
 
         private void GetTheResponse()
