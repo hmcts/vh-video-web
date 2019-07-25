@@ -16,7 +16,7 @@ namespace VideoWeb.AcceptanceTests.Builders
         private readonly TestContext _context;
         private string _username;
         private const int MaxRetries = 5;
-        private TimeSpan Delay = TimeSpan.FromSeconds(1);
+        private readonly TimeSpan _delay = TimeSpan.FromSeconds(1);
         private bool _expectTheParticipantToExist;
         private Services.Bookings.UpdateParticipantRequest _updateRequest;
 
@@ -71,7 +71,7 @@ namespace VideoWeb.AcceptanceTests.Builders
                     }
                 }
                 
-                Thread.Sleep(Delay);
+                Thread.Sleep(_delay);
             }
 
             return false;
@@ -89,7 +89,7 @@ namespace VideoWeb.AcceptanceTests.Builders
                 {
                     return true;
                 }
-                Thread.Sleep(Delay);
+                Thread.Sleep(_delay);
             }
 
             return false;
@@ -105,7 +105,7 @@ namespace VideoWeb.AcceptanceTests.Builders
                 {
                     return true;
                 }
-                Thread.Sleep(Delay);
+                Thread.Sleep(_delay);
             }
 
             return false;
