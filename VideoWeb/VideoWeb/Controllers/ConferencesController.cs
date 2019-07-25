@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Polly.CircuitBreaker;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
@@ -166,7 +167,7 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e);
             }
 
-            List<BookingParticipant> bookingParticipants;
+            List<BookingParticipant> bookingParticipants = new List<BookingParticipant>();
             try
             {
                 _logger.LogTrace($"Retrieving booking participants for hearing ${conference.Hearing_id}");
@@ -179,6 +180,11 @@ namespace VideoWeb.Controllers
                 _logger.LogError(e, $"Unable to retrieve booking participants for hearing ${conference.Hearing_id}",
                     null);
                 return StatusCode(e.StatusCode, e);
+            }
+            catch (BrokenCircuitException e)
+            {
+                _logger.LogError(e, $"Unable to retrieve booking participants for hearing ${conference.Hearing_id}",
+                    null);
             }
 
             if (!isVhOfficer && conference.Participants.All(x => x.Username.ToLower().Trim() != username))
