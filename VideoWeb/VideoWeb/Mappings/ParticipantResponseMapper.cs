@@ -11,12 +11,6 @@ namespace VideoWeb.Mappings
         public ParticipantResponse MapParticipantToResponseModel(ParticipantDetailsResponse participant,
             BookingParticipant bookingParticipant)
         {
-            if (bookingParticipant == null)
-            {
-                throw new ArgumentNullException(nameof(bookingParticipant),
-                    $"Could not find participant in bookings for participant ${participant.Id}");
-            }
-            
             var status = ParticipantStatus.None;
             if (participant.Current_status?.Participant_state != null)
             {
@@ -34,8 +28,8 @@ namespace VideoWeb.Mappings
             var response = new ParticipantResponse
             {
                 Id = participant.Id.GetValueOrDefault(),
-                FirstName = bookingParticipant.First_name,
-                LastName = bookingParticipant.Last_name,
+                FirstName = bookingParticipant?.First_name,
+                LastName = bookingParticipant?.Last_name,
                 Name = participant.Name,
                 Status = status,
                 Role = role,
@@ -43,8 +37,8 @@ namespace VideoWeb.Mappings
                 DisplayName = participant.Display_name,
                 CaseTypeGroup = participant.Case_type_group,
                 Representee = participant.Representee,
-                ContactEmail = bookingParticipant.Contact_email,
-                ContactTelephone = bookingParticipant.Telephone_number
+                ContactEmail = bookingParticipant?.Contact_email,
+                ContactTelephone = bookingParticipant?.Telephone_number
             };
 
             if (role == UserRole.Judge)
