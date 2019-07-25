@@ -8,6 +8,8 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Serialization;
+using Polly;
+using Polly.Extensions.Http;
 using Swashbuckle.AspNetCore.Swagger;
 using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
@@ -73,7 +75,9 @@ namespace VideoWeb
 
             services.AddHttpClient<IBookingsApiClient, BookingsApiClient>()
                 .AddHttpMessageHandler(() => container.GetService<BookingsApiTokenHandler>())
-                .AddTypedClient(httpClient => BuildBookingsApiClient(httpClient, servicesConfiguration));
+                .AddTypedClient(httpClient => BuildBookingsApiClient(httpClient, servicesConfiguration))
+                .AddPolicyHandler(GetRetryPolicy())
+                .AddPolicyHandler(GetCircuitBreakerPolicy());
             
             services.AddHttpClient<IVideoApiClient, VideoApiClient>()
                 .AddHttpMessageHandler(() => container.GetService<VideoApiTokenHandler>())
@@ -87,6 +91,37 @@ namespace VideoWeb
                 .AddHttpMessageHandler<VideoCallbackTokenHandler>();
             
             return services;
+        }
+
+        public static IServiceCollection AddJsonOptions(this IServiceCollection serviceCollection)
+        {
+            var contractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new SnakeCaseNamingStrategy()
+            };
+
+            serviceCollection.AddMvc()
+                .AddJsonOptions(options => {
+                    options.SerializerSettings.ContractResolver = contractResolver;
+                    options.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;
+                }).AddJsonOptions(options =>
+                    options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter()));
+
+            return serviceCollection;
+        }
+
+        private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        {
+            return HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+        }
+
+        private static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
+        {
+            return HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .CircuitBreakerAsync(3, TimeSpan.FromSeconds(30));
         }
 
         private static IBookingsApiClient BuildBookingsApiClient(HttpClient httpClient,
@@ -105,23 +140,6 @@ namespace VideoWeb
             HearingServicesConfiguration serviceSettings)
         {
             return new UserApiClient(httpClient) {BaseUrl = serviceSettings.UserApiUrl};
-        }
-
-        public static IServiceCollection AddJsonOptions(this IServiceCollection serviceCollection)
-        {
-            var contractResolver = new DefaultContractResolver
-            {
-                NamingStrategy = new SnakeCaseNamingStrategy()
-            };
-
-            serviceCollection.AddMvc()
-                .AddJsonOptions(options => {
-                    options.SerializerSettings.ContractResolver = contractResolver;
-                    options.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;
-                }).AddJsonOptions(options =>
-                    options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter()));
-
-            return serviceCollection;
         }
     }
 }
