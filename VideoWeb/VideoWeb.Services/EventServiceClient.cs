@@ -18,15 +18,14 @@ namespace VideoWeb.Services
     public class EventServiceClient : IEventsServiceClient
     {
         private readonly HttpClient _httpClient;
-        private HearingServicesConfiguration _hearingServicesConfiguration;
 
         public EventServiceClient(HttpClient httpClient,
             IOptions<HearingServicesConfiguration> hearingServicesConfiguration)
         {
-            _hearingServicesConfiguration = hearingServicesConfiguration.Value;
+            var hearingServicesConfiguration1 = hearingServicesConfiguration.Value;
             _httpClient = httpClient;
 
-            _httpClient.BaseAddress = new Uri(_hearingServicesConfiguration.VideoApiUrl);
+            _httpClient.BaseAddress = new Uri(hearingServicesConfiguration1.VideoApiUrl);
         }
 
 
@@ -36,26 +35,25 @@ namespace VideoWeb.Services
             var httpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
 
-            var response = await _httpClient.PostAsync("callback/conference", httpContent).ConfigureAwait(false);
+            var response = await _httpClient.PostAsync(new Uri("callback/conference"), httpContent).ConfigureAwait(false);
             try
             {
                 var headers_ = System.Linq.Enumerable.ToDictionary(response.Headers, h_ => h_.Key, h_ => h_.Value);
                 var statusCode = response.StatusCode;
+                
                 if (statusCode == HttpStatusCode.NoContent)
                 {
                     return;
                 }
-
-                if (statusCode == HttpStatusCode.BadRequest)
+                else if (statusCode == HttpStatusCode.BadRequest)
                 {
                     var responseText = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                     var problemDetails =
                         ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ProblemDetails>(responseText);
                     throw new VideoApiException<ProblemDetails>("Bad Request", (int) response.StatusCode, responseText,
                         headers_, problemDetails, null);
-                }
-
-                if (statusCode != HttpStatusCode.OK && statusCode != HttpStatusCode.NoContent)
+                } 
+                else
                 {
                     var responseData_ = response.Content == null
                         ? null

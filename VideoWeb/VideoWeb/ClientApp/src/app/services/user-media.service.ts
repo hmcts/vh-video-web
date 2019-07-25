@@ -77,12 +77,14 @@ export class UserMediaService {
         return this.getCachedDeviceIfStillConnected(this.preferredMicCache);
     }
 
-    getCachedDeviceIfStillConnected(cache: SessionStorage<UserMediaDevice>): UserMediaDevice {
+    async getCachedDeviceIfStillConnected(cache: SessionStorage<UserMediaDevice>): Promise<UserMediaDevice> {
         const device = cache.get();
         if (!device) {
             this.logger.warn(`Preferred device is no longer connected`);
             return null;
         }
+
+        await this.checkDeviceListIsReady();
 
         const stillConnected = this.availableDeviceList.find(x => x.label === device.label);
         if (stillConnected) {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using FluentAssertions;
-using Protractor;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -40,6 +39,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenTheUserClicksPause()
         {
             _browser.NgDriver.WaitUntilElementClickable(_page.PauseButton).Click();
+        }
+
+        [Then(@"the waiting room displays the paused status")]
+        public void ThenTheWaitingRoomDisplaysThePausedStatus()
+        {
+            ScenarioContext.Current.Pending();
         }
 
         [Then(@"the user resumes the hearing")]
