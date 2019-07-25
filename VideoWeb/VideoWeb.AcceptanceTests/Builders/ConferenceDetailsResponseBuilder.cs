@@ -1,14 +1,128 @@
-﻿namespace VideoWeb.AcceptanceTests.Builders
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading;
+using Testing.Common.Helpers;
+using VideoWeb.AcceptanceTests.Contexts;
+using VideoWeb.Common.Helpers;
+using VideoWeb.Services.Video;
+using UpdateParticipantRequest = VideoWeb.Services.Bookings.UpdateParticipantRequest;
+
+namespace VideoWeb.AcceptanceTests.Builders
 {
     public class ConferenceDetailsResponseBuilder
     {
+        private readonly TestContext _context;
+        private string _username;
+        private const int MaxRetries = 5;
+        private TimeSpan Delay = TimeSpan.FromSeconds(1);
+        private bool _expectTheParticipantToExist;
+        private Services.Bookings.UpdateParticipantRequest _updateRequest;
 
+        public ConferenceDetailsResponseBuilder(TestContext context)
+        {
+            _context = context;
+            _context.Request = _context.Get(new ConferenceEndpoints().GetConferenceDetailsById(_context.NewConferenceId));
+        }
 
+        public ConferenceDetailsResponseBuilder WithUsername(string username)
+        {
+            _username = username;
+            return this;
+        }
 
+        public ConferenceDetailsResponseBuilder IsAdded()
+        {
+            _expectTheParticipantToExist = true;
+            return this;
+        }
 
+        public ConferenceDetailsResponseBuilder IsRemoved()
+        {
+            _expectTheParticipantToExist = false;
+            return this;
+        }
 
+        public ConferenceDetailsResponseBuilder ExpectedUpdate(UpdateParticipantRequest updateRequest)
+        {
+            _updateRequest = updateRequest;
+            return this;
+        }
 
+        public bool PollForParticipant()
+        {
+            for (var i = 0; i < MaxRetries; i++)
+            {
+                var conference = GetConferenceDetails();
 
+                if (_expectTheParticipantToExist)
+                {
+                    if (ParticipantExists(conference.Participants))
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (!ParticipantExists(conference.Participants))
+                    {
+                        return true;
+                    }
+                }
+                
+                Thread.Sleep(Delay);
+            }
 
+            return false;
+        }
+
+        public bool PollForParticipantUpdated()
+        {
+            for (var i = 0; i < MaxRetries; i++)
+            {
+                var conference = GetConferenceDetails();
+                var updatedParticipant = conference.Participants.Find(x => x.Username.ToLower().Equals(_username.ToLower()));
+
+                if (updatedParticipant.Display_name.Equals(_updateRequest.Display_name) &&
+                    updatedParticipant.Name.Contains($"{_updateRequest.Title}"))
+                {
+                    return true;
+                }
+                Thread.Sleep(Delay);
+            }
+
+            return false;
+        }
+
+        public bool PollForExpectedStatus(HttpStatusCode status)
+        {
+            for (var i = 0; i < MaxRetries; i++)
+            {
+                GetConferenceDetails();
+
+                if (_context.Response.StatusCode.Equals(status))
+                {
+                    return true;
+                }
+                Thread.Sleep(Delay);
+            }
+
+            return false;
+        }
+
+        private bool ParticipantExists(IEnumerable<ParticipantDetailsResponse> participants)
+        {
+            return participants.Any(x => x.Username.ToLower().Equals(_username.ToLower()));
+        }
+
+        public ConferenceDetailsResponse GetConferenceDetails()
+        {
+            new ExecuteRequestBuilder()
+                .WithContext(_context)
+                .SendWithoutVerification();
+
+            return ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_context.Response.Content);            
+        }
     }
 }
