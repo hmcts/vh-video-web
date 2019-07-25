@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using VideoWeb.Services;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
@@ -20,13 +21,15 @@ namespace VideoWeb.Controllers
         private readonly IVideoApiClient _videoApiClient;
         private readonly IUserApiClient _userApiClient;
         private readonly IBookingsApiClient _bookingsApiClient;
+        private readonly IEventsServiceClient _eventsServiceClient;
 
         public HealthCheckController(IVideoApiClient videoApiClient, IUserApiClient userApiClient,
-            IBookingsApiClient bookingsApiClient)
+            IBookingsApiClient bookingsApiClient, IEventsServiceClient eventsServiceClient)
         {
             _videoApiClient = videoApiClient;
             _userApiClient = userApiClient;
             _bookingsApiClient = bookingsApiClient;
+            _eventsServiceClient = eventsServiceClient;
         }
 
         /// <summary>
@@ -43,7 +46,8 @@ namespace VideoWeb.Controllers
             {
                 BookingsApiHealth = {Successful = true},
                 UserApiHealth = {Successful = true},
-                VideoApiHealth = {Successful = true}
+                VideoApiHealth = {Successful = true},
+                EventsCallbackHealth = {Successful = true}
             };
             try
             {
@@ -85,11 +89,50 @@ namespace VideoWeb.Controllers
                     response.VideoApiHealth.ErrorMessage = ex.Message;
                     response.VideoApiHealth.Data = ex.Data;
                 }
+
+                if (((VideoApiException) ex).StatusCode == (int) HttpStatusCode.InternalServerError)
+                {
+                    response.VideoApiHealth.Successful = false;
+                    response.VideoApiHealth.ErrorMessage = ex.Message;
+                    response.VideoApiHealth.Data = ex.Data;
+                }
+            }
+
+            try
+            {
+                var conferenceEvent = new ConferenceEventRequest
+                {
+                    Conference_id = string.Empty,
+                    Event_id = string.Empty,
+                    Event_type = EventType.None,
+                    Participant_id = string.Empty,
+                    Reason = "Video-Web Health Check",
+                    Time_stamp_utc = null,
+                    Transfer_from = null,
+                    Transfer_to = null
+                };
+                await _eventsServiceClient.PostEventsAsync(conferenceEvent);
+            }
+            catch (Exception ex)
+            {
+                if (!(ex is VideoApiException))
+                {
+                    response.EventsCallbackHealth.Successful = false;
+                    response.EventsCallbackHealth.ErrorMessage = ex.Message;
+                    response.EventsCallbackHealth.Data = ex.Data;
+                }
+
+                if (((VideoApiException) ex).StatusCode == (int) HttpStatusCode.InternalServerError)
+                {
+                    response.EventsCallbackHealth.Successful = false;
+                    response.EventsCallbackHealth.ErrorMessage = ex.Message;
+                    response.EventsCallbackHealth.Data = ex.Data;
+                }
             }
 
 
             if (!response.UserApiHealth.Successful || !response.BookingsApiHealth.Successful ||
-                !response.VideoApiHealth.Successful)
+                !response.VideoApiHealth.Successful || !response.EventsCallbackHealth.Successful)
             {
                 return StatusCode((int) HttpStatusCode.InternalServerError, response);
             }
