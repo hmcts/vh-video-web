@@ -16,10 +16,6 @@
 
 <div *ngIf="!loadingData && !hasHearings()">
   <h1 class="govuk-heading-xl">Video hearings for {{courtName}}</h1>
-  <div class="govuk-!-margin-top-4">
-    <input type="button" id="check-equipment-btn" class="govuk-button" role="button" value="Check equipment"
-      (click)="goToEquipmentCheck()" alt="Check equipment" />
-  </div>
   <h3 class="govuk-heading-m"> You have no video hearings</h3>
   <p class="govuk-body">If you are expecting to see details of your hearing listed here, please contact us using the
     options below.</p>
