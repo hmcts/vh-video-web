@@ -18,14 +18,13 @@ namespace VideoWeb.Services
     public class EventServiceClient : IEventsServiceClient
     {
         private readonly HttpClient _httpClient;
+        private HearingServicesConfiguration _hearingServicesConfiguration;
 
         public EventServiceClient(HttpClient httpClient,
             IOptions<HearingServicesConfiguration> hearingServicesConfiguration)
         {
-            var hearingServicesConfiguration1 = hearingServicesConfiguration.Value;
+            _hearingServicesConfiguration = hearingServicesConfiguration.Value;
             _httpClient = httpClient;
-
-            _httpClient.BaseAddress = new Uri(hearingServicesConfiguration1.VideoApiUrl);
         }
 
 
@@ -35,7 +34,8 @@ namespace VideoWeb.Services
             var httpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
 
-            var response = await _httpClient.PostAsync(new Uri("callback/conference"), httpContent).ConfigureAwait(false);
+            var uri = $"{_hearingServicesConfiguration.VideoApiUrl}/callback/conference";
+            var response = await _httpClient.PostAsync(uri, httpContent).ConfigureAwait(false);
             try
             {
                 var headers_ = System.Linq.Enumerable.ToDictionary(response.Headers, h_ => h_.Key, h_ => h_.Value);
