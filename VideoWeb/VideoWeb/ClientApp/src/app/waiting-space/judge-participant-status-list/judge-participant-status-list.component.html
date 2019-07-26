@@ -34,7 +34,7 @@
         </div>
 
         <div class="govuk-body-s govuk-!-margin-bottom-3" *ngIf="isUserJudge()">
-          <label class="govuk-body-s label-status label-status--{{getParticipantStatus(participant)}}">
+          <label class="govuk-body-s label-status label-status--{{getParticipantStatusCss(participant)}}">
             {{ getParticipantStatus(participant) }}
           </label>
         </div>
