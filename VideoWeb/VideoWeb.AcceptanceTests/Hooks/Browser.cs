@@ -96,7 +96,6 @@ namespace VideoWeb.AcceptanceTests.Hooks
         [BeforeScenario]
         public void LaunchBrowser(TestContext testContext, ScenarioContext scenarioContext)
         {
-            if (!scenarioContext.ScenarioInfo.Tags.Contains("ApiOnly")) return;
             _browserContext.BrowserSetup(testContext.VideoWebUrl, testContext.Environment);
             _browserContext.NavigateToPage();
         }
@@ -152,7 +151,6 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 SaucelabsResult.LogPassed(passed, _browserContext.NgDriver);
             }
 
-            if (!_scenarioContext.ScenarioInfo.Tags.Contains("ApiOnly")) return;
             _browserContext.NgDriver.Quit();
             _browserContext.NgDriver.Dispose();
 

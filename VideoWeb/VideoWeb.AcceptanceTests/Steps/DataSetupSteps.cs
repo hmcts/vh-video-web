@@ -67,8 +67,11 @@ namespace VideoWeb.AcceptanceTests.Steps
             _context.RequestBody = hearingRequest.Build();
             _context.Request = _context.Post(_bookingEndpoints.BookNewHearing(), _context.RequestBody);
 
-            WhenISendTheRequestToTheBookingsApiEndpoint();
-            ThenTheHearingOrConferenceShouldBe(HttpStatusCode.Created);
+            new ExecuteRequestBuilder()
+                .WithContext(_context)
+                .WithExpectedStatusCode(HttpStatusCode.Created)
+                .SendToBookingsApi();
+
             ThenTheHearingDetailsShouldBeRetrieved();
         }
 
@@ -97,22 +100,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 throw new DataException("Conference Id has not been set");
             }
-        }
-
-        [When(@"I send the requests to the bookings api")]
-        public void WhenISendTheRequestToTheBookingsApiEndpoint()
-        {
-            _context.Response = _context.BookingsApiClient().Execute(_context.Request);
-            if (_context.Response.Content != null)
-                _context.Json = _context.Response.Content;
-        }
-
-        [Then(@"the hearings should be (.*)")]
-        [Then(@"the conference should be (.*)")]
-        public void ThenTheHearingOrConferenceShouldBe(HttpStatusCode status)
-        {
-            _context.Response.StatusCode.Should().Be(status);
-            _context.Response.IsSuccessful.Should().Be(true);           
         }
 
         [Then(@"hearing details should be retrieved")]
