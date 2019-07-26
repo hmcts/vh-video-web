@@ -12,6 +12,7 @@ namespace Testing.Common.Helpers
             ParticipantsEndpoints = new ParticipantsEndpoints();
             PersonEndpoints = new PersonEndpoints();
             HealthCheckEndpoints = new BookingsApiHealthCheckEndpoints();
+            BookingsParticipantsEndpoints = new BookingsParticipantsEndpoints();
         }
 
         public HearingVenueEndpoints HearingVenueEndpoints { get; set; }
@@ -20,6 +21,7 @@ namespace Testing.Common.Helpers
         public ParticipantsEndpoints ParticipantsEndpoints { get; set; }
         public PersonEndpoints PersonEndpoints { get; set; }
         public BookingsApiHealthCheckEndpoints HealthCheckEndpoints { get; set; }
+        public BookingsParticipantsEndpoints BookingsParticipantsEndpoints { get; set; }
     }
 
     public class HearingVenueEndpoints
@@ -62,6 +64,9 @@ namespace Testing.Common.Helpers
             $"{ApiRoot}/{hearingId}/participants/{participantId}";
 
         public string AddParticipantsToHearing(Guid hearingId) => $"{ApiRoot}/{hearingId}/participants";
+
+        public string UpdateParticipantDetails(Guid hearingId, Guid participantId) =>
+            $"{ApiRoot}/{hearingId}/participants/{participantId}";
 
         public string RemoveParticipantFromHearing(Guid hearingId, Guid participantId) =>
             $"{ApiRoot}/{hearingId}/participants/{participantId}";
