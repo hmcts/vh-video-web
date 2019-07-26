@@ -60,6 +60,8 @@ export class UserMediaService {
         this.availableDeviceList = Array.from(updatedDevices, device =>
             new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)
         );
+
+        console.log(this.availableDeviceList);
         this.connectedDevices.next(this.availableDeviceList);
     }
 
@@ -80,7 +82,6 @@ export class UserMediaService {
     async getCachedDeviceIfStillConnected(cache: SessionStorage<UserMediaDevice>): Promise<UserMediaDevice> {
         const device = cache.get();
         if (!device) {
-            this.logger.warn(`Preferred device is no longer connected`);
             return null;
         }
 
@@ -90,6 +91,7 @@ export class UserMediaService {
         if (stillConnected) {
             return device;
         } else {
+            this.logger.warn(`Preferred device ${device.label} is no longer connected`);
             cache.clear();
             return null;
         }
