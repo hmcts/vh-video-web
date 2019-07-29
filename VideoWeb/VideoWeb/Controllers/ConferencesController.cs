@@ -173,41 +173,40 @@ namespace VideoWeb.Controllers
                 return Unauthorized();
             }
 
-            List<BookingParticipant> bookingParticipants = new List<BookingParticipant>();
+            var bookingParticipants = new List<BookingParticipant>();
             try
             {
                 _logger.LogTrace($"Retrieving booking participants for hearing ${conference.Hearing_id}");
-                bookingParticipants =
-                    await _bookingsApiClient.GetAllParticipantsInHearingAsync(conference.Hearing_id
-                        .GetValueOrDefault());
+                bookingParticipants = await _bookingsApiClient.GetAllParticipantsInHearingAsync(conference.Hearing_id
+                    .GetValueOrDefault());
             }
             catch (BookingsApiException e)
             {
-                _logger.LogError(e, $"Unable to retrieve booking participants for hearing ${conference.Hearing_id}",
-                    null);
-                return StatusCode(e.StatusCode, e);
+                _logger.LogError(e, $"Unable to retrieve booking participants for hearing ${conference.Hearing_id}", null);
             }
             catch (BrokenCircuitException e)
             {
-                _logger.LogError(e, $"Unable to retrieve booking participants for hearing ${conference.Hearing_id}",
-                    null);
+                _logger.LogError(e, $"Unable to retrieve booking participants for hearing ${conference.Hearing_id}", null);
             }
 
-            try
+            if (bookingParticipants.Any())
             {
-                ValidateConferenceAndBookingParticipantsMatch(conference.Participants, bookingParticipants);
-                
+                try
+                {
+                    ValidateConferenceAndBookingParticipantsMatch(conference.Participants, bookingParticipants);
+                }
+                catch (AggregateException e)
+                {
+                    return StatusCode((int) HttpStatusCode.ExpectationFailed, e);
+                }
             }
-            catch (AggregateException e)
-            {
-                return StatusCode((int) HttpStatusCode.ExpectationFailed, e);
-            }
-
 
             // these are roles that are filtered against when lists participants on the UI
             var displayRoles = new List<UserRole>
             {
-                UserRole.Judge, UserRole.Individual, UserRole.Representative
+                UserRole.Judge,
+                UserRole.Individual,
+                UserRole.Representative
             };
             conference.Participants = conference.Participants
                 .Where(x => displayRoles.Contains((UserRole) x.User_role.GetValueOrDefault())).ToList();

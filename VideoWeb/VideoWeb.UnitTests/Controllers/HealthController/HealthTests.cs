@@ -110,6 +110,40 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
             response.EventsCallbackHealth.Successful.Should().BeFalse();
             response.EventsCallbackHealth.ErrorMessage.Should().NotBeNullOrWhiteSpace();
         }
+        
+        [Test]
+        public async Task Should_return_internal_server_error_result_when_non_video_api_exception_thrown()
+        {
+            var exception = new UriFormatException("Test format is invalid");
+
+            _eventsServiceClientMock
+                .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
+                .ThrowsAsync(exception);
+
+            var result = await _controller.Health();
+            var typedResult = (ObjectResult) result;
+            typedResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
+            var response = (HealthCheckResponse) typedResult.Value;
+            response.EventsCallbackHealth.Successful.Should().BeFalse();
+            response.EventsCallbackHealth.ErrorMessage.Should().NotBeNullOrWhiteSpace();
+        }
+
+        [Test]
+        public async Task should_return_ok_when_exception_is_not_internal_server_error()
+        {
+            var exception = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
+                "Please provide a valid conference Id", null, default(ProblemDetails), null);
+
+            _eventsServiceClientMock
+                .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
+                .ThrowsAsync(exception);
+
+            var result = await _controller.Health();
+            var typedResult = (ObjectResult) result;
+            typedResult.StatusCode.Should().Be((int) HttpStatusCode.OK);
+            var response = (HealthCheckResponse) typedResult.Value;
+            response.EventsCallbackHealth.Successful.Should().BeTrue();
+        }
 
         [Test]
         public async Task should_return_ok_when_all_services_are_running()
