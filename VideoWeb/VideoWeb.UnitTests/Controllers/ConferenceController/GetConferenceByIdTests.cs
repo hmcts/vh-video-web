@@ -96,7 +96,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var typedResult = result.Value;
             typedResult.Should().BeNull();
             var objectResult = (ObjectResult) result.Result;
-            objectResult.StatusCode.Should().Be(apiException.StatusCode);
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
         }
 
 
