@@ -35,7 +35,7 @@ namespace VideoWeb.Services
             var httpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
 
 
-            var response = await _httpClient.PostAsync(new Uri("callback/conference"), httpContent).ConfigureAwait(false);
+            var response = await _httpClient.PostAsync("callback/conference", httpContent).ConfigureAwait(false);
             try
             {
                 var headers_ = System.Linq.Enumerable.ToDictionary(response.Headers, h_ => h_.Key, h_ => h_.Value);
