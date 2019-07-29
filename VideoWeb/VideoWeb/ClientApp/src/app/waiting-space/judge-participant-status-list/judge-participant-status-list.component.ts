@@ -172,7 +172,7 @@ export class JudgeParticipantStatusListComponent implements OnInit {
     } else if (participant.status === ParticipantStatus.Disconnected) {
       return 'disconnected';
     } else if (participant.status === ParticipantStatus.InConsultation) {
-      return 'in consultation';
+      return 'in a consultation';
     } else if (participant.status === ParticipantStatus.InHearing) {
       return 'in a hearing';
     } else if (participant.status === ParticipantStatus.Joining) {
@@ -181,6 +181,28 @@ export class JudgeParticipantStatusListComponent implements OnInit {
       return 'not signed in';
     } else if (participant.status === ParticipantStatus.UnableToJoin) {
       return 'unable to join';
+    } else if (participant.status === ParticipantStatus.None) {
+      return 'not signed in';
+    }
+  }
+
+  getParticipantStatusCss(participant: ParticipantResponse): string {
+    if (participant.status === ParticipantStatus.Available) {
+      return 'connected';
+    } else if (participant.status === ParticipantStatus.Disconnected) {
+      return 'disconnected';
+    } else if (participant.status === ParticipantStatus.InConsultation) {
+      return 'in_a_consultation';
+    } else if (participant.status === ParticipantStatus.InHearing) {
+      return 'in_a_hearing';
+    } else if (participant.status === ParticipantStatus.Joining) {
+      return 'joining';
+    } else if (participant.status === ParticipantStatus.NotSignedIn) {
+      return 'not_signed_in';
+    } else if (participant.status === ParticipantStatus.UnableToJoin) {
+      return 'unable_to_join';
+    } else if (participant.status === ParticipantStatus.None) {
+      return 'not_signed_in';
     }
   }
 

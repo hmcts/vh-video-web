@@ -16,19 +16,21 @@
   letter-spacing: 1px;
 }
 
+.label-status--available,
 .label-status--disconnected {
   background-color: govuk-colour("red");
   text-transform: uppercase;
 }
 
-.label-status--notsignedin {
+.label-status--not_signed_in,
+.label-status--unable_to_join {
   background-color: govuk-colour("grey-1");
   text-transform: uppercase;
 }
 
 .label-status--connected,
-.label-status--inconsultation,
-.label-status--inahearing {
+.label-status--in_a_consultation,
+.label-status--in_a_hearing {
   background-color: govuk-colour("green");
   text-transform: uppercase;
 }
