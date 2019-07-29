@@ -9,6 +9,7 @@ using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 using HealthCheckResponse = VideoWeb.Contract.Responses.HealthCheckResponse;
+using HealthCheck = VideoWeb.Contract.Responses.HealthCheck;
 
 namespace VideoWeb.Controllers
 {
@@ -83,19 +84,7 @@ namespace VideoWeb.Controllers
             }
             catch (Exception ex)
             {
-                if (!(ex is VideoApiException))
-                {
-                    response.VideoApiHealth.Successful = false;
-                    response.VideoApiHealth.ErrorMessage = ex.Message;
-                    response.VideoApiHealth.Data = ex.Data;
-                }
-
-                if (((VideoApiException) ex).StatusCode == (int) HttpStatusCode.InternalServerError)
-                {
-                    response.VideoApiHealth.Successful = false;
-                    response.VideoApiHealth.ErrorMessage = ex.Message;
-                    response.VideoApiHealth.Data = ex.Data;
-                }
+                response.VideoApiHealth = HandleVideoApiCallException(ex);
             }
 
             try
@@ -115,19 +104,7 @@ namespace VideoWeb.Controllers
             }
             catch (Exception ex)
             {
-                if (!(ex is VideoApiException))
-                {
-                    response.EventsCallbackHealth.Successful = false;
-                    response.EventsCallbackHealth.ErrorMessage = ex.Message;
-                    response.EventsCallbackHealth.Data = ex.Data;
-                }
-
-                if (((VideoApiException) ex).StatusCode == (int) HttpStatusCode.InternalServerError)
-                {
-                    response.EventsCallbackHealth.Successful = false;
-                    response.EventsCallbackHealth.ErrorMessage = ex.Message;
-                    response.EventsCallbackHealth.Data = ex.Data;
-                }
+                response.EventsCallbackHealth = HandleVideoApiCallException(ex);
             }
 
 
@@ -138,6 +115,30 @@ namespace VideoWeb.Controllers
             }
 
             return Ok(response);
+        }
+
+        private HealthCheck HandleVideoApiCallException(Exception ex)
+        {
+            var isApiException = ex is VideoApiException;
+            var healthCheck = new HealthCheck {Successful = true};
+            if (isApiException)
+            {
+                if (((VideoApiException) ex).StatusCode != (int) HttpStatusCode.InternalServerError)
+                {
+                    return healthCheck;
+                }
+                healthCheck.Successful = false;
+                healthCheck.ErrorMessage = ex.Message;
+                healthCheck.Data = ex.Data;
+            }
+            else
+            {
+                healthCheck.Successful = false;
+                healthCheck.ErrorMessage = ex.Message;
+                healthCheck.Data = ex.Data;
+            }
+
+            return healthCheck;
         }
     }
 }
