@@ -1,7 +1,7 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus, TokenResponse } from 'src/app/services/clients/api-client';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -12,6 +12,7 @@ import { Hearing } from '../../shared/models/hearing';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 declare var PexRTC: any;
+declare var HeartbeatFactory: any;
 
 @Component({
   selector: 'app-participant-waiting-room',
@@ -23,7 +24,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   loadingData: boolean;
   hearing: Hearing;
   participant: ParticipantResponse;
-
+  token: TokenResponse;
   pexipAPI: any;
   stream: MediaStream;
   connected: boolean;
@@ -54,6 +55,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     this.logger.debug('Loading participant waiting room');
     this.connected = false;
     this.initHearingAlert();
+    this.getJwtoken();
     this.getConference();
   }
 
@@ -112,6 +114,17 @@ export class ParticipantWaitingRoomComponent implements OnInit {
           this.loadingData = false;
           this.errorService.handleApiError(error);
         });
+  }
+
+  getJwtoken(): void {
+    this.logger.debug('retrieving jwtoken');
+    this.videoWebService.getJwToken(this.participant.id).subscribe((token: TokenResponse) => {
+      this.logger.debug('retrieved jwtoken for heartbeat');
+      this.token = token;
+    },
+      (error) => {
+        this.errorService.handleApiError(error);
+      });
   }
 
   getConferenceStatusText(): string {
@@ -189,6 +202,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       self.updateShowVideo();
       self.logger.info('successfully connected to call');
       self.stream = stream;
+      const heartbeatFactory = new HeartbeatFactory(this.pexipAPI, null, this.hearing.getConference().Id, this.participant.Id, this.token);
     };
 
     this.pexipAPI.onError = function (reason) {
