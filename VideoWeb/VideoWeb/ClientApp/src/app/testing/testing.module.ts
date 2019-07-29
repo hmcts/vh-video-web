@@ -21,6 +21,7 @@ import { MicVisualiserStubComponent } from './stubs/mic-visualiser-stub';
 import { VhoParticipantStatusStubComponent } from './stubs/vho-participant-status-stub';
 import { SelfTestStubComponent } from './stubs/self-test-stub';
 import { SelectMediaDevicesStubComponent } from './stubs/select-media-devices-stub';
+import { BetaBannerStubComponent } from './stubs/beta-banner-stub';
 
 @NgModule({
   imports: [
@@ -46,7 +47,8 @@ import { SelectMediaDevicesStubComponent } from './stubs/select-media-devices-st
     VhoParticipantStatusStubComponent,
     SelfTestStubComponent,
     SelectMediaDevicesStubComponent,
-    IndividualParticipantStatusListStubComponent
+    IndividualParticipantStatusListStubComponent,
+    BetaBannerStubComponent
   ]
 })
 export class TestingModule { }
