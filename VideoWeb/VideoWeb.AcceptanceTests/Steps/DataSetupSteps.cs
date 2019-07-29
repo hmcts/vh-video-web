@@ -26,6 +26,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             _context = context;
         }
 
+        [Given(@"I have a hearing")]
+        public void GivenIHaveAHearingOnly()
+        {
+            GivenIHaveAHearing();
+        }
+
         [Given(@"I have a hearing and a conference")]
         [Given(@"I have another hearing and a conference")]
         public void GivenIHaveAHearingAndAConference()
@@ -51,7 +57,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             GetTheNewConferenceDetails();
         }
 
-        [Given(@"I have a hearing")]
         public void GivenIHaveAHearing(int minutes = 0)
         {
             var hearingRequest = new HearingRequestBuilder()
@@ -62,12 +67,16 @@ namespace VideoWeb.AcceptanceTests.Steps
             _context.RequestBody = hearingRequest.Build();
             _context.Request = _context.Post(_bookingEndpoints.BookNewHearing(), _context.RequestBody);
 
-            WhenISendTheRequestToTheBookingsApiEndpoint();
-            ThenTheHearingOrConferenceShouldBe(HttpStatusCode.Created);
+            new ExecuteRequestBuilder()
+                .WithContext(_context)
+                .WithExpectedStatusCode(HttpStatusCode.Created)
+                .SendToBookingsApi();
+
             ThenTheHearingDetailsShouldBeRetrieved();
         }
 
         [Given(@"Get the new conference details")]
+        [When(@"I attempt to retrieve the new conference details from the video api")]
         public void GetTheNewConferenceDetails()
         {
             IConferenceRetriever conferenceRetriever;
@@ -91,22 +100,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 throw new DataException("Conference Id has not been set");
             }
-        }
-
-        [When(@"I send the requests to the bookings api")]
-        public void WhenISendTheRequestToTheBookingsApiEndpoint()
-        {
-            _context.Response = _context.BookingsApiClient().Execute(_context.Request);
-            if (_context.Response.Content != null)
-                _context.Json = _context.Response.Content;
-        }
-
-        [Then(@"the hearings should be (.*)")]
-        [Then(@"the conference should be (.*)")]
-        public void ThenTheHearingOrConferenceShouldBe(HttpStatusCode status)
-        {
-            _context.Response.StatusCode.Should().Be(status);
-            _context.Response.IsSuccessful.Should().Be(true);           
         }
 
         [Then(@"hearing details should be retrieved")]

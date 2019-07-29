@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading;
 using FluentAssertions;
 using Testing.Common.Helpers;
+using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.Common.Helpers;
 using VideoWeb.Services.Video;
@@ -51,9 +52,12 @@ namespace VideoWeb.AcceptanceTests.Configuration
             };
 
             context.Request = context.Post(new VideoApiUriFactory().ConferenceEndpoints.BookNewConference, request);
-            context.Response = context.VideoApiClient().Execute(context.Request);
-            context.Json = context.Response.Content;
-            context.Response.StatusCode.Should().Be(HttpStatusCode.Created);
+
+            new ExecuteRequestBuilder()
+                .WithContext(context)
+                .WithExpectedStatusCode(HttpStatusCode.Created)
+                .SendToVideoApi();
+            
             var conference = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(context.Json);
             conference.Should().NotBeNull();
 
@@ -71,9 +75,10 @@ namespace VideoWeb.AcceptanceTests.Configuration
             var conferenceFound = false;
             for (var i = 0; i < waitForConferenceToBeCreatedRetries; i++)
             {
-                context.Response = context.VideoApiClient().Execute(context.Request);
-                if (context.Response.Content != null)
-                    context.Json = context.Response.Content;
+                new ExecuteRequestBuilder()
+                    .WithContext(context)
+                    .SendWithoutVerification();
+
                 if (context.Response.StatusCode.Equals(HttpStatusCode.OK))
                 {
                     conferenceFound = true;

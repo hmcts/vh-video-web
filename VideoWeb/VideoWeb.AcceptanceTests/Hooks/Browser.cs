@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
@@ -89,8 +90,12 @@ namespace VideoWeb.AcceptanceTests.Hooks
             testContext.TargetBrowser = GetTargetBrowser();
             testContext.RunningLocally = testContext.VideoApiBaseUrl.Contains("localhost");
 
-            testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, testContext.TargetBrowser);
+            testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, testContext.TargetBrowser);            
+        }
 
+        [BeforeScenario]
+        public void LaunchBrowser(TestContext testContext, ScenarioContext scenarioContext)
+        {
             _browserContext.BrowserSetup(testContext.VideoWebUrl, testContext.Environment);
             _browserContext.NavigateToPage();
         }
