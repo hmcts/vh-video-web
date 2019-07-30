@@ -34,7 +34,7 @@
         </div>
 
         <div class="govuk-body-s govuk-!-margin-bottom-3" *ngIf="isUserJudge()">
-          <label class="govuk-body-s label-status label-status--{{getParticipantStatus(participant)}}">
+          <label class="govuk-body-s label-status label-status--{{getParticipantStatusCss(participant)}}">
             {{ getParticipantStatus(participant) }}
           </label>
         </div>
@@ -51,7 +51,7 @@
   </div>
 
   <div *ngIf="!litigantInPerson">
-    <div *ngFor="let participant of representativeParticipants" class="govuk-grid-row govuk-!-margin-bottom-1">
+    <div *ngFor="let participant of nonJugdeParticipants" class="govuk-grid-row govuk-!-margin-bottom-1">
       <div id="p-row-{{participant.id}}" class="govuk-grid-column-full govuk-!-margin-top-2">
 
         <!-- represented by solicitor -->
@@ -73,7 +73,7 @@
         </div>
 
         <div class="govuk-body-s govuk-!-margin-bottom-3" *ngIf="isUserJudge()">
-          <label class="govuk-body-s label-status label-status--{{getParticipantStatus(participant)}}">
+          <label class="govuk-body-s label-status label-status--{{getParticipantStatusCss(participant)}}">
             {{ getParticipantStatus(participant) }}
           </label>
         </div>
