@@ -1,4 +1,4 @@
-import { Component, Input, NgZone, OnInit } from '@angular/core';
+import { Component, Input, NgZone, OnInit, Output } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { SnotifyButton } from 'ng-snotify';
 import {
@@ -8,6 +8,9 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { EventsService } from 'src/app/services/events.service';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { NotificationService } from 'src/app/services/notification.service';
+import { ModalService } from 'src/app/services/modal.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { Participant } from 'src/app/shared/models/participant';
 
 @Component({
   selector: 'app-individual-participant-status-list',
@@ -21,18 +24,38 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   nonJugdeParticipants: ParticipantResponse[];
   judge: ParticipantResponse;
 
+  consultationRequestee: Participant;
+  consultationRequester: Participant;
+
   constructor(
     private adalService: AdalService,
     private consultationService: ConsultationService,
     private eventService: EventsService,
     private ngZone: NgZone,
-    private notificationService: NotificationService
+    private modalService: ModalService,
+    private logger: Logger
   ) { }
 
   ngOnInit() {
     this.filterNonJudgeParticipants();
     this.filterJudge();
     this.setupSubscribers();
+  }
+
+  private setupSubscribers() {
+    this.eventService.start();
+
+    this.eventService.getConsultationMessage().subscribe(message => {
+      this.ngZone.run(() => {
+        if (message.result === ConsultationAnswer.Accepted) {
+          this.handleAcceptedConsultationRequest(message);
+        } else if (message.result === ConsultationAnswer.Rejected) {
+          this.handleRejectedConsultationRequest(message);
+        } else {
+          this.displayConsultationRequestPopup(message);
+        }
+      });
+    });
   }
 
   isParticipantAvailable(participant: ParticipantResponse): boolean {
@@ -55,102 +78,70 @@ export class IndividualParticipantStatusListComponent implements OnInit {
 
   begingCallWith(participant: ParticipantResponse): void {
     if (this.canCallParticipant(participant)) {
-      this.raiseConsultationRequestEvent(participant);
+      this.modalService.open('raise-pc-modal');
+      const requestee = this.conference.participants.find(x => x.id === participant.id);
+      const requester = this.conference.participants.find
+        (x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
+
+      this.consultationRequestee = new Participant(requestee);
+      this.logger.event(`${requester.username} requesting private consultation with ${requestee.username}`);
+      this.consultationService.raiseConsultationRequest(this.conference, requester, requestee)
+        .subscribe(() => {
+          this.logger.info('Raised consultation request event');
+        },
+          error => {
+            this.logger.error('Failed to raise consultation request', error);
+          }
+        );
     }
   }
 
-  private setupSubscribers() {
-    this.eventService.start();
-
-    this.eventService.getConsultationMessage().subscribe(message => {
-      this.ngZone.run(() => {
-        if (message.result === ConsultationAnswer.Accepted) {
-          this.handleAcceptedConsultationRequest(message);
-        } else if (message.result === ConsultationAnswer.Rejected) {
-          this.handleRejectedConsultationRequest(message);
-        } else {
-          this.displayConsultationRequestPopup(message);
-        }
-      });
-    });
-  }
-
-  private raiseConsultationRequestEvent(participant: ParticipantResponse): void {
-    const requestee = this.conference.participants.find(x => x.id === participant.id);
-    const requester = this.conference.participants.find
-      (x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
-
-    const message = 'Requesting consultation with ' + requestee.display_name;
-    this.notificationService.info(message, 5000, true);
-
-    this.consultationService.raiseConsultationRequest(this.conference, requester, requestee)
-      .subscribe(() => {
-        console.info('Raised consultation request event');
-      },
-        error => {
-          console.error(error);
-        }
-      );
+  cancelConsultationRequest() {
+    this.modalService.close('raise-pc-modal');
   }
 
   private displayConsultationRequestPopup(message: ConsultationMessage) {
     const requester = this.conference.participants.find(x => x.username === message.requestedBy);
     const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
-
-    const toastMessage = requester.display_name + ' would like to speak to you. Would you like to join a private room?';
-    const buttons: SnotifyButton[] = [
-      {
-        text: 'Accept', bold: true, action: (toast) => {
-          this.notificationService.clearNotification(toast.id);
-          this.acceptConsultationRequest(requester, requestee);
-        }
-      },
-      {
-        text: 'Reject', action: (toast) => {
-          this.notificationService.clearNotification(toast.id);
-          this.rejectConsultationRequest(requester, requestee);
-        }
-      },
-    ];
-    this.notificationService.confirm(toastMessage, buttons, 0, true);
+    this.consultationRequester = new Participant(requester);
+    this.consultationRequestee = new Participant(requestee);
+    this.modalService.open('receive-pc-modal');
   }
 
-  acceptConsultationRequest(requester: ParticipantResponse, requestee: ParticipantResponse) {
-    this.consultationService.respondToConsultationRequest(this.conference, requester, requestee, ConsultationAnswer.Accepted)
-      .subscribe(() => {
-        console.info('accepted consultation request from ' + requester.display_name);
-      },
-        error => {
-          alert('Failed to send response, check logs');
-          console.error(error);
-        }
-      );
-  }
+  async answerConsultationRequest(answer: ConsultationAnswer) {
+    this.modalService.close('receive-pc-modal');
+    this.logger.event(`${this.consultationRequestee.displayName} responded to consultation: ${answer}`);
 
-  rejectConsultationRequest(requester: ParticipantResponse, requestee: ParticipantResponse) {
-    this.consultationService.respondToConsultationRequest(this.conference, requester, requestee, ConsultationAnswer.Rejected)
-      .subscribe(() => {
-        console.info(requestee.display_name + ' rejected called request from ' + requester.display_name);
-      },
-        error => {
-          alert('Failed to send response, check logs');
-          console.error(error);
-        }
-      );
+    try {
+      await this.consultationService.respondToConsultationRequest(
+        this.conference, this.consultationRequester.base,
+        this.consultationRequestee.base,
+        ConsultationAnswer.Accepted).toPromise();
+    } catch (error) {
+      this.logger.error('Failed to respond to consultation request', error);
+    }
   }
 
   private handleAcceptedConsultationRequest(message: ConsultationMessage) {
+    this.modalService.close('raise-pc-modal');
+    const requester = this.conference.participants.find(x => x.username === message.requestedBy);
     const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
-
-    const toastMessage = requestee.display_name + ' accepted your call. Please wait to be transferred.';
-    this.notificationService.success(toastMessage, 5000);
+    this.consultationRequester = new Participant(requester);
+    this.consultationRequestee = new Participant(requestee);
+    this.modalService.open('accepted-pc-modal');
   }
 
   private handleRejectedConsultationRequest(message: ConsultationMessage) {
+    this.modalService.close('raise-pc-modal');
+    const requester = this.conference.participants.find(x => x.username === message.requestedBy);
     const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
+    this.consultationRequester = new Participant(requester);
+    this.consultationRequestee = new Participant(requestee);
+    this.modalService.open('rejected-pc-modal');
+  }
 
-    const toastMessage = requestee.display_name + ' rejected your call';
-    this.notificationService.error(toastMessage, 5000);
+  closeConsultationRejection() {
+    this.modalService.close('rejected-pc-modal');
   }
 
   private filterNonJudgeParticipants(): void {
