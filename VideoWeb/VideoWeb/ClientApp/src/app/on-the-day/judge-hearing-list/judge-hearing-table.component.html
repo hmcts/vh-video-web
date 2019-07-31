@@ -44,32 +44,32 @@
 
             <span *ngIf="getRepresentative(hearing.applicants)">
               <p class="govuk-!-margin-0 govuk-!-padding-0">
-                <span class="govuk-!-font-weight-bold">{{getRepresentative(hearing.applicants)?.displayName}}</span>
+                <span class="govuk-!-font-weight-bold">{{getRepresentative(hearing.applicants).displayName}}</span>
                 Solicitor
               </p>
               <p class="govuk-!-margin-0 govuk-!-padding-0">for <span class="govuk-!-font-weight-bold">
-                  {{getRepresentative(hearing.applicants)?.representee }}</span>
+                  {{getRepresentative(hearing.applicants).representee }}</span>
               </p>
             </span>
             <span *ngIf="!getRepresentative(hearing.applicants) && getIndividual(hearing.applicants)">
               <p class="govuk-!-margin-0 govuk-!-padding-0 govuk-!-font-weight-bold">
-                {{getIndividual(hearing.applicants)?.displayName}} ({{getIndividual(hearing.applicants)?.caseGroup}})
+                {{getIndividual(hearing.applicants).displayName}} ({{getIndividual(hearing.applicants).caseGroup}})
               </p>
             </span>
 
             <!-- Respondents -->
             <span *ngIf="getRepresentative(hearing.respondents)">
               <p class="govuk-!-margin-0 govuk-!-margin-top-3 govuk-!-padding-0">
-                <span class="govuk-!-font-weight-bold">{{getRepresentative(hearing.respondents)?.displayName}}</span>
+                <span class="govuk-!-font-weight-bold">{{getRepresentative(hearing.respondents).displayName}}</span>
                 Solicitor
               </p>
               <p class="govuk-!-margin-0 govuk-!-padding-0">for <span class="govuk-!-font-weight-bold">
-                  {{getRepresentative(hearing.respondents)?.representee}}</span>
+                  {{getRepresentative(hearing.respondents).representee}}</span>
               </p>
             </span>
             <span *ngIf="!getRepresentative(hearing.respondents) && getIndividual(hearing.respondents)">
               <p class="govuk-!-margin-0 govuk-!-margin-top-3 govuk-!-padding-0 govuk-!-font-weight-bold">
-                {{getIndividual(hearing.respondents)?.displayName}} ({{getIndividual(hearing.respondents)?.caseGroup}})
+                {{getIndividual(hearing.respondents).displayName}} ({{getIndividual(hearing.respondents).caseGroup}})
               </p>
             </span>
 
