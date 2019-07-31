@@ -60,7 +60,7 @@
         };
         if (this.token !== "none")
         {
-            request.headers.Authorization = this.token;
+            request.headers.Authorization = `Bearer ${this.token}`;
         }
 
         fetch(url, request)

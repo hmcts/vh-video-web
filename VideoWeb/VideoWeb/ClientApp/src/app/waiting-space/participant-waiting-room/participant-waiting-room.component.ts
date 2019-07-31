@@ -24,6 +24,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   loadingData: boolean;
   hearing: Hearing;
   participant: ParticipantResponse;
+  conference: ConferenceResponse;
   token: TokenResponse;
   pexipAPI: any;
   stream: MediaStream;
@@ -55,7 +56,6 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     this.logger.debug('Loading participant waiting room');
     this.connected = false;
     this.initHearingAlert();
-    this.getJwtoken();
     this.getConference();
   }
 
@@ -102,8 +102,10 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       .subscribe(async (data: ConferenceResponse) => {
         this.loadingData = false;
         this.hearing = new Hearing(data);
+        this.conference = this.hearing.getConference();
         this.participant = data.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
         this.logger.info(`Participant waiting room for conference: ${conferenceId} and participant: ${this.participant.id}`);
+        this.getJwtoken();
         this.subscribeToClock();
         this.setupSubscribers();
         await this.setupPexipClient();
@@ -202,7 +204,11 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       self.updateShowVideo();
       self.logger.info('successfully connected to call');
       self.stream = stream;
-      const heartbeatFactory = new HeartbeatFactory(this.pexipAPI, null, this.hearing.getConference().Id, this.participant.Id, this.token);
+
+      const baseUrl =  self.conference.pexip_node_uri.replace('sip.', '');
+      const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${self.conference.id}`;
+      console.log(url);
+      const heartbeatFactory = new HeartbeatFactory(self.pexipAPI, url, self.conference.id, self.participant.id, self.token.token);
     };
 
     this.pexipAPI.onError = function (reason) {
