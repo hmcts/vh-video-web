@@ -1,15 +1,13 @@
-import { Component, Input, NgZone, OnInit, Output } from '@angular/core';
+import { Component, Input, NgZone, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
-import { SnotifyButton } from 'ng-snotify';
+import { ConsultationService } from 'src/app/services/api/consultation.service';
 import {
   ConferenceResponse, ConsultationAnswer, ParticipantResponse, ParticipantStatus, UserRole
 } from 'src/app/services/clients/api-client';
-import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { EventsService } from 'src/app/services/events.service';
-import { ConsultationMessage } from 'src/app/services/models/consultation-message';
-import { NotificationService } from 'src/app/services/notification.service';
-import { ModalService } from 'src/app/services/modal.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ModalService } from 'src/app/services/modal.service';
+import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { Participant } from 'src/app/shared/models/participant';
 
 @Component({
@@ -26,6 +24,11 @@ export class IndividualParticipantStatusListComponent implements OnInit {
 
   consultationRequestee: Participant;
   consultationRequester: Participant;
+
+  private readonly REQUEST_PC_MODAL = 'raise-pc-modal';
+  private readonly RECIEVE_PC_MODAL = 'receive-pc-modal';
+  private readonly ACCEPTED_PC_MODAL = 'accepted-pc-modal';
+  private readonly REJECTED_PC_MODAL = 'rejected-pc-modal';
 
   constructor(
     private adalService: AdalService,
@@ -78,7 +81,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
 
   begingCallWith(participant: ParticipantResponse): void {
     if (this.canCallParticipant(participant)) {
-      this.modalService.open('raise-pc-modal');
+      this.displayModal(this.REQUEST_PC_MODAL);
       const requestee = this.conference.participants.find(x => x.id === participant.id);
       const requester = this.conference.participants.find
         (x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
@@ -97,7 +100,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   }
 
   cancelConsultationRequest() {
-    this.modalService.close('raise-pc-modal');
+    this.closeAllPCModals();
   }
 
   private displayConsultationRequestPopup(message: ConsultationMessage) {
@@ -105,11 +108,11 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
     this.consultationRequester = new Participant(requester);
     this.consultationRequestee = new Participant(requestee);
-    this.modalService.open('receive-pc-modal');
+    this.displayModal(this.RECIEVE_PC_MODAL);
   }
 
   async answerConsultationRequest(answer: ConsultationAnswer) {
-    this.modalService.close('receive-pc-modal');
+    this.closeAllPCModals();
     this.logger.event(`${this.consultationRequestee.displayName} responded to consultation: ${answer}`);
 
     try {
@@ -123,25 +126,36 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   }
 
   private handleAcceptedConsultationRequest(message: ConsultationMessage) {
-    this.modalService.close('raise-pc-modal');
-    const requester = this.conference.participants.find(x => x.username === message.requestedBy);
-    const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
-    this.consultationRequester = new Participant(requester);
-    this.consultationRequestee = new Participant(requestee);
-    this.modalService.open('accepted-pc-modal');
+    this.initConsultationParticipants(message);
+    this.displayModal(this.ACCEPTED_PC_MODAL);
   }
 
   private handleRejectedConsultationRequest(message: ConsultationMessage) {
-    this.modalService.close('raise-pc-modal');
+    this.initConsultationParticipants(message);
+    this.displayModal(this.REJECTED_PC_MODAL);
+  }
+
+  displayModal(modalId: string) {
+    this.closeAllPCModals();
+    this.modalService.open(modalId);
+  }
+
+  private closeAllPCModals(): void {
+    this.modalService.close(this.REQUEST_PC_MODAL);
+    this.modalService.close(this.RECIEVE_PC_MODAL);
+    this.modalService.close(this.ACCEPTED_PC_MODAL);
+    this.modalService.close(this.REJECTED_PC_MODAL);
+  }
+
+  closeConsultationRejection() {
+    this.closeAllPCModals();
+  }
+
+  private initConsultationParticipants(message: ConsultationMessage): void {
     const requester = this.conference.participants.find(x => x.username === message.requestedBy);
     const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
     this.consultationRequester = new Participant(requester);
     this.consultationRequestee = new Participant(requestee);
-    this.modalService.open('rejected-pc-modal');
-  }
-
-  closeConsultationRejection() {
-    this.modalService.close('rejected-pc-modal');
   }
 
   private filterNonJudgeParticipants(): void {

@@ -61,7 +61,6 @@ export class UserMediaService {
             new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)
         );
 
-        console.log(this.availableDeviceList);
         this.connectedDevices.next(this.availableDeviceList);
     }
 
