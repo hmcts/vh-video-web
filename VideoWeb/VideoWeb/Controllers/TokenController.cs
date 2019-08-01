@@ -54,7 +54,7 @@ namespace VideoWeb.Controllers
             }
 
             var expiresOn = DateTime.UtcNow.AddMinutes(180).ToUniversalTime().ToString(CultureInfo.InvariantCulture);
-            var token = _customJwtTokenProvider.GenerateToken(participantId.ToString(), 180);
+            var token = _customJwtTokenProvider.GenerateToken(participantId.ToString(), 240);
             var tokenResponse = new TokenResponse {ExpiresOn = expiresOn, Token = token};
             return Ok(tokenResponse);
         }
