@@ -13,8 +13,10 @@ namespace VideoWeb.AcceptanceTests.Users
         private readonly string _baseUrl;
         public NgWebDriver Driver { get; set; }
         private readonly SeleniumEnvironment _environment;
+        public TargetBrowser TargetBrowser { get; set; }
         public string PageUrl() => Driver.Url;
         public string PageTitle => Driver.Title;
+        public string LastWindowName { get; set; }
 
         public UserBrowser(UserAccount user, TestContext context)
         {
@@ -69,5 +71,10 @@ namespace VideoWeb.AcceptanceTests.Users
 
         }
 
+        public void BrowserTearDown()
+        {
+            Driver.Quit();
+            Driver.Dispose();
+        }
     }
 }

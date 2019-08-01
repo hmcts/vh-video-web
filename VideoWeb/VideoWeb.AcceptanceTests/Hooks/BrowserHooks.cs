@@ -7,7 +7,6 @@ using Microsoft.Extensions.Options;
 using TechTalk.SpecFlow;
 using Testing.Common.Configuration;
 using Testing.Common.Helpers;
-using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Users;
 using VideoWeb.Common.Security;
@@ -18,28 +17,27 @@ namespace VideoWeb.AcceptanceTests.Hooks
     [Binding]
     public sealed class BrowserHooks
     {
-        private readonly BrowserContext _browserContext;
-        private readonly TestContext _context;
         private readonly SauceLabsSettings _saucelabsSettings;
         private readonly ScenarioContext _scenarioContext;
+        private readonly Dictionary<string, UserBrowser> _browsers;
+        private readonly TestContext _testContext;
 
-        public BrowserHooks(BrowserContext browserContext, TestContext context, SauceLabsSettings saucelabsSettings,
-            ScenarioContext injectedContext)
+        public BrowserHooks(Dictionary<string, UserBrowser> browsers, TestContext testContext, SauceLabsSettings saucelabsSettings, ScenarioContext injectedContext)
         {
-            _browserContext = browserContext;
-            _context = context;
+            _browsers = browsers;
+            _testContext = testContext;
             _saucelabsSettings = saucelabsSettings;
             _scenarioContext = injectedContext;
         }
 
-        private TargetBrowser GetTargetBrowser()
+        private static TargetBrowser GetTargetBrowser(IReadOnlyDictionary<string, UserBrowser> browsers, TestContext context)
         {
-            _browserContext.TargetBrowser = Enum.TryParse(NUnit.Framework.TestContext.Parameters["TargetBrowser"], true, out TargetBrowser targetTargetBrowser) ? targetTargetBrowser : TargetBrowser.Chrome;
-            return _browserContext.TargetBrowser;
+            browsers[context.CurrentUser.Key].TargetBrowser = Enum.TryParse(NUnit.Framework.TestContext.Parameters["TargetBrowser"], true, out TargetBrowser targetTargetBrowser) ? targetTargetBrowser : TargetBrowser.Chrome;
+            return browsers[context.CurrentUser.Key].TargetBrowser;
         }
 
         [BeforeScenario]
-        public void BeforeScenario(TestContext testContext)
+        public void BeforeScenario(Dictionary<string, UserBrowser> browsers, TestContext testContext)
         {
             var azureAdConfiguration = new BookingsConfigLoader().ReadAzureAdSettings();
 
@@ -89,7 +87,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
             testContext.SaucelabsSettings = _saucelabsSettings;
             KillAnyChromeDriverProcesses(_saucelabsSettings);
-            testContext.TargetBrowser = GetTargetBrowser();
+            testContext.TargetBrowser = GetTargetBrowser(browsers, testContext);
             testContext.RunningLocally = testContext.VideoApiBaseUrl.Contains("localhost");
 
             testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, testContext.TargetBrowser);            
@@ -138,28 +136,17 @@ namespace VideoWeb.AcceptanceTests.Hooks
         }
 
         [AfterScenario]
-        public void AfterScenario()
+        public void AfterScenario(Dictionary<string, UserBrowser> browsers, TestContext context)
         {
             if (_saucelabsSettings.RunWithSaucelabs)
             {
                 var passed = _scenarioContext.TestError == null;
-                SaucelabsResult.LogPassed(passed, _browserContext.NgDriver);
+                SaucelabsResult.LogPassed(passed, browsers[context.CurrentUser.Key].Driver);
             }
 
-            _browserContext.NgDriver.Quit();
-            _browserContext.NgDriver.Dispose();
-
-            foreach (var driver in _context.WrappedDrivers.Values)
+            foreach (var browser in browsers.Values)
             {
-                try
-                {
-                    driver.Quit();
-                    driver.Dispose();
-                }
-                catch (Exception ex)
-                {
-                    NUnit.Framework.TestContext.WriteLine(ex.Message);
-                }
+                browser.BrowserTearDown();
             }
 
             var chromeDriverProcesses = Process.GetProcessesByName("ChromeDriver");

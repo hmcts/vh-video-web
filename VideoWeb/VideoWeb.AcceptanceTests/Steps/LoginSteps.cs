@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Contexts;
@@ -25,26 +23,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             _tc = testContext;
             _loginPage = loginPage;
             _commonPageElements = commonPageElements;
-        }
-
-        [Given(@"a new browser is open for user (.*)")]
-        [Given(@"a new browser is open for a (.*)")]
-        [Given(@"a new browser is open for an (.*)")]
-        public void GivenANewBrowserIsOpenFor(string user)
-        {
-            _tc.CurrentUser =
-                _tc.TestSettings.UserAccounts.First(x => x.Lastname.ToLower().Contains(user.ToLower().Replace(" ","")));
-
-            if (_tc.CurrentUser == null)
-                throw new ArgumentOutOfRangeException($"There are no users configured called '{user}'");
-
-            var browser = new UserBrowser(_tc.CurrentUser, _tc);
-            _browsers.Add(_tc.CurrentUser.Key, browser);
-
-            browser.LaunchBrowser();
-            browser.NavigateToPage();
-
-            browser.Retry(() => browser.PageUrl().Should().Contain("login.microsoftonline.com"), 10);
         }
 
         [When(@"the user attempts to login with valid credentials")]

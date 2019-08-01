@@ -37,8 +37,6 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public Guid NewConferenceId { get; set; }
         public TestSettings TestSettings { get; set; }
         public SeleniumEnvironment Environment { get; set; }
-        public Dictionary<string, BrowserContext> Drivers { get; set; }
-        public Dictionary<string, IWebDriver> WrappedDrivers { get; set; }
         public SauceLabsSettings SaucelabsSettings { get; set; }
         public TargetBrowser TargetBrowser { get; set; }
         public bool RunningLocally { get; set; }
@@ -46,8 +44,6 @@ namespace VideoWeb.AcceptanceTests.Contexts
 
         public TestContext()
         {
-            Drivers = new Dictionary<string, BrowserContext>();
-            WrappedDrivers = new Dictionary<string, IWebDriver>();
             Cases = new List<CaseResponse>();
         }
 
