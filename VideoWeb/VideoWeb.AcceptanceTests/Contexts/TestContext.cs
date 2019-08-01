@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using OpenQA.Selenium;
 using RestSharp;
 using Testing.Common.Configuration;
 using VideoWeb.AcceptanceTests.Helpers;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
+using BoDi;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using TechTalk.SpecFlow;
@@ -19,25 +20,25 @@ namespace VideoWeb.AcceptanceTests.Hooks
     {
         private readonly SauceLabsSettings _saucelabsSettings;
         private readonly ScenarioContext _scenarioContext;
-        private readonly Dictionary<string, UserBrowser> _browsers;
-        private readonly TestContext _testContext;
+        private static Dictionary<string, UserBrowser> _browsers;
+        private readonly IObjectContainer _objectContainer;
 
-        public BrowserHooks(Dictionary<string, UserBrowser> browsers, TestContext testContext, SauceLabsSettings saucelabsSettings, ScenarioContext injectedContext)
+        public BrowserHooks(IObjectContainer objectContainer, SauceLabsSettings saucelabsSettings, ScenarioContext injectedContext)
         {
-            _browsers = browsers;
-            _testContext = testContext;
+            _objectContainer = objectContainer;
             _saucelabsSettings = saucelabsSettings;
             _scenarioContext = injectedContext;
         }
 
-        private static TargetBrowser GetTargetBrowser(IReadOnlyDictionary<string, UserBrowser> browsers, TestContext context)
+        [BeforeScenario]
+        public void InitialiseBrowserContainer()
         {
-            browsers[context.CurrentUser.Key].TargetBrowser = Enum.TryParse(NUnit.Framework.TestContext.Parameters["TargetBrowser"], true, out TargetBrowser targetTargetBrowser) ? targetTargetBrowser : TargetBrowser.Chrome;
-            return browsers[context.CurrentUser.Key].TargetBrowser;
+            _browsers = new Dictionary<string, UserBrowser>();
+            _objectContainer.RegisterInstanceAs(_browsers);
         }
 
         [BeforeScenario]
-        public void BeforeScenario(Dictionary<string, UserBrowser> browsers, TestContext testContext)
+        public void BeforeScenario(TestContext testContext)
         {
             var azureAdConfiguration = new BookingsConfigLoader().ReadAzureAdSettings();
 
@@ -87,10 +88,16 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
             testContext.SaucelabsSettings = _saucelabsSettings;
             KillAnyChromeDriverProcesses(_saucelabsSettings);
-            testContext.TargetBrowser = GetTargetBrowser(browsers, testContext);
+            testContext.TargetBrowser = GetTargetBrowser(testContext);
             testContext.RunningLocally = testContext.VideoApiBaseUrl.Contains("localhost");
 
             testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, testContext.TargetBrowser);            
+        }
+
+        private static TargetBrowser GetTargetBrowser(TestContext context)
+        {
+            context.TargetBrowser = Enum.TryParse(NUnit.Framework.TestContext.Parameters["TargetBrowser"], true, out TargetBrowser targetTargetBrowser) ? targetTargetBrowser : TargetBrowser.Chrome;
+            return context.TargetBrowser;
         }
 
         public static void KillAnyChromeDriverProcesses(SauceLabsSettings sauceLabsSettings)

@@ -27,10 +27,10 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
         public IWebDriver GetDriver(string filename)
         {
-            return _saucelabsSettings.RunWithSaucelabs ? InitSauceLabsDriver(filename) : InitLocalDriver(filename,  _scenario);
+            return _saucelabsSettings.RunWithSaucelabs ? InitSauceLabsDriver(filename, _scenario) : InitLocalDriver(filename,  _scenario);
         }
 
-        private IWebDriver InitSauceLabsDriver(string filename)
+        private IWebDriver InitSauceLabsDriver(string filename, ScenarioInfo scenario)
         {
 #pragma warning disable 618
             // disable warning of using desired capabilities
@@ -78,16 +78,32 @@ namespace VideoWeb.AcceptanceTests.Helpers
                     caps.SetCapability("platform", "Windows 10");
                     caps.SetCapability("version", "74.0");
                     caps.SetCapability("autoAcceptAlerts", true);
-                    
-                    var chromeOptions = new Dictionary<string, object>
+
+                    Dictionary<string, object> chromeOptions;
+
+                    if (scenario.Tags.Contains("Video"))
                     {
-                        ["args"] = new List<string>
+                        chromeOptions = new Dictionary<string, object>
                         {
-                            "use-fake-ui-for-media-stream",
-                            "use-fake-device-for-media-stream",
-                            $"use-file-for-fake-video-capture={GetBuildPath}/Videos/{filename}"
-                        }
-                    };
+                            ["args"] = new List<string>
+                            {
+                                "use-fake-ui-for-media-stream",
+                                "use-fake-device-for-media-stream",
+                                $"use-file-for-fake-video-capture={GetBuildPath}/Videos/{filename}"
+                            }
+                        };
+                    }
+                    else
+                    {
+                        chromeOptions = new Dictionary<string, object>
+                        {
+                            ["args"] = new List<string>
+                            {
+                                "use-fake-ui-for-media-stream",
+                                "use-fake-device-for-media-stream"
+                            }
+                        };
+                    }
                     caps.SetCapability(ChromeOptions.Capability, chromeOptions);
                     break;
             }
