@@ -23,7 +23,7 @@ namespace VideoWeb.Common.Security
         
         private string GetCallbackToken()
         {
-            return _customJwtTokenProvider.GenerateToken("VhVideoApi", 2);
+            return _customJwtTokenProvider.GenerateTokenForCallbackEndpoint("VhVideoApi", 2);
         }
     }
 }
