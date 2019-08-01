@@ -41,7 +41,7 @@
             timestamp: now.toISOString(),
             elapsed_time: now - this.startTime,
             hearing_id: this.hearingId,
-            participant_id: this.participantId.split(";")[2],
+            participant_id: this.participantId,
             session_id: this.sessionId,
             media_statistics: mediaStatistics
         }
