@@ -107,10 +107,6 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         this.participant = data.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
         this.logger.info(`Participant waiting room for conference: ${conferenceId} and participant: ${this.participant.id}`);
         this.getJwtoken();
-        this.subscribeToClock();
-        this.setupSubscribers();
-        await this.setupPexipClient();
-        this.call();
       },
         (error) => {
           this.logger.error(`There was an error getting a confernce ${conferenceId}`, error);
@@ -121,11 +117,16 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
   getJwtoken(): void {
     this.logger.debug('retrieving jwtoken');
-    this.videoWebService.getJwToken(this.participant.id).subscribe((token: TokenResponse) => {
+    this.videoWebService.getJwToken(this.participant.id).subscribe(async (token: TokenResponse) => {
       this.logger.debug('retrieved jwtoken for heartbeat');
       this.token = token;
+      this.subscribeToClock();
+      this.setupSubscribers();
+      await this.setupPexipClient();
+      this.call();
     },
       (error) => {
+        this.logger.error(`There was an error getting a jwtoken for ${this.participant.id}`, error);
         this.errorService.handleApiError(error);
       });
   }
