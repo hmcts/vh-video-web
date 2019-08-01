@@ -2,6 +2,7 @@
 {
     public class UserAccount
     {
+        public string Key { get; set; }
         public string Role { get; set; }
         public string AlternativeEmail { get; set; }
         public string Firstname { get; set; }

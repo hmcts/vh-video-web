@@ -8,6 +8,7 @@ using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.AcceptanceTests.Users;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.AcceptanceTests.Steps
@@ -15,19 +16,19 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public sealed class HearingAlertsSteps
     {
-        private readonly BrowserContext _browserContext;
-        private readonly TestContext _context;
+        private readonly Dictionary<string, UserBrowser> _browsers;
+        private readonly TestContext _tc;
         private readonly ScenarioContext _scenarioContext;
         private readonly VhoHearingListPage _hearingListPage;
         private readonly AdminPanelPage _adminPanelPage;
         private const string ParticipantKey = "participant";
         private const string AlertTimeKey = "alert time";
 
-        public HearingAlertsSteps(BrowserContext browserContext, TestContext context, ScenarioContext scenarioContext,
+        public HearingAlertsSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, ScenarioContext scenarioContext,
             VhoHearingListPage hearingListPage, AdminPanelPage adminPanelPage)
         {
-            _browserContext = browserContext;
-            _context = context;
+            _browsers = browsers;
+            _tc = testContext;
             _scenarioContext = scenarioContext;
             _hearingListPage = hearingListPage;
             _adminPanelPage = adminPanelPage;
@@ -37,13 +38,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenAParticipantHasChosenToBlockUserMedia()
         {
             var request = new EventRequestBuilder()
-                .WithConferenceId(_context.NewConferenceId)
+                .WithConferenceId(_tc.NewConferenceId)
                 .WithParticipantId(GetJudgeParticipantId())
                 .WithEventType(EventType.MediaPermissionDenied)
                 .Build();
 
             new ExecuteEventBuilder()
-                .WithContext(_context)
+                .WithContext(_tc)
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
                 .Execute();
@@ -53,14 +54,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenTheJudgeHasSuspendedTheHearing()
         {
             var request = new EventRequestBuilder()
-                .WithConferenceId(_context.NewConferenceId)
+                .WithConferenceId(_tc.NewConferenceId)
                 .WithParticipantId(GetJudgeParticipantId())
                 .WithEventType(EventType.Disconnected)
                 .WithRoomType(RoomType.HearingRoom)
                 .Build();
 
             new ExecuteEventBuilder()
-                .WithContext(_context)
+                .WithContext(_tc)
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
                 .Execute();
@@ -69,18 +70,18 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"a (.*) has disconnected from the (.*)")]
         public void WhenAParticipantHasDisconnectedFromTheHearing(string participant, RoomType room)
         {
-            var participantId = participant.Equals("Judge") ? GetJudgeParticipantId() : GetIndividualParticipantId();
+            var participantId = participant.Equals("Judge") || participant.Equals("Clerk") ? GetJudgeParticipantId() : GetIndividualParticipantId();
             _scenarioContext.Add(ParticipantKey, participantId);
 
             var request = new EventRequestBuilder()
-                .WithConferenceId(_context.NewConferenceId)
+                .WithConferenceId(_tc.NewConferenceId)
                 .WithParticipantId(participantId)
                 .WithEventType(EventType.Disconnected)
                 .WithRoomType(room)
                 .Build();
 
             new ExecuteEventBuilder()
-                .WithContext(_context)
+                .WithContext(_tc)
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
                 .Execute();
@@ -90,13 +91,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenAParticipantHasFailedTheSelf_Test()
         {
             var request = new EventRequestBuilder()
-                .WithConferenceId(_context.NewConferenceId)
+                .WithConferenceId(_tc.NewConferenceId)
                 .WithParticipantId(GetIndividualParticipantId())
                 .WithEventType(EventType.SelfTestFailed)
                 .Build();
 
             new ExecuteEventBuilder()
-                .WithContext(_context)
+                .WithContext(_tc)
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
                 .Execute();
@@ -106,14 +107,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenAParticipantHasFailedTheSelfTestWithReason(string reason)
         {
             var request = new EventRequestBuilder()
-                .WithConferenceId(_context.NewConferenceId)
+                .WithConferenceId(_tc.NewConferenceId)
                 .WithParticipantId(GetIndividualParticipantId())
                 .WithEventType(EventType.SelfTestFailed)
                 .WithReason(reason)
                 .Build();
 
             new ExecuteEventBuilder()
-                .WithContext(_context)
+                .WithContext(_tc)
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
                 .Execute();
@@ -124,21 +125,21 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var alerts = GetAlerts();
             var alert = alerts.First(x => x.AlertType.ToLower().Equals(alertType.ToLower()));
-            _browserContext.NgDriver.ClickAndWaitForPageToLoad(_adminPanelPage.AlertCheckbox(alert.Row + 1));
+            _browsers[_tc.CurrentUser.Key].Driver.ClickAndWaitForPageToLoad(_adminPanelPage.AlertCheckbox(alert.Row + 1));
         }
 
         [When(@"the hearing has been closed")]
         public void WhenTheHearingHasBeenClosed()
         {
             var request = new EventRequestBuilder()
-                .WithConferenceId(_context.NewConferenceId)
+                .WithConferenceId(_tc.NewConferenceId)
                 .WithParticipantId(GetJudgeParticipantId())
                 .WithEventType(EventType.Close)
                 .WithRoomType(RoomType.HearingRoom)
                 .Build();
 
             new ExecuteEventBuilder()
-                .WithContext(_context)
+                .WithContext(_tc)
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
                 .Execute();
@@ -150,7 +151,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Video Hearings Officer user should not see an alert")]
         public void ThenTheVideoHearingsOfficerUserShouldNotSeeAnAlert()
         {
-            _browserContext.NgDriver.Navigate().Refresh();
+            _browsers[_tc.CurrentUser.Key].Driver.Navigate().Refresh();
 
             _scenarioContext.Pending();
         }
@@ -158,24 +159,24 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Video Hearings Officer user should see a (.*) notification and a (.*) alert")]
         public void ThenTheVideoHearingsOfficerUserShouldSeeAnAlert(string notification, string alertType)
         {
-            _browserContext.NgDriver.Navigate().Refresh();
+            _browsers[_tc.CurrentUser.Key].Driver.Navigate().Refresh();
 
-            _browserContext.NgDriver
+            _browsers[_tc.CurrentUser.Key].Driver
                 .WaitUntilElementVisible(
-                    _hearingListPage.VideoHearingsOfficerNumberofAlerts(_context.Hearing.Cases.First().Number))
+                    _hearingListPage.VideoHearingsOfficerNumberofAlerts(_tc.Hearing.Cases.First().Number))
                 .Text.Should().Contain("Alert");
 
-            _browserContext.NgDriver
+            _browsers[_tc.CurrentUser.Key].Driver
                 .WaitUntilElementVisible(
-                    _hearingListPage.VideoHearingsOfficerAlertType(_context.Hearing.Cases.First().Number))
+                    _hearingListPage.VideoHearingsOfficerAlertType(_tc.Hearing.Cases.First().Number))
                 .Text.Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
 
-            _browserContext.NgDriver
+            _browsers[_tc.CurrentUser.Key].Driver
                 .WaitUntilElementVisible(
-                    _hearingListPage.VideoHearingsOfficerSelectHearingButton(_context.Hearing.Cases.First().Number))
+                    _hearingListPage.VideoHearingsOfficerSelectHearingButton(_tc.Hearing.Cases.First().Number))
                 .Click();
 
-            _browserContext.NgDriver.WaitUntilElementVisible(_hearingListPage.AdminIframe).Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_hearingListPage.AdminIframe).Displayed.Should().BeTrue();
 
             var alerts = GetAlerts();
             var timeOfAlert = _scenarioContext.Get<DateTime>(AlertTimeKey).ToString(DateFormats.AlertMessageTimestamp);
@@ -217,7 +218,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Video Hearings Officer should only see (.*) hearings")]
         public void ThenTheVideoHearingsOfficerShouldOnlySeeHearing(int count)
         {
-            _browserContext.NgDriver.WaitUntilElementsVisible(_hearingListPage.VhoHearingRows).Count.Should().Be(count);
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementsVisible(_hearingListPage.VhoHearingRows).Count.Should().Be(count);
         }
 
         [Then(@"the (.*) alert should be updated with the details of the user that actioned the alert")]
@@ -229,22 +230,22 @@ namespace VideoWeb.AcceptanceTests.Steps
             var timeMinusAMinute = DateTime.Now.AddMinutes(-1).ToString(DateFormats.AlertMessageTimestamp);
             var timePlusAMinute = DateTime.Now.AddMinutes(1).ToString(DateFormats.AlertMessageTimestamp);
             alert.ActionedAt.Should().Match<string>(t => t.Equals(time) || t.Equals(timeMinusAMinute) || t.Equals(timePlusAMinute));
-            alert.ActionedBy.Should().Be(_context.CurrentUser.Username.ToLower());
+            alert.ActionedBy.Should().Be(_tc.CurrentUser.Username.ToLower());
         }
 
         private string GetJudgeParticipantId()
         {
-            return _context.Conference.Participants.Find(x => x.User_role.Equals(UserRole.Judge)).Id.ToString();
+            return _tc.Conference.Participants.Find(x => x.User_role.Equals(UserRole.Judge)).Id.ToString();
         }
 
         private string GetIndividualParticipantId()
         {
-            return _context.Conference.Participants.Find(x => x.User_role.Equals(UserRole.Individual)).Id.ToString();
+            return _tc.Conference.Participants.Find(x => x.User_role.Equals(UserRole.Individual)).Id.ToString();
         }
 
         private List<Alert> GetAlerts()
         {
-            var rowsCount = _browserContext.NgDriver.WaitUntilElementsVisible(_adminPanelPage.AlertRows).Count;
+            var rowsCount = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementsVisible(_adminPanelPage.AlertRows).Count;
             rowsCount.Should().BeGreaterThan(0);
             var alerts = new List<Alert>();
 
@@ -253,15 +254,15 @@ namespace VideoWeb.AcceptanceTests.Steps
                 var alert = new Alert
                 {
                     Row = i,
-                    Checkbox = _browserContext.NgDriver.WaitUntilElementsVisible(_adminPanelPage.AlertCheckboxes)[i],
-                    Timestamp = _browserContext.NgDriver.WaitUntilElementsVisible(_adminPanelPage.AlertTimestamp)[i].Text,
-                    AlertType = _browserContext.NgDriver.WaitUntilElementsVisible(_adminPanelPage.AlertMessage)[i].Text,
-                    Username = _browserContext.NgDriver.WaitUntilElementsVisible(_adminPanelPage.AlertByUser)[i].Text
+                    Checkbox = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementsVisible(_adminPanelPage.AlertCheckboxes)[i],
+                    Timestamp = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementsVisible(_adminPanelPage.AlertTimestamp)[i].Text,
+                    AlertType = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementsVisible(_adminPanelPage.AlertMessage)[i].Text,
+                    Username = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementsVisible(_adminPanelPage.AlertByUser)[i].Text
                 };
-                if (!_browserContext.NgDriver.WaitUntilElementsVisible(_adminPanelPage.AlertCheckboxes)[i].Enabled)
+                if (!_browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementsVisible(_adminPanelPage.AlertCheckboxes)[i].Enabled)
                 {
-                    alert.ActionedAt = _browserContext.NgDriver.WaitUntilElementVisible(_adminPanelPage.ActionedByTimestamp(alert.AlertType)).Text;
-                    alert.ActionedBy = _browserContext.NgDriver.WaitUntilElementVisible(_adminPanelPage.ActionedByUser(alert.AlertType)).Text;
+                    alert.ActionedAt = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_adminPanelPage.ActionedByTimestamp(alert.AlertType)).Text;
+                    alert.ActionedBy = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_adminPanelPage.ActionedByUser(alert.AlertType)).Text;
                 }
                 alerts.Add(alert);
             }

@@ -218,6 +218,26 @@ namespace VideoWeb.AcceptanceTests.Steps
             }
         }
 
+        [Then(@"the Clerk waiting room displays the paused status")]
+        public void ThenTheClerkWaitingRoomDisplaysThePausedStatus()
+        {
+            _browser.NgDriver.WaitUntilElementVisible(_clerkPage.PausedText).Displayed.Should()
+                .BeTrue();
+        }
+
+        [Then(@"the participants waiting room displays the paused status")]
+        public void ThenTheWaitingRoomDisplaysThePausedStatus()
+        {
+            _browser.NgDriver.WaitUntilElementVisible(_page.PausedTitle).Displayed.Should()
+                .BeTrue();
+        }
+
+        [Then(@"the Clerk resumes the hearing")]
+        public void ThenTheUserResumesTheHearing()
+        {
+            _browser.NgDriver.ClickAndWaitForPageToLoad(_clerkPage.ResumeVideoCallButton);
+        }
+
         private static string ConvertRgbToHex(string rgbCssValue)
         {
             var numbers = rgbCssValue.Replace("rgba(", "").Replace(")", "").Split(",");

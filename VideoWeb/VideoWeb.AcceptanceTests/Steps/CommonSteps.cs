@@ -8,6 +8,7 @@ using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Journeys;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.AcceptanceTests.Users;
 using TestContext = VideoWeb.AcceptanceTests.Contexts.TestContext;
 
 namespace VideoWeb.AcceptanceTests.Steps
@@ -43,14 +44,16 @@ namespace VideoWeb.AcceptanceTests.Steps
             _declarationSteps = declarationSteps;
         }
 
-        [Given(@"there is a new browser open for (.*)")]
+        [Given(@"there is a brand new browser open for (.*)")]
         public void GivenAnotherBrowserWindowIsLaunched(string participant)
         {
+            _browserContext.LastWindowName = _browserContext.NgDriver.WrappedDriver.WindowHandles.Last();
             var username = participant.ToLower().Equals("clerk") ? _context.GetClerkUser().Username : _context.TestSettings.UserAccounts.Find(x => x.Lastname.Contains(participant)).Username;
             _context.Drivers.Add(username, _browserContext);
             _context.WrappedDrivers.Add(username, _browserContext.NgDriver.WrappedDriver);
             _browserContext.BrowserSetup(_context.VideoWebUrl, _context.Environment, participant);
             _browserContext.NavigateToPage();
+
         }
 
         [Given(@"in the (.*)'s browser")]
@@ -58,7 +61,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"in the (.*)'s browser")]
         public void GivenInTheParticipantsBrowser(string participant)
         {
-            var username = _context.TestSettings.UserAccounts.First(x => x.Lastname.Equals(participant))?.Username;
+            var username = _context.TestSettings.UserAccounts.First(x => x.Lastname.Contains(participant))?.Username;
             if (username == null)
             {
                 throw new ArgumentOutOfRangeException($"There are no users with lastname '{participant}'");
@@ -67,6 +70,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _context.Drivers.Remove(username);
             _context.Drivers.Add(username, _browserContext);
             _browserContext = _context.Drivers.FirstOrDefault(x => x.Key.Equals(username)).Value;
+            _context.WrappedDrivers.FirstOrDefault(x => x.Key.Equals(username)).Value.SwitchTo().Window(_browserContext.LastWindowName);
         }
 
         [Given(@"the (.*) user has progressed to the (.*) page")]

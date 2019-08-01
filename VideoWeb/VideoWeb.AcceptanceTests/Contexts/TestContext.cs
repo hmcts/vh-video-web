@@ -5,7 +5,6 @@ using System.Linq;
 using OpenQA.Selenium;
 using RestSharp;
 using Testing.Common.Configuration;
-using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.Common.Helpers;
 using VideoWeb.Services.Bookings;

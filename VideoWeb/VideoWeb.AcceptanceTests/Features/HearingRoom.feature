@@ -26,12 +26,14 @@ Scenario: Clerk pauses hearing
 	When the user clicks the button with innertext Start video call
 	Then the user is on the Countdown page
 	When the countdown finishes
-	Then the user is on the Hearing Room page for 10 seconds
-	When the user clicks pause
+	Then the Clerk is on the Hearing Room page for 10 seconds
+	When the Clerk clicks pause
 	Then the user is on the Waiting Room page
-	And the waiting room displays the paused status
-	And the hearing status changed to Paused
-	And the user resumes the hearing
+	And the Clerk waiting room displays the paused status
+	#And the hearing status changed to Paused
+	When in the Individual01's browser
+	Then the participants waiting room displays the paused status
+	And the Clerk resumes the hearing
 
 @Chrome @Video
 Scenario: Two participants join hearing
@@ -43,7 +45,7 @@ Scenario: Two participants join hearing
 	When the user clicks the button with innertext Start video call
 	Then the user is on the Countdown page
 	When the countdown finishes
-	Then the user is on the Hearing Room page for 1 minute
+	Then the Clerk is on the Hearing Room page for 1 minute
 
 @Chrome @Video
 Scenario: Four participants join hearing
@@ -59,4 +61,4 @@ Scenario: Four participants join hearing
 	When the user clicks the button with innertext Start video call
 	Then the user is on the Countdown page
 	When the countdown finishes
-	Then the user is on the Hearing Room page for 2 minutes
+	Then the Clerk is on the Hearing Room page for 2 minutes

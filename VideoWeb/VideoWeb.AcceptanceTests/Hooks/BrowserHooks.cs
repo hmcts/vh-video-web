@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
@@ -9,20 +9,21 @@ using Testing.Common.Configuration;
 using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
+using VideoWeb.AcceptanceTests.Users;
 using VideoWeb.Common.Security;
 using TestContext = VideoWeb.AcceptanceTests.Contexts.TestContext;
 
 namespace VideoWeb.AcceptanceTests.Hooks
 {
     [Binding]
-    public sealed class Browser
+    public sealed class BrowserHooks
     {
         private readonly BrowserContext _browserContext;
         private readonly TestContext _context;
         private readonly SauceLabsSettings _saucelabsSettings;
         private readonly ScenarioContext _scenarioContext;
 
-        public Browser(BrowserContext browserContext, TestContext context, SauceLabsSettings saucelabsSettings,
+        public BrowserHooks(BrowserContext browserContext, TestContext context, SauceLabsSettings saucelabsSettings,
             ScenarioContext injectedContext)
         {
             _browserContext = browserContext;
@@ -47,6 +48,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
             foreach (var user in testSettings.UserAccounts)
             {
+                user.Key = user.Lastname;
                 user.Username = $"{user.Displayname.Replace(" ", "").Replace("ClerkJudge","Clerk")}{testSettings.TestUsernameStem}";
             }
 
@@ -91,13 +93,6 @@ namespace VideoWeb.AcceptanceTests.Hooks
             testContext.RunningLocally = testContext.VideoApiBaseUrl.Contains("localhost");
 
             testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, testContext.TargetBrowser);            
-        }
-
-        [BeforeScenario]
-        public void LaunchBrowser(TestContext testContext, ScenarioContext scenarioContext)
-        {
-            _browserContext.BrowserSetup(testContext.VideoWebUrl, testContext.Environment);
-            _browserContext.NavigateToPage();
         }
 
         public static void KillAnyChromeDriverProcesses(SauceLabsSettings sauceLabsSettings)

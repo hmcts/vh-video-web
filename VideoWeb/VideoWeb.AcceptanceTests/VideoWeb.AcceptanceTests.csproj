@@ -68,25 +68,40 @@
     <None Update="useraccounts.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Videos\judge.y4m">
+    <None Update="Videos\clerk.y4m">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Videos\part1.y4m">
+    <None Update="Videos\individual01.y4m">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Videos\part2.y4m">
+    <None Update="Videos\representative01.y4m">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Videos\part3.y4m">
+    <None Update="Videos\individual02.y4m">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Videos\part4.y4m">
+    <None Update="Videos\representative02.y4m">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Properties" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Features\QueueSubscriber.feature.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>QueueSubscriber.feature</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <SpecFlowFeatureFiles Update="Features\QueueSubscriber.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>QueueSubscriber.feature.cs</LastGenOutput>
+    </SpecFlowFeatureFiles>
   </ItemGroup>
 
 </Project>

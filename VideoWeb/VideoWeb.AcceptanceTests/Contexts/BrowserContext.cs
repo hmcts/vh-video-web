@@ -16,6 +16,7 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public NgWebDriver NgDriver;
         public TargetBrowser TargetBrowser { get; set; }
         internal ContextItems Items { get; set; }
+        public string LastWindowName { get; set; }
 
         public BrowserContext()
         {
