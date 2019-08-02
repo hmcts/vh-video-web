@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { ConfigService } from 'src/app/services/api/config.service';
-import { ParticipantResponse, ParticipantStatus, UserRole } from 'src/app/services/clients/api-client';
+import { ParticipantResponse, ParticipantStatus, UserRole, ConferenceResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -10,6 +10,10 @@ import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { IndividualParticipantStatusListComponent } from './individual-participant-status-list.component';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { ConsultationService } from 'src/app/services/api/consultation.service';
+import { of } from 'rxjs';
 
 
 describe('IndividualParticipantStatusListComponent', () => {
@@ -17,6 +21,9 @@ describe('IndividualParticipantStatusListComponent', () => {
   let fixture: ComponentFixture<IndividualParticipantStatusListComponent>;
   let adalService: MockAdalService;
   let eventService: MockEventsService;
+  let consultationService: ConsultationService;
+  let conference: ConferenceResponse;
+
 
   configureTestSuite(() => {
     TestBed.configureTestingModule({
@@ -25,7 +32,8 @@ describe('IndividualParticipantStatusListComponent', () => {
       providers: [
         { provide: AdalService, useClass: MockAdalService },
         { provide: ConfigService, useClass: MockConfigService },
-        { provide: EventsService, useClass: MockEventsService }
+        { provide: EventsService, useClass: MockEventsService },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
     adalService = TestBed.get(AdalService);
@@ -35,7 +43,9 @@ describe('IndividualParticipantStatusListComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(IndividualParticipantStatusListComponent);
     component = fixture.componentInstance;
-    component.conference = new ConferenceTestData().getConferenceDetail();
+    consultationService = TestBed.get(ConsultationService);
+    conference = new ConferenceTestData().getConferenceDetail();
+    component.conference = conference;
     fixture.detectChanges();
   });
 
@@ -82,8 +92,16 @@ describe('IndividualParticipantStatusListComponent', () => {
   });
 
   it('should not be able to call self', () => {
-    const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'chris.green@hearings.net' });
+    const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: adalService.userInfo.userName });
     expect(component.canCallParticipant(participant)).toBeFalsy();
+  });
+
+  it('should not be able to begin call self', () => {
+    spyOn(consultationService, 'raiseConsultationRequest').and.callFake(() => of());
+    adalService.userInfo.userName = 'chris.green@hearings.net';
+    const participant = conference.participants.find(x => x.username === adalService.userInfo.userName);
+    component.begingCallWith(participant);
+    expect(consultationService.raiseConsultationRequest).toHaveBeenCalledTimes(0);
   });
 
   it('should be able to call an available participant', () => {
@@ -91,17 +109,11 @@ describe('IndividualParticipantStatusListComponent', () => {
     expect(component.canCallParticipant(participant)).toBeTruthy();
   });
 
-  it('should not be able to begin call self', () => {
-    const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'chris.green@hearings.net' });
-    const spiedObject = spyOn<any>(component, 'raiseConsultationRequestEvent');
-    component.begingCallWith(participant);
-    expect(spiedObject).toHaveBeenCalledTimes(0);
-  });
-
   it('should be able to begin call with another participant', () => {
-    const participant = new ParticipantResponse({ status: ParticipantStatus.Available, username: 'test@dot.com' });
-    const spiedObject = spyOn<any>(component, 'raiseConsultationRequestEvent');
+    spyOn(consultationService, 'raiseConsultationRequest').and.callFake(() => of());
+    const participant = conference.participants.find(x => x.username === 'james.green@hearings.net');
+    participant.status = ParticipantStatus.Available;
     component.begingCallWith(participant);
-    expect(spiedObject).toHaveBeenCalled();
+    expect(consultationService.raiseConsultationRequest).toHaveBeenCalled();
   });
 });

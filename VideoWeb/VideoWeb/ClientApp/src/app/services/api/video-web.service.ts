@@ -51,6 +51,10 @@ export class VideoWebService {
     return this.apiClient.getToken(participantId);
   }
 
+  getJwToken(participantId: string): Observable<TokenResponse> {
+    return this.apiClient.getJwtoken(participantId);
+  }
+
   raiseParticipantEvent(conferenceId: string,
     updateParticipantStatusEventRequest: UpdateParticipantStatusEventRequest): Observable<void> {
     return this.apiClient.updateParticipantStatus(conferenceId, updateParticipantStatusEventRequest);

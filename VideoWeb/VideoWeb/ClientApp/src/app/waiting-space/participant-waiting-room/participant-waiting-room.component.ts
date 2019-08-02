@@ -1,7 +1,8 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus,
+  TokenResponse } from 'src/app/services/clients/api-client';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -12,6 +13,7 @@ import { Hearing } from '../../shared/models/hearing';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 declare var PexRTC: any;
+declare var HeartbeatFactory: any;
 
 @Component({
   selector: 'app-participant-waiting-room',
@@ -23,7 +25,8 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   loadingData: boolean;
   hearing: Hearing;
   participant: ParticipantResponse;
-
+  conference: ConferenceResponse;
+  token: TokenResponse;
   pexipAPI: any;
   stream: MediaStream;
   connected: boolean;
@@ -100,18 +103,32 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       .subscribe(async (data: ConferenceResponse) => {
         this.loadingData = false;
         this.hearing = new Hearing(data);
+        this.conference = this.hearing.getConference();
         this.participant = data.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
         this.logger.info(`Participant waiting room for conference: ${conferenceId} and participant: ${this.participant.id}`);
-        this.subscribeToClock();
-        this.setupSubscribers();
-        await this.setupPexipClient();
-        this.call();
+        this.getJwtoken();
       },
         (error) => {
           this.logger.error(`There was an error getting a confernce ${conferenceId}`, error);
           this.loadingData = false;
           this.errorService.handleApiError(error);
         });
+  }
+
+  getJwtoken(): void {
+    this.logger.debug('retrieving jwtoken');
+    this.videoWebService.getJwToken(this.participant.id).subscribe(async (token: TokenResponse) => {
+      this.logger.debug('retrieved jwtoken for heartbeat');
+      this.token = token;
+      this.subscribeToClock();
+      this.setupSubscribers();
+      await this.setupPexipClient();
+      this.call();
+    },
+      (error) => {
+        this.logger.error(`There was an error getting a jwtoken for ${this.participant.id}`, error);
+        this.errorService.handleApiError(error);
+      });
   }
 
   getConferenceStatusText(): string {
@@ -189,6 +206,11 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       self.updateShowVideo();
       self.logger.info('successfully connected to call');
       self.stream = stream;
+
+      const baseUrl =  self.conference.pexip_node_uri.replace('sip.', '');
+      const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${self.conference.id}`;
+      console.log(url);
+      const heartbeatFactory = new HeartbeatFactory(self.pexipAPI, url, self.conference.id, self.participant.id, self.token.token);
     };
 
     this.pexipAPI.onError = function (reason) {

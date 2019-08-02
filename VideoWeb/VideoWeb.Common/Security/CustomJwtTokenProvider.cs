@@ -9,6 +9,7 @@ namespace VideoWeb.Common.Security
 {
     public interface ICustomJwtTokenProvider
     {
+        string GenerateTokenForCallbackEndpoint(string claims, int expiresInMinutes);
         string GenerateToken(string claims, int expiresInMinutes);
     }
 
@@ -21,9 +22,15 @@ namespace VideoWeb.Common.Security
             _customTokenSettings = customTokenSettings;
         }
 
-        public string GenerateToken(string claims, int expiresInMinutes)
+        public string GenerateTokenForCallbackEndpoint(string claims, int expiresInMinutes)
         {
             byte[] key = new ASCIIEncoding().GetBytes(_customTokenSettings.ThirdPartySecret);
+            return BuildToken(claims, expiresInMinutes, key);
+        }
+
+        public string GenerateToken(string claims, int expiresInMinutes)
+        {
+            byte[] key = Convert.FromBase64String(_customTokenSettings.Secret);
             return BuildToken(claims, expiresInMinutes, key);
         }
 
@@ -33,9 +40,7 @@ namespace VideoWeb.Common.Security
             SecurityTokenDescriptor descriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] {new Claim(ClaimTypes.Name, claims)}),
-                Audience = _customTokenSettings.Audience,
                 NotBefore = DateTime.UtcNow.AddMinutes(-1),
-                Issuer = _customTokenSettings.Issuer,
                 Expires = DateTime.UtcNow.AddMinutes(expiresInMinutes + 1),
                 SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature)
             };
