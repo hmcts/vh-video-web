@@ -8,6 +8,10 @@ export class Participant {
         this.participant = participant;
     }
 
+    get base(): ParticipantResponse {
+        return this.participant;
+    }
+
     get id(): string {
         return this.participant.id;
     }

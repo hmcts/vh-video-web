@@ -27,3 +27,70 @@
 .hearing-details-col2-width {
   width: 31%;
 }
+
+.modal {
+  display: none;
+  /* Hidden by default */
+  position: fixed;
+  /* Stay in place */
+  z-index: 1;
+  /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%;
+  /* Full width */
+  height: 100%;
+  /* Full height */
+  overflow: auto;
+  /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0);
+  /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.9);
+  /* Black w/ opacity */
+}
+
+.modal.clear {
+  background-color: rgb(223, 223, 223);
+  /* Fallback color */
+  background-color: rgba(223, 223, 223, 0.1);
+}
+
+.modal.consultation {
+  position: absolute;
+  left: 50%;
+  top: 70%;
+  width: 35%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+/* Modal Content/Box */
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto;
+  /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  /* Could be more or less, depending on screen size */
+}
+
+.modal-content.negative {
+  color: #ffffff;
+  background-color: #1e1e1e;
+  border: 1px solid #888;
+}
+
+.modal-open {
+  /* body overflow is hidden to hide main scrollbar when modal window is open */
+  display: block;
+  z-index: 1000;
+}
+
+.govuk-body--white,
+.govuk-body-l--white,
+.govuk-body-s--white {
+  color: govuk-colour("white");
+  text-align: center;
+}
