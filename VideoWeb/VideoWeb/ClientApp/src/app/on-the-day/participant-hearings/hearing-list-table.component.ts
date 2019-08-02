@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ConferenceForUserResponse } from 'src/app/services/clients/api-client';
 import * as moment from 'moment';
 import { Router } from '@angular/router';
@@ -11,6 +11,7 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
 })
 export class HearingListTableComponent implements OnInit {
   @Input() conferences: ConferenceForUserResponse[];
+  @Output() selectedConference = new EventEmitter<string>();
 
   constructor(private router: Router) { }
 
@@ -18,6 +19,7 @@ export class HearingListTableComponent implements OnInit {
   }
 
   signIntoConference(conference: ConferenceForUserResponse) {
+    this.selectedConference.emit(conference.id);
     this.router.navigate([PageUrls.Introduction, conference.id]);
   }
 

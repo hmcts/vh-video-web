@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { ConfigService } from './services/api/config.service';
 import { DeviceTypeService } from './services/device-type.service';
@@ -18,17 +18,21 @@ export class AppComponent implements OnInit {
 
   loggedIn: boolean;
   isRepresentativeOrIndividual: boolean;
+  @Output() selectedConference = new EventEmitter<string>();
 
   constructor(private adalService: AdalService,
     private configService: ConfigService,
     private router: Router,
     private deviceTypeService: DeviceTypeService,
     private profileService: ProfileService,
-    private errorService: ErrorService
+    private errorService: ErrorService,
+    private route: ActivatedRoute
   ) {
     this.loggedIn = false;
     this.isRepresentativeOrIndividual = false;
     this.initAuthentication();
+
+    console.log(this.selectedConference);
   }
 
   private initAuthentication() {
@@ -62,11 +66,11 @@ export class AppComponent implements OnInit {
         this.router.navigate(['/login'], { queryParams: { returnUrl: currentUrl } });
       }
 
-    this.profileService.getUserProfile()
-      .then((profile) => {
-        this.isRepresentativeOrIndividual = (profile.role === (UserRole.Individual || UserRole.Representative));
-      })
-      .catch((error) => this.errorService.handleApiError(error));
+      this.profileService.getUserProfile()
+        .then((profile) => {
+          this.isRepresentativeOrIndividual = (profile.role === (UserRole.Individual || UserRole.Representative));
+        })
+        .catch((error) => this.errorService.handleApiError(error));
     }
   }
 
