@@ -236,6 +236,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_page.PausedTitle).Displayed.Should().BeTrue();
         }
 
+        [Then(@"the participants waiting room displays the closed status")]
+        public void ThenTheWaitingRoomDisplaysTheClosedStatus()
+        {
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_page.ClosedTitle).Displayed.Should().BeTrue();
+        }
+
         [Then(@"the Clerk resumes the hearing")]
         public void ThenTheUserResumesTheHearing()
         {

@@ -45,6 +45,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Given(@"a new browser is open for user (.*)")]
+        [Given(@"a new browser is open for the (.*)")]
         [Given(@"a new browser is open for a (.*)")]
         [Given(@"a new browser is open for an (.*)")]
         public void GivenANewBrowserIsOpenFor(string user)
