@@ -33,5 +33,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By TimePanel => By.XPath("//div[contains(@class,'govuk-panel') and @ng-reflect-klass='govuk-panel']");
 
         public By PausedTitle => CommonLocators.ElementContainingText("Your video hearing is paused");
+        public By ClosedTitle => CommonLocators.ElementContainingText("Your video hearing is closed");
     }
 }

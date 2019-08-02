@@ -45,6 +45,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementClickable(_page.PauseButton).Click();
         }
 
+        [When(@"the Clerk clicks close")]
+        public void WhenTheUserClicksClose()
+        {
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementClickable(_page.CloseButton).Click();
+        }
+
         [Then(@"the Clerk is on the Hearing Room page for (.*) seconds")]
         public void ThenTheUserIsOnTheHearingRoomPageForSeconds(int seconds)
         {
