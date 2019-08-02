@@ -121,9 +121,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     if (hearing.isReadyToStart() || hearing.isDelayed() || hearing.isSuspended()) {
       return false;
     }
-    if (this.judge.username.toLocaleLowerCase().trim() === this.adalService.userInfo.userName.toLocaleLowerCase().trim()) {
-      return false;
-    }
+
     if (participant.username.toLocaleLowerCase().trim() === this.adalService.userInfo.userName.toLocaleLowerCase().trim()) {
       return false;
     }

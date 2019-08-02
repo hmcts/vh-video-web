@@ -116,12 +116,6 @@ describe('IndividualParticipantStatusListComponent', () => {
     expect(component.canCallParticipant(participant)).toBeFalsy();
   });
 
-  it('should not be able to call when user is judge', () => {
-    const participant = conference.participants.find(x => x.role === UserRole.Judge);
-    adalService.userInfo.userName = participant.username;
-    expect(component.canCallParticipant(participant)).toBeFalsy();
-  });
-
   it('should not be able to call when hearing is about to start', () => {
     const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: adalService.userInfo.userName });
     expect(component.canCallParticipant(participant)).toBeFalsy();
