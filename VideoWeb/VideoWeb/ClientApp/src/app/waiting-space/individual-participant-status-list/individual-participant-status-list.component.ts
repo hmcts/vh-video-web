@@ -9,6 +9,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ModalService } from 'src/app/services/modal.service';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { Participant } from 'src/app/shared/models/participant';
+import { Hearing } from 'src/app/shared/models/hearing';
 
 @Component({
   selector: 'app-individual-participant-status-list',
@@ -116,6 +117,10 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   }
 
   canCallParticipant(participant: ParticipantResponse): boolean {
+    const hearing = new Hearing(this.conference);
+    if (hearing.isReadyToStart() || hearing.isDelayed() || hearing.isSuspended()) {
+      return false;
+    }
     if (this.judge.username.toLocaleLowerCase().trim() === this.adalService.userInfo.userName.toLocaleLowerCase().trim()) {
       return false;
     }

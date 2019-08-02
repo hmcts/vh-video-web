@@ -2,7 +2,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { ConfigService } from 'src/app/services/api/config.service';
-import { ParticipantResponse, ParticipantStatus, UserRole, ConferenceResponse } from 'src/app/services/clients/api-client';
+import {
+  ParticipantResponse, ParticipantStatus, UserRole, ConferenceResponse, ConferenceStatus
+} from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -92,6 +94,35 @@ describe('IndividualParticipantStatusListComponent', () => {
   });
 
   it('should not be able to call self', () => {
+    component.conference = new ConferenceTestData().getConferenceFuture();
+    const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: adalService.userInfo.userName });
+    expect(component.canCallParticipant(participant)).toBeFalsy();
+  });
+
+  it('should not be able to call when hearing is about to start', () => {
+    const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: adalService.userInfo.userName });
+    expect(component.canCallParticipant(participant)).toBeFalsy();
+  });
+
+  it('should not be able to call when hearing is delayed', () => {
+    component.conference = new ConferenceTestData().getConferencePast();
+    const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: adalService.userInfo.userName });
+    expect(component.canCallParticipant(participant)).toBeFalsy();
+  });
+
+  it('should not be able to call when hearing is suspended', () => {
+    component.conference.status = ConferenceStatus.Suspended;
+    const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: adalService.userInfo.userName });
+    expect(component.canCallParticipant(participant)).toBeFalsy();
+  });
+
+  it('should not be able to call when user is judge', () => {
+    const participant = conference.participants.find(x => x.role === UserRole.Judge);
+    adalService.userInfo.userName = participant.username;
+    expect(component.canCallParticipant(participant)).toBeFalsy();
+  });
+
+  it('should not be able to call when hearing is about to start', () => {
     const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: adalService.userInfo.userName });
     expect(component.canCallParticipant(participant)).toBeFalsy();
   });
