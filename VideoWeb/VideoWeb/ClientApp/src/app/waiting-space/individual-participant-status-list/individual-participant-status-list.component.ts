@@ -68,7 +68,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
       .then(() => {
         self.incomingCallTimeout = setTimeout(async () => {
           await self.cancelIncomingCall();
-        }, 60000);
+        }, 120000);
       })
       .catch(function (reason) {
         self.logger.error('Failed to announce hearing starting', reason);
@@ -145,7 +145,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
           this.waitingForConsultationResponse = true;
           this.outgoingCallTimeout = setTimeout(() => {
             this.cancelOutgoingCall();
-          }, 60000);
+          }, 120000);
         },
           error => {
             this.logger.error('Failed to raise consultation request', error);
