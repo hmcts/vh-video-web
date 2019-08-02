@@ -5,7 +5,7 @@ Feature: Camera Working
 	So that I can ensure my camera is ready to use for the hearing
 
 Scenario: Participant camera working
-	Given the Individual user has progressed to the Camera Working page
+	Given the Participant user has progressed to the Camera Working page
 	Then contact us details are available
 	When the user clicks the Check my equipment again button
 	Then the Please answer this question error message appears
@@ -15,8 +15,8 @@ Scenario: Participant camera working
 	Then the user is on the Microphone Working page
 
 @VIH-4595
-Scenario: Participant does not confirm the camera is working
-	Given the Individual user has progressed to the Camera Working page
+Scenario: Participant camera not working
+	Given the Participant user has progressed to the Camera Working page
 	When the user selects the No radiobutton
 	And the user clicks the Check my equipment again button
 	Then the user is on the Equipment Check page

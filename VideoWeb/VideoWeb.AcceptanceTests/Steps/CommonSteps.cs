@@ -16,7 +16,6 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public class CommonSteps
     {
-        private const string DefaultUser = "individual01";
         private readonly TimeSpan _shortTimeout = TimeSpan.FromSeconds(30);
         private readonly TimeSpan _longTimeout = TimeSpan.FromSeconds(90);
         private readonly TestContext _tc;
@@ -77,7 +76,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _browsers[_tc.CurrentUser.Key].LastWindowName =
                     _browsers[_tc.CurrentUser.Key].Driver.WrappedDriver.WindowHandles.Last();
 
-            _tc.CurrentUser = user.ToLower().Equals("participant") ? _tc.TestSettings.UserAccounts.First(x => x.Lastname.ToLower().Equals(DefaultUser)) : _tc.TestSettings.UserAccounts.First(x => x.Displayname.ToLower().Contains(user.ToLower().Replace(" ", "")));          
+            _tc.CurrentUser = user.ToLower().Equals("participant") ? _tc.TestSettings.UserAccounts.First(x => x.Lastname.ToLower().Equals(_tc.DefaultParticipant.Lastname.ToLower())) : _tc.TestSettings.UserAccounts.First(x => x.Displayname.ToLower().Contains(user.ToLower().Replace(" ", "")));          
 
             if (_tc.CurrentUser == null)
                 throw new ArgumentOutOfRangeException($"There are no users configured called '{user}'");

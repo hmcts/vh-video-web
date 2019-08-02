@@ -67,16 +67,6 @@ namespace VideoWeb.AcceptanceTests.Hooks
         }
 
         [AfterScenario]
-        public static void RemoveConference(TestContext context, ConferenceEndpoints endpoints)
-        {
-            if (context.NewConferenceId == Guid.Empty) return;
-            context.Request = context.Delete(endpoints.RemoveConference(context.NewConferenceId));
-            context.Response = context.VideoApiClient().Execute(context.Request);
-            context.Response.IsSuccessful.Should().BeTrue("New conference has been deleted after the test");
-            context.NewConferenceId = Guid.Empty;
-        }
-
-        [AfterScenario]
         public static void RemoveHearing(TestContext context, HearingsEndpoints endpoints)
         {
             if (context.NewHearingId == Guid.Empty) return;

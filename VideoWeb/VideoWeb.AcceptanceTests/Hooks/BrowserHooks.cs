@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using BoDi;
 using FluentAssertions;
@@ -90,7 +91,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             KillAnyChromeDriverProcesses(_saucelabsSettings);
             testContext.TargetBrowser = GetTargetBrowser(testContext);
             testContext.RunningLocally = testContext.VideoApiBaseUrl.Contains("localhost");
-
+            testContext.DefaultParticipant = testSettings.UserAccounts.First(x => x.DefaultParticipant.Equals(true));
             testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, testContext.TargetBrowser);            
         }
 

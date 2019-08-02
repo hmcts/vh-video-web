@@ -28,6 +28,7 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public string VideoWebUrl { get; set; }
         public string Json { get; set; }
         public UserAccount CurrentUser { get; set; }
+        public UserAccount DefaultParticipant { get; set; }
         public int DelayedStartTime { get; set; }
         public HearingDetailsResponse Hearing { get; set; }
         public List<CaseResponse> Cases { get; set; }
