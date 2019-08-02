@@ -1,66 +1,63 @@
-﻿using System;
-using System.Linq;
+﻿using System.Collections.Generic;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.AcceptanceTests.Users;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
     public sealed class LoginSteps
     {
-        private readonly BrowserContext _browserContext;
-        private readonly TestContext _context;
-        private readonly MicrosoftLoginPage _loginPage;
+        private readonly Dictionary<string, UserBrowser> _browsers;
+        private readonly TestContext _tc;
+        private readonly LoginPage _loginPage;
         private readonly CommonPages _commonPageElements;
 
-        public LoginSteps(BrowserContext browserContext, TestContext context, 
-            MicrosoftLoginPage loginPage, CommonPages commonPageElements)
+        public LoginSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, 
+            LoginPage loginPage, CommonPages commonPageElements)
         {
-            _browserContext = browserContext;
-            _context = context;
+            _browsers = browsers;
+            _tc = testContext;
             _loginPage = loginPage;
             _commonPageElements = commonPageElements;
         }
 
-        [Given(@"the login page is open")]
-        public void GivenUserIsOnTheMicrosoftLoginPage()
+        [When(@"the user attempts to login with valid credentials")]
+        public void WhenUserLogsInWithValidCredentials()
         {
-            _browserContext.Retry(() =>
-            {
-                _browserContext.PageUrl().Should().Contain("login.microsoftonline.com");
-            }, 10);
+            EnterUsername(_tc.CurrentUser.Username);
+            ClickNextButton();
+            EnterPassword(_tc.TestSettings.TestUserPassword);
+            ClickSignInButton();
         }
 
-        [When(@"the (.*) attempts to login with valid credentials")]
-        public void WhenUserLogsInWithValidCredentials(string role)
+        public void EnterUsername(string username)
         {
-            if (role.EndsWith("1") || role.EndsWith("2") || role.EndsWith("3") || role.EndsWith("4"))
-            {
-                _context.CurrentUser = _context.TestSettings.UserAccounts.Find(x => x.Lastname.Equals(role));
-            }
-            else
-            {
-                _context.CurrentUser = role.Contains("with no hearings") ? _context.TestSettings.UserAccounts.LastOrDefault(c => c.Role == role.Split(" ")[0]) : _context.TestSettings.UserAccounts.FirstOrDefault(c => c.Role == role);
-            }
+            NUnit.Framework.TestContext.WriteLine($"Logging in as {username}");
 
-            if (_context.CurrentUser == null)
-            {
-                throw new ArgumentOutOfRangeException($"There are no users configured with the role '{role}'");
-            }
-
-            _loginPage.Logon(_context.CurrentUser.Username, _context.TestSettings.TestUserPassword);
-            if (_context.Drivers.ContainsKey(_context.CurrentUser.Username)) return;
-            _context.Drivers.Add(_context.CurrentUser.Username, _browserContext);
-            _context.WrappedDrivers.Add(_context.CurrentUser.Username, _browserContext.NgDriver.WrappedDriver);
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_loginPage.UsernameTextfield).Clear();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_loginPage.UsernameTextfield).SendKeys(username);
         }
+
+        public void ClickNextButton() => _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_loginPage.Next).Click();
+
+        public void EnterPassword(string password)
+        {
+            var maskedPassword = new string('*', (password ?? string.Empty).Length);
+            NUnit.Framework.TestContext.WriteLine($"Using password {maskedPassword}");
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_loginPage.Passwordfield).Clear();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_loginPage.Passwordfield).SendKeys(password);
+        }
+
+        public void ClickSignInButton() => _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_loginPage.SignIn).Click();
 
         [Then(@"the sign out link is displayed")]
         public void ThenTheHearingListPageIsDisplayed()
         {
-            _browserContext.NgDriver.WaitUntilElementVisible(_commonPageElements.SignOutLink).Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_commonPageElements.SignOutLink).Displayed.Should().BeTrue();
         }
     }
 }

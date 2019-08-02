@@ -5,35 +5,38 @@ using FluentAssertions;
 using OpenQA.Selenium;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
+using VideoWeb.AcceptanceTests.Users;
 
 namespace VideoWeb.AcceptanceTests.Pages
 {
     public class CommonPages
     {
-        private readonly BrowserContext _browserContext;
+        private readonly Dictionary<string, UserBrowser> _browsers;
+        private readonly TestContext _tc;
         public By SignOutLink => By.PartialLinkText("Sign out");
         public By QuoteYourCaseNumberText => CommonLocators.ElementContainingText("Call us on");
         public By ContactUsLink => CommonLocators.ElementContainingText("Contact us for help");
 
-        public CommonPages(BrowserContext browserContext)
+        public CommonPages(Dictionary<string, UserBrowser> browsers, TestContext testContext)
         {
-            _browserContext = browserContext;
+            _browsers = browsers;
+            _tc = testContext;
         }
 
         public bool TheCaseNumberIsDisplayedInTheContactDetails(string caseNumber)
         {
-            _browserContext.NgDriver.WaitUntilElementClickable(ContactUsLink).Click();
-            return _browserContext.NgDriver.WaitUntilElementVisible(QuoteYourCaseNumberText).Text.Contains($"and quote your case number {caseNumber}");
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementClickable(ContactUsLink).Click();
+            return _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(QuoteYourCaseNumberText).Text.Contains($"and quote your case number {caseNumber}");
         }
 
         public void PageUrl(Page page)
         {
-            _browserContext.Retry(() => _browserContext.NgDriver.Url.Trim().Should().Contain(page.Url), 2);
+            _browsers[_tc.CurrentUser.Key].Retry(() => _browsers[_tc.CurrentUser.Key].Driver.Url.Trim().Should().Contain(page.Url), 2);
         }
 
         public void ClickWithJavascript(By element)
         {
-            IJavaScriptExecutor js = (IJavaScriptExecutor)_browserContext.NgDriver;
+            IJavaScriptExecutor js = (IJavaScriptExecutor)_browsers[_tc.CurrentUser.Key].Driver;
             js.ExecuteScript("arguments[0].click();", element);
         }
         
@@ -42,65 +45,55 @@ namespace VideoWeb.AcceptanceTests.Pages
             IEnumerable<IWebElement> webElements = null;
             try
             {
-                webElements = _browserContext.NgDriver.WaitUntilElementsVisible(elements);
+                webElements = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementsVisible(elements);
             }
             catch (Exception ex)
             {
-                webElements = _browserContext.NgDriver.FindElements(elements);
+                webElements = _browsers[_tc.CurrentUser.Key].Driver.FindElements(elements);
                 NUnit.Framework.TestContext.WriteLine(ex);
             }
             return webElements;
         }
        
-        protected void InputValues(By element, string value) => _browserContext.NgDriver.WaitUntilElementVisible(element).SendKeys(value);
-        protected void ClickElement(By element) => _browserContext.NgDriver.WaitUntilElementVisible(element).Click();
+        protected void InputValues(By element, string value) => _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(element).SendKeys(value);
+        protected void ClickElement(By element) => _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(element).Click();
         protected void ClearFieldInputValues(By element, string value)
         {
-            var webElement = _browserContext.NgDriver.WaitUntilElementVisible(element);
+            var webElement = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(element);
             webElement.Clear();
             webElement.SendKeys(value);
         }
 
-        public string GetElementText(By element) => _browserContext.NgDriver.WaitUntilElementVisible(element).Text.Trim();
+        public string GetElementText(By element) => _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(element).Text.Trim();
 
         protected void SelectOption(By elements, string option)
         {
             var getListOfElements = GetListOfElements(elements);
-            _browserContext.Retry(() => getListOfElements.AsEnumerable().Count().Should().BeGreaterThan(0, "List is not populated"));
+            _browsers[_tc.CurrentUser.Key].Retry(() => getListOfElements.AsEnumerable().Count().Should().BeGreaterThan(0, "List is not populated"));
             foreach (var element in getListOfElements)
             {
                 if (option == element.Text.Trim())
-                    _browserContext.NgDriver.WaitUntilElementClickable(element).Click();
+                    _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementClickable(element).Click();
             }
         }
         protected void SelectOption(By elements)
         {
             var getListOfElements = GetListOfElements(elements);
-            _browserContext.Retry(() => getListOfElements.AsEnumerable().Count().Should().BeGreaterThan(0, "List is not populated"));
-            _browserContext.NgDriver.WaitUntilElementClickable(getListOfElements.AsEnumerable().First()).Click();
+            _browsers[_tc.CurrentUser.Key].Retry(() => getListOfElements.AsEnumerable().Count().Should().BeGreaterThan(0, "List is not populated"));
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementClickable(getListOfElements.AsEnumerable().First()).Click();
         }
         protected string SelectLastItem(By elements)
         {
             var getListOfElements = GetListOfElements(elements);
-            _browserContext.Retry(() => getListOfElements.AsEnumerable().Count().Should().BeGreaterThan(0, "List is not populated"));
-            var lastItem = _browserContext.NgDriver.WaitUntilElementClickable(getListOfElements.AsEnumerable().Last());
+            _browsers[_tc.CurrentUser.Key].Retry(() => getListOfElements.AsEnumerable().Count().Should().BeGreaterThan(0, "List is not populated"));
+            var lastItem = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementClickable(getListOfElements.AsEnumerable().Last());
             lastItem.Click();
             return lastItem.Text.Trim();
         }
 
         public void PageUrl(string url)
         {
-            _browserContext.Retry(() => _browserContext.NgDriver.Url.Should().Contain(url));
-        }
-
-        public void AcceptBrowserAlert() => _browserContext.AcceptAlert();
-        public void AddItems<T>(string key, T value) => _browserContext.Items.AddOrUpdate(key, value);
-        public dynamic GetItems(string key) => _browserContext.Items.Get(key);
-        protected IEnumerable<string> Items(By elements)
-        {
-            var webElements = _browserContext.NgDriver.WaitUntilElementsVisible(elements);
-            return webElements.Select(element => element.Text.Trim()).ToList();
-        }
-        public void TopMenuHmctsLogo() => SelectOption(By.XPath("//*[@class='hmcts-header__logotype']"));
+            _browsers[_tc.CurrentUser.Key].Retry(() => _browsers[_tc.CurrentUser.Key].Driver.Url.Should().Contain(url));
+        }       
     }
 }

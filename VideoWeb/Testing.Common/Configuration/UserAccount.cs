@@ -2,6 +2,7 @@
 {
     public class UserAccount
     {
+        public string Key { get; set; }
         public string Role { get; set; }
         public string AlternativeEmail { get; set; }
         public string Firstname { get; set; }
@@ -12,5 +13,6 @@
         public string HearingRoleName { get; set; }
         public string Representee { get; set; }
         public string SolicitorsReference { get; set; }
+        public bool DefaultParticipant { get; set; }
     }
 }

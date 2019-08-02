@@ -7,8 +7,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By HearingName = By.XPath("//h1[contains(text(),'hearing')]/..//h2[@class='govuk-heading-m']");
         public By CaseNumber = By.XPath("//h1[contains(text(),'hearing')]/..//h3[@class='govuk-heading-m']");
         public By HearingDate = By.XPath("//p[contains(@aria-label,'date of hearing')]");
-        public By JudgeHearingTime = By.XPath("//p[contains(@aria-label,'scheduled time and duration of hearing')]");
-        public By ScheduledDuration = By.XPath("//p[@aria-label='scheduled time and duration of hearing']");
         public By ContactHelpline => CommonLocators.ElementContainingText("helpline");
 
         public By OtherParticipantsStatus(string displayName) =>
@@ -33,5 +31,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public string ScheduledBgColour = "#005ea5";
 
         public By TimePanel => By.XPath("//div[contains(@class,'govuk-panel') and @ng-reflect-klass='govuk-panel']");
+
+        public By PausedTitle => CommonLocators.ElementContainingText("Your video hearing is paused");
     }
 }

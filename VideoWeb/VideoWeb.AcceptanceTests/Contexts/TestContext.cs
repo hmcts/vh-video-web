@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using OpenQA.Selenium;
 using RestSharp;
 using Testing.Common.Configuration;
-using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.Common.Helpers;
 using VideoWeb.Services.Bookings;
@@ -30,6 +28,7 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public string VideoWebUrl { get; set; }
         public string Json { get; set; }
         public UserAccount CurrentUser { get; set; }
+        public UserAccount DefaultParticipant { get; set; }
         public int DelayedStartTime { get; set; }
         public HearingDetailsResponse Hearing { get; set; }
         public List<CaseResponse> Cases { get; set; }
@@ -38,8 +37,6 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public Guid NewConferenceId { get; set; }
         public TestSettings TestSettings { get; set; }
         public SeleniumEnvironment Environment { get; set; }
-        public Dictionary<string, BrowserContext> Drivers { get; set; }
-        public Dictionary<string, IWebDriver> WrappedDrivers { get; set; }
         public SauceLabsSettings SaucelabsSettings { get; set; }
         public TargetBrowser TargetBrowser { get; set; }
         public bool RunningLocally { get; set; }
@@ -47,8 +44,6 @@ namespace VideoWeb.AcceptanceTests.Contexts
 
         public TestContext()
         {
-            Drivers = new Dictionary<string, BrowserContext>();
-            WrappedDrivers = new Dictionary<string, IWebDriver>();
             Cases = new List<CaseResponse>();
         }
 

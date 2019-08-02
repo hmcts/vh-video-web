@@ -17,11 +17,6 @@ namespace VideoWeb.AcceptanceTests.Helpers
         private readonly SauceLabsSettings _saucelabsSettings;
         private readonly ScenarioInfo _scenario;
         private static TargetBrowser _targetBrowser;
-        private const string JudgeVideo = "judge";
-        private const string Individual1Video = "part1";
-        private const string Representative1Video = "part2";
-        private const string Individual2Video = "part3";
-        private const string Representative2Video = "part4";
 
         public SeleniumEnvironment(SauceLabsSettings saucelabsSettings, ScenarioInfo scenario, TargetBrowser targetBrowser)
         {
@@ -30,23 +25,12 @@ namespace VideoWeb.AcceptanceTests.Helpers
             _targetBrowser = targetBrowser;
         }
 
-        public IWebDriver GetDriver(string user)
+        public IWebDriver GetDriver(string filename)
         {
-            string video;
-            switch (user)
-            {
-                case "Judge": case "Judge01": case "Clerk": case "Clerk01": video = JudgeVideo; break;
-                case "Individual01": video = Individual1Video; break;
-                case "Representative01": video = Representative1Video; break;
-                case "Individual02": video = Individual2Video; break;
-                case "Representative02": video = Representative2Video; break;
-                case "VideoHearingsOfficer": video = Representative2Video; break;
-                default: throw new ArgumentOutOfRangeException($"No user defined; {user}");
-            }
-            return _saucelabsSettings.RunWithSaucelabs ? InitSauceLabsDriver(video) : InitLocalDriver(video,  _scenario);
+            return _saucelabsSettings.RunWithSaucelabs ? InitSauceLabsDriver(filename, _scenario) : InitLocalDriver(filename,  _scenario);
         }
 
-        private IWebDriver InitSauceLabsDriver(string video)
+        private IWebDriver InitSauceLabsDriver(string filename, ScenarioInfo scenario)
         {
 #pragma warning disable 618
             // disable warning of using desired capabilities
@@ -94,16 +78,32 @@ namespace VideoWeb.AcceptanceTests.Helpers
                     caps.SetCapability("platform", "Windows 10");
                     caps.SetCapability("version", "74.0");
                     caps.SetCapability("autoAcceptAlerts", true);
-                    
-                    var chromeOptions = new Dictionary<string, object>
+
+                    Dictionary<string, object> chromeOptions;
+
+                    if (scenario.Tags.Contains("Video"))
                     {
-                        ["args"] = new List<string>
+                        chromeOptions = new Dictionary<string, object>
                         {
-                            "use-fake-ui-for-media-stream",
-                            "use-fake-device-for-media-stream",
-                            $"use-file-for-fake-video-capture={GetBuildPath}/Videos/{video}.y4m"
-                        }
-                    };
+                            ["args"] = new List<string>
+                            {
+                                "use-fake-ui-for-media-stream",
+                                "use-fake-device-for-media-stream",
+                                $"use-file-for-fake-video-capture={GetBuildPath}/Videos/{filename}"
+                            }
+                        };
+                    }
+                    else
+                    {
+                        chromeOptions = new Dictionary<string, object>
+                        {
+                            ["args"] = new List<string>
+                            {
+                                "use-fake-ui-for-media-stream",
+                                "use-fake-device-for-media-stream"
+                            }
+                        };
+                    }
                     caps.SetCapability(ChromeOptions.Capability, chromeOptions);
                     break;
             }
@@ -120,7 +120,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             return new RemoteWebDriver(remoteUrl, caps, commandTimeout);
         }
 
-        private static IWebDriver InitLocalDriver(string video, ScenarioInfo scenario)
+        private static IWebDriver InitLocalDriver(string filename, ScenarioInfo scenario)
         {            
             var options = new ChromeOptions();
             options.AddArgument("ignore -certificate-errors");
@@ -128,7 +128,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             options.AddArgument("use-fake-device-for-media-stream");
             if (scenario.Tags.Contains("Video"))
             {
-                options.AddArgument($"use-file-for-fake-video-capture={GetBuildPath}/Videos/{video}.y4m");
+                options.AddArgument($"use-file-for-fake-video-capture={GetBuildPath}/Videos/{filename}");
             }       
             var commandTimeout = TimeSpan.FromSeconds(30);
 

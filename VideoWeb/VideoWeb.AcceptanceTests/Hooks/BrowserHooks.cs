@@ -1,40 +1,41 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using BoDi;
 using FluentAssertions;
 using Microsoft.Extensions.Options;
 using TechTalk.SpecFlow;
 using Testing.Common.Configuration;
 using Testing.Common.Helpers;
-using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
+using VideoWeb.AcceptanceTests.Users;
 using VideoWeb.Common.Security;
 using TestContext = VideoWeb.AcceptanceTests.Contexts.TestContext;
 
 namespace VideoWeb.AcceptanceTests.Hooks
 {
     [Binding]
-    public sealed class Browser
+    public sealed class BrowserHooks
     {
-        private readonly BrowserContext _browserContext;
-        private readonly TestContext _context;
         private readonly SauceLabsSettings _saucelabsSettings;
         private readonly ScenarioContext _scenarioContext;
+        private static Dictionary<string, UserBrowser> _browsers;
+        private readonly IObjectContainer _objectContainer;
 
-        public Browser(BrowserContext browserContext, TestContext context, SauceLabsSettings saucelabsSettings,
-            ScenarioContext injectedContext)
+        public BrowserHooks(IObjectContainer objectContainer, SauceLabsSettings saucelabsSettings, ScenarioContext injectedContext)
         {
-            _browserContext = browserContext;
-            _context = context;
+            _objectContainer = objectContainer;
             _saucelabsSettings = saucelabsSettings;
             _scenarioContext = injectedContext;
         }
 
-        private TargetBrowser GetTargetBrowser()
+        [BeforeScenario]
+        public void InitialiseBrowserContainer()
         {
-            _browserContext.TargetBrowser = Enum.TryParse(NUnit.Framework.TestContext.Parameters["TargetBrowser"], true, out TargetBrowser targetTargetBrowser) ? targetTargetBrowser : TargetBrowser.Chrome;
-            return _browserContext.TargetBrowser;
+            _browsers = new Dictionary<string, UserBrowser>();
+            _objectContainer.RegisterInstanceAs(_browsers);
         }
 
         [BeforeScenario]
@@ -47,6 +48,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
             foreach (var user in testSettings.UserAccounts)
             {
+                user.Key = user.Lastname;
                 user.Username = $"{user.Displayname.Replace(" ", "").Replace("ClerkJudge","Clerk")}{testSettings.TestUsernameStem}";
             }
 
@@ -87,17 +89,16 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
             testContext.SaucelabsSettings = _saucelabsSettings;
             KillAnyChromeDriverProcesses(_saucelabsSettings);
-            testContext.TargetBrowser = GetTargetBrowser();
+            testContext.TargetBrowser = GetTargetBrowser(testContext);
             testContext.RunningLocally = testContext.VideoApiBaseUrl.Contains("localhost");
-
+            testContext.DefaultParticipant = testSettings.UserAccounts.First(x => x.DefaultParticipant.Equals(true));
             testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, testContext.TargetBrowser);            
         }
 
-        [BeforeScenario]
-        public void LaunchBrowser(TestContext testContext, ScenarioContext scenarioContext)
+        private static TargetBrowser GetTargetBrowser(TestContext context)
         {
-            _browserContext.BrowserSetup(testContext.VideoWebUrl, testContext.Environment);
-            _browserContext.NavigateToPage();
+            context.TargetBrowser = Enum.TryParse(NUnit.Framework.TestContext.Parameters["TargetBrowser"], true, out TargetBrowser targetTargetBrowser) ? targetTargetBrowser : TargetBrowser.Chrome;
+            return context.TargetBrowser;
         }
 
         public static void KillAnyChromeDriverProcesses(SauceLabsSettings sauceLabsSettings)
@@ -143,28 +144,17 @@ namespace VideoWeb.AcceptanceTests.Hooks
         }
 
         [AfterScenario]
-        public void AfterScenario()
+        public void AfterScenario(Dictionary<string, UserBrowser> browsers, TestContext context)
         {
             if (_saucelabsSettings.RunWithSaucelabs)
             {
                 var passed = _scenarioContext.TestError == null;
-                SaucelabsResult.LogPassed(passed, _browserContext.NgDriver);
+                SaucelabsResult.LogPassed(passed, browsers[context.CurrentUser.Key].Driver);
             }
 
-            _browserContext.NgDriver.Quit();
-            _browserContext.NgDriver.Dispose();
-
-            foreach (var driver in _context.WrappedDrivers.Values)
+            foreach (var browser in browsers.Values)
             {
-                try
-                {
-                    driver.Quit();
-                    driver.Dispose();
-                }
-                catch (Exception ex)
-                {
-                    NUnit.Framework.TestContext.WriteLine(ex.Message);
-                }
+                browser.BrowserTearDown();
             }
 
             var chromeDriverProcesses = Process.GetProcessesByName("ChromeDriver");

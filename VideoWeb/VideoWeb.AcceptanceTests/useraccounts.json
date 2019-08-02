@@ -15,6 +15,7 @@
       "AlternativeEmail": "a41@a.com"
     },
     {
+      "DefaultParticipant": true, 
       "Role": "Individual",
       "Firstname": "Automation01",
       "Lastname": "Individual01",
