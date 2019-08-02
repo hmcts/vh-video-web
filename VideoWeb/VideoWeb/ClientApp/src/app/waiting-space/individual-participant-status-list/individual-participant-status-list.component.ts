@@ -25,6 +25,11 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   consultationRequestee: Participant;
   consultationRequester: Participant;
 
+  incomingCallSound: HTMLAudioElement;
+  incomingCallTimeout: NodeJS.Timer;
+  outgoingCallTimeout: NodeJS.Timer;
+  waitingForConsultationResponse: boolean;
+
   private readonly REQUEST_PC_MODAL = 'raise-pc-modal';
   private readonly RECIEVE_PC_MODAL = 'receive-pc-modal';
   private readonly ACCEPTED_PC_MODAL = 'accepted-pc-modal';
@@ -40,9 +45,50 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.waitingForConsultationResponse = false;
+    this.initConsultationRequestAlert();
     this.filterNonJudgeParticipants();
     this.filterJudge();
     this.setupSubscribers();
+  }
+
+  initConsultationRequestAlert(): void {
+    this.incomingCallSound = new Audio();
+    this.incomingCallSound.src = '/assets/audio/consultation_request.mp3';
+    this.incomingCallSound.load();
+    this.incomingCallSound.addEventListener('ended', function () {
+      this.play();
+    }, false);
+  }
+
+  playIncomingCallSound() {
+    const self = this;
+    this.incomingCallSound.play()
+      .then(() => {
+        self.incomingCallTimeout = setTimeout(async () => {
+          await self.cancelIncomingCall();
+        }, 60000);
+      })
+      .catch(function (reason) {
+        self.logger.error('Failed to announce hearing starting', reason);
+      });
+  }
+
+  async cancelIncomingCall() {
+    this.logger.info('Consultation request timed-out. Rejecting call');
+    this.closeAllPCModals();
+    this.stopCallRinging();
+    await this.answerConsultationRequest(ConsultationAnswer.Rejected);
+  }
+
+  stopCallRinging() {
+    this.incomingCallSound.pause();
+    this.incomingCallSound.currentTime = 0;
+  }
+
+  cancelOutgoingCall() {
+    this.logger.info('Consultation request timed-out. Cancelling call');
+    this.closeAllPCModals();
   }
 
   private setupSubscribers() {
@@ -91,6 +137,10 @@ export class IndividualParticipantStatusListComponent implements OnInit {
       this.consultationService.raiseConsultationRequest(this.conference, requester, requestee)
         .subscribe(() => {
           this.logger.info('Raised consultation request event');
+          this.waitingForConsultationResponse = true;
+          this.outgoingCallTimeout = setTimeout(() => {
+            this.cancelOutgoingCall();
+          }, 60000);
         },
           error => {
             this.logger.error('Failed to raise consultation request', error);
@@ -106,12 +156,15 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   private displayConsultationRequestPopup(message: ConsultationMessage) {
     const requester = this.conference.participants.find(x => x.username === message.requestedBy);
     const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
+    this.logger.info(`Incoming request for private consultation from ${requester.display_name}`);
     this.consultationRequester = new Participant(requester);
     this.consultationRequestee = new Participant(requestee);
     this.displayModal(this.RECIEVE_PC_MODAL);
+    this.playIncomingCallSound();
   }
 
   async answerConsultationRequest(answer: ConsultationAnswer) {
+    this.stopCallRinging();
     this.closeAllPCModals();
     this.logger.event(`${this.consultationRequestee.displayName} responded to consultation: ${answer}`);
 

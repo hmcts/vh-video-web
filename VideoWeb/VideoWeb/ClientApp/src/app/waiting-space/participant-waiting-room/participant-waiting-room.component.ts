@@ -90,9 +90,10 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   }
 
   announceHearingIsAboutToStart(): void {
+    const self = this;
     this.hearingAlertSound.play()
       .catch(function (reason) {
-        console.error(`caught error ${reason}`);
+        self.logger.error('Failed to announce hearing starting', reason);
       });
     this.hearingStartingAnnounced = true;
   }
@@ -123,7 +124,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       this.subscribeToClock();
       this.setupSubscribers();
       await this.setupPexipClient();
-      this.call();
+      // this.call();
     },
       (error) => {
         this.logger.error(`There was an error getting a jwtoken for ${this.participant.id}`, error);
