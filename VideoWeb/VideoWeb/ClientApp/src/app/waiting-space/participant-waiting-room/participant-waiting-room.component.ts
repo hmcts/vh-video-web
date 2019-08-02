@@ -90,9 +90,10 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   }
 
   announceHearingIsAboutToStart(): void {
+    const self = this;
     this.hearingAlertSound.play()
       .catch(function (reason) {
-        console.error(`caught error ${reason}`);
+        self.logger.error('Failed to announce hearing starting', reason);
       });
     this.hearingStartingAnnounced = true;
   }
