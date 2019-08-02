@@ -124,7 +124,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       this.subscribeToClock();
       this.setupSubscribers();
       await this.setupPexipClient();
-      // this.call();
+      this.call();
     },
       (error) => {
         this.logger.error(`There was an error getting a jwtoken for ${this.participant.id}`, error);
