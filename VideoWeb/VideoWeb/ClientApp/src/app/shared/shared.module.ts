@@ -20,6 +20,7 @@ import { SelfTestComponent } from './self-test/self-test.component';
 import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-browser.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { ModalComponent } from './modal/modal.component';
+import { BetaBannerComponent } from './beta-banner/beta-banner.component';
 
 @NgModule({
   imports: [
@@ -45,7 +46,8 @@ import { ModalComponent } from './modal/modal.component';
     SelfTestComponent,
     UnsupportedBrowserComponent,
     PrivacyPolicyComponent,
-    ModalComponent
+    ModalComponent,
+    BetaBannerComponent
   ],
   providers: [
     { provide: 'SnotifyToastConfig', useValue: ToastDefaults},
@@ -67,6 +69,7 @@ import { ModalComponent } from './modal/modal.component';
     HttpClientModule,
     SnotifyModule,
     DeviceDetectorModule,
+    BetaBannerComponent
   ]
 })
 export class SharedModule { }
