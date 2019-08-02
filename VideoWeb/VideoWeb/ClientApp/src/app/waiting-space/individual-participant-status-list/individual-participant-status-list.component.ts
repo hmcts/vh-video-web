@@ -26,10 +26,11 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   consultationRequestee: Participant;
   consultationRequester: Participant;
 
-  incomingCallSound: HTMLAudioElement;
+  callRiningSound: HTMLAudioElement;
   incomingCallTimeout: NodeJS.Timer;
   outgoingCallTimeout: NodeJS.Timer;
   waitingForConsultationResponse: boolean;
+  private readonly CALL_TIMEOUT = 120000;
 
   private readonly REQUEST_PC_MODAL = 'raise-pc-modal';
   private readonly RECIEVE_PC_MODAL = 'receive-pc-modal';
@@ -47,32 +48,19 @@ export class IndividualParticipantStatusListComponent implements OnInit {
 
   ngOnInit() {
     this.waitingForConsultationResponse = false;
-    this.initConsultationRequestAlert();
+    this.initCallRingingSound();
     this.filterNonJudgeParticipants();
     this.filterJudge();
     this.setupSubscribers();
   }
 
-  initConsultationRequestAlert(): void {
-    this.incomingCallSound = new Audio();
-    this.incomingCallSound.src = '/assets/audio/consultation_request.mp3';
-    this.incomingCallSound.load();
-    this.incomingCallSound.addEventListener('ended', function () {
+  initCallRingingSound(): void {
+    this.callRiningSound = new Audio();
+    this.callRiningSound.src = '/assets/audio/consultation_request.mp3';
+    this.callRiningSound.load();
+    this.callRiningSound.addEventListener('ended', function () {
       this.play();
     }, false);
-  }
-
-  playIncomingCallSound() {
-    const self = this;
-    this.incomingCallSound.play()
-      .then(() => {
-        self.incomingCallTimeout = setTimeout(async () => {
-          await self.cancelIncomingCall();
-        }, 120000);
-      })
-      .catch(function (reason) {
-        self.logger.error('Failed to announce hearing starting', reason);
-      });
   }
 
   async cancelIncomingCall() {
@@ -83,13 +71,16 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   }
 
   stopCallRinging() {
-    this.incomingCallSound.pause();
-    this.incomingCallSound.currentTime = 0;
+    clearTimeout(this.incomingCallTimeout);
+    clearTimeout(this.outgoingCallTimeout);
+    this.callRiningSound.pause();
+    this.callRiningSound.currentTime = 0;
   }
 
   cancelOutgoingCall() {
     this.logger.info('Consultation request timed-out. Cancelling call');
     this.displayModal(this.REJECTED_PC_MODAL);
+    this.stopCallRinging();
   }
 
   private setupSubscribers() {
@@ -140,10 +131,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
       this.consultationService.raiseConsultationRequest(this.conference, requester, requestee)
         .subscribe(() => {
           this.logger.info('Raised consultation request event');
-          this.waitingForConsultationResponse = true;
-          this.outgoingCallTimeout = setTimeout(() => {
-            this.cancelOutgoingCall();
-          }, 120000);
+          this.startCallRinging(true);
         },
           error => {
             this.logger.error('Failed to raise consultation request', error);
@@ -152,7 +140,30 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     }
   }
 
+  startCallRinging(outgoingCall: boolean) {
+    if (outgoingCall) {
+      this.waitingForConsultationResponse = true;
+      this.outgoingCallTimeout = setTimeout(() => {
+        this.cancelOutgoingCall();
+      }, this.CALL_TIMEOUT);
+    } else {
+      this.incomingCallTimeout = setTimeout(async () => {
+        await this.cancelIncomingCall();
+      }, this.CALL_TIMEOUT);
+    }
+    this.callRiningSound.play();
+  }
+
+  cancelCallRinging(outgoingCall: boolean) {
+    if (outgoingCall) {
+      this.cancelOutgoingCall();
+    } else {
+      this.cancelIncomingCall();
+    }
+  }
+
   cancelConsultationRequest() {
+    this.stopCallRinging();
     this.closeAllPCModals();
   }
 
@@ -163,7 +174,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     this.consultationRequester = new Participant(requester);
     this.consultationRequestee = new Participant(requestee);
     this.displayModal(this.RECIEVE_PC_MODAL);
-    this.playIncomingCallSound();
+    this.startCallRinging(false);
   }
 
   async answerConsultationRequest(answer: ConsultationAnswer) {
