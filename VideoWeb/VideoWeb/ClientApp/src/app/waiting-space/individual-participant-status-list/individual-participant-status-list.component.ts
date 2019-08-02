@@ -89,7 +89,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
 
   cancelOutgoingCall() {
     this.logger.info('Consultation request timed-out. Cancelling call');
-    this.closeAllPCModals();
+    this.displayModal(this.REJECTED_PC_MODAL);
   }
 
   private setupSubscribers() {
