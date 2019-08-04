@@ -13,11 +13,11 @@ using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
 {
-    public class RequestConsultationTests
+    public class LeavePrivateConsultationTests
     {
         private ConsultationsController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
-
+        
         [SetUp]
         public void Setup()
         {
@@ -36,15 +36,15 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 ControllerContext = context
             };
         }
-
+        
         [Test]
         public async Task should_return_no_content_when_request_is_sent()
         {
             _videoApiClientMock
-                .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
+                .Setup(x => x.LeavePrivateConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
                 .Returns(Task.FromResult(default(object)));
 
-            var result = await _controller.HandleConsultationRequest(Builder<ConsultationRequest>.CreateNew().Build());
+            var result = await _controller.LeavePrivateConsultation(Builder<LeaveConsultationRequest>.CreateNew().Build());
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
         }
@@ -55,10 +55,10 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id", null, default(ProblemDetails), null);
             _videoApiClientMock
-                .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
+                .Setup(x => x.LeavePrivateConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.HandleConsultationRequest(Builder<ConsultationRequest>.CreateNew().Build());
+            var result = await _controller.LeavePrivateConsultation(Builder<LeaveConsultationRequest>.CreateNew().Build());
             var typedResult = (ObjectResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
         }
@@ -70,10 +70,10 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default(ProblemDetails), null);
             _videoApiClientMock
-                .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
+                .Setup(x => x.LeavePrivateConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.HandleConsultationRequest(Builder<ConsultationRequest>.CreateNew().Build());
+            var result = await _controller.LeavePrivateConsultation(Builder<LeaveConsultationRequest>.CreateNew().Build());
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
         }

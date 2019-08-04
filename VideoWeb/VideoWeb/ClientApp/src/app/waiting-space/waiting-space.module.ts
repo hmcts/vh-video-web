@@ -9,6 +9,7 @@ import { JudgeWaitingRoomComponent } from './judge-waiting-room/judge-waiting-ro
 import { JudgeParticipantStatusListComponent } from './judge-participant-status-list/judge-participant-status-list.component';
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room/participant-waiting-room.component';
 import { WaitingSpaceRoutingModule } from './waiting-space-routing.module';
+import { IndividualConsultationControlsComponent } from './individual-consultation-controls/individual-consultation-controls.component';
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import { WaitingSpaceRoutingModule } from './waiting-space-routing.module';
     ParticipantWaitingRoomComponent,
     JudgeWaitingRoomComponent,
     JudgeHearingPageComponent,
-    AnalogueClockComponent
+    AnalogueClockComponent,
+    IndividualConsultationControlsComponent
   ]
 })
 export class WaitingSpaceModule { }

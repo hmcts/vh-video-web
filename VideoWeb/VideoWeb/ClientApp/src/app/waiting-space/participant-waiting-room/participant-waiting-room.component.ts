@@ -1,8 +1,10 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus,
-  TokenResponse } from 'src/app/services/clients/api-client';
+import {
+  ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus,
+  TokenResponse
+} from 'src/app/services/clients/api-client';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -12,6 +14,7 @@ import { ClockService as ClockService } from 'src/app/services/clock.service';
 import { Hearing } from '../../shared/models/hearing';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ConsultationService } from 'src/app/services/api/consultation.service';
 declare var PexRTC: any;
 declare var HeartbeatFactory: any;
 
@@ -37,6 +40,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   hearingAlertSound: HTMLAudioElement;
 
   showVideo: boolean;
+  showConsultationControls: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -47,10 +51,12 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     private errorService: ErrorService,
     private clockService: ClockService,
     private userMediaService: UserMediaService,
-    private logger: Logger
+    private logger: Logger,
+    private consultationService: ConsultationService
   ) {
     this.loadingData = true;
     this.showVideo = false;
+    this.showConsultationControls = false;
   }
 
   ngOnInit() {
@@ -208,7 +214,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       self.logger.info('successfully connected to call');
       self.stream = stream;
 
-      const baseUrl =  self.conference.pexip_node_uri.replace('sip.', '');
+      const baseUrl = self.conference.pexip_node_uri.replace('sip.', '');
       const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${self.conference.id}`;
       console.log(url);
       const heartbeatFactory = new HeartbeatFactory(self.pexipAPI, url, self.conference.id, self.participant.id, self.token.token);
@@ -240,22 +246,35 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     if (!this.connected) {
       this.logger.debug('Not showing video because not connecting to node');
       this.showVideo = false;
+      this.showConsultationControls = false;
       return;
     }
 
     if (this.hearing.isInSession()) {
       this.logger.debug('Showing video because hearing is in session');
       this.showVideo = true;
+      this.showConsultationControls = false;
       return;
     }
 
     if (this.participant.status === ParticipantStatus.InConsultation) {
       this.logger.debug('Showing video because hearing is in session');
       this.showVideo = true;
+      this.showConsultationControls = true;
       return;
     }
 
     this.logger.debug('Not showing video because hearing is not in session and user is not in consultation');
     this.showVideo = false;
+    this.showConsultationControls = false;
+  }
+
+  async onConsultationCancelled() {
+    this.logger.debug(`Participant ${this.participant.id} Attempting to leave conference: ${this.conference.id}`);
+    try {
+      await this.consultationService.leaveConsultation(this.conference, this.participant).toPromise();
+    } catch (error) {
+      this.logger.error('Failed to leave private consultation', error);
+    }
   }
 }
