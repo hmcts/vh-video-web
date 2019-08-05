@@ -9,6 +9,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ModalService } from 'src/app/services/modal.service';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { Participant } from 'src/app/shared/models/participant';
+import { Hearing } from 'src/app/shared/models/hearing';
 
 @Component({
   selector: 'app-individual-participant-status-list',
@@ -25,6 +26,12 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   consultationRequestee: Participant;
   consultationRequester: Participant;
 
+  callRiningSound: HTMLAudioElement;
+  incomingCallTimeout: NodeJS.Timer;
+  outgoingCallTimeout: NodeJS.Timer;
+  waitingForConsultationResponse: boolean;
+  private readonly CALL_TIMEOUT = 120000;
+
   private readonly REQUEST_PC_MODAL = 'raise-pc-modal';
   private readonly RECIEVE_PC_MODAL = 'receive-pc-modal';
   private readonly ACCEPTED_PC_MODAL = 'accepted-pc-modal';
@@ -40,9 +47,40 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.waitingForConsultationResponse = false;
+    this.initCallRingingSound();
     this.filterNonJudgeParticipants();
     this.filterJudge();
     this.setupSubscribers();
+  }
+
+  initCallRingingSound(): void {
+    this.callRiningSound = new Audio();
+    this.callRiningSound.src = '/assets/audio/consultation_request.mp3';
+    this.callRiningSound.load();
+    this.callRiningSound.addEventListener('ended', function () {
+      this.play();
+    }, false);
+  }
+
+  async cancelIncomingCall() {
+    this.logger.info('Consultation request timed-out. Rejecting call');
+    this.closeAllPCModals();
+    this.stopCallRinging();
+    await this.answerConsultationRequest(ConsultationAnswer.Rejected);
+  }
+
+  stopCallRinging() {
+    clearTimeout(this.incomingCallTimeout);
+    clearTimeout(this.outgoingCallTimeout);
+    this.callRiningSound.pause();
+    this.callRiningSound.currentTime = 0;
+  }
+
+  cancelOutgoingCall() {
+    this.logger.info('Consultation request timed-out. Cancelling call');
+    this.displayModal(this.REJECTED_PC_MODAL);
+    this.stopCallRinging();
   }
 
   private setupSubscribers() {
@@ -70,9 +108,11 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   }
 
   canCallParticipant(participant: ParticipantResponse): boolean {
-    if (this.judge.username.toLocaleLowerCase().trim() === this.adalService.userInfo.userName.toLocaleLowerCase().trim()) {
+    const hearing = new Hearing(this.conference);
+    if (hearing.isReadyToStart() || hearing.isDelayed() || hearing.isSuspended()) {
       return false;
     }
+
     if (participant.username.toLocaleLowerCase().trim() === this.adalService.userInfo.userName.toLocaleLowerCase().trim()) {
       return false;
     }
@@ -91,6 +131,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
       this.consultationService.raiseConsultationRequest(this.conference, requester, requestee)
         .subscribe(() => {
           this.logger.info('Raised consultation request event');
+          this.startCallRinging(true);
         },
           error => {
             this.logger.error('Failed to raise consultation request', error);
@@ -99,19 +140,45 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     }
   }
 
+  startCallRinging(outgoingCall: boolean) {
+    if (outgoingCall) {
+      this.waitingForConsultationResponse = true;
+      this.outgoingCallTimeout = setTimeout(() => {
+        this.cancelOutgoingCall();
+      }, this.CALL_TIMEOUT);
+    } else {
+      this.incomingCallTimeout = setTimeout(async () => {
+        await this.cancelIncomingCall();
+      }, this.CALL_TIMEOUT);
+    }
+    this.callRiningSound.play();
+  }
+
+  cancelCallRinging(outgoingCall: boolean) {
+    if (outgoingCall) {
+      this.cancelOutgoingCall();
+    } else {
+      this.cancelIncomingCall();
+    }
+  }
+
   cancelConsultationRequest() {
+    this.stopCallRinging();
     this.closeAllPCModals();
   }
 
   private displayConsultationRequestPopup(message: ConsultationMessage) {
     const requester = this.conference.participants.find(x => x.username === message.requestedBy);
     const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
+    this.logger.info(`Incoming request for private consultation from ${requester.display_name}`);
     this.consultationRequester = new Participant(requester);
     this.consultationRequestee = new Participant(requestee);
     this.displayModal(this.RECIEVE_PC_MODAL);
+    this.startCallRinging(false);
   }
 
   async answerConsultationRequest(answer: ConsultationAnswer) {
+    this.stopCallRinging();
     this.closeAllPCModals();
     this.logger.event(`${this.consultationRequestee.displayName} responded to consultation: ${answer}`);
 
