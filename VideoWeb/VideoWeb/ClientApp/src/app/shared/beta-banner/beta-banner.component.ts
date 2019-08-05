@@ -17,11 +17,6 @@ export class BetaBannerComponent implements OnInit {
   constructor(
     private router: Router,
     private eventService: EventsService) {
-    this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        this.pageUrl = router.url;
-      });
   }
   ngOnInit(): void {
     this.setupSubscribers();
@@ -30,9 +25,11 @@ export class BetaBannerComponent implements OnInit {
   private setupSubscribers() {
     this.eventService.start();
     this.eventService.getHearingStatusMessage().subscribe(message => {
+      this.pageUrl = '';
       if (message.status === ConferenceStatus.Closed) {
-        this.pageUrl = '';
         this.pageUrl = this.exitSurveyUrl + this.router.url;
+      } else {
+        this.pageUrl = this.inPageFeedbackUrl + this.router.url;
       }
     });
   }
