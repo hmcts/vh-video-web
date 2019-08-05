@@ -19,8 +19,7 @@ Scenario: Clerk starts hearing
 
 @Chrome @Video @VIH-4615
 Scenario: Clerk pauses hearing
-	Given the Individual user has progressed to the Waiting Room page
-	And there is a new browser open for Clerk
+	Given the Individual01 user has progressed to the Waiting Room page
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
 	Then the participant status for Individual01 is displayed as Connected
 	When the user clicks the button with innertext Start video call
@@ -30,17 +29,30 @@ Scenario: Clerk pauses hearing
 	When the Clerk clicks pause
 	Then the user is on the Waiting Room page
 	And the Clerk waiting room displays the paused status
-	#And the hearing status changed to Paused
+	And the hearing status changed to Paused
 	When in the Individual01's browser
 	Then the participants waiting room displays the paused status
 	And the Clerk resumes the hearing
 
+@Chrome @Video @VIH-4615
+Scenario: Clerk closes hearing
+	Given the Individual01 user has progressed to the Waiting Room page
+	And the Clerk user has progressed to the Waiting Room page for the existing hearing
+	Then the participant status for Individual01 is displayed as Connected
+	When the user clicks the button with innertext Start video call
+	Then the user is on the Countdown page
+	When the countdown finishes
+	Then the Clerk is on the Hearing Room page for 10 seconds
+	When the Clerk clicks close
+	Then the user is on the Hearings List page
+	And the hearing status changed to Closed
+	When in the Individual01's browser
+	Then the participants waiting room displays the closed status
+
 @Chrome @Video
 Scenario: Two participants join hearing
-	Given the Individual user has progressed to the Waiting Room page
-	And there is a new browser open for Representative01
+	Given the Individual01 user has progressed to the Waiting Room page
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
-	And there is a new browser open for Clerk
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
 	When the user clicks the button with innertext Start video call
 	Then the user is on the Countdown page
@@ -49,14 +61,10 @@ Scenario: Two participants join hearing
 
 @Chrome @Video
 Scenario: Four participants join hearing
-	Given the Individual user has progressed to the Waiting Room page
-	And there is a new browser open for Representative01
+	Given the Individual01 user has progressed to the Waiting Room page
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
-	And there is a new browser open for Individual02
 	And the Individual02 user has progressed to the Waiting Room page for the existing hearing
-	And there is a new browser open for Representative02
 	And the Representative02 user has progressed to the Waiting Room page for the existing hearing
-	And there is a new browser open for Clerk
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
 	When the user clicks the button with innertext Start video call
 	Then the user is on the Countdown page

@@ -79,31 +79,18 @@ namespace VideoWeb.AcceptanceTests.Helpers
                     caps.SetCapability("version", "74.0");
                     caps.SetCapability("autoAcceptAlerts", true);
 
-                    Dictionary<string, object> chromeOptions;
+                    var chromeOptions = new Dictionary<string, List<string>>
+                    {
+                        ["args"] = new List<string>
+                        {
+                            "use-fake-ui-for-media-stream",
+                            "use-fake-device-for-media-stream"
+                        }
+                    };
 
                     if (scenario.Tags.Contains("Video"))
-                    {
-                        chromeOptions = new Dictionary<string, object>
-                        {
-                            ["args"] = new List<string>
-                            {
-                                "use-fake-ui-for-media-stream",
-                                "use-fake-device-for-media-stream",
-                                $"use-file-for-fake-video-capture={GetBuildPath}/Videos/{filename}"
-                            }
-                        };
-                    }
-                    else
-                    {
-                        chromeOptions = new Dictionary<string, object>
-                        {
-                            ["args"] = new List<string>
-                            {
-                                "use-fake-ui-for-media-stream",
-                                "use-fake-device-for-media-stream"
-                            }
-                        };
-                    }
+                        chromeOptions["args"].Add($"use-file-for-fake-video-capture={GetBuildPath}/Videos/{filename}");                  
+
                     caps.SetCapability(ChromeOptions.Capability, chromeOptions);
                     break;
             }
