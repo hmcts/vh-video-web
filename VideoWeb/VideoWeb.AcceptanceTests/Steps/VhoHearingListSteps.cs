@@ -41,10 +41,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the VHO can see a list of hearings including the new hearing")]
         public void ThenTheVhoCanSeeAListOfHearingsIncludingTheNewHearing()
         {
+            if (_tc.Hearing.Scheduled_duration == null)
+            {
+                throw new DataMisalignedException("Duration cannot be null");
+            }
+
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_vhoPage.HearingWithCaseNumber(_tc.Hearing.Cases.First().Number)).Displayed
                 .Should().BeTrue();
 
-            Debug.Assert(_tc.Hearing.Scheduled_duration != null, "_tc.Hearing.Scheduled_duration != null");
             var timespan = TimeSpan.FromMinutes(_tc.Hearing.Scheduled_duration.Value);
             var listedFor = GetListedForTimeAsString(timespan);
 
