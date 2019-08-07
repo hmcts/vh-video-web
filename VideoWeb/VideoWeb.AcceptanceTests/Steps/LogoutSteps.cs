@@ -1,20 +1,26 @@
-﻿using TechTalk.SpecFlow;
+﻿using System.Collections.Generic;
+using FluentAssertions;
+using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.AcceptanceTests.Users;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
     public sealed class LogoutSteps
     {
-        private readonly BrowserContext _browserContext;
+        private readonly Dictionary<string, UserBrowser> _browsers;
+        private readonly TestContext _tc;
         private readonly CommonPages _commonPages;
-        private readonly MicrosoftLoginPage _loginPage;
+        private readonly LoginPage _loginPage;
 
-        public LogoutSteps(BrowserContext browserContext, CommonPages commonPages, MicrosoftLoginPage loginPage)
+        public LogoutSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, 
+            CommonPages commonPages, LoginPage loginPage)
         {
-            _browserContext = browserContext;
+            _browsers = browsers;
+            _tc = testContext;
             _commonPages = commonPages;
             _loginPage = loginPage;
         }
@@ -22,13 +28,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user attempts to logout")]
         public void WhenTheUserAttemptsToLogout()
         {
-            _browserContext.NgDriver.WaitUntilElementClickable(_commonPages.SignOutLink).Click();            
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementClickable(_commonPages.SignOutLink).Click();            
         }
 
         [Then(@"the user should be navigated to sign in screen")]
         public void ThenTheUserShouldBeNavigatedToSignInScreen()
         {
-            _loginPage.SignInTitle();
+            _browsers[_tc.CurrentUser.Key].Retry(() => _browsers[_tc.CurrentUser.Key].Driver.Title.Trim().Should().Be(_loginPage.SignInTitle), 5);
         }
     }
 }

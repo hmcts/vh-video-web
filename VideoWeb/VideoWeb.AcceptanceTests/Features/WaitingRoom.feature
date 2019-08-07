@@ -5,21 +5,11 @@ Feature: Waiting Room
 	So that I am ready for the video hearing to begin
 
 @VIH-4233
-Scenario: Individual waiting room
-	Given the Individual user has progressed to the Waiting Room page
+Scenario: Participant waiting room
+	Given the Participant user has progressed to the Waiting Room page
 	Then the user is on the Waiting Room page
 	And the participant status will be updated to Available
 	And the participant can see information about their case
-	And the user can see a list of participants and their representatives
-	And the user can see the hearing is about to begin title
-	And the user can see a black box and an about to begin message
-
-@VIH-4233
-Scenario: Representative waiting room
-	Given the Representative user has progressed to the Waiting Room page
-	Then the user is on the Waiting Room page
-	And the participant status will be updated to Available
-	And the participant can see information about their case 
 	And the user can see a list of participants and their representatives
 	And the user can see the hearing is about to begin title
 	And the user can see a black box and an about to begin message
@@ -37,32 +27,16 @@ Scenario: Clerk waiting room
 	And the participant status will be updated to Joining
 
 @VIH-4233
-Scenario: Individual hearing is delayed
-	Given the Individual user has progressed to the Waiting Room page with a hearing in -10 minutes time
+Scenario: Participant hearing is delayed
+	Given the Participant user has progressed to the Waiting Room page with a hearing in -10 minutes time
 	Then the user is on the Waiting Room page
 	And the participant status will be updated to Available
 	And the user can see the hearing is delayed title
 	And the user can see a yellow box and a delayed message
 
 @VIH-4233
-Scenario: Individual is in the waiting room early
-	Given the Individual user has progressed to the Waiting Room page with a hearing in 10 minutes time
-	Then the user is on the Waiting Room page
-	And the participant status will be updated to Available
-	And the user can see the hearing is scheduled title
-	And the user can see a blue box and a scheduled message	
-
-@VIH-4233
-Scenario: Representative hearing is delayed
-	Given the Representative user has progressed to the Waiting Room page with a hearing in -10 minutes time
-	Then the user is on the Waiting Room page
-	And the participant status will be updated to Available
-	And the user can see the hearing is delayed title
-	And the user can see a yellow box and a delayed message
-
-@VIH-4233
-Scenario: Representative is in the waiting room early
-	Given the Representative user has progressed to the Waiting Room page with a hearing in 10 minutes time
+Scenario: Participant is in the waiting room early
+	Given the Participant user has progressed to the Waiting Room page with a hearing in 10 minutes time
 	Then the user is on the Waiting Room page
 	And the participant status will be updated to Available
 	And the user can see the hearing is scheduled title

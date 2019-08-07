@@ -10,6 +10,7 @@ using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.AcceptanceTests.Users;
 using VideoWeb.Common.Helpers;
 using VideoWeb.Services.Video;
 using UserRole = VideoWeb.Services.Video.UserRole;
@@ -19,9 +20,9 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public sealed class ParticipantStatusSteps
     {
-        private readonly TestContext _context;
-        private readonly BrowserContext _browserContext;
-        private readonly ScenarioContext _scenarioContext;
+        private readonly Dictionary<string, UserBrowser> _browsers;
+        private readonly TestContext _tc;
+        private readonly ScenarioContext _scenario;
         private readonly AdminPanelPage _adminPanelPage;
         private readonly VhoHearingListPage _hearingListPage;
         private readonly ConferenceEndpoints _conferenceEndpoints = new VideoApiUriFactory().ConferenceEndpoints;
@@ -29,12 +30,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         private const string ParticipantsKey = "participants";
         private const int MaxRetries = 5;
 
-        public ParticipantStatusSteps(TestContext testContext, BrowserContext browserContext,
-            ScenarioContext injectedContext, AdminPanelPage adminPanelPage, VhoHearingListPage hearingListPage)
+        public ParticipantStatusSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext,
+            ScenarioContext scenario, AdminPanelPage adminPanelPage, VhoHearingListPage hearingListPage)
         {
-            _context = testContext;
-            _browserContext = browserContext;
-            _scenarioContext = injectedContext;
+            _tc = testContext;
+            _browsers = browsers;
+            _scenario = scenario;
             _adminPanelPage = adminPanelPage;
             _hearingListPage = hearingListPage;
         }
@@ -79,12 +80,12 @@ namespace VideoWeb.AcceptanceTests.Steps
                 default: throw new ArgumentOutOfRangeException($"Action {action} is not defined");
             }
 
-            var participants = _scenarioContext.Get<List<ParticipantDetailsResponse>>(ParticipantsKey);
+            var participants = _scenario.Get<List<ParticipantDetailsResponse>>(ParticipantsKey);
 
             foreach (var participant in participants)
             {
                 var request = Builder<ConferenceEventRequest>.CreateNew()
-                    .With(x => x.Conference_id = _context.NewConferenceId.ToString())
+                    .With(x => x.Conference_id = _tc.NewConferenceId.ToString())
                     .With(x => x.Participant_id = participant.Id.ToString())
                     .With(x => x.Event_id = Guid.NewGuid().ToString())
                     .With(x => x.Event_type = eventType)
@@ -92,46 +93,46 @@ namespace VideoWeb.AcceptanceTests.Steps
                     .With(x => x.Transfer_to = to)
                     .With(x => x.Reason = "Automated")
                     .Build();
-                _context.Request = _context.Post(_callbackEndpoints.Event, request);
-                _context.Response = _context.VideoApiClient().Execute(_context.Request);
-                _context.Response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-                _context.Response.IsSuccessful.Should().Be(true);
+                _tc.Request = _tc.Post(_callbackEndpoints.Event, request);
+                _tc.Response = _tc.VideoApiClient().Execute(_tc.Request);
+                _tc.Response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+                _tc.Response.IsSuccessful.Should().Be(true);
             }
         }
 
         [Then(@"the participants statuses should be (.*)")]
         public void ThenTheParticipantsStatusesShouldBeNotJoined(string participantStatus)
         {
-            _browserContext.NgDriver.WrappedDriver.SwitchTo().ParentFrame();
-            _browserContext.NgDriver.WaitUntilElementVisible(_adminPanelPage.ParticipantStatusTable).Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WrappedDriver.SwitchTo().ParentFrame();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_adminPanelPage.ParticipantStatusTable).Displayed.Should().BeTrue();
 
-            var participants = _context.Conference.Participants.FindAll(x =>
+            var participants = _tc.Conference.Participants.FindAll(x =>
                 x.User_role == UserRole.Individual || x.User_role == UserRole.Representative);
 
             CheckParticipantStatus(participantStatus, participants);
 
-            _scenarioContext.Add(ParticipantsKey, participants);
+            _scenario.Add(ParticipantsKey, participants);
         }
 
         [Then(@"the participant status will be updated to (.*)")]
         public void ThenTheParticipantStatusWillBeUpdatedToJoining(ParticipantState expectedState)
         {
-            _context.Request =
-                _context.Get(_conferenceEndpoints.GetConferenceDetailsById(_context.NewConferenceId));
+            _tc.Request =
+                _tc.Get(_conferenceEndpoints.GetConferenceDetailsById(_tc.NewConferenceId));
 
             var participantStatus = ParticipantState.None;
 
             for (var i = 0; i < MaxRetries; i++)
             {
-                _context.Response = _context.VideoApiClient().Execute(_context.Request);
-                _context.Response.IsSuccessful.Should().BeTrue();
+                _tc.Response = _tc.VideoApiClient().Execute(_tc.Request);
+                _tc.Response.IsSuccessful.Should().BeTrue();
                 var conference =
-                    ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_context.Response
+                    ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_tc.Response
                         .Content);
                 conference.Should().NotBeNull();
 
                 var participant = conference.Participants
-                    .Find(x => x.Username.ToLower().Equals(_context.CurrentUser.Username.ToLower()));
+                    .Find(x => x.Username.ToLower().Equals(_tc.CurrentUser.Username.ToLower()));
 
                 var participantState = participant.Current_status?.Participant_state;
                 if (participantState != null && participantState.Equals(expectedState))
@@ -151,15 +152,16 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the participants statuses should update to (.*)")]
         public void ThenTheParticipantsStatusesShouldUpdateToDisconnected(string participantStatus)
         {
-            _browserContext.NgDriver.Navigate().Refresh();
-            _browserContext.NgDriver
+            _browsers[_tc.CurrentUser.Key].Driver.Navigate().Refresh();
+
+            _browsers[_tc.CurrentUser.Key].Driver
                 .WaitUntilElementVisible(
-                    _hearingListPage.VideoHearingsOfficerSelectHearingButton(_context.Hearing.Cases.First().Number))
+                    _hearingListPage.VideoHearingsOfficerSelectHearingButton(_tc.Hearing.Cases.First().Number))
                 .Click();
 
-            _browserContext.NgDriver.WaitUntilElementVisible(_adminPanelPage.ParticipantStatusTable).Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_adminPanelPage.ParticipantStatusTable).Displayed.Should().BeTrue();
 
-            var participants = _scenarioContext.Get<List<ParticipantDetailsResponse>>(ParticipantsKey);
+            var participants = _scenario.Get<List<ParticipantDetailsResponse>>(ParticipantsKey);
 
             CheckParticipantStatus(participantStatus, participants);
         }
@@ -171,7 +173,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 var participantName = NameInCorrectFormat(participant);
 
                 if (participant.Id != null)
-                    _browserContext.NgDriver
+                    _browsers[_tc.CurrentUser.Key].Driver
                         .WaitUntilElementVisible(
                             _adminPanelPage.ParticipantStatus((Guid) participant.Id, participantName))
                         .Text.Trim().Should().Be(participantStatus);

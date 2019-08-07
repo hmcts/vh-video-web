@@ -5,8 +5,8 @@ Feature: Error Pages
 	So that I know how to 
 
 Scenario: Page not found error
-	Given the login page is open
-	When the Individual attempts to login with valid credentials
+	Given a new browser is open for a Participant
+	When the user attempts to login with valid credentials
 	Then the user is on the Hearings List page
 	When the user attempts to navigate to a nonexistent page
 	Then the user is on the Not Found page
@@ -14,7 +14,7 @@ Scenario: Page not found error
 	And contact us details are available
 
 Scenario: Page not authorised error
-	Given the Individual user has progressed to the Waiting Room page
+	Given the Participant user has progressed to the Waiting Room page
 	Then the user is on the Waiting Room page
 	When the user is removed from the hearing
 	And the user tries to navigate back to the waiting room page

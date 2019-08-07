@@ -64,5 +64,6 @@ Scenario: Video Hearings Officer can see all hearings for today only
 	And I have another hearing and a conference
 	And I have a hearing and a conference in 1 days time
 	And I have another hearing and a conference in 2 days time
-	When the Video Hearings Officer attempts to login with valid credentials
+	And a new browser is open for a Video Hearings Officer
+	When the user attempts to login with valid credentials
 	Then the Video Hearings Officer should only see 2 hearings

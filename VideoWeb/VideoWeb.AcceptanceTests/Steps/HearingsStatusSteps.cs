@@ -10,6 +10,7 @@ using VideoWeb.AcceptanceTests.Actions;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.AcceptanceTests.Users;
 using VideoWeb.Common.Helpers;
 using VideoWeb.Services.Video;
 
@@ -18,15 +19,15 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public sealed class HearingsStatusSteps
     {
-        private const int MaxRetries = 5;
-        private readonly TestContext _context;
-        private readonly BrowserContext _browser;
+        private const int MaxRetries = 10;
+        private readonly TestContext _tc;
+        private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly VhoHearingListPage _hearingListPage;
 
-        public HearingsStatusSteps(TestContext context, BrowserContext browser, VhoHearingListPage hearingListPage)
+        public HearingsStatusSteps(Dictionary<string, UserBrowser> browsers, TestContext tc, VhoHearingListPage hearingListPage)
         {
-            _context = context;
-            _browser = browser;
+            _tc = tc;
+            _browsers = browsers;
             _hearingListPage = hearingListPage;
         }
 
@@ -43,22 +44,22 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {"Suspended", new SuspendedAction()},
                 {"Closed", new ClosedAction()}
             };
-            actions[status].Execute(_context, GetJudgeParticipantId());
+            actions[status].Execute(_tc, GetJudgeParticipantId());
         }
 
         [Then(@"the hearings should be in chronological order")]
         public void ThenTheHearingsShouldBeInChronologicalOrder()
         {
-            var displayedCaseOrder = _browser.NgDriver.WaitUntilElementsVisible(_hearingListPage.VideoHearingsCaseNumbers);
-            displayedCaseOrder.First().Text.Should().Be(_context.Hearing.Cases.First().Number);
+            var displayedCaseOrder = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementsVisible(_hearingListPage.VideoHearingsCaseNumbers);
+            displayedCaseOrder.First().Text.Should().Be(_tc.Hearing.Cases.First().Number);
         }
 
         [Then(@"the Video Hearings Officer user should see a (.*) notification")]
         public void ThenTheVideoHearingsOfficerUserShouldSeeANotification(string notification)
         {
-            _browser.NgDriver
+            _browsers[_tc.CurrentUser.Key].Driver
                 .WaitUntilElementVisible(
-                    _hearingListPage.VideoHearingsOfficerAlertType(_context.Hearing.Cases.First().Number))
+                    _hearingListPage.VideoHearingsOfficerAlertType(_tc.Hearing.Cases.First().Number))
                 .Text.Should().Be(notification);
         }
 
@@ -89,22 +90,22 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private ConferenceDetailsResponse GetConferenceDetails()
         {
-            if (_context.Conference.Id == null)
+            if (_tc.Conference.Id == null)
             {
                 throw new DataMisalignedException("Conference Id is not set");
             }
             var endpoint =
                 new VideoApiUriFactory().ConferenceEndpoints
-                    .GetConferenceDetailsById((Guid)_context.Conference.Id);
-            _context.Request = _context.Get(endpoint);
-            _context.Response = _context.VideoApiClient().Execute(_context.Request);
-            _context.Response.StatusCode.Should().Be(HttpStatusCode.OK);
-            return ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_context.Json);
+                    .GetConferenceDetailsById((Guid)_tc.Conference.Id);
+            _tc.Request = _tc.Get(endpoint);
+            _tc.Response = _tc.VideoApiClient().Execute(_tc.Request);
+            _tc.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+            return ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_tc.Json);
         }
 
         private string GetJudgeParticipantId()
         {
-            return _context.Conference.Participants.Find(x => x.User_role.Equals(UserRole.Judge)).Id.ToString();
+            return _tc.Conference.Participants.Find(x => x.User_role.Equals(UserRole.Judge)).Id.ToString();
         }
     }
 }

@@ -25,7 +25,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly TestContext _context;
         private readonly HearingsEndpoints _hearingsEndpoints = new BookingsApiUriFactory().HearingsEndpoints;
         private readonly BookingsParticipantsEndpoints _bookingParticipantsEndpoints = new BookingsApiUriFactory().BookingsParticipantsEndpoints;
-        private readonly ConferenceEndpoints _conferenceEndpoints = new VideoApiUriFactory().ConferenceEndpoints;
         private const string UpdatedWord = "Updated";
         private const int UpdatedTimeInMins = 1;
         private UserAccount _addedUser;
