@@ -19,8 +19,8 @@ describe('ParticipantHearingsComponent with no conferences for user', () => {
   const noConferences: ConferenceForUserResponse[] = [];
 
   beforeEach(() => {
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForUser']);
-    videoWebServiceSpy.getConferencesForUser.and.returnValue(of(noConferences));
+    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForIndividual']);
+    videoWebServiceSpy.getConferencesForIndividual.and.returnValue(of(noConferences));
 
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, SharedModule],
@@ -54,8 +54,8 @@ describe('ParticipantHearingsComponent with conferences for user', () => {
   const conferences = new ConferenceTestData().getTestData();
 
   configureTestSuite(() => {
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForUser']);
-    videoWebServiceSpy.getConferencesForUser.and.returnValue(of(conferences));
+    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForIndividual']);
+    videoWebServiceSpy.getConferencesForIndividual.and.returnValue(of(conferences));
 
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, SharedModule],
@@ -89,8 +89,8 @@ describe('ParticipantHearingsComponent with service error', () => {
   let errorService: ErrorService;
 
   configureTestSuite(() => {
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForUser']);
-    videoWebServiceSpy.getConferencesForUser.and.returnValue(throwError({ status: 401, isApiException: true }));
+    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForIndividual']);
+    videoWebServiceSpy.getConferencesForIndividual.and.returnValue(throwError({ status: 401, isApiException: true }));
 
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, SharedModule],

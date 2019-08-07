@@ -32,9 +32,9 @@ describe('VhoHearingsComponent', () => {
   let errorService: ErrorService;
 
   configureTestSuite(() => {
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesToday',
+    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForVHOfficer',
       'getConferenceById', 'getTasksForConference']);
-    videoWebServiceSpy.getConferencesToday.and.returnValue(of(conferences));
+    videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(of(conferences));
     videoWebServiceSpy.getConferenceById.and.returnValue(of(new ConferenceTestData().getConferenceDetail()));
     videoWebServiceSpy.getTasksForConference.and.returnValue(of(new ConferenceTestData().getTasksForConference()));
 
