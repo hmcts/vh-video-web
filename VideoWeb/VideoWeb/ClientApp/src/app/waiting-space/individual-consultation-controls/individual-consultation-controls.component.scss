@@ -1,11 +1,12 @@
 .consultation-controls {
   z-index: 1000;
   position: fixed;
-  left: 0;
-  bottom: 0;
+  left: 50%;
+  bottom: 1vh;
+  transform: translate(-50%, -50%);
+  margin: 0 auto;
 }
 
 .leave-consultation-button {
-  height: 10vh;
   width: 35vh;
 }

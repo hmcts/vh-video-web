@@ -39,7 +39,7 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e);
             }
         }
-
+        
         [HttpPost("leave")]
         [SwaggerOperation(OperationId = "LeavePrivateConsultation")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]

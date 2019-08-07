@@ -2657,6 +2657,9 @@ namespace VideoWeb.Services.Video
         [System.Runtime.Serialization.EnumMember(Value = @"Rejected")]
         Rejected = 2,
     
+        [System.Runtime.Serialization.EnumMember(Value = @"Cancelled")]
+        Cancelled = 3,
+    
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.21.0 (Newtonsoft.Json v11.0.0.0)")]

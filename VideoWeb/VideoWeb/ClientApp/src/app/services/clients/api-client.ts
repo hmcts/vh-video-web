@@ -1654,6 +1654,7 @@ export enum ConsultationAnswer {
     None = "None",
     Accepted = "Accepted",
     Rejected = "Rejected",
+    Cancelled = "Cancelled",
 }
 
 export class LeaveConsultationRequest implements ILeaveConsultationRequest {
