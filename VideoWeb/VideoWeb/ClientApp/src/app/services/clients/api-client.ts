@@ -348,6 +348,69 @@ export class ApiClient {
     }
 
     /**
+     * @param request (optional) 
+     * @return Success
+     */
+    leavePrivateConsultation(request: LeaveConsultationRequest | null | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/consultations/leave";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(request);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processLeavePrivateConsultation(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processLeavePrivateConsultation(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processLeavePrivateConsultation(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("A server error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
      * Check Service Health
      * @return Success
      */
@@ -1591,6 +1654,47 @@ export enum ConsultationAnswer {
     None = "None",
     Accepted = "Accepted",
     Rejected = "Rejected",
+    Cancelled = "Cancelled",
+}
+
+export class LeaveConsultationRequest implements ILeaveConsultationRequest {
+    conference_id?: string | undefined;
+    participant_id?: string | undefined;
+
+    constructor(data?: ILeaveConsultationRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.conference_id = data["conference_id"];
+            this.participant_id = data["participant_id"];
+        }
+    }
+
+    static fromJS(data: any): LeaveConsultationRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new LeaveConsultationRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["conference_id"] = this.conference_id;
+        data["participant_id"] = this.participant_id;
+        return data; 
+    }
+}
+
+export interface ILeaveConsultationRequest {
+    conference_id?: string | undefined;
+    participant_id?: string | undefined;
 }
 
 export class HealthCheckResponse implements IHealthCheckResponse {
@@ -1751,6 +1855,7 @@ export enum EventType {
     MediaPermissionDenied = "MediaPermissionDenied",
     ParticipantJoining = "ParticipantJoining",
     SelfTestFailed = "SelfTestFailed",
+    Suspend = "Suspend",
 }
 
 export class AddSelfTestFailureEventRequest implements IAddSelfTestFailureEventRequest {
