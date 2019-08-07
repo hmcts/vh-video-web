@@ -20,7 +20,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly TestContext _tc;
         private readonly WaitingRoomPage _page;
         private readonly ClerkWaitingRoomPage _clerkPage;
-        private CommonSteps _commonSteps;
+        private readonly CommonSteps _commonSteps;
 
         public WaitingRoomSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext,
             WaitingRoomPage page, ClerkWaitingRoomPage clerkPage, CommonSteps commonSteps)
