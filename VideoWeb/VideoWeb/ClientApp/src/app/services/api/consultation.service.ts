@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { ApiClient, ConferenceResponse, ConsultationAnswer, ConsultationRequest, ParticipantResponse, LeaveConsultationRequest } from '../clients/api-client';
+import {
+  ApiClient, ConferenceResponse, ConsultationAnswer, ConsultationRequest, ParticipantResponse, LeaveConsultationRequest
+} from '../clients/api-client';
 
 
 @Injectable({
