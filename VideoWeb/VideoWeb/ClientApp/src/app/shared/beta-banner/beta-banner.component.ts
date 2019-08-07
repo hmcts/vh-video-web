@@ -13,18 +13,21 @@ export class BetaBannerComponent implements OnInit {
   inPageFeedbackUrl = 'https://www.smartsurvey.co.uk/s/VideoHearings_Feedback/?pageurl=';
   exitSurveyUrl = 'https://www.smartsurvey.co.uk/s/VideoHearings_ExitSurvey/?pageurl=';
   @Input() isRepresentativeOrIndividual: boolean;
+  status: ConferenceStatus;
 
   constructor(
     private router: Router,
     private eventService: EventsService) {
   }
   ngOnInit(): void {
-    this.setupSubscribers();
     this.getInPageFeedbackUrl();
+    this.setupSubscribers();
   }
   private setupSubscribers() {
     this.eventService.start();
     this.eventService.getHearingStatusMessage().subscribe(message => {
+      this.status = message.status;
+
       this.pageUrl = '';
       if (message.status === ConferenceStatus.Closed) {
         this.pageUrl = this.exitSurveyUrl + this.router.url;
@@ -37,7 +40,12 @@ export class BetaBannerComponent implements OnInit {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
-        this.pageUrl = this.inPageFeedbackUrl + this.router.url;
+        this.pageUrl = '';
+        if (this.status === ConferenceStatus.Closed && (this.router.url.indexOf('waiting-room') > -1)) {
+          this.pageUrl = this.exitSurveyUrl + this.router.url;
+        } else {
+          this.pageUrl = this.inPageFeedbackUrl + this.router.url;
+        }
       });
   }
 }
