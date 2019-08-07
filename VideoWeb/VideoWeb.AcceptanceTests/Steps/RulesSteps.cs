@@ -9,24 +9,31 @@ using VideoWeb.AcceptanceTests.Users;
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
-    public sealed class RulesSteps
+    public sealed class RulesSteps : ISteps
     {
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _tc;
         private readonly RulesPage _rulesPage;
+        private readonly CommonSteps _commonSteps;
 
-        public RulesSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, RulesPage rulesPage)
+        public RulesSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, RulesPage rulesPage, CommonSteps commonSteps)
         {
             _browsers = browsers;
             _tc = testContext;
             _rulesPage = rulesPage;
+            _commonSteps = commonSteps;
         }
 
         [Then(@"the HMCTS Crest is visible")]
-        public void ThenTheHMCTSCrestIsVisible()
+        public void ThenTheHmctsCrestIsVisible()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_rulesPage.HmctsLogo).Displayed
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_rulesPage.HmctsLogo).Displayed
                 .Should().BeTrue();
+        }
+
+        public void ProgressToNextPage()
+        {
+            _commonSteps.WhentheUserClicksTheButton("Continue");
         }
     }
 }

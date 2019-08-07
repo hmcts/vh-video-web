@@ -41,10 +41,12 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public TargetBrowser TargetBrowser { get; set; }
         public bool RunningLocally { get; set; }
         public BookNewHearingRequest HearingRequest { get; set; }
+        public bool Selftest { get; set; }
 
         public TestContext()
         {
             Cases = new List<CaseResponse>();
+            Selftest = false;
         }
 
         public UserAccount GetJudgeUser()

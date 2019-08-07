@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading;
 using FluentAssertions;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.Extensions;
 using OpenQA.Selenium.Support.UI;
 using TechTalk.SpecFlow;
 using Testing.Common.Helpers;
@@ -17,20 +18,22 @@ using VideoWeb.Services.Video;
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
-    public sealed class PracticeVideoHearingSteps
+    public sealed class PracticeVideoHearingSteps : ISteps
     {
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _tc;
         private readonly PracticeVideoHearingPage _practiceVideoHearingPage;
+        private readonly CommonSteps _commonSteps;
         private const int VideoFinishedPlayingTimeout = 90;
         private const int Retries = 5;
 
         public PracticeVideoHearingSteps(Dictionary<string, UserBrowser> browsers, TestContext tc,
-            PracticeVideoHearingPage practiceVideoHearingPage)
+            PracticeVideoHearingPage practiceVideoHearingPage, CommonSteps commonSteps)
         {
             _browsers = browsers;
             _tc = tc;
             _practiceVideoHearingPage = practiceVideoHearingPage;
+            _commonSteps = commonSteps;
         }
 
         [When(@"the video has ended")]
@@ -43,7 +46,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the choose your camera and microphone popup should appear")]
         public void ThenTheChooseYourCameraAndMicrophonePopupShouldAppear()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(
                 _practiceVideoHearingPage.ChangeMicPopup).Displayed.Should().BeTrue();
         }
 
@@ -106,22 +109,22 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the user can see contact details to help resolve the issues")]
         public void ThenTheUserCanSeeContactDetailsToHelpResolveTheIssues()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_practiceVideoHearingPage.ProblemsTitle).Displayed.Should()
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_practiceVideoHearingPage.ProblemsTitle).Displayed.Should()
                 .BeTrue();
 
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_practiceVideoHearingPage.TellParticipantsText).Displayed.Should()
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_practiceVideoHearingPage.TellParticipantsText).Displayed.Should()
                 .BeTrue();
         }
 
         private void VideoIsPlaying(By element)
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(element);
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(element);
 
             var playing = false;
 
             for (var i = 1; i <= Retries; i++)
             {
-                var currentTime = Convert.ToDouble(_browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(element)
+                var currentTime = Convert.ToDouble(_browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(element)
                     .GetAttribute("currentTime"));
                 if (currentTime > 0)
                 {
@@ -133,6 +136,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             }
 
             playing.Should().BeTrue();
+        }
+
+        public void ProgressToNextPage()
+        {
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_practiceVideoHearingPage.IncomingVideo)
+                .Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browsers[_tc.CurrentUser.Key].Driver.FindElement(CommonLocators.ButtonWithLabel("Continue")));
+            _commonSteps.WhentheUserClicksTheButton("Continue");
         }
     }
 }
