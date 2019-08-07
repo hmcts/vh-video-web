@@ -1,0 +1,12 @@
+.consultation-controls {
+  z-index: 1000;
+  position: fixed;
+  left: 50%;
+  bottom: 1vh;
+  transform: translate(-50%, -50%);
+  margin: 0 auto;
+}
+
+.leave-consultation-button {
+  width: 35vh;
+}

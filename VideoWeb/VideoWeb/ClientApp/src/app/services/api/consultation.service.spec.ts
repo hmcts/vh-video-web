@@ -2,7 +2,7 @@ import { inject, TestBed } from '@angular/core/testing';
 import { configureTestSuite } from 'ng-bullet';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { SharedModule } from '../../shared/shared.module';
-import { ApiClient, ConsultationAnswer, ConsultationRequest } from '../clients/api-client';
+import { ApiClient, ConsultationAnswer, ConsultationRequest, LeaveConsultationRequest } from '../clients/api-client';
 import { ConsultationService } from './consultation.service';
 
 
@@ -54,5 +54,20 @@ describe('ConsultationService', () => {
     service.respondToConsultationRequest(conference, requester, requestee, ConsultationAnswer.Accepted);
 
     expect(apiClient.handleConsultationRequest).toHaveBeenCalledWith(request);
+  }));
+
+  it('should leave a consultation', inject([ConsultationService], (service: ConsultationService) => {
+    spyOn(apiClient, 'leavePrivateConsultation');
+    const conference = new ConferenceTestData().getConferenceDetail();
+    const participant = conference.participants[0];
+
+    const request = new LeaveConsultationRequest({
+      conference_id: conference.id,
+      participant_id: participant.id,
+    });
+
+    service.leaveConsultation(conference, participant);
+
+    expect(apiClient.leavePrivateConsultation).toHaveBeenCalledWith(request);
   }));
 });
