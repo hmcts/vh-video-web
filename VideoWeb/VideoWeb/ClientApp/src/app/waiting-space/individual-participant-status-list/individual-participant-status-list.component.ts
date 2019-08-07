@@ -27,11 +27,9 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   consultationRequester: Participant;
 
   callRiningSound: HTMLAudioElement;
-  incomingCallTimeout: NodeJS.Timer;
   outgoingCallTimeout: NodeJS.Timer;
   waitingForConsultationResponse: boolean;
-  // private readonly CALL_TIMEOUT = 120000;
-  private readonly CALL_TIMEOUT = 2000;
+  private readonly CALL_TIMEOUT = 120000;
 
   private readonly REQUEST_PC_MODAL = 'raise-pc-modal';
   private readonly RECIEVE_PC_MODAL = 'receive-pc-modal';
@@ -64,13 +62,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     }, false);
   }
 
-  async cancelIncomingCall() {
-    this.logger.info('Consultation request timed-out.');
-    this.stopCallRinging();
-  }
-
   stopCallRinging() {
-    clearTimeout(this.incomingCallTimeout);
     clearTimeout(this.outgoingCallTimeout);
     this.callRiningSound.pause();
     this.callRiningSound.currentTime = 0;
@@ -152,14 +144,6 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     await this.callRiningSound.play();
   }
 
-  cancelCallRinging(outgoingCall: boolean) {
-    if (outgoingCall) {
-      this.cancelOutgoingCall();
-    } else {
-      this.cancelIncomingCall();
-    }
-  }
-
   async cancelConsultationRequest() {
     this.stopCallRinging();
     this.closeAllPCModals();
@@ -177,6 +161,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   }
 
   async answerConsultationRequest(answer: ConsultationAnswer) {
+    this.closeAllPCModals();
     this.stopCallRinging();
     this.logger.event(`${this.consultationRequestee.displayName} responded to consultation: ${answer}`);
     try {
@@ -190,11 +175,13 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   }
 
   private handleAcceptedConsultationRequest(message: ConsultationMessage) {
+    this.stopCallRinging();
     this.initConsultationParticipants(message);
     this.displayModal(this.ACCEPTED_PC_MODAL);
   }
 
   private handleRejectedConsultationRequest(message: ConsultationMessage) {
+    this.stopCallRinging();
     this.initConsultationParticipants(message);
     this.displayModal(this.REJECTED_PC_MODAL);
   }
