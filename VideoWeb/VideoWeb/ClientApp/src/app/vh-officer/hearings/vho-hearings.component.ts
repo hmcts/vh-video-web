@@ -143,7 +143,9 @@ export class VhoHearingsComponent implements OnInit {
         },
           (error) => {
             this.logger.error(`There was an error when selecting conference ${conference.id}`, error);
-            this.errorService.handleApiError(error);
+            if (!this.errorService.returnHomeIfUnauthorised(error)) {
+              this.errorService.handleApiError(error);
+            }
           });
     }
   }

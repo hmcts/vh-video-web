@@ -9,6 +9,8 @@ import { HearingRulesComponent } from './hearing-rules.component';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { configureTestSuite } from 'ng-bullet';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 describe('HearingRulesComponent', () => {
   let component: HearingRulesComponent;
@@ -30,7 +32,8 @@ describe('HearingRulesComponent', () => {
             }
           },
         },
-        { provide: VideoWebService, useClass: MockVideoWebService }
+        { provide: VideoWebService, useClass: MockVideoWebService },
+        { provide: Logger, useClass: MockLogger },
       ]
     });
   });

@@ -1,8 +1,10 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus,
-  TokenResponse } from 'src/app/services/clients/api-client';
+import {
+  ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus,
+  TokenResponse
+} from 'src/app/services/clients/api-client';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -112,7 +114,9 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         (error) => {
           this.logger.error(`There was an error getting a confernce ${conferenceId}`, error);
           this.loadingData = false;
-          this.errorService.handleApiError(error);
+          if (!this.errorService.returnHomeIfUnauthorised(error)) {
+            this.errorService.handleApiError(error);
+          }
         });
   }
 
@@ -208,7 +212,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       self.logger.info('successfully connected to call');
       self.stream = stream;
 
-      const baseUrl =  self.conference.pexip_node_uri.replace('sip.', '');
+      const baseUrl = self.conference.pexip_node_uri.replace('sip.', '');
       const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${self.conference.id}`;
       console.log(url);
       const heartbeatFactory = new HeartbeatFactory(self.pexipAPI, url, self.conference.id, self.participant.id, self.token.token);

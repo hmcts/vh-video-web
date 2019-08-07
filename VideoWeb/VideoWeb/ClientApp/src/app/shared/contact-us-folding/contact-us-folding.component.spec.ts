@@ -7,6 +7,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { of } from 'rxjs';
 import { configureTestSuite } from 'ng-bullet';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('ContactUsFoldingComponent', () => {
   let component: ContactUsFoldingComponent;
@@ -18,10 +21,11 @@ describe('ContactUsFoldingComponent', () => {
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
 
     TestBed.configureTestingModule({
-      imports: [HttpClientModule],
+      imports: [HttpClientModule, RouterTestingModule],
       declarations: [ContactUsFoldingComponent],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy },
+        { provide: Logger, useClass: MockLogger },
         {
           provide: ActivatedRoute,
           useValue: {

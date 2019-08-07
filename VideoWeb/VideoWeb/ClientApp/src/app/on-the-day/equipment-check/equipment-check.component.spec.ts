@@ -10,6 +10,8 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { EquipmentCheckComponent } from './equipment-check.component';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 describe('EquipmentCheckComponent', () => {
   let component: EquipmentCheckComponent;
@@ -31,7 +33,8 @@ describe('EquipmentCheckComponent', () => {
             }
           },
         },
-        { provide: VideoWebService, useClass: MockVideoWebService }
+        { provide: VideoWebService, useClass: MockVideoWebService },
+        { provide: Logger, useClass: MockLogger },
       ]
     });
 
