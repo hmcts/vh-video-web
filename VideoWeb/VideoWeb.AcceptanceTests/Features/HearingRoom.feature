@@ -6,7 +6,6 @@ Feature: HearingRoom
 
 @Chrome @Video @VIH-4610
 Scenario: Clerk starts hearing
-	//Given the Clerk user has progressed to the Waiting Room page
 	Given the Clerk user has progressed to the Waiting Room page
 	Then the hearing status changed to NotStarted
 	And the participant status for Individual01 is displayed as Not signed in
