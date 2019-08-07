@@ -3,8 +3,10 @@
 </div>
 
 <div *ngIf="showVideo" class="govuk-grid-row">
+
+  <div class="video-background"></div>
   <div class="govuk-grid-column-one-half">
-    <video id="incomingFeed" [srcObject]="this.stream" autoplay width="1000px" height="auto">
+    <video id="incomingFeed" [srcObject]="this.stream" autoplay height="auto">
       Your browser does not support Video
     </video>
   </div>
@@ -36,23 +38,6 @@
   </div>
 
   <div class="govuk-grid-column-two-thirds">
-    <!--     <h1 class="govuk-heading-xl">Your hearing {{ getConferenceStatusText() }}</h1>
-  
-      <h2 class="govuk-heading-m">{{hearing.caseName}}</h2>
-  
-      <h3 class="govuk-heading-m">Case number: {{hearing.caseNumber}}</h3>
-  
-      <div class="govuk-!-margin-bottom-9">
-        <span class="govuk-body">
-          <p class="govuk-!-margin-0" aria-label="date of hearing, scheduled start time and scheduled end time">
-            {{ hearing.scheduledStartTime | date: 'EEEE dd MMMM	yyyy' }},
-            <span class="govuk-!-font-weight-bold">
-              {{ hearing.scheduledStartTime | date: 'HH:mm a' }} to
-              {{ hearing.scheduledEndTime | date: 'HH:mm a' }}
-            </span>
-          </p>
-        </span>
-      </div> -->
     <div *ngIf="hearing.isClosed()">
       <p class="govuk-body">
         This hearing is finished. You may now sign out.
@@ -125,3 +110,6 @@
     </app-individual-participant-status-list>
   </div>
 </div>
+
+<app-individual-consultation-controls (cancelConsulation)="onConsultationCancelled()" *ngIf="showConsultationControls">
+</app-individual-consultation-controls>
