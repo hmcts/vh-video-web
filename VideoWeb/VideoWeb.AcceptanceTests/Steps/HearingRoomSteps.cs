@@ -32,10 +32,10 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             Thread.Sleep(TimeSpan.FromSeconds(CountdownDuration));
 
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_page.JudgeIframe).Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.JudgeIframe).Displayed.Should().BeTrue();
             _browsers[_tc.CurrentUser.Key].Driver.SwitchTo().Frame(HearingRoomPage.JudgeIframeId);
 
-            Convert.ToDouble(_browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_page.IncomingVideo)
+            Convert.ToDouble(_browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.IncomingVideo)
                 .GetAttribute("currentTime")).Should().BeGreaterThan(0);
         }
 
@@ -54,7 +54,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Clerk is on the Hearing Room page for (.*) seconds")]
         public void ThenTheUserIsOnTheHearingRoomPageForSeconds(int seconds)
         {
-            _commonPages.PageUrl(Page.HearingRoom);
             Thread.Sleep(TimeSpan.FromSeconds(seconds));
         }
 
@@ -62,27 +61,26 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Clerk is on the Hearing Room page for (.*) minutes")]
         public void ThenTheUserIsOnTheHearingRoomPageForMinutes(int minutes)
         {
-            _commonPages.PageUrl(Page.HearingRoom);
             Thread.Sleep(TimeSpan.FromMinutes(minutes));
         }
 
         [Then(@"the hearing controls are visible")]
         public void ThenTheHearingControlsAreVisible()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_page.ToggleSelfview).Displayed.Should().BeTrue();
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_page.PauseButton).Displayed.Should().BeTrue();
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_page.CloseButton).Displayed.Should().BeTrue();
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_page.TechnicalIssues).Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.ToggleSelfview).Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.PauseButton).Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.CloseButton).Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.TechnicalIssues).Displayed.Should().BeTrue();
         }
 
         [Then(@"the user can see themselves and toggle the view off and on")]
         public void ThenTheUserCanSeeThemselvesAndToggleTheViewOffAndOn()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_page.SelfView).Displayed.Should().BeTrue();
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_page.ToggleSelfview).Click();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.SelfView).Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.ToggleSelfview).Click();
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementNotVisible(_page.SelfView).Should().BeTrue();
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_page.ToggleSelfview).Click();
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_page.SelfView).Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.ToggleSelfview).Click();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.SelfView).Displayed.Should().BeTrue();
         }
     }
 }

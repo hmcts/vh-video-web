@@ -7,7 +7,7 @@ Feature: Error Pages
 Scenario: Page not found error
 	Given a new browser is open for a Participant
 	When the user attempts to login with valid credentials
-	Then the user is on the Hearings List page
+	Then the user is on the Hearing List page
 	When the user attempts to navigate to a nonexistent page
 	Then the user is on the Not Found page
 	And the Not Found error page displays text of how to rectify the problem
