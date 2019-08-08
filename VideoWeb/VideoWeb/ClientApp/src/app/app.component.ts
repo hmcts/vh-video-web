@@ -4,6 +4,9 @@ import { AdalService } from 'adal-angular4';
 import { ConfigService } from './services/api/config.service';
 import { DeviceTypeService } from './services/device-type.service';
 import { PageUrls } from './shared/page-url.constants';
+import { ProfileService } from './services/api/profile.service';
+import { ErrorService } from './services/error.service';
+import { UserRole } from './services/clients/api-client';
 
 @Component({
   selector: 'app-root',
@@ -14,12 +17,16 @@ import { PageUrls } from './shared/page-url.constants';
 export class AppComponent implements OnInit {
 
   loggedIn: boolean;
+  isRepresentativeOrIndividual: boolean;
   constructor(private adalService: AdalService,
     private configService: ConfigService,
     private router: Router,
-    private deviceTypeService: DeviceTypeService
+    private deviceTypeService: DeviceTypeService,
+    private profileService: ProfileService,
+    private errorService: ErrorService
   ) {
     this.loggedIn = false;
+    this.isRepresentativeOrIndividual = false;
     this.initAuthentication();
   }
 
@@ -53,6 +60,11 @@ export class AppComponent implements OnInit {
       if (!this.loggedIn) {
         this.router.navigate(['/login'], { queryParams: { returnUrl: currentUrl } });
       }
+      this.profileService.getUserProfile()
+        .then((profile) => {
+          this.isRepresentativeOrIndividual = (profile.role === (UserRole.Individual || UserRole.Representative));
+        })
+        .catch((error) => this.errorService.handleApiError(error));
     }
   }
 

@@ -1,24 +1,40 @@
-﻿namespace VideoWeb.AcceptanceTests.Journeys
+﻿using System.Collections.Generic;
+using FluentAssertions;
+using VideoWeb.AcceptanceTests.Pages;
+
+namespace VideoWeb.AcceptanceTests.Journeys
 {
-    public enum ParticipantJourney
+    public class ParticipantJourney : IJourney
     {
-        Login = 0,
-        HearingList = 1,
-        Introduction = 2,
-        EquipmentCheck = 3,
-        SwitchOnYourCameraAndMicrophone = 4,
-        PracticeVideoHearing = 5,
-        CameraWorking = 6,
-        MicrophoneWorking = 7,
-        SeeAndHearVideo = 8,
-        Rules = 9,
-        Declaration = 10,
-        WaitingRoom = 11,
-        Countdown = 12,
-        HearingRoom = 13,
-        NotInParticipantJourney = -99,
-        NotFound = -1,
-        Unauthorised = -2,
-        Help = -3
+        public List<Page> Journey()
+        {
+            return new List<Page>()
+            {
+                Page.Login,
+                Page.HearingList,
+                Page.Introduction,
+                Page.EquipmentCheck,
+                Page.SwitchOnCamAndMic,
+                Page.PracticeVideoHearing,
+                Page.CameraWorking,
+                Page.MicrophoneWorking,
+                Page.SeeAndHearVideo,
+                Page.Rules,
+                Page.Declaration,
+                Page.WaitingRoom,
+                Page.Countdown,
+                Page.HearingRoom
+            };
+        }
+
+        public void VerifyUserIsApplicableToJourney(string currentUserRole)
+        {
+            currentUserRole.ToLower().Should().BeOneOf("participant", "individual", "representative");
+        }
+
+        public void VerifyDestinationIsInThatJourney(Page destinationPage)
+        {
+            Journey().Should().Contain(destinationPage);
+        }
     }
 }

@@ -17,34 +17,38 @@ using ParticipantResponse = VideoWeb.Services.Bookings.ParticipantResponse;
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
-    public sealed class HearingsListSteps
+    public sealed class HearingsListSteps : ISteps
     {
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _tc;
         private readonly HearingListPage _page;
         private readonly ClerkHearingListPage _clerkPage;
-        private readonly VhoHearingListPage _vhoPage;
         private const int TollerenceInMinutes = 3;
         private const int MinutesToWaitBeforeAllowedToJoinHearing = 30;
 
-        public HearingsListSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, HearingListPage page,
-            ClerkHearingListPage clerkPage, VhoHearingListPage vhoPage)
+        public HearingsListSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, HearingListPage page, ClerkHearingListPage clerkPage)
         {
             _browsers = browsers;
             _tc = testContext;
             _page = page;
             _clerkPage = clerkPage;
-            _vhoPage = vhoPage;
         }
 
         [When(@"the user clicks on the Start Hearing button")]
-        public void WhenTheUserClicksTheStartButton()
+        public void ProgressToNextPage()
         {
-            var element = _tc.CurrentUser.Role.Equals("Clerk") ? _clerkPage.StartHearingButton(_tc.Hearing.Cases.First().Number) : _page.SignInButton(_tc.Hearing.Cases.First().Number);
-            var tollerence = _tc.CurrentUser.Role.Equals("Clerk") ? 30 : TollerenceInMinutes * 60;
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_page.HearingListPageTitle).Displayed.Should().BeTrue();
-            _browsers[_tc.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browsers[_tc.CurrentUser.Key].Driver.FindElement(element));
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(element, tollerence).Click();
+            if (_tc.Selftest)
+            {
+                WhenTheUserClicksTheCheckEquipmentButton();
+            }
+            else
+            {
+                var element = _tc.CurrentUser.Role.Equals("Clerk") ? _clerkPage.StartHearingButton(_tc.Hearing.Cases.First().Number) : _page.SignInButton(_tc.Hearing.Cases.First().Number);
+                var tollerence = _tc.CurrentUser.Role.Equals("Clerk") ? 30 : TollerenceInMinutes * 60;
+                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.HearingListPageTitle).Displayed.Should().BeTrue();
+                _browsers[_tc.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browsers[_tc.CurrentUser.Key].Driver.FindElement(element));
+                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(element, tollerence).Click();
+            }           
         }
 
         [When(@"the user clicks on the Check Equipment button")]
@@ -53,37 +57,24 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementClickable(_clerkPage.CheckEquipmentButton).Click();
         }
 
-        [When(@"the VHO selects the hearing")]
-        public void WhenTheVhoSelectsTheHearing()
-        {
-            _browsers[_tc.CurrentUser.Key].Driver
-                .WaitUntilElementVisible(
-                    _vhoPage.VideoHearingsOfficerSelectHearingButton(_tc.Hearing.Cases.First().Number))
-                .Click();
-
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_vhoPage.AdminIframe).Displayed.Should().BeTrue();
-            _browsers[_tc.CurrentUser.Key].Driver.SwitchTo().Frame(VhoHearingListPage.AdminIframeId);
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_vhoPage.WaitingRoomText).Displayed.Should().BeTrue();
-        }
-
         [Then(@"a warning message appears indicating the user has no hearings scheduled")]
         public void ThenAWarningMessageAppearsIndicatingTheUserHasNoHearingsScheduled()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_page.NoHearingsWarningMessage).Displayed
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.NoHearingsWarningMessage).Displayed
                 .Should().BeTrue();
         }
 
         [Then(@"the participant can see a list of hearings including the new hearing")]
         public void ThenTheParticipantCanSeeAListOfHearingsIncludingTheNewHearing()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_page.HearingWithCaseNumber(_tc.Hearing.Cases.First().Number)).Displayed
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.HearingWithCaseNumber(_tc.Hearing.Cases.First().Number)).Displayed
                 .Should().BeTrue();
 
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_page.ParticipantHearingDate(_tc.Hearing.Cases.First().Number)).Text
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.ParticipantHearingDate(_tc.Hearing.Cases.First().Number)).Text
                 .Should().Be(
                     $"{_tc.Hearing.Scheduled_date_time?.ToString(DateFormats.HearingListPageDate)}");
 
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_page.ParticipantHearingTime(_tc.Hearing.Cases.First().Number)).Text
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.ParticipantHearingTime(_tc.Hearing.Cases.First().Number)).Text
                 .Should().Be(
                     $"{_tc.Hearing.Scheduled_date_time?.ToLocalTime():HH:mm}");
         }
@@ -91,7 +82,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the user can see their details at the top of the hearing list")]
         public void ThenTheUserCanSeeTheirDetailsAtTheTopOfTheHearingList()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_clerkPage.ClerkHearingListTitle).Text
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_clerkPage.ClerkHearingListTitle).Text
                 .Should().Be($"Video hearings for {_tc.CurrentUser.Firstname}, {_tc.CurrentUser.Lastname}");
         }
 
@@ -114,7 +105,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithDriver(_browsers[_tc.CurrentUser.Key].Driver)
                 .Fetch();
 
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(
                     _clerkPage.ClerkHearingDate(scheduledDateTime.ToString(DateFormats.ClerkHearingListDate)))
                 .Displayed.Should().BeTrue();
 
@@ -131,16 +122,16 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"contact us details for the clerk are available")]
         public void ThenContactUsDetailsForTheClerkAreAvailable()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_clerkPage.ClerkContactUs).Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_clerkPage.ClerkContactUs).Displayed.Should().BeTrue();
 
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_clerkPage.ClerkPhoneNumber).Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_clerkPage.ClerkPhoneNumber).Displayed.Should().BeTrue();
         }
 
         [Then(@"the new hearing isn't available to join yet")]
         public void ThenTheNewHearingIsnTAvailableToJoinYet()
         {
            var actualTime = _browsers[_tc.CurrentUser.Key].Driver
-                .WaitUntilElementVisible(_page.WaitToSignInText(_tc.Hearing.Cases.First().Number))
+                .WaitUntilVisible(_page.WaitToSignInText(_tc.Hearing.Cases.First().Number))
                 .Text;
 
             actualTime = actualTime.Substring(actualTime.Length - 5);
@@ -160,91 +151,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"when the hearing is ready to start the hearing button appears")]
         public void ThenWhenTheHearingIsReadyToStartTheHearingButtonAppears()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_page.SignInButton(_tc.Hearing.Cases.First().Number), TollerenceInMinutes * 60).Displayed
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.SignInButton(_tc.Hearing.Cases.First().Number), TollerenceInMinutes * 60).Displayed
                 .Should().BeTrue();
-        }        
-
-        [Then(@"the VHO can see a list of hearings including the new hearing")]
-        public void ThenTheVhoCanSeeAListOfHearingsIncludingTheNewHearing()
-        {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_vhoPage.HearingWithCaseNumber(_tc.Hearing.Cases.First().Number)).Displayed
-                .Should().BeTrue();
-
-            Debug.Assert(_tc.Hearing.Scheduled_duration != null, "_tc.Hearing.Scheduled_duration != null");
-            var timespan = TimeSpan.FromMinutes(_tc.Hearing.Scheduled_duration.Value);
-            var listedFor = GetListedForTimeAsString(timespan);
-
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_vhoPage.VideoHearingsOfficerTime(_tc.Hearing.Cases.First().Number)).Text
-                .Should().Be($"{_tc.Hearing.Scheduled_date_time?.ToLocalTime():HH:mm}");
-
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_vhoPage.VideoHearingsOfficerListedFor(_tc.Hearing.Cases.First().Number)).Text
-                .Should().Be($"{listedFor}");
-        }
-
-        [Then(@"the VHO can see the hearing view")]
-        public void ThenTheVhoCanSeeTheHearingView()
-        {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_vhoPage.WaitingRoomText).Displayed.Should().BeTrue();
-        }
-
-        [Then(@"the VHO should see the participant contact details")]
-        public void ThenTheVhoShouldSeeTheParticipantContactDetails()
-        {
-            _browsers[_tc.CurrentUser.Key].Driver.WrappedDriver.SwitchTo().ParentFrame();
-
-            var hearingParticipants = _tc.Hearing.Participants.FindAll(x =>
-                x.User_role_name.Equals("Individual") || x.User_role_name.Equals("Representative"));
-
-            var user = hearingParticipants.First().Last_name;
-
-            var hearingParticipant = hearingParticipants.First();
-
-            var firstParticipantLink = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_vhoPage.ParticipantName(hearingParticipant.Last_name));
-            firstParticipantLink.Displayed.Should().BeTrue();
-
-            var action = new OpenQA.Selenium.Interactions.Actions(_browsers[_tc.CurrentUser.Key].Driver.WrappedDriver);
-            action.MoveToElement(firstParticipantLink).Perform();
-
-            var conferenceParticipant = _tc.Conference.Participants.Find(x => x.Name.Contains(user));
-            var participantEmailAndRole = $"{conferenceParticipant.Name} ({conferenceParticipant.Case_type_group})";
-
-            _browsers[_tc.CurrentUser.Key].Driver
-                .WaitUntilElementVisible(_vhoPage.ParticipantContactDetails(user, participantEmailAndRole)).Displayed
-                .Should().BeTrue();
-
-            _browsers[_tc.CurrentUser.Key].Driver
-                .WaitUntilElementVisible(_vhoPage.ParticipantContactDetails(user, hearingParticipant.Contact_email)).Displayed
-                .Should().BeTrue();
-
-            _browsers[_tc.CurrentUser.Key].Driver
-                .WaitUntilElementVisible(_vhoPage.ParticipantContactDetails(user, hearingParticipant.Telephone_number)).Displayed
-                .Should().BeTrue();
-        }
-
-        private static string GetListedForTimeAsString(TimeSpan timespan)
-        {
-            var listedFor = "";
-
-            if (timespan.Hours.Equals(0))
-            {
-                listedFor = timespan.Minutes.Equals(1) ? $"{timespan.Minutes} minute" : $"{timespan.Minutes} minutes";
-            }
-            else
-            {
-                listedFor = timespan.Hours.Equals(1) ? $"{timespan.Hours} hour" : $"{timespan.Hours} hours";
-            }
-
-            if (timespan.Minutes.Equals(0) || timespan.Hours <= 0) return listedFor;
-            if (timespan.Minutes.Equals(1))
-            {
-                listedFor = listedFor + $" and 1 minute";
-            }
-            else
-            {
-                listedFor = listedFor + $" and {timespan.Minutes} minutes";
-            }
-
-            return listedFor;
         }
 
         private static void ParticipantsDisplayed(IEnumerable<ParticipantResponse> participants, HearingRow rowData)

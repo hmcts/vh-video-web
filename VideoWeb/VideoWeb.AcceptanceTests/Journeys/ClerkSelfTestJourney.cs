@@ -1,15 +1,32 @@
-﻿namespace VideoWeb.AcceptanceTests.Journeys
+﻿using System.Collections.Generic;
+using FluentAssertions;
+using VideoWeb.AcceptanceTests.Pages;
+
+namespace VideoWeb.AcceptanceTests.Journeys
 {
-    public enum ClerkSelfTestJourney
+
+    public class ClerkSelfTestJourney : IJourney
     {
-        Login = 0,
-        HearingList = 1,
-        EquipmentCheck = 2,
-        SwitchOnYourCameraAndMicrophone = 3,
-        PracticeVideoHearing = 4,        
-        NotInClerkSelfTestJourney = -99,
-        NotFound = -1,
-        Unauthorised = -2,
-        Help = -3
+        public List<Page> Journey()
+        {
+            return new List<Page>()
+            {
+                Page.Login,
+                Page.HearingList,
+                Page.EquipmentCheck,
+                Page.SwitchOnCamAndMic,
+                Page.PracticeVideoHearing
+            };
+        }
+
+        public void VerifyUserIsApplicableToJourney(string currentUserRole)
+        {
+            currentUserRole.ToLower().Should().BeOneOf("clerk", "judge");
+        }
+
+        public void VerifyDestinationIsInThatJourney(Page destinationPage)
+        {
+            Journey().Should().Contain(destinationPage);
+        }
     }
 }

@@ -23,6 +23,7 @@ import { Hearing } from '../../shared/models/hearing';
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room.component';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { IndividualConsultationControlsStubComponent } from 'src/app/testing/stubs/individual-consultation-controls-stub';
 
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
@@ -41,7 +42,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
       declarations: [ParticipantWaitingRoomComponent, IndividualParticipantStatusListStubComponent,
-        AnalogueClockStubComponent, JudgeParticipantStatusListStubComponent],
+        AnalogueClockStubComponent, JudgeParticipantStatusListStubComponent, IndividualConsultationControlsStubComponent],
       providers: [
         {
           provide: ActivatedRoute,
@@ -185,7 +186,7 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
       declarations: [ParticipantWaitingRoomComponent, IndividualParticipantStatusListStubComponent,
-        AnalogueClockStubComponent, JudgeParticipantStatusListStubComponent],
+        AnalogueClockStubComponent, JudgeParticipantStatusListStubComponent, IndividualConsultationControlsStubComponent],
       providers: [
         {
           provide: ActivatedRoute,

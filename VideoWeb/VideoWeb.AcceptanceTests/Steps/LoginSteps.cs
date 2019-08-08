@@ -9,7 +9,7 @@ using VideoWeb.AcceptanceTests.Users;
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
-    public sealed class LoginSteps
+    public sealed class LoginSteps : ISteps
     {
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _tc;
@@ -26,7 +26,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [When(@"the user attempts to login with valid credentials")]
-        public void WhenUserLogsInWithValidCredentials()
+        public void ProgressToNextPage()
         {
             EnterUsername(_tc.CurrentUser.Username);
             ClickNextButton();
@@ -38,26 +38,26 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             NUnit.Framework.TestContext.WriteLine($"Logging in as {username}");
 
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_loginPage.UsernameTextfield).Clear();
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_loginPage.UsernameTextfield).SendKeys(username);
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_loginPage.UsernameTextfield).Clear();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_loginPage.UsernameTextfield).SendKeys(username);
         }
 
-        public void ClickNextButton() => _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_loginPage.Next).Click();
+        public void ClickNextButton() => _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_loginPage.Next).Click();
 
         public void EnterPassword(string password)
         {
             var maskedPassword = new string('*', (password ?? string.Empty).Length);
             NUnit.Framework.TestContext.WriteLine($"Using password {maskedPassword}");
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_loginPage.Passwordfield).Clear();
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_loginPage.Passwordfield).SendKeys(password);
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_loginPage.Passwordfield).Clear();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_loginPage.Passwordfield).SendKeys(password);
         }
 
-        public void ClickSignInButton() => _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_loginPage.SignIn).Click();
+        public void ClickSignInButton() => _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_loginPage.SignIn).Click();
 
         [Then(@"the sign out link is displayed")]
         public void ThenTheHearingListPageIsDisplayed()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_commonPageElements.SignOutLink).Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_commonPageElements.SignOutLink).Displayed.Should().BeTrue();
         }
     }
 }

@@ -9,7 +9,7 @@ using NUnit.Framework;
 using Testing.Common.Helpers;
 using VideoWeb.Controllers;
 using VideoWeb.Services.Video;
-using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
+using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
 {

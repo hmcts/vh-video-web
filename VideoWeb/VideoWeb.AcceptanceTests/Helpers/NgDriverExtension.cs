@@ -99,7 +99,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 throw new NoSuchElementException($"Element with locator: '{elementLocator}' was not found in current context page.", ex);
             }
         }
-        public static IWebElement WaitUntilElementVisible(this IWebDriver driver, By elementLocator, int timeout = 30)
+        public static IWebElement WaitUntilVisible(this IWebDriver driver, By elementLocator, int timeout = 30)
         {
             try
             {

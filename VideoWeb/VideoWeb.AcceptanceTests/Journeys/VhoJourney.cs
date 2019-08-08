@@ -1,12 +1,29 @@
-﻿namespace VideoWeb.AcceptanceTests.Journeys
+﻿using System.Collections.Generic;
+using FluentAssertions;
+using VideoWeb.AcceptanceTests.Pages;
+
+namespace VideoWeb.AcceptanceTests.Journeys
 {
-    public enum VhoJourney
+    public class VhoJourney : IJourney
     {
-        Login = 0,
-        HearingList = 1,
-        AdminPanel = 2,
-        NotInVhoJourney = -99,
-        NotFound = -1,
-        Unauthorised = -2
+        public List<Page> Journey()
+        {
+            return new List<Page>()
+            {
+                Page.Login,
+                Page.VhoHearingList,
+                Page.AdminPanel
+            };
+        }
+
+        public void VerifyUserIsApplicableToJourney(string currentUserRole)
+        {
+            currentUserRole.ToLower().Should().BeOneOf("video hearings officer");
+        }
+
+        public void VerifyDestinationIsInThatJourney(Page destinationPage)
+        {
+            Journey().Should().Contain(destinationPage);
+        }
     }
 }

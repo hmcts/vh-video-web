@@ -14,6 +14,7 @@ import { ClockService as ClockService } from 'src/app/services/clock.service';
 import { Hearing } from '../../shared/models/hearing';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ConsultationService } from 'src/app/services/api/consultation.service';
 declare var PexRTC: any;
 declare var HeartbeatFactory: any;
 
@@ -39,6 +40,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   hearingAlertSound: HTMLAudioElement;
 
   showVideo: boolean;
+  showConsultationControls: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -49,10 +51,12 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     private errorService: ErrorService,
     private clockService: ClockService,
     private userMediaService: UserMediaService,
-    private logger: Logger
+    private logger: Logger,
+    private consultationService: ConsultationService
   ) {
     this.loadingData = true;
     this.showVideo = false;
+    this.showConsultationControls = false;
   }
 
   ngOnInit() {
@@ -228,7 +232,15 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     this.pexipAPI.onDisconnect = function (reason) {
       self.connected = false;
       self.updateShowVideo();
-      self.logger.info(`Disconnected from pexip. Reason : ${reason}`);
+      self.logger.warn(`Disconnected from pexip. Reason : ${reason}`);
+    };
+
+    this.pexipAPI.onParticipantCreate = function (participant) {
+      self.logger.debug(`Participant added : ${participant}`);
+    };
+
+    this.pexipAPI.onParticipantDelete = function (participant) {
+      self.logger.debug(`Participant removed : ${participant}`);
     };
   }
 
@@ -244,22 +256,35 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     if (!this.connected) {
       this.logger.debug('Not showing video because not connecting to node');
       this.showVideo = false;
+      this.showConsultationControls = false;
       return;
     }
 
     if (this.hearing.isInSession()) {
       this.logger.debug('Showing video because hearing is in session');
       this.showVideo = true;
+      this.showConsultationControls = false;
       return;
     }
 
     if (this.participant.status === ParticipantStatus.InConsultation) {
       this.logger.debug('Showing video because hearing is in session');
       this.showVideo = true;
+      this.showConsultationControls = true;
       return;
     }
 
     this.logger.debug('Not showing video because hearing is not in session and user is not in consultation');
     this.showVideo = false;
+    this.showConsultationControls = false;
+  }
+
+  async onConsultationCancelled() {
+    this.logger.debug(`Participant ${this.participant.id} Attempting to leave conference: ${this.conference.id}`);
+    try {
+      await this.consultationService.leaveConsultation(this.conference, this.participant).toPromise();
+    } catch (error) {
+      this.logger.error('Failed to leave private consultation', error);
+    }
   }
 }

@@ -59,31 +59,31 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheNotFoundErrorPageDisplaysTextOfHowToRectifyTheProblem()
         {
             _browsers[_tc.CurrentUser.Key]
-                .Driver.WaitUntilElementVisible(_errorPage.NotFoundPageTitle)
+                .Driver.WaitUntilVisible(_errorPage.NotFoundPageTitle)
                 .Displayed.Should().BeTrue();
 
             _browsers[_tc.CurrentUser.Key]
-                .Driver.WaitUntilElementVisible(_errorPage.TypedErrorMessage)
+                .Driver.WaitUntilVisible(_errorPage.TypedErrorMessage)
                 .Displayed.Should().BeTrue();
 
             _browsers[_tc.CurrentUser.Key]
-                .Driver.WaitUntilElementVisible(_errorPage.PastedErrorMessage)
+                .Driver.WaitUntilVisible(_errorPage.PastedErrorMessage)
                 .Displayed.Should().BeTrue();
 
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_errorPage.LinkErrorMessage)
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_errorPage.LinkErrorMessage)
                 .Displayed.Should().BeTrue();
         }
 
         [Then(@"the Unauthorised error page displays text of how to rectify the problem")]
         public void ThenTheUnauthorisedErrorPageDisplaysTextOfHowToRectifyTheProblem()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_errorPage.UnauthorisedPageTitle)
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_errorPage.UnauthorisedPageTitle)
                 .Displayed.Should().BeTrue();
 
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_errorPage.NotRegisteredErrorMessage)
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_errorPage.NotRegisteredErrorMessage)
                 .Displayed.Should().BeTrue();
 
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_errorPage.IsThisAMistakeErrorMessage)
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_errorPage.IsThisAMistakeErrorMessage)
                 .Displayed.Should().BeTrue();
         }
     }
