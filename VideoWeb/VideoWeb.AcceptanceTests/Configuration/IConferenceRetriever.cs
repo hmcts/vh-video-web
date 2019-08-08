@@ -8,7 +8,9 @@ using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.Common.Helpers;
+using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
+using ParticipantRequest = VideoWeb.Services.Video.ParticipantRequest;
 using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.AcceptanceTests.Configuration
@@ -69,6 +71,7 @@ namespace VideoWeb.AcceptanceTests.Configuration
     {
         public ConferenceDetailsResponse GetConference(TestContext context)
         {
+            UpdateStatusToCreateConference(context);
             const int waitForConferenceToBeCreatedRetries = 10;
             context.Request = context.Get(new VideoApiUriFactory().ConferenceEndpoints.GetConferenceByHearingRefId(context.NewHearingId));
             context.RequestBody = null;
@@ -94,6 +97,21 @@ namespace VideoWeb.AcceptanceTests.Configuration
 
             return conference;
         }
-    }
 
+        public void UpdateStatusToCreateConference(TestContext context)
+        {
+            var updateRequest = new UpdateBookingStatusRequest
+            {
+                Status = UpdateBookingStatusRequestStatus.Created,
+                Updated_by = context.GetCaseAdminUser().Username
+            };
+
+            context.Request = context.Patch(new BookingsApiUriFactory().HearingsEndpoints.UpdateHearingStatus(context.NewHearingId), updateRequest);
+
+            new ExecuteRequestBuilder()
+                .WithContext(context)
+                .WithExpectedStatusCode(HttpStatusCode.NoContent)
+                .SendToBookingsApi();
+        }
+    }
 }
