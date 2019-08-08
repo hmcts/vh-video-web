@@ -102,7 +102,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
 
   canCallParticipant(participant: ParticipantResponse): boolean {
     const hearing = new Hearing(this.conference);
-    if (hearing.isReadyToStart() || hearing.isDelayed() || hearing.isSuspended()) {
+    if (hearing.isStarting() || hearing.isDelayed() || hearing.isSuspended()) {
       return false;
     }
 
