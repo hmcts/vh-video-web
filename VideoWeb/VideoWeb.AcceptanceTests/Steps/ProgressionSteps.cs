@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Journeys;
@@ -82,20 +83,25 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"the (.*) user has progressed to the (.*) page for the existing hearing")]
         public void GivenHearingExistsAndIAmOnThePage(string user, string page)
         {
-            _commonSteps.GivenInTheUsersBrowser(user);
+            _commonSteps.GivenANewBrowserIsOpenFor(user);
             Progression(FromString(user), page);
         }
 
         private static Journey FromString(string user)
         {
-            switch (user.ToLower())
+            switch (RemoveNumbersFromUser(user.ToLower()))
             {
-                case "clerk": return Journey.Clerk;
+                case "clerk": case "judge": return Journey.Clerk;
                 case "clerk self test": return Journey.ClerkSelftest;
-                case "participant": return Journey.Participant;
+                case "participant": case "individual": case "representative": return Journey.Participant;
                 case "video hearings officer": return Journey.Vho;
             }
             throw new ArgumentOutOfRangeException($"No user journey found for '{user}'");
+        }
+
+        private static string RemoveNumbersFromUser(string user)
+        {
+            return Regex.Replace(user, @"[\d-]", string.Empty);
         }
 
         private void Progression(Journey userJourney, string pageAsString)
