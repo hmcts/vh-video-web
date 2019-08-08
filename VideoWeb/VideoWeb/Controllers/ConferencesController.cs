@@ -47,21 +47,7 @@ namespace VideoWeb.Controllers
         public async Task<ActionResult<List<ConferenceForUserResponse>>> GetConferencesForJudge()
         {
             _logger.LogDebug("GetConferencesForJudge");
-            var username = User.Identity.Name;
-            try
-            {
-                var conferences = await _videoApiClient.GetConferencesForUsernameAsync(username);
-                _logger.LogTrace("Successfully retrieved conferences for user");
-                conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();
-                var mapper = new ConferenceForUserResponseMapper();
-                var response = conferences.Select(x => mapper.MapConferenceSummaryToResponseModel(x)).ToList();
-                return Ok(response);
-            }
-            catch (VideoApiException e)
-            {
-                _logger.LogError(e, "Unable to get conferences for user", null);
-                return StatusCode(e.StatusCode, e);
-            }
+            return await GetConferenceForUserAsync(false);
         }
         
         /// <summary>
@@ -75,12 +61,24 @@ namespace VideoWeb.Controllers
         public async Task<ActionResult<List<ConferenceForUserResponse>>> GetConferencesForIndividual()
         {
             _logger.LogDebug("GetConferencesForIndividual");
+            return await GetConferenceForUserAsync(true);
+
+        }
+
+        private async Task<ActionResult<List<ConferenceForUserResponse>>> GetConferenceForUserAsync(bool excludeStaleConferences)
+        {
             var username = User.Identity.Name;
             try
             {
                 var conferences = await _videoApiClient.GetConferencesForUsernameAsync(username);
                 _logger.LogTrace("Successfully retrieved conferences for user");
-                conferences = conferences.Where(HasNotPassed).ToList();
+                
+                if (excludeStaleConferences)
+                {
+                    _logger.LogTrace("Filtering conference that have been closed for more than 30 minutes");
+                    conferences = conferences.Where(HasNotPassed).ToList();
+                }
+
                 conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();
                 var mapper = new ConferenceForUserResponseMapper();
                 var response = conferences.Select(x => mapper.MapConferenceSummaryToResponseModel(x)).ToList();
@@ -91,7 +89,7 @@ namespace VideoWeb.Controllers
                 _logger.LogError(e, "Unable to get conferences for user", null);
                 return StatusCode(e.StatusCode, e);
             }
-        }
+        } 
 
         /// <summary>
         /// Get conferences for user
