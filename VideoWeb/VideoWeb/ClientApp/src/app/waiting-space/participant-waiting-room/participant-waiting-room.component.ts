@@ -235,6 +235,9 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       self.connected = false;
       self.updateShowVideo();
       self.logger.warn(`Disconnected from pexip. Reason : ${reason}`);
+      if (!self.hearing.isClosed()) {
+        self.call();
+      }
     };
 
     this.pexipAPI.onParticipantCreate = function (participant) {

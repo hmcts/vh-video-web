@@ -23,7 +23,7 @@ Scenario: Clerk waiting room
 	And the user can see other participants status
 	And the participant status will be updated to Available
 	When the user navigates back to the hearing list
-	Then the user is on the Hearings List page
+	Then the user is on the Hearing List page
 	And the participant status will be updated to Joining
 
 @VIH-4233

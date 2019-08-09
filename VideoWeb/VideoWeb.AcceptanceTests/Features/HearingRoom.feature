@@ -44,7 +44,7 @@ Scenario: Clerk closes hearing
 	When the countdown finishes
 	Then the Clerk is on the Hearing Room page for 10 seconds
 	When the Clerk clicks close
-	Then the user is on the Hearings List page
+	Then the user is on the Hearing List page
 	And the hearing status changed to Closed
 	When in the Individual01's browser
 	Then the participants waiting room displays the closed status

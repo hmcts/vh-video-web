@@ -22,6 +22,6 @@ namespace VideoWeb.AcceptanceTests.Pages
             By.XPath($"//div[contains(text(),'{participantLastName}')]");
 
         public By ParticipantContactDetails(string participantLastName, string expected) => 
-            By.XPath($"//div[contains(text(),'{participantLastName}')]//*[contains(text(),'{expected}')]");        
+            By.XPath($"//div[contains(text(),'{participantLastName}')]//*[contains(text(),'{expected}')]");
     }
 }

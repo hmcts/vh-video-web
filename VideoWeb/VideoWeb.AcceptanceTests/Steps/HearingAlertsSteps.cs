@@ -162,21 +162,21 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_tc.CurrentUser.Key].Driver.Navigate().Refresh();
 
             _browsers[_tc.CurrentUser.Key].Driver
-                .WaitUntilElementVisible(
+                .WaitUntilVisible(
                     _hearingListPage.VideoHearingsOfficerNumberofAlerts(_tc.Hearing.Cases.First().Number))
                 .Text.Should().Contain("Alert");
 
             _browsers[_tc.CurrentUser.Key].Driver
-                .WaitUntilElementVisible(
+                .WaitUntilVisible(
                     _hearingListPage.VideoHearingsOfficerAlertType(_tc.Hearing.Cases.First().Number))
                 .Text.Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
 
             _browsers[_tc.CurrentUser.Key].Driver
-                .WaitUntilElementVisible(
+                .WaitUntilVisible(
                     _hearingListPage.VideoHearingsOfficerSelectHearingButton(_tc.Hearing.Cases.First().Number))
                 .Click();
 
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_hearingListPage.AdminIframe).Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_hearingListPage.AdminIframe).Displayed.Should().BeTrue();
 
             var alerts = GetAlerts();
             var timeOfAlert = _scenarioContext.Get<DateTime>(AlertTimeKey).ToString(DateFormats.AlertMessageTimestamp);
@@ -261,8 +261,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                 };
                 if (!_browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementsVisible(_adminPanelPage.AlertCheckboxes)[i].Enabled)
                 {
-                    alert.ActionedAt = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_adminPanelPage.ActionedByTimestamp(alert.AlertType)).Text;
-                    alert.ActionedBy = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementVisible(_adminPanelPage.ActionedByUser(alert.AlertType)).Text;
+                    alert.ActionedAt = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_adminPanelPage.ActionedByTimestamp(alert.AlertType)).Text;
+                    alert.ActionedBy = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_adminPanelPage.ActionedByUser(alert.AlertType)).Text;
                 }
                 alerts.Add(alert);
             }

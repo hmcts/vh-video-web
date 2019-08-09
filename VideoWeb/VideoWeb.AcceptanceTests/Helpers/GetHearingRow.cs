@@ -22,12 +22,12 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
         private void CheckRowIsVisisble()
         {
-            _driver.WaitUntilElementVisible(_page.ClerkHearingCaseName(_caseNumber)).Displayed.Should().BeTrue();
+            _driver.WaitUntilVisible(_page.ClerkHearingCaseName(_caseNumber)).Displayed.Should().BeTrue();
         }
 
         private void GetTime()
         {
-            var unformattedText = _driver.WaitUntilElementVisible(_page.ClerkHearingTime(_caseNumber)).Text;
+            var unformattedText = _driver.WaitUntilVisible(_page.ClerkHearingTime(_caseNumber)).Text;
             var listOfTimes = unformattedText.Split("-");
             _hearingRow.StartTime = listOfTimes[0].Replace("-","").Trim();
             _hearingRow.EndTime = listOfTimes[1].Replace("-", "").Trim();
@@ -35,13 +35,13 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
         private void GetJudge()
         {
-            _hearingRow.Judge = _driver.WaitUntilElementVisible(_page.ClerkHearingJudge(_caseNumber, _judgeName)).Text;
+            _hearingRow.Judge = _driver.WaitUntilVisible(_page.ClerkHearingJudge(_caseNumber, _judgeName)).Text;
         }
 
         private void GetcaseDetails()
         {
-            _hearingRow.CaseName = _driver.WaitUntilElementVisible(_page.ClerkHearingCaseName(_caseNumber)).Text;
-            _hearingRow.CaseType = _driver.WaitUntilElementVisible(_page.ClerkHearingCaseType(_caseNumber)).Text;
+            _hearingRow.CaseName = _driver.WaitUntilVisible(_page.ClerkHearingCaseName(_caseNumber)).Text;
+            _hearingRow.CaseType = _driver.WaitUntilVisible(_page.ClerkHearingCaseType(_caseNumber)).Text;
             _hearingRow.CaseNumber = _caseNumber;
         }
 

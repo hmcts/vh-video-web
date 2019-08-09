@@ -58,7 +58,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheVideoHearingsOfficerUserShouldSeeANotification(string notification)
         {
             _browsers[_tc.CurrentUser.Key].Driver
-                .WaitUntilElementVisible(
+                .WaitUntilVisible(
                     _hearingListPage.VideoHearingsOfficerAlertType(_tc.Hearing.Cases.First().Number))
                 .Text.Should().Be(notification);
         }

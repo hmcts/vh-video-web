@@ -4,10 +4,9 @@ namespace VideoWeb.AcceptanceTests.Pages
 {
     public class WaitingRoomPage
     {
-        public By HearingName = By.XPath("//h1[contains(text(),'hearing')]/..//h2[@class='govuk-heading-m']");
-        public By CaseNumber = By.XPath("//h1[contains(text(),'hearing')]/..//h3[@class='govuk-heading-m']");
-        public By HearingDate = By.XPath("//p[contains(@aria-label,'date of hearing')]");
-        public By ContactHelpline => CommonLocators.ElementContainingText("helpline");
+        public By HearingCaseDetails = By.XPath("//*[contains(@class,'hearing-details-col1-width')]");
+        public By HearingDate = By.XPath("//*[contains(@class,'hearing-details-col2-width')]");
+        public By ContactVhTeam => CommonLocators.ElementContainingText("Video hearings team");
 
         public By OtherParticipantsStatus(string displayName) =>
             By.XPath(
