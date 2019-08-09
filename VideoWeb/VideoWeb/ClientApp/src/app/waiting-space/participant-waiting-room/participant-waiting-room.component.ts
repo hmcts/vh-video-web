@@ -118,7 +118,9 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         (error) => {
           this.logger.error(`There was an error getting a confernce ${conferenceId}`, error);
           this.loadingData = false;
-          this.errorService.handleApiError(error);
+          if (!this.errorService.returnHomeIfUnauthorised(error)) {
+            this.errorService.handleApiError(error);
+          }
         });
   }
 

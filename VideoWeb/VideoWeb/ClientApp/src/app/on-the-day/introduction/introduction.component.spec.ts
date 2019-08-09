@@ -12,6 +12,8 @@ import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { IntroductionComponent } from './introduction.component';
 import { AdalService } from 'adal-angular4';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 describe('IntroductionComponent', () => {
   let component: IntroductionComponent;
@@ -34,7 +36,8 @@ describe('IntroductionComponent', () => {
           },
         },
         { provide: AdalService, useClass: MockAdalService },
-        { provide: VideoWebService, useClass: MockVideoWebService }
+        { provide: VideoWebService, useClass: MockVideoWebService },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
 

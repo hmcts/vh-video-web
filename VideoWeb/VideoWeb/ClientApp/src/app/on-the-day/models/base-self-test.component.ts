@@ -40,7 +40,9 @@ export abstract class BaseSelfTestComponent implements OnInit {
                     .find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
             }, (error) => {
                 this.loadingData = false;
-                this.errorService.handleApiError(error);
+                if (!this.errorService.returnHomeIfUnauthorised(error)) {
+                    this.errorService.handleApiError(error);
+                }
             });
     }
 

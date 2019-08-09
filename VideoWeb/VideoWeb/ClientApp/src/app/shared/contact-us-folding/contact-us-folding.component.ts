@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse } from 'src/app/services/clients/api-client';
 import { VhContactDetails } from 'src/app/shared/contact-information';
+import { ErrorService } from 'src/app/services/error.service';
 
 @Component({
   selector: 'app-contact-us-folding',
@@ -21,7 +22,8 @@ export class ContactUsFoldingComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private videoWebService: VideoWebService
+    private videoWebService: VideoWebService,
+    private errorService: ErrorService
   ) { }
 
   ngOnInit() {
@@ -33,9 +35,12 @@ export class ContactUsFoldingComponent implements OnInit {
 
   getConference(conferenceId: string): void {
     this.videoWebService.getConferenceById(conferenceId)
-      .subscribe((data: ConferenceResponse) => {
-        this.conference = data;
-      });
+      .subscribe((conference) => this.conference = conference,
+        (error) => {
+          if (!this.errorService.returnHomeIfUnauthorised(error)) {
+            this.errorService.handleApiError(error);
+          }
+        });
   }
 
   get caseNumber(): string {

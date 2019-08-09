@@ -32,9 +32,9 @@ describe('VhoHearingsComponent', () => {
   let errorService: ErrorService;
 
   configureTestSuite(() => {
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesToday',
+    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForVHOfficer',
       'getConferenceById', 'getTasksForConference']);
-    videoWebServiceSpy.getConferencesToday.and.returnValue(of(conferences));
+    videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(of(conferences));
     videoWebServiceSpy.getConferenceById.and.returnValue(of(new ConferenceTestData().getConferenceDetail()));
     videoWebServiceSpy.getTasksForConference.and.returnValue(of(new ConferenceTestData().getTasksForConference()));
 
@@ -69,7 +69,7 @@ describe('VhoHearingsComponent', () => {
 
   it('should handle api error when retrieving conference fails', () => {
     spyOn(errorService, 'handleApiError').and.callFake(() => { Promise.resolve(true); });
-    videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 401, isApiException: true }));
+    videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 404, isApiException: true }));
     component.onConferenceSelected(component.conferences[0]);
     expect(errorService.handleApiError).toHaveBeenCalled();
   });
