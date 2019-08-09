@@ -42,6 +42,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         [BeforeScenario]
         public static void ClearAnyConferences(TestContext context, ConferenceEndpoints endpoints)
         {
+            if (!context.RunningLocally) return;
             ClearConferences(context, endpoints, context.GetIndividualUsers());
             ClearConferences(context, endpoints, context.GetRepresentativeUsers());
         }
