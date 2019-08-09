@@ -33,5 +33,12 @@ namespace VideoWeb.AcceptanceTests.Pages
 
         public By PausedTitle => CommonLocators.ElementContainingText("Your video hearing is paused");
         public By ClosedTitle => CommonLocators.ElementContainingText("Your video hearing is closed");
+
+        public By PrivateConsultationLink(string participantId) => By.XPath($"//div[@id='p-row-{participantId}']/a");
+        public By OutgoingCallMessage => CommonLocators.ElementContainingText("Your contact request has been sent to");
+        public By IncomingCallMessage => CommonLocators.ElementContainingText("Incoming call");
+
+        public By AcceptPrivateCall() => By.XPath("//input[@value='Accept call']");
+        public By RejectPrivateCall() => By.XPath("//input[@value='Reject call']");
     }
 }
