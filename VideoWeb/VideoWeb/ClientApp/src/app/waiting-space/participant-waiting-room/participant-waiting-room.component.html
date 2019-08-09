@@ -14,7 +14,7 @@
       (click)="toggleView()">
       {{ selfViewOpen ? 'Close' : 'Open' }} self-view
     </button>
-    <video *ngIf="selfViewOpen" id="outgoingFeed" [srcObject]="this.outgoingStream" autoplay height="auto">
+    <video *ngIf="selfViewOpen" id="outgoingFeed" [muted]="true" [srcObject]="this.outgoingStream" autoplay height="auto">
       Your browser does not support Video
     </video>
   </div>
