@@ -37,21 +37,48 @@ namespace VideoWeb.Controllers
         }
 
         /// <summary>
-        /// Get conferences for user
+        /// Get conferences today for a judge or a clerk
         /// </summary>
         /// <returns>List of conferences, if any</returns>
-        [HttpGet]
+        [HttpGet("judges")]
         [ProducesResponseType(typeof(List<ConferenceForUserResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        [SwaggerOperation(OperationId = "GetConferencesForUser")]
-        public async Task<ActionResult<List<ConferenceForUserResponse>>> GetConferencesForUser()
+        [SwaggerOperation(OperationId = "GetConferencesForJudge")]
+        public async Task<ActionResult<List<ConferenceForUserResponse>>> GetConferencesForJudge()
         {
-            _logger.LogDebug("GetConferencesForUser");
+            _logger.LogDebug("GetConferencesForJudge");
+            return await GetConferenceForUserAsync(false);
+        }
+        
+        /// <summary>
+        /// Get conferences today for individual or representative excluding those that have been closed for over 30 minutes
+        /// </summary>
+        /// <returns>List of conferences, if any</returns>
+        [HttpGet("individuals")]
+        [ProducesResponseType(typeof(List<ConferenceForUserResponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [SwaggerOperation(OperationId = "GetConferencesForIndividual")]
+        public async Task<ActionResult<List<ConferenceForUserResponse>>> GetConferencesForIndividual()
+        {
+            _logger.LogDebug("GetConferencesForIndividual");
+            return await GetConferenceForUserAsync(true);
+
+        }
+
+        private async Task<ActionResult<List<ConferenceForUserResponse>>> GetConferenceForUserAsync(bool excludeStaleConferences)
+        {
             var username = User.Identity.Name;
             try
             {
                 var conferences = await _videoApiClient.GetConferencesForUsernameAsync(username);
                 _logger.LogTrace("Successfully retrieved conferences for user");
+                
+                if (excludeStaleConferences)
+                {
+                    _logger.LogTrace("Filtering conference that have been closed for more than 30 minutes");
+                    conferences = conferences.Where(HasNotPassed).ToList();
+                }
+
                 conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();
                 var mapper = new ConferenceForUserResponseMapper();
                 var response = conferences.Select(x => mapper.MapConferenceSummaryToResponseModel(x)).ToList();
@@ -62,19 +89,19 @@ namespace VideoWeb.Controllers
                 _logger.LogError(e, "Unable to get conferences for user", null);
                 return StatusCode(e.StatusCode, e);
             }
-        }
+        } 
 
         /// <summary>
         /// Get conferences for user
         /// </summary>
         /// <returns>List of conferences, if any</returns>
-        [HttpGet("today")]
+        [HttpGet("vhofficer")]
         [ProducesResponseType(typeof(List<ConferenceForUserResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.Unauthorized)]
-        [SwaggerOperation(OperationId = "GetConferencesToday")]
-        public async Task<ActionResult<List<ConferenceForUserResponse>>> GetConferencesToday()
+        [SwaggerOperation(OperationId = "GetConferencesForVHOfficer")]
+        public async Task<ActionResult<List<ConferenceForUserResponse>>> GetConferencesForVHOfficer()
         {
-            _logger.LogDebug("GetConferencesToday");
+            _logger.LogDebug("GetConferencesForVHOfficer");
             try
             {
                 var username = User.Identity.Name.ToLower().Trim();
@@ -166,10 +193,14 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e);
             }
 
-            if (!isVhOfficer && conference.Participants.All(x => x.Username.ToLower().Trim() != username))
+            var exceededTimeLimit = !HasNotPassed(new ConferenceSummaryResponse
+                {Status = conference.Current_status, Closed_date_time = conference.Closed_date_time});
+            if (!isVhOfficer && (conference.Participants.All(x => x.Username.ToLower().Trim() != username) ||
+                                 exceededTimeLimit))
             {
                 _logger.LogInformation(
-                    $"Unauthorised to view conference details {conferenceId} because user is neither a VH Officer nor a participant of the conference");
+                    $"Unauthorised to view conference details {conferenceId} because user is neither a VH " +
+                    "Officer nor a participant of the conference, or the conference has been closed for over 30 minutes");
                 return Unauthorized();
             }
 
