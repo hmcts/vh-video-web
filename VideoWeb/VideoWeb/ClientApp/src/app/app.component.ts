@@ -62,7 +62,9 @@ export class AppComponent implements OnInit {
       }
       this.profileService.getUserProfile()
         .then((profile) => {
-          this.isRepresentativeOrIndividual = (profile.role === (UserRole.Individual || UserRole.Representative));
+          if (profile.role === UserRole.Representative || profile.role === UserRole.Individual) {
+            this.isRepresentativeOrIndividual = true;
+          }
         })
         .catch((error) => this.errorService.handleApiError(error));
     }
