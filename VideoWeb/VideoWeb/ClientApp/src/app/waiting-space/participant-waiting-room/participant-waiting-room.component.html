@@ -3,10 +3,18 @@
 </div>
 
 <div *ngIf="showVideo" class="govuk-grid-row">
-
   <div class="video-background"></div>
   <div class="govuk-grid-column-one-half">
     <video id="incomingFeed" [srcObject]="this.stream" autoplay height="auto">
+      Your browser does not support Video
+    </video>
+  </div>
+  <div class="govuk-grid-column-one-half">
+    <button type="button" class="govuk-button govuk-button--secondary reduce-margin" data-module="govuk-button"
+      (click)="toggleView()">
+      {{ selfViewOpen ? 'Close' : 'Open' }} self-view
+    </button>
+    <video *ngIf="selfViewOpen" id="outgoingFeed" [srcObject]="this.outgoingStream" autoplay height="auto">
       Your browser does not support Video
     </video>
   </div>
