@@ -5,7 +5,7 @@
   <!-- <ng-snotify></ng-snotify> -->
 
   <div class="govuk-width-container" id="master-container">
-    <app-beta-banner [isRepresentativeOrIndividual]="isRepresentativeOrIndividual"></app-beta-banner>
+    <app-beta-banner *ngIf="loggedIn" [isRepresentativeOrIndividual]="isRepresentativeOrIndividual"></app-beta-banner>
 
     <main class="govuk-main-wrapper" id="main-content" role="main"
       [ngClass]="!loggedIn ? 'pad-unactivated-router' : ''">
