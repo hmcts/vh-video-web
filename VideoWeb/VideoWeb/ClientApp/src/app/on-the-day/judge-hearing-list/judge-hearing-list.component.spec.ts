@@ -23,8 +23,8 @@ describe('JudgeHearingListComponent with no conferences for user', () => {
   const noConferences: ConferenceForUserResponse[] = [];
 
   configureTestSuite(() => {
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForUser']);
-    videoWebServiceSpy.getConferencesForUser.and.returnValue(of(noConferences));
+    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForJudge']);
+    videoWebServiceSpy.getConferencesForJudge.and.returnValue(of(noConferences));
 
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, SharedModule],
@@ -57,8 +57,8 @@ describe('JudgeHearingListComponent with conferences for user', () => {
   let profileService: ProfileService;
 
   configureTestSuite(() => {
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForUser']);
-    videoWebServiceSpy.getConferencesForUser.and.returnValue(of(conferences));
+    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForJudge']);
+    videoWebServiceSpy.getConferencesForJudge.and.returnValue(of(conferences));
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
@@ -108,8 +108,8 @@ describe('JudgeHearingListComponent with service error', () => {
   let errorService: ErrorService;
 
   configureTestSuite(() => {
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForUser']);
-    videoWebServiceSpy.getConferencesForUser.and.returnValue(throwError({ status: 401, isApiException: true }));
+    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForJudge']);
+    videoWebServiceSpy.getConferencesForJudge.and.returnValue(throwError({ status: 401, isApiException: true }));
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],

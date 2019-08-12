@@ -11,7 +11,11 @@ import { TasksTestData } from './data/tasks-test-data';
 
 export class MockVideoWebService extends VideoWebService {
 
-    getConferencesForUser(): Observable<ConferenceForUserResponse[]> {
+    getConferencesForJudge(): Observable<ConferenceForUserResponse[]> {
+        return of(new ConferenceTestData().getTestData());
+    }
+
+    getConferencesForIndividual(): Observable<ConferenceForUserResponse[]> {
         return of(new ConferenceTestData().getTestData());
     }
 

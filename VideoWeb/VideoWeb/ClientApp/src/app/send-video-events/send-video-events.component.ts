@@ -39,7 +39,9 @@ export class SendVideoEventsComponent implements OnInit {
       },
         (error) => {
           this.loadingData = false;
-          this.errorService.handleApiError(error);
+          if (!this.errorService.returnHomeIfUnauthorised(error)) {
+            this.errorService.handleApiError(error);
+          }
         });
   }
 

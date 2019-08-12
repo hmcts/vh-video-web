@@ -10,6 +10,8 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { DeclarationComponent } from './declaration.component';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 describe('DeclarationComponent Tests', () => {
   let component: DeclarationComponent;
@@ -32,7 +34,8 @@ describe('DeclarationComponent Tests', () => {
             }
           },
         },
-        { provide: VideoWebService, useClass: MockVideoWebService }
+        { provide: VideoWebService, useClass: MockVideoWebService },
+        { provide: Logger, useClass: MockLogger },
       ]
     });
   });

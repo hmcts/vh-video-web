@@ -8,6 +8,8 @@ import 'webrtc-adapter';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VhContactDetails } from 'src/app/shared/contact-information';
+import { ErrorService } from 'src/app/services/error.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 @Component({
   selector: 'app-switch-on-camera-microphone',
@@ -32,7 +34,9 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
     private videoWebService: VideoWebService,
     private adalService: AdalService,
     private userMediaStreamService: UserMediaStreamService,
-    private profileService: ProfileService
+    private profileService: ProfileService,
+    private errorService: ErrorService,
+    private logger: Logger
   ) {
     this.userPrompted = false;
     this.mediaAccepted = false;
@@ -52,7 +56,12 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
   getConference(): void {
     this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
     this.videoWebService.getConferenceById(this.conferenceId)
-      .subscribe((conference) => this.conference = conference);
+      .subscribe((conference) => this.conference = conference,
+        (error) => {
+          if (!this.errorService.returnHomeIfUnauthorised(error)) {
+            this.errorService.handleApiError(error);
+          }
+        });
   }
 
   async requestMedia() {
@@ -77,7 +86,7 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
     this.videoWebService.raiseMediaEvent(this.conference.id,
       new AddMediaEventRequest({ participant_id: participant.id.toString() })).subscribe(x => { },
         (error) => {
-          console.error(error);
+          this.logger.error('Failed to post media permission denied alert', error);
         });
   }
 }
