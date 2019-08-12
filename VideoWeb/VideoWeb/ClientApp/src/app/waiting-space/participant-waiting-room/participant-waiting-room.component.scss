@@ -55,16 +55,18 @@
   margin-top: -20px;
 }
 
-#outgoingFeed {
-  position: relative;
-  left: 0;
-  top: 0;
-  min-width: 100%;
-  min-height: 100%;
-  max-width: 100%;
-  max-height: 100vh;
+#outgoingFeedDiv {
+  left: 0.19%;
+  position: fixed;
+  bottom: 1%;
 }
-
+#outgoingFeedVideo {
+  left: 1%;
+  position: fixed;
+  bottom: 5.22%;
+  max-width: 25%;
+  min-width: 25%;
+}
 .reduce-margin {
   margin-bottom: 2px;
 }
