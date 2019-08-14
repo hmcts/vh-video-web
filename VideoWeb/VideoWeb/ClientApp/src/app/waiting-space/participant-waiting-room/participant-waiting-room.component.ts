@@ -26,6 +26,8 @@ declare var HeartbeatFactory: any;
 })
 export class ParticipantWaitingRoomComponent implements OnInit {
 
+  private maxBandwidth = 768;
+
   loadingData: boolean;
   hearing: Hearing;
   participant: ParticipantResponse;
@@ -278,7 +280,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     const conferenceAlias = this.hearing.getConference().participant_uri;
     const displayName = this.participant.tiled_display_name;
     this.logger.debug(`Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`);
-    this.pexipAPI.makeCall(pexipNode, conferenceAlias, displayName, null);
+    this.pexipAPI.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth);
   }
 
   updateShowVideo(): void {
