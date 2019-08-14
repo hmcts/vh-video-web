@@ -15,6 +15,7 @@ import { Hearing } from '../../shared/models/hearing';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 declare var PexRTC: any;
 declare var HeartbeatFactory: any;
 
@@ -56,7 +57,8 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     private clockService: ClockService,
     private userMediaService: UserMediaService,
     private logger: Logger,
-    private consultationService: ConsultationService
+    private consultationService: ConsultationService,
+    private router: Router
   ) {
     this.loadingData = true;
     this.showVideo = false;
@@ -90,6 +92,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   subscribeToClock(): void {
     this.clockService.getClock().subscribe((time) => {
       this.currentTime = time;
+      this.checkIfHearingIsClosed();
       this.checkIfHearingIsStarting();
     });
   }
@@ -97,6 +100,25 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   checkIfHearingIsStarting(): void {
     if (this.hearing.isStarting() && !this.hearingStartingAnnounced) {
       this.announceHearingIsAboutToStart();
+    }
+  }
+
+  checkIfHearingIsClosed(): void {
+    if (this.hearing.isClosed()) {
+      const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+      this.videoWebService.getConferenceById(conferenceId)
+        .subscribe(async (data: ConferenceResponse) => {
+          this.hearing = new Hearing(data);
+          if (this.hearing.isPastClosedTime()) {
+            this.router.navigate([PageUrls.ParticipantHearingList]);
+          }
+        },
+          (error) => {
+            this.logger.error(`There was an error getting a conference ${conferenceId}`, error);
+            if (!this.errorService.returnHomeIfUnauthorised(error)) {
+              this.errorService.handleApiError(error);
+            }
+          });
     }
   }
 
@@ -121,7 +143,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         this.getJwtoken();
       },
         (error) => {
-          this.logger.error(`There was an error getting a confernce ${conferenceId}`, error);
+          this.logger.error(`There was an error getting a conference ${conferenceId}`, error);
           this.loadingData = false;
           if (!this.errorService.returnHomeIfUnauthorised(error)) {
             this.errorService.handleApiError(error);
