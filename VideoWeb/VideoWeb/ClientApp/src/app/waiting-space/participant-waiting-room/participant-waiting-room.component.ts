@@ -34,6 +34,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   pexipAPI: any;
   stream: MediaStream;
   connected: boolean;
+  outgoingStream: MediaStream;
 
   currentTime: Date;
   hearingStartingAnnounced: boolean;
@@ -42,6 +43,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
   showVideo: boolean;
   showConsultationControls: boolean;
+  selfViewOpen: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -59,6 +61,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     this.loadingData = true;
     this.showVideo = false;
     this.showConsultationControls = false;
+    this.selfViewOpen = false;
   }
 
   ngOnInit() {
@@ -219,6 +222,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
       self.logger.info('running pexip setup');
       this.connect('0000', null);
+      self.outgoingStream = stream;
     };
 
     this.pexipAPI.onConnect = function (stream) {
@@ -300,5 +304,9 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     } catch (error) {
       this.logger.error('Failed to leave private consultation', error);
     }
+  }
+
+  toggleView(): boolean {
+    return this.selfViewOpen = !this.selfViewOpen;
   }
 }
