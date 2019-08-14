@@ -108,7 +108,6 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         .subscribe(async (data: ConferenceResponse) => {
           this.hearing = new Hearing(data);
           if (this.hearing.isPastClosedTime()) {
-            // this.clockService.ngOnDestroy();
             this.router.navigate([PageUrls.ParticipantHearingList]);
           }
         },
