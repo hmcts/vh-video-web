@@ -71,5 +71,10 @@ namespace VideoWeb.Contract.Responses
         /// The participants in the conference
         /// </summary>
         public List<ParticipantResponse> Participants { get; set; }
+
+        /// <summary>
+        /// Closed date time as UTC
+        /// </summary>
+        public DateTime ClosedDateTime { get; set; }
     }
 }

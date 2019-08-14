@@ -44,14 +44,14 @@ export class Hearing {
 
     get applicants(): Participant[] {
         return this.participants
-        .filter(x => x.caseGroup !== '')
-        .filter(x => x.caseGroup.toLowerCase() === 'applicant' || x.caseGroup.toLowerCase() === 'claimant');
+            .filter(x => x.caseGroup !== '')
+            .filter(x => x.caseGroup.toLowerCase() === 'applicant' || x.caseGroup.toLowerCase() === 'claimant');
     }
 
     get respondents(): Participant[] {
         return this.participants
-        .filter(x => x.caseGroup !== '')
-        .filter(x => x.caseGroup.toLowerCase() === 'respondent' || x.caseGroup.toLowerCase() === 'defendant');
+            .filter(x => x.caseGroup !== '')
+            .filter(x => x.caseGroup.toLowerCase() === 'respondent' || x.caseGroup.toLowerCase() === 'defendant');
     }
 
     getConference(): ConferenceResponse {
@@ -145,5 +145,15 @@ export class Hearing {
 
     isPaused(): boolean {
         return this.conference.status === ConferenceStatus.Paused;
+    }
+
+    isPastClosedTime(): boolean {
+        if (this.conference.status !== ConferenceStatus.Closed) {
+            return false;
+        }
+        const now = moment.utc();
+        let closed = moment(this.conference.closed_date_time);
+        closed = closed.add(30, 'minutes');
+        return now.isAfter(closed) && this.conference.status === ConferenceStatus.Closed;
     }
 }
