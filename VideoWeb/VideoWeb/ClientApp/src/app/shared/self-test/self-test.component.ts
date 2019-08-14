@@ -36,6 +36,8 @@ export class SelfTestComponent implements OnInit {
 
   testCallResult: TestCallScoreResponse = null;
 
+  private maxBandwidth = 768;
+
   constructor(
     private logger: Logger,
     private videoWebService: VideoWebService,
@@ -149,7 +151,7 @@ export class SelfTestComponent implements OnInit {
     const pexipNode = this.conference.pexip_self_test_node_uri;
     const conferenceAlias = 'testcall2';
     const tokenOptions = btoa(`${this.token.expires_on};${this.participant.id};${this.token.token}`);
-    this.pexipAPI.makeCall(pexipNode, `${conferenceAlias};${tokenOptions}`, this.participant.id, null);
+    this.pexipAPI.makeCall(pexipNode, `${conferenceAlias};${tokenOptions}`, this.participant.id, this.maxBandwidth);
   }
 
   replayVideo() {
