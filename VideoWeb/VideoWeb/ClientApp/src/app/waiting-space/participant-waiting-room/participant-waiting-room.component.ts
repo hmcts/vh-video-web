@@ -100,9 +100,21 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
   checkIfHearingIsClosed(): void {
     if (this.hearing.isClosed()) {
-      setTimeout(() => {
-        this.router.navigate([PageUrls.ParticipantHearingList]);
-      }, 1800000);
+      const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+      this.videoWebService.getConferenceById(conferenceId)
+        .subscribe(async (data: ConferenceResponse) => {
+          this.hearing = new Hearing(data);
+          if (this.hearing.isPastClosedTime()) {
+            // this.clockService.ngOnDestroy();
+            this.router.navigate([PageUrls.ParticipantHearingList]);
+          }
+        },
+          (error) => {
+            this.logger.error(`There was an error getting a conference ${conferenceId}`, error);
+            if (!this.errorService.returnHomeIfUnauthorised(error)) {
+              this.errorService.handleApiError(error);
+            }
+          });
     }
   }
 
@@ -127,7 +139,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         this.getJwtoken();
       },
         (error) => {
-          this.logger.error(`There was an error getting a confernce ${conferenceId}`, error);
+          this.logger.error(`There was an error getting a conference ${conferenceId}`, error);
           this.loadingData = false;
           if (!this.errorService.returnHomeIfUnauthorised(error)) {
             this.errorService.handleApiError(error);
