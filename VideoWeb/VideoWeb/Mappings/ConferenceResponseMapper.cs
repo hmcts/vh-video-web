@@ -38,7 +38,7 @@ namespace VideoWeb.Mappings
                 ScheduledDuration = conference.Scheduled_duration.GetValueOrDefault(),
                 Status = status,
                 Participants = participants,
-                ClosedDateTime = conference.Closed_date_time.GetValueOrDefault()
+                ClosedDateTime = conference.Closed_date_time
             };
 
             if (conference.Meeting_room == null) return response;
