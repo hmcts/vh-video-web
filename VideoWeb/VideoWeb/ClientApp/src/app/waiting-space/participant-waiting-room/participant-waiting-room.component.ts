@@ -100,20 +100,9 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
   checkIfHearingIsClosed(): void {
     if (this.hearing.isClosed()) {
-      const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-      this.videoWebService.getConferenceById(conferenceId)
-        .subscribe(async (data: ConferenceResponse) => {
-          this.hearing = new Hearing(data);
-          if (this.hearing.isPastClosedTime()) {
-            this.router.navigate([PageUrls.ParticipantHearingList]);
-          }
-        },
-          (error) => {
-            this.logger.error(`There was an error getting a confernce ${conferenceId}`, error);
-            if (!this.errorService.returnHomeIfUnauthorised(error)) {
-              this.errorService.handleApiError(error);
-            }
-          });
+      setTimeout(() => {
+        this.router.navigate([PageUrls.ParticipantHearingList]);
+      }, 1800000);
     }
   }
 
