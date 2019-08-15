@@ -2,7 +2,7 @@
   Please wait to be connected...
 </div>
 
-<div *ngIf="!loadingData && iframeOrigin" class="govuk-width-container">
+<div *ngIf="!loadingData" class="govuk-width-container">
   <iframe id="judgeIframe" [src]='selectedHearingUrl' [attr.allow]='allowPermissions' width="1000px" height="500px" allowfullscreen frameborder="0"
     webkitallowfullscreen mozallowfullscreen allowfullscreen>
   </iframe>
