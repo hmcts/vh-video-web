@@ -121,14 +121,14 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     const conference = new ConferenceTestData().getConferenceNow();
     conference.status = ConferenceStatus.NotStarted;
     component.hearing = new Hearing(conference);
-    expect(component.getConferenceStatusText()).toBe('is about to begin');
+    expect(component.getConferenceStatusText()).toBe('');
   });
 
   it('should return is delayed header text', () => {
     const conference = new ConferenceTestData().getConferencePast();
     conference.status = ConferenceStatus.NotStarted;
     component.hearing = new Hearing(conference);
-    expect(component.getConferenceStatusText()).toBe('is delayed');
+    expect(component.getConferenceStatusText()).toBe('');
   });
 
   it('should not show video stream when user is not connected to call', () => {
