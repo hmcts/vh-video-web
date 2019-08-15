@@ -19,6 +19,7 @@ export class JudgeHearingPageComponent implements OnInit {
   loadingData: boolean;
   conference: ConferenceResponse;
   selectedHearingUrl: SafeResourceUrl;
+  allowPermissions: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -74,6 +75,9 @@ export class JudgeHearingPageComponent implements OnInit {
       this.logger.info(`judge using microphone ${preferredMic.label}`);
       mic = preferredMic.deviceId;
     }
+
+    const iframeOrigin = new URL(this.conference.judge_i_frame_uri).origin;
+    this.allowPermissions = `microphone ${iframeOrigin}; camera ${iframeOrigin};`;
 
     const judgeUri = `${this.conference.judge_i_frame_uri}?display_name=${encodedDisplayName}&cam=${cam}&mic=${mic}`;
     this.selectedHearingUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
