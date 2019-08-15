@@ -12,11 +12,12 @@
 </div>
 <div *ngIf="showVideo" class="govuk-grid-row">
   <div class="govuk-grid-column-one-half" id="outgoingFeedDiv">
-    <button id="outgoingFeedButton" type="button" class="govuk-button govuk-button--secondary reduce-margin" data-module="govuk-button"
-      (click)="toggleView()">
+    <button id="outgoingFeedButton" type="button" class="govuk-button govuk-button--secondary reduce-margin"
+      data-module="govuk-button" (click)="toggleView()">
       {{ selfViewOpen ? 'Close' : 'Open' }} self-view
     </button>
-    <video *ngIf="selfViewOpen" id="outgoingFeedVideo" [muted]="true" [srcObject]="this.outgoingStream" autoplay height="auto">
+    <video *ngIf="selfViewOpen" id="outgoingFeedVideo" [muted]="true" [srcObject]="this.outgoingStream" autoplay
+      height="auto">
       Your browser does not support Video
     </video>
   </div>
@@ -51,9 +52,10 @@
     <div
       *ngIf="!showVideo && currentTime && ( hearing.isNotStarted() || hearing.isPaused() || hearing.isSuspended() || hearing.isClosed()  )"
       class="govuk-panel"
-      [ngClass]="{'hearing-on-time': hearing.isOnTime() || hearing.isPaused() || hearing.isClosed(), 'hearing-near-start': hearing.isStarting(), 'hearing-delayed': hearing.isDelayed() || hearing.isSuspended()}">
+      [ngClass]="{'hearing-on-time': hearing.isOnTime() || hearing.isPaused() || hearing.isClosed() || hearing.isStarting() || hearing.isDelayed() || hearing.isSuspended()}">
+
       <div class="govuk-body govuk-!-margin-bottom-0"
-        [ngClass]="{'hearing-on-time': hearing.isOnTime() || hearing.isPaused() || hearing.isClosed(), 'hearing-near-start': hearing.isStarting(), 'hearing-delayed': hearing.isDelayed() || hearing.isSuspended()}">
+        [ngClass]="{'hearing-on-time': hearing.isOnTime() || hearing.isPaused() || hearing.isClosed() || hearing.isStarting() || hearing.isDelayed() || hearing.isSuspended() }">
 
         <div *ngIf="hearing.isOnTime()">
           <h3 class="govuk-heading-m white">Please keep an eye on the time</h3>
@@ -61,16 +63,20 @@
         </div>
 
         <div *ngIf="hearing.isStarting()">
-          <h3 class="govuk-heading-m white">Please stay near your screen</h3>
+          <!-- <h3 class="govuk-heading-m white">Please stay near your screen</h3>
+          <p>Make sure you're ready when the judge starts the hearing.</p> -->
+          <h3 class="govuk-heading-m white">Please keep an eye on the time</h3>
           <p>Make sure you're ready when the judge starts the hearing.</p>
         </div>
 
         <div *ngIf="hearing.isDelayed()">
-          <h3 class="govuk-heading-m">We're really sorry your hearing is delayed</h3>
+          <!-- <h3 class="govuk-heading-m">We're really sorry your hearing is delayed</h3>
           <p>
             Please stand by and one of the video hearing team will call you in the next 5 minutes on the number you
             have given us.
-          </p>
+          </p> -->
+          <h3 class="govuk-heading-m white">Please keep an eye on the time</h3>
+          <p>Make sure you're ready when the judge starts the hearing.</p>
         </div>
 
         <div *ngIf="hearing.isClosed()">
@@ -98,7 +104,7 @@
         </div>
         <div class="govuk-grid-column-one-half">
           <div class="govuk-body"
-            [ngClass]="{'hearing-on-time': hearing.isOnTime() || hearing.isPaused() || hearing.isClosed(), 'hearing-near-start': hearing.isStarting(), 'hearing-delayed': hearing.isDelayed() || hearing.isSuspended()}">
+            [ngClass]="{'hearing-on-time': hearing.isOnTime() || hearing.isPaused() || hearing.isClosed() || hearing.isStarting() || hearing.isDelayed() || hearing.isSuspended()}">
             <p class="govuk-!-margin-bottom-4">The time now is:</p>
             <p class="govuk-panel__body govuk-!-margin-top-4 govuk-!-font-size-80">
               <strong>{{ currentTime | date:'HH:mm' }}</strong>

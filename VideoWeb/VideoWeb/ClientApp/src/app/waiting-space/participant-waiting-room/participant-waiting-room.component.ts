@@ -170,9 +170,11 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   getConferenceStatusText(): string {
     if (this.hearing.getConference().status === ConferenceStatus.NotStarted) {
       if (this.hearing.isStarting()) {
-        return 'is about to begin';
+        /* return 'is about to begin'; */
+        return '';
       } else if (this.hearing.isDelayed()) {
-        return 'is delayed';
+        /* return 'is delayed'; */
+        return '';
       } else {
         return '';
       }
