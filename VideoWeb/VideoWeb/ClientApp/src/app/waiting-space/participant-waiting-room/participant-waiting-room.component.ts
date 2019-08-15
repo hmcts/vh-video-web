@@ -16,6 +16,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
+import { Subscription } from 'rxjs';
 declare var PexRTC: any;
 declare var HeartbeatFactory: any;
 
@@ -46,6 +47,8 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   showVideo: boolean;
   showConsultationControls: boolean;
   selfViewOpen: boolean;
+
+  subscription: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -90,7 +93,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   }
 
   subscribeToClock(): void {
-    this.clockService.getClock().subscribe((time) => {
+    this.subscription = this.clockService.getClock().subscribe((time) => {
       this.currentTime = time;
       this.checkIfHearingIsClosed();
       this.checkIfHearingIsStarting();
@@ -110,6 +113,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         .subscribe(async (data: ConferenceResponse) => {
           this.hearing = new Hearing(data);
           if (this.hearing.isPastClosedTime()) {
+            this.subscription.unsubscribe();
             this.router.navigate([PageUrls.ParticipantHearingList]);
           }
         },
