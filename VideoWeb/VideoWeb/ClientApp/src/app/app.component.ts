@@ -59,15 +59,20 @@ export class AppComponent implements OnInit {
       this.loggedIn = this.adalService.userInfo.authenticated;
       if (!this.loggedIn) {
         this.router.navigate(['/login'], { queryParams: { returnUrl: currentUrl } });
+        return;
       }
-      this.profileService.getUserProfile()
-        .then((profile) => {
-          if (profile.role === UserRole.Representative || profile.role === UserRole.Individual) {
-            this.isRepresentativeOrIndividual = true;
-          }
-        })
-        .catch((error) => this.errorService.handleApiError(error));
+      this.retrieveProfileRole();
     }
+  }
+
+  retrieveProfileRole(): void {
+    this.profileService.getUserProfile()
+      .then((profile) => {
+        if (profile.role === UserRole.Representative || profile.role === UserRole.Individual) {
+          this.isRepresentativeOrIndividual = true;
+        }
+      })
+      .catch((error) => this.errorService.handleApiError(error));
   }
 
   logOut() {
