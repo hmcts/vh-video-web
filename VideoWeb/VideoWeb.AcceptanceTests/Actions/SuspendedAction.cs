@@ -11,7 +11,7 @@ namespace VideoWeb.AcceptanceTests.Actions
             var request = new EventRequestBuilder()
                 .WithConferenceId(context.NewConferenceId)
                 .WithParticipantId(participantId)
-                .WithEventType(EventType.Suspend)
+                .WithEventType(EventType.Disconnected)
                 .FromRoomType(RoomType.HearingRoom)
                 .Build();
 
