@@ -8,6 +8,7 @@ import {
   SelfTestFailureReason
 } from 'src/app/services/clients/api-client';
 import { AdalService } from 'adal-angular4';
+import { ErrorService } from 'src/app/services/error.service';
 
 @Component({
   selector: 'app-microphone-check',
@@ -24,7 +25,8 @@ export class MicrophoneCheckComponent implements OnInit {
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private videoWebService: VideoWebService,
-    private adalService: AdalService
+    private adalService: AdalService,
+    private errorService: ErrorService
   ) { }
 
   ngOnInit() {
@@ -37,7 +39,12 @@ export class MicrophoneCheckComponent implements OnInit {
   getConference(): void {
     this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
     this.videoWebService.getConferenceById(this.conferenceId)
-      .subscribe((conference) => this.conference = conference);
+      .subscribe((conference) => this.conference = conference,
+        (error) => {
+          if (!this.errorService.returnHomeIfUnauthorised(error)) {
+            this.errorService.handleApiError(error);
+          }
+        });
   }
 
   showError(): boolean {

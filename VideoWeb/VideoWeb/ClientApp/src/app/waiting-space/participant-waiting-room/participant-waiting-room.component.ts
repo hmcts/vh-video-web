@@ -15,6 +15,7 @@ import { Hearing } from '../../shared/models/hearing';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 declare var PexRTC: any;
 declare var HeartbeatFactory: any;
 
@@ -25,6 +26,8 @@ declare var HeartbeatFactory: any;
 })
 export class ParticipantWaitingRoomComponent implements OnInit {
 
+  private maxBandwidth = 768;
+
   loadingData: boolean;
   hearing: Hearing;
   participant: ParticipantResponse;
@@ -33,6 +36,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   pexipAPI: any;
   stream: MediaStream;
   connected: boolean;
+  outgoingStream: MediaStream;
 
   currentTime: Date;
   hearingStartingAnnounced: boolean;
@@ -41,6 +45,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
   showVideo: boolean;
   showConsultationControls: boolean;
+  selfViewOpen: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -52,11 +57,13 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     private clockService: ClockService,
     private userMediaService: UserMediaService,
     private logger: Logger,
-    private consultationService: ConsultationService
+    private consultationService: ConsultationService,
+    private router: Router
   ) {
     this.loadingData = true;
     this.showVideo = false;
     this.showConsultationControls = false;
+    this.selfViewOpen = false;
   }
 
   ngOnInit() {
@@ -85,6 +92,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   subscribeToClock(): void {
     this.clockService.getClock().subscribe((time) => {
       this.currentTime = time;
+      this.checkIfHearingIsClosed();
       this.checkIfHearingIsStarting();
     });
   }
@@ -92,6 +100,25 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   checkIfHearingIsStarting(): void {
     if (this.hearing.isStarting() && !this.hearingStartingAnnounced) {
       this.announceHearingIsAboutToStart();
+    }
+  }
+
+  checkIfHearingIsClosed(): void {
+    if (this.hearing.isClosed()) {
+      const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+      this.videoWebService.getConferenceById(conferenceId)
+        .subscribe(async (data: ConferenceResponse) => {
+          this.hearing = new Hearing(data);
+          if (this.hearing.isPastClosedTime()) {
+            this.router.navigate([PageUrls.ParticipantHearingList]);
+          }
+        },
+          (error) => {
+            this.logger.error(`There was an error getting a conference ${conferenceId}`, error);
+            if (!this.errorService.returnHomeIfUnauthorised(error)) {
+              this.errorService.handleApiError(error);
+            }
+          });
     }
   }
 
@@ -116,9 +143,11 @@ export class ParticipantWaitingRoomComponent implements OnInit {
         this.getJwtoken();
       },
         (error) => {
-          this.logger.error(`There was an error getting a confernce ${conferenceId}`, error);
+          this.logger.error(`There was an error getting a conference ${conferenceId}`, error);
           this.loadingData = false;
-          this.errorService.handleApiError(error);
+          if (!this.errorService.returnHomeIfUnauthorised(error)) {
+            this.errorService.handleApiError(error);
+          }
         });
   }
 
@@ -206,6 +235,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
       self.logger.info('running pexip setup');
       this.connect('0000', null);
+      self.outgoingStream = stream;
     };
 
     this.pexipAPI.onConnect = function (stream) {
@@ -250,7 +280,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     const conferenceAlias = this.hearing.getConference().participant_uri;
     const displayName = this.participant.tiled_display_name;
     this.logger.debug(`Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`);
-    this.pexipAPI.makeCall(pexipNode, conferenceAlias, displayName, null);
+    this.pexipAPI.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth);
   }
 
   updateShowVideo(): void {
@@ -287,5 +317,9 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     } catch (error) {
       this.logger.error('Failed to leave private consultation', error);
     }
+  }
+
+  toggleView(): boolean {
+    return this.selfViewOpen = !this.selfViewOpen;
   }
 }

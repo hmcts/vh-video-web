@@ -48,7 +48,7 @@ export class JudgeHearingListComponent implements OnInit {
   }
 
   retrieveHearingsForUser() {
-    this.videoWebService.getConferencesForUser().subscribe((data: ConferenceForUserResponse[]) => {
+    this.videoWebService.getConferencesForJudge().subscribe((data: ConferenceForUserResponse[]) => {
       this.loadingData = false;
       this.conferences = data;
     },

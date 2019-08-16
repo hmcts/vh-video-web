@@ -28,7 +28,7 @@ export class ParticipantHearingsComponent implements OnInit {
   }
 
   retrieveHearingsForUser() {
-    this.videoWebService.getConferencesForUser().subscribe((data: ConferenceForUserResponse[]) => {
+    this.videoWebService.getConferencesForIndividual().subscribe((data: ConferenceForUserResponse[]) => {
       this.loadingData = false;
       this.conferences = data;
     },

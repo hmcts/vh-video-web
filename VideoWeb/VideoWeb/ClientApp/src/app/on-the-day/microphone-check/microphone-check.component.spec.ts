@@ -11,6 +11,8 @@ import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MicrophoneCheckComponent } from './microphone-check.component';
 import { AdalService } from 'adal-angular4';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 describe('MicrophoneCheckComponent', () => {
   let component: MicrophoneCheckComponent;
@@ -33,7 +35,8 @@ describe('MicrophoneCheckComponent', () => {
           },
         },
         { provide: AdalService, useClass: MockAdalService },
-        { provide: VideoWebService, useClass: MockVideoWebService }
+        { provide: VideoWebService, useClass: MockVideoWebService },
+        { provide: Logger, useClass: MockLogger }
       ]
     });
   });

@@ -10,6 +10,7 @@ import { ModalService } from 'src/app/services/modal.service';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { Participant } from 'src/app/shared/models/participant';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 
 @Component({
   selector: 'app-individual-participant-status-list',
@@ -90,6 +91,19 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         }
       });
     });
+
+    this.eventService.getParticipantStatusMessage().subscribe(message => {
+      this.ngZone.run(() => {
+        this.handleParticipantStatusChange(message);
+      });
+    });
+  }
+
+  handleParticipantStatusChange(message: ParticipantStatusMessage): void {
+    const isCurrentUser = this.adalService.userInfo.userName.toLocaleLowerCase() === message.email.toLowerCase();
+    if (isCurrentUser && message.status === ParticipantStatus.InConsultation) {
+      this.closeAllPCModals();
+    }
   }
 
   isParticipantAvailable(participant: ParticipantResponse): boolean {

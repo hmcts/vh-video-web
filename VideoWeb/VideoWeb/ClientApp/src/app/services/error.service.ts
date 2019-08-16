@@ -22,6 +22,17 @@ export class ErrorService {
     }
   }
 
+  returnHomeIfUnauthorised(error: any): boolean {
+    if (!error.isApiException) { return; }
+    const swaggerError: ApiException = error;
+    if (swaggerError.status === 401) {
+      this.logger.warn('Returning back to hearing list');
+      this.router.navigate([PageUrls.Home]);
+      return true;
+    }
+    return false;
+  }
+
   goToUnauthorised() {
     this.router.navigate([PageUrls.Unauthorised]);
   }

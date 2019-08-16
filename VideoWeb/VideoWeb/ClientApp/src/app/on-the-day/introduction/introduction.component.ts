@@ -6,6 +6,7 @@ import {
   UpdateParticipantStatusEventRequest, ConferenceResponse
 } from 'src/app/services/clients/api-client';
 import { AdalService } from 'adal-angular4';
+import { ErrorService } from 'src/app/services/error.service';
 
 @Component({
   selector: 'app-introduction',
@@ -21,7 +22,8 @@ export class IntroductionComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private videoWebService: VideoWebService,
-    private adalService: AdalService
+    private adalService: AdalService,
+    private errorService: ErrorService
   ) { }
 
   ngOnInit() {
@@ -34,6 +36,11 @@ export class IntroductionComponent implements OnInit {
       .subscribe((conference) => {
         this.conference = conference;
         this.postParticipantJoiningStatus();
+      },
+      (error) => {
+        if (!this.errorService.returnHomeIfUnauthorised(error)) {
+          this.errorService.handleApiError(error);
+        }
       });
   }
 

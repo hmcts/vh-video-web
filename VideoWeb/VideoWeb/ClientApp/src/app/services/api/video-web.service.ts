@@ -15,12 +15,16 @@ export class VideoWebService {
   constructor(private apiClient: ApiClient) {
   }
 
-  getConferencesForUser(): Observable<ConferenceForUserResponse[]> {
-    return this.apiClient.getConferencesForUser();
+  getConferencesForJudge(): Observable<ConferenceForUserResponse[]> {
+    return this.apiClient.getConferencesForJudge();
   }
 
-  getConferencesToday(): Observable<ConferenceForUserResponse[]> {
-    return this.apiClient.getConferencesToday();
+  getConferencesForIndividual(): Observable<ConferenceForUserResponse[]> {
+    return this.apiClient.getConferencesForIndividual();
+  }
+
+  getConferencesForVHOfficer(): Observable<ConferenceForUserResponse[]> {
+    return this.apiClient.getConferencesForVHOfficer();
   }
 
   getConferenceById(conferenceId: string): Observable<ConferenceResponse> {
