@@ -104,6 +104,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     if (isCurrentUser && message.status === ParticipantStatus.InConsultation) {
       this.closeAllPCModals();
     }
+    this.filterNonJudgeParticipants();
   }
 
   isParticipantAvailable(participant: ParticipantResponse): boolean {
