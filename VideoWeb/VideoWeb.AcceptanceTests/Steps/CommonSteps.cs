@@ -42,6 +42,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Given(@"in the (.*)'s browser")]
+        [When(@"in (.*)'s browser")]
         [When(@"in the (.*)'s browser")]
         [Then(@"in the (.*)'s browser")]
         public void GivenInTheUsersBrowser(string user)
