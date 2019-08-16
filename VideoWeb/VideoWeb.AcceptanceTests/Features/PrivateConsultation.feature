@@ -28,6 +28,14 @@ Scenario: Reject a private consultation
 	Then the user is on the Waiting Room page
 
 @VIH-4134
+Scenario: No answer on a private consultation
+	Given the Individual01 user has progressed to the Waiting Room page with a hearing in 30 minutes time
+	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
+	When the user starts a private consultation with Individual01
+	And the user does not answer after 2 minutes
+	Then the Representative01 user sees the call has stopped calling
+
+@VIH-4134
 Scenario: Participants cannot request Private consultation in hard-seating area
 	Given the Individual01 user has progressed to the Waiting Room page with a hearing in 3 minutes time
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing

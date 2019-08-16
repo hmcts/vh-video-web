@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Assertions;
@@ -58,6 +60,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_waitingRoomPage.ClosePrivateConsultationButton).Click();
         }
 
+        [When(@"the user does not answer after (.*) minutes")]
+        public void WhenTheUserDoesNotAnswerAfterMinutes(int minutes)
+        {
+            Thread.Sleep(TimeSpan.FromMinutes(minutes));
+        }
+
         [Then(@"(.*) can see the other participant")]
         public void ThenTheParticipantsCanTalkToEachOther(string user)
         {
@@ -90,6 +98,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_tc.CurrentUser.Key].Driver.Navigate().Refresh();
             var participantId = _tc.Conference.Participants.First(x => x.Name.ToLower().Contains(user.ToLower())).Id;
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementNotVisible(_waitingRoomPage.PrivateConsultationLink(participantId.ToString())).Should().BeTrue();
+        }
+
+        [Then(@"the (.*) user sees the call has stopped calling")]
+        public void ThenTheRepresentativeUserSeesTheCallHasStoppedCalling(string user)
+        {
+            _commonSteps.GivenInTheUsersBrowser(user);
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementNotVisible(_waitingRoomPage.OutgoingCallMessage)
+                .Should().BeTrue();
         }
     }
 }
