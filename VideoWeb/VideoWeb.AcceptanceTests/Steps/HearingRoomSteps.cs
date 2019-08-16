@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using FluentAssertions;
 using TechTalk.SpecFlow;
+using VideoWeb.AcceptanceTests.Assertions;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
@@ -35,8 +36,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.JudgeIframe).Displayed.Should().BeTrue();
             _browsers[_tc.CurrentUser.Key].Driver.SwitchTo().Frame(HearingRoomPage.JudgeIframeId);
 
-            Convert.ToDouble(_browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.IncomingVideo)
-                .GetAttribute("currentTime")).Should().BeGreaterThan(0);
+            new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(_page.IncomingVideo);
         }
 
         [When(@"the Clerk clicks pause")]

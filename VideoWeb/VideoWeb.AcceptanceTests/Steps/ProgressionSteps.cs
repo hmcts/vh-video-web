@@ -71,6 +71,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             Progression(FromString(user), page);
         }
 
+        [Given(@"the (.*) user has progressed to the (.*) page with a hearing in (.*) minute time")]
         [Given(@"the (.*) user has progressed to the (.*) page with a hearing in (.*) minutes time")]
         public void GivenIAmOnThePageWithAHearingInMinuteTime(string user, string page, int minutes)
         {

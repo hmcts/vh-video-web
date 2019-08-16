@@ -8,6 +8,7 @@ using OpenQA.Selenium.Support.Extensions;
 using OpenQA.Selenium.Support.UI;
 using TechTalk.SpecFlow;
 using Testing.Common.Helpers;
+using VideoWeb.AcceptanceTests.Assertions;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
@@ -56,7 +57,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementExists(_practiceVideoHearingPage.MicsList).Displayed.Should()
                 .BeTrue();
 
-            VideoIsPlaying(_practiceVideoHearingPage.PreferredCameraVideo);
+            new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(_practiceVideoHearingPage.PreferredCameraVideo);
 
             var micOptions = new SelectElement(_browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementExists(_practiceVideoHearingPage.MicsList));
             var micOptionsCount = micOptions.Options.Count;
@@ -76,8 +77,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the incoming and self video should be playing video")]
         public void ThenTheIncomingVideoShouldBePlaying()
         {
-            VideoIsPlaying(_practiceVideoHearingPage.IncomingVideo);
-            VideoIsPlaying(_practiceVideoHearingPage.SelfVideo);
+            new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(_practiceVideoHearingPage.IncomingVideo);
+            new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(_practiceVideoHearingPage.SelfVideo);
         }
 
         [Then(@"the test score should be produced")]
@@ -114,28 +115,6 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_practiceVideoHearingPage.TellParticipantsText).Displayed.Should()
                 .BeTrue();
-        }
-
-        private void VideoIsPlaying(By element)
-        {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(element);
-
-            var playing = false;
-
-            for (var i = 1; i <= Retries; i++)
-            {
-                var currentTime = Convert.ToDouble(_browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(element)
-                    .GetAttribute("currentTime"));
-                if (currentTime > 0)
-                {
-                    playing = true;
-                    break;
-                }
-
-                Thread.Sleep(TimeSpan.FromSeconds(1));
-            }
-
-            playing.Should().BeTrue();
         }
 
         public void ProgressToNextPage()

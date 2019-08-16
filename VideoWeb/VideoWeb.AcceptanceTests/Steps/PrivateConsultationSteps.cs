@@ -1,6 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using FluentAssertions;
 using TechTalk.SpecFlow;
+using VideoWeb.AcceptanceTests.Assertions;
 using VideoWeb.AcceptanceTests.Contexts;
+using VideoWeb.AcceptanceTests.Helpers;
+using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.AcceptanceTests.Users;
 
 namespace VideoWeb.AcceptanceTests.Steps
@@ -11,31 +18,95 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _tc;
         private readonly CommonSteps _commonSteps;
+        private readonly WaitingRoomPage _waitingRoomPage;
 
-        public PrivateConsultationSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, CommonSteps commonSteps)
+        public PrivateConsultationSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, 
+            CommonSteps commonSteps, WaitingRoomPage waitingRoomPage)
         {
             _browsers = browsers;
             _tc = testContext;
             _commonSteps = commonSteps;
+            _waitingRoomPage = waitingRoomPage;
         }
 
         [When(@"the user starts a private consultation with (.*)")]
         public void WhenTheUserStartsAPrivateConsultationWithIndividual(string user)
         {
-            ScenarioContext.Current.Pending();
+            var participantId = _tc.Conference.Participants.First(x => x.Name.ToLower().Contains(user.ToLower())).Id;
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_waitingRoomPage.PrivateConsultationLink(participantId.ToString())).Click();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_waitingRoomPage.OutgoingCallMessage)
+                .Displayed.Should().BeTrue();
         }
 
         [When(@"(.*) accepts the private consultation")]
         public void WhenTheUserAcceptsThePrivateConsultation(string user)
         {
             _commonSteps.GivenInTheUsersBrowser(user);
-            ScenarioContext.Current.Pending();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_waitingRoomPage.IncomingCallMessage)
+                .Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_waitingRoomPage.AcceptPrivateCall()).Click();
         }
 
-        [Then(@"the participants can talk to each other")]
-        public void ThenTheParticipantsCanTalkToEachOther()
+        [When(@"(.*) rejects the private consultation")]
+        public void WhenTheUserRejectsThePrivateConsultation(string user)
         {
-            ScenarioContext.Current.Pending();
+            _commonSteps.GivenInTheUsersBrowser(user);
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_waitingRoomPage.RejectPrivateCall()).Click();
         }
+
+        [When(@"a participant closes the private consultation")]
+        public void WhenAParticipantClosesThePrivateConsultation()
+        {
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_waitingRoomPage.ClosePrivateConsultationButton).Click();
+        }
+
+        [When(@"the user does not answer after (.*) minutes")]
+        public void WhenTheUserDoesNotAnswerAfterMinutes(int minutes)
+        {
+            Thread.Sleep(TimeSpan.FromMinutes(minutes));
+        }
+
+        [Then(@"(.*) can see the other participant")]
+        public void ThenTheParticipantsCanTalkToEachOther(string user)
+        {
+            _commonSteps.GivenInTheUsersBrowser(user);
+            new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(_waitingRoomPage.IncomingVideo);
+        }
+
+        [Then(@"the self view can be open and closed")]
+        public void ThenTheSelfViewCanBeOpenAndClosed()
+        {
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementNotVisible(_waitingRoomPage.SelfViewVideo).Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_waitingRoomPage.SelfViewButton).Click();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_waitingRoomPage.SelfViewVideo).Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_waitingRoomPage.SelfViewButton).Click();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementNotVisible(_waitingRoomPage.SelfViewVideo).Should().BeTrue();
+        }
+
+        [Then(@"the (.*) user sees a message that the request has been rejected")]
+        public void ThenTheRepresentativeUserSeesAMessageThatTheRequestHasBeenRejected(string user)
+        {
+            _commonSteps.GivenInTheUsersBrowser(user);
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_waitingRoomPage.CallRejectedMessage)
+                .Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_waitingRoomPage.CallRejectedCloseButton).Click();
+        }
+
+        [Then(@"the private consultation link with (.*) is not visible")]
+        public void ThenThePrivateConsultationLinkIsNotVisible(string user)
+        {
+            _browsers[_tc.CurrentUser.Key].Driver.Navigate().Refresh();
+            var participantId = _tc.Conference.Participants.First(x => x.Name.ToLower().Contains(user.ToLower())).Id;
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementNotVisible(_waitingRoomPage.PrivateConsultationLink(participantId.ToString())).Should().BeTrue();
+        }
+
+        [Then(@"the (.*) user sees a message that the request has not been answered")]
+        public void ThenTheRepresentativeUserSeesAMessageThatTheRequestHasNotBeenAnswered(string user)
+        {
+            _commonSteps.GivenInTheUsersBrowser(user);
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_waitingRoomPage.DidNotAnswerYourCall)
+                .Displayed.Should().BeTrue();
+        }
+
     }
 }
