@@ -33,7 +33,7 @@ Scenario: No answer on a private consultation
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
 	When the user starts a private consultation with Individual01
 	And the user does not answer after 2 minutes
-	Then the Representative01 user sees the call has stopped calling
+	Then the Representative01 user sees a message that the request has not been answered
 
 @VIH-4134
 Scenario: Participants cannot request Private consultation in hard-seating area

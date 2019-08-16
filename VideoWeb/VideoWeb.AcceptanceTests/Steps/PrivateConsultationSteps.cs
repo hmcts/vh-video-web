@@ -100,12 +100,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementNotVisible(_waitingRoomPage.PrivateConsultationLink(participantId.ToString())).Should().BeTrue();
         }
 
-        [Then(@"the (.*) user sees the call has stopped calling")]
-        public void ThenTheRepresentativeUserSeesTheCallHasStoppedCalling(string user)
+        [Then(@"the (.*) user sees a message that the request has not been answered")]
+        public void ThenTheRepresentativeUserSeesAMessageThatTheRequestHasNotBeenAnswered(string user)
         {
             _commonSteps.GivenInTheUsersBrowser(user);
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementNotVisible(_waitingRoomPage.OutgoingCallMessage)
-                .Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_waitingRoomPage.DidNotAnswerYourCall)
+                .Displayed.Should().BeTrue();
         }
+
     }
 }
