@@ -42,6 +42,6 @@ Scenario: Participants cannot request Private consultation in delayed seating ar
 @VIH-4134
 Scenario: Participants cannot request Private consultation in suspended seating area
 	Given the Individual01 user has progressed to the Waiting Room page with a hearing in 30 minutes time
-	And the hearing status changes to Suspended
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
+	And the hearing status changes to Suspended
 	Then the private consultation link with Individual01 is not visible

@@ -87,9 +87,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the private consultation link with (.*) is not visible")]
         public void ThenThePrivateConsultationLinkIsNotVisible(string user)
         {
+            _browsers[_tc.CurrentUser.Key].Driver.Navigate().Refresh();
             var participantId = _tc.Conference.Participants.First(x => x.Name.ToLower().Contains(user.ToLower())).Id;
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementNotVisible(_waitingRoomPage.PrivateConsultationLink(participantId.ToString())).Should().BeTrue();
         }
-
     }
 }
