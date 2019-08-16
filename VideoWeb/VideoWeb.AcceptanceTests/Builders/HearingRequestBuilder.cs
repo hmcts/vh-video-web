@@ -73,7 +73,7 @@ namespace VideoWeb.AcceptanceTests.Builders
 
             var cases = Builder<CaseRequest>.CreateListOfSize(1).Build().ToList();
             cases[0].Is_lead_case = false;
-            cases[0].Name = $"Automated Test Hearing {GenerateRandom.Letters(_fromRandomNumber)}";
+            cases[0].Name = $"Video Web Automated Test {GenerateRandom.Letters(_fromRandomNumber)}";
             cases[0].Number = $"{GenerateRandom.CaseNumber(_fromRandomNumber)}";
 
             _request = Builder<BookNewHearingRequest>.CreateNew()
