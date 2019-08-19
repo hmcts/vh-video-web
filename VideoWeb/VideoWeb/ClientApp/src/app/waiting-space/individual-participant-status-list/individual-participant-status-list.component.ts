@@ -70,9 +70,12 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   }
 
   async cancelOutgoingCall() {
+    if (!this.waitingForConsultationResponse) {
+      return;
+    }
     this.logger.info('Consultation request timed-out. Cancelling call');
-    this.displayModal(this.REJECTED_PC_MODAL);
     await this.answerConsultationRequest(ConsultationAnswer.Cancelled);
+    this.displayModal(this.REJECTED_PC_MODAL);
   }
 
   private setupSubscribers() {
@@ -176,6 +179,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   }
 
   async answerConsultationRequest(answer: ConsultationAnswer) {
+    this.waitingForConsultationResponse = false;
     this.closeAllPCModals();
     this.stopCallRinging();
     this.logger.event(`${this.consultationRequestee.displayName} responded to consultation: ${answer}`);
