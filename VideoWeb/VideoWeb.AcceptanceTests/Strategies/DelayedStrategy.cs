@@ -1,9 +1,9 @@
 ﻿using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Steps;
 
-namespace VideoWeb.AcceptanceTests.Actions
+namespace VideoWeb.AcceptanceTests.Strategies
 {
-    public class DelayedAction : IHearingStatusActions
+    public class DelayedStrategy : IHearingStatusStrategies
     {
         public void Execute(TestContext context, string participantId)
         {
