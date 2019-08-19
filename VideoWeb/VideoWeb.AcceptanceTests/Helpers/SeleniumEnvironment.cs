@@ -27,10 +27,10 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
         public IWebDriver GetDriver(string filename)
         {
-            return _saucelabsSettings.RunWithSaucelabs ? InitSauceLabsDriver(filename, _scenario) : InitLocalDriver(filename,  _scenario);
+            return _saucelabsSettings.RunWithSaucelabs ? InitSauceLabsDriver() : InitLocalDriver(filename,  _scenario);
         }
 
-        private IWebDriver InitSauceLabsDriver(string filename, ScenarioInfo scenario)
+        private IWebDriver InitSauceLabsDriver()
         {
 #pragma warning disable 618
             // disable warning of using desired capabilities
@@ -78,7 +78,6 @@ namespace VideoWeb.AcceptanceTests.Helpers
                     caps.SetCapability("platform", "Windows 10");
                     caps.SetCapability("version", "74.0");
                     caps.SetCapability("autoAcceptAlerts", true);
-
                     var chromeOptions = new Dictionary<string, List<string>>
                     {
                         ["args"] = new List<string>
@@ -86,13 +85,8 @@ namespace VideoWeb.AcceptanceTests.Helpers
                             "use-fake-ui-for-media-stream",
                             "use-fake-device-for-media-stream"
                         }
-                    };
-
-                    if (scenario.Tags.Contains("Video"))
-                        chromeOptions["args"].Add($"use-file-for-fake-video-capture={GetBuildPath}/Videos/{filename}");                  
-
-                    caps.SetCapability(ChromeOptions.Capability, chromeOptions);
-                    break;
+                    };                    
+                    caps.SetCapability(ChromeOptions.Capability, chromeOptions); break;
             }
 
             caps.SetCapability("name", _scenario.Title);
@@ -110,7 +104,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
         private static IWebDriver InitLocalDriver(string filename, ScenarioInfo scenario)
         {            
             var options = new ChromeOptions();
-            options.AddArgument("ignore -certificate-errors");
+            options.AddArgument("ignore-certificate-errors");
             options.AddArgument("use-fake-ui-for-media-stream");
             options.AddArgument("use-fake-device-for-media-stream");
             if (scenario.Tags.Contains("Video"))
