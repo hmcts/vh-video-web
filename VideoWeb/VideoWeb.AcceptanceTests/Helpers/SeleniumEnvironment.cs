@@ -121,6 +121,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
                     {
                         "use-fake-ui-for-media-stream",
                         "use-fake-device-for-media-stream",
+                        "allow-file-access",
                         $"use-file-for-fake-video-capture={GetBuildPath}/Videos/{filename}"
                     }
                 };
