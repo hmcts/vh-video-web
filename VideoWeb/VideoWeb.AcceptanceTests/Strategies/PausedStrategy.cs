@@ -2,9 +2,9 @@
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.Services.Video;
 
-namespace VideoWeb.AcceptanceTests.Actions
+namespace VideoWeb.AcceptanceTests.Strategies
 {
-    internal class PausedAction : IHearingStatusActions
+    internal class PausedStrategy : IHearingStatusStrategies
     {
         public void Execute(TestContext context, string participantId)
         {
