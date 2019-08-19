@@ -27,10 +27,10 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
         public IWebDriver GetDriver(string filename)
         {
-            return _saucelabsSettings.RunWithSaucelabs ? InitSauceLabsDriver(filename, _scenario) : InitLocalDriver(filename,  _scenario);
+            return _saucelabsSettings.RunWithSaucelabs ? InitSauceLabsDriver() : InitLocalDriver(filename,  _scenario);
         }
 
-        private IWebDriver InitSauceLabsDriver(string filename, ScenarioInfo scenario)
+        private IWebDriver InitSauceLabsDriver()
         {
 #pragma warning disable 618
             // disable warning of using desired capabilities
@@ -78,8 +78,15 @@ namespace VideoWeb.AcceptanceTests.Helpers
                     caps.SetCapability("platform", "Windows 10");
                     caps.SetCapability("version", "74.0");
                     caps.SetCapability("autoAcceptAlerts", true);
-                    caps.SetCapability(ChromeOptions.Capability, GetSaucelabsChromeOptions(scenario, filename));
-                    break;
+                    var chromeOptions = new Dictionary<string, List<string>>
+                    {
+                        ["args"] = new List<string>
+                        {
+                            "use-fake-ui-for-media-stream",
+                            "use-fake-device-for-media-stream"
+                        }
+                    };                    
+                    caps.SetCapability(ChromeOptions.Capability, chromeOptions); break;
             }
 
             caps.SetCapability("name", _scenario.Title);
@@ -109,32 +116,6 @@ namespace VideoWeb.AcceptanceTests.Helpers
             _targetBrowser = TargetBrowser.Chrome;
 
             return new ChromeDriver(GetBuildPath, options, commandTimeout);
-        }
-
-        private static Dictionary<string, List<string>> GetSaucelabsChromeOptions(ScenarioInfo scenario, string filename)
-        {
-            if (scenario.Tags.Contains("Video"))
-            {
-                return new Dictionary<string, List<string>>
-                {
-                    ["args"] = new List<string>
-                    {
-                        "use-fake-ui-for-media-stream",
-                        "use-fake-device-for-media-stream",
-                        "allow-file-access",
-                        $"use-file-for-fake-video-capture={GetBuildPath}/Videos/{filename}"
-                    }
-                };
-            }
-
-            return new Dictionary<string, List<string>>
-            {
-                ["args"] = new List<string>
-                {
-                    "use-fake-ui-for-media-stream",
-                    "use-fake-device-for-media-stream"
-                }
-            };
         }
 
         private static string GetBuildPath
