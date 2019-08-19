@@ -97,7 +97,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
         private static IWebDriver InitLocalDriver(string filename, ScenarioInfo scenario)
         {            
             var options = new ChromeOptions();
-            options.AddArgument("ignore -certificate-errors");
+            options.AddArgument("ignore-certificate-errors");
             options.AddArgument("use-fake-ui-for-media-stream");
             options.AddArgument("use-fake-device-for-media-stream");
             if (scenario.Tags.Contains("Video"))
