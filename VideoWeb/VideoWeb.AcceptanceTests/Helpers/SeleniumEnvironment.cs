@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -77,16 +78,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
                     caps.SetCapability("platform", "Windows 10");
                     caps.SetCapability("version", "74.0");
                     caps.SetCapability("autoAcceptAlerts", true);
-
-                    var options = new ChromeOptions();
-                    options.AddArgument("ignore -certificate-errors");
-                    options.AddArgument("use-fake-ui-for-media-stream");
-                    options.AddArgument("use-fake-device-for-media-stream");
-
-                    if (scenario.Tags.Contains("Video"))
-                        options.AddArgument($"use-file-for-fake-video-capture={GetBuildPath}/Videos/{filename}");
-
-                    caps.SetCapability(ChromeOptions.Capability, options.ToCapabilities() as DesiredCapabilities);
+                    caps.SetCapability(ChromeOptions.Capability, GetSaucelabsChromeOptions(scenario, filename));
                     break;
             }
 
@@ -117,6 +109,31 @@ namespace VideoWeb.AcceptanceTests.Helpers
             _targetBrowser = TargetBrowser.Chrome;
 
             return new ChromeDriver(GetBuildPath, options, commandTimeout);
+        }
+
+        private static Dictionary<string, List<string>> GetSaucelabsChromeOptions(ScenarioInfo scenario, string filename)
+        {
+            var chromeOptions = new Dictionary<string, List<string>>();
+
+            if (scenario.Tags.Contains("Video"))
+            {
+                chromeOptions.Add("args", new List<string>
+                {
+                    "use-fake-ui-for-media-stream",
+                    "use-fake-device-for-media-stream",
+                    $"use-file-for-fake-video-capture={GetBuildPath}/Videos/{filename}"
+                });
+            }
+            else
+            {
+                chromeOptions.Add("args", new List<string>
+                {
+                    "use-fake-ui-for-media-stream",
+                    "use-fake-device-for-media-stream"
+                });
+            }
+
+            return chromeOptions;
         }
 
         private static string GetBuildPath
