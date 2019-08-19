@@ -86,7 +86,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
                     if (scenario.Tags.Contains("Video"))
                         options.AddArgument($"use-file-for-fake-video-capture={GetBuildPath}/Videos/{filename}");
 
-                    caps.SetCapability(ChromeOptions.Capability, options);
+                    caps.SetCapability(ChromeOptions.Capability, options.ToCapabilities() as DesiredCapabilities);
                     break;
             }
 
