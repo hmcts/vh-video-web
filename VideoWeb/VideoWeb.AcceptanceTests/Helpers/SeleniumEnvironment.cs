@@ -113,27 +113,27 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
         private static Dictionary<string, List<string>> GetSaucelabsChromeOptions(ScenarioInfo scenario, string filename)
         {
-            var chromeOptions = new Dictionary<string, List<string>>();
-
             if (scenario.Tags.Contains("Video"))
             {
-                chromeOptions.Add("args", new List<string>
+                return new Dictionary<string, List<string>>
                 {
-                    "use-fake-ui-for-media-stream",
-                    "use-fake-device-for-media-stream",
-                    $"use-file-for-fake-video-capture={GetBuildPath}/Videos/{filename}"
-                });
+                    ["args"] = new List<string>
+                    {
+                        "use-fake-ui-for-media-stream",
+                        "use-fake-device-for-media-stream",
+                        $"use-file-for-fake-video-capture={GetBuildPath}/Videos/{filename}"
+                    }
+                };
             }
-            else
+
+            return new Dictionary<string, List<string>>
             {
-                chromeOptions.Add("args", new List<string>
+                ["args"] = new List<string>
                 {
                     "use-fake-ui-for-media-stream",
                     "use-fake-device-for-media-stream"
-                });
-            }
-
-            return chromeOptions;
+                }
+            };
         }
 
         private static string GetBuildPath
