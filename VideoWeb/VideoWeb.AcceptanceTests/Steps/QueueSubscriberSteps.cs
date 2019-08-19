@@ -163,7 +163,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the conference has been deleted")]
         public void ThenTheConferenceHasBeenDeleted()
         {
-            new ConferenceDetailsResponseBuilder(_context).PollForExpectedStatus(HttpStatusCode.NotFound).Should().BeTrue(); ;
+            new ConferenceDetailsResponseBuilder(_context).PollForExpectedStatus(HttpStatusCode.NotFound).Should().BeTrue();
 
             _context.NewHearingId = Guid.Empty;
             _context.NewConferenceId = Guid.Empty;
