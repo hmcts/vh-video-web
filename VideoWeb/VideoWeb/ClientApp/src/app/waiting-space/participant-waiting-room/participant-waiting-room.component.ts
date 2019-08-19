@@ -322,6 +322,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       .subscribe(async (data: ConferenceResponse) => {
         this.hearing = new Hearing(data);
         this.conference = this.hearing.getConference();
+        this.participant = data.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
         this.logger.info(`Participant waiting room for conference: ${conferenceId} and participant: ${this.participant.id}`);
       },
         (error) => {
