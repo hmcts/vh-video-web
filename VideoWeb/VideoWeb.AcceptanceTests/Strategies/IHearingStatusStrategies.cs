@@ -1,8 +1,8 @@
 ﻿using VideoWeb.AcceptanceTests.Contexts;
 
-namespace VideoWeb.AcceptanceTests.Actions
+namespace VideoWeb.AcceptanceTests.Strategies
 {
-    public interface IHearingStatusActions
+    public interface IHearingStatusStrategies
     {
         void Execute(TestContext context, string participantId);
     }

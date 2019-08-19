@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -79,19 +78,15 @@ namespace VideoWeb.AcceptanceTests.Helpers
                     caps.SetCapability("version", "74.0");
                     caps.SetCapability("autoAcceptAlerts", true);
 
-                    var chromeOptions = new Dictionary<string, List<string>>
-                    {
-                        ["args"] = new List<string>
-                        {
-                            "use-fake-ui-for-media-stream",
-                            "use-fake-device-for-media-stream"
-                        }
-                    };
+                    var options = new ChromeOptions();
+                    options.AddArgument("ignore -certificate-errors");
+                    options.AddArgument("use-fake-ui-for-media-stream");
+                    options.AddArgument("use-fake-device-for-media-stream");
 
                     if (scenario.Tags.Contains("Video"))
-                        chromeOptions["args"].Add($"use-file-for-fake-video-capture={GetBuildPath}/Videos/{filename}");                  
+                        options.AddArgument($"use-file-for-fake-video-capture={GetBuildPath}/Videos/{filename}");
 
-                    caps.SetCapability(ChromeOptions.Capability, chromeOptions);
+                    caps.SetCapability(ChromeOptions.Capability, options);
                     break;
             }
 

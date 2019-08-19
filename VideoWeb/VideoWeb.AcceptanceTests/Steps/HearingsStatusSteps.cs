@@ -6,10 +6,10 @@ using System.Threading;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using Testing.Common.Helpers;
-using VideoWeb.AcceptanceTests.Actions;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.AcceptanceTests.Strategies;
 using VideoWeb.AcceptanceTests.Users;
 using VideoWeb.Common.Helpers;
 using VideoWeb.Services.Video;
@@ -35,14 +35,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the hearing status changes to (.*)")]
         public void WhenTheHearingStatusChangesTooNotStarted(string status)
         {
-            var actions = new Dictionary<string, IHearingStatusActions>
+            var actions = new Dictionary<string, IHearingStatusStrategies>
             {
-                {"Not Started", new NotStartedAction()},
-                {"Delayed", new DelayedAction()},
-                {"In Session", new InSessionAction()},
-                {"Paused", new PausedAction()},
-                {"Suspended", new SuspendedAction()},
-                {"Closed", new ClosedAction()}
+                {"Not Started", new NotStartedStrategy()},
+                {"Delayed", new DelayedStrategy()},
+                {"In Session", new InSessionStrategy()},
+                {"Paused", new PausedStrategy()},
+                {"Suspended", new SuspendedStrategy()},
+                {"Closed", new ClosedStrategy()}
             };
             actions[status].Execute(_tc, GetJudgeParticipantId());
         }
