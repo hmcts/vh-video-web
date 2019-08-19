@@ -16,6 +16,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
+import { Subscription } from 'rxjs';
 declare var PexRTC: any;
 declare var HeartbeatFactory: any;
 
@@ -46,6 +47,8 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   showVideo: boolean;
   showConsultationControls: boolean;
   selfViewOpen: boolean;
+
+  subscription: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -90,7 +93,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   }
 
   subscribeToClock(): void {
-    this.clockService.getClock().subscribe((time) => {
+    this.subscription = this.clockService.getClock().subscribe((time) => {
       this.currentTime = time;
       this.checkIfHearingIsClosed();
       this.checkIfHearingIsStarting();
@@ -104,21 +107,9 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   }
 
   checkIfHearingIsClosed(): void {
-    if (this.hearing.isClosed()) {
-      const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-      this.videoWebService.getConferenceById(conferenceId)
-        .subscribe(async (data: ConferenceResponse) => {
-          this.hearing = new Hearing(data);
-          if (this.hearing.isPastClosedTime()) {
-            this.router.navigate([PageUrls.ParticipantHearingList]);
-          }
-        },
-          (error) => {
-            this.logger.error(`There was an error getting a conference ${conferenceId}`, error);
-            if (!this.errorService.returnHomeIfUnauthorised(error)) {
-              this.errorService.handleApiError(error);
-            }
-          });
+    if (this.hearing.isPastClosedTime()) {
+      this.subscription.unsubscribe();
+      this.router.navigate([PageUrls.ParticipantHearingList]);
     }
   }
 
@@ -213,6 +204,9 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
   handleConferenceStatusChange(message: ConferenceStatusMessage) {
     this.hearing.getConference().status = message.status;
+    if (message.status === ConferenceStatus.Closed) {
+      this.getConferenceClosedTime(this.hearing.id);
+    }
   }
 
   async setupPexipClient() {
@@ -321,5 +315,18 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
   toggleView(): boolean {
     return this.selfViewOpen = !this.selfViewOpen;
+  }
+
+  getConferenceClosedTime(conferenceId: string): void {
+    this.videoWebService.getConferenceById(conferenceId)
+      .subscribe(async (data: ConferenceResponse) => {
+        this.hearing = new Hearing(data);
+        this.conference = this.hearing.getConference();
+        this.participant = data.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
+        this.logger.info(`Participant waiting room for conference: ${conferenceId} and participant: ${this.participant.id}`);
+      },
+        (error) => {
+          this.logger.error(`There was an error getting a conference ${conferenceId}`, error);
+        });
   }
 }
