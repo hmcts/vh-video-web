@@ -107,22 +107,9 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   }
 
   checkIfHearingIsClosed(): void {
-    if (this.hearing.isClosed()) {
-      const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-      this.videoWebService.getConferenceById(conferenceId)
-        .subscribe(async (data: ConferenceResponse) => {
-          this.hearing = new Hearing(data);
-          if (this.hearing.isPastClosedTime()) {
-            this.subscription.unsubscribe();
-            this.router.navigate([PageUrls.ParticipantHearingList]);
-          }
-        },
-          (error) => {
-            this.logger.error(`There was an error getting a conference ${conferenceId}`, error);
-            if (!this.errorService.returnHomeIfUnauthorised(error)) {
-              this.errorService.handleApiError(error);
-            }
-          });
+    if (this.hearing.isPastClosedTime()) {
+      this.subscription.unsubscribe();
+      this.router.navigate([PageUrls.ParticipantHearingList]);
     }
   }
 
@@ -217,6 +204,9 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
   handleConferenceStatusChange(message: ConferenceStatusMessage) {
     this.hearing.getConference().status = message.status;
+    if (message.status === ConferenceStatus.Closed) {
+      this.getConferenceClosedTime(this.hearing.id);
+    }
   }
 
   async setupPexipClient() {
@@ -325,5 +315,17 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
   toggleView(): boolean {
     return this.selfViewOpen = !this.selfViewOpen;
+  }
+
+  getConferenceClosedTime(conferenceId: string): void {
+    this.videoWebService.getConferenceById(conferenceId)
+      .subscribe(async (data: ConferenceResponse) => {
+        this.hearing = new Hearing(data);
+        this.conference = this.hearing.getConference();
+        this.logger.info(`Participant waiting room for conference: ${conferenceId} and participant: ${this.participant.id}`);
+      },
+        (error) => {
+          this.logger.error(`There was an error getting a conference ${conferenceId}`, error);
+        });
   }
 }
