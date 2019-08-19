@@ -34,7 +34,7 @@ Scenario: Participant hearing is delayed
 	And the user can see the hearing is delayed title
 	And the user can see a yellow box and a delayed message
 
-@VIH-4233 
+@VIH-4233
 Scenario: Participant is in the waiting room early
 	Given the Participant user has progressed to the Waiting Room page with a hearing in 10 minutes time
 	Then the user is on the Waiting Room page
