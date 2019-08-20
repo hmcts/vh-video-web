@@ -12,11 +12,13 @@ export class ParticipantHearingsComponent implements OnInit {
   conferences: ConferenceForUserResponse[];
   loadingData: boolean;
   interval: any;
+  errorCount: number;
 
   constructor(
     private videoWebService: VideoWebService,
     private errorService: ErrorService
   ) {
+    this.errorCount = 0;
     this.loadingData = true;
   }
 
@@ -29,12 +31,18 @@ export class ParticipantHearingsComponent implements OnInit {
 
   retrieveHearingsForUser() {
     this.videoWebService.getConferencesForIndividual().subscribe((data: ConferenceForUserResponse[]) => {
+      this.errorCount = 0;
       this.loadingData = false;
       this.conferences = data;
     },
       (error) => {
+        this.errorCount++;
         this.loadingData = false;
-        this.errorService.handleApiError(error);
+        if (this.errorCount > 3) {
+          this.errorService.handleApiError(error);
+        } else {
+          this.errorService.handleApiError(error, true);
+        }
       });
   }
 

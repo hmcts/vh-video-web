@@ -23,11 +23,13 @@ export class EventsService {
   private hearingStatusSubject = new Subject<ConferenceStatusMessage>();
   private helpMessageSubject = new Subject<HelpMessage>();
   private consultationMessageSubject = new Subject<ConsultationMessage>();
+  private connectionAttempt: number;
 
   constructor(
     private adalService: AdalService,
     private configService: ConfigService,
     private logger: Logger) {
+    this.connectionAttempt = 0;
     this.connectionStarted = false;
     this.eventServiceBaseUri = this.configService.clientSettings.video_api_url;
     this.connection = new signalR.HubConnectionBuilder()
@@ -37,18 +39,32 @@ export class EventsService {
 
   start() {
     if (!this.connectionStarted && !this.attemptingConnection) {
+      this.connectionAttempt++;
       this.attemptingConnection = true;
       this.connection
         .start()
         .then(() => {
+          this.connectionAttempt = 0;
           this.connectionStarted = true;
           this.attemptingConnection = false;
           this.logger.info('Successfully connected to event hub');
+          this.connection.onclose((error) => this.onEventHubErrorOrClose(error));
         })
         .catch(err => {
-          this.attemptingConnection = false;
           this.logger.error('Failed to connect to event hub', err);
+          this.onEventHubErrorOrClose(err);
         });
+    }
+  }
+
+  private onEventHubErrorOrClose(error: Error) {
+    this.connectionStarted = false;
+    this.attemptingConnection = false;
+    this.logger.error('EventHub connection closed', error);
+
+    if (this.connectionAttempt < 3) {
+      this.logger.info(`Attempting to re-connect to eventhub. Attempt #${this.connectionAttempt + 1}`);
+      this.start();
     }
   }
 

@@ -11,8 +11,9 @@ export class ErrorService {
 
   constructor(private router: Router, private logger: Logger) { }
 
-  handleApiError(error: any) {
+  handleApiError(error: any, skipRedirect: boolean = false) {
     this.logger.error('API error', error);
+    if (skipRedirect) { return; }
     if (!error.isApiException) { return; }
     const swaggerError: ApiException = error;
     switch (swaggerError.status) {
