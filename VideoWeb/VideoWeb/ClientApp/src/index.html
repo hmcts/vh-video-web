@@ -40,12 +40,14 @@
         }
       }
     }
+
   </script>
 </head>
 
 <body class="govuk-template__body app-body-class">
   <script>
     document.body.className = ((document.body.className) ? document.body.className + ' js-enabled' : 'js-enabled');
+
   </script>
   <!-- This section for IE 11 only -->
   <div id="showIE" style="display: none;">
@@ -63,7 +65,7 @@
         </div>
       </div>
     </header>
-    <div class="govuk-width-container" id="master-container">
+    <div class="govuk-width-container">
       <main class="govuk-main-wrapper" id="main-content" role="main">
         <router-outlet></router-outlet>
         <app-unsupported-browser>
