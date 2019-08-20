@@ -11,7 +11,6 @@ Scenario: Participant waiting room
 	And the participant status will be updated to Available
 	And the participant can see information about their case
 	And the user can see a list of participants and their representatives
-	And the user can see the hearing is about to begin title
 	And the user can see a black box and an about to begin message
 
 @smoketest @VIH-4610

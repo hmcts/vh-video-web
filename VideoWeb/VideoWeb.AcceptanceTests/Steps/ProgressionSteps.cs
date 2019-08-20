@@ -90,7 +90,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private static Journey FromString(string user)
         {
-            switch (RemoveNumbersFromUser(user.ToLower()))
+            switch (RemoveNumbersFromUsername(user.ToLower()))
             {
                 case "clerk": case "judge": return Journey.Clerk;
                 case "clerk self test": return Journey.ClerkSelftest;
@@ -100,7 +100,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             throw new ArgumentOutOfRangeException($"No user journey found for '{user}'");
         }
 
-        private static string RemoveNumbersFromUser(string user)
+        private static string RemoveNumbersFromUsername(string user)
         {
             return Regex.Replace(user, @"[\d-]", string.Empty);
         }
@@ -146,6 +146,21 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {Page.Declaration, _declarationSteps},
                 {Page.WaitingRoom, _waitingRoomSteps}
             };
-        }      
+        }
+
+        [When(@"the Participant user navigates from the Equipment Check page back to the (.*) page")]
+        public void WhenTheParticipantUserNavigatesFromTheEquipmentCheckPageBackToTheSeeAndHearVideoPage(string endPage)
+        {
+            var page = Page.FromString(endPage);
+            var steps = Steps();
+            steps[Page.EquipmentCheck].ProgressToNextPage();
+            steps[Page.SwitchOnCamAndMic].ProgressToNextPage();
+            steps[Page.PracticeVideoHearing].ProgressToNextPage();
+            if (page.Equals(Page.MicrophoneWorking) || page.Equals(Page.SeeAndHearVideo))
+                steps[Page.CameraWorking].ProgressToNextPage();
+
+            if (page.Equals(Page.SeeAndHearVideo))
+                steps[Page.MicrophoneWorking].ProgressToNextPage();
+        }
     }
 }
