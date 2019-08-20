@@ -15,6 +15,8 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { Logger } from 'src/app/services/logging/logger-base';
 
+import * as $ from 'jquery';
+
 @Component({
   selector: 'app-vho-hearings',
   templateUrl: './vho-hearings.component.html',
@@ -250,6 +252,11 @@ export class VhoHearingsComponent implements OnInit {
   }
 
   enableFullScreen(fullScreen: boolean) {
+    const masterContainerCount = $('div[id*=\'master-container\']').length;
+    if (masterContainerCount > 1) {
+      throw new Error('Multiple master containers in DOM');
+    }
+
     const masterContainer = document.getElementById('master-container');
     if (!masterContainer) {
       return;
