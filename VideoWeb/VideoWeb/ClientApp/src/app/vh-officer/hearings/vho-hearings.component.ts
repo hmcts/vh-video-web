@@ -1,4 +1,4 @@
-import { Component, HostListener, NgZone, OnInit } from '@angular/core';
+import { Component, HostListener, NgZone, OnInit, OnDestroy } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -16,13 +16,14 @@ import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { Logger } from 'src/app/services/logging/logger-base';
 
 import * as $ from 'jquery';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-vho-hearings',
   templateUrl: './vho-hearings.component.html',
   styleUrls: ['./vho-hearings.component.scss']
 })
-export class VhoHearingsComponent implements OnInit {
+export class VhoHearingsComponent implements OnInit, OnDestroy {
 
   adminFrameWidth: number;
   adminFrameHeight: number;
@@ -37,6 +38,7 @@ export class VhoHearingsComponent implements OnInit {
 
   pendingTransferRequests: ConsultationMessage[] = [];
   tasks: TaskResponse[];
+  conferencesSubscription: Subscription;
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
@@ -66,6 +68,12 @@ export class VhoHearingsComponent implements OnInit {
     this.setupSubscribers();
   }
 
+  ngOnDestroy(): void {
+    this.logger.debug('Clearing intervals and subscriptions for VH Officer');
+    clearInterval(this.interval);
+    this.conferencesSubscription.unsubscribe();
+  }
+
   private setupSubscribers() {
     this.logger.debug('Setting up VH Officer event subscribers');
     this.eventService.start();
@@ -86,7 +94,7 @@ export class VhoHearingsComponent implements OnInit {
   }
 
   retrieveHearingsForVhOfficer() {
-    this.videoWebService.getConferencesForVHOfficer().subscribe((data: ConferenceForUserResponse[]) => {
+    this.conferencesSubscription = this.videoWebService.getConferencesForVHOfficer().subscribe((data: ConferenceForUserResponse[]) => {
       this.loadingData = false;
       this.conferences = data;
       if (data && data.length > 0) {
