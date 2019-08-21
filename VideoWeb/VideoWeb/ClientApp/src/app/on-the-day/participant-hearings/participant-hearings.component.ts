@@ -20,11 +20,11 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
     private videoWebService: VideoWebService,
     private errorService: ErrorService
   ) {
-    this.errorCount = 0;
     this.loadingData = true;
   }
 
   ngOnInit() {
+    this.errorCount = 0;
     this.retrieveHearingsForUser();
     this.interval = setInterval(() => {
       this.retrieveHearingsForUser();
