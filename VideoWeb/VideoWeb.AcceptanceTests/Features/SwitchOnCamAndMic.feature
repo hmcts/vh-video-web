@@ -10,7 +10,7 @@ Scenario: Participant switch on camera and microphone
 	When the user clicks the Switch on button
 	Then the camera and microphone turned on success message appears
 	When the user clicks the Watch video button
-	Then the user is on the Camera Working page
+	Then the user is on the Practice video hearing page
 
 @VIH-4671 
 Scenario: Clerk switch on camera and microphone

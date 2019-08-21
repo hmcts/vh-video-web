@@ -7,8 +7,6 @@ Feature: See and Hear Video
 Scenario: Participant see and hear video
 	Given the Participant user has progressed to the See and Hear Video page
 	Then contact us details are available
-	When the user clicks the Check my equipment again button
-	Then the Please answer this question error message appears
 	When the user selects the Yes radiobutton
 	Then the Check my equipment again button is disabled
 	When the user clicks the Continue button
