@@ -241,7 +241,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       const baseUrl = self.conference.pexip_node_uri.replace('sip.', '');
       const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${self.conference.id}`;
       console.log(url);
-      const heartbeatFactory = new HeartbeatFactory(self.pexipAPI, url, self.conference.id, self.participant.id, self.token.token);
+      // const heartbeatFactory = new HeartbeatFactory(self.pexipAPI, url, self.conference.id, self.participant.id, self.token.token);
     };
 
     this.pexipAPI.onError = function (reason) {
