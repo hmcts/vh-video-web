@@ -1,15 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ConferenceForUserResponse } from 'src/app/services/clients/api-client';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-participant-hearings',
   templateUrl: './participant-hearings.component.html',
   styleUrls: ['./participant-hearings.component.css']
 })
-export class ParticipantHearingsComponent implements OnInit {
+export class ParticipantHearingsComponent implements OnInit, OnDestroy {
   conferences: ConferenceForUserResponse[];
+  conferencesSubscription: Subscription;
   loadingData: boolean;
   interval: any;
   errorCount: number;
@@ -18,19 +20,24 @@ export class ParticipantHearingsComponent implements OnInit {
     private videoWebService: VideoWebService,
     private errorService: ErrorService
   ) {
-    this.errorCount = 0;
     this.loadingData = true;
   }
 
   ngOnInit() {
+    this.errorCount = 0;
     this.retrieveHearingsForUser();
     this.interval = setInterval(() => {
       this.retrieveHearingsForUser();
     }, 30000);
   }
 
+  ngOnDestroy(): void {
+    clearInterval(this.interval);
+    this.conferencesSubscription.unsubscribe();
+  }
+
   retrieveHearingsForUser() {
-    this.videoWebService.getConferencesForIndividual().subscribe((data: ConferenceForUserResponse[]) => {
+    this.conferencesSubscription = this.videoWebService.getConferencesForIndividual().subscribe((data: ConferenceForUserResponse[]) => {
       this.errorCount = 0;
       this.loadingData = false;
       this.conferences = data;

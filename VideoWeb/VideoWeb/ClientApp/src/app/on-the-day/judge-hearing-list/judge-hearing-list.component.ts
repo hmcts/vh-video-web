@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ProfileService } from 'src/app/services/api/profile.service';
@@ -8,19 +8,21 @@ import { ErrorService } from 'src/app/services/error.service';
 import { VhContactDetails } from 'src/app/shared/contact-information';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-judge-hearing-list',
   templateUrl: './judge-hearing-list.component.html'
 })
 
-export class JudgeHearingListComponent implements OnInit {
+export class JudgeHearingListComponent implements OnInit, OnDestroy {
 
   contact = {
     phone: VhContactDetails.phone
   };
 
   conferences: ConferenceForUserResponse[];
+  conferencesSubscription: Subscription;
   hearingListForm: FormGroup;
   loadingData: boolean;
   interval: any;
@@ -47,15 +49,20 @@ export class JudgeHearingListComponent implements OnInit {
     }, 30000);
   }
 
+  ngOnDestroy(): void {
+    this.logger.debug('Clearing intervals and subscriptions for Judge/Clerk');
+    clearInterval(this.interval);
+    this.conferencesSubscription.unsubscribe();
+  }
+
   retrieveHearingsForUser() {
-    this.videoWebService.getConferencesForJudge().subscribe((data: ConferenceForUserResponse[]) => {
+    this.conferencesSubscription = this.videoWebService.getConferencesForJudge().subscribe((data: ConferenceForUserResponse[]) => {
       this.loadingData = false;
       this.conferences = data;
     },
       (error) => {
         this.loadingData = false;
         this.errorService.handleApiError(error);
-
       });
   }
 

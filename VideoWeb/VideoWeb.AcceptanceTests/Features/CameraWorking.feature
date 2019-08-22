@@ -7,8 +7,6 @@ Feature: Camera Working
 Scenario: Participant camera working
 	Given the Participant user has progressed to the Camera Working page
 	Then contact us details are available
-	When the user clicks the Check my equipment again button
-	Then the Please answer this question error message appears
 	When the user selects the Yes radiobutton
 	Then the Check my equipment again button is disabled
 	When the user clicks the Continue button
@@ -20,7 +18,7 @@ Scenario: Participant camera not working
 	When the user selects the No radiobutton
 	And the user clicks the Check my equipment again button
 	Then the user is on the Equipment Check page
-	When the Individual user navigates from the Equipment Check page back to the Camera Working page
+	When the Participant user navigates from the Equipment Check page back to the Camera Working page
 	And the user selects the No radiobutton
 	And the user clicks the Continue button
 	Then the user is on the Help page

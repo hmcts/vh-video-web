@@ -12,12 +12,13 @@ namespace VideoWeb.AcceptanceTests.Pages
             By.XPath(
                 $"//div[@class='govuk-grid-row']//strong[contains(text(), '{displayName}')]/../../div");
 
+        public By IndividualParticipantsList => By.XPath("//app-individual-participant-status-list/div//div[contains(@class,'govuk-grid-row')]//div[contains(@class,'govuk-grid-column')]");
+
         public By ParticipantsList =>
             By.XPath("//app-participant-status-list/div//div[contains(@class,'govuk-grid-row')]//div[contains(@class,'govuk-grid-column')]");
 
         public By RowInformation(string id) => By.XPath($"//div[@id='{id}']/p");
 
-        public By AboutToBeginHeader => CommonLocators.ElementContainingText("Your hearing is about to begin");
         public By AboutToBeginText => CommonLocators.ElementContainingText("Please stay near your screen");
         public string AboutToBeginBgColour = "#0b0c0c";
 
