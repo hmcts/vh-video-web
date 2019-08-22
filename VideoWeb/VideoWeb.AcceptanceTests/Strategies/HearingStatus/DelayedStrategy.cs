@@ -1,7 +1,7 @@
 ﻿using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Steps;
 
-namespace VideoWeb.AcceptanceTests.Strategies
+namespace VideoWeb.AcceptanceTests.Strategies.HearingStatus
 {
     public class DelayedStrategy : IHearingStatusStrategies
     {

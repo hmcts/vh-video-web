@@ -2,16 +2,16 @@
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.Services.Video;
 
-namespace VideoWeb.AcceptanceTests.Strategies
+namespace VideoWeb.AcceptanceTests.Strategies.ParticipantStatus
 {
-    internal class NotStartedStrategy : IHearingStatusStrategies
+    internal class JoiningStrategy : IParticipantStatusStrategy
     {
         public void Execute(TestContext context, string participantId)
         {
             var request = new EventRequestBuilder()
                 .WithConferenceId(context.NewConferenceId)
                 .WithParticipantId(participantId)
-                .WithEventType(EventType.JudgeAvailable)
+                .WithEventType(EventType.ParticipantJoining)
                 .Build();
 
             new ExecuteEventBuilder()

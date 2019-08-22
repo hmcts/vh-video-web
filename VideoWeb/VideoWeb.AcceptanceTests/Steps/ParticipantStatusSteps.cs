@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading;
-using FizzWare.NBuilder;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.AcceptanceTests.Strategies.ParticipantStatus;
 using VideoWeb.AcceptanceTests.Users;
 using VideoWeb.Common.Helpers;
 using VideoWeb.Services.Video;
@@ -26,7 +25,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly AdminPanelPage _adminPanelPage;
         private readonly VhoHearingListPage _hearingListPage;
         private readonly ConferenceEndpoints _conferenceEndpoints = new VideoApiUriFactory().ConferenceEndpoints;
-        private readonly CallbackEndpoints _callbackEndpoints = new VideoApiUriFactory().CallbackEndpoints;
         private const string ParticipantsKey = "participants";
         private const int MaxRetries = 5;
 
@@ -43,60 +41,20 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the participants are (.*)")]
         public void WhenTheParticipantsStatusesChange(string action)
         {
-            EventType eventType;
-            var from = RoomType.WaitingRoom;
-            var to = RoomType.WaitingRoom;
-
-            switch (action)
+            var participantStatuses = new Dictionary<string, IParticipantStatusStrategy>
             {
-                case "Joining":
-                {
-                    eventType = EventType.ParticipantJoining;
-                    break;
-                }
-                case "In Hearing":
-                {
-                    eventType = EventType.Transfer;
-                    to = RoomType.HearingRoom;
-                    break;
-                }
-                case "In Consultation":
-                {
-                    eventType = EventType.Transfer;
-                    to = RoomType.ConsultationRoom1;
-                    break;
-                }
-                case "Available":
-                {
-                    eventType = EventType.Transfer;
-                    from = RoomType.HearingRoom;
-                    break;
-                }
-                case "Disconnected":
-                {
-                    eventType = EventType.Disconnected;
-                    break;
-                }
-                default: throw new ArgumentOutOfRangeException($"Action {action} is not defined");
-            }
+                {"Available", new AvailableStrategy()},
+                {"Disconnected", new DisconnectedStrategy()},
+                {"In Consultation", new InConsultationStrategy()},
+                {"In Hearing", new InHearingStrategy()},
+                {"Joining", new JoiningStrategy()}
+            };
 
             var participants = _scenario.Get<List<ParticipantDetailsResponse>>(ParticipantsKey);
 
             foreach (var participant in participants)
             {
-                var request = Builder<ConferenceEventRequest>.CreateNew()
-                    .With(x => x.Conference_id = _tc.NewConferenceId.ToString())
-                    .With(x => x.Participant_id = participant.Id.ToString())
-                    .With(x => x.Event_id = Guid.NewGuid().ToString())
-                    .With(x => x.Event_type = eventType)
-                    .With(x => x.Transfer_from = from)
-                    .With(x => x.Transfer_to = to)
-                    .With(x => x.Reason = "Automated")
-                    .Build();
-                _tc.Request = _tc.Post(_callbackEndpoints.Event, request);
-                _tc.Response = _tc.VideoApiClient().Execute(_tc.Request);
-                _tc.Response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-                _tc.Response.IsSuccessful.Should().Be(true);
+                participantStatuses[action].Execute(_tc, participant.Id.ToString());
             }
         }
 
