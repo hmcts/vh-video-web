@@ -2,9 +2,9 @@
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.Services.Video;
 
-namespace VideoWeb.AcceptanceTests.Strategies
+namespace VideoWeb.AcceptanceTests.Strategies.ParticipantStatus
 {
-    internal class InSessionStrategy : IHearingStatusStrategies
+    internal class InHearingStrategy : IParticipantStatusStrategy
     {
         public void Execute(TestContext context, string participantId)
         {
@@ -12,21 +12,7 @@ namespace VideoWeb.AcceptanceTests.Strategies
                 .WithConferenceId(context.NewConferenceId)
                 .WithParticipantId(participantId)
                 .WithEventType(EventType.Transfer)
-                .FromRoomType(RoomType.WaitingRoom)
                 .ToRoomType(RoomType.HearingRoom)
-                .Build();
-
-            new ExecuteEventBuilder()
-                .WithContext(context)
-                .WithRequest(request)
-                .Execute();
-
-            request = new EventRequestBuilder()
-                .WithConferenceId(context.NewConferenceId)
-                .WithParticipantId(participantId)
-                .WithEventType(EventType.Joined)
-                .FromRoomType(null)
-                .ToRoomType(null)
                 .Build();
 
             new ExecuteEventBuilder()

@@ -3,6 +3,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using VideoWeb.Common.Configuration;
+using VideoWeb.Common.Security.HashGen;
 
 namespace Testing.Common.Configuration
 {
@@ -50,6 +51,14 @@ namespace Testing.Common.Configuration
             hearingServiceOptions.Value.VideoApiResourceId.Should().NotBeNullOrEmpty();
             hearingServiceOptions.Value.VideoWebUrl.Should().NotBeNullOrEmpty();
             return hearingServiceOptions.Value;
+        }
+
+        public CustomTokenSettings ReadCustomTokenSettings()
+        {
+            var customTokenOptions = Options.Create(_configRoot.GetSection("CustomToken").Get<CustomTokenSettings>());
+            customTokenOptions.Value.Secret.Should().NotBeNullOrEmpty();
+            customTokenOptions.Value.ThirdPartySecret.Should().NotBeNullOrEmpty();
+            return customTokenOptions.Value;
         }
 
         public IConfigurationRoot GetRoot()

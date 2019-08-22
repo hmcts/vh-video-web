@@ -7,8 +7,7 @@ Feature: Microphone Working
 Scenario: Participant microphone working
 	Given the Participant user has progressed to the Microphone Working page
 	Then contact us details are available
-	When the user clicks the Check my equipment again button
-	And the user selects the Yes radiobutton
+	When the user selects the Yes radiobutton
 	And the user clicks the Continue button
 	Then the user is on the See and Hear Video page
 

@@ -28,5 +28,5 @@ Scenario: Video Hearings Officer login
 	Given I have a hearing and a conference
 	And a new browser is open for a Video Hearings Officer
 	When the user attempts to login with valid credentials
-	Then the user is on the VHO Hearings List page
+	Then the user is on the VHO Hearing List page
 	And the sign out link is displayed
