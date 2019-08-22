@@ -34,7 +34,8 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
   }
 
   continueParticipantJourney() {
-    this.router.navigate([PageUrls.CameraWorking, this.conference.id]);
+    const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+    this.router.navigate([PageUrls.CameraWorking, conferenceId]);
   }
 
   restartTest() {
