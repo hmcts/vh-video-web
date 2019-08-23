@@ -25,16 +25,21 @@ namespace VideoWeb.AcceptanceTests.Steps
             _loginPage = loginPage;
         }
 
-        [When(@"the user attempts to logout")]
+        [When(@"the user attempts to logout and log back in")]
         public void WhenTheUserAttemptsToLogout()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementClickable(_commonPages.SignOutLink).Click();            
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementClickable(_commonPages.SignOutLink).Click();
+
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_commonPages.SignOutMessage)
+                .Displayed.Should().BeTrue();
+
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementClickable(_commonPages.SignInLink).Click();
         }
 
         [Then(@"the user should be navigated to sign in screen")]
         public void ThenTheUserShouldBeNavigatedToSignInScreen()
         {
-            _browsers[_tc.CurrentUser.Key].Retry(() => _browsers[_tc.CurrentUser.Key].Driver.Title.Trim().Should().Be(_loginPage.SignInTitle), 5);
+            _browsers[_tc.CurrentUser.Key].Retry(() => _browsers[_tc.CurrentUser.Key].Driver.Title.Trim().Should().Be(_loginPage.SignInTitle), 2);
         }
     }
 }

@@ -13,6 +13,8 @@ namespace VideoWeb.AcceptanceTests.Pages
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _tc;
         public By SignOutLink => By.PartialLinkText("Sign out");
+        public By SignOutMessage => CommonLocators.ElementContainingText("Signed out successfully");
+        public By SignInLink => By.PartialLinkText("here");
         public By QuoteYourCaseNumberText => CommonLocators.ElementContainingText("Call us on");
         public By ContactUsLink => CommonLocators.ElementContainingText("Contact us for help");
 

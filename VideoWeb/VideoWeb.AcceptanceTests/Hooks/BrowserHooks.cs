@@ -12,6 +12,7 @@ using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Users;
 using VideoWeb.Common.Security;
+using VideoWeb.Common.Security.HashGen;
 using TestContext = VideoWeb.AcceptanceTests.Contexts.TestContext;
 
 namespace VideoWeb.AcceptanceTests.Hooks
@@ -42,6 +43,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         public void BeforeScenario(TestContext testContext)
         {
             var azureAdConfiguration = new BookingsConfigLoader().ReadAzureAdSettings();
+            testContext.CustomTokenSettings = new BookingsConfigLoader().ReadCustomTokenSettings();
 
             var testSettings = new BookingsConfigLoader().ReadTestSettings();
             testSettings.UserAccounts = new BookingsConfigLoader().ReadUserAccountSettings();

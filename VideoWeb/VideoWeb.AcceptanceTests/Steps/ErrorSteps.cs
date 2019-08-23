@@ -29,7 +29,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user attempts to navigate to a nonexistent page")]
         public void WhenTheUserAttemptsToNavigateToANonexistentPage()
         {
-            _browsers[_tc.CurrentUser.Key].NavigateToPage("non-existent-page");
+            _browsers[_tc.CurrentUser.Key].NavigateToPage(AddSlashToUrlIfRequired());
+        }
+
+        private string AddSlashToUrlIfRequired()
+        {
+            var baseUrl = _tc.VideoWebUrl;
+            var url = baseUrl[baseUrl.Length - 1].Equals(char.Parse("/")) ? "non-existent-page" : "/non-existent-page";
+            return url;
         }
 
         [When(@"the user is removed from the hearing")]

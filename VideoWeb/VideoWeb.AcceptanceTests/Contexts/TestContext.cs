@@ -2,10 +2,14 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Microsoft.Extensions.Options;
 using RestSharp;
 using Testing.Common.Configuration;
 using VideoWeb.AcceptanceTests.Helpers;
+using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Helpers;
+using VideoWeb.Common.Security;
+using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
 using TestSettings = Testing.Common.Configuration.TestSettings;
@@ -42,6 +46,8 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public bool RunningLocally { get; set; }
         public BookNewHearingRequest HearingRequest { get; set; }
         public bool Selftest { get; set; }
+        public CustomTokenSettings CustomTokenSettings { get; set; }
+        public IOptions<AzureAdConfiguration> AzureAdConfiguration { get; set; }
 
         public TestContext()
         {
@@ -161,6 +167,19 @@ namespace VideoWeb.AcceptanceTests.Contexts
             request.AddParameter("Application/json", ApiRequestHelper.SerialiseRequestToSnakeCaseJson(requestBody),
                 ParameterType.RequestBody);
             return request;
+        }
+
+        public void SetDefaultVideoApiBearerToken()
+        {
+            VideoApiBearerToken = new TokenProvider(AzureAdConfiguration).GetClientAccessToken(
+                TestSettings.TestClientId, TestSettings.TestClientSecret,
+                AzureAdConfiguration.Value.VhVideoApiResourceId);
+        }
+
+        public void SetCustomJwTokenForCallback()
+        {
+            var generateTokenWithAsciiKey = new CustomJwtTokenProvider(CustomTokenSettings).GenerateTokenForCallbackEndpoint("VhVideoApi", 2);
+            VideoApiBearerToken = generateTokenWithAsciiKey;
         }
     }
 }
