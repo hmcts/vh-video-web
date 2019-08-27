@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Services.Video;
 
@@ -14,10 +15,12 @@ namespace VideoWeb.Controllers
     public class TasksController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
+        private readonly ILogger<TasksController> _logger;
 
-        public TasksController(IVideoApiClient videoApiClient)
+        public TasksController(IVideoApiClient videoApiClient, ILogger<TasksController> logger)
         {
             _videoApiClient = videoApiClient;
+            _logger = logger;
         }
 
         [HttpGet("{conferenceId}/tasks")]
@@ -32,7 +35,8 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                return StatusCode(e.StatusCode, e);
+                _logger.LogError(e, $"Unable to get tasks for conference {conferenceId}");
+                return StatusCode(e.StatusCode, e.Response);
             }
         }
 
@@ -61,6 +65,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
+                _logger.LogError(e, $"Unable to get complete tasks {taskId} in conference {conferenceId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
