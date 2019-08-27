@@ -6,6 +6,7 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using Testing.Common.Helpers;
@@ -16,12 +17,14 @@ namespace VideoWeb.UnitTests.Controllers.TasksController
     public class GetTasksTests
     {
         private VideoWeb.Controllers.TasksController _controller;
+        private Mock<ILogger<VideoWeb.Controllers.TasksController>> _mockLogger;
         private Mock<IVideoApiClient> _videoApiClientMock;
 
         [SetUp]
         public void Setup()
         {
             _videoApiClientMock = new Mock<IVideoApiClient>();
+            _mockLogger = new Mock<ILogger<VideoWeb.Controllers.TasksController>>();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
             {
@@ -31,7 +34,7 @@ namespace VideoWeb.UnitTests.Controllers.TasksController
                 }
             };
 
-            _controller = new VideoWeb.Controllers.TasksController(_videoApiClientMock.Object)
+            _controller = new VideoWeb.Controllers.TasksController(_videoApiClientMock.Object, _mockLogger.Object)
             {
                 ControllerContext = context
             };
