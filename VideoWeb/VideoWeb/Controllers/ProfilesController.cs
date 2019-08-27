@@ -1,6 +1,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
@@ -14,10 +15,12 @@ namespace VideoWeb.Controllers
     public class ProfilesController : Controller
     {
         private readonly IUserApiClient _userApiClient;
+        private readonly ILogger<ProfilesController> _logger;
 
-        public ProfilesController(IUserApiClient userApiClient)
+        public ProfilesController(IUserApiClient userApiClient, ILogger<ProfilesController> logger)
         {
             _userApiClient = userApiClient;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -30,11 +33,12 @@ namespace VideoWeb.Controllers
             {
                 var profile = await _userApiClient.GetUserByAdUserNameAsync(username);
                 var response = new UserProfileResponseMapper().MapToResponseModel(profile);
-                return Ok(response);
+                return Ok(response);         
             }
             catch (UserApiException e)
             {
-                return StatusCode(e.StatusCode, e);
+                _logger.LogError(e, "Unable to get user profile");
+                return StatusCode(e.StatusCode, e.Response);
             }
         }
     }
