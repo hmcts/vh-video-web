@@ -58,7 +58,7 @@
 		this.updateLookback(mediaStatistics);
 		mediaStatistics.outgoing.audio["percentage-lost-recent"] = this.getRecentPercentageLost(this.lookbackValues.outgoing.audio).toFixed(1) + "%";
 		mediaStatistics.outgoing.video["percentage-lost-recent"] = this.getRecentPercentageLost(this.lookbackValues.outgoing.video).toFixed(1) + "%";
-		if (typeof window.updateCallStatistics != undefined) {
+		if (window.updateCallStatistics && typeof window.updateCallStatistics != undefined) {
 			window.updateCallStatistics(mediaStatistics);
 		}
 		return {
@@ -178,5 +178,3 @@
 	scope.HeartbeatFactory = HeartbeatFactory;
 
 })(window);
-
-
