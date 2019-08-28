@@ -6,6 +6,7 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 
 import { ConferenceStatus, ParticipantStatus } from '../../services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
+import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
 
 export class MockEventsService {
 
@@ -13,6 +14,7 @@ export class MockEventsService {
   nextHearingStatusMessage: ConferenceStatusMessage;
   nextHelpMessage: HelpMessage;
   nextConsultationMessage: ConsultationMessage;
+  nextAdminConsultationMessage: AdminConsultationMessage;
 
   constructor() {
     this.nextParticipantStatusMessage = new ParticipantStatusMessage('chris.green@hearings.net', ParticipantStatus.Available);
@@ -39,6 +41,10 @@ export class MockEventsService {
 
   getConsultationMessage(): Observable<ConsultationMessage> {
     return of(this.nextConsultationMessage);
+  }
+
+  getAdminConsultationMessage(): Observable<AdminConsultationMessage> {
+    return of(this.nextAdminConsultationMessage);
   }
 }
 

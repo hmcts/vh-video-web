@@ -43,12 +43,31 @@ namespace VideoWeb.Controllers
         [HttpPost("leave")]
         [SwaggerOperation(OperationId = "LeavePrivateConsultation")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> LeavePrivateConsultation(LeaveConsultationRequest request)
         {
             try
             {
                 await _videoApiClient.LeavePrivateConsultationAsync(request);
+                return NoContent();
+            }
+            catch (VideoApiException e)
+            {
+                return StatusCode(e.StatusCode, e.Response);
+            }
+        }
+        
+        [HttpPost("vhofficer/respond")]
+        [SwaggerOperation(OperationId = "RespondToAdminConsultationRequest")]
+        [ProducesResponseType((int) HttpStatusCode.NoContent)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> RespondToAdminConsultationRequest(AdminConsultationRequest request)
+        {
+            try
+            {
+                await _videoApiClient.RespondToAdminConsultationRequestAsync(request);
                 return NoContent();
             }
             catch (VideoApiException e)
