@@ -1,4 +1,4 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import {
@@ -25,11 +25,12 @@ declare var HeartbeatFactory: any;
   templateUrl: './participant-waiting-room.component.html',
   styleUrls: ['./participant-waiting-room.component.scss']
 })
-export class ParticipantWaitingRoomComponent implements OnInit {
+export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
   private maxBandwidth = 768;
 
   loadingData: boolean;
+  conferencesSubscription: Subscription;
   hearing: Hearing;
   participant: ParticipantResponse;
   conference: ConferenceResponse;
@@ -49,6 +50,10 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   selfViewOpen: boolean;
 
   subscription: Subscription;
+  errorCount: number;
+
+  callbackTimeoutTime = 31000; // 31 seconds
+  callbackTimeout: NodeJS.Timer;
 
   constructor(
     private route: ActivatedRoute,
@@ -70,10 +75,16 @@ export class ParticipantWaitingRoomComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.errorCount = 0;
     this.logger.debug('Loading participant waiting room');
     this.connected = false;
     this.initHearingAlert();
     this.getConference();
+  }
+
+  ngOnDestroy(): void {
+    clearTimeout(this.callbackTimeout);
+    this.conferencesSubscription.unsubscribe();
   }
 
   initHearingAlert() {
@@ -124,8 +135,9 @@ export class ParticipantWaitingRoomComponent implements OnInit {
 
   getConference(): void {
     const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-    this.videoWebService.getConferenceById(conferenceId)
+    this.conferencesSubscription = this.videoWebService.getConferenceById(conferenceId)
       .subscribe(async (data: ConferenceResponse) => {
+        this.errorCount = 0;
         this.loadingData = false;
         this.hearing = new Hearing(data);
         this.conference = this.hearing.getConference();
@@ -233,6 +245,7 @@ export class ParticipantWaitingRoomComponent implements OnInit {
     };
 
     this.pexipAPI.onConnect = function (stream) {
+      self.errorCount = 0;
       self.connected = true;
       self.updateShowVideo();
       self.logger.info('successfully connected to call');
@@ -241,22 +254,29 @@ export class ParticipantWaitingRoomComponent implements OnInit {
       const baseUrl = self.conference.pexip_node_uri.replace('sip.', '');
       const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${self.conference.id}`;
       console.log(url);
-      const heartbeatFactory = new HeartbeatFactory(self.pexipAPI, url, self.conference.id, self.participant.id, self.token.token);
+      const bearerToken = 'Bearer';
+      const heartbeatFactory = new HeartbeatFactory(self.pexipAPI, url, self.conference.id, self.participant.id,
+        (`${bearerToken} ${self.token.token}`));
     };
 
     this.pexipAPI.onError = function (reason) {
+      self.errorCount++;
       self.connected = false;
       self.updateShowVideo();
       self.logger.error(`Error from pexip. Reason : ${reason}`, reason);
-      self.errorService.goToServiceError();
+      if (self.errorCount > 3) {
+        self.errorService.goToServiceError();
+      }
     };
 
     this.pexipAPI.onDisconnect = function (reason) {
       self.connected = false;
       self.updateShowVideo();
       self.logger.warn(`Disconnected from pexip. Reason : ${reason}`);
-      if (!self.hearing.isClosed()) {
-        self.call();
+      if (!self.hearing.isPastClosedTime()) {
+        self.callbackTimeout = setTimeout(() => {
+          self.call();
+        }, this.CALL_TIMEOUT);
       }
     };
 

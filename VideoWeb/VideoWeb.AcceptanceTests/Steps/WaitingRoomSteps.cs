@@ -115,7 +115,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the user can see a list of participants and their representatives")]
         public void ThenTheUserCanSeeAListOfParticipantsAndTheirRepresentatives()
         {
-            var allRows = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementsVisible(_page.ParticipantsList);
+            var rowsElement = _tc.CurrentUser.Role.ToLower().Equals("individual") ? _page.IndividualParticipantsList : _page.ParticipantsList;
+            var allRows = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementsVisible(rowsElement);
             var participantRowIds = (from row in allRows where row.GetAttribute("id") != "" select row.GetAttribute("id")).ToList();
             var participantsInformation = new List<ParticipantInformation>();
             foreach (var id in participantRowIds)
@@ -166,12 +167,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             switch (title)
             {
-                case "about to begin":
-                {
-                    _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.AboutToBeginHeader)
-                        .Displayed.Should().BeTrue();
-                    break;
-                }
                 case "delayed":
                 {
                     _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.DelayedHeader)

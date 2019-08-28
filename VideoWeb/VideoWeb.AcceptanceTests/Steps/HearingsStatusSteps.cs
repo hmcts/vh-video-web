@@ -10,6 +10,7 @@ using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.AcceptanceTests.Strategies;
+using VideoWeb.AcceptanceTests.Strategies.HearingStatus;
 using VideoWeb.AcceptanceTests.Users;
 using VideoWeb.Common.Helpers;
 using VideoWeb.Services.Video;

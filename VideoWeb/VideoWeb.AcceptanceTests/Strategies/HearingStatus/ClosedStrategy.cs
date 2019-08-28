@@ -2,7 +2,7 @@
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.Services.Video;
 
-namespace VideoWeb.AcceptanceTests.Strategies
+namespace VideoWeb.AcceptanceTests.Strategies.HearingStatus
 {
     internal class ClosedStrategy : IHearingStatusStrategies
     {

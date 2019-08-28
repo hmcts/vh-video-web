@@ -86,8 +86,8 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, "Unable to get conferences for user", null);
-                return StatusCode(e.StatusCode, e);
+                _logger.LogError(e, "Unable to get conferences for user");
+                return StatusCode(e.StatusCode, e.Response);
             }
         } 
 
@@ -115,7 +115,7 @@ namespace VideoWeb.Controllers
             }
             catch (UserApiException e)
             {
-                return StatusCode(e.StatusCode, e);
+                return StatusCode(e.StatusCode, e.Response);
             }
 
             try
@@ -129,7 +129,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                return StatusCode(e.StatusCode, e);
+                return StatusCode(e.StatusCode, e.Response);
             }
         }
 
@@ -177,8 +177,8 @@ namespace VideoWeb.Controllers
             }
             catch (UserApiException e)
             {
-                _logger.LogError(e, "Unable to retrieve user profile", null);
-                return StatusCode(e.StatusCode, e);
+                _logger.LogError(e, "Unable to retrieve user profile");
+                return StatusCode(e.StatusCode, e.Response);
             }
 
             ConferenceDetailsResponse conference;
@@ -189,8 +189,8 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to retrieve conference: ${conferenceId}", null);
-                return StatusCode(e.StatusCode, e);
+                _logger.LogError(e, $"Unable to retrieve conference: ${conferenceId}");
+                return StatusCode(e.StatusCode, e.Response);
             }
 
             var exceededTimeLimit = !HasNotPassed(new ConferenceSummaryResponse
@@ -213,11 +213,11 @@ namespace VideoWeb.Controllers
             }
             catch (BookingsApiException e)
             {
-                _logger.LogError(e, $"Unable to retrieve booking participants for hearing ${conference.Hearing_id}", null);
+                _logger.LogError(e, $"Unable to retrieve booking participants for hearing ${conference.Hearing_id}");
             }
             catch (BrokenCircuitException e)
             {
-                _logger.LogError(e, $"Unable to retrieve booking participants for hearing ${conference.Hearing_id}", null);
+                _logger.LogError(e, $"Unable to retrieve booking participants for hearing ${conference.Hearing_id}");
             }
 
             if (bookingParticipants.Any())

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using Testing.Common.Helpers;
@@ -15,11 +16,13 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
     {
         private ProfilesController _controller;
         private Mock<IUserApiClient> _userApiClientMock;
+        private Mock<ILogger<ProfilesController>> _mockLogger;
 
         [SetUp]
         public void Setup()
         {
             _userApiClientMock = new Mock<IUserApiClient>();
+            _mockLogger = new Mock<ILogger<ProfilesController>>();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
             {
@@ -29,7 +32,7 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
                 }
             };
 
-            _controller = new ProfilesController(_userApiClientMock.Object)
+            _controller = new ProfilesController(_userApiClientMock.Object, _mockLogger.Object)
             {
                 ControllerContext = context
             };
