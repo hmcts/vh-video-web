@@ -41,6 +41,7 @@ namespace VideoWeb.Common.Security
             {
                 Subject = new ClaimsIdentity(new[] {new Claim(ClaimTypes.Name, claims)}),
                 NotBefore = DateTime.UtcNow.AddMinutes(-1),
+                Issuer = _customTokenSettings.Issuer,
                 Expires = DateTime.UtcNow.AddMinutes(expiresInMinutes + 1),
                 SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature)
             };

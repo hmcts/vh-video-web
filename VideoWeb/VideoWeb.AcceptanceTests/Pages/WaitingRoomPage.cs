@@ -22,15 +22,15 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By AboutToBeginText => CommonLocators.ElementContainingText("Please stay near your screen");
         public string AboutToBeginBgColour = "#0b0c0c";
 
-        public By DelayedHeader => CommonLocators.ElementContainingText("Your hearing is delayed");
+        public By DelayedHeader => CommonLocators.ElementContainingText("Your video hearing is delayed");
         public By DelayedText => CommonLocators.ElementContainingText("We're really sorry your hearing is delayed");
         public string DelayedBgColour = "#ffbf47";
 
-        public By ScheduledHeader => CommonLocators.ElementContainingText("Your hearing");
-        public By ScheduledText => CommonLocators.ElementContainingText("Please keep an eye on the time");
+        public By ScheduledHeader => CommonLocators.ElementContainingText("Your video hearing");
+        public By ScheduledText => By.XPath("//h3[text()='Please keep an eye on the time']"); 
         public string ScheduledBgColour = "#005ea5";
 
-        public By TimePanel => By.XPath("//div[contains(@class,'govuk-panel') and @ng-reflect-klass='govuk-panel']");
+        public By TimePanel => By.XPath("//div[@ng-reflect-klass='govuk-panel']");
 
         public By PausedTitle => CommonLocators.ElementContainingText("Your video hearing is paused");
         public By ClosedTitle => CommonLocators.ElementContainingText("Your video hearing is closed");

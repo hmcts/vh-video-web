@@ -27,6 +27,6 @@ Scenario: Representative logout
 Scenario: Video Hearings Officer logout
 	Given a new browser is open for a Video Hearings Officer
 	When the user attempts to login with valid credentials
-	Then the user is on the VHO Hearing List page
+	Then the user is on the Hearing List page
 	When the user attempts to logout and log back in
 	Then the user should be navigated to sign in screen
