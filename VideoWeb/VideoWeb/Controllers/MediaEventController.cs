@@ -44,7 +44,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                return StatusCode(e.StatusCode, e);
+                return StatusCode(e.StatusCode, e.Response);
             }
         }
 
@@ -72,7 +72,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                return StatusCode(e.StatusCode, e);
+                return StatusCode(e.StatusCode, e.Response);
             }
         }
     }

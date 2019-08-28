@@ -58,7 +58,7 @@
 		this.updateLookback(mediaStatistics);
 		mediaStatistics.outgoing.audio["percentage-lost-recent"] = this.getRecentPercentageLost(this.lookbackValues.outgoing.audio).toFixed(1) + "%";
 		mediaStatistics.outgoing.video["percentage-lost-recent"] = this.getRecentPercentageLost(this.lookbackValues.outgoing.video).toFixed(1) + "%";
-		if (typeof window.updateCallStatistics != undefined) {
+		if (window.updateCallStatistics && typeof window.updateCallStatistics != undefined) {
 			window.updateCallStatistics(mediaStatistics);
 		}
 		return {
@@ -66,7 +66,7 @@
 			timestamp: now.toISOString(),
 			elapsed_time: now - this.startTime,
 			hearing_id: this.hearingId,
-			participant_id: this.participantId.split(";")[2],
+			participant_id: this.participantId,
 			session_id: this.sessionId,
 			media_statistics: mediaStatistics
 		}
@@ -178,5 +178,3 @@
 	scope.HeartbeatFactory = HeartbeatFactory;
 
 })(window);
-
-

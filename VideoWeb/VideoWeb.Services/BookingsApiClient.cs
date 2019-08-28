@@ -365,25 +365,6 @@ namespace VideoWeb.Services.Bookings
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(System.Collections.Generic.IEnumerable<int> types, string cursor, int? limit, System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Gets all suitability answers for a given hearing</summary>
-        /// <param name="hearingId">Hearing Id</param>
-        /// <returns>Success</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<SuitabilityAnswerResponse>> GetSuitabilityAnswersAllAsync(System.Guid hearingId);
-    
-        /// <summary>Gets all suitability answers for a given hearing</summary>
-        /// <param name="hearingId">Hearing Id</param>
-        /// <returns>Success</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Collections.Generic.List<SuitabilityAnswerResponse> GetSuitabilityAnswersAll(System.Guid hearingId);
-    
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Gets all suitability answers for a given hearing</summary>
-        /// <param name="hearingId">Hearing Id</param>
-        /// <returns>Success</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<SuitabilityAnswerResponse>> GetSuitabilityAnswersAllAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
-    
         /// <summary>Get all hearing venues available for booking</summary>
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
@@ -2281,108 +2262,6 @@ namespace VideoWeb.Services.Bookings
             }
         }
     
-        /// <summary>Gets all suitability answers for a given hearing</summary>
-        /// <param name="hearingId">Hearing Id</param>
-        /// <returns>Success</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.List<SuitabilityAnswerResponse>> GetSuitabilityAnswersAllAsync(System.Guid hearingId)
-        {
-            return GetSuitabilityAnswersAllAsync(hearingId, System.Threading.CancellationToken.None);
-        }
-    
-        /// <summary>Gets all suitability answers for a given hearing</summary>
-        /// <param name="hearingId">Hearing Id</param>
-        /// <returns>Success</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Collections.Generic.List<SuitabilityAnswerResponse> GetSuitabilityAnswersAll(System.Guid hearingId)
-        {
-            return System.Threading.Tasks.Task.Run(async () => await GetSuitabilityAnswersAllAsync(hearingId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
-        }
-    
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Gets all suitability answers for a given hearing</summary>
-        /// <param name="hearingId">Hearing Id</param>
-        /// <returns>Success</returns>
-        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.List<SuitabilityAnswerResponse>> GetSuitabilityAnswersAllAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
-        {
-            if (hearingId == null)
-                throw new System.ArgumentNullException("hearingId");
-    
-            var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/{hearingId}/suitability-answers");
-            urlBuilder_.Replace("{hearingId}", System.Uri.EscapeDataString(ConvertToString(hearingId, System.Globalization.CultureInfo.InvariantCulture)));
-    
-            var client_ = _httpClient;
-            try
-            {
-                using (var request_ = new System.Net.Http.HttpRequestMessage())
-                {
-                    request_.Method = new System.Net.Http.HttpMethod("GET");
-                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
-    
-                    PrepareRequest(client_, request_, urlBuilder_);
-                    var url_ = urlBuilder_.ToString();
-                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
-                    PrepareRequest(client_, request_, url_);
-    
-                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-                    try
-                    {
-                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-                        if (response_.Content != null && response_.Content.Headers != null)
-                        {
-                            foreach (var item_ in response_.Content.Headers)
-                                headers_[item_.Key] = item_.Value;
-                        }
-    
-                        ProcessResponse(client_, response_);
-    
-                        var status_ = ((int)response_.StatusCode).ToString();
-                        if (status_ == "200") 
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<SuitabilityAnswerResponse>>(response_, headers_).ConfigureAwait(false);
-                            return objectResponse_.Object;
-                        }
-                        else
-                        if (status_ == "400") 
-                        {
-                            string responseText_ = ( response_.Content == null ) ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new BookingsApiException("Bad Request", (int)response_.StatusCode, responseText_, headers_, null);
-                        }
-                        else
-                        if (status_ == "404") 
-                        {
-                            string responseText_ = ( response_.Content == null ) ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new BookingsApiException("Not Found", (int)response_.StatusCode, responseText_, headers_, null);
-                        }
-                        else
-                        if (status_ == "401") 
-                        {
-                            string responseText_ = ( response_.Content == null ) ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new BookingsApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
-                        }
-                        else
-                        if (status_ != "200" && status_ != "204")
-                        {
-                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new BookingsApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
-                        }
-            
-                        return default(System.Collections.Generic.List<SuitabilityAnswerResponse>);
-                    }
-                    finally
-                    {
-                        if (response_ != null)
-                            response_.Dispose();
-                    }
-                }
-            }
-            finally
-            {
-            }
-        }
-    
         /// <summary>Get all hearing venues available for booking</summary>
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
@@ -3559,6 +3438,10 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public HearingDetailsResponseStatus? Status { get; set; }
     
+        /// <summary>QuestionnaireNotRequired</summary>
+        [Newtonsoft.Json.JsonProperty("questionnaire_not_required", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? Questionnaire_not_required { get; set; }
+    
     
     }
     
@@ -3611,6 +3494,10 @@ namespace VideoWeb.Services.Bookings
         /// <summary>User updated the hearing record</summary>
         [Newtonsoft.Json.JsonProperty("updated_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Updated_by { get; set; }
+    
+        /// <summary>QuestionnaireNotRequired</summary>
+        [Newtonsoft.Json.JsonProperty("questionnaire_not_required", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? Questionnaire_not_required { get; set; }
     
     
     }
@@ -3690,6 +3577,10 @@ namespace VideoWeb.Services.Bookings
         /// <summary>The VH admin username that created the hearing</summary>
         [Newtonsoft.Json.JsonProperty("created_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Created_by { get; set; }
+    
+        /// <summary>QuestionnaireNotRequired</summary>
+        [Newtonsoft.Json.JsonProperty("questionnaire_not_required", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? Questionnaire_not_required { get; set; }
     
     
     }
@@ -3805,24 +3696,9 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public BookingsHearingResponseStatus? Status { get; set; }
     
-    
-    }
-    
-    /// <summary>Suitability Answer Response Object</summary>
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.21.0 (Newtonsoft.Json v11.0.0.0)")]
-    public partial class SuitabilityAnswerResponse 
-    {
-        /// <summary>Key used to identify the question</summary>
-        [Newtonsoft.Json.JsonProperty("key", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Key { get; set; }
-    
-        /// <summary>Answer the question</summary>
-        [Newtonsoft.Json.JsonProperty("answer", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Answer { get; set; }
-    
-        /// <summary>Extended answer to the question</summary>
-        [Newtonsoft.Json.JsonProperty("extended_answer", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Extended_answer { get; set; }
+        /// <summary>QuestionnaireNotRequired</summary>
+        [Newtonsoft.Json.JsonProperty("questionnaire_not_required", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? Questionnaire_not_required { get; set; }
     
     
     }
@@ -3905,25 +3781,42 @@ namespace VideoWeb.Services.Bookings
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.21.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class PersonSuitabilityAnswerResponse 
     {
-        /// <summary>Hearing Id</summary>
         [Newtonsoft.Json.JsonProperty("hearing_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid? Hearing_id { get; set; }
     
-        /// <summary>Participant Id</summary>
         [Newtonsoft.Json.JsonProperty("participant_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid? Participant_id { get; set; }
     
-        /// <summary>Scheduled time of the hearing</summary>
         [Newtonsoft.Json.JsonProperty("scheduled_at", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTime? Scheduled_at { get; set; }
     
-        /// <summary>Last updated date and time of the suitability answers</summary>
         [Newtonsoft.Json.JsonProperty("updated_at", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTime? Updated_at { get; set; }
     
-        /// <summary>List of answers</summary>
+        [Newtonsoft.Json.JsonProperty("questionnaire_not_required", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? Questionnaire_not_required { get; set; }
+    
         [Newtonsoft.Json.JsonProperty("answers", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.List<SuitabilityAnswerResponse> Answers { get; set; }
+    
+    
+    }
+    
+    /// <summary>Suitability Answer Response Object</summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.21.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class SuitabilityAnswerResponse 
+    {
+        /// <summary>Key used to identify the question</summary>
+        [Newtonsoft.Json.JsonProperty("key", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Key { get; set; }
+    
+        /// <summary>Answer the question</summary>
+        [Newtonsoft.Json.JsonProperty("answer", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Answer { get; set; }
+    
+        /// <summary>Extended answer to the question</summary>
+        [Newtonsoft.Json.JsonProperty("extended_answer", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Extended_answer { get; set; }
     
     
     }
