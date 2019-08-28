@@ -3,7 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import {
   ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus,
-  TokenResponse
+  TokenResponse,
+  ConsultationAnswer
 } from 'src/app/services/clients/api-client';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { EventsService } from 'src/app/services/events.service';
@@ -48,6 +49,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   showVideo: boolean;
   showConsultationControls: boolean;
   selfViewOpen: boolean;
+  isAdminConsultation: boolean;
 
   subscription: Subscription;
   errorCount: number;
@@ -68,6 +70,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     private consultationService: ConsultationService,
     private router: Router
   ) {
+    this.isAdminConsultation = false;
     this.loadingData = true;
     this.showVideo = false;
     this.showConsultationControls = false;
@@ -207,11 +210,23 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.updateShowVideo();
       });
     });
+
+    this.logger.debug('Subscribing to admin consultation messages...');
+    this.eventService.getAdminConsultationMessage().subscribe(message => {
+      this.ngZone.run(() => {
+        if (message.answer && message.answer === ConsultationAnswer.Accepted) {
+          this.isAdminConsultation = true;
+        }
+      });
+    });
   }
 
   handleParticipantStatusChange(message: ParticipantStatusMessage): any {
     const participant = this.hearing.getConference().participants.find(p => p.username.toLowerCase() === message.email.toLowerCase());
     participant.status = message.status;
+    if (message.status !== ParticipantStatus.InConsultation) {
+      this.isAdminConsultation = false;
+    }
   }
 
   handleConferenceStatusChange(message: ConferenceStatusMessage) {
@@ -253,8 +268,9 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
       const baseUrl = self.conference.pexip_node_uri.replace('sip.', '');
       const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${self.conference.id}`;
-      console.log(url);
-      const heartbeatFactory = new HeartbeatFactory(self.pexipAPI, url, self.conference.id, self.participant.id, self.token.token);
+      self.logger.debug(`heartbeat uri: ${url}`);
+      const bearerToken = `Bearer ${self.token.token}`;
+      const heartbeatFactory = new HeartbeatFactory(self.pexipAPI, url, self.conference.id, self.participant.id, bearerToken);
     };
 
     this.pexipAPI.onError = function (reason) {
@@ -313,7 +329,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     if (this.participant.status === ParticipantStatus.InConsultation) {
       this.logger.debug('Showing video because hearing is in session');
       this.showVideo = true;
-      this.showConsultationControls = true;
+      this.showConsultationControls = !this.isAdminConsultation;
       return;
     }
 
