@@ -219,14 +219,14 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     }
   }
 
-  async answerVHOfficerConsultationRequest(answer: ConsultationAnswer) {
+  async acceptVhoConsultationRequest() {
     this.waitingForConsultationResponse = false;
     this.closeAllPCModals();
     this.stopCallRinging();
-    this.logger.event(`${this.consultationRequestee.displayName} responded to vho consultation: ${answer}`);
+    this.logger.event(`${this.consultationRequestee.displayName} responded to vho consultation: ${ConsultationAnswer.Accepted}`);
     try {
       await this.consultationService.respondToAdminConsultationRequest(
-        this.conference, this.consultationRequestee.base, answer, this.adminConsultationMessage.roomType).toPromise();
+        this.conference, this.consultationRequestee.base, ConsultationAnswer.Accepted, this.adminConsultationMessage.roomType).toPromise();
     } catch (error) {
       this.logger.error('Failed to respond to admin consultation request', error);
     }
