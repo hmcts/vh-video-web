@@ -255,7 +255,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${self.conference.id}`;
       console.log(url);
       const bearerToken = 'Bearer';
-      console.log(`${bearerToken} ${self.token.token}`);
       const heartbeatFactory = new HeartbeatFactory(self.pexipAPI, url, self.conference.id, self.participant.id,
         (`${bearerToken} ${self.token.token}`));
     };
