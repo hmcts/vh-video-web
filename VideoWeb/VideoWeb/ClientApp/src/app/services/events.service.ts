@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import * as signalR from '@aspnet/signalr';
 import { AdalService } from 'adal-angular4';
 import { Observable, Subject } from 'rxjs';
-import { ConferenceStatus, ParticipantStatus, RoomType } from './clients/api-client';
+import { ConferenceStatus, ParticipantStatus, RoomType, ConsultationAnswer } from './clients/api-client';
 import { ConfigService } from './api/config.service';
 import { ConsultationMessage } from './models/consultation-message';
 import { ConferenceStatusMessage } from './models/conference-status-message';
@@ -115,11 +115,12 @@ export class EventsService {
   }
 
   getAdminConsultationMessage(): Observable<AdminConsultationMessage> {
-    this.connection.on('AdminConsultationMessage', (conferenceId: string, roomType: RoomType, requestedFor: string) => {
-      const message = new AdminConsultationMessage(conferenceId, roomType, requestedFor);
-      this.logger.event('AdminConsultationMessage received', message);
-      this.adminConsultationMessageSubject.next(message);
-    });
+    this.connection.on('AdminConsultationMessage',
+      (conferenceId: string, roomType: RoomType, requestedFor: string, answer: ConsultationAnswer) => {
+        const message = new AdminConsultationMessage(conferenceId, roomType, requestedFor, answer);
+        this.logger.event('AdminConsultationMessage received', message);
+        this.adminConsultationMessageSubject.next(message);
+      });
 
     return this.adminConsultationMessageSubject.asObservable();
   }

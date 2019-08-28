@@ -106,8 +106,10 @@ export class IndividualParticipantStatusListComponent implements OnInit {
 
     this.eventService.getAdminConsultationMessage().subscribe(message => {
       this.ngZone.run(() => {
-        this.adminConsultationMessage = message;
-        this.handleAdminConsultationMessage(message);
+        if (!message.answer) {
+          this.adminConsultationMessage = message;
+          this.handleAdminConsultationMessage(message);
+        }
       });
     });
   }
@@ -175,6 +177,12 @@ export class IndividualParticipantStatusListComponent implements OnInit {
       this.waitingForConsultationResponse = true;
       this.outgoingCallTimeout = setTimeout(async () => {
         await this.cancelOutgoingCall();
+      }, this.CALL_TIMEOUT);
+    }
+    if (this.adminConsultationMessage) {
+      this.outgoingCallTimeout = setTimeout(async () => {
+        this.stopCallRinging();
+        this.closeAllPCModals();
       }, this.CALL_TIMEOUT);
     }
     await this.callRiningSound.play();
