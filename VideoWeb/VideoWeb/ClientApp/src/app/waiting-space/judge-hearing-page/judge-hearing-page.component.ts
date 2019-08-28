@@ -20,6 +20,7 @@ export class JudgeHearingPageComponent implements OnInit {
   conference: ConferenceResponse;
   selectedHearingUrl: SafeResourceUrl;
   allowPermissions: string;
+  judgeUri: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -79,9 +80,9 @@ export class JudgeHearingPageComponent implements OnInit {
     const iframeOrigin = new URL(this.conference.judge_i_frame_uri).origin;
     this.allowPermissions = `microphone ${iframeOrigin}; camera ${iframeOrigin};`;
 
-    const judgeUri = `${this.conference.judge_i_frame_uri}?display_name=${encodedDisplayName}&cam=${cam}&mic=${mic}`;
+    this.judgeUri = `${this.conference.judge_i_frame_uri}?display_name=${encodedDisplayName}&cam=${cam}&mic=${mic}`;
     this.selectedHearingUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-      judgeUri
+      this.judgeUri
     );
   }
 
@@ -112,6 +113,15 @@ export class JudgeHearingPageComponent implements OnInit {
       this.selectedHearingUrl = '';
       this.logger.event(`Conference closed, navigating back to waiting room`, properties);
       this.router.navigate([PageUrls.JudgeWaitingRoom, this.conference.id]);
+    }
+  }
+
+  judgeURLChanged() {
+    const iFrameElem = <HTMLIFrameElement>document.getElementById('judgeIframe');
+    const src = iFrameElem.src;
+    if (src && src !== this.judgeUri) {
+      this.logger.warn(`Uri ${src} is not recogised`);
+      this.router.navigate([PageUrls.JudgeHearingList]);
     }
   }
 }
