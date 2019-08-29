@@ -15,7 +15,7 @@ declare var PexRTC: any;
   styleUrls: ['./self-test.component.scss']
 })
 export class SelfTestComponent implements OnInit, OnDestroy {
-  
+
   @Input() conference: ConferenceResponse;
   @Input() participant: ParticipantResponse;
 
