@@ -140,6 +140,14 @@ export class SendVideoEventsComponent implements OnInit {
     this.sendEvent(request);
   }
 
+  vhoConsultation(participant: ParticipantResponse) {
+    const request = this.buildBasicEventRequest();
+    request.participant_id = participant.id;
+    request.event_type = EventType.VhoCall;
+    request.transfer_to = RoomType.ConsultationRoom2;
+    this.sendEvent(request);
+  }
+
   private sendEvent(request: ConferenceEventRequest) {
     this.videoWebService.sendEvent(request)
       .subscribe(() => {

@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import {
-  ApiClient, ConferenceResponse, ConsultationAnswer, ConsultationRequest, ParticipantResponse, LeaveConsultationRequest
+  ApiClient, ConferenceResponse, ConsultationAnswer, ConsultationRequest, ParticipantResponse,
+  LeaveConsultationRequest, AdminConsultationRequest, RoomType
 } from '../clients/api-client';
 
 
@@ -36,6 +37,16 @@ export class ConsultationService {
     return this.apiClient.leavePrivateConsultation(new LeaveConsultationRequest({
       conference_id: conference.id,
       participant_id: participant.id
+    }));
+  }
+
+  respondToAdminConsultationRequest(conference: ConferenceResponse, participant: ParticipantResponse,
+    answer: ConsultationAnswer, room: RoomType): Observable<void> {
+    return this.apiClient.respondToAdminConsultationRequest(new AdminConsultationRequest({
+      conference_id: conference.id,
+      participant_id: participant.id,
+      answer: answer,
+      consultation_room: room
     }));
   }
 }

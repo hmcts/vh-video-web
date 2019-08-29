@@ -8,8 +8,7 @@ Scenario: Participant camera working
 	Given the Participant user has progressed to the Camera Working page
 	Then contact us details are available
 	When the user selects the Yes radiobutton
-	Then the Check my equipment again button is disabled
-	When the user clicks the Continue button
+	And the user clicks the Continue button
 	Then the user is on the Microphone Working page
 
 @VIH-4595

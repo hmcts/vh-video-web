@@ -36,7 +36,7 @@ namespace VideoWeb.AcceptanceTests.Assertions
                 Thread.Sleep(TimeSpan.FromSeconds(1));
             }
 
-            playing.Should().BeTrue();
+            playing.Should().BeTrue("video is playing");
         }
     }
 }

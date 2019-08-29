@@ -39,10 +39,9 @@ namespace VideoWeb.AcceptanceTests.Builders
         {
             _context.SetCustomJwTokenForCallback();
             _context.Request = _context.Post(_callbackEndpoints.Event, _request);
-            _context.Response = _context.VideoApiClient().Execute(_context.Request);
+            _context.Response = _context.VideoApiEventCallbackClient().Execute(_context.Request);
             _context.Response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             _context.Response.IsSuccessful.Should().Be(true);
-            _context.SetDefaultVideoApiBearerToken();
         }
     }
 }

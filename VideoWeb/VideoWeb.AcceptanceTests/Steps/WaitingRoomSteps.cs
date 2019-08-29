@@ -165,22 +165,10 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the user can see the hearing is (.*) title")]
         public void ThenTheUserCanSeeTheHearingIsAAboutToBeginTitle(string title)
         {
-            switch (title)
-            {
-                case "delayed":
-                {
-                    _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.DelayedHeader)
-                        .Displayed.Should().BeTrue();
-                    break;
-                }
-                case "scheduled":
-                {
-                    _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.ScheduledHeader)
-                        .Displayed.Should().BeTrue();
-                    break;
-                }
-                default: throw new ArgumentOutOfRangeException($"No such title: '{title}'");
-            }                      
+            var headerElement = title.Equals("delayed") ? _page.DelayedHeader : _page.ScheduledHeader;
+
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(headerElement)
+                .Displayed.Should().BeTrue();
         }
 
         [Then(@"the user can see a (.*) box and a (.*) message")]

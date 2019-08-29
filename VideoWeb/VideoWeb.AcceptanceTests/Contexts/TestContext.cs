@@ -25,6 +25,7 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public string BookingsApiBearerToken { get; set; }
         public string UserApiBearerToken { get; set; }
         public string VideoApiBearerToken { get; set; }
+        public string CallbackBearerToken { get; set; }
         public string VideoWebBearerToken { get; set; }
         public string BookingsApiBaseUrl { get; set; }
         public string UserApiBaseUrl { get; set; }
@@ -133,6 +134,14 @@ namespace VideoWeb.AcceptanceTests.Contexts
             return client;
         }
 
+        public RestClient VideoApiEventCallbackClient()
+        {
+            var client = new RestClient(VideoApiBaseUrl);
+            client.AddDefaultHeader("Accept", "application/json");
+            client.AddDefaultHeader("Authorization", $"Bearer {CallbackBearerToken}");
+            return client;
+        }
+
         public RestClient VideoWebClient()
         {
             var client = new RestClient(VideoWebUrl);
@@ -179,7 +188,7 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public void SetCustomJwTokenForCallback()
         {
             var generateTokenWithAsciiKey = new CustomJwtTokenProvider(CustomTokenSettings).GenerateTokenForCallbackEndpoint("VhVideoApi", 2);
-            VideoApiBearerToken = generateTokenWithAsciiKey;
+            CallbackBearerToken = generateTokenWithAsciiKey;
         }
     }
 }

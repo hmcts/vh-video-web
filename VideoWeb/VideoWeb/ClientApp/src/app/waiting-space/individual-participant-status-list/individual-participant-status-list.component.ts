@@ -11,6 +11,7 @@ import { ConsultationMessage } from 'src/app/services/models/consultation-messag
 import { Participant } from 'src/app/shared/models/participant';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
 
 @Component({
   selector: 'app-individual-participant-status-list',
@@ -36,6 +37,8 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   private readonly RECIEVE_PC_MODAL = 'receive-pc-modal';
   private readonly ACCEPTED_PC_MODAL = 'accepted-pc-modal';
   private readonly REJECTED_PC_MODAL = 'rejected-pc-modal';
+  private readonly VHO_REQUEST_PC_MODAL = 'vho-raise-pc-modal';
+  adminConsultationMessage: AdminConsultationMessage;
 
   constructor(
     private adalService: AdalService,
@@ -100,6 +103,23 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         this.handleParticipantStatusChange(message);
       });
     });
+
+    this.eventService.getAdminConsultationMessage().subscribe(message => {
+      this.ngZone.run(() => {
+        if (!message.answer) {
+          this.adminConsultationMessage = message;
+          this.handleAdminConsultationMessage(message);
+        }
+      });
+    });
+  }
+
+  handleAdminConsultationMessage(message: AdminConsultationMessage) {
+    const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
+    this.logger.info(`Incoming request for private consultation from Video Hearings Team`);
+    this.consultationRequestee = new Participant(requestee);
+    this.displayModal(this.VHO_REQUEST_PC_MODAL);
+    this.startCallRinging(false);
   }
 
   handleParticipantStatusChange(message: ParticipantStatusMessage): void {
@@ -159,6 +179,12 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         await this.cancelOutgoingCall();
       }, this.CALL_TIMEOUT);
     }
+    if (this.adminConsultationMessage) {
+      this.outgoingCallTimeout = setTimeout(async () => {
+        this.stopCallRinging();
+        this.closeAllPCModals();
+      }, this.CALL_TIMEOUT);
+    }
     await this.callRiningSound.play();
   }
 
@@ -193,6 +219,19 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     }
   }
 
+  async acceptVhoConsultationRequest() {
+    this.waitingForConsultationResponse = false;
+    this.closeAllPCModals();
+    this.stopCallRinging();
+    this.logger.event(`${this.consultationRequestee.displayName} responded to vho consultation: ${ConsultationAnswer.Accepted}`);
+    try {
+      await this.consultationService.respondToAdminConsultationRequest(
+        this.conference, this.consultationRequestee.base, ConsultationAnswer.Accepted, this.adminConsultationMessage.roomType).toPromise();
+    } catch (error) {
+      this.logger.error('Failed to respond to admin consultation request', error);
+    }
+  }
+
   private handleAcceptedConsultationRequest(message: ConsultationMessage) {
     this.stopCallRinging();
     this.initConsultationParticipants(message);
@@ -221,6 +260,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     this.modalService.close(this.RECIEVE_PC_MODAL);
     this.modalService.close(this.ACCEPTED_PC_MODAL);
     this.modalService.close(this.REJECTED_PC_MODAL);
+    this.modalService.close(this.VHO_REQUEST_PC_MODAL);
   }
 
   closeConsultationRejection() {
