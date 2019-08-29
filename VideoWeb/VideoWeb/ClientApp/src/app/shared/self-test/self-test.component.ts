@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnDestroy } from '@angular/core';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, ParticipantResponse, TokenResponse, TestCallScoreResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -6,6 +6,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
+import { Subscription } from 'rxjs';
 declare var PexRTC: any;
 
 @Component({
@@ -13,7 +14,7 @@ declare var PexRTC: any;
   templateUrl: './self-test.component.html',
   styleUrls: ['./self-test.component.scss']
 })
-export class SelfTestComponent implements OnInit {
+export class SelfTestComponent implements OnInit, OnDestroy {
 
   @Input() conference: ConferenceResponse;
   @Input() participant: ParticipantResponse;
@@ -37,6 +38,7 @@ export class SelfTestComponent implements OnInit {
   testCallResult: TestCallScoreResponse = null;
 
   private maxBandwidth = 768;
+  subscription: Subscription;
 
   constructor(
     private logger: Logger,
@@ -63,7 +65,7 @@ export class SelfTestComponent implements OnInit {
   setupTestAndCall(): void {
     this.logger.debug('setting up pexip client and call');
     this.setupPexipClient();
-    this.videoWebService.getToken(this.participant.id).subscribe((token: TokenResponse) => {
+    this.subscription = this.videoWebService.getToken(this.participant.id).subscribe((token: TokenResponse) => {
       this.logger.debug('retrieved token for self test');
       this.token = token;
       this.call();
@@ -188,5 +190,10 @@ export class SelfTestComponent implements OnInit {
       this.disconnect();
     }
     this.testCompleted.emit(this.testCallResult);
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+    this.disconnect();
   }
 }
