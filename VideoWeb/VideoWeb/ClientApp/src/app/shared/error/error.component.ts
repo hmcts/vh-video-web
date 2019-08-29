@@ -1,25 +1,49 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Location } from '@angular/common';
+import { Router, NavigationEnd } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-error',
   templateUrl: './error.component.html'
 })
-export class ErrorComponent implements OnInit, OnDestroy {
+export class ErrorComponent implements OnDestroy {
 
   returnTimeout: NodeJS.Timer;
+  subscription: Subscription;
+
   private readonly CALL_TIMEOUT = 30000;
+  private browserRefresh: boolean;
 
-  constructor(private location: Location) { }
+  constructor(private router: Router, private location: Location) {
+    this.browserRefresh = false;
+    this.subscription = this.router.events.subscribe((event) => {
+      console.info(event);
+      if (event instanceof NavigationEnd) {
+        this.browserRefresh = (event.id === 1 && event.url === event.urlAfterRedirects);
+      }
 
-  ngOnInit() {
+      if (this.browserRefresh) {
+        this.goBack();
+      } else {
+        this.startGoBackTimer();
+      }
+    });
+  }
+
+  private goBack(): void {
+    this.location.back();
+  }
+
+  private startGoBackTimer(): void {
     this.returnTimeout = setTimeout(async () => {
-      this.location.back();
+      this.goBack();
     }, this.CALL_TIMEOUT);
   }
 
   ngOnDestroy(): void {
     clearTimeout(this.returnTimeout);
+    this.subscription.unsubscribe();
   }
 
 }
