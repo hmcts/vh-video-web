@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using FluentAssertions;
+using OpenQA.Selenium.Support.Extensions;
 using TechTalk.SpecFlow;
 using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Contexts;
@@ -175,10 +176,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the user can see a (.*) box and an (.*) message")]
         public void ThenTheUserCanSeeABlackBoxAndAAboutToBeginMessage(string colour, string message)
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.TimePanel)
+            _browsers[_tc.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browsers[_tc.CurrentUser.Key].Driver.FindElement(_page.TimePanel));
+
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementExists(_page.TimePanel)
                 .Displayed.Should().BeTrue();
 
-            var backgroundColourInHex = ConvertRgbToHex(_browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.TimePanel)
+            var backgroundColourInHex = ConvertRgbToHex(_browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementExists(_page.TimePanel)
                 .GetCssValue("background-color"));
 
             switch (colour)
@@ -186,21 +189,21 @@ namespace VideoWeb.AcceptanceTests.Steps
                 case "black":
                 {
                     backgroundColourInHex.Should().Be(_page.AboutToBeginBgColour);
-                    _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.AboutToBeginText)
+                    _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementExists(_page.AboutToBeginText)
                         .Displayed.Should().BeTrue();
                         break;
                 }
                 case "yellow":
                 {
                     backgroundColourInHex.Should().Be(_page.DelayedBgColour);
-                    _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.DelayedText)
+                    _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementExists(_page.DelayedText)
                         .Displayed.Should().BeTrue();
                         break;
                 }
                 case "blue":
                 {
                     backgroundColourInHex.Should().Be(_page.ScheduledBgColour);
-                    _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.ScheduledText)
+                    _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementExists(_page.ScheduledText)
                         .Displayed.Should().BeTrue();
                         break;
                 }
