@@ -285,7 +285,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       self.logger.debug(`heartbeat uri: ${url}`);
       const bearerToken = `Bearer ${self.token.token}`;
       self.heartbeat = new HeartbeatFactory(self.pexipAPI, url, self.conference.id, self.participant.id, bearerToken);
-      // self.heartbeat.revive();
     };
 
     this.pexipAPI.onError = function (reason) {
