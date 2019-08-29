@@ -89,7 +89,9 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     clearTimeout(this.callbackTimeout);
     this.conferencesSubscription.unsubscribe();
-    this.heartbeat.kill();
+    if (this.heartbeat) {
+      this.heartbeat.kill();
+    }
     this.disconnect();
   }
 
