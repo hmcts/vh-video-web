@@ -12,12 +12,3 @@ Scenario: Page not found error
 	Then the user is on the Not Found page
 	And the Not Found error page displays text of how to rectify the problem
 	And contact us details are available
-
-Scenario: Page not authorised error
-	Given the Participant user has progressed to the Waiting Room page
-	Then the user is on the Waiting Room page
-	When the user is removed from the hearing
-	And the user tries to navigate back to the waiting room page
-	Then the user is on the Unauthorised page
-	And the Unauthorised error page displays text of how to rectify the problem
-	And contact us details are available
