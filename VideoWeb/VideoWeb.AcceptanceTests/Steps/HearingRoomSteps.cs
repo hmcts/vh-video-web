@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using FluentAssertions;
 using TechTalk.SpecFlow;
@@ -17,15 +18,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _tc;
         private readonly HearingRoomPage _page;
-        private readonly CommonPages _commonPages;
         private const int CountdownDuration = 30;
 
-        public HearingRoomSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, HearingRoomPage page, CommonPages commonPages)
+        public HearingRoomSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, HearingRoomPage page)
         {
             _browsers = browsers;
             _tc = testContext;
             _page = page;
-            _commonPages = commonPages;
         }
 
         [When(@"the countdown finishes")]
@@ -61,7 +60,28 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Clerk is on the Hearing Room page for (.*) minutes")]
         public void ThenTheUserIsOnTheHearingRoomPageForMinutes(int minutes)
         {
-            Thread.Sleep(TimeSpan.FromMinutes(minutes));
+            if (_tc.RunningLocally)
+            {
+                Thread.Sleep(TimeSpan.FromMinutes(minutes));
+            }
+            else
+            {
+                ClickOnThePageEvery20SecondsToKeepTheTestRunningInSaucelabs(minutes);
+            }
+        }
+
+        private void ClickOnThePageEvery20SecondsToKeepTheTestRunningInSaucelabs(int timeoutInMinutes)
+        {
+            var timer = new Stopwatch();
+            timer.Start();
+
+            while (timer.Elapsed.Minutes <= TimeSpan.FromMinutes(timeoutInMinutes).Minutes)
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(20));
+                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.IncomingVideo).Click();
+            }
+
+            timer.Stop();
         }
 
         [Then(@"the hearing controls are visible")]

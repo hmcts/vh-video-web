@@ -82,7 +82,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Then(@"the test score should be produced")]
-        public void ThenTheTestScoreShouldBeDisplayed()
+        public void ThenTheTestScoreShouldBeProduced()
         {
             var endpoint = new VideoWebParticipantsEndpoints();
             var participantId = _tc.Conference.Participants
@@ -102,7 +102,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             }
 
             found.Should().BeTrue();
-            _tc.Response.IsSuccessful.Should().Be(true);
             var selfScore = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<TestCallScoreResponse>(_tc.Response.Content);
             selfScore.Score.ToString().Should().ContainAny("Good", "Okay", "Bad");
         }
