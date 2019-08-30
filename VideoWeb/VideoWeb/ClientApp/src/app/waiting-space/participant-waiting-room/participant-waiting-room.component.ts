@@ -54,8 +54,9 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   subscription: Subscription;
   errorCount: number;
 
-  callbackTimeoutTime = 31000; // 31 seconds
+  CALL_TIMEOUT = 31000; // 31 seconds
   callbackTimeout: NodeJS.Timer;
+  heartbeat: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -88,6 +89,21 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     clearTimeout(this.callbackTimeout);
     this.conferencesSubscription.unsubscribe();
+    if (this.heartbeat) {
+      this.heartbeat.kill();
+    }
+    this.disconnect();
+  }
+
+  disconnect() {
+    if (this.pexipAPI) {
+      this.logger.info('disconnecting from pexip node');
+      this.pexipAPI.disconnect();
+    }
+    this.stream = null;
+    this.outgoingStream = null;
+    this.connected = false;
+    this.showVideo = false;
   }
 
   initHearingAlert() {
@@ -272,12 +288,13 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${self.conference.id}`;
       self.logger.debug(`heartbeat uri: ${url}`);
       const bearerToken = `Bearer ${self.token.token}`;
-      const heartbeatFactory = new HeartbeatFactory(self.pexipAPI, url, self.conference.id, self.participant.id, bearerToken);
+      self.heartbeat = new HeartbeatFactory(self.pexipAPI, url, self.conference.id, self.participant.id, bearerToken);
     };
 
     this.pexipAPI.onError = function (reason) {
       self.errorCount++;
       self.connected = false;
+      self.heartbeat.kill();
       self.updateShowVideo();
       self.logger.error(`Error from pexip. Reason : ${reason}`, reason);
       if (self.errorCount > 3) {
@@ -287,12 +304,13 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     this.pexipAPI.onDisconnect = function (reason) {
       self.connected = false;
+      self.heartbeat.kill();
       self.updateShowVideo();
       self.logger.warn(`Disconnected from pexip. Reason : ${reason}`);
       if (!self.hearing.isPastClosedTime()) {
         self.callbackTimeout = setTimeout(() => {
           self.call();
-        }, this.CALL_TIMEOUT);
+        }, self.CALL_TIMEOUT);
       }
     };
 
