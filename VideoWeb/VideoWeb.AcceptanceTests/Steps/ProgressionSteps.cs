@@ -84,7 +84,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"the (.*) user has progressed to the (.*) page for the existing hearing")]
         public void GivenHearingExistsAndIAmOnThePage(string user, string page)
         {
-            _commonSteps.GivenANewBrowserIsOpenFor(user);
+            _commonSteps.GivenANewBrowserIsOpenFor(user.ToLower().Equals("clerk self test") ? "clerk" : user);
             Progression(FromString(user), page);
         }
 
