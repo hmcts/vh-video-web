@@ -2,8 +2,7 @@
 
 .conference-suspended,
 .conference-delayed,
-.conference-not-ready,
-.conference-closed {
+.conference-not-ready {
     background-color: govuk-colour("red");
     color: govuk-colour("white");
     font-weight: bold;
@@ -32,6 +31,11 @@
     font-weight: bold;
 }
 
+.conference-closed {
+    background-color: govuk-colour("black");
+    color: govuk-colour("white");
+    font-weight: bold;
+}
 .selected-conference {
     background: govuk-colour("grey-3");
 }
