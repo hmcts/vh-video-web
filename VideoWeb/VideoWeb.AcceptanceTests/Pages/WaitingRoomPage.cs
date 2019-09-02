@@ -30,7 +30,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By ScheduledText => By.XPath("//h3[text()='Please keep an eye on the time']"); 
         public string ScheduledBgColour = "#005ea5";
 
-        public By TimePanel => By.XPath("//div[@ng-reflect-klass='govuk-panel']");
+        public By TimePanel => By.XPath("//div[contains(@class,'govuk-panel')][1]");
 
         public By PausedTitle => CommonLocators.ElementContainingText("Your video hearing is paused");
         public By ClosedTitle => CommonLocators.ElementContainingText("Your video hearing is closed");

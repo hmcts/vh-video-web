@@ -67,7 +67,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _dataSetupSteps.GivenIHaveAHearing(0);
             _dataSetupSteps.GetTheNewConferenceDetails();
-            _commonSteps.GivenANewBrowserIsOpenFor(user);
+            _commonSteps.GivenANewBrowserIsOpenFor(user.ToLower().Equals("clerk self test") ? "clerk" : user);
             Progression(FromString(user), page);
         }
 

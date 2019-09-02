@@ -19,7 +19,7 @@ namespace VideoWeb.AcceptanceTests.Pages
             By.XPath($"//p[contains(text(),'{caseNumber}')]/../..//span");
 
         public const string AdminIframeId = "admin-frame";
-        public By AdminIframe => By.XPath($"//iframe[@id='{VhoHearingListPage.AdminIframeId}']");
+        public By AdminIframe => By.XPath($"//iframe[@id='{AdminIframeId}']");
         public By VhoHearingRows => By.XPath("//div[contains(@class,'govuk-summary-list__row')]");
         public By WaitingRoomText => CommonLocators.ElementContainingText("Waiting");
     }
