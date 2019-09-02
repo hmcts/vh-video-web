@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Support.Extensions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
@@ -84,8 +86,11 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         [When(@"the user selects the (.*) radiobutton")]
         public void WhenTheUserSelectsTheRadiobutton(string label)
-        {
+        {            
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementExists(CommonLocators.RadioButtonWithLabel(label)).Click();
+
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementExists(CommonLocators.RadioButtonWithLabel(label)).Selected
+                .Should().BeTrue();
         }
 
         [When(@"the user clicks the (.*) link")]
@@ -93,6 +98,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(CommonLocators.LinkWithText(linktext)).Displayed
                 .Should().BeTrue();
+
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(CommonLocators.LinkWithText(linktext)).Click();
         }
 
