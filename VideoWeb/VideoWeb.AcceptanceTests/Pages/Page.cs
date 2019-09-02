@@ -5,8 +5,8 @@ namespace VideoWeb.AcceptanceTests.Pages
 {
     public class Page
     {
-        public string Name { get; private set; }
-        public string Url { get; private set; }
+        public string Name { get; }
+        public string Url { get; }
 
         private Page(string name, string url)
         {
