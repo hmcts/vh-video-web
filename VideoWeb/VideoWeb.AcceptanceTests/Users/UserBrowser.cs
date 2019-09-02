@@ -66,7 +66,6 @@ namespace VideoWeb.AcceptanceTests.Users
                 .Handle<Exception>()
                 .WaitAndRetry(times, retryAttempt => TimeSpan.FromSeconds(Math.Pow(5, retryAttempt)))
                 .Execute(action);
-
         }
 
         public void BrowserTearDown()
