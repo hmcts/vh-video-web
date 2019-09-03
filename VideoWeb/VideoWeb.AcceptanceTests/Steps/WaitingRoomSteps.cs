@@ -178,7 +178,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_tc.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browsers[_tc.CurrentUser.Key].Driver.FindElement(_page.TimePanel));
 
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementExists(_page.TimePanel)
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.TimePanel)
                 .Displayed.Should().BeTrue();
 
             var backgroundColourInHex = ConvertRgbToHex(_browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementExists(_page.TimePanel)
