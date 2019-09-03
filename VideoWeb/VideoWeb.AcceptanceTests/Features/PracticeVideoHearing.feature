@@ -51,4 +51,4 @@ Scenario: Clerk does not confirm the equipment is working
 	When the user clicks the Check equipment again button
 	And the user clicks the Equipment is faulty button
 	When the user clicks the Continue button
-	Then the user is on the Hearings List page
+	Then the user is on the Hearing List page
