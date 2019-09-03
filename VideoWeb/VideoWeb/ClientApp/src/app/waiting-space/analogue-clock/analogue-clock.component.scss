@@ -227,6 +227,24 @@
   left: 50%;
 }
 
+.inner_face.isStartingWhite::before {
+  /* clock center circle small */
+  content: "";
+  width: 18px;
+  /* width of inner circle */
+  height: 18px;
+  /* height of inner circle */
+  border-radius: 18px;
+  margin-left: -9px;
+  /* set this value of 1/2 width value*/
+  margin-top: -9px;
+  /* set this value of 1/2 height value*/
+  background: govuk-colour("white");
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
 .inner_face::after {
   content: "";
   position: absolute;

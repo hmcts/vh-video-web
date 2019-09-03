@@ -59,7 +59,8 @@
   position: fixed;
   left: 50%;
   top: 70%;
-  width: max-content;
+  width: auto;
+  white-space: nowrap;
   transform: translate(-50%, -50%);
   text-align: center;
 }
