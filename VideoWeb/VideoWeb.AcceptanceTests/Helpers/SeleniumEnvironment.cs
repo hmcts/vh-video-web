@@ -91,12 +91,12 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
             caps.SetCapability("name", _scenario.Title);
             caps.SetCapability("build", $"{Environment.GetEnvironmentVariable("Build_DefinitionName")} {Environment.GetEnvironmentVariable("RELEASE_RELEASENAME")}");
-#pragma warning restore 618
+            caps.SetCapability("screenResolution", "1920x1200");
 
             // It can take quite a bit of time for some commands to execute remotely so this is higher than default
             var commandTimeout = TimeSpan.FromMinutes(3);
 
-            var remoteUrl = new System.Uri(_saucelabsSettings.RemoteServerUrl);
+            var remoteUrl = new Uri(_saucelabsSettings.RemoteServerUrl);
 
             return new RemoteWebDriver(remoteUrl, caps, commandTimeout);
         }
