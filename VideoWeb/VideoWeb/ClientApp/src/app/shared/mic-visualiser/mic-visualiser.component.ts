@@ -1,17 +1,19 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import 'webrtc-adapter';
 
 @Component({
   selector: 'app-mic-visualiser',
   templateUrl: './mic-visualiser.component.html'
 })
-export class MicVisualiserComponent implements OnInit {
+export class MicVisualiserComponent implements OnInit, OnDestroy {
 
   canvasContext: CanvasRenderingContext2D;
   audioContext: AudioContext;
-  microphone: MediaStreamAudioSourceNode;
+  source: MediaStreamAudioSourceNode;
   analyser: AnalyserNode;
-  javascriptNode: ScriptProcessorNode;
+
+  dataArray: Uint8Array;
+  rafId: number;
 
   constructor() { }
 
@@ -20,37 +22,38 @@ export class MicVisualiserComponent implements OnInit {
   ngOnInit() {
     const canvas = <HTMLCanvasElement>document.getElementById('meter');
     this.canvasContext = canvas.getContext('2d');
-    this.processStream();
+    this.setupStream();
   }
 
-  processStream() {
+  ngOnDestroy(): void {
+    cancelAnimationFrame(this.rafId);
+  }
+
+  setupStream() {
     if (!this.stream) {
       throw new Error('No stream provided');
     }
     this.audioContext = new AudioContext();
     this.analyser = this.audioContext.createAnalyser();
-    this.microphone = this.audioContext.createMediaStreamSource(this.stream);
-    this.javascriptNode = this.audioContext.createScriptProcessor(2048, 1, 1);
+    this.source = this.audioContext.createMediaStreamSource(this.stream);
+    this.source.connect(this.analyser);
     this.analyser.smoothingTimeConstant = 0.8;
     this.analyser.fftSize = 1024;
 
-    this.microphone.connect(this.analyser);
-    this.analyser.connect(this.javascriptNode);
-    this.javascriptNode.connect(this.audioContext.destination);
+    this.rafId = requestAnimationFrame(this.tick.bind(this));
+  }
 
-    const self = this;
-    this.javascriptNode.onaudioprocess = function () {
-      const array = new Uint8Array(self.analyser.frequencyBinCount);
-      self.analyser.getByteFrequencyData(array);
+  processStream() {
+    this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+    this.analyser.getByteFrequencyData(this.dataArray);
 
-      let values = 0;
-      const length = array.length;
-      for (let i = 0; i < length; i++) {
-        values += (array[i]);
-      }
-      const average = values / length;
-      self.fillMeter(Math.round(average));
-    };
+    let values = 0;
+    const length = this.dataArray.length;
+    for (let i = 0; i < length; i++) {
+      values += (this.dataArray[i]);
+    }
+    const average = values / length;
+    this.fillMeter(Math.round(average));
   }
 
   fillMeter(feedback: number) {
@@ -59,6 +62,11 @@ export class MicVisualiserComponent implements OnInit {
 
     this.canvasContext.clearRect(0, 0, width, height);
     this.canvasContext.fillStyle = 'green';
-    this.canvasContext.fillRect(0, 0, feedback * 2, height);
+    this.canvasContext.fillRect(0, 0, feedback * 1.75, height);
+  }
+
+  tick() {
+    this.processStream();
+    this.rafId = requestAnimationFrame(this.tick.bind(this));
   }
 }

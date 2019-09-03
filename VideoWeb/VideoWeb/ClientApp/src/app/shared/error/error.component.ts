@@ -18,7 +18,6 @@ export class ErrorComponent implements OnDestroy {
   constructor(private router: Router, private location: Location) {
     this.browserRefresh = false;
     this.subscription = this.router.events.subscribe((event) => {
-      console.info(event);
       if (event instanceof NavigationEnd) {
         this.browserRefresh = (event.id === 1 && event.url === event.urlAfterRedirects);
       }
