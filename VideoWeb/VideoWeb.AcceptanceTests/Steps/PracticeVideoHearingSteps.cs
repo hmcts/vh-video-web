@@ -24,7 +24,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly TestContext _tc;
         private readonly PracticeVideoHearingPage _practiceVideoHearingPage;
         private readonly CommonSteps _commonSteps;
-        private const int VideoFinishedPlayingTimeout = 90;
+        private const int VideoFinishedPlayingTimeout = 120;
         private const int Retries = 5;
 
         public PracticeVideoHearingSteps(Dictionary<string, UserBrowser> browsers, TestContext tc,

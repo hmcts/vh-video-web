@@ -104,9 +104,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheRepresentativeUserSeesAMessageThatTheRequestHasNotBeenAnswered(string user)
         {
             _commonSteps.GivenInTheUsersBrowser(user);
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_waitingRoomPage.DidNotAnswerYourCall)
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_waitingRoomPage.CallRejectedMessage)
                 .Displayed.Should().BeTrue();
         }
-
     }
 }

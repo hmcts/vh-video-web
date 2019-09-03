@@ -151,8 +151,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the conference details have been updated")]
         public void ThenTheConferenceDetailsHaveBeenUpdated()
         {
-            var conference = new ConferenceDetailsResponseBuilder(_context).GetConferenceDetails();
+            new ConferenceDetailsResponseBuilder(_context).PollForUpdatedHearing(UpdatedWord);
 
+            var conference = new ConferenceDetailsResponseBuilder(_context).GetConferenceDetails();
             conference.Case_name.Should().Contain(UpdatedWord);
             conference.Case_number.Should().Contain(UpdatedWord);
             conference.Scheduled_date_time.Should()
