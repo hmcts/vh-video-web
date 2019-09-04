@@ -100,7 +100,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _tc.Request = _tc.Get(endpoint);
             _tc.Response = _tc.VideoApiClient().Execute(_tc.Request);
             _tc.Response.StatusCode.Should().Be(HttpStatusCode.OK);
-            return ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_tc.Json);
+            return ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_tc.Response.Content);
         }
 
         private string GetJudgeParticipantId()
