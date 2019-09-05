@@ -11,8 +11,7 @@ namespace VideoWeb.AcceptanceTests.Journeys
             return new List<Page>()
             {
                 Page.Login,
-                Page.VhoHearingList,
-                Page.AdminPanel
+                Page.VhoHearingList
             };
         }
 

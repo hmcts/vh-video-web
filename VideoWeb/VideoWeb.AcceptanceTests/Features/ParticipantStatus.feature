@@ -5,7 +5,7 @@
 
 @VIH-4500
 Scenario Outline: Participants status updates
-	Given the Video Hearings Officer user has progressed to the Admin Panel page
+	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	Then the participants statuses should be Not Signed In
 	When the participants are <Status>
 	Then the participants statuses should update to <Status>
@@ -19,4 +19,4 @@ Scenario Outline: Participants status updates
 
 @VIH-4507
 Scenario: Show participant contact details to VHO
-	Given the Video Hearings Officer user has progressed to the Admin Panel page
+	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
