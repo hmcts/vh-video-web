@@ -13,7 +13,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By AlertMessage => By.XPath("//div[contains(@class,'task-body')]/p");
         public By AlertByUser => By.XPath("//div[contains(@class,'task-origin')]/p");
         public By ActionedBy(string alertType) => By.XPath($"//div[contains(@class,'task-body')]/p[contains(text(),'{alertType}')]/../..//div/p[contains(text(),':')]");
-        public By ActionedByUser(string alertType) => By.XPath($"//div[contains(@class,'task-body')]/p[contains(text(),'{alertType}')]/../..//div/p[contains(text(),'@')]");
         public By ParticipantStatusTable = By.Id("participant-status");
         public By ParticipantStatus(Guid participantId, string name) => By.XPath($"//div[@id='p-row-{participantId}']/..//p[text()!='{name}']");
     }
