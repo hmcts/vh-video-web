@@ -61,8 +61,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the participants statuses should be (.*)")]
         public void ThenTheParticipantsStatusesShouldBeNotJoined(string participantStatus)
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WrappedDriver.SwitchTo().ParentFrame();
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_adminPanelPage.ParticipantStatusTable).Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_adminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
 
             var participants = _tc.Conference.Participants.FindAll(x =>
                 x.User_role == UserRole.Individual || x.User_role == UserRole.Representative);
@@ -117,7 +116,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                     _hearingListPage.VideoHearingsOfficerSelectHearingButton(_tc.Hearing.Cases.First().Number))
                 .Click();
 
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_adminPanelPage.ParticipantStatusTable).Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_adminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
 
             var participants = _scenario.Get<List<ParticipantDetailsResponse>>(ParticipantsKey);
 

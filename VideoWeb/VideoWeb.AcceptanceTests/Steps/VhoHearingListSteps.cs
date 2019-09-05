@@ -16,6 +16,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _tc;
         private readonly VhoHearingListPage _vhoPage;
+        private readonly AdminPanelPage _adminPanelPage;
 
         public VhoHearingListSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, VhoHearingListPage vhoPage)
         {
@@ -31,10 +32,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WaitUntilVisible(
                     _vhoPage.VideoHearingsOfficerSelectHearingButton(_tc.Hearing.Cases.First().Number))
                 .Click();
-
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_vhoPage.AdminIframe).Displayed.Should().BeTrue();
-            _browsers[_tc.CurrentUser.Key].Driver.SwitchTo().Frame(VhoHearingListPage.AdminIframeId);
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_vhoPage.WaitingRoomText).Displayed.Should().BeTrue();
+;
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_adminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
         }
 
         [Then(@"the VHO can see a list of hearings including the new hearing")]

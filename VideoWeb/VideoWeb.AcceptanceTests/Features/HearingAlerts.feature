@@ -5,7 +5,7 @@
 
 @VIH-4417
 Scenario: Video Hearings Officer receieves media blocked alert
-	Given the Video Hearings Officer user has progressed to the Admin Panel page
+	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	When a participant has chosen to block user media
 	Then the Video Hearings Officer user should see a Not Started notification and a Media blocked alert
 	When the user selects the Media blocked alert
@@ -14,7 +14,7 @@ Scenario: Video Hearings Officer receieves media blocked alert
 
 @VIH-4419
 Scenario: Video Hearings Officer receieves suspended alert
-	Given the Video Hearings Officer user has progressed to the Admin Panel page
+	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	When the judge has disconnected from the hearing
 	Then the Video Hearings Officer user should see a Suspended notification and a Suspended alert
 	When the user selects the Suspended alert
@@ -23,7 +23,7 @@ Scenario: Video Hearings Officer receieves suspended alert
 
 @VIH-1630 @VIH-4418
 Scenario Outline: Video Hearings Officer receieves disconnected alert
-	Given the Video Hearings Officer user has progressed to the Admin Panel page
+	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	When a <Participant> has disconnected from the <Room>
 	Then the Video Hearings Officer user should see a <Notification> notification and a Disconnected alert
 	When the user selects the Disconnected alert
@@ -39,7 +39,7 @@ Scenario Outline: Video Hearings Officer receieves disconnected alert
 
 @VIH-1630 @VIH-4416
 Scenario Outline: Video Hearings Officer receieves failed self test alert
-	Given the Video Hearings Officer user has progressed to the Admin Panel page
+	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	When a participant has failed the self-test with <Reason>
 	Then the Video Hearings Officer user should see a Not Started notification and a <Reason> alert
 	When the user selects the <Reason> alert
@@ -53,7 +53,7 @@ Scenario Outline: Video Hearings Officer receieves failed self test alert
 
 @VIH-4418
 Scenario: Video Hearings Officer does not receive disconnected alert when hearing is closed
-	Given the Video Hearings Officer user has progressed to the Admin Panel page
+	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	When the hearing has been closed
 	And a Participant has disconnected from the HearingRoom
 	Then the Video Hearings Officer user should not see an alert
