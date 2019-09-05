@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using OpenQA.Selenium.Interactions;
-using OpenQA.Selenium.Support.Extensions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
