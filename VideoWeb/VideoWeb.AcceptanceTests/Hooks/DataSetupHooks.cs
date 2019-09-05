@@ -13,11 +13,12 @@ namespace VideoWeb.AcceptanceTests.Hooks
     {
         [BeforeScenario]
         [AfterScenario]
-        private static void ClearHearings(TestContext context, HearingsEndpoints endpoints)
+        private static void ClearHearingsForClerk(TestContext context, HearingsEndpoints endpoints)
         {
             context.Request = context.Get(endpoints.GetHearingsByUsername(context.GetClerkUser().Username));
             context.Response = context.BookingsApiClient().Execute(context.Request);
             var hearings = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingDetailsResponse>>(context.Response.Content);
+            if (hearings == null) return;
             foreach (var hearing in hearings)
             {
                 context.Request = context.Delete(endpoints.RemoveHearing(hearing.Id));
