@@ -26,7 +26,7 @@ namespace VideoWeb.AcceptanceTests.Users
         private void SetFileName(UserAccount user)
         {
             if (user.Role.Equals("Video Hearings Officer")) return;
-            _videoFileName = user.Role.Equals("Judge") ? "clerk.y4m" : $"{user.Lastname.ToLower()}.y4m";
+            _videoFileName = user.Role.Equals("Judge") || user.Role.Equals("Clerk") ? "clerk.y4m" : $"{user.Lastname.ToLower()}.y4m";
         }
 
         public void LaunchBrowser()

@@ -18,7 +18,7 @@ namespace VideoWeb.AcceptanceTests.Builders
         private const int MaxRetries = 5;
         private readonly TimeSpan _delay = TimeSpan.FromSeconds(1);
         private bool _expectTheParticipantToExist;
-        private Services.Bookings.UpdateParticipantRequest _updateRequest;
+        private UpdateParticipantRequest _updateRequest;
 
         public ConferenceDetailsResponseBuilder(TestContext context)
         {
@@ -48,6 +48,22 @@ namespace VideoWeb.AcceptanceTests.Builders
         {
             _updateRequest = updateRequest;
             return this;
+        }
+
+        public bool PollForUpdatedHearing(string updatedWord)
+        {
+            for (var i = 0; i < MaxRetries; i++)
+            {
+                var conference = GetConferenceDetails();
+
+                if (conference.Case_name.Contains(updatedWord))
+                {
+                    return true;
+                }
+                Thread.Sleep(_delay);
+            }
+
+            return false;
         }
 
         public bool PollForParticipant()

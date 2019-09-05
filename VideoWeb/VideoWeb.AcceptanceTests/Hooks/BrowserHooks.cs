@@ -12,7 +12,6 @@ using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Users;
 using VideoWeb.Common.Security;
-using VideoWeb.Common.Security.HashGen;
 using TestContext = VideoWeb.AcceptanceTests.Contexts.TestContext;
 
 namespace VideoWeb.AcceptanceTests.Hooks
@@ -44,6 +43,8 @@ namespace VideoWeb.AcceptanceTests.Hooks
         {
             var azureAdConfiguration = new BookingsConfigLoader().ReadAzureAdSettings();
             testContext.CustomTokenSettings = new BookingsConfigLoader().ReadCustomTokenSettings();
+            testContext.CustomTokenSettings.Secret.Should().NotBeNullOrEmpty();
+            testContext.CustomTokenSettings.ThirdPartySecret.Should().NotBeNullOrEmpty();
 
             var testSettings = new BookingsConfigLoader().ReadTestSettings();
             testSettings.UserAccounts = new BookingsConfigLoader().ReadUserAccountSettings();
@@ -151,7 +152,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             if (_saucelabsSettings.RunWithSaucelabs)
             {
                 var passed = _scenarioContext.TestError == null;
-                SaucelabsResult.LogPassed(passed, browsers[context.CurrentUser.Key].Driver);
+                LogResultToSaucelabsEvenWithNoDriver(browsers, context, passed);
             }
 
             foreach (var browser in browsers.Values)
@@ -171,6 +172,18 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 {
                     NUnit.Framework.TestContext.WriteLine(ex.Message);
                 }
+            }
+        }
+
+        private static void LogResultToSaucelabsEvenWithNoDriver(IReadOnlyDictionary<string, UserBrowser> browsers, TestContext context, bool passed)
+        {
+            if (browsers.Count.Equals(0))
+            {
+                SaucelabsResult.LogPassed(passed, context.Environment);
+            }
+            else
+            {
+                SaucelabsResult.LogPassed(passed, browsers[context.CurrentUser.Key].Driver);
             }
         }
     }

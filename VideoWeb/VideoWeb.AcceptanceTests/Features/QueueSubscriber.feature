@@ -25,11 +25,6 @@ Scenario: Hearing Deleted
 	When I attempt to delete the hearing
 	Then the conference has been deleted 
 
-Scenario: Hearing Is Ready For Video Updates the main hearing details
-	Given I have a hearing and a conference
-	When I attempt to update the hearing details
-	Then the conference details have been updated
-
 Scenario: Participant Added
 	Given I have a hearing and a conference
 	When I add a participant to the hearing

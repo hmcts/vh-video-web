@@ -9,7 +9,6 @@ using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.AcceptanceTests.Strategies;
 using VideoWeb.AcceptanceTests.Strategies.HearingStatus;
 using VideoWeb.AcceptanceTests.Users;
 using VideoWeb.Common.Helpers;
@@ -20,7 +19,7 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public sealed class HearingsStatusSteps
     {
-        private const int MaxRetries = 10;
+        private const int MaxRetries = 20;
         private readonly TestContext _tc;
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly VhoHearingListPage _hearingListPage;
@@ -72,7 +71,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Then(@"the hearing status changed to (.*)")]
-        public void ThenTheHearingStatusChangesToPaused(ConferenceState state)
+        public void ThenTheHearingStatusChanges(ConferenceState state)
         {
             var isUpdatedState = false;
             for (var i = 0; i < MaxRetries; i++)
@@ -83,10 +82,10 @@ namespace VideoWeb.AcceptanceTests.Steps
                     isUpdatedState = true;
                     break;
                 }
-                Thread.Sleep(TimeSpan.FromSeconds(1));
+                Thread.Sleep(TimeSpan.FromSeconds(3));
             }
 
-            isUpdatedState.Should().BeTrue();
+            isUpdatedState.Should().BeTrue($"Hearing status has been updated to {state}");
         }
 
         private ConferenceDetailsResponse GetConferenceDetails()
@@ -101,7 +100,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _tc.Request = _tc.Get(endpoint);
             _tc.Response = _tc.VideoApiClient().Execute(_tc.Request);
             _tc.Response.StatusCode.Should().Be(HttpStatusCode.OK);
-            return ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_tc.Json);
+            return ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_tc.Response.Content);
         }
 
         private string GetJudgeParticipantId()
