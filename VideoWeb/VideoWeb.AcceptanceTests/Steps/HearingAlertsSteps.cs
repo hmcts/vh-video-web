@@ -153,7 +153,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_tc.CurrentUser.Key].Driver.Navigate().Refresh();
 
-            _scenarioContext.Pending();
+            _browsers[_tc.CurrentUser.Key].Driver
+                .WaitUntilVisible(
+                    _hearingListPage.VideoHearingsOfficerSelectHearingButton(_tc.Hearing.Cases.First().Number))
+                .Click();
+
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementNotVisible(_adminPanelPage.AlertsHeader)
+                .Should().BeTrue("Alerts box should not be visible.");
         }
 
         [Then(@"the Video Hearings Officer user should see a (.*) notification and a (.*) alert")]
@@ -176,7 +182,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                     _hearingListPage.VideoHearingsOfficerSelectHearingButton(_tc.Hearing.Cases.First().Number))
                 .Click();
 
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_hearingListPage.AdminIframe).Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_adminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
 
             var alerts = GetAlerts();
             var timeOfAlert = _scenarioContext.Get<DateTime>(AlertTimeKey).ToString(DateFormats.AlertMessageTimestamp);
@@ -261,8 +267,9 @@ namespace VideoWeb.AcceptanceTests.Steps
                 };
                 if (!_browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementsVisible(_adminPanelPage.AlertCheckboxes)[i].Enabled)
                 {
-                    alert.ActionedAt = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_adminPanelPage.ActionedByTimestamp(alert.AlertType)).Text;
-                    alert.ActionedBy = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_adminPanelPage.ActionedByUser(alert.AlertType)).Text;
+                    var actionedByDetails = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_adminPanelPage.ActionedBy(alert.AlertType)).Text;
+                    alert.ActionedBy = actionedByDetails.Split(" ")[0].Trim();
+                    alert.ActionedAt = actionedByDetails.Split(" ")[1].Trim();
                 }
                 alerts.Add(alert);
             }
