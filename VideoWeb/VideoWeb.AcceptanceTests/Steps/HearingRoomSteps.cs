@@ -109,7 +109,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the participant is back in the hearing")]
         public void ThenTheParticipantIsBackInTheHearing()
         {
-            new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(_page.IncomingVideo);
+            new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(_page.ParticipantIncomingVideo);
         }
 
     }

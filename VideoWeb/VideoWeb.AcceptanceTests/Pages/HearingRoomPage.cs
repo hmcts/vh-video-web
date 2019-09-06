@@ -18,6 +18,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By ToggleSelfview = By.Id("selfViewButton");
 
         public By IncomingVideo = By.Id("incomingVideo");
+        public By ParticipantIncomingVideo = By.Id("incomingFeed");
         public By SelfView = By.Id("selfviewVideo");
 
         public By PauseSelectWindowText = CommonLocators.ElementContainingText("Do you wish to pause the hearing?");
