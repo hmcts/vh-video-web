@@ -105,5 +105,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.ToggleSelfview).Click();
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.SelfView).Displayed.Should().BeTrue();
         }
+
+        [Then(@"the participant is back in the hearing")]
+        public void ThenTheParticipantIsBackInTheHearing()
+        {
+            new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(_page.IncomingVideo);
+        }
+
     }
 }

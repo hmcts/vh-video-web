@@ -38,7 +38,7 @@ Scenario: Clerk pauses hearing
 	When the countdown finishes
 	Then the user is on the Hearing Room page
 	When in Individual01's browser
-	Then the user is on the Hearing Room page
+	Then the participant is back in the hearing
 
 @Chrome @Video @VIH-4615
 Scenario: Clerk closes hearing
