@@ -37,9 +37,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"a participant has chosen to block user media")]
         public void WhenAParticipantHasChosenToBlockUserMedia()
         {
+            var participantUser = GetUserFromConferenceDetails(UserRole.Individual.ToString());
+
             var request = new EventRequestBuilder()
                 .WithConferenceId(_tc.NewConferenceId)
-                .WithParticipantId(GetJudgeParticipantId())
+                .WithParticipantId(participantUser.Id.ToString())
                 .WithEventType(EventType.MediaPermissionDenied)
                 .Build();
 
@@ -55,7 +57,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var request = new EventRequestBuilder()
                 .WithConferenceId(_tc.NewConferenceId)
-                .WithParticipantId(GetJudgeParticipantId())
+                .WithParticipantId(GetClerkParticipantId())
                 .WithEventType(EventType.Disconnected)
                 .WithRoomType(RoomType.HearingRoom)
                 .Build();
@@ -70,12 +72,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"a (.*) has disconnected from the (.*)")]
         public void WhenAParticipantHasDisconnectedFromTheHearing(string participant, RoomType room)
         {
-            var participantId = participant.Equals("Judge") || participant.Equals("Clerk") ? GetJudgeParticipantId() : GetIndividualParticipantId();
-            _scenarioContext.Add(ParticipantKey, participantId);
+            var participantUser = GetUserFromConferenceDetails(participant);
 
             var request = new EventRequestBuilder()
                 .WithConferenceId(_tc.NewConferenceId)
-                .WithParticipantId(participantId)
+                .WithParticipantId(participantUser.Id.ToString())
                 .WithEventType(EventType.Disconnected)
                 .WithRoomType(room)
                 .Build();
@@ -85,6 +86,19 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
                 .Execute();
+        }
+
+        private ParticipantDetailsResponse GetUserFromConferenceDetails(string userRole)
+        {
+            var participantUser = userRole.ToLower().Equals("judge") || userRole.ToLower().Equals("clerk")
+                ? _tc.Conference.Participants.Find(x => x.User_role.Equals(UserRole.Judge))
+                : _tc.Conference.Participants.Find(x => x.User_role.Equals(UserRole.Individual));
+
+            if (participantUser.Id == null)
+                throw new DataMisalignedException("Participant Id is not set");
+
+            _scenarioContext.Add(ParticipantKey, participantUser);
+            return participantUser;
         }
 
         [When(@"a participant has failed the self-test")]
@@ -133,7 +147,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var request = new EventRequestBuilder()
                 .WithConferenceId(_tc.NewConferenceId)
-                .WithParticipantId(GetJudgeParticipantId())
+                .WithParticipantId(GetClerkParticipantId())
                 .WithEventType(EventType.Close)
                 .WithRoomType(RoomType.HearingRoom)
                 .Build();
@@ -205,7 +219,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             }
             alertTypeExists.Should().BeTrue();
 
-            if (alertType.Equals("Blocked media") || alertType.Equals("Disconnected"))
+            if (alertType.ToLower().Equals("media blocked") || alertType.ToLower().Equals("disconnected"))
             {
                 alerts.First(x => x.AlertType.ToLower().Equals(alertType.ToLower())).Username.Should()
                     .Be(_scenarioContext.Get<ParticipantDetailsResponse>(ParticipantKey).Name);
@@ -239,7 +253,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             alert.ActionedBy.Should().Be(_tc.CurrentUser.Username.ToLower());
         }
 
-        private string GetJudgeParticipantId()
+        private string GetClerkParticipantId()
         {
             return _tc.Conference.Participants.Find(x => x.User_role.Equals(UserRole.Judge)).Id.ToString();
         }
