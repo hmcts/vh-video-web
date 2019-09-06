@@ -32,7 +32,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly Page NotFound = new Page("Not Found", "not-found");
         public static readonly Page Unauthorised = new Page("Unauthorised", "unauthorised");
         public static readonly Page Help = new Page("Help", "get-help");
-        public static readonly Page AdminPanel = new Page("Admin Panel", "hearing-list");
 
         public string ToString(Page page)
         {
@@ -57,6 +56,7 @@ namespace VideoWeb.AcceptanceTests.Pages
             {
                 yield return Login;
                 yield return HearingList;
+                yield return VhoHearingList;
                 yield return Introduction;
                 yield return EquipmentCheck;
                 yield return SwitchOnCamAndMic;
@@ -72,7 +72,6 @@ namespace VideoWeb.AcceptanceTests.Pages
                 yield return NotFound;
                 yield return Unauthorised;
                 yield return Help;
-                yield return AdminPanel;
             }
         }
     }

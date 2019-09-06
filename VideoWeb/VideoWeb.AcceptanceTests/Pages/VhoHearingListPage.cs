@@ -14,12 +14,8 @@ namespace VideoWeb.AcceptanceTests.Pages
             By.XPath($"//p[contains(text(),'{caseNumber}')]/../../..//p[contains(text(),'Alert')]");
         public By VideoHearingsOfficerAlertType(string caseNumber) =>
             By.XPath($"//p[contains(text(),'{caseNumber}')]/../..//span");
-
         public By VideoHearingsOfficerSelectHearingButton(string caseNumber) =>
             By.XPath($"//p[contains(text(),'{caseNumber}')]/../..//span");
-
-        public const string AdminIframeId = "admin-frame";
-        public By AdminIframe => By.XPath($"//iframe[@id='{AdminIframeId}']");
         public By VhoHearingRows => By.XPath("//div[contains(@class,'govuk-summary-list__row')]");
         public By WaitingRoomText => CommonLocators.ElementContainingText("Waiting");
     }
