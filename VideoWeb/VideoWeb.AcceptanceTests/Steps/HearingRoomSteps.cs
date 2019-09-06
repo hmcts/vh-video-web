@@ -19,6 +19,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly TestContext _tc;
         private readonly HearingRoomPage _page;
         private const int CountdownDuration = 30;
+        private const int ExtraTimeAfterTheCountdown = 10;
 
         public HearingRoomSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, HearingRoomPage page)
         {
@@ -36,6 +37,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_tc.CurrentUser.Key].Driver.SwitchTo().Frame(HearingRoomPage.JudgeIframeId);
 
             new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(_page.IncomingVideo);
+
+            Thread.Sleep(TimeSpan.FromSeconds(ExtraTimeAfterTheCountdown));
         }
 
         [When(@"the Clerk clicks pause")]

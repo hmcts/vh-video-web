@@ -30,9 +30,15 @@ Scenario: Clerk pauses hearing
 	Then the user is on the Waiting Room page
 	And the Clerk waiting room displays the paused status
 	And the hearing status changed to Paused
-	When in the Individual01's browser
+	When in Individual01's browser
 	Then the participants waiting room displays the paused status
+	When in the Clerk's browser
 	And the Clerk resumes the hearing
+	Then the user is on the Countdown page
+	When the countdown finishes
+	Then the user is on the Hearing Room page
+	When in Individual01's browser
+	Then the user is on the Hearing Room page
 
 @Chrome @Video @VIH-4615
 Scenario: Clerk closes hearing
@@ -46,7 +52,7 @@ Scenario: Clerk closes hearing
 	When the Clerk clicks close
 	Then the user is on the Hearing List page
 	And the hearing status changed to Closed
-	When in the Individual01's browser
+	When in Individual01's browser
 	Then the participants waiting room displays the closed status
 
 @Chrome @Video

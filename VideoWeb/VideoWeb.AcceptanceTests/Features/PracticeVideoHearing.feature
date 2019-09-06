@@ -37,7 +37,7 @@ Scenario: Clerk confirms the equipment is working
 	Given the Clerk Self Test user has progressed to the Practice video hearing page
 	Then the incoming and self video should be playing video
 	When the user clicks the Equipment is working button
-	Then the user is on the Hearings List page
+	Then the user is on the Hearing List page
 
 @VIH-4671 @Chrome @Firefox @Video
 Scenario: Clerk does not confirm the equipment is working
