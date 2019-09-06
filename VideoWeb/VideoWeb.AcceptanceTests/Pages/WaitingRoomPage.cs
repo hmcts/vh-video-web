@@ -37,9 +37,7 @@ namespace VideoWeb.AcceptanceTests.Pages
 
         public By PrivateConsultationLink(string participantId) => By.XPath($"//div[@id='p-row-{participantId}']/a");
         public By OutgoingCallMessage => CommonLocators.ElementContainingText("Your contact request has been sent to");
-        public By IncomingCallMessage => CommonLocators.ElementContainingText("Incoming call");
-        public By AcceptedYourCall(string user) => CommonLocators.ElementContainingText($"{user} has accepted your call");
-        public By DidNotAnswerYourCall => CommonLocators.ElementContainingText($"did not answer your call");
+        public By IncomingCallMessage => CommonLocators.ElementContainingText("Incoming call");       
         public By Frame => By.XPath("//app-participant-waiting-room");
         public By IncomingVideo => By.XPath("//video[@id='incomingFeed']");
         public By SelfViewButton => By.Id("outgoingFeedButton");

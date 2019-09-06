@@ -61,6 +61,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the participants statuses should be (.*)")]
         public void ThenTheParticipantsStatusesShouldBeNotJoined(string participantStatus)
         {
+            _browsers[_tc.CurrentUser.Key].Driver
+                .WaitUntilVisible(
+                    _hearingListPage.VideoHearingsOfficerSelectHearingButton(_tc.Hearing.Cases.First().Number))
+                .Click();
+
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_adminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
 
             var participants = _tc.Conference.Participants.FindAll(x =>

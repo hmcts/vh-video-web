@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using FluentAssertions;
 using OpenQA.Selenium.Support.Extensions;
 using TechTalk.SpecFlow;
@@ -22,6 +23,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly WaitingRoomPage _page;
         private readonly ClerkWaitingRoomPage _clerkPage;
         private readonly CommonSteps _commonSteps;
+        private const int ExtraTimeInWaitingRoomAfterThePause = 10;
 
         public WaitingRoomSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext,
             WaitingRoomPage page, ClerkWaitingRoomPage clerkPage, CommonSteps commonSteps)
@@ -37,6 +39,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenTheUserNavigatesBackToTheHearingList()
         {
             _browsers[_tc.CurrentUser.Key].Driver.ClickAndWaitForPageToLoad(_clerkPage.ReturnToHearingRoomLink);
+        }
+
+        [When(@"the Clerk resumes the hearing")]
+        public void ThenTheUserResumesTheHearing()
+        {
+            Thread.Sleep(TimeSpan.FromSeconds(ExtraTimeInWaitingRoomAfterThePause));
+            _browsers[_tc.CurrentUser.Key].Driver.ClickAndWaitForPageToLoad(_clerkPage.ResumeVideoCallButton);
         }
 
         [Then(@"the participant status for (.*) is displayed as (.*)")]
@@ -228,12 +237,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheWaitingRoomDisplaysTheClosedStatus()
         {
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.ClosedTitle).Displayed.Should().BeTrue();
-        }
-
-        [Then(@"the Clerk resumes the hearing")]
-        public void ThenTheUserResumesTheHearing()
-        {
-            _browsers[_tc.CurrentUser.Key].Driver.ClickAndWaitForPageToLoad(_clerkPage.ResumeVideoCallButton);
         }
 
         private static string ConvertRgbToHex(string rgbCssValue)

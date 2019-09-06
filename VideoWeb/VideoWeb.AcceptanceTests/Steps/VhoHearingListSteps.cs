@@ -18,11 +18,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly VhoHearingListPage _vhoPage;
         private readonly AdminPanelPage _adminPanelPage;
 
-        public VhoHearingListSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, VhoHearingListPage vhoPage)
+        public VhoHearingListSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, VhoHearingListPage vhoPage, AdminPanelPage adminPanelPage)
         {
             _browsers = browsers;
             _tc = testContext;
             _vhoPage = vhoPage;
+            _adminPanelPage = adminPanelPage;
         }
 
         [When(@"the VHO selects the hearing")]
@@ -60,14 +61,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the VHO can see the hearing view")]
         public void ThenTheVhoCanSeeTheHearingView()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_vhoPage.WaitingRoomText).Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_adminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
         }
 
         [Then(@"the VHO should see the participant contact details")]
         public void ThenTheVhoShouldSeeTheParticipantContactDetails()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WrappedDriver.SwitchTo().ParentFrame();
-
             var hearingParticipants = _tc.Hearing.Participants.FindAll(x =>
                 x.User_role_name.Equals("Individual") || x.User_role_name.Equals("Representative"));
 

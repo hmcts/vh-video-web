@@ -41,12 +41,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             browser.Retry(() => browser.PageUrl().Should().Contain("login.microsoftonline.com"), 10);
         }
 
-        [Given(@"in the (.*)'s browser")]
+        [Given(@"in (.*)'s browser")]
         [When(@"in (.*)'s browser")]
-        [When(@"in the (.*)'s browser")]
-        [Then(@"in the (.*)'s browser")]
+        [Then(@"in (.*)'s browser")]
         public void GivenInTheUsersBrowser(string user)
         {
+            user = user.Replace("the ", "");
+
             SwitchCurrentUser(user);
 
             _browsers[_tc.CurrentUser.Key].Driver.SwitchTo().Window(_browsers[_tc.CurrentUser.Key].LastWindowName);
