@@ -19,6 +19,7 @@ export class VideoCheckComponent implements OnInit {
   submitted = false;
   conferenceId: string;
   conference: ConferenceResponse;
+  participantId: string;
 
   constructor(
     private router: Router,
@@ -39,7 +40,12 @@ export class VideoCheckComponent implements OnInit {
   getConference(): void {
     this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
     this.videoWebService.getConferenceById(this.conferenceId)
-      .subscribe((conference) => this.conference = conference,
+      .subscribe((conference) => {
+        this.conference = conference;
+        const participant = this.conference.participants.
+          find(x => x.username.toLocaleLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
+        this.participantId = participant.id.toString();
+      },
         (error) => {
           if (!this.errorService.returnHomeIfUnauthorised(error)) {
             this.errorService.handleApiError(error);
@@ -57,13 +63,9 @@ export class VideoCheckComponent implements OnInit {
     this.submitted = true;
     if (this.form.invalid) {
       if (this.videoCheck.value === 'No') {
-
-        const participant = this.conference.participants.
-          find(x => x.username.toLocaleLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
-
         this.videoWebService.raiseSelfTestFailureEvent(this.conferenceId,
           new AddSelfTestFailureEventRequest({
-            participant_id: participant.id.toString(),
+            participant_id: this.participantId,
             self_test_failure_reason: SelfTestFailureReason.Video
           }))
           .subscribe(x => { },
