@@ -26,6 +26,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly CommonSteps _commonSteps;
         private const int VideoFinishedPlayingTimeout = 120;
         private const int Retries = 5;
+        private const int ExtraTimeoutToLoadVideoFromKinly = 60;
 
         public PracticeVideoHearingSteps(Dictionary<string, UserBrowser> browsers, TestContext tc,
             PracticeVideoHearingPage practiceVideoHearingPage, CommonSteps commonSteps)
@@ -117,7 +118,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         public void ProgressToNextPage()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_practiceVideoHearingPage.IncomingVideo)
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_practiceVideoHearingPage.IncomingVideo, ExtraTimeoutToLoadVideoFromKinly)
                 .Displayed.Should().BeTrue();
             _browsers[_tc.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browsers[_tc.CurrentUser.Key].Driver.FindElement(CommonLocators.ButtonWithLabel("Continue")));
             _commonSteps.WhentheUserClicksTheButton("Continue");

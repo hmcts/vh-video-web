@@ -17,6 +17,5 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By VideoHearingsOfficerSelectHearingButton(string caseNumber) =>
             By.XPath($"//p[contains(text(),'{caseNumber}')]/../..//span");
         public By VhoHearingRows => By.XPath("//div[contains(@class,'govuk-summary-list__row')]");
-        public By WaitingRoomText => CommonLocators.ElementContainingText("Waiting");
     }
 }
