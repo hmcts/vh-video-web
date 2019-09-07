@@ -174,7 +174,7 @@ export class JudgeParticipantStatusListComponent implements OnInit {
     } else if (participant.status === ParticipantStatus.InConsultation) {
       return 'in a consultation';
     } else if (participant.status === ParticipantStatus.InHearing) {
-      return 'in a hearing';
+      return 'connected';
     } else if (participant.status === ParticipantStatus.Joining) {
       return 'joining';
     } else if (participant.status === ParticipantStatus.NotSignedIn) {
