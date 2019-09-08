@@ -25,7 +25,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly PracticeVideoHearingPage _practiceVideoHearingPage;
         private readonly CommonSteps _commonSteps;
         private const int VideoFinishedPlayingTimeout = 120;
-        private const int Retries = 5;
+        private const int Retries = 10;
         private const int ExtraTimeoutToLoadVideoFromKinly = 60;
 
         public PracticeVideoHearingSteps(Dictionary<string, UserBrowser> browsers, TestContext tc,
@@ -86,7 +86,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var endpoint = new VideoWebParticipantsEndpoints();
             var participantId = _tc.Conference.Participants
-                .Find(x => x.Display_name.Equals(_tc.CurrentUser.Displayname)).Id;
+                .Find(x => x.Display_name.ToLower().Equals(_tc.CurrentUser.Displayname.ToLower())).Id;
             _tc.Request = _tc.Get(endpoint.SelfTestResult(_tc.NewConferenceId, participantId));
 
             var found = false;
@@ -98,7 +98,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                     found = true;
                     break;
                 }
-                Thread.Sleep(TimeSpan.FromSeconds(1));
+                Thread.Sleep(TimeSpan.FromSeconds(3));
             }
 
             found.Should().BeTrue();
