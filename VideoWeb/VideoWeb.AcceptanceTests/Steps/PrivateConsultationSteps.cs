@@ -19,7 +19,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly TestContext _tc;
         private readonly CommonSteps _commonSteps;
         private readonly WaitingRoomPage _page;
-        private const int SecondsWaitToCallAndAnswers = 3;
+        private const int SecondsWaitToCallAndAnswer = 3;
 
         public PrivateConsultationSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, 
             CommonSteps commonSteps, WaitingRoomPage page)
@@ -36,7 +36,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.TimePanel)
                 .Displayed.Should().BeTrue();
 
-            Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitToCallAndAnswers));
+            Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitToCallAndAnswer));
 
             var participantId = _tc.Conference.Participants.First(x => x.Name.ToLower().Contains(user.ToLower())).Id;
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.PrivateConsultationLink(participantId.ToString())).Click();
@@ -49,7 +49,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _commonSteps.GivenInTheUsersBrowser(user);
 
-            Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitToCallAndAnswers));
+            Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitToCallAndAnswer));
 
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.IncomingCallMessage)
                 .Displayed.Should().BeTrue();
