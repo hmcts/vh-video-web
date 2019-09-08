@@ -31,7 +31,8 @@
               "src/scripts/pexrtc.js",
               "src/scripts/EdgePF.js",
               "src/scripts/IEPF.js",
-              "src/scripts/Heartbeat.js"
+              "src/scripts/Heartbeat.js",
+              "src/scripts/adapter.debug.js"
             ]
           },
           "configurations": {
@@ -88,7 +89,8 @@
               "src/scripts/pexrtc.js",
               "src/scripts/EdgePF.js",
               "src/scripts/IEPF.js",
-              "src/scripts/Heartbeat.js"
+              "src/scripts/Heartbeat.js",
+              "src/scripts/adapter.debug.js"
             ],
             "assets": [
               "src/assets"
