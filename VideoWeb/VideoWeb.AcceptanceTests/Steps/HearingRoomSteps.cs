@@ -20,6 +20,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly HearingRoomPage _page;
         private const int CountdownDuration = 30;
         private const int ExtraTimeAfterTheCountdown = 10;
+        private const int PauseCloseTransferDuration = 10;
 
         public HearingRoomSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, HearingRoomPage page)
         {
@@ -45,12 +46,16 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenTheUserClicksPause()
         {
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementClickable(_page.PauseButton).Click();
+
+            Thread.Sleep(TimeSpan.FromSeconds(PauseCloseTransferDuration));
         }
 
         [When(@"the Clerk clicks close")]
         public void WhenTheUserClicksClose()
         {
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementClickable(_page.CloseButton).Click();
+
+            Thread.Sleep(TimeSpan.FromSeconds(PauseCloseTransferDuration));
         }
 
         [Then(@"the Clerk is on the Hearing Room page for (.*) seconds")]
@@ -111,6 +116,5 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(_page.ParticipantIncomingVideo);
         }
-
     }
 }
