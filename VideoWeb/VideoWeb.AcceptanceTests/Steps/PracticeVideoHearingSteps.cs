@@ -90,19 +90,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .Find(x => x.Display_name.ToLower().Equals(_tc.CurrentUser.Displayname.ToLower())).Id;
             _tc.Request = _tc.Get(endpoint.GetSelfTestScore(_tc.NewConferenceId, participantId));
 
-            var found = false;
-            for (var i = 0; i < Retries; i++)
-            {
-                _tc.Response = _tc.VideoApiClient().Execute(_tc.Request);
-                if (_tc.Response.StatusCode.Equals(HttpStatusCode.OK))
-                {
-                    found = true;
-                    break;
-                }
-                Thread.Sleep(TimeSpan.FromSeconds(Delay));
-            }
+            PollForTestScore();
 
-            found.Should().BeTrue($"Expected the status code after {Retries * Delay} seconds to be OK, but found {_tc.Response.StatusCode}");
             var selfScore = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<TestCallScoreResponse>(_tc.Response.Content);
             selfScore.Score.ToString().Should().ContainAny("Good", "Okay", "Bad");
         }
@@ -115,6 +104,25 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_practiceVideoHearingPage.TellParticipantsText)
                 .Displayed.Should().BeTrue();
+        }
+
+        private void PollForTestScore()
+        {
+            var found = false;
+            for (var i = 0; i < Retries; i++)
+            {
+                _tc.Response = _tc.VideoApiClient().Execute(_tc.Request);
+                if (_tc.Response.StatusCode.Equals(HttpStatusCode.OK))
+                {
+                    found = true;
+                    break;
+                }
+
+                Thread.Sleep(TimeSpan.FromSeconds(Delay));
+            }
+
+            found.Should().BeTrue(
+                    $"Expected the status code after {Retries * Delay} seconds to be OK, but found {_tc.Response.StatusCode}");
         }
 
         public void ProgressToNextPage()
