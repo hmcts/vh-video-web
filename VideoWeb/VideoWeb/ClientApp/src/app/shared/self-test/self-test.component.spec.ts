@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { configureTestSuite } from 'ng-bullet';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { TestCallScoreResponse, TestScore } from 'src/app/services/clients/api-client';
+import { TestCallScoreResponse, TestScore, AddSelfTestFailureEventRequest, SelfTestFailureReason } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
@@ -20,6 +20,7 @@ describe('SelfTestComponent', () => {
     let component: SelfTestComponent;
     let fixture: ComponentFixture<SelfTestComponent>;
     let userMediaService: MockUserMediaService;
+    let videoWebService: MockVideoWebService;
     let pexipSpy: any;
     let userMediaStreamServiceSpy: jasmine.SpyObj<UserMediaStreamService>;
     const testData = new ConferenceTestData();
@@ -51,6 +52,7 @@ describe('SelfTestComponent', () => {
         component.conference = testData.getConferenceDetail();
         component.participant = component.conference.participants[0];
         userMediaService = TestBed.get(UserMediaService);
+        videoWebService = TestBed.get(VideoWebService);
         spyOn(component, 'call').and.callFake(() => { });
         spyOn(component, 'disconnect').and.callFake(() => { });
         fixture.detectChanges();
@@ -78,5 +80,27 @@ describe('SelfTestComponent', () => {
 
         component.publishTestResult();
         expect(component.disconnect).toHaveBeenCalled();
+    });
+
+    it('should raise failed self test event when test score is bad', async () => {
+        spyOn(videoWebService, 'raiseSelfTestFailureEvent');
+        component.testCallResult = new TestCallScoreResponse({ passed: false, score: TestScore.Bad });
+        await component.ngOnDestroy();
+        const request = new AddSelfTestFailureEventRequest({
+            participant_id: component.participant.id,
+            self_test_failure_reason: SelfTestFailureReason.BadScore
+        });
+        expect(videoWebService.raiseSelfTestFailureEvent).toHaveBeenCalledWith(component.conference.id, request);
+    });
+
+    it('should raise failed self test event when test is incomplete', async () => {
+        spyOn(videoWebService, 'raiseSelfTestFailureEvent');
+        component.testCallResult = null;
+        await component.ngOnDestroy();
+        const request = new AddSelfTestFailureEventRequest({
+            participant_id: component.participant.id,
+            self_test_failure_reason: SelfTestFailureReason.IncompleteTest
+        });
+        expect(videoWebService.raiseSelfTestFailureEvent).toHaveBeenCalledWith(component.conference.id, request);
     });
 });
