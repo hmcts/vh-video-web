@@ -80,7 +80,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void GetTheNewConferenceDetails()
         {
             IConferenceRetriever conferenceRetriever;
-            if (_context.RunningLocally)
+            if (_context.RunningVideoApiLocally)
             {
                 conferenceRetriever = new RetrieveConferenceLocally();
             }
