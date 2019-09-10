@@ -1,5 +1,5 @@
 import { Injectable, } from '@angular/core';
-import 'webrtc-adapter';
+import 'adapterjs';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
 
