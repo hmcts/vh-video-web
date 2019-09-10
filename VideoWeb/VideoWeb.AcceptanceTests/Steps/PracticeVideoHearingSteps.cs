@@ -25,7 +25,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly PracticeVideoHearingPage _practiceVideoHearingPage;
         private readonly CommonSteps _commonSteps;
         private const int VideoFinishedPlayingTimeout = 120;
-        private const int Retries = 10;
+        private const int Retries = 20;
+        private const int PauseDuration = 3;
         private const int ExtraTimeoutToLoadVideoFromKinly = 60;
 
         public PracticeVideoHearingSteps(Dictionary<string, UserBrowser> browsers, TestContext tc,
@@ -93,15 +94,15 @@ namespace VideoWeb.AcceptanceTests.Steps
             for (var i = 0; i < Retries; i++)
             {
                 _tc.Response = _tc.VideoWebClient().Execute(_tc.Request);
-                if (_tc.Response.StatusCode == HttpStatusCode.OK)
+                if (_tc.Response.StatusCode.Equals(HttpStatusCode.OK))
                 {
                     found = true;
                     break;
                 }
-                Thread.Sleep(TimeSpan.FromSeconds(3));
+                Thread.Sleep(TimeSpan.FromSeconds(PauseDuration));
             }
 
-            found.Should().BeTrue();
+            found.Should().BeTrue($"Expected the status code after {Retries * PauseDuration} seconds to be OK, but found {_tc.Response.StatusCode}");
             var selfScore = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<TestCallScoreResponse>(_tc.Response.Content);
             selfScore.Score.ToString().Should().ContainAny("Good", "Okay", "Bad");
         }
@@ -109,11 +110,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the user can see contact details to help resolve the issues")]
         public void ThenTheUserCanSeeContactDetailsToHelpResolveTheIssues()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_practiceVideoHearingPage.ProblemsTitle).Displayed.Should()
-                .BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_practiceVideoHearingPage.ProblemsTitle)
+                .Displayed.Should().BeTrue();
 
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_practiceVideoHearingPage.TellParticipantsText).Displayed.Should()
-                .BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_practiceVideoHearingPage.TellParticipantsText)
+                .Displayed.Should().BeTrue();
         }
 
         public void ProgressToNextPage()

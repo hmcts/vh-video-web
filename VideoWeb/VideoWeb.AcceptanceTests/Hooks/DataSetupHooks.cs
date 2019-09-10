@@ -25,33 +25,34 @@ namespace VideoWeb.AcceptanceTests.Hooks
             if (hearings == null) return;
             foreach (var hearing in hearings)
             {
+                CancelTheHearing(hearing.Id, context);
                 DeleteTheHearing(hearing.Id, context);
             }
         }
 
-        [BeforeScenario]
-        [AfterScenario]
-        private static void ClearClosedConferencesForClerk(TestContext context, ConferenceEndpoints conferenceEndpoints)
-        {
-            context.Request = context.Get(conferenceEndpoints.GetTodaysConferences);
-            context.Response = context.VideoApiClient().Execute(context.Request);
-            var todaysConferences = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ConferenceSummaryResponse>>(context.Response.Content);
-            if (todaysConferences == null) return;
+        //[BeforeScenario]
+        //[AfterScenario]
+        //private static void ClearClosedConferencesForClerk(TestContext context, ConferenceEndpoints conferenceEndpoints)
+        //{
+        //    context.Request = context.Get(conferenceEndpoints.GetTodaysConferences);
+        //    context.Response = context.VideoApiClient().Execute(context.Request);
+        //    var todaysConferences = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ConferenceSummaryResponse>>(context.Response.Content);
+        //    if (todaysConferences == null) return;
 
-            foreach (var conference in todaysConferences)
-            {
-                if (!ClerkUserIsAParticipantInTheConference(conference.Participants, context.GetClerkUser().Username) ||
-                    !conference.Status.Equals(ConferenceState.Closed)) continue;
+        //    foreach (var conference in todaysConferences)
+        //    {
+        //        if (!ClerkUserIsAParticipantInTheConference(conference.Participants, context.GetClerkUser().Username) ||
+        //            !conference.Status.Equals(ConferenceState.Closed)) continue;
 
-                var hearingId = GetTheHearingIdFromTheConference(conference.Id, context);
+        //        var hearingId = GetTheHearingIdFromTheConference(conference.Id, context);
 
-                if (HearingHasNotBeenDeletedAlready(hearingId, context))
-                    DeleteTheHearing(hearingId, context);
+        //        if (HearingHasNotBeenDeletedAlready(hearingId, context))
+        //            DeleteTheHearing(hearingId, context);
 
-                if (ConferenceHasNotBeenDeletedAlready(conference.Id, context))
-                    DeleteTheConference(conference.Id, context);
-            }
-        }
+        //        if (ConferenceHasNotBeenDeletedAlready(conference.Id, context))
+        //            DeleteTheConference(conference.Id, context);
+        //    }
+        //}
 
         private static bool ClerkUserIsAParticipantInTheConference(IEnumerable<ParticipantSummaryResponse> participants, string username)
         {
@@ -88,6 +89,18 @@ namespace VideoWeb.AcceptanceTests.Hooks
             context.Request = context.Get(new VideoApiUriFactory().ConferenceEndpoints.GetConferenceDetailsById((Guid)conferenceId));
             context.Response = context.VideoApiClient().Execute(context.Request);
             return !context.Response.StatusCode.Equals(HttpStatusCode.NotFound);
+        }
+
+        private static void CancelTheHearing(Guid? hearingId, TestContext context)
+        {
+            var request = new UpdateBookingStatusRequest()
+            {
+                Updated_by = context.GetCaseAdminUser().Username,
+                Status = UpdateBookingStatusRequestStatus.Cancelled
+            };
+            context.Request = context.Patch(new BookingsApiUriFactory().HearingsEndpoints.UpdateHearingStatus(hearingId), request);
+            context.Response = context.BookingsApiClient().Execute(context.Request);
+            context.Response.IsSuccessful.Should().BeTrue($"Hearing {hearingId} has been cancelled");
         }
 
         private static void DeleteTheHearing(Guid? hearingId, TestContext context)
