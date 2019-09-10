@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ProfileService } from 'src/app/services/api/profile.service';
@@ -49,6 +49,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
     }, 30000);
   }
 
+  @HostListener('window:beforeunload')
   ngOnDestroy(): void {
     this.logger.debug('Clearing intervals and subscriptions for Judge/Clerk');
     clearInterval(this.interval);

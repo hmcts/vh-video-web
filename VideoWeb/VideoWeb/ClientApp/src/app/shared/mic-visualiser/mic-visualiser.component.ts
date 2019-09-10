@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, HostListener } from '@angular/core';
 import 'webrtc-adapter';
 
 @Component({
@@ -25,6 +25,7 @@ export class MicVisualiserComponent implements OnInit, OnDestroy {
     this.setupStream();
   }
 
+  @HostListener('window:beforeunload')
   ngOnDestroy(): void {
     cancelAnimationFrame(this.rafId);
   }
