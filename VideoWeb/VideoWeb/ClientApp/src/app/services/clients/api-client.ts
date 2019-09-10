@@ -2111,6 +2111,8 @@ export enum SelfTestFailureReason {
     Camera = "Camera",
     Microphone = "Microphone",
     Video = "Video",
+    BadScore = "BadScore",
+    IncompleteTest = "IncompleteTest",
 }
 
 export class TestCallScoreResponse implements ITestCallScoreResponse {
