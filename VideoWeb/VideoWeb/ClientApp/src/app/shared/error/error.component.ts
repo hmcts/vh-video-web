@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Location } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -40,6 +40,7 @@ export class ErrorComponent implements OnDestroy {
     }, this.CALL_TIMEOUT);
   }
 
+  @HostListener('window:beforeunload')
   ngOnDestroy(): void {
     clearTimeout(this.returnTimeout);
     this.subscription.unsubscribe();

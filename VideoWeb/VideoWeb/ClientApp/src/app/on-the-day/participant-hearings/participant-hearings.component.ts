@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { ConferenceForUserResponse } from 'src/app/services/clients/api-client';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
@@ -31,6 +31,7 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
     }, 30000);
   }
 
+  @HostListener('window:beforeunload')
   ngOnDestroy(): void {
     clearInterval(this.interval);
     this.conferencesSubscription.unsubscribe();
