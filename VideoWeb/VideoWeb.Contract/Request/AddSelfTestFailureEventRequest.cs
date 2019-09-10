@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Contract.Request
@@ -14,6 +15,11 @@ namespace VideoWeb.Contract.Request
     {
         Camera = 0,
         Microphone = 1,
-        Video = 2
+        Video = 2,
+        [Description("Bad Score")]
+        BadScore = 3,
+        [Description("Incomplete Test")]
+        IncompleteTest = 4
+
     }
 }
