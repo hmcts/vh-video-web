@@ -12,7 +12,8 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-judge-hearing-list',
-  templateUrl: './judge-hearing-list.component.html'
+  templateUrl: './judge-hearing-list.component.html',
+  styleUrls: ['./judge-hearing-list.component.scss']
 })
 
 export class JudgeHearingListComponent implements OnInit, OnDestroy {
