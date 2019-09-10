@@ -93,7 +93,8 @@ namespace VideoWeb.AcceptanceTests.Hooks
             testContext.SaucelabsSettings = _saucelabsSettings;
             KillAnyChromeDriverProcesses(_saucelabsSettings);
             testContext.TargetBrowser = GetTargetBrowser(testContext);
-            testContext.RunningLocally = testContext.VideoApiBaseUrl.Contains("localhost");
+            testContext.RunningVideoWebLocally = testContext.VideoWebUrl.Contains("localhost");
+            testContext.RunningVideoApiLocally = testContext.VideoApiBaseUrl.Contains("localhost");
             testContext.DefaultParticipant = testSettings.UserAccounts.First(x => x.DefaultParticipant.Equals(true));
             testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, testContext.TargetBrowser);            
         }

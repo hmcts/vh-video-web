@@ -68,7 +68,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Clerk is on the Hearing Room page for (.*) minutes")]
         public void ThenTheUserIsOnTheHearingRoomPageForMinutes(int minutes)
         {
-            if (_tc.RunningLocally)
+            if (_tc.RunningVideoWebLocally)
             {
                 Thread.Sleep(TimeSpan.FromMinutes(minutes));
             }
