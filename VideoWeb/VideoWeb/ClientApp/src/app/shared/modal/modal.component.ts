@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ElementRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, ElementRef, OnDestroy, HostListener } from '@angular/core';
 import { ModalService } from 'src/app/services/modal.service';
 
 @Component({
@@ -38,6 +38,7 @@ export class ModalComponent implements OnInit, OnDestroy {
   }
 
   // remove self from modal service when directive is destroyed
+  @HostListener('window:beforeunload')
   ngOnDestroy(): void {
     this.modalService.remove(this.id);
     this.element.remove();

@@ -68,6 +68,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     this.setupSubscribers();
   }
 
+  @HostListener('window:beforeunload')
   ngOnDestroy(): void {
     this.logger.debug('Clearing intervals and subscriptions for VH Officer');
     clearInterval(this.interval);
