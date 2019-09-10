@@ -44,7 +44,8 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public SeleniumEnvironment Environment { get; set; }
         public SauceLabsSettings SaucelabsSettings { get; set; }
         public TargetBrowser TargetBrowser { get; set; }
-        public bool RunningLocally { get; set; }
+        public bool RunningVideoWebLocally { get; set; }
+        public bool RunningVideoApiLocally { get; set; }
         public BookNewHearingRequest HearingRequest { get; set; }
         public bool Selftest { get; set; }
         public CustomTokenSettings CustomTokenSettings { get; set; }
