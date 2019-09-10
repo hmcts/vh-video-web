@@ -18,7 +18,7 @@ Scenario: Participant video hearing practice
 	When the user selects a new microphone
 	Then the choose your camera and microphone popup should disappear
 
-@VIH-4671 @Chrome @Firefox @Video
+@VIH-4671 @Chrome @Firefox @Video @Smoketest
 Scenario: Clerk video hearing practice
 	Given the Clerk Self Test user has progressed to the Practice video hearing page
 	Then the incoming and self video should be playing video
@@ -32,7 +32,7 @@ Scenario: Clerk video hearing practice
 	When the user selects a new microphone
 	Then the choose your camera and microphone popup should disappear
 
-@VIH-4671 @Chrome @Firefox @Video @Smoketest
+@VIH-4671 @Chrome @Firefox @Video
 Scenario: Clerk confirms the equipment is working
 	Given the Clerk Self Test user has progressed to the Practice video hearing page
 	Then the incoming and self video should be playing video
