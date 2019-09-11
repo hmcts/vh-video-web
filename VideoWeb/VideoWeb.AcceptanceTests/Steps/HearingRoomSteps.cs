@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using FluentAssertions;
 using TechTalk.SpecFlow;
@@ -18,17 +19,21 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _tc;
         private readonly HearingRoomPage _page;
+        private readonly WaitingRoomPage _waitingRoomPage;
         private readonly CommonSteps _commonSteps;
         private const int CountdownDuration = 30;
         private const int ExtraTimeAfterTheCountdown = 10;
         private const int PauseCloseTransferDuration = 10;
+        private const int ExtraTimeForPageToRefresh = 60;
 
-        public HearingRoomSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, HearingRoomPage page, CommonSteps commonSteps)
+        public HearingRoomSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, HearingRoomPage page, 
+            CommonSteps commonSteps, WaitingRoomPage waitingRoomPage)
         {
             _browsers = browsers;
             _tc = testContext;
             _page = page;
             _commonSteps = commonSteps;
+            _waitingRoomPage = waitingRoomPage;
         }
 
         [When(@"the countdown finishes")]
@@ -65,6 +70,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _commonSteps.GivenInTheUsersBrowser(user);
             _browsers[_tc.CurrentUser.Key].Driver.Navigate().Refresh();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_waitingRoomPage.HearingCaseDetails, ExtraTimeForPageToRefresh).Text
+                .Should().Contain(_tc.Hearing.Cases.First().Name);
         }
 
         [Then(@"the Clerk is on the Hearing Room page for (.*) seconds")]
