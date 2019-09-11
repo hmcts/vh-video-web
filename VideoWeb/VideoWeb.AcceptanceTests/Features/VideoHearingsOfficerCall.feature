@@ -29,7 +29,7 @@ Scenario: Video Hearings Officer cannot call users in private consultation
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
 	When the user starts a private consultation with Individual01
 	And Individual01 accepts the private consultation
-	Given the Video Hearings Officer user has progressed to the Hearing List page for the existing hearing
+	Given the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
 	When the Video Hearings Officer starts a call with Individual01
 	Then the Individual01 user does not see an alert
 
@@ -40,6 +40,6 @@ Scenario: Video Hearings Officer cannot call users in a hearing
 	When the user clicks the button with innertext Start video call
 	Then the user is on the Countdown page
 	When the countdown finishes
-	Given the Video Hearings Officer user has progressed to the Hearing List page for the existing hearing
+	Given the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
 	When the Video Hearings Officer starts a call with Individual01
 	Then the Individual01 user does not see an alert
