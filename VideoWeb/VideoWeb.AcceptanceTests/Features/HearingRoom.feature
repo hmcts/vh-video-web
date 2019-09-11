@@ -65,14 +65,16 @@ Scenario: Two participants join hearing
 	When the countdown finishes
 	Then the Clerk is on the Hearing Room page for 1 minute
 
-@Chrome @Video
+@Chrome @Video @smoketest
 Scenario: Four participants join hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
 	And the Individual02 user has progressed to the Waiting Room page for the existing hearing
 	And the Representative02 user has progressed to the Waiting Room page for the existing hearing
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
-	When the user clicks the button with innertext Start video call
+	When Individual01 refreshes the waiting room page
+	And in the Clerk's browser
+	And the user clicks the button with innertext Start video call
 	Then the user is on the Countdown page
 	When the countdown finishes
 	Then the Clerk is on the Hearing Room page for 2 minutes
