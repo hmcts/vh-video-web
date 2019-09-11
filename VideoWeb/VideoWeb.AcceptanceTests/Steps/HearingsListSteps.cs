@@ -22,7 +22,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly TestContext _tc;
         private readonly HearingListPage _page;
         private readonly ClerkHearingListPage _clerkPage;
-        private const int TollerenceInMinutes = 3;
+        private const int ToleranceInMinutes = 3;
         private const int MinutesToWaitBeforeAllowedToJoinHearing = 30;
 
         public HearingsListSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, HearingListPage page, ClerkHearingListPage clerkPage)
@@ -43,10 +43,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             else
             {
                 var element = _tc.CurrentUser.Role.Equals("Clerk") ? _clerkPage.StartHearingButton(_tc.Hearing.Cases.First().Number) : _page.SignInButton(_tc.Hearing.Cases.First().Number);
-                var tollerence = _tc.CurrentUser.Role.Equals("Clerk") ? 30 : TollerenceInMinutes * 60;
+                var tolerance = _tc.CurrentUser.Role.Equals("Clerk") ? 30 : ToleranceInMinutes * 60;
                 _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.HearingListPageTitle).Displayed.Should().BeTrue();
                 _browsers[_tc.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browsers[_tc.CurrentUser.Key].Driver.FindElement(element));
-                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(element, tollerence).Click();
+                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(element, tolerance).Click();
             }           
         }
 
@@ -136,7 +136,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             actualTime = actualTime.Substring(actualTime.Length - 5);
 
             var isWithinTimeframe = false;
-            for (var i = -TollerenceInMinutes; i <= TollerenceInMinutes; i++)
+            for (var i = -ToleranceInMinutes; i <= ToleranceInMinutes; i++)
             {
                 if (!actualTime.Equals(DateTime.Now
                     .AddMinutes(_tc.DelayedStartTime - MinutesToWaitBeforeAllowedToJoinHearing + i)
@@ -150,7 +150,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"when the hearing is ready to start the hearing button appears")]
         public void ThenWhenTheHearingIsReadyToStartTheHearingButtonAppears()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.SignInButton(_tc.Hearing.Cases.First().Number), TollerenceInMinutes * 60).Displayed
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.SignInButton(_tc.Hearing.Cases.First().Number), ToleranceInMinutes * 60).Displayed
                 .Should().BeTrue();
         }
 
