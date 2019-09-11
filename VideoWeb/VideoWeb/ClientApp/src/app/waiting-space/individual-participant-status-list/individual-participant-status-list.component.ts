@@ -116,6 +116,10 @@ export class IndividualParticipantStatusListComponent implements OnInit {
 
   handleAdminConsultationMessage(message: AdminConsultationMessage) {
     const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
+    if (!this.isParticipantAvailable(requestee)) {
+      this.logger.info(`Ignoring request for private consultation from Video Hearings Team since participant is not available`);
+      return;
+    }
     this.logger.info(`Incoming request for private consultation from Video Hearings Team`);
     this.consultationRequestee = new Participant(requestee);
     this.displayModal(this.VHO_REQUEST_PC_MODAL);
