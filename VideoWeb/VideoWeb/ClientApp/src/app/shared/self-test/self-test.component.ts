@@ -1,6 +1,9 @@
-import { Component, EventEmitter, Input, OnInit, Output, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnDestroy, HostListener } from '@angular/core';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, ParticipantResponse, TokenResponse, TestCallScoreResponse } from 'src/app/services/clients/api-client';
+import {
+  ConferenceResponse, ParticipantResponse, TokenResponse, TestCallScoreResponse, TestScore,
+  AddSelfTestFailureEventRequest, SelfTestFailureReason
+} from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
@@ -192,8 +195,31 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     this.testCompleted.emit(this.testCallResult);
   }
 
-  ngOnDestroy(): void {
+  @HostListener('window:beforeunload')
+  async ngOnDestroy() {
     this.subscription.unsubscribe();
     this.disconnect();
+
+    let reason: SelfTestFailureReason;
+    if (this.testCallResult && this.testCallResult.score === TestScore.Bad) {
+      reason = SelfTestFailureReason.BadScore;
+    } else if (!this.testCallResult) {
+      reason = SelfTestFailureReason.IncompleteTest;
+    }
+
+    await this.raiseFailedSelfTest(reason);
+  }
+
+  async raiseFailedSelfTest(reason: SelfTestFailureReason) {
+    const request = new AddSelfTestFailureEventRequest({
+      participant_id: this.participant.id,
+      self_test_failure_reason: reason
+    });
+    try {
+      await this.videoWebService.raiseSelfTestFailureEvent(this.conference.id, request).toPromise();
+      this.logger.info(`Notified failed test test because of ${reason}`);
+    } catch (err) {
+      this.logger.error('There was a problem raising a failed self test event', err);
+    }
   }
 }

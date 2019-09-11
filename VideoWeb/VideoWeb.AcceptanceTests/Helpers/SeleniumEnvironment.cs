@@ -17,6 +17,8 @@ namespace VideoWeb.AcceptanceTests.Helpers
         private readonly SauceLabsSettings _saucelabsSettings;
         private readonly ScenarioInfo _scenario;
         private static TargetBrowser _targetBrowser;
+        private const string SaucelabsScreenResolution = "1920x1200";
+        private const int SaucelabsIdleTimeoutInSeconds = 300;
 
         public SeleniumEnvironment(SauceLabsSettings saucelabsSettings, ScenarioInfo scenario, TargetBrowser targetBrowser)
         {
@@ -91,7 +93,8 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
             caps.SetCapability("name", _scenario.Title);
             caps.SetCapability("build", $"{Environment.GetEnvironmentVariable("Build_DefinitionName")} {Environment.GetEnvironmentVariable("RELEASE_RELEASENAME")}");
-            caps.SetCapability("screenResolution", "1920x1200");
+            caps.SetCapability("screenResolution", SaucelabsScreenResolution);
+            caps.SetCapability("idleTimeout", SaucelabsIdleTimeoutInSeconds);
 
             // It can take quite a bit of time for some commands to execute remotely so this is higher than default
             var commandTimeout = TimeSpan.FromMinutes(3);

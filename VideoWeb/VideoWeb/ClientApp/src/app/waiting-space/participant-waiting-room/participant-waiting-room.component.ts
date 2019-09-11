@@ -1,4 +1,4 @@
-import { Component, NgZone, OnInit, OnDestroy } from '@angular/core';
+import { Component, NgZone, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import {
@@ -86,6 +86,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     this.getConference();
   }
 
+  @HostListener('window:beforeunload')
   ngOnDestroy(): void {
     clearTimeout(this.callbackTimeout);
     this.conferencesSubscription.unsubscribe();

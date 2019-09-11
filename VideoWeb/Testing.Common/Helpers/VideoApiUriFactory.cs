@@ -32,6 +32,9 @@ namespace Testing.Common.Helpers
 
         public string RemoveParticipantFromConference(Guid conferenceId, Guid participantId) =>
             $"{ApiRoot}/{conferenceId}/participants/{participantId}";
+
+        public string GetSelfTestScore(Guid conferenceId, Guid? participantId) =>
+            $"{ApiRoot}/{conferenceId}/participants/{participantId}/selftestresult";
     }
 
     public class ConferenceEndpoints
@@ -43,6 +46,7 @@ namespace Testing.Common.Helpers
         public string GetConferenceDetailsById(Guid conferenceId) => $"{ApiRoot}/{conferenceId}";
         public string GetConferenceByHearingRefId(Guid hearingRefId) => $"{ApiRoot}/hearings/{hearingRefId}";
         public string RemoveConference(Guid? conferenceId) => $"{ApiRoot}/{conferenceId}";
+        public string GetTodaysConferences => $"{ApiRoot}/today";
     }
 
     public class VideoApiHealthCheckEndpoints

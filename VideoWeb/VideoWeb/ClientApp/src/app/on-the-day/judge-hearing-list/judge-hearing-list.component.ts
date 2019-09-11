@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ProfileService } from 'src/app/services/api/profile.service';
@@ -12,7 +12,8 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-judge-hearing-list',
-  templateUrl: './judge-hearing-list.component.html'
+  templateUrl: './judge-hearing-list.component.html',
+  styleUrls: ['./judge-hearing-list.component.scss']
 })
 
 export class JudgeHearingListComponent implements OnInit, OnDestroy {
@@ -49,6 +50,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
     }, 30000);
   }
 
+  @HostListener('window:beforeunload')
   ngOnDestroy(): void {
     this.logger.debug('Clearing intervals and subscriptions for Judge/Clerk');
     clearInterval(this.interval);

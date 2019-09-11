@@ -2,7 +2,7 @@
   <p class="govuk-body">Loading please wait...</p>
 </div>
 
-<div *ngIf="!loadingData && hasHearings()">
+<div id="hearing-list" *ngIf="!loadingData && hasHearings()">
   <h1 class="govuk-heading-xl">Video hearings for {{courtName}}</h1>
   <div class="govuk-!-margin-top-4">
     <input type="button" id="check-equipment-btn" class="govuk-button" role="button" value="Check equipment"
@@ -21,7 +21,7 @@
     options below.</p>
 </div>
 
-<div *ngIf="!loadingData">
+<div id="contact-team" *ngIf="!loadingData">
   <h3 class="govuk-heading-m govuk-!-margin-top-8 govuk-!-margin-bottom-1">Do you need help?</h3>
   <p class="govuk-body">Call the video hearings team on <span class="govuk-!-font-weight-bold">{{contact.phone}}</span>
   </p>

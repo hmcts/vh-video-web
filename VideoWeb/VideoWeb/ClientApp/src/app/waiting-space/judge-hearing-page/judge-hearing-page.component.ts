@@ -69,12 +69,12 @@ export class JudgeHearingPageComponent implements OnInit {
 
     if (preferredCam) {
       this.logger.info(`judge using camera ${preferredCam.label}`);
-      cam = preferredCam.label;
+      cam = encodeURI(preferredCam.label);
     }
 
     if (preferredMic) {
       this.logger.info(`judge using microphone ${preferredMic.label}`);
-      mic = preferredMic.label;
+      mic = encodeURI(preferredMic.label);
     }
 
     const iframeOrigin = new URL(this.conference.judge_i_frame_uri).origin;

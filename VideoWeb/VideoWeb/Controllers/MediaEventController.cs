@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Request;
+using VideoWeb.Extensions;
 using VideoWeb.Services;
 using VideoWeb.Services.Video;
 
@@ -58,15 +59,16 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                await _eventsServiceClient.PostEventsAsync(new ConferenceEventRequest
+                var eventRequest = new ConferenceEventRequest
                 {
                     Conference_id = conferenceId.ToString(),
                     Participant_id = addSelfTestFailureEventRequest.ParticipantId.ToString(),
                     Event_id = Guid.NewGuid().ToString(),
                     Event_type = addSelfTestFailureEventRequest.EventType,
                     Time_stamp_utc = DateTime.UtcNow,
-                    Reason = $"Failed self-test ({ addSelfTestFailureEventRequest.SelfTestFailureReason })"
-                });
+                    Reason = $"Failed self-test ({addSelfTestFailureEventRequest.SelfTestFailureReason.DescriptionAttr()})"
+                };
+                await _eventsServiceClient.PostEventsAsync(eventRequest);
 
                 return NoContent();
             }
