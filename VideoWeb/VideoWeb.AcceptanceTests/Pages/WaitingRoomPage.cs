@@ -27,7 +27,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public string DelayedBgColour = "#ffbf47";
 
         public By ScheduledHeader => CommonLocators.ElementContainingText("Your video hearing");
-        public By ScheduledText => By.XPath("//h3[text()='Please keep an eye on the time']"); 
+        public By ScheduledText => By.XPath("//h3[contains(text(),'The video hearings team will contact you by video before the hearing')]"); 
         public string ScheduledBgColour = "#005ea5";
 
         public By TimePanel => By.XPath("//div[contains(@class,'govuk-panel')][1]");
