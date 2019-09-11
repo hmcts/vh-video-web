@@ -68,6 +68,19 @@ namespace VideoWeb.AcceptanceTests.Users
                 .Execute(action);
         }
 
+        public string SwitchTab(string title)
+        {
+            foreach (var window in Driver.WrappedDriver.WindowHandles)
+            {
+                var tab = Driver.SwitchTo().Window(window);
+                if (tab.Title.Trim().ToLower().Equals(title.ToLower()))
+                {
+                    return window;
+                }
+            }
+            throw new ArgumentException($"No windows with title '{title}' were found.");
+        }
+
         public void BrowserTearDown()
         {
             Driver.Quit();
