@@ -57,8 +57,9 @@
         [ngClass]="{'hearing-on-time': hearing.isOnTime() || hearing.isPaused() || hearing.isClosed(), 'hearing-near-start': hearing.isStarting(), 'hearing-delayed': hearing.isDelayed() || hearing.isSuspended()}">
 
         <div *ngIf="hearing.isOnTime()">
-          <h3 class="govuk-heading-m white">The video hearings team will contact you by video before the hearing begins
-            to check you're ready.</h3>
+          <p class="govuk-body-l white">
+            The video hearings team will contact you by video before the hearing begins to check you're ready.
+          </p>
         </div>
 
         <div *ngIf="hearing.isStarting()">
