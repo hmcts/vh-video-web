@@ -22,3 +22,24 @@ Scenario: No Answer on a Video Hearings Officer Call
 	When the Video Hearings Officer starts a call with Individual01
 	And the user does not answer after 2 minutes
 	Then the Individual01 user can no longer see the alert
+
+@VIH-4613
+Scenario: Video Hearings Officer cannot call users in private consultation
+	Given the Individual01 user has progressed to the Waiting Room page with a hearing in 30 minutes time
+	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
+	When the user starts a private consultation with Individual01
+	And Individual01 accepts the private consultation
+	Given the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
+	When the Video Hearings Officer starts a call with Individual01
+	Then the Individual01 user does not see an alert
+
+@VIH-4613
+Scenario: Video Hearings Officer cannot call users in a hearing
+	Given the Individual01 user has progressed to the Waiting Room page
+	And the Clerk user has progressed to the Waiting Room page for the existing hearing
+	When the user clicks the button with innertext Start video call
+	Then the user is on the Countdown page
+	When the countdown finishes
+	Given the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
+	When the Video Hearings Officer starts a call with Individual01
+	Then the Individual01 user does not see an alert

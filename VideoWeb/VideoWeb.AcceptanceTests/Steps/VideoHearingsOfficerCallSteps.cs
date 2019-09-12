@@ -84,6 +84,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Then(@"the (.*) user can no longer see the alert")]
+        [Then(@"the (.*) user does not see an alert")]
         public void ThenTheIndividualCanNoLongerSeeTheAlert(string user)
         {
             _commonSteps.GivenInTheUsersBrowser(user);
