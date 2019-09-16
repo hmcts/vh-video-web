@@ -28,7 +28,8 @@ Scenario: Video Hearings Officer cannot call users in private consultation
 	Given the Individual01 user has progressed to the Waiting Room page with a hearing in 30 minutes time
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
 	When the user starts a private consultation with Individual01
-	And Individual01 accepts the private consultation
+	And Individual01 accepts the private consultation 
+	Then Representative01 can see the other participant
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
 	When the Video Hearings Officer starts a call with Individual01
 	Then the Individual01 user does not see an alert
