@@ -14,15 +14,15 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _tc;
         private readonly LoginPage _loginPage;
-        private readonly CommonPages _commonPageElements;
+        private readonly CommonPages _commonPages;
 
         public LoginSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, 
-            LoginPage loginPage, CommonPages commonPageElements)
+            LoginPage loginPage, CommonPages commonPages)
         {
             _browsers = browsers;
             _tc = testContext;
             _loginPage = loginPage;
-            _commonPageElements = commonPageElements;
+            _commonPages = commonPages;
         }
 
         [When(@"the user attempts to login with valid credentials")]
@@ -54,10 +54,27 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         public void ClickSignInButton() => _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_loginPage.SignIn).Click();
 
+        [When(@"the user attempts to logout and log back in")]
+        public void WhenTheUserAttemptsToLogout()
+        {
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementClickable(_commonPages.SignOutLink).Click();
+
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_commonPages.SignOutMessage)
+                .Displayed.Should().BeTrue();
+
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementClickable(_commonPages.SignInLink).Click();
+        }
+
+        [Then(@"the user should be navigated to sign in screen")]
+        public void ThenTheUserShouldBeNavigatedToSignInScreen()
+        {
+            _browsers[_tc.CurrentUser.Key].Retry(() => _browsers[_tc.CurrentUser.Key].Driver.Title.Trim().Should().Be(_loginPage.SignInTitle), 2);
+        }
+
         [Then(@"the sign out link is displayed")]
         public void ThenTheHearingListPageIsDisplayed()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_commonPageElements.SignOutLink).Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_commonPages.SignOutLink).Displayed.Should().BeTrue();
         }
     }
 }
