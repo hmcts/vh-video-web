@@ -22,8 +22,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly WaitingRoomPage _waitingRoomPage;
         private readonly CommonSteps _commonSteps;
         private const int CountdownDuration = 30;
-        private const int ExtraTimeAfterTheCountdown = 10;
-        private const int PauseCloseTransferDuration = 10;
+        private const int ExtraTimeAfterTheCountdown = 30;
+        private const int PauseCloseTransferDuration = 15;
         private const int ExtraTimeForPageToRefresh = 60;
 
         public HearingRoomSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, HearingRoomPage page, 

@@ -25,7 +25,7 @@ Scenario: Clerk pauses hearing
 	When the user clicks the button with innertext Start video call
 	Then the user is on the Countdown page
 	When the countdown finishes
-	Then the Clerk is on the Hearing Room page for 10 seconds
+	Then the Clerk is on the Hearing Room page for 20 seconds
 	When the Clerk clicks pause
 	Then the user is on the Waiting Room page
 	And the Clerk waiting room displays the paused status
