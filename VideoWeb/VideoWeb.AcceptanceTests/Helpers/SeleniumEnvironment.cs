@@ -42,7 +42,8 @@ namespace VideoWeb.AcceptanceTests.Helpers
             {
                 case TargetBrowser.Firefox:
                     var profile = new FirefoxProfile();
-                    profile.SetPreference("use-fake-ui-for-media-stream", true);
+                    profile.SetPreference("media.navigator.streams.fake", true);
+                    profile.SetPreference("media.navigator.permission.disabled", true);
                     caps.SetCapability(FirefoxDriver.ProfileCapabilityName, profile);
                     caps.SetCapability("browserName", "Firefox");
                     caps.SetCapability("platform", "Windows 10");
@@ -88,7 +89,8 @@ namespace VideoWeb.AcceptanceTests.Helpers
                             "use-fake-device-for-media-stream"
                         }
                     };                    
-                    caps.SetCapability(ChromeOptions.Capability, chromeOptions); break;
+                    caps.SetCapability(ChromeOptions.Capability, chromeOptions);
+                    break;
             }
 
             caps.SetCapability("name", _scenario.Title);
