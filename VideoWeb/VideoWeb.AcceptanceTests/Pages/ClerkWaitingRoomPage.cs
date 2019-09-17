@@ -13,6 +13,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By IsEveryoneConnectedText => CommonLocators.ElementContainingText("Is everyone connected?");
         public By ParticipantStatus(Guid participantId) => By.XPath($"//div[@id='p-row-{participantId}']//label");
         public By PausedText => CommonLocators.ElementContainingText("Hearing paused");
-        public By ResumeVideoCallButton => CommonLocators.ButtonWithInnertext("Resume video call");
+        public By ResumeVideoCallButton => CommonLocators.ButtonWithInnertext("Resume video hearing");
     }
 }
