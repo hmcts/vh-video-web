@@ -9,7 +9,7 @@ Scenario: Clerk starts hearing
 	Given the Clerk user has progressed to the Waiting Room page
 	Then the hearing status changed to NotStarted
 	And the participant status for Individual01 is displayed as Not signed in
-	When the user clicks the button with innertext Start video call
+	When the Clerk starts the hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
 	Then the user is on the Hearing Room page
@@ -22,7 +22,7 @@ Scenario: Clerk pauses hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
 	Then the participant status for Individual01 is displayed as Connected
-	When the user clicks the button with innertext Start video call
+	When the Clerk starts the hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
 	Then the Clerk is on the Hearing Room page for 20 seconds
@@ -45,7 +45,7 @@ Scenario: Clerk closes hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
 	Then the participant status for Individual01 is displayed as Connected
-	When the user clicks the button with innertext Start video call
+	When the Clerk starts the hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
 	Then the Clerk is on the Hearing Room page for 10 seconds
@@ -60,7 +60,7 @@ Scenario: Two participants join hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
-	When the user clicks the button with innertext Start video call
+	When the Clerk starts the hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
 	Then the Clerk is on the Hearing Room page for 1 minute
@@ -74,7 +74,7 @@ Scenario: Four participants join hearing
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
 	When Individual01 refreshes the waiting room page
 	And in the Clerk's browser
-	And the user clicks the button with innertext Start video call
+	And the Clerk starts the hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
 	Then the Clerk is on the Hearing Room page for 2 minutes

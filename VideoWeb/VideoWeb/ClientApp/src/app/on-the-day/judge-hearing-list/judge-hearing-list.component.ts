@@ -10,6 +10,8 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Subscription } from 'rxjs';
 
+import * as $ from 'jquery';
+
 @Component({
   selector: 'app-judge-hearing-list',
   templateUrl: './judge-hearing-list.component.html',
@@ -55,15 +57,18 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
     this.logger.debug('Clearing intervals and subscriptions for Judge/Clerk');
     clearInterval(this.interval);
     this.conferencesSubscription.unsubscribe();
+    this.enableFullScreen(false);
   }
 
   retrieveHearingsForUser() {
     this.conferencesSubscription = this.videoWebService.getConferencesForJudge().subscribe((data: ConferenceForUserResponse[]) => {
       this.loadingData = false;
       this.conferences = data;
+      this.enableFullScreen(true);
     },
       (error) => {
         this.loadingData = false;
+        this.enableFullScreen(false);
         this.errorService.handleApiError(error);
       });
   }
@@ -83,5 +88,23 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
 
   goToEquipmentCheck() {
     this.router.navigate([PageUrls.EquipmentCheck, this.conferences[0].id]);
+  }
+
+  enableFullScreen(fullScreen: boolean) {
+    const masterContainerCount = $('div[id*=\'master-container\']').length;
+    if (masterContainerCount > 1) {
+      throw new Error('Multiple master containers in DOM');
+    }
+
+    const masterContainer = document.getElementById('master-container');
+    if (!masterContainer) {
+      return;
+    }
+
+    if (fullScreen) {
+      masterContainer.classList.add('fullscreen');
+    } else {
+      masterContainer.classList.remove('fullscreen');
+    }
   }
 }
