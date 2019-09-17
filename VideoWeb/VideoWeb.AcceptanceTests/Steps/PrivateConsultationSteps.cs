@@ -20,6 +20,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly CommonSteps _commonSteps;
         private readonly WaitingRoomPage _page;
         private const int SecondsWaitToCallAndAnswer = 3;
+        private const int ExtraTimeToConnectTheParticipantsInSaucelabs = 60;
 
         public PrivateConsultationSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, 
             CommonSteps commonSteps, WaitingRoomPage page)
@@ -79,7 +80,10 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheParticipantsCanTalkToEachOther(string user)
         {
             _commonSteps.GivenInTheUsersBrowser(user);
-            new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(_page.IncomingVideo);
+
+            new VideoIsPlaying(_browsers[_tc.CurrentUser.Key])
+                .DelayForVideoElementToAppear(ExtraTimeToConnectTheParticipantsInSaucelabs)
+                .Feed(_page.IncomingVideo);
         }
 
         [Then(@"the self view can be open and closed")]

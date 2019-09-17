@@ -157,7 +157,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private static void ParticipantsDisplayed(IEnumerable<ParticipantResponse> participants, HearingRow rowData)
         {
            foreach (var participant in participants)
-            {
+           {
                 if (!participant.User_role_name.Equals(UserRole.Individual.ToString()) &&
                     !participant.User_role_name.Equals(UserRole.Representative.ToString())) continue;
 
@@ -181,7 +181,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
                 var participantIsDisplayed = individualIsDisplayed || representativeIsDisplayed;
                 participantIsDisplayed.Should().BeTrue();
-            }           
+           }           
         }
     }
 }

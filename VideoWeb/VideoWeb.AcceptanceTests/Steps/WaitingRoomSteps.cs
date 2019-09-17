@@ -250,9 +250,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             return hex.ToLower();
         }
 
+        [When(@"the Clerk starts the hearing")]
         public void ProgressToNextPage()
         {
-            _commonSteps.WhentheUserClicksTheButtonWithInnertext("Start Hearing");
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_clerkPage.StartVideoHearingButton).Click();
         }
     }
 
