@@ -49,11 +49,11 @@
 
     <div>
       <button *ngIf="isNotStarted()" type="submit" class="govuk-button govuk-button--start" (click)="goToHearingPage()">
-        Start video call
+        Start video hearing
       </button>
       <button *ngIf="hearingPaused() || hearingSuspended()" type="submit" class="govuk-button govuk-button--start"
         (click)="goToHearingPage()">
-        Resume video call
+        Resume video hearing
       </button>
     </div>
 
