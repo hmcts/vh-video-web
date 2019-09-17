@@ -80,10 +80,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheVideoHearingsOfficerCanSeeAndHearTheParticipant(string user)
         {
             _commonSteps.GivenInTheUsersBrowser(user);
-            new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(_adminPage.IncomingVideo);
+            new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(user.ToLower().Equals("video hearings officer")
+                ? _adminPage.IncomingVideo
+                : _adminPage.IncomingFeed);
         }
 
         [Then(@"the (.*) user can no longer see the alert")]
+        [Then(@"the (.*) user does not see an alert")]
         public void ThenTheIndividualCanNoLongerSeeTheAlert(string user)
         {
             _commonSteps.GivenInTheUsersBrowser(user);

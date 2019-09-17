@@ -1,32 +1,32 @@
 ﻿Feature: Login
 	As a registered video hearings user
-	I would like to login
-	So that I can access hearings
+	I would like to login and Logout
+	So that I can access and sign out of the application
 
 Scenario: Clerk login
-	Given I have a hearing and a conference
-	And a new browser is open for a Clerk
+	Given a new browser is open for a Clerk
 	When the user attempts to login with valid credentials
 	Then the user is on the Hearing List page
-	And the sign out link is displayed
+	When the user attempts to logout and log back in
+	Then the user should be navigated to sign in screen
 
 Scenario: Individual login
-	Given I have a hearing and a conference
-	And a new browser is open for an Individual
+	Given a new browser is open for an Individual
 	When the user attempts to login with valid credentials
 	Then the user is on the Hearing List page
-	And the sign out link is displayed
+	When the user attempts to logout and log back in
+	Then the user should be navigated to sign in screen
 
 Scenario: Representative login
-	Given I have a hearing and a conference
-	And a new browser is open for a Representative
+	Given a new browser is open for an Representative
 	When the user attempts to login with valid credentials
 	Then the user is on the Hearing List page
-	And the sign out link is displayed
+	When the user attempts to logout and log back in
+	Then the user should be navigated to sign in screen
 
 Scenario: Video Hearings Officer login
-	Given I have a hearing and a conference
-	And a new browser is open for a Video Hearings Officer
+	Given a new browser is open for a Video Hearings Officer
 	When the user attempts to login with valid credentials
 	Then the user is on the Hearing List page
-	And the sign out link is displayed
+	When the user attempts to logout and log back in
+	Then the user should be navigated to sign in screen
