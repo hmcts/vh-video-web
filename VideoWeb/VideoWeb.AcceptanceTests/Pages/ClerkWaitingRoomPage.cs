@@ -14,5 +14,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By ParticipantStatus(Guid participantId) => By.XPath($"//div[@id='p-row-{participantId}']//label");
         public By PausedText => CommonLocators.ElementContainingText("Hearing paused");
         public By ResumeVideoCallButton => CommonLocators.ButtonWithInnertext("Resume video hearing");
+        public By StartVideoHearingButton => CommonLocators.ButtonWithInnertext("Start video hearing");
     }
 }
