@@ -138,9 +138,16 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _commonSteps.GivenInTheUsersBrowser(user);
 
-            new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(user.ToLower().Equals("clerk")
-                ? _page.ClerkIncomingVideo
-                : _page.ParticipantIncomingVideo);
+            if (user.ToLower().Equals("clerk"))
+            {
+                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.JudgeIframe).Displayed.Should().BeTrue();
+                _browsers[_tc.CurrentUser.Key].Driver.SwitchTo().Frame(HearingRoomPage.JudgeIframeId);
+                new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(_page.ClerkIncomingVideo);
+            }
+            else
+            {
+                new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(_page.ParticipantIncomingVideo);
+            }
         }
     }
 }
