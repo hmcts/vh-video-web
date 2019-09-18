@@ -4,7 +4,7 @@ Feature: HearingRoom
 	As a registered user
 	I want to be able to access the video hearing room and interact with the controls
 
-@Chrome @Video @VIH-4610
+@Chrome @Video @VIH-4610 @HearingTest
 Scenario: Clerk starts hearing
 	Given the Clerk user has progressed to the Waiting Room page
 	Then the hearing status changed to NotStarted
@@ -17,7 +17,7 @@ Scenario: Clerk starts hearing
 	And the hearing controls are visible
 	And the user can see themselves and toggle the view off and on
 
-@Chrome @Video @VIH-4615
+@Chrome @Video @VIH-4615 @HearingTest
 Scenario: Clerk pauses hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
@@ -40,7 +40,7 @@ Scenario: Clerk pauses hearing
 	When in Individual01's browser
 	Then the participant is back in the hearing
 
-@Chrome @Video @VIH-4615
+@Chrome @Video @VIH-4615 @HearingTest
 Scenario: Clerk closes hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
