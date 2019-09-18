@@ -19,7 +19,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public const string AdminIframeId = "admin-frame";
         public By AdminIframe = By.Id(AdminIframeId);
         public By ParticipantInIframe(string displayName) => By.XPath($"//b[contains(text(),'{displayName}')]");
-        public By VhoPrivateConsultationLink = By.XPath("//a[contains(text(),'Private consultation')]");
+        public By VhoPrivateConsultationLink(Guid? participantId) => By.XPath($"//a[contains(@href,'{participantId}') and @aria-label='Private consultation']");
 
         public By IncomingCallMessage => CommonLocators.ElementContainingText("Incoming call from Video Hearings Team");
         public By AcceptPrivateCall => CommonLocators.ButtonWithLabel("Accept call");

@@ -39,7 +39,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By OutgoingCallMessage => CommonLocators.ElementContainingText("Your contact request has been sent to");
         public By IncomingCallMessage => CommonLocators.ElementContainingText("Incoming call");       
         public By Frame => By.XPath("//app-participant-waiting-room");
-        public By IncomingVideo => By.XPath("//video[@id='incomingFeed']");
+        public By IncomingFeed => By.XPath("//video[@id='incomingFeed']");
         public By SelfViewButton => By.Id("outgoingFeedButton");
         public By SelfViewVideo => By.Id("outgoingFeedVideo");
         public By ClosePrivateConsultationButton => By.Id("close-pc-btn");
