@@ -64,6 +64,9 @@ Scenario: Two participants join hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
 	Then the Clerk is on the Hearing Room page for 1 minute
+	And Indiviual01 can see the other participants
+	And Representative01 can see the other participants
+	And Clerk can see the other participants
 
 @Chrome @Video
 Scenario: Four participants join hearing
