@@ -64,9 +64,14 @@ Scenario: Two participants join hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
 	Then the Clerk is on the Hearing Room page for 1 minute
-	And Indiviual01 can see the other participants
+	And Individual01 can see the other participants
 	And Representative01 can see the other participants
 	And Clerk can see the other participants
+	When the Clerk clicks close
+	Then the user is on the Hearing List page
+	And the hearing status changed to Closed
+	When in Individual01's browser
+	Then the participants waiting room displays the closed status
 
 @Chrome @Video
 Scenario: Four participants join hearing
@@ -75,9 +80,12 @@ Scenario: Four participants join hearing
 	And the Individual02 user has progressed to the Waiting Room page for the existing hearing
 	And the Representative02 user has progressed to the Waiting Room page for the existing hearing
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
-	When Individual01 refreshes the waiting room page
-	And in the Clerk's browser
-	And the Clerk starts the hearing
+	When the Clerk starts the hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
 	Then the Clerk is on the Hearing Room page for 2 minutes
+	And Individual01 can see the other participants
+	And Representative01 can see the other participants
+	And Individual02 can see the other participants
+	And Representative02 can see the other participants
+	And Clerk can see the other participants

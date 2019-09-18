@@ -22,17 +22,15 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly TestContext _tc;
         private readonly WaitingRoomPage _page;
         private readonly ClerkWaitingRoomPage _clerkPage;
-        private readonly CommonSteps _commonSteps;
         private const int ExtraTimeInWaitingRoomAfterThePause = 10;
 
         public WaitingRoomSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext,
-            WaitingRoomPage page, ClerkWaitingRoomPage clerkPage, CommonSteps commonSteps)
+            WaitingRoomPage page, ClerkWaitingRoomPage clerkPage)
         {
             _browsers = browsers;
             _tc = testContext;
             _page = page;
             _clerkPage = clerkPage;
-            _commonSteps = commonSteps;
         }
 
         [When(@"the user navigates back to the hearing list")]
@@ -253,7 +251,21 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the Clerk starts the hearing")]
         public void ProgressToNextPage()
         {
+            CheckParticipantsAreStillConnected();
+
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_clerkPage.StartVideoHearingButton).Click();
+        }
+
+        private void CheckParticipantsAreStillConnected()
+        {
+            foreach (var lastname in _browsers.Keys)
+            {
+                var user = _tc.Conference.Participants.First(x => x.Name.ToLower().Contains(lastname.ToLower()));
+                if (!user.User_role.Equals(UserRole.Judge) || user.Id == null) continue;
+                _browsers[_tc.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browsers[_tc.CurrentUser.Key].Driver.FindElement(_clerkPage.ParticipantStatus((Guid)user.Id)));
+                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_clerkPage.ParticipantStatus((Guid)user.Id)).Text.ToUpper().Trim()
+                    .Should().Be("CONNECTED");
+            }
         }
     }
 
