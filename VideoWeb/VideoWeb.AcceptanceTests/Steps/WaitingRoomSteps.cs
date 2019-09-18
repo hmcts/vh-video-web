@@ -261,7 +261,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             foreach (var lastname in _browsers.Keys)
             {
                 var user = _tc.Conference.Participants.First(x => x.Name.ToLower().Contains(lastname.ToLower()));
-                if (!user.User_role.Equals(UserRole.Judge) || user.Id == null) continue;
+                if (user.User_role.Equals(UserRole.Judge) || user.Id == null) continue;
                 _browsers[_tc.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browsers[_tc.CurrentUser.Key].Driver.FindElement(_clerkPage.ParticipantStatus((Guid)user.Id)));
                 _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_clerkPage.ParticipantStatus((Guid)user.Id)).Text.ToUpper().Trim()
                     .Should().Be("CONNECTED");
