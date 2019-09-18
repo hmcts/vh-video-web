@@ -47,7 +47,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             var participant = _tc.Conference.Participants.Find(x => x.Name.ToLower().Contains(user.ToLower()));
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_adminPage.ParticipantInIframe(participant.Display_name)).Click();
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_adminPage.VhoPrivateConsultationLink).Click();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_adminPage.VhoPrivateConsultationLink(participant.Id)).Click();
 
             _browsers[_tc.CurrentUser.Key].LastWindowName = _browsers[_tc.CurrentUser.Key].SwitchTab("Private Consultation");
 

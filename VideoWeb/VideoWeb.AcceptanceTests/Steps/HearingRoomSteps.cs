@@ -44,7 +44,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.JudgeIframe).Displayed.Should().BeTrue();
             _browsers[_tc.CurrentUser.Key].Driver.SwitchTo().Frame(HearingRoomPage.JudgeIframeId);
 
-            new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(_page.IncomingVideo);
+            new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(_page.ClerkIncomingVideo);
 
             Thread.Sleep(TimeSpan.FromSeconds(ExtraTimeAfterTheCountdown));
         }
@@ -102,7 +102,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             while (timer.Elapsed.Minutes <= TimeSpan.FromMinutes(timeoutInMinutes).Minutes)
             {
                 Thread.Sleep(TimeSpan.FromSeconds(20));
-                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.IncomingVideo).Click();
+                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.ClerkIncomingVideo).Click();
             }
 
             timer.Stop();
@@ -131,6 +131,23 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheParticipantIsBackInTheHearing()
         {
             new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(_page.ParticipantIncomingVideo);
+        }
+
+        [Then(@"(.*) can see the other participants")]
+        public void ThenParticipantsCanSeeTheOtherParticipants(string user)
+        {
+            _commonSteps.GivenInTheUsersBrowser(user);
+
+            if (user.ToLower().Equals("clerk"))
+            {
+                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.JudgeIframe).Displayed.Should().BeTrue();
+                _browsers[_tc.CurrentUser.Key].Driver.SwitchTo().Frame(HearingRoomPage.JudgeIframeId);
+                new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(_page.ClerkIncomingVideo);
+            }
+            else
+            {
+                new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(_page.ParticipantIncomingVideo);
+            }
         }
     }
 }

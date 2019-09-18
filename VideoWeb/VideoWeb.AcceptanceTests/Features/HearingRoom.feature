@@ -4,7 +4,7 @@ Feature: HearingRoom
 	As a registered user
 	I want to be able to access the video hearing room and interact with the controls
 
-@Chrome @Video @VIH-4610
+@Chrome @Video @VIH-4610 @HearingTest
 Scenario: Clerk starts hearing
 	Given the Clerk user has progressed to the Waiting Room page
 	Then the hearing status changed to NotStarted
@@ -17,7 +17,7 @@ Scenario: Clerk starts hearing
 	And the hearing controls are visible
 	And the user can see themselves and toggle the view off and on
 
-@Chrome @Video @VIH-4615
+@Chrome @Video @VIH-4615 @HearingTest
 Scenario: Clerk pauses hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
@@ -40,7 +40,7 @@ Scenario: Clerk pauses hearing
 	When in Individual01's browser
 	Then the participant is back in the hearing
 
-@Chrome @Video @VIH-4615
+@Chrome @Video @VIH-4615 @HearingTest
 Scenario: Clerk closes hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
@@ -55,7 +55,7 @@ Scenario: Clerk closes hearing
 	When in Individual01's browser
 	Then the participants waiting room displays the closed status
 
-@Chrome @Video
+@Chrome @Video @HearingTest
 Scenario: Two participants join hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
@@ -64,17 +64,23 @@ Scenario: Two participants join hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
 	Then the Clerk is on the Hearing Room page for 1 minute
+	And Clerk can see the other participants
+	And Individual01 can see the other participants
+	And Representative01 can see the other participants
 
-@Chrome @Video
+@Chrome @Video @HearingTest
 Scenario: Four participants join hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
 	And the Individual02 user has progressed to the Waiting Room page for the existing hearing
 	And the Representative02 user has progressed to the Waiting Room page for the existing hearing
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
-	When Individual01 refreshes the waiting room page
-	And in the Clerk's browser
-	And the Clerk starts the hearing
+	When the Clerk starts the hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
 	Then the Clerk is on the Hearing Room page for 2 minutes
+	And Clerk can see the other participants
+	And Individual01 can see the other participants
+	And Representative01 can see the other participants
+	And Individual02 can see the other participants
+	And Representative02 can see the other participants

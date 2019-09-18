@@ -10,7 +10,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By PauseButton = By.Id("pauseButton");
         public By CloseButton = By.Id("closeButton");
         public By ToggleSelfview = By.Id("selfViewButton");
-        public By IncomingVideo = By.Id("incomingVideo");
+        public By ClerkIncomingVideo = By.Id("incomingVideo");
         public By ParticipantIncomingVideo = By.Id("incomingFeed");
         public By SelfView = By.Id("selfviewVideo");
     }
