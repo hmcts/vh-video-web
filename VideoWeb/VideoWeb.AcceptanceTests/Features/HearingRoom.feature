@@ -55,7 +55,7 @@ Scenario: Clerk closes hearing
 	When in Individual01's browser
 	Then the participants waiting room displays the closed status
 
-@Chrome @Video
+@Chrome @Video @HearingTest
 Scenario: Two participants join hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
@@ -67,13 +67,8 @@ Scenario: Two participants join hearing
 	And Individual01 can see the other participants
 	And Representative01 can see the other participants
 	And Clerk can see the other participants
-	When the Clerk clicks close
-	Then the user is on the Hearing List page
-	And the hearing status changed to Closed
-	When in Individual01's browser
-	Then the participants waiting room displays the closed status
 
-@Chrome @Video
+@Chrome @Video @HearingTest
 Scenario: Four participants join hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
