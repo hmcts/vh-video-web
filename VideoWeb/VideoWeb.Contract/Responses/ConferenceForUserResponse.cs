@@ -14,6 +14,11 @@ namespace VideoWeb.Contract.Responses
         public Guid Id { get; set; }
         
         /// <summary>
+        /// Hearing ID for conference
+        /// </summary>
+        public Guid HearingId { get; set; }
+        
+        /// <summary>
         /// Scheduled date time as UTC
         /// </summary>
         public DateTime ScheduledDateTime { get; set; }

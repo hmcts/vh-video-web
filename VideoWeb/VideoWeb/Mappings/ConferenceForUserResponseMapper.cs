@@ -38,6 +38,7 @@ namespace VideoWeb.Mappings
             }
             
             conferenceForUserResponse.Id = conference.Id.GetValueOrDefault();
+            conferenceForUserResponse.HearingId = conference.Hearing_id.GetValueOrDefault();
             conferenceForUserResponse.CaseName = conference.Case_name;
             conferenceForUserResponse.CaseNumber = conference.Case_number;
             conferenceForUserResponse.CaseType = conference.Case_type;

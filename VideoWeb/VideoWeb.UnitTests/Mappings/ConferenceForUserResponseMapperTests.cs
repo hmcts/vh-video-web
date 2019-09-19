@@ -39,6 +39,7 @@ namespace VideoWeb.UnitTests.Mappings
             var response = _mapper.MapConferenceSummaryToResponseModel(conference);
 
             response.Id.Should().Be(conference.Id.GetValueOrDefault());
+            response.HearingId.Should().Be(conference.Hearing_id.GetValueOrDefault());
             response.CaseName.Should().Be(conference.Case_name);
             response.CaseNumber.Should().Be(conference.Case_number);
             response.CaseType.Should().Be(conference.Case_type);
