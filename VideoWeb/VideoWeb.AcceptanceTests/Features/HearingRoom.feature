@@ -68,7 +68,7 @@ Scenario: Two participants join hearing
 	And Individual01 can see the other participants
 	And Representative01 can see the other participants
 
-@Chrome @Video @HearingTest @Smoketest
+@Chrome @Video @HearingTest
 Scenario: Four participants join hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
@@ -79,6 +79,12 @@ Scenario: Four participants join hearing
 	When the Clerk starts the hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
+	Then Clerk can see the other participants
+	And Individual01 can see the other participants
+	And Representative01 can see the other participants
+	And Individual02 can see the other participants
+	And Representative02 can see the other participants
+	When in Clerk's browser
 	Then the Clerk is on the Hearing Room page for 2 minutes
 	And Clerk can see the other participants
 	And Individual01 can see the other participants

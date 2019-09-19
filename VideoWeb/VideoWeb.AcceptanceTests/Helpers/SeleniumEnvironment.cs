@@ -18,7 +18,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
         private readonly ScenarioInfo _scenario;
         private static TargetBrowser _targetBrowser;
         private const string SaucelabsScreenResolution = "1920x1200";
-        private const int SaucelabsIdleTimeoutInSeconds = 300;
+        private const int SaucelabsIdleTimeoutInSeconds = 60 * 30;
 
         public SeleniumEnvironment(SauceLabsSettings saucelabsSettings, ScenarioInfo scenario, TargetBrowser targetBrowser)
         {
