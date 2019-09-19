@@ -22,15 +22,31 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly TestContext _tc;
         private readonly WaitingRoomPage _page;
         private readonly ClerkWaitingRoomPage _clerkPage;
+        private readonly CommonSteps _commonSteps;
         private const int ExtraTimeInWaitingRoomAfterThePause = 10;
 
         public WaitingRoomSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext,
-            WaitingRoomPage page, ClerkWaitingRoomPage clerkPage)
+            WaitingRoomPage page, ClerkWaitingRoomPage clerkPage, CommonSteps commonSteps)
         {
             _browsers = browsers;
             _tc = testContext;
             _page = page;
             _clerkPage = clerkPage;
+            _commonSteps = commonSteps;
+        }
+
+        [Given(@"all the participants refresh their browsers")]
+        public void GivenAllTheParticipantsRefreshTheirBrowsers()
+        {
+            var participants = _tc.Hearing.Participants.Where(x => !x.Display_name.ToLower().Contains("clerk"));
+            foreach (var participant in participants)
+            {
+                _commonSteps.GivenInTheUsersBrowser(participant.Last_name);
+                _browsers[_tc.CurrentUser.Key].Driver.Navigate().Refresh();
+                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.HearingCaseDetails, 60).Text
+                    .Should().Contain(_tc.Hearing.Cases.First().Name);
+            }
+            _commonSteps.GivenInTheUsersBrowser("Clerk");
         }
 
         [When(@"the user navigates back to the hearing list")]
