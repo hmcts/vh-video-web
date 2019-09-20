@@ -41,9 +41,10 @@ namespace VideoWeb.AcceptanceTests.Helpers
             switch (_targetBrowser)
             {
                 case TargetBrowser.Firefox:
-                    var profile = new FirefoxProfile();
-                    profile.SetPreference("media.navigator.streams.fake", true);
-                    profile.SetPreference("media.navigator.permission.disabled", true);
+                    var profile = new Dictionary<string, object>
+                    {
+                        ["args"] = new List<string>{ "media.navigator.permission.disabled", "media.navigator.streams.fake"}
+                    };
                     caps.SetCapability(FirefoxDriver.ProfileCapabilityName, profile);
                     caps.SetCapability("browserName", "Firefox");
                     caps.SetCapability("platform", "Windows 10");
@@ -83,11 +84,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
                     caps.SetCapability("autoAcceptAlerts", true);
                     var chromeOptions = new Dictionary<string, List<string>>
                     {
-                        ["args"] = new List<string>
-                        {
-                            "use-fake-ui-for-media-stream",
-                            "use-fake-device-for-media-stream"
-                        }
+                        ["args"] = new List<string>{ "use-fake-ui-for-media-stream", "use-fake-device-for-media-stream" }
                     };                    
                     caps.SetCapability(ChromeOptions.Capability, chromeOptions);
                     break;
