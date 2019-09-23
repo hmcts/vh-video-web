@@ -18,14 +18,14 @@
           <p class="govuk-!-margin-0 govuk-!-padding-0">{{conference.case_name}}</p>
         </strong>
         <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3">
-          <span class="govuk-!-padding-2"
+          <span class="govuk-!-padding-1 govuk-body-s"
             [ngClass]="{'conference-ready': isOnTime(conference), 'conference-delayed': isDelayed(conference), 
               'conference-suspended': isSuspended(conference), 'conference-paused': isPaused(conference), 
               'conference-in-session': isInSession(conference), 'conference-closed': isClosed(conference)}">{{ getConferenceStatusText(conference) }}</span>
 
-          <span class="govuk-!-padding-2 govuk-!-margin-left-2 report-conference"
+          <span class="govuk-!-padding-1 govuk-!-margin-left-2 report-conference govuk-body-s"
             (click)="copyToClipboard(conference);$event.stopPropagation()">
-            Report
+            Copy UID
           </span>
           
         </div>

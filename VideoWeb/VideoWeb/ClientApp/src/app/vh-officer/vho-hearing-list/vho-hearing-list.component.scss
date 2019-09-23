@@ -13,8 +13,7 @@
   font-weight: bold;
 }
 
-.conference-in-session,
-.report-conference {
+.conference-in-session {
   background-color: govuk-colour("blue");
   color: govuk-colour("white");
   font-weight: bold;
@@ -42,8 +41,32 @@
   background: govuk-colour("grey-3");
 }
 
+.report-conference {
+  background: transparent;
+  border-style: solid;
+  border-width: 1.5px;
+  border-color: govuk-colour("grey-1");
+  color: govuk-colour("grey-1");
+  font-weight: bold;
+}
+
+.selected-conference .report-conference {
+  background: govuk-colour("grey-1");
+  border-style: solid;
+  border-width: 1.5px;
+  border-color: govuk-colour("grey-1");
+  color: govuk-colour("white");
+  font-weight: bold;
+}
+
 .report-conference:active {
-  background: govuk-colour("light-blue");
+  background: govuk-colour("grey-1");
+  color: govuk-colour("white");
+}
+
+.selected-conference .report-conference:active {
+  background: govuk-colour("white");
+  color: govuk-colour("grey-1");
 }
 
 .copy-clipboard {
