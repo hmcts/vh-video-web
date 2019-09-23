@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ConferenceForUserResponse, ConferenceResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { ClipboardService } from 'ngx-clipboard';
 
 @Component({
   selector: 'app-vho-hearing-list',
@@ -13,7 +14,7 @@ export class VhoHearingListComponent implements OnInit {
   @Output() selectedConference = new EventEmitter<ConferenceForUserResponse>();
   currentConference: ConferenceForUserResponse;
 
-  constructor() { }
+  constructor(private clipboardService: ClipboardService) { }
 
   ngOnInit() {
   }
@@ -73,5 +74,9 @@ export class VhoHearingListComponent implements OnInit {
   selectConference(conference: ConferenceForUserResponse) {
     this.currentConference = conference;
     this.selectedConference.emit(conference);
+  }
+
+  copyToClipboard(conference: ConferenceForUserResponse) {
+    this.clipboardService.copyFromContent(conference.hearing_id);
   }
 }

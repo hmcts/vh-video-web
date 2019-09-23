@@ -3,39 +3,72 @@
 .conference-suspended,
 .conference-delayed,
 .conference-not-ready {
-    background-color: govuk-colour("red");
-    color: govuk-colour("white");
-    font-weight: bold;
+  background-color: govuk-colour("red");
+  color: govuk-colour("white");
+  font-weight: bold;
 }
 
 .pending-alerts {
-    color: govuk-colour("red");
-    font-weight: bold;
+  color: govuk-colour("red");
+  font-weight: bold;
 }
 
 .conference-in-session {
-    background-color: govuk-colour("blue");
-    color: govuk-colour("white");
-    font-weight: bold;
+  background-color: govuk-colour("blue");
+  color: govuk-colour("white");
+  font-weight: bold;
 }
 
 .conference-paused {
-    background-color: govuk-colour("yellow");
-    color: govuk-colour("black");
-    font-weight: bold;
+  background-color: govuk-colour("yellow");
+  color: govuk-colour("black");
+  font-weight: bold;
 }
 
 .conference-ready {
-    background-color: govuk-colour("green");
-    color: govuk-colour("white");
-    font-weight: bold;
+  background-color: govuk-colour("green");
+  color: govuk-colour("white");
+  font-weight: bold;
 }
 
 .conference-closed {
-    background-color: govuk-colour("black");
-    color: govuk-colour("white");
-    font-weight: bold;
+  background-color: govuk-colour("black");
+  color: govuk-colour("white");
+  font-weight: bold;
 }
+
 .selected-conference {
-    background: govuk-colour("grey-3");
+  background: govuk-colour("grey-3");
+}
+
+.report-conference {
+  background: transparent;
+  border-style: solid;
+  border-width: 1.5px;
+  border-color: govuk-colour("grey-1");
+  color: govuk-colour("grey-1");
+  font-weight: bold;
+}
+
+.selected-conference .report-conference {
+  background: govuk-colour("grey-1");
+  border-style: solid;
+  border-width: 1.5px;
+  border-color: govuk-colour("grey-1");
+  color: govuk-colour("white");
+  font-weight: bold;
+}
+
+.report-conference:active {
+  background: govuk-colour("grey-1");
+  color: govuk-colour("white");
+}
+
+.selected-conference .report-conference:active {
+  background: govuk-colour("white");
+  color: govuk-colour("grey-1");
+}
+
+.copy-clipboard {
+  padding-left: 5px;
 }
