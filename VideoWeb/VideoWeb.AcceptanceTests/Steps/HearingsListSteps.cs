@@ -3,15 +3,19 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using FluentAssertions;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using OpenQA.Selenium.Support.Extensions;
 using TechTalk.SpecFlow;
 using Testing.Common.Helpers;
-using VideoWeb.AcceptanceTests.Contexts;
+using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.AcceptanceTests.Users;
-using VideoWeb.Contract.Responses;
+using VideoWeb.Common.Helpers;
+using VideoWeb.Services.Video;
 using ParticipantResponse = VideoWeb.Services.Bookings.ParticipantResponse;
+using TestContext = VideoWeb.AcceptanceTests.Contexts.TestContext;
+using UserRole = VideoWeb.Contract.Responses.UserRole;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -31,6 +35,18 @@ namespace VideoWeb.AcceptanceTests.Steps
             _tc = testContext;
             _page = page;
             _clerkPage = clerkPage;
+        }
+
+        [Given(@"the Video Hearings Officer has no hearings")]
+        public void GivenTheVideoHearingsOfficerHasNoHearings()
+        {
+            _tc.Request = _tc.Get(new VideoApiUriFactory().ConferenceEndpoints.GetTodaysConferences);
+            new ExecuteRequestBuilder().WithContext(_tc).SendToVideoApi();
+            var conferences = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ConferenceSummaryResponse>>(_tc.Json);
+            if (conferences.Count >  0)
+            {
+                throw new TestPlatformException($"Test requires no other hearings to be present but found {conferences.Count} other hearings.");
+            }
         }
 
         [When(@"the user clicks on the Start Hearing button")]
