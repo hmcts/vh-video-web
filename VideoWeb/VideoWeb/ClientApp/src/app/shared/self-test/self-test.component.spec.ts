@@ -103,4 +103,15 @@ describe('SelfTestComponent', () => {
         });
         expect(videoWebService.raiseSelfTestFailureEvent).toHaveBeenCalledWith(component.conference.id, request);
     });
+
+    it('should not raise failed self test event when score has already been sent', async () => {
+        spyOn(videoWebService, 'raiseSelfTestFailureEvent');
+        component.scoreSent = true;
+        await component.ngOnDestroy();
+        const request = new AddSelfTestFailureEventRequest({
+            participant_id: component.participant.id,
+            self_test_failure_reason: SelfTestFailureReason.IncompleteTest
+        });
+        expect(videoWebService.raiseSelfTestFailureEvent).toHaveBeenCalledTimes(0);
+    });
 });
