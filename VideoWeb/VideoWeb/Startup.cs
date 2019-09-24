@@ -1,13 +1,17 @@
 using System;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Extensions;
@@ -61,8 +65,9 @@ namespace VideoWeb
 
             serviceCollection.AddMvc(options => { options.Filters.Add(new AuthorizeFilter(policy)); });
 
+            var customTokenSettings = Configuration.GetSection("CustomToken").Get<CustomTokenSettings>();
             var securitySettings = Configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
-            
+            var securityKey = new ASCIIEncoding().GetBytes(customTokenSettings.ThirdPartySecret);
             serviceCollection.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -73,6 +78,39 @@ namespace VideoWeb
                 options.TokenValidationParameters.ValidateLifetime = true;
                 options.Audience = securitySettings.ClientId;
                 options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
+            }).AddJwtBearer("EventHubUser", options =>
+            {
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        if (string.IsNullOrEmpty(accessToken)) return Task.CompletedTask;
+
+                        var path = context.HttpContext.Request.Path;
+                        if (path.StartsWithSegments("/eventhub"))
+                        {
+                            context.Token = accessToken;
+                        }
+
+                        return Task.CompletedTask;
+                    }
+                };
+                options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}";
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ClockSkew = TimeSpan.Zero,
+                    ValidateLifetime = true,
+                    ValidAudience = securitySettings.ClientId
+                };
+            }).AddJwtBearer("Callback", options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    IssuerSigningKey = new SymmetricSecurityKey(securityKey)
+                };
             });
 
             serviceCollection.AddAuthorization();
@@ -121,6 +159,17 @@ namespace VideoWeb
                 {
                     spa.UseAngularCliServer(npmScript: "start");
                 }
+            });
+
+            app.UseSignalR(routes =>
+            {
+                const string path = "/eventhub";
+                routes.MapHub<EventHub.Hub.EventHub>(path,
+                    options =>
+                    {
+                        options.Transports = HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling |
+                                             HttpTransportType.WebSockets;
+                    });
             });
         }
     }
