@@ -15,12 +15,14 @@
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
         <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.2.0" />
         <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
+        <PackageReference Include="Moq" Version="4.10.1" />
         <PackageReference Include="NBuilder" Version="6.0.0" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />
+      <ProjectReference Include="..\VideoWeb.EventHub\VideoWeb.EventHub.csproj" />
       <ProjectReference Include="..\VideoWeb.Services\VideoWeb.Services.csproj" />
     </ItemGroup>
 

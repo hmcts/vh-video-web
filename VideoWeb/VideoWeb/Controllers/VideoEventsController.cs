@@ -2,6 +2,8 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.Mappings;
 using VideoWeb.Services;
 using VideoWeb.Services.Video;
 
@@ -9,14 +11,16 @@ namespace VideoWeb.Controllers
 {
     [Produces("application/json")]
     [ApiController]
-    [Route("events")]
+    [Route("callback")]
     public class VideoEventsController : Controller
     {
         private readonly IEventsServiceClient _eventsServiceClient;
+        private readonly IEventHandlerFactory _eventHandlerFactory;
 
-        public VideoEventsController(IEventsServiceClient eventsServiceClient)
+        public VideoEventsController(IEventsServiceClient eventsServiceClient, IEventHandlerFactory eventHandlerFactory)
         {
             _eventsServiceClient = eventsServiceClient;
+            _eventHandlerFactory = eventHandlerFactory;
         }
 
         [HttpPost]
@@ -27,7 +31,12 @@ namespace VideoWeb.Controllers
         {
             try
             {
+                var callbackEvent = new CallbackEventMapper().MapConferenceEventToCallbackEventModel(request);
+                var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
+                
+                await handler.HandleAsync(callbackEvent);
                 await _eventsServiceClient.PostEventsAsync(request);
+                
                 return NoContent();
             }
             catch (VideoApiException e)

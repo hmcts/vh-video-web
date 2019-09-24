@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
@@ -8,6 +9,7 @@ using Moq;
 using NUnit.Framework;
 using Testing.Common.Helpers;
 using VideoWeb.Controllers;
+using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.Services;
 using VideoWeb.Services.Video;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
@@ -18,7 +20,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
     {
         private VideoEventsController _controller;
         private Mock<IEventsServiceClient> _videoApiClientMock;
-        
+
         [SetUp]
         public void Setup()
         {
@@ -32,7 +34,9 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 }
             };
             
-            _controller = new VideoEventsController(_videoApiClientMock.Object)
+            var eventHandlerFactory = new EventHandlerFactory(EventHandlerListBuilder.Get());
+            
+            _controller = new VideoEventsController(_videoApiClientMock.Object, eventHandlerFactory)
             {
                 ControllerContext = context
             };
@@ -45,7 +49,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
                 .Returns(Task.FromResult(default(object)));
             
-            var result = await _controller.SendHearingEvent(Builder<ConferenceEventRequest>.CreateNew().Build());
+            var result = await _controller.SendHearingEvent(CreateRequest());
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
         }
@@ -59,7 +63,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
             
-            var result = await _controller.SendHearingEvent(Builder<ConferenceEventRequest>.CreateNew().Build());
+            var result = await _controller.SendHearingEvent(CreateRequest());
             var typedResult = (ObjectResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
         }
@@ -73,9 +77,18 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.SendHearingEvent(Builder<ConferenceEventRequest>.CreateNew().Build());
+            var result = await _controller.SendHearingEvent(CreateRequest());
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
-        } 
+        }
+
+        private ConferenceEventRequest CreateRequest()
+        {
+            return Builder<ConferenceEventRequest>.CreateNew()
+                .With(x => x.Conference_id = Guid.NewGuid().ToString())
+                .With(x => x.Participant_id = Guid.NewGuid().ToString())
+                .With(x => x.Event_type = EventType.Joined)
+                .Build();
+        }
     }
 }
