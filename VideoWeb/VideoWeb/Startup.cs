@@ -113,7 +113,8 @@ namespace VideoWeb
                 };
             });
 
-            serviceCollection.AddAuthorization();
+            serviceCollection.AddAuthorization(AddPolicies);
+            serviceCollection.AddMvc(AddMvcPolicies);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -121,6 +122,17 @@ namespace VideoWeb
         {
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Video App"); });
+            
+            app.UseSignalR(routes =>
+            {
+                const string path = "/eventhub";
+                routes.MapHub<EventHub.Hub.EventHub>(path,
+                    options =>
+                    {
+                        options.Transports = HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling |
+                                             HttpTransportType.WebSockets;
+                    });
+            });
             
             if (env.IsDevelopment())
             {
@@ -160,17 +172,29 @@ namespace VideoWeb
                     spa.UseAngularCliServer(npmScript: "start");
                 }
             });
+        }
+        
+        private static void AddPolicies(AuthorizationOptions options)
+        {
+            options.DefaultPolicy = new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser().AddAuthenticationSchemes("default")
+                .Build();
 
-            app.UseSignalR(routes =>
-            {
-                const string path = "/eventhub";
-                routes.MapHub<EventHub.Hub.EventHub>(path,
-                    options =>
-                    {
-                        options.Transports = HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling |
-                                             HttpTransportType.WebSockets;
-                    });
-            });
+            options.AddPolicy("EventHubUser", new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .AddAuthenticationSchemes("EventHubUser")
+                .Build());
+
+            options.AddPolicy("Callback", new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .AddAuthenticationSchemes("Callback")
+                .Build());
+        }
+
+        private static void AddMvcPolicies(MvcOptions options)
+        {
+            options.Filters.Add(new AuthorizeFilter(new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser().Build()));
         }
     }
 }

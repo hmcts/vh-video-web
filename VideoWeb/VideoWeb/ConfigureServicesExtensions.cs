@@ -7,6 +7,8 @@ using System.Reflection;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Polly;
 using Polly.Extensions.Http;
@@ -15,6 +17,7 @@ using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
+using VideoWeb.EventHub.Hub;
 using VideoWeb.Services;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
@@ -68,7 +71,8 @@ namespace VideoWeb
             services.AddScoped<ITokenProvider, TokenProvider>();
             services.AddScoped<ICustomJwtTokenProvider, CustomJwtTokenProvider>();
             services.AddScoped<IHashGenerator, HashGenerator>();
-
+            services.AddScoped<IUserProfileService, AdUserProfileService>();
+            
             var container = services.BuildServiceProvider();
             var servicesConfiguration = container.GetService<IOptions<HearingServicesConfiguration>>().Value;
 
@@ -89,6 +93,20 @@ namespace VideoWeb
 
             services.AddHttpClient<IEventsServiceClient, EventServiceClient>()
                 .AddHttpMessageHandler<VideoCallbackTokenHandler>();
+                
+            var contractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new SnakeCaseNamingStrategy()
+            };
+            
+            services.AddSignalR()
+                .AddJsonProtocol(options =>
+                {
+                    options.PayloadSerializerSettings.ContractResolver = contractResolver;
+                    options.PayloadSerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+                    options.PayloadSerializerSettings.Converters.Add(
+                        new StringEnumConverter());
+                }).AddHubOptions<EventHub.Hub.EventHub>(options => { options.EnableDetailedErrors = true; });
             
             return services;
         }
