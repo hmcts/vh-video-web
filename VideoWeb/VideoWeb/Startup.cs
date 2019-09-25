@@ -111,6 +111,7 @@ namespace VideoWeb
                     };
                 });
 
+            serviceCollection.AddMemoryCache();
             serviceCollection.AddAuthorization(AddPolicies);
             serviceCollection.AddMvc(AddMvcPolicies);
         }
