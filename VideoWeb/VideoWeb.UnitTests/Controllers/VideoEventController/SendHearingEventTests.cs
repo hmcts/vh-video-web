@@ -1,18 +1,22 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using NUnit.Framework;
 using Testing.Common.Helpers;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.EventHub.Models;
 using VideoWeb.Services;
 using VideoWeb.Services.Video;
-using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
+using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
+using Role = VideoWeb.EventHub.Enums.UserRole;
 
 namespace VideoWeb.UnitTests.Controllers.VideoEventController
 {
@@ -20,11 +24,21 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
     {
         private VideoEventsController _controller;
         private Mock<IEventsServiceClient> _videoApiClientMock;
+        private Conference _testConference;
 
         [SetUp]
         public void Setup()
         {
             _videoApiClientMock = new Mock<IEventsServiceClient>();
+            _testConference = BuildConferenceForTest();
+            var helper = new EventComponentHelper();
+            
+            var handlerList = helper.GetHandlers();
+            helper.Cache.Set(_testConference.Id, _testConference);
+            helper.RegisterUsersForHubContext(_testConference.Participants);
+            
+            var eventHandlerFactory = new EventHandlerFactory(handlerList);
+            
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
             {
@@ -33,8 +47,6 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                     User = claimsPrincipal
                 }
             };
-            
-            var eventHandlerFactory = new EventHandlerFactory(EventHandlerListBuilder.Get());
             
             _controller = new VideoEventsController(_videoApiClientMock.Object, eventHandlerFactory)
             {
@@ -85,10 +97,33 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         private ConferenceEventRequest CreateRequest()
         {
             return Builder<ConferenceEventRequest>.CreateNew()
-                .With(x => x.Conference_id = Guid.NewGuid().ToString())
-                .With(x => x.Participant_id = Guid.NewGuid().ToString())
+                .With(x => x.Conference_id = _testConference.Id.ToString())
+                .With(x => x.Participant_id = _testConference.Participants[0].Id.ToString())
                 .With(x => x.Event_type = EventType.Joined)
                 .Build();
+        }
+        
+        private static Conference BuildConferenceForTest()
+        {
+            return new Conference
+            {
+                Id = Guid.NewGuid(),
+                HearingId = Guid.NewGuid(),
+                Participants = new List<Participant>()
+                {
+                    Builder<Participant>.CreateNew()
+                        .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
+                        .Build(),
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
+                        .With(x => x.Id = Guid.NewGuid()).Build(),
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
+                        .With(x => x.Id = Guid.NewGuid()).Build(),
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
+                        .With(x => x.Id = Guid.NewGuid()).Build(),
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
+                        .With(x => x.Id = Guid.NewGuid()).Build()
+                }
+            };
         }
     }
 }

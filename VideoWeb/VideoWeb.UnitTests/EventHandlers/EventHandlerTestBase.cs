@@ -15,32 +15,26 @@ namespace VideoWeb.UnitTests.EventHandlers
 {
     public abstract class EventHandlerTestBase
     {
-        protected List<IEventHandler> EventHandlersList;
-        protected Mock<IEventHubClient> EventHubClientMock;
-        protected Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> EventHubContextMock;
-        protected IMemoryCache MemoryCache;
+        protected List<IEventHandler> EventHandlersList { get; private set; }
+        protected Mock<IEventHubClient> EventHubClientMock { get; private set; }
+        protected Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> EventHubContextMock { get; private set; }
+        protected IMemoryCache MemoryCache { get; private set; }
 
         protected Conference TestConference;
         
         [SetUp]
         public void Setup()
         {
-            EventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>();
-            EventHubClientMock = new Mock<IEventHubClient>();
-            MemoryCache = new MemoryCache(new MemoryCacheOptions());
-
-            EventHandlersList = EventHandlerListBuilder.Get(EventHubContextMock, MemoryCache);
+            var helper = new EventComponentHelper();
+            EventHandlersList = helper.GetHandlers();
+            EventHubContextMock = helper.EventHubContextMock;
+            EventHubClientMock = helper.EventHubClientMock;
+            MemoryCache = helper.Cache;
 
             TestConference = BuildConferenceForTest();
             MemoryCache.Set(TestConference.Id, TestConference);
             
-            foreach (var participant in TestConference.Participants)
-            {
-                EventHubContextMock.Setup(x => x.Clients.Group(participant.Username.ToLowerInvariant()))
-                    .Returns(EventHubClientMock.Object);
-            }
-            EventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
-                .Returns(EventHubClientMock.Object);
+            helper.RegisterUsersForHubContext(TestConference.Participants);
         }
 
         private static Conference BuildConferenceForTest()
