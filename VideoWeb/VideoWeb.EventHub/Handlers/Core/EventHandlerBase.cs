@@ -1,5 +1,6 @@
 using System.Linq;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Caching.Memory;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Hub;
@@ -11,23 +12,22 @@ namespace VideoWeb.EventHub.Handlers.Core
     public abstract class EventHandlerBase : IEventHandler
     {
         protected readonly IHubContext<Hub.EventHub, IEventHubClient> HubContext;
+        private readonly IMemoryCache _memoryCache;
 
-        protected EventHandlerBase(IHubContext<Hub.EventHub, IEventHubClient> hubContext)
+        protected EventHandlerBase(IHubContext<Hub.EventHub, IEventHubClient> hubContext, IMemoryCache memoryCache)
         {
             HubContext = hubContext;
+            _memoryCache = memoryCache;
         }
 
         public Conference SourceConference { get; set; }
         public Participant SourceParticipant { get; set; }
 
         public abstract EventType EventType { get; }
-#pragma warning disable S4457 // Parameter validation in "async/await" methods should be wrapped
+
         public async Task HandleAsync(CallbackEvent callbackEvent)
         {
-            SourceConference = new Conference();
-                //await QueryHandler.Handle<GetConferenceByIdQuery, Conference>(
-                //    new GetConferenceByIdQuery(callbackEvent.ConferenceId));
-
+            SourceConference = _memoryCache.Get<Conference>(callbackEvent.ConferenceId);
             if (SourceConference == null) throw new ConferenceNotFoundException(callbackEvent.ConferenceId);
 
             SourceParticipant = SourceConference.Participants

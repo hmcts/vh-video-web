@@ -7,12 +7,14 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using Testing.Common.Helpers;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
+using VideoWeb.EventHub;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
@@ -46,7 +48,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             };
 
             _controller = new ConferencesController(_videoApiClientMock.Object, _userApiClientMock.Object,
-                _bookingsApiClientMock.Object, _mockLogger.Object)
+                _bookingsApiClientMock.Object, _mockLogger.Object, new MemoryCache(new MemoryCacheOptions()))
             {
                 ControllerContext = context
             };

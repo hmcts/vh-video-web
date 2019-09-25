@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Caching.Memory;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
@@ -9,7 +10,7 @@ namespace VideoWeb.EventHub.Handlers
 {
     public class DisconnectedEventHandler : EventHandlerBase
     {
-        public DisconnectedEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext) : base(hubContext)
+        public DisconnectedEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext, IMemoryCache memoryCache) : base(hubContext, memoryCache)
         {
         }
 
@@ -25,34 +26,12 @@ namespace VideoWeb.EventHub.Handlers
         {
             var participantState = ParticipantState.Disconnected;
             await PublishParticipantStatusMessage(participantState).ConfigureAwait(false);
-
-            //await AddDisconnectedTask().ConfigureAwait(false);
         }
-
-        //private async Task AddDisconnectedTask()
-        //{
-        //    var taskType = SourceParticipant.IsJudge() ? TaskType.Judge : TaskType.Participant;
-        //    var disconnected = new AddTaskCommand(SourceConference.Id, SourceParticipant.Id, "Disconnected", taskType);
-        //    await CommandHandler.Handle(disconnected).ConfigureAwait(false);
-        //}
-
-        //private async Task AddSuspendedTask()
-        //{
-        //    var addSuspendedTask =
-        //        new AddTaskCommand(SourceConference.Id, SourceConference.Id, "Suspended", TaskType.Hearing);
-        //    await CommandHandler.Handle(addSuspendedTask).ConfigureAwait(false);
-        //}
 
         private async Task PublishSuspendedEventMessage()
         {
             var conferenceState = ConferenceState.Suspended;
             await PublishConferenceStatusMessage(conferenceState).ConfigureAwait(false);
-            
-            //var updateConferenceStatusCommand =
-            //    new UpdateConferenceStatusCommand(SourceConference.Id, conferenceState);
-            //await CommandHandler.Handle(updateConferenceStatusCommand).ConfigureAwait(false);
-
-            //await AddSuspendedTask().ConfigureAwait(false);
         }
     }
 }

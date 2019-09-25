@@ -4,10 +4,12 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Polly.CircuitBreaker;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Responses;
+using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
@@ -26,14 +28,16 @@ namespace VideoWeb.Controllers
         private readonly IUserApiClient _userApiClient;
         private readonly IBookingsApiClient _bookingsApiClient;
         private readonly ILogger<ConferencesController> _logger;
+        private readonly IMemoryCache _memoryCache;
 
         public ConferencesController(IVideoApiClient videoApiClient, IUserApiClient userApiClient,
-            IBookingsApiClient bookingsApiClient, ILogger<ConferencesController> logger)
+            IBookingsApiClient bookingsApiClient, ILogger<ConferencesController> logger, IMemoryCache memoryCache)
         {
             _videoApiClient = videoApiClient;
             _userApiClient = userApiClient;
             _bookingsApiClient = bookingsApiClient;
             _logger = logger;
+            _memoryCache = memoryCache;
         }
 
         /// <summary>
@@ -244,7 +248,37 @@ namespace VideoWeb.Controllers
 
             var mapper = new ConferenceResponseMapper();
             var response = mapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
+            AddConferenceToCache(conference);
+
             return Ok(response);
+        }
+
+        private async void AddConferenceToCache(ConferenceDetailsResponse conferenceResponse)
+        {
+            var participants = new List<Participant>();
+            foreach (var participant in conferenceResponse.Participants)
+            {
+                participants.Add(new Participant
+                {
+                    Id = participant.Id.Value,
+                    DisplayName = participant.Display_name,
+                    Role = (VideoWeb.EventHub.Enums.UserRole) Enum.Parse(typeof(UserRole), participant.User_role.ToString()),
+                    UserId = participant.Username
+                });
+            }
+
+            var conference = new Conference
+            {
+                Id = conferenceResponse.Id.Value,
+                HearingId = conferenceResponse.Hearing_id.Value,
+                Participants = participants
+            };
+
+            await _memoryCache.GetOrCreateAsync(conference.Id, entry =>
+            {
+                entry.SlidingExpiration = TimeSpan.FromHours(8);
+                return Task.FromResult(conference);
+            });
         }
 
         private static void ValidateConferenceAndBookingParticipantsMatch(List<ParticipantDetailsResponse> participants,
