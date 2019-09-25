@@ -1,5 +1,6 @@
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.EventHub.Handlers.Core;
@@ -12,6 +13,8 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("callback")]
+    [AllowAnonymous]
+    //[Authorize(AuthenticationSchemes = "Callback")]
     public class VideoEventsController : Controller
     {
         private readonly IEventsServiceClient _eventsServiceClient;

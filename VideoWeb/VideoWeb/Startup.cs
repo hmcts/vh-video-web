@@ -59,59 +59,57 @@ namespace VideoWeb
 
         private void RegisterAuth(IServiceCollection serviceCollection)
         {
-            var policy = new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser()
-                .Build();
-
-            serviceCollection.AddMvc(options => { options.Filters.Add(new AuthorizeFilter(policy)); });
-
             var customTokenSettings = Configuration.GetSection("CustomToken").Get<CustomTokenSettings>();
             var securitySettings = Configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
             var securityKey = new ASCIIEncoding().GetBytes(customTokenSettings.ThirdPartySecret);
             serviceCollection.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-            {
-                options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}";
-                options.TokenValidationParameters.ValidateLifetime = true;
-                options.Audience = securitySettings.ClientId;
-                options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
-            }).AddJwtBearer("EventHubUser", options =>
-            {
-                options.Events = new JwtBearerEvents
                 {
-                    OnMessageReceived = context =>
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                }).AddPolicyScheme(JwtBearerDefaults.AuthenticationScheme, "handler", options =>
+                    options.ForwardDefaultSelector = context =>
+                        context.Request.Path.StartsWithSegments("/callback")
+                            ? "Callback" : "default")
+                .AddJwtBearer("default", options =>
+                {
+                    options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}";
+                    options.TokenValidationParameters.ValidateLifetime = true;
+                    options.Audience = securitySettings.ClientId;
+                    options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
+                }).AddJwtBearer("EventHubUser", options =>
+                {
+                    options.Events = new JwtBearerEvents
                     {
-                        var accessToken = context.Request.Query["access_token"];
-                        if (string.IsNullOrEmpty(accessToken)) return Task.CompletedTask;
-
-                        var path = context.HttpContext.Request.Path;
-                        if (path.StartsWithSegments("/eventhub"))
+                        OnMessageReceived = context =>
                         {
-                            context.Token = accessToken;
-                        }
+                            var accessToken = context.Request.Query["access_token"];
+                            if (string.IsNullOrEmpty(accessToken)) return Task.CompletedTask;
 
-                        return Task.CompletedTask;
-                    }
-                };
-                options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}";
-                options.TokenValidationParameters = new TokenValidationParameters()
+                            var path = context.HttpContext.Request.Path;
+                            if (path.StartsWithSegments("/eventhub"))
+                            {
+                                context.Token = accessToken;
+                            }
+
+                            return Task.CompletedTask;
+                        }
+                    };
+                    options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}";
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ClockSkew = TimeSpan.Zero,
+                        ValidateLifetime = true,
+                        ValidAudience = securitySettings.ClientId
+                    };
+                }).AddJwtBearer("Callback", options =>
                 {
-                    ClockSkew = TimeSpan.Zero,
-                    ValidateLifetime = true,
-                    ValidAudience = securitySettings.ClientId
-                };
-            }).AddJwtBearer("Callback", options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    IssuerSigningKey = new SymmetricSecurityKey(securityKey)
-                };
-            });
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        IssuerSigningKey = new SymmetricSecurityKey(securityKey)
+                    };
+                });
 
             serviceCollection.AddAuthorization(AddPolicies);
             serviceCollection.AddMvc(AddMvcPolicies);

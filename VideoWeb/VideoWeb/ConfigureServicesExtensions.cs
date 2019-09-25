@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Reflection;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -17,6 +18,7 @@ using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
+using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.Services;
 using VideoWeb.Services.Bookings;
@@ -93,6 +95,9 @@ namespace VideoWeb
 
             services.AddHttpClient<IEventsServiceClient, EventServiceClient>()
                 .AddHttpMessageHandler<VideoCallbackTokenHandler>();
+            
+            services.AddScoped<IEventHandlerFactory, EventHandlerFactory>();
+            RegisterEventHandlers(services);
                 
             var contractResolver = new DefaultContractResolver
             {
@@ -109,6 +114,29 @@ namespace VideoWeb
                 }).AddHubOptions<EventHub.Hub.EventHub>(options => { options.EnableDetailedErrors = true; });
             
             return services;
+        }
+        
+        private static void RegisterEventHandlers(IServiceCollection serviceCollection)
+        {
+            var eventHandlers = GetAllTypesOf<IEventHandler>();
+            
+            foreach (var eventHandler in eventHandlers)
+            {
+                if (eventHandler.IsInterface || eventHandler.IsAbstract) continue;
+                var serviceType = eventHandler.GetInterfaces()[0];
+                serviceCollection.AddScoped(serviceType, eventHandler);
+            }
+        }
+        
+        private static IEnumerable<Type> GetAllTypesOf<T>()
+        {
+            var platform = Environment.OSVersion.Platform.ToString();
+            var runtimeAssemblyNames = DependencyContext.Default.GetRuntimeAssemblyNames(platform);
+
+            return runtimeAssemblyNames
+                .Select(Assembly.Load)
+                .SelectMany(a => a.ExportedTypes)
+                .Where(t => typeof(T).IsAssignableFrom(t));
         }
 
         public static IServiceCollection AddJsonOptions(this IServiceCollection serviceCollection)
