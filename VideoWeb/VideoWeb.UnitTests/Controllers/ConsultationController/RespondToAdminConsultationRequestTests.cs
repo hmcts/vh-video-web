@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
@@ -61,7 +62,37 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 ControllerContext = context
             };
         }
-        
+
+        [Test]
+        public async Task should_return_conference_not_found_when_request_is_sent()
+        {
+            _videoApiClientMock
+                .Setup(x => x.RespondToAdminConsultationRequestAsync(It.IsAny<AdminConsultationRequest>()))
+                .Returns(Task.FromResult(default(object)));
+            _memoryCache.Remove(_testConference.Id);
+            var consultationRequest = ConsultationHelper.GetAdminConsultationRequest(_testConference, ConsultationAnswer.None);
+            var result = await _controller.RespondToAdminConsultationRequest(consultationRequest);
+
+            var typedResult = (NotFoundResult)result;
+            typedResult.Should().NotBeNull();
+        }
+
+        [Test]
+        public async Task should_return_participant_not_found_when_request_is_sent()
+        {
+            _videoApiClientMock
+                .Setup(x => x.RespondToAdminConsultationRequestAsync(It.IsAny<AdminConsultationRequest>()))
+                .Returns(Task.FromResult(default(object)));
+            var conference = new Conference { Id = Guid.NewGuid() };
+            _memoryCache.Set(conference.Id, conference);
+
+            var consultationRequest = Builder<AdminConsultationRequest>.CreateNew().With(x => x.Conference_id = conference.Id).Build();
+            var result = await _controller.RespondToAdminConsultationRequest(consultationRequest);
+
+            var typedResult = (NotFoundResult)result;
+            typedResult.Should().NotBeNull();
+        }
+
         [Test]
         public async Task should_return_no_content_when_request_is_sent()
         {
@@ -93,10 +124,6 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [Test]
         public async Task should_send_message_to_clients_when_answer_accepted()
         {
-            var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
-                (int) HttpStatusCode.InternalServerError,
-                "Stacktrace goes here", null, default(ProblemDetails), null);
-            
             _videoApiClientMock
                 .Setup(x => x.RespondToAdminConsultationRequestAsync(It.IsAny<AdminConsultationRequest>())).Returns(Task.FromResult(HttpStatusCode.NoContent));
 

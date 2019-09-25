@@ -1,5 +1,7 @@
+using System;
 using System.Net;
 using System.Threading.Tasks;
+using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -48,6 +50,36 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             };
         }
         
+        [Test]
+        public async Task should_return_conference_not_found_when_request_is_sent()
+        {
+            _videoApiClientMock
+                .Setup(x => x.LeavePrivateConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
+                .Returns(Task.FromResult(default(object)));
+            _memoryCache.Remove(_testConference.Id);
+            var leaveConsultationRequest = ConsultationHelper.GetLeaveConsultationRequest(_testConference);
+            var result = await _controller.LeavePrivateConsultation(leaveConsultationRequest);
+
+            var typedResult = (NotFoundResult) result;
+            typedResult.Should().NotBeNull();
+        }
+
+        [Test]
+        public async Task should_return_participant_not_found_when_request_is_sent()
+        {
+            _videoApiClientMock
+                .Setup(x => x.LeavePrivateConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
+                .Returns(Task.FromResult(default(object)));
+            var conference = new Conference {Id = Guid.NewGuid()};
+            _memoryCache.Set(conference.Id, conference);
+
+            var leaveConsultationRequest = Builder<LeaveConsultationRequest>.CreateNew().With(x => x.Conference_id = conference.Id).Build();
+            var result = await _controller.LeavePrivateConsultation(leaveConsultationRequest);
+
+            var typedResult = (NotFoundResult) result;
+            typedResult.Should().NotBeNull();
+        }
+
         [Test]
         public async Task should_return_no_content_when_request_is_sent()
         {

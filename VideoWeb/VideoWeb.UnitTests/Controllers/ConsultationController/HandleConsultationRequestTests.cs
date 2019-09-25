@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
@@ -46,7 +47,6 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _eventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
                 .Returns(_eventHubClientMock.Object);
 
-
             var context = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext
@@ -62,13 +62,41 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
+        public async Task should_return_conference_not_found_when_request_is_sent()
+        {
+            _videoApiClientMock
+                .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
+                .Returns(Task.FromResult(default(object)));
+            _memoryCache.Remove(_testConference.Id);
+            var consultationRequest = ConsultationHelper.GetConsultationRequest(_testConference);
+            var result = await _controller.HandleConsultationRequest(consultationRequest);
+
+            var typedResult = (NotFoundResult)result;
+            typedResult.Should().NotBeNull();
+        }
+
+        [Test]
+        public async Task should_return_participant_not_found_when_request_is_sent()
+        {
+            _videoApiClientMock
+                .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
+                .Returns(Task.FromResult(default(object)));
+            var conference = new Conference { Id = Guid.NewGuid() };
+            _memoryCache.Set(conference.Id, conference);
+
+            var consultationRequest = Builder<ConsultationRequest>.CreateNew().With(x => x.Conference_id = conference.Id).Build();
+            var result = await _controller.HandleConsultationRequest(consultationRequest);
+
+            var typedResult = (NotFoundResult)result;
+            typedResult.Should().NotBeNull();
+        }
+
+        [Test]
         public async Task should_return_no_content_when_request_is_sent()
         {
             _videoApiClientMock
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .Returns(Task.FromResult(default(object)));
-
-            //_eventHubContextMock.Setup(x => x.)
 
             var result = await _controller.HandleConsultationRequest(ConsultationHelper.GetConsultationRequest(_testConference));
             var typedResult = (NoContentResult) result;
@@ -102,6 +130,39 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var result = await _controller.HandleConsultationRequest(ConsultationHelper.GetConsultationRequest(_testConference));
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
+        }
+
+        [Test]
+        public async Task should_send_message_to_other_party_when_requested()
+        {
+            _videoApiClientMock
+                .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>())).Returns(Task.FromResult(HttpStatusCode.NoContent));
+
+            var consultationRequest = ConsultationHelper.GetConsultationRequest(_testConference);
+            var result = await _controller.HandleConsultationRequest(consultationRequest);
+            var typedResult = (NoContentResult)result;
+            typedResult.Should().NotBeNull();
+
+            _eventHubClientMock.Verify(x => x.ConsultationMessage(_testConference.Id, _testConference.Participants[1].Username, 
+                _testConference.Participants[2].Username, string.Empty));
+        }
+
+        [TestCase(ConsultationAnswer.Cancelled)]
+        [TestCase(ConsultationAnswer.Accepted)]
+        [TestCase(ConsultationAnswer.Rejected)]
+        public async Task should_send_message_to_other_party_when_answered(ConsultationAnswer answer)
+        {
+            _videoApiClientMock
+                .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>())).Returns(Task.FromResult(HttpStatusCode.NoContent));
+
+            var consultationRequest = ConsultationHelper.GetConsultationRequest(_testConference);
+            consultationRequest.Answer = answer;
+            var result = await _controller.HandleConsultationRequest(consultationRequest);
+            var typedResult = (NoContentResult)result;
+            typedResult.Should().NotBeNull();
+
+            _eventHubClientMock.Verify(x => x.ConsultationMessage(_testConference.Id, _testConference.Participants[1].Username, 
+                _testConference.Participants[2].Username, answer.ToString()));
         }
     }
 }

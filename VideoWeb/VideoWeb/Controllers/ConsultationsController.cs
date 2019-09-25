@@ -47,13 +47,13 @@ namespace VideoWeb.Controllers
                 return NotFound();
             }
 
-            var requestedBy = conference.Participants.SingleOrDefault(x => x.Id == request.Requested_by);
+            var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.Requested_by);
             if (requestedBy == null)
             {
                 return NotFound();
             }
 
-            var requestedFor = conference.Participants.SingleOrDefault(x => x.Id == request.Requested_for);
+            var requestedFor = conference.Participants?.SingleOrDefault(x => x.Id == request.Requested_for);
             if (requestedFor == null)
             {
                 return NotFound();
@@ -97,7 +97,7 @@ namespace VideoWeb.Controllers
                 return NotFound();
             }
 
-            var participant = conference.Participants.SingleOrDefault(x => x.Id == request.Participant_id);
+            var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.Participant_id);
             if (participant == null)
             {
                 return NotFound();
@@ -127,7 +127,7 @@ namespace VideoWeb.Controllers
                 return NotFound();
             }
 
-            var participant = conference.Participants.SingleOrDefault(x => x.Id == request.Participant_id);
+            var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.Participant_id);
             if (participant == null)
             {
                 return NotFound();

@@ -46,6 +46,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .With(x => x.Conference_id = conference.Id)
                 .With(x => x.Requested_by = conference.Participants[1].Id)
                 .With(x => x.Requested_for = conference.Participants[2].Id)
+                .With(x => x.Answer = null)
                 .Build();
         }
         public static AdminConsultationRequest GetAdminConsultationRequest(Conference conference, ConsultationAnswer answer)
