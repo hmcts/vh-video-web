@@ -253,7 +253,7 @@ namespace VideoWeb.Controllers
             return Ok(response);
         }
 
-        private async void AddConferenceToCache(ConferenceDetailsResponse conferenceResponse)
+        private async Task AddConferenceToCache(ConferenceDetailsResponse conferenceResponse)
         {
             var participants = new List<Participant>();
             foreach (var participant in conferenceResponse.Participants)
