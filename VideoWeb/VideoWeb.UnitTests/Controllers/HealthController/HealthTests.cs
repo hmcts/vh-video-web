@@ -23,7 +23,6 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
         private Mock<IVideoApiClient> _videoApiClientMock;
         private Mock<IUserApiClient> _userApiClientMock;
         private Mock<IBookingsApiClient> _bookingsApiClientMock;
-        private Mock<IEventsServiceClient> _eventsServiceClientMock;
 
         [SetUp]
         public void Setup()
@@ -31,10 +30,9 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
             _videoApiClientMock = new Mock<IVideoApiClient>();
             _userApiClientMock = new Mock<IUserApiClient>();
             _bookingsApiClientMock = new Mock<IBookingsApiClient>();
-            _eventsServiceClientMock = new Mock<IEventsServiceClient>();
 
             _controller = new HealthCheckController(_videoApiClientMock.Object, _userApiClientMock.Object,
-                _bookingsApiClientMock.Object, _eventsServiceClientMock.Object);
+                _bookingsApiClientMock.Object);
 
             var judges = Builder<UserResponse>.CreateListOfSize(3).Build().ToList();
             _userApiClientMock.Setup(x => x.GetJudgesAsync())
@@ -94,38 +92,20 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
         }
         
         [Test]
-        public async Task Should_return_internal_server_error_result_when_event_callback_not_reachable()
-        {
-            var exception = new VideoApiException<ProblemDetails>("Bad token", (int) HttpStatusCode.InternalServerError,
-                "Please provide a valid conference Id", null, default(ProblemDetails), null);
-
-            _eventsServiceClientMock
-                .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
-                .ThrowsAsync(exception);
-
-            var result = await _controller.Health();
-            var typedResult = (ObjectResult) result;
-            typedResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
-            var response = (HealthCheckResponse) typedResult.Value;
-            response.EventsCallbackHealth.Successful.Should().BeFalse();
-            response.EventsCallbackHealth.ErrorMessage.Should().NotBeNullOrWhiteSpace();
-        }
-        
-        [Test]
         public async Task Should_return_internal_server_error_result_when_non_video_api_exception_thrown()
         {
             var exception = new UriFormatException("Test format is invalid");
 
-            _eventsServiceClientMock
-                .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
+            _bookingsApiClientMock
+                .Setup(x => x.BookNewHearingAsync(It.IsAny<BookNewHearingRequest>()))
                 .ThrowsAsync(exception);
 
             var result = await _controller.Health();
             var typedResult = (ObjectResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
             var response = (HealthCheckResponse) typedResult.Value;
-            response.EventsCallbackHealth.Successful.Should().BeFalse();
-            response.EventsCallbackHealth.ErrorMessage.Should().NotBeNullOrWhiteSpace();
+            response.BookingsApiHealth.Successful.Should().BeFalse();
+            response.BookingsApiHealth.ErrorMessage.Should().NotBeNullOrWhiteSpace();
         }
 
         [Test]
@@ -134,15 +114,15 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
             var exception = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id", null, default(ProblemDetails), null);
 
-            _eventsServiceClientMock
-                .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
+            _bookingsApiClientMock
+                .Setup(x => x.BookNewHearingAsync(It.IsAny<BookNewHearingRequest>()))
                 .ThrowsAsync(exception);
 
             var result = await _controller.Health();
             var typedResult = (ObjectResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.OK);
             var response = (HealthCheckResponse) typedResult.Value;
-            response.EventsCallbackHealth.Successful.Should().BeTrue();
+            response.BookingsApiHealth.Successful.Should().BeTrue();
         }
 
         [Test]
@@ -156,7 +136,6 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
             response.BookingsApiHealth.Successful.Should().BeTrue();
             response.UserApiHealth.Successful.Should().BeTrue();
             response.VideoApiHealth.Successful.Should().BeTrue();
-            response.EventsCallbackHealth.Successful.Should().BeTrue();
         }
     }
 }

@@ -15,25 +15,6 @@ namespace VideoWeb.Services.Video
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.0.4.0 (NJsonSchema v10.0.21.0 (Newtonsoft.Json v11.0.0.0))")]
     public partial interface IVideoApiClient
     {
-        /// <summary>Accepts video conference events and publishes to internal clients/services</summary>
-        /// <param name="request">Details of the event</param>
-        /// <returns>Success</returns>
-        /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PostEventsAsync(ConferenceEventRequest request);
-    
-        /// <summary>Accepts video conference events and publishes to internal clients/services</summary>
-        /// <param name="request">Details of the event</param>
-        /// <returns>Success</returns>
-        /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        void PostEvents(ConferenceEventRequest request);
-    
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Accepts video conference events and publishes to internal clients/services</summary>
-        /// <param name="request">Details of the event</param>
-        /// <returns>Success</returns>
-        /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task PostEventsAsync(ConferenceEventRequest request, System.Threading.CancellationToken cancellationToken);
-    
         /// <summary>Get non-closed conferences for a participant by their username</summary>
         /// <param name="username">person username</param>
         /// <returns>Success</returns>
@@ -351,6 +332,25 @@ namespace VideoWeb.Services.Video
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<TaskResponse> UpdateTaskStatusAsync(System.Guid conferenceId, long taskId, UpdateTaskRequest updateTaskRequest, System.Threading.CancellationToken cancellationToken);
     
+        /// <summary>Accepts video conference events and publishes to internal clients/services</summary>
+        /// <param name="request">Details of the event</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task RaiseVideoEventAsync(ConferenceEventRequest request);
+    
+        /// <summary>Accepts video conference events and publishes to internal clients/services</summary>
+        /// <param name="request">Details of the event</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        void RaiseVideoEvent(ConferenceEventRequest request);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Accepts video conference events and publishes to internal clients/services</summary>
+        /// <param name="request">Details of the event</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task RaiseVideoEventAsync(ConferenceEventRequest request, System.Threading.CancellationToken cancellationToken);
+    
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.0.4.0 (NJsonSchema v10.0.21.0 (Newtonsoft.Json v11.0.0.0))")]
@@ -383,97 +383,6 @@ namespace VideoWeb.Services.Video
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, string url);
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
-    
-        /// <summary>Accepts video conference events and publishes to internal clients/services</summary>
-        /// <param name="request">Details of the event</param>
-        /// <returns>Success</returns>
-        /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task PostEventsAsync(ConferenceEventRequest request)
-        {
-            return PostEventsAsync(request, System.Threading.CancellationToken.None);
-        }
-    
-        /// <summary>Accepts video conference events and publishes to internal clients/services</summary>
-        /// <param name="request">Details of the event</param>
-        /// <returns>Success</returns>
-        /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public void PostEvents(ConferenceEventRequest request)
-        {
-            System.Threading.Tasks.Task.Run(async () => await PostEventsAsync(request, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
-        }
-    
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Accepts video conference events and publishes to internal clients/services</summary>
-        /// <param name="request">Details of the event</param>
-        /// <returns>Success</returns>
-        /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task PostEventsAsync(ConferenceEventRequest request, System.Threading.CancellationToken cancellationToken)
-        {
-            var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/callback/conference");
-    
-            var client_ = _httpClient;
-            try
-            {
-                using (var request_ = new System.Net.Http.HttpRequestMessage())
-                {
-                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value));
-                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
-                    request_.Content = content_;
-                    request_.Method = new System.Net.Http.HttpMethod("POST");
-    
-                    PrepareRequest(client_, request_, urlBuilder_);
-                    var url_ = urlBuilder_.ToString();
-                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
-                    PrepareRequest(client_, request_, url_);
-    
-                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-                    try
-                    {
-                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-                        if (response_.Content != null && response_.Content.Headers != null)
-                        {
-                            foreach (var item_ in response_.Content.Headers)
-                                headers_[item_.Key] = item_.Value;
-                        }
-    
-                        ProcessResponse(client_, response_);
-    
-                        var status_ = ((int)response_.StatusCode).ToString();
-                        if (status_ == "204") 
-                        {
-                            return;
-                        }
-                        else
-                        if (status_ == "400") 
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
-                            throw new VideoApiException<ProblemDetails>("Bad Request", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-                        if (status_ == "401") 
-                        {
-                            string responseText_ = ( response_.Content == null ) ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new VideoApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
-                        }
-                        else
-                        if (status_ != "200" && status_ != "204")
-                        {
-                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new VideoApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
-                        }
-                    }
-                    finally
-                    {
-                        if (response_ != null)
-                            response_.Dispose();
-                    }
-                }
-            }
-            finally
-            {
-            }
-        }
     
         /// <summary>Get non-closed conferences for a participant by their username</summary>
         /// <param name="username">person username</param>
@@ -2112,6 +2021,97 @@ namespace VideoWeb.Services.Video
             }
         }
     
+        /// <summary>Accepts video conference events and publishes to internal clients/services</summary>
+        /// <param name="request">Details of the event</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task RaiseVideoEventAsync(ConferenceEventRequest request)
+        {
+            return RaiseVideoEventAsync(request, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Accepts video conference events and publishes to internal clients/services</summary>
+        /// <param name="request">Details of the event</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public void RaiseVideoEvent(ConferenceEventRequest request)
+        {
+            System.Threading.Tasks.Task.Run(async () => await RaiseVideoEventAsync(request, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Accepts video conference events and publishes to internal clients/services</summary>
+        /// <param name="request">Details of the event</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task RaiseVideoEventAsync(ConferenceEventRequest request, System.Threading.CancellationToken cancellationToken)
+        {
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/events");
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(request, _settings.Value));
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("POST");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "204") 
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == "400") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Bad Request", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new VideoApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new VideoApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
         protected struct ObjectResponseResult<T>
         {
             public ObjectResponseResult(T responseObject, string responseText)
@@ -2205,146 +2205,6 @@ namespace VideoWeb.Services.Video
         }
     }
 
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.21.0 (Newtonsoft.Json v11.0.0.0)")]
-    public partial class ConferenceEventRequest 
-    {
-        /// <summary>Unique id to represent an event</summary>
-        [Newtonsoft.Json.JsonProperty("event_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Event_id { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("event_type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public EventType? Event_type { get; set; }
-    
-        /// <summary>Timestamp when this event has occured (date time in utc).</summary>
-        [Newtonsoft.Json.JsonProperty("time_stamp_utc", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTime? Time_stamp_utc { get; set; }
-    
-        /// <summary>Id of virtual court room (uuid).</summary>
-        [Newtonsoft.Json.JsonProperty("conference_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Conference_id { get; set; }
-    
-        /// <summary>Id of participant (uuid).</summary>
-        [Newtonsoft.Json.JsonProperty("participant_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Participant_id { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("transfer_from", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public RoomType? Transfer_from { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("transfer_to", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public RoomType? Transfer_to { get; set; }
-    
-        /// <summary>Event reason</summary>
-        [Newtonsoft.Json.JsonProperty("reason", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Reason { get; set; }
-    
-    
-    }
-    
-    /// <summary>Type of an event</summary>
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.21.0 (Newtonsoft.Json v11.0.0.0)")]
-    public enum EventType
-    {
-        [System.Runtime.Serialization.EnumMember(Value = @"None")]
-        None = 0,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Joined")]
-        Joined = 1,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Disconnected")]
-        Disconnected = 2,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Transfer")]
-        Transfer = 3,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Help")]
-        Help = 4,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Pause")]
-        Pause = 5,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Close")]
-        Close = 6,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Leave")]
-        Leave = 7,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Consultation")]
-        Consultation = 8,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"JudgeAvailable")]
-        JudgeAvailable = 9,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"MediaPermissionDenied")]
-        MediaPermissionDenied = 10,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"ParticipantJoining")]
-        ParticipantJoining = 11,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"SelfTestFailed")]
-        SelfTestFailed = 12,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Suspend")]
-        Suspend = 13,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"VhoCall")]
-        VhoCall = 14,
-    
-    }
-    
-    /// <summary>Room from where the participant is transferred from.</summary>
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.21.0 (Newtonsoft.Json v11.0.0.0)")]
-    public enum RoomType
-    {
-        [System.Runtime.Serialization.EnumMember(Value = @"WaitingRoom")]
-        WaitingRoom = 0,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"HearingRoom")]
-        HearingRoom = 1,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"ConsultationRoom1")]
-        ConsultationRoom1 = 2,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"ConsultationRoom2")]
-        ConsultationRoom2 = 3,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"AdminRoom")]
-        AdminRoom = 4,
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.21.0 (Newtonsoft.Json v11.0.0.0)")]
-    public partial class ProblemDetails 
-    {
-        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Type { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Title { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Status { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("detail", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Detail { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("instance", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Instance { get; set; }
-    
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
-    
-        [Newtonsoft.Json.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties; }
-            set { _additionalProperties = value; }
-        }
-    
-    
-    }
-    
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.21.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class BookNewConferenceRequest 
     {
@@ -2644,6 +2504,36 @@ namespace VideoWeb.Services.Video
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.21.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class ProblemDetails 
+    {
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Type { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Title { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int? Status { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("detail", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Detail { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("instance", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Instance { get; set; }
+    
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+    
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.21.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class UpdateConferenceRequest 
     {
         [Newtonsoft.Json.JsonProperty("hearing_ref_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -2810,6 +2700,27 @@ namespace VideoWeb.Services.Video
     
     }
     
+    /// <summary>Consultation Room to use</summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.21.0 (Newtonsoft.Json v11.0.0.0)")]
+    public enum RoomType
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"WaitingRoom")]
+        WaitingRoom = 0,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"HearingRoom")]
+        HearingRoom = 1,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"ConsultationRoom1")]
+        ConsultationRoom1 = 2,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"ConsultationRoom2")]
+        ConsultationRoom2 = 3,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"AdminRoom")]
+        AdminRoom = 4,
+    
+    }
+    
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.21.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class HealthCheckResponse 
     {
@@ -2931,6 +2842,95 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonProperty("updated_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Updated_by { get; set; }
     
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.21.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class ConferenceEventRequest 
+    {
+        /// <summary>Unique id to represent an event</summary>
+        [Newtonsoft.Json.JsonProperty("event_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Event_id { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("event_type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public EventType? Event_type { get; set; }
+    
+        /// <summary>Timestamp when this event has occured (date time in utc).</summary>
+        [Newtonsoft.Json.JsonProperty("time_stamp_utc", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Time_stamp_utc { get; set; }
+    
+        /// <summary>Id of virtual court room (uuid).</summary>
+        [Newtonsoft.Json.JsonProperty("conference_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Conference_id { get; set; }
+    
+        /// <summary>Id of participant (uuid).</summary>
+        [Newtonsoft.Json.JsonProperty("participant_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Participant_id { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("transfer_from", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public RoomType? Transfer_from { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("transfer_to", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public RoomType? Transfer_to { get; set; }
+    
+        /// <summary>Event reason</summary>
+        [Newtonsoft.Json.JsonProperty("reason", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Reason { get; set; }
+    
+    
+    }
+    
+    /// <summary>Type of an event</summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.21.0 (Newtonsoft.Json v11.0.0.0)")]
+    public enum EventType
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"None")]
+        None = 0,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Joined")]
+        Joined = 1,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Disconnected")]
+        Disconnected = 2,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Transfer")]
+        Transfer = 3,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Help")]
+        Help = 4,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Pause")]
+        Pause = 5,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Close")]
+        Close = 6,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Leave")]
+        Leave = 7,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Consultation")]
+        Consultation = 8,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"JudgeAvailable")]
+        JudgeAvailable = 9,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"MediaPermissionDenied")]
+        MediaPermissionDenied = 10,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"ParticipantJoining")]
+        ParticipantJoining = 11,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"SelfTestFailed")]
+        SelfTestFailed = 12,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Suspend")]
+        Suspend = 13,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"VhoCall")]
+        VhoCall = 14,
     
     }
 

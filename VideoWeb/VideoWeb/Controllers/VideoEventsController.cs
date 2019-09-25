@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.Mappings;
-using VideoWeb.Services;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Controllers
@@ -17,12 +16,12 @@ namespace VideoWeb.Controllers
     //[Authorize(AuthenticationSchemes = "Callback")]
     public class VideoEventsController : Controller
     {
-        private readonly IEventsServiceClient _eventsServiceClient;
+        private readonly IVideoApiClient _videoApiClient;
         private readonly IEventHandlerFactory _eventHandlerFactory;
 
-        public VideoEventsController(IEventsServiceClient eventsServiceClient, IEventHandlerFactory eventHandlerFactory)
+        public VideoEventsController(IVideoApiClient videoApiClient, IEventHandlerFactory eventHandlerFactory)
         {
-            _eventsServiceClient = eventsServiceClient;
+            _videoApiClient = videoApiClient;
             _eventHandlerFactory = eventHandlerFactory;
         }
 
@@ -38,7 +37,7 @@ namespace VideoWeb.Controllers
                 var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
                 
                 await handler.HandleAsync(callbackEvent);
-                await _eventsServiceClient.PostEventsAsync(request);
+                await _videoApiClient.RaiseVideoEventAsync(request);
                 
                 return NoContent();
             }

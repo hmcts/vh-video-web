@@ -10,8 +10,8 @@ using NUnit.Framework;
 using Testing.Common.Helpers;
 using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
-using VideoWeb.Services;
 using VideoWeb.Services.Video;
+using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {
@@ -19,13 +19,11 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
     {
         private ParticipantsController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
-        private Mock<IEventsServiceClient> _eventsServiceClientMock;
         
         [SetUp]
         public void Setup()
         {
             _videoApiClientMock = new Mock<IVideoApiClient>();
-            _eventsServiceClientMock = new Mock<IEventsServiceClient>();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
             {
@@ -35,7 +33,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 }
             };
 
-            _controller = new ParticipantsController(_videoApiClientMock.Object, _eventsServiceClientMock.Object)
+            _controller = new ParticipantsController(_videoApiClientMock.Object)
             {
                 ControllerContext = context
             };
@@ -60,8 +58,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         [Test]
         public async Task should_forward_error_code_on_failure()
         {
-            var apiException = new VideoApiException<Microsoft.AspNetCore.Mvc.ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
-                "Please provide a valid conference Id", null, default(Microsoft.AspNetCore.Mvc.ProblemDetails), null);
+            var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
+                "Please provide a valid conference Id", null, default(ProblemDetails), null);
             var conferenceId = Guid.NewGuid();
             var participantId = Guid.NewGuid();
             _videoApiClientMock
@@ -76,8 +74,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         [Test]
         public async Task should_return_no_content_when_event_is_sent()
         {
-            _eventsServiceClientMock
-                .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
+            _videoApiClientMock
+                .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .Returns(Task.FromResult(default(object)));
 
             var result = await _controller.UpdateParticipantStatus(Guid.NewGuid(), 
@@ -89,11 +87,11 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         [Test]
         public async Task should_return_bad_request()
         {
-            var apiException = new VideoApiException<Microsoft.AspNetCore.Mvc.ProblemDetails>("Bad Request", 
+            var apiException = new VideoApiException<ProblemDetails>("Bad Request", 
                 (int)HttpStatusCode.BadRequest, "Please provide a valid conference Id", null, 
-                default(Microsoft.AspNetCore.Mvc.ProblemDetails), null);
-            _eventsServiceClientMock
-                .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
+                default(ProblemDetails), null);
+            _videoApiClientMock
+                .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
 
             var result = await _controller.UpdateParticipantStatus(Guid.NewGuid(), 
@@ -105,11 +103,11 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         [Test]
         public async Task should_return_exception()
         {
-            var apiException = new VideoApiException<Microsoft.AspNetCore.Mvc.ProblemDetails>("Internal Server Error", 
+            var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", 
                 (int)HttpStatusCode.InternalServerError, "Stacktrace goes here", null, 
-                default(Microsoft.AspNetCore.Mvc.ProblemDetails), null);
-            _eventsServiceClientMock
-                .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
+                default(ProblemDetails), null);
+            _videoApiClientMock
+                .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
 
             var result = await _controller.UpdateParticipantStatus(Guid.NewGuid(), 

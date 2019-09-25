@@ -14,11 +14,10 @@ using NUnit.Framework;
 using Testing.Common.Helpers;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
-using VideoWeb.EventHub;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
-using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
+using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
@@ -129,7 +128,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var closedConferenceTimeLimit = DateTime.UtcNow.AddMinutes(30);
             var expectedConferenceIds = conferences.Where(x =>
                     x.Status != ConferenceState.Closed ||
-                    DateTime.Compare(x.Closed_date_time.Value, closedConferenceTimeLimit) < 0)
+                    DateTime.Compare(x.Closed_date_time.GetValueOrDefault(), closedConferenceTimeLimit) < 0)
                 .Select(x => x.Id).ToList();
 
             

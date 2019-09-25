@@ -13,7 +13,6 @@ using Testing.Common.Helpers;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Services;
 using VideoWeb.Services.Video;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 using Role = VideoWeb.EventHub.Enums.UserRole;
@@ -23,13 +22,13 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
     public class SendHearingEventTests
     {
         private VideoEventsController _controller;
-        private Mock<IEventsServiceClient> _videoApiClientMock;
+        private Mock<IVideoApiClient> _videoApiClientMock;
         private Conference _testConference;
 
         [SetUp]
         public void Setup()
         {
-            _videoApiClientMock = new Mock<IEventsServiceClient>();
+            _videoApiClientMock = new Mock<IVideoApiClient>();
             _testConference = BuildConferenceForTest();
             var helper = new EventComponentHelper();
             
@@ -58,7 +57,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         public async Task should_return_no_content_when_event_is_sent()
         {
             _videoApiClientMock
-                .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
+                .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .Returns(Task.FromResult(default(object)));
             
             var result = await _controller.SendHearingEvent(CreateRequest());
@@ -72,7 +71,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id", null, default(ProblemDetails), null);
             _videoApiClientMock
-                .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
+                .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
             
             var result = await _controller.SendHearingEvent(CreateRequest());
@@ -86,7 +85,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default(ProblemDetails), null);
             _videoApiClientMock
-                .Setup(x => x.PostEventsAsync(It.IsAny<ConferenceEventRequest>()))
+                .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
 
             var result = await _controller.SendHearingEvent(CreateRequest());
