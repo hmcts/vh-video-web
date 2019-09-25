@@ -20,9 +20,9 @@ namespace VideoWeb.EventHub.Handlers
         protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             var targetRoom = ValidationConsultationRoom(callbackEvent);
-            await HubContext.Clients.Group(SourceParticipant.UserId.ToLowerInvariant())
+            await HubContext.Clients.Group(SourceParticipant.Username.ToLowerInvariant())
                 .AdminConsultationMessage(SourceConference.Id, targetRoom,
-                    SourceParticipant.UserId.ToLowerInvariant());
+                    SourceParticipant.Username.ToLowerInvariant());
         }
 
         private RoomType ValidationConsultationRoom(CallbackEvent callbackEvent)

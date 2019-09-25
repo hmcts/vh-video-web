@@ -45,12 +45,12 @@ namespace VideoWeb.EventHub.Handlers.Core
         {
             foreach (var participant in SourceConference.Participants)
             {
-                await HubContext.Clients.Group(participant.UserId.ToLowerInvariant())
-                    .ParticipantStatusMessage(SourceParticipant.UserId, participantState);
+                await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
+                    .ParticipantStatusMessage(SourceParticipant.Username, participantState);
             }
             
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
-                .ParticipantStatusMessage(SourceParticipant.UserId, participantState);
+                .ParticipantStatusMessage(SourceParticipant.Username, participantState);
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace VideoWeb.EventHub.Handlers.Core
         {
             foreach (var participant in SourceConference.Participants)
             {
-                await HubContext.Clients.Group(participant.UserId.ToLowerInvariant())
+                await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
                     .ConferenceStatusMessage(SourceConference.Id, hearingEventStatus);
             }
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)

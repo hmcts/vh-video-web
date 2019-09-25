@@ -10,7 +10,8 @@ namespace VideoWeb.EventHub.Handlers
 {
     public class CloseEventHandler : EventHandlerBase
     {
-        public CloseEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext, IMemoryCache memoryCache) : base(hubContext, memoryCache)
+        public CloseEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext, IMemoryCache memoryCache) :
+            base(hubContext, memoryCache)
         {
         }
 

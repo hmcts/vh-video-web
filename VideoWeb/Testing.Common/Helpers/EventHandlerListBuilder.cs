@@ -13,22 +13,25 @@ namespace Testing.Common.Helpers
         public static List<IEventHandler> Get()
         {
             var eventHubContextMock = new Mock<IHubContext<EventHub, IEventHubClient>>();
-            var memoryCacheMock = new Mock<IMemoryCache>();
+            return Get(eventHubContextMock, new MemoryCache(new MemoryCacheOptions()));
+        }
 
-
+        public static List<IEventHandler> Get(Mock<IHubContext<EventHub, IEventHubClient>> eventHubContextMock,
+            IMemoryCache memoryCache)
+        {
             return new List<IEventHandler>
             {
-                new CloseEventHandler(eventHubContextMock.Object, memoryCacheMock.Object),
-                new DisconnectedEventHandler(eventHubContextMock.Object, memoryCacheMock.Object),
-                new HelpEventHandler(eventHubContextMock.Object, memoryCacheMock.Object),
-                new JoinedEventHandler(eventHubContextMock.Object, memoryCacheMock.Object),
-                new JudgeAvailableEventHandler(eventHubContextMock.Object, memoryCacheMock.Object),
-                new LeaveEventHandler(eventHubContextMock.Object, memoryCacheMock.Object),
-                new PauseEventHandler(eventHubContextMock.Object, memoryCacheMock.Object),
-                new SuspendEventHandler(eventHubContextMock.Object, memoryCacheMock.Object),
-                new TransferEventHandler(eventHubContextMock.Object, memoryCacheMock.Object),
-                new ParticipantJoiningEventHandler(eventHubContextMock.Object, memoryCacheMock.Object),
-                new VhOfficerCallEventHandler(eventHubContextMock.Object, memoryCacheMock.Object)
+                new CloseEventHandler(eventHubContextMock.Object, memoryCache),
+                new DisconnectedEventHandler(eventHubContextMock.Object, memoryCache),
+                new HelpEventHandler(eventHubContextMock.Object, memoryCache),
+                new JoinedEventHandler(eventHubContextMock.Object, memoryCache),
+                new JudgeAvailableEventHandler(eventHubContextMock.Object, memoryCache),
+                new LeaveEventHandler(eventHubContextMock.Object, memoryCache),
+                new PauseEventHandler(eventHubContextMock.Object, memoryCache),
+                new SuspendEventHandler(eventHubContextMock.Object, memoryCache),
+                new TransferEventHandler(eventHubContextMock.Object, memoryCache),
+                new ParticipantJoiningEventHandler(eventHubContextMock.Object, memoryCache),
+                new VhOfficerCallEventHandler(eventHubContextMock.Object, memoryCache)
             };
         }
     }

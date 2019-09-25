@@ -263,7 +263,7 @@ namespace VideoWeb.Controllers
                     Id = participant.Id.Value,
                     DisplayName = participant.Display_name,
                     Role = (VideoWeb.EventHub.Enums.UserRole) Enum.Parse(typeof(UserRole), participant.User_role.ToString()),
-                    UserId = participant.Username
+                    Username = participant.Username
                 });
             }
 
