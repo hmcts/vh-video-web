@@ -97,7 +97,7 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
             var exception = new UriFormatException("Test format is invalid");
 
             _bookingsApiClientMock
-                .Setup(x => x.BookNewHearingAsync(It.IsAny<BookNewHearingRequest>()))
+                .Setup(x => x.GetCaseTypesAsync())
                 .ThrowsAsync(exception);
 
             var result = await _controller.Health();
