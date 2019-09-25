@@ -1291,7 +1291,6 @@ export class ApiClient {
 
 export class ConferenceForUserResponse implements IConferenceForUserResponse {
     id?: string | undefined;
-    hearing_id?: string | undefined;
     scheduled_date_time?: Date | undefined;
     case_type?: string | undefined;
     case_number?: string | undefined;
@@ -1316,7 +1315,6 @@ export class ConferenceForUserResponse implements IConferenceForUserResponse {
     init(data?: any) {
         if (data) {
             this.id = data["id"];
-            this.hearing_id = data["hearing_id"];
             this.scheduled_date_time = data["scheduled_date_time"] ? new Date(data["scheduled_date_time"].toString()) : <any>undefined;
             this.case_type = data["case_type"];
             this.case_number = data["case_number"];
@@ -1345,7 +1343,6 @@ export class ConferenceForUserResponse implements IConferenceForUserResponse {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["hearing_id"] = this.hearing_id;
         data["scheduled_date_time"] = this.scheduled_date_time ? this.scheduled_date_time.toISOString() : <any>undefined;
         data["case_type"] = this.case_type;
         data["case_number"] = this.case_number;
@@ -1367,7 +1364,6 @@ export class ConferenceForUserResponse implements IConferenceForUserResponse {
 
 export interface IConferenceForUserResponse {
     id?: string | undefined;
-    hearing_id?: string | undefined;
     scheduled_date_time?: Date | undefined;
     case_type?: string | undefined;
     case_number?: string | undefined;

@@ -77,6 +77,6 @@ export class VhoHearingListComponent implements OnInit {
   }
 
   copyToClipboard(conference: ConferenceForUserResponse) {
-    this.clipboardService.copyFromContent(conference.hearing_id);
+    this.clipboardService.copyFromContent(conference.id);
   }
 }
