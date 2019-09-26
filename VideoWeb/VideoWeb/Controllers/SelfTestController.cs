@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Services.Video;
@@ -16,9 +13,11 @@ namespace VideoWeb.Controllers
     public class SelfTestController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
-        public SelfTestController(IVideoApiClient videoApiClient)
+        private readonly ILogger<SelfTestController> _logger;
+        public SelfTestController(IVideoApiClient videoApiClient, ILogger<SelfTestController> logger)
         {
             _videoApiClient = videoApiClient;
+            _logger = logger;
         }
 
         /// <summary>
@@ -27,11 +26,20 @@ namespace VideoWeb.Controllers
         /// <returns></returns>
         [HttpGet]
         [ProducesResponseType(typeof(SelfTestPexipResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [SwaggerOperation(OperationId = "GetPexipConfig")]
         public ActionResult<SelfTestPexipResponse> GetPexipConfig()
         {
-            var response = _videoApiClient.GetPexipServicesConfiguration();
-            return Ok(response);
+            try
+            {
+                _logger.LogDebug("GetPexipNodeForIndependentSelfTest");
+                var response = _videoApiClient.GetPexipServicesConfiguration();
+                return Ok(response);
+            }
+            catch (VideoApiException e)
+            {
+                return StatusCode(e.StatusCode, e.Response);
+            }
         }
     }
 }
