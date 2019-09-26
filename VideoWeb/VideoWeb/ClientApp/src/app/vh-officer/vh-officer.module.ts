@@ -7,6 +7,7 @@ import { TasksTableComponent } from '../vh-officer/tasks-table/tasks-table.compo
 import { VhoHearingListComponent } from '../vh-officer/vho-hearing-list/vho-hearing-list.component';
 import { ParticipantInfoTooltipComponent } from './participant-info-tooltip/participant-info-tooltip.component';
 import { VhOfficerRoutingModule } from './vh-officer-routing.module';
+import { ClipboardModule } from 'ngx-clipboard';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { VhOfficerRoutingModule } from './vh-officer-routing.module';
   imports: [
     CommonModule,
     SharedModule,
+    ClipboardModule,
     VhOfficerRoutingModule
   ]
 })

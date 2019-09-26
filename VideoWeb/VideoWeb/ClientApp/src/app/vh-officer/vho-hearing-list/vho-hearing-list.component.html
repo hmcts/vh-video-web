@@ -1,29 +1,35 @@
 <div id="list-column" class="govuk-grid-column-one-half govuk-!-padding-0">
-    <dl id="conferences-list" class="govuk-summary-list">
-      <div class="govuk-summary-list__row" [ngClass]="{'selected-conference': isCurrentConference(conference)}"
-        *ngFor="let conference of conferences" (click)="selectConference(conference)">
-        <dd class="govuk-summary-list__value govuk-!-padding-left-4">
-          <p class="govuk-!-margin-0 govuk-!-padding-0">{{conference.scheduled_date_time | date:'HH:mm' }}</p>
-          <span id="with-hint-hint" class="govuk-hint">
-            {{ getDuration(conference) }}
-          </span>
-          <p *ngIf="conference.no_of_pending_tasks === 1" class="pending-alerts">{{ conference.no_of_pending_tasks }}
-            Alert</p>
-          <p *ngIf="conference.no_of_pending_tasks > 1" class="pending-alerts">{{ conference.no_of_pending_tasks }}
-            Alerts</p>
-        </dd>
-        <dd class="govuk-summary-list__value">
-          <strong>
-            <p class="govuk-!-margin-0 govuk-!-padding-0">{{conference.case_number}}</p>
-            <p class="govuk-!-margin-0 govuk-!-padding-0">{{conference.case_name}}</p>
-          </strong>
-          <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3">
-            <span class="govuk-!-padding-2"
+  <dl id="conferences-list" class="govuk-summary-list">
+    <div class="govuk-summary-list__row" [ngClass]="{'selected-conference': isCurrentConference(conference)}"
+      *ngFor="let conference of conferences" (click)="selectConference(conference)">
+      <dd class="govuk-summary-list__value govuk-!-padding-left-4">
+        <p class="govuk-!-margin-0 govuk-!-padding-0">{{conference.scheduled_date_time | date:'HH:mm' }}</p>
+        <span id="with-hint-hint" class="govuk-hint">
+          {{ getDuration(conference) }}
+        </span>
+        <p *ngIf="conference.no_of_pending_tasks === 1" class="pending-alerts">{{ conference.no_of_pending_tasks }}
+          Alert</p>
+        <p *ngIf="conference.no_of_pending_tasks > 1" class="pending-alerts">{{ conference.no_of_pending_tasks }}
+          Alerts</p>
+      </dd>
+      <dd class="govuk-summary-list__value">
+        <strong>
+          <p class="govuk-!-margin-0 govuk-!-padding-0">{{conference.case_number}}</p>
+          <p class="govuk-!-margin-0 govuk-!-padding-0">{{conference.case_name}}</p>
+        </strong>
+        <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3">
+          <span class="govuk-!-padding-1 govuk-body-s"
             [ngClass]="{'conference-ready': isOnTime(conference), 'conference-delayed': isDelayed(conference), 
               'conference-suspended': isSuspended(conference), 'conference-paused': isPaused(conference), 
               'conference-in-session': isInSession(conference), 'conference-closed': isClosed(conference)}">{{ getConferenceStatusText(conference) }}</span>
-          </div>
-        </dd>
-      </div>
-    </dl>
-  </div>
+
+          <span class="govuk-!-padding-1 govuk-!-margin-left-2 report-conference govuk-body-s"
+            (click)="copyToClipboard(conference);$event.stopPropagation()">
+            Copy UID
+          </span>
+          
+        </div>
+      </dd>
+    </div>
+  </dl>
+</div>

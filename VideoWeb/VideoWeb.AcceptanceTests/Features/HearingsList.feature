@@ -54,7 +54,8 @@ Scenario: Clerk has 1 or more hearings
 
 @VIH-4156
 Scenario: Video Hearings Officer has no hearings
-	Given a new browser is open for a Video Hearings Officer
+	Given the Video Hearings Officer has no hearings
+	And a new browser is open for a Video Hearings Officer
 	When the user attempts to login with valid credentials
 	Then the user is on the VHO Hearing List page
 	And a warning message appears indicating the user has no hearings scheduled

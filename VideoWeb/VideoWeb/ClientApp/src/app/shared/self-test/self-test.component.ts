@@ -41,6 +41,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
   hasMultipleDevices: boolean;
 
   testCallResult: TestCallScoreResponse = null;
+  scoreSent: boolean;
 
   selfTestParticipantId: string;
   selfTestPexipNode: string;
@@ -65,6 +66,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
     this.displayFeed = false;
     this.displayDeviceChangeModal = false;
+    this.scoreSent = false;
     this.setupSubscribers();
     this.setupTestAndCall();
   }
@@ -210,6 +212,9 @@ export class SelfTestComponent implements OnInit, OnDestroy {
       }
 
       this.logger.info(`test call score: ${this.testCallResult.score}`);
+      if (this.testCallResult.score === TestScore.Bad) {
+        await this.raiseFailedSelfTest(SelfTestFailureReason.BadScore);
+      }
     } catch (err) {
       this.logger.error('there was a problem retrieving the self test score', err);
     }
@@ -241,6 +246,10 @@ export class SelfTestComponent implements OnInit, OnDestroy {
   }
 
   async raiseFailedSelfTest(reason: SelfTestFailureReason) {
+    if (this.scoreSent) {
+      return;
+    }
+
     const request = new AddSelfTestFailureEventRequest({
       participant_id: this.selfTestParticipantId,
       self_test_failure_reason: reason
@@ -248,6 +257,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     try {
       await this.videoWebService.raiseSelfTestFailureEvent(this.conference.id, request).toPromise();
       this.logger.info(`Notified failed test test because of ${reason}`);
+      this.scoreSent = true;
     } catch (err) {
       this.logger.error('There was a problem raising a failed self test event', err);
     }
