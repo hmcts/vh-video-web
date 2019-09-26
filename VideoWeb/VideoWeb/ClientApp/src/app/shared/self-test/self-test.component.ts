@@ -72,17 +72,15 @@ export class SelfTestComponent implements OnInit, OnDestroy {
   initialiseData(): void {
     if (this.participant) {
       this.selfTestParticipantId = this.participant.id;
-      this.logger.debug('PARTICIPANT SELF TEST ID: ' + this.selfTestParticipantId);
+      this.logger.debug(this.selfTestParticipantId);
     } else {
       this.selfTestParticipantId = Guid.create().toString();
-      this.logger.debug('INDEPENDENT SELF TEST ID: ' + this.selfTestParticipantId);
+      this.logger.debug(this.selfTestParticipantId);
     }
     if (this.conference) {
       this.selfTestPexipNode = this.conference.pexip_self_test_node_uri;
-      this.logger.debug('SELF TEST NODE: ' + this.selfTestPexipNode);
     } else {
       this.selfTestPexipNode = this.selfTestPexipConfig.pexip_self_test_node;
-      this.logger.debug('INDEPENDENT SELF TEST NODE: ' + this.selfTestPexipNode);
     }
   }
 
