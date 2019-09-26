@@ -36,7 +36,6 @@ export abstract class BaseSelfTestComponent implements OnInit {
     }
 
     getConference(): void {
-        
         this.logger.debug(`retrieving conference ${this.conferenceId}`);
         this.videoWebService.getConferenceById(this.conferenceId).
             subscribe((response) => {
