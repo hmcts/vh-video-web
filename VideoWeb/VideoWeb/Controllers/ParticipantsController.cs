@@ -67,5 +67,22 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
+
+        [HttpGet("independentselftestresult")]
+        [SwaggerOperation(OperationId = "GetIndependentTestCallResult")]
+        [ProducesResponseType(typeof(TestCallScoreResponse), (int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetIndependentTestCallResult(Guid participantId)
+        {
+            try
+            {
+                var score = await _videoApiClient.GetIndependentTestCallResultAsync(participantId);
+                return Ok(score);
+            }
+            catch (VideoApiException e)
+            {
+                return StatusCode(e.StatusCode, e.Response);
+            }
+        }
     }
 }

@@ -3,7 +3,8 @@ import {
   ApiClient, ConferenceForUserResponse, ConferenceResponse, ConferenceEventRequest,
   TaskResponse, AddMediaEventRequest, TestCallScoreResponse, TokenResponse,
   AddSelfTestFailureEventRequest,
-  UpdateParticipantStatusEventRequest
+  UpdateParticipantStatusEventRequest,
+  SelfTestPexipResponse
 } from '../clients/api-client';
 import { Observable } from 'rxjs';
 
@@ -51,6 +52,10 @@ export class VideoWebService {
     return this.apiClient.getTestCallResult(conferenceId, participantId);
   }
 
+  getIndependentTestCallScore(participantId: string): Observable<TestCallScoreResponse> {
+    return this.apiClient.getIndependentTestCallResult(participantId);
+  }
+
   getToken(participantId: string): Observable<TokenResponse> {
     return this.apiClient.getToken(participantId);
   }
@@ -67,4 +72,9 @@ export class VideoWebService {
   raiseSelfTestFailureEvent(conferenceId: string, addSelfTestFailureEventRequest: AddSelfTestFailureEventRequest): Observable<void> {
     return this.apiClient.addSelfTestFailureEventToConference(conferenceId, addSelfTestFailureEventRequest);
   }
+
+  getPexipConfig(): Observable<SelfTestPexipResponse> {
+    return this.apiClient.getPexipConfig();
+  }
+
 }

@@ -4,7 +4,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { AdalService } from 'adal-angular4';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { TestCallScoreResponse, ConferenceResponse, ParticipantResponse } from 'src/app/services/clients/api-client';
+import { TestCallScoreResponse, ConferenceResponse, ParticipantResponse, SelfTestPexipResponse } from 'src/app/services/clients/api-client';
 
 @Injectable()
 export abstract class BaseSelfTestComponent implements OnInit {
@@ -15,6 +15,8 @@ export abstract class BaseSelfTestComponent implements OnInit {
     loadingData: boolean;
     conference: ConferenceResponse;
     participant: ParticipantResponse;
+    conferenceId: string;
+    selfTestPexipConfig: SelfTestPexipResponse;
 
     constructor(
         protected route: ActivatedRoute,
@@ -24,16 +26,21 @@ export abstract class BaseSelfTestComponent implements OnInit {
         protected logger: Logger) { }
 
     ngOnInit() {
-        this.getConference();
+        this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+        if (this.conferenceId) {
+          this.getConference();
+        } else {
+          this.getPexipConfig();
+        }
         this.testInProgress = false;
     }
 
     getConference(): void {
-        const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-        this.logger.debug(`retrieving conference ${conferenceId}`);
-        this.videoWebService.getConferenceById(conferenceId).
+        
+        this.logger.debug(`retrieving conference ${this.conferenceId}`);
+        this.videoWebService.getConferenceById(this.conferenceId).
             subscribe((response) => {
-                this.logger.debug(`retrieved conference ${conferenceId} successfully`);
+                this.logger.debug(`retrieved conference ${this.conferenceId} successfully`);
                 this.loadingData = false;
                 this.conference = response;
                 this.participant = response.participants
@@ -44,6 +51,20 @@ export abstract class BaseSelfTestComponent implements OnInit {
                     this.errorService.handleApiError(error);
                 }
             });
+    }
+
+    getPexipConfig(): void {
+      this.logger.debug(`retrieving pexip configuration`);
+      this.videoWebService.getPexipConfig().
+        subscribe((response) => {
+          this.logger.debug(`retrieved pexip configuration successfully`);
+          this.selfTestPexipConfig = response;
+          console.log('Self test Pexip cofig: ' + this.selfTestPexipConfig);
+        }, (error) => {
+          if (!this.errorService.returnHomeIfUnauthorised(error)) {
+            this.errorService.handleApiError(error);
+          }
+        });
     }
 
     onTestStarted() {

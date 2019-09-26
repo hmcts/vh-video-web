@@ -18,6 +18,7 @@ import { ParticipantSelfTestComponent } from './participant-self-test/participan
 import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone/switch-on-camera-microphone.component';
 import { VideoCheckComponent } from './video-check/video-check.component';
 import { JudgeSelfTestComponent } from './judge-self-test/judge-self-test.component';
+import { IndependentSelfTestComponent } from './independent-self-test/independent-self-test.component';
 
 export const routes: Routes = [
   { path: `${PageUrls.JudgeHearingList}`, component: JudgeHearingListComponent, canActivate: [JudgeGuard] },
@@ -25,13 +26,16 @@ export const routes: Routes = [
   { path: `${PageUrls.Declaration}/:conferenceId`, component: DeclarationComponent },
   { path: `${PageUrls.HearingRules}/:conferenceId`, component: HearingRulesComponent },
   { path: `${PageUrls.EquipmentCheck}/:conferenceId`, component: EquipmentCheckComponent },
+  { path: `${PageUrls.EquipmentCheck}`, component: EquipmentCheckComponent },
   { path: `${PageUrls.CameraWorking}/:conferenceId`, component: CameraCheckComponent },
   { path: `${PageUrls.MicrophoneWorking}/:conferenceId`, component: MicrophoneCheckComponent },
   { path: `${PageUrls.VideoWorking}/:conferenceId`, component: VideoCheckComponent },
   { path: `${PageUrls.CameraAndMicrophone}/:conferenceId`, component: CameraAndMicrophoneComponent },
   { path: `${PageUrls.SwitchOnCameraMicrophone}/:conferenceId`, component: SwitchOnCameraMicrophoneComponent },
+  { path: `${PageUrls.SwitchOnCameraMicrophone}`, component: SwitchOnCameraMicrophoneComponent },
   { path: `${PageUrls.ParticipantSelfTestVideo}/:conferenceId`, component: ParticipantSelfTestComponent },
   { path: `${PageUrls.JudgeSelfTestVideo}/:conferenceId`, component: JudgeSelfTestComponent },
+  { path: `${PageUrls.IndependentSelfTestVideo}`, component: IndependentSelfTestComponent },
   { path: `${PageUrls.GetHelp}`, component: EquipmentProblemComponent },
   { path: `${PageUrls.SignonAComputer}`, component: SignonAComputerComponent},
   { path: `${PageUrls.Introduction}/:conferenceId`, component: IntroductionComponent },

@@ -21,6 +21,10 @@ export class EquipmentCheckComponent implements OnInit {
   }
 
   goToCameraAndMicCheck() {
-    this.router.navigate([PageUrls.SwitchOnCameraMicrophone, this.conferenceId]);
+    if (this.conferenceId) {
+      this.router.navigate([PageUrls.SwitchOnCameraMicrophone, this.conferenceId]);
+    } else {
+      this.router.navigate([PageUrls.SwitchOnCameraMicrophone]);
+    }
   }
 }
