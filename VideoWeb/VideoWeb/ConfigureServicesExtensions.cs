@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Options;
@@ -68,6 +69,7 @@ namespace VideoWeb
             services.AddTransient<VideoApiTokenHandler>();
             services.AddTransient<UserApiTokenHandler>();
             
+            services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
             services.AddScoped<ITokenProvider, TokenProvider>();
             services.AddScoped<ICustomJwtTokenProvider, CustomJwtTokenProvider>();
             services.AddScoped<IHashGenerator, HashGenerator>();
