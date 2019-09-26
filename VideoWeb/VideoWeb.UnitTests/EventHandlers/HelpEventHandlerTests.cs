@@ -18,7 +18,6 @@ namespace VideoWeb.UnitTests.EventHandlers
             _eventHandler = new HelpEventHandler(EventHubContextMock.Object, MemoryCache);
 
             var conference = TestConference;
-            var participantCount = conference.Participants.Count + 1; // plus one for admin
             var callbackEvent = new CallbackEvent
             {
                 EventType = EventType.Help,

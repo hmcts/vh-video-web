@@ -1,15 +1,19 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using NUnit.Framework;
 using Testing.Common.Helpers;
 using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
+using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
@@ -19,12 +23,17 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
     {
         private ParticipantsController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
-        
+        private EventComponentHelper _eventComponentHelper;
+        private Conference _testConference;
+
         [SetUp]
         public void Setup()
         {
+            _eventComponentHelper = new EventComponentHelper();
             _videoApiClientMock = new Mock<IVideoApiClient>();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
+            _testConference = _eventComponentHelper.BuildConferenceForTest();
+
             var context = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext
@@ -33,10 +42,13 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 }
             };
 
-            _controller = new ParticipantsController(_videoApiClientMock.Object)
+            var eventHandlerFactory = new EventHandlerFactory(_eventComponentHelper.GetHandlers());
+            _controller = new ParticipantsController(_videoApiClientMock.Object, eventHandlerFactory)
             {
                 ControllerContext = context
             };
+            _eventComponentHelper.Cache.Set(_testConference.Id, _testConference);
+            _eventComponentHelper.RegisterUsersForHubContext(_testConference.Participants);
         }
 
         [Test]
@@ -78,8 +90,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .Returns(Task.FromResult(default(object)));
 
-            var result = await _controller.UpdateParticipantStatus(Guid.NewGuid(), 
-                Builder<UpdateParticipantStatusEventRequest>.CreateNew().Build());
+            var result = await _controller.UpdateParticipantStatus(_testConference.Id, 
+                Builder<UpdateParticipantStatusEventRequest>.CreateNew().With(x => x.ParticipantId = _testConference.Participants.First().Id).Build());
             var typedResult = (NoContentResult)result;
             typedResult.Should().NotBeNull();
         }
@@ -96,7 +108,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
 
             var result = await _controller.UpdateParticipantStatus(Guid.NewGuid(), 
                 Builder<UpdateParticipantStatusEventRequest>.CreateNew().Build());
-            var typedResult = (ObjectResult)result;
+            var typedResult = (BadRequestResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
 
@@ -110,8 +122,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.UpdateParticipantStatus(Guid.NewGuid(), 
-                Builder<UpdateParticipantStatusEventRequest>.CreateNew().Build());
+            var result = await _controller.UpdateParticipantStatus(_testConference.Id,
+                Builder<UpdateParticipantStatusEventRequest>.CreateNew().With(x => x.ParticipantId = _testConference.Participants.First().Id).Build());
             var typedResult = (ObjectResult)result;
             typedResult.Should().NotBeNull();
         }
