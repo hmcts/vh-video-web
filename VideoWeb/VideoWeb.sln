@@ -21,7 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.Services", "VideoW
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.Services.Generator", "VideoWeb.Services.Generator\VideoWeb.Services.Generator.csproj", "{4437442A-6318-4092-AC52-81C7FA6E60DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoWeb.AcceptanceTests", "VideoWeb.AcceptanceTests\VideoWeb.AcceptanceTests.csproj", "{E901FAB5-4429-4A0B-BEF0-058610D0EDB6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.AcceptanceTests", "VideoWeb.AcceptanceTests\VideoWeb.AcceptanceTests.csproj", "{E901FAB5-4429-4A0B-BEF0-058610D0EDB6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoWeb.EventHub", "VideoWeb.EventHub\VideoWeb.EventHub.csproj", "{7D287149-3E23-429A-88C1-AC27C5F08B69}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +67,10 @@ Global
 		{E901FAB5-4429-4A0B-BEF0-058610D0EDB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E901FAB5-4429-4A0B-BEF0-058610D0EDB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E901FAB5-4429-4A0B-BEF0-058610D0EDB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D287149-3E23-429A-88C1-AC27C5F08B69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D287149-3E23-429A-88C1-AC27C5F08B69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D287149-3E23-429A-88C1-AC27C5F08B69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D287149-3E23-429A-88C1-AC27C5F08B69}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

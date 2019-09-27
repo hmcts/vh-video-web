@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using VideoWeb.Services;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
@@ -22,15 +21,13 @@ namespace VideoWeb.Controllers
         private readonly IVideoApiClient _videoApiClient;
         private readonly IUserApiClient _userApiClient;
         private readonly IBookingsApiClient _bookingsApiClient;
-        private readonly IEventsServiceClient _eventsServiceClient;
 
         public HealthCheckController(IVideoApiClient videoApiClient, IUserApiClient userApiClient,
-            IBookingsApiClient bookingsApiClient, IEventsServiceClient eventsServiceClient)
+            IBookingsApiClient bookingsApiClient)
         {
             _videoApiClient = videoApiClient;
             _userApiClient = userApiClient;
             _bookingsApiClient = bookingsApiClient;
-            _eventsServiceClient = eventsServiceClient;
         }
 
         /// <summary>
@@ -47,8 +44,7 @@ namespace VideoWeb.Controllers
             {
                 BookingsApiHealth = {Successful = true},
                 UserApiHealth = {Successful = true},
-                VideoApiHealth = {Successful = true},
-                EventsCallbackHealth = {Successful = true}
+                VideoApiHealth = {Successful = true}
             };
             try
             {
@@ -87,29 +83,9 @@ namespace VideoWeb.Controllers
                 response.VideoApiHealth = HandleVideoApiCallException(ex);
             }
 
-            try
-            {
-                var conferenceEvent = new ConferenceEventRequest
-                {
-                    Conference_id = string.Empty,
-                    Event_id = string.Empty,
-                    Event_type = EventType.None,
-                    Participant_id = string.Empty,
-                    Reason = "Video-Web Health Check",
-                    Time_stamp_utc = null,
-                    Transfer_from = null,
-                    Transfer_to = null
-                };
-                await _eventsServiceClient.PostEventsAsync(conferenceEvent);
-            }
-            catch (Exception ex)
-            {
-                response.EventsCallbackHealth = HandleVideoApiCallException(ex);
-            }
-
 
             if (!response.UserApiHealth.Successful || !response.BookingsApiHealth.Successful ||
-                !response.VideoApiHealth.Successful || !response.EventsCallbackHealth.Successful)
+                !response.VideoApiHealth.Successful)
             {
                 return StatusCode((int) HttpStatusCode.InternalServerError, response);
             }

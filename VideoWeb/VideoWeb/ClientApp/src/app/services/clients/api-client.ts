@@ -1230,7 +1230,7 @@ export class ApiClient {
      * @return Success
      */
     sendEvent(request: ConferenceEventRequest | null | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/events";
+        let url_ = this.baseUrl + "/callback";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(request);
