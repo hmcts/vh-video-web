@@ -9,12 +9,10 @@ namespace VideoWeb.Contract.Responses
             BookingsApiHealth = new HealthCheck();
             UserApiHealth = new HealthCheck();
             VideoApiHealth = new HealthCheck();
-            EventsCallbackHealth = new HealthCheck();
         }
         public HealthCheck BookingsApiHealth { get; set; }
         public HealthCheck UserApiHealth { get; set; }
         public HealthCheck VideoApiHealth { get; set; }
-        public HealthCheck EventsCallbackHealth { get; set; }
 
     }
 

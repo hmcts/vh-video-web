@@ -42,6 +42,7 @@
     <ItemGroup>
       <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />
       <ProjectReference Include="..\VideoWeb.Contract\VideoWeb.Contract.csproj" />
+      <ProjectReference Include="..\VideoWeb.EventHub\VideoWeb.EventHub.csproj" />
       <ProjectReference Include="..\VideoWeb.Services\VideoWeb.Services.csproj" />
     </ItemGroup>
 

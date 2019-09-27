@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Request;
-using VideoWeb.Services;
+using VideoWeb.EventHub.Exceptions;
+using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Controllers
@@ -15,12 +17,13 @@ namespace VideoWeb.Controllers
     public class ParticipantsController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
-        private readonly IEventsServiceClient _eventsServiceClient;
+        private readonly IEventHandlerFactory _eventHandlerFactory;
 
-        public ParticipantsController(IVideoApiClient videoApiClient, IEventsServiceClient eventsServiceClient)
+
+        public ParticipantsController(IVideoApiClient videoApiClient, IEventHandlerFactory eventHandlerFactory)
         {
             _videoApiClient = videoApiClient;
-            _eventsServiceClient = eventsServiceClient;
+            _eventHandlerFactory = eventHandlerFactory;
         }
 
         [HttpGet("{conferenceId}/participants/{participantId}/selftestresult")]
@@ -48,17 +51,30 @@ namespace VideoWeb.Controllers
         public async Task<IActionResult> UpdateParticipantStatus(Guid conferenceId, 
             UpdateParticipantStatusEventRequest updateParticipantStatusEventRequest)
         {
+            var conferenceEventRequest = new ConferenceEventRequest
+            {
+                Conference_id = conferenceId.ToString(),
+                Participant_id = updateParticipantStatusEventRequest.ParticipantId.ToString(),
+                Event_id = Guid.NewGuid().ToString(),
+                Event_type = updateParticipantStatusEventRequest.EventType,
+                Time_stamp_utc = DateTime.UtcNow,
+                Reason = "participant joining"
+            };
+
+            var callbackEvent = new CallbackEventMapper().MapConferenceEventToCallbackEventModel(conferenceEventRequest);
+            var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
             try
             {
-                await _eventsServiceClient.PostEventsAsync(new ConferenceEventRequest
-                {
-                    Conference_id = conferenceId.ToString(),
-                    Participant_id = updateParticipantStatusEventRequest.ParticipantId.ToString(),
-                    Event_id = Guid.NewGuid().ToString(),
-                    Event_type = updateParticipantStatusEventRequest.EventType,
-                    Time_stamp_utc = DateTime.UtcNow,
-                    Reason = "participant joining"
-                });
+                await handler.HandleAsync(callbackEvent);
+            }
+            catch (ConferenceNotFoundException)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                await _videoApiClient.RaiseVideoEventAsync(conferenceEventRequest);
 
                 return NoContent();
             }

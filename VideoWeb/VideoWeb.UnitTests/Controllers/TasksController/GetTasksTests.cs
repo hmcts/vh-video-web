@@ -11,6 +11,7 @@ using Moq;
 using NUnit.Framework;
 using Testing.Common.Helpers;
 using VideoWeb.Services.Video;
+using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.TasksController
 {
@@ -57,8 +58,8 @@ namespace VideoWeb.UnitTests.Controllers.TasksController
         [Test]
         public async Task should_return_exception()
         {
-            var apiException = new VideoApiException<Microsoft.AspNetCore.Mvc.ProblemDetails>("Internal Server Error", (int)HttpStatusCode.InternalServerError,
-                "Stacktrace goes here", null, default(Microsoft.AspNetCore.Mvc.ProblemDetails), null);
+            var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int)HttpStatusCode.InternalServerError,
+                "Stacktrace goes here", null, default(ProblemDetails), null);
             _videoApiClientMock
                 .Setup(x => x.GetTasksForConferenceAsync(It.IsAny<Guid>()))
                 .ThrowsAsync(apiException);

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Request;
 using VideoWeb.Extensions;
-using VideoWeb.Services;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Controllers
@@ -15,11 +14,11 @@ namespace VideoWeb.Controllers
     [Route("conferences")]
     public class MediaEventController: Controller
     {
-        private readonly IEventsServiceClient _eventsServiceClient;
+        private readonly IVideoApiClient _videoApiClient;
 
-        public MediaEventController(IEventsServiceClient eventsServiceClient)
+        public MediaEventController(IVideoApiClient videoApiClient)
         {
-            _eventsServiceClient = eventsServiceClient;
+            _videoApiClient = videoApiClient;
         }
 
         [HttpPost("{conferenceId}/mediaevents")]
@@ -31,7 +30,7 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                await _eventsServiceClient.PostEventsAsync(new ConferenceEventRequest
+                await _videoApiClient.RaiseVideoEventAsync(new ConferenceEventRequest
                 {
                     Conference_id = conferenceId.ToString(),
                     Participant_id = addMediaEventRequest.ParticipantId.ToString(),
@@ -68,7 +67,7 @@ namespace VideoWeb.Controllers
                     Time_stamp_utc = DateTime.UtcNow,
                     Reason = $"Failed self-test ({addSelfTestFailureEventRequest.SelfTestFailureReason.DescriptionAttr()})"
                 };
-                await _eventsServiceClient.PostEventsAsync(eventRequest);
+                await _videoApiClient.RaiseVideoEventAsync(eventRequest);
 
                 return NoContent();
             }

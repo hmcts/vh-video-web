@@ -1358,7 +1358,7 @@ export class ApiClient {
      * @return Success
      */
     sendEvent(request: ConferenceEventRequest | null | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/events";
+        let url_ = this.baseUrl + "/callback";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(request);
@@ -2033,7 +2033,6 @@ export class HealthCheckResponse implements IHealthCheckResponse {
     bookings_api_health?: HealthCheck | undefined;
     user_api_health?: HealthCheck | undefined;
     video_api_health?: HealthCheck | undefined;
-    events_callback_health?: HealthCheck | undefined;
 
     constructor(data?: IHealthCheckResponse) {
         if (data) {
@@ -2049,7 +2048,6 @@ export class HealthCheckResponse implements IHealthCheckResponse {
             this.bookings_api_health = data["bookings_api_health"] ? HealthCheck.fromJS(data["bookings_api_health"]) : <any>undefined;
             this.user_api_health = data["user_api_health"] ? HealthCheck.fromJS(data["user_api_health"]) : <any>undefined;
             this.video_api_health = data["video_api_health"] ? HealthCheck.fromJS(data["video_api_health"]) : <any>undefined;
-            this.events_callback_health = data["events_callback_health"] ? HealthCheck.fromJS(data["events_callback_health"]) : <any>undefined;
         }
     }
 
@@ -2065,7 +2063,6 @@ export class HealthCheckResponse implements IHealthCheckResponse {
         data["bookings_api_health"] = this.bookings_api_health ? this.bookings_api_health.toJSON() : <any>undefined;
         data["user_api_health"] = this.user_api_health ? this.user_api_health.toJSON() : <any>undefined;
         data["video_api_health"] = this.video_api_health ? this.video_api_health.toJSON() : <any>undefined;
-        data["events_callback_health"] = this.events_callback_health ? this.events_callback_health.toJSON() : <any>undefined;
         return data; 
     }
 }
@@ -2074,7 +2071,6 @@ export interface IHealthCheckResponse {
     bookings_api_health?: HealthCheck | undefined;
     user_api_health?: HealthCheck | undefined;
     video_api_health?: HealthCheck | undefined;
-    events_callback_health?: HealthCheck | undefined;
 }
 
 export class HealthCheck implements IHealthCheck {

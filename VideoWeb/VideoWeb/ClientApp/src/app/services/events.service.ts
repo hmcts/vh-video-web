@@ -35,7 +35,7 @@ export class EventsService {
     this.connectionStarted = false;
     this.eventServiceBaseUri = this.configService.clientSettings.video_api_url;
     this.connection = new signalR.HubConnectionBuilder()
-      .withUrl(this.eventServiceBaseUri + '/eventhub?access_token=' + this.adalService.userInfo.token)
+      .withUrl('/eventhub?access_token=' + this.adalService.userInfo.token)
       .build();
   }
 
