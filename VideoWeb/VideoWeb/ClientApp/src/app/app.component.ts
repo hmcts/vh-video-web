@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Renderer, ElementRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { ConfigService } from './services/api/config.service';
@@ -16,6 +16,9 @@ import { UserRole } from './services/clients/api-client';
 
 export class AppComponent implements OnInit {
 
+  @ViewChild('maincontent')
+  main: ElementRef;
+
   loggedIn: boolean;
   isRepresentativeOrIndividual: boolean;
   constructor(private adalService: AdalService,
@@ -23,7 +26,8 @@ export class AppComponent implements OnInit {
     private router: Router,
     private deviceTypeService: DeviceTypeService,
     private profileService: ProfileService,
-    private errorService: ErrorService
+    private errorService: ErrorService,
+    private renderer: Renderer
   ) {
     this.loggedIn = false;
     this.isRepresentativeOrIndividual = false;
@@ -79,5 +83,9 @@ export class AppComponent implements OnInit {
     this.loggedIn = false;
     sessionStorage.clear();
     this.adalService.logOut();
+  }
+
+  skipToContent() {
+    this.renderer.invokeElementMethod(this.main.nativeElement, 'focus');
   }
 }
