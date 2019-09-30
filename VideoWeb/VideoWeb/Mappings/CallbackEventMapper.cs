@@ -12,11 +12,10 @@ namespace VideoWeb.Mappings
         {
             var eventType = Enum.Parse<EventType>(request.Event_type.ToString());
             var conferenceId = Guid.Parse(request.Conference_id);
-            var participantId = Guid.Parse(request.Participant_id);
+            Guid.TryParse(request.Participant_id, out var participantId);
 
             var transferFrom = MapRoom(request.Transfer_from.ToString());
             var transferTo = MapRoom(request.Transfer_to.ToString());
-            
             
             var callbackEvent = new CallbackEvent
             {
