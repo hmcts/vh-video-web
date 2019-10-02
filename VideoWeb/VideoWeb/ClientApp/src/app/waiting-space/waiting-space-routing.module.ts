@@ -6,9 +6,9 @@ import { JudgeHearingPageComponent } from './judge-hearing-page/judge-hearing-pa
 import { PageUrls } from '../shared/page-url.constants';
 
 const routes: Routes = [
-  { path: `${PageUrls.ParticipantWaitingRoom}/:conferenceId`, component: ParticipantWaitingRoomComponent },
-  { path: `${PageUrls.JudgeWaitingRoom}/:conferenceId`, component: JudgeWaitingRoomComponent },
-  { path: `${PageUrls.JudgeHearingRoom}/:conferenceId`, component: JudgeHearingPageComponent },
+  { path: `${PageUrls.ParticipantWaitingRoom}/:conferenceId`, component: ParticipantWaitingRoomComponent, data: { title: 'Waiting room'} },
+  { path: `${PageUrls.JudgeWaitingRoom}/:conferenceId`, component: JudgeWaitingRoomComponent, data: { title: 'Waiting room'} },
+  { path: `${PageUrls.JudgeHearingRoom}/:conferenceId`, component: JudgeHearingPageComponent, data: { title: 'Hearing room'} },
 ];
 
 @NgModule({
