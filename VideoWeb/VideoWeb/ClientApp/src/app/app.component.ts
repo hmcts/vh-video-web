@@ -89,8 +89,6 @@ export class AppComponent implements OnInit {
 
   setPageTitle(): void {
     const applTitle = this.titleService.getTitle() + ' - ';
-    console.log(applTitle);
-
     this.router
       .events.pipe(
         filter(event => event instanceof NavigationEnd),
@@ -104,8 +102,8 @@ export class AppComponent implements OnInit {
           }
           return applTitle;
         })
-      ).subscribe((ttl: string) => {
-        this.titleService.setTitle(applTitle + ttl);
+      ).subscribe((appendTitle: string) => {
+        this.titleService.setTitle(applTitle + appendTitle);
       });
   }
 }
