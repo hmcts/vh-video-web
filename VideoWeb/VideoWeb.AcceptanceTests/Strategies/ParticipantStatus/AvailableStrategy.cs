@@ -1,4 +1,5 @@
-﻿using VideoWeb.AcceptanceTests.Builders;
+﻿using System.Net;
+using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.Services.Video;
 
@@ -18,7 +19,7 @@ namespace VideoWeb.AcceptanceTests.Strategies.ParticipantStatus
             new ExecuteEventBuilder()
                 .WithContext(context)
                 .WithRequest(request)
-                .Execute();
+                .SendToVideoWeb();
         }
     }
 }
