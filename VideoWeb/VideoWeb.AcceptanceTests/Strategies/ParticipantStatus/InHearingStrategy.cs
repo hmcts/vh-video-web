@@ -18,7 +18,7 @@ namespace VideoWeb.AcceptanceTests.Strategies.ParticipantStatus
             new ExecuteEventBuilder()
                 .WithContext(context)
                 .WithRequest(request)
-                .Execute();
+                .SendToVideoWeb();
         }
     }
 }
