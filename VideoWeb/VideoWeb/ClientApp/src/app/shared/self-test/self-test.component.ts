@@ -254,12 +254,15 @@ export class SelfTestComponent implements OnInit, OnDestroy {
       participant_id: this.selfTestParticipantId,
       self_test_failure_reason: reason
     });
-    try {
-      await this.videoWebService.raiseSelfTestFailureEvent(this.conference.id, request).toPromise();
-      this.logger.info(`Notified failed test test because of ${reason}`);
-      this.scoreSent = true;
-    } catch (err) {
-      this.logger.error('There was a problem raising a failed self test event', err);
+    if (this.conference) {
+      try {
+        await this.videoWebService.raiseSelfTestFailureEvent(this.conference.id, request).toPromise();
+        this.logger.info(`Notified failed test test because of ${reason}`);
+        this.scoreSent = true;
+      } catch (err) {
+        this.logger.error('There was a problem raising a failed self test event', err);
+      }
     }
+
   }
 }
