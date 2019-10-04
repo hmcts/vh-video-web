@@ -20,7 +20,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             _hearingRow = new HearingRow();           
         }
 
-        private void CheckRowIsVisisble()
+        private void CheckRowIsVisible()
         {
             _driver.WaitUntilVisible(_page.ClerkHearingCaseName(_caseNumber)).Displayed.Should().BeTrue();
         }
@@ -85,7 +85,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 throw new NullReferenceException("Values must be set");
             }
 
-            CheckRowIsVisisble();
+            CheckRowIsVisible();
             GetTime();
             GetJudge();
             GetcaseDetails();
