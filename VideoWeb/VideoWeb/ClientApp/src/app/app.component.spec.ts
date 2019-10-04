@@ -106,4 +106,9 @@ describe('AppComponent', () => {
     expect(component.loggedIn).toBeFalsy();
     expect(adalServiceSpy.logOut).toHaveBeenCalled();
   });
+
+  it('should have a tag Skip to main content', async(() => {
+    const compiled = fixture.debugElement.nativeElement;
+    expect(compiled.querySelector('a').textContent).toContain('Skip to main content');
+  }));
 });
