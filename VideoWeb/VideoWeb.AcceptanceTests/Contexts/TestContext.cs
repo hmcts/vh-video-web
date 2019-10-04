@@ -143,6 +143,14 @@ namespace VideoWeb.AcceptanceTests.Contexts
             return client;
         }
 
+        public RestClient VideoWebEventCallbackClient()
+        {
+            var client = new RestClient(VideoWebUrl);
+            client.AddDefaultHeader("Accept", "application/json");
+            client.AddDefaultHeader("Authorization", $"Bearer {CallbackBearerToken}");
+            return client;
+        }
+
         public RestClient VideoWebClient()
         {
             var client = new RestClient(VideoWebUrl);
