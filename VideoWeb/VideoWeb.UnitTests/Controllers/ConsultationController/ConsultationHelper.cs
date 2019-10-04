@@ -7,7 +7,7 @@ using UserRole = VideoWeb.EventHub.Enums.UserRole;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
 {
-    public class ConsultationHelper
+    public static class ConsultationHelper
     {
         public static Conference BuildConferenceForTest()
         {

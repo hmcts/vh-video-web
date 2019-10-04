@@ -94,13 +94,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_clerkPage.HearingTitle).Text.Should()
                 .Be($"{_tc.Cases.First().Name} ({_tc.Hearing.Case_type_name}) case number: {_tc.Cases.First().Number}");
 
-            var startdate = (DateTime) _tc.Hearing.Scheduled_date_time?.ToLocalTime();
-            var dateAndStartTime = startdate.ToString(DateFormats.ClerkWaitingRoomPageTime);
-            var endtime = startdate.AddMinutes((int) _tc.Hearing.Scheduled_duration)
+            var startDate = (DateTime) _tc.Hearing.Scheduled_date_time;
+            var dateAndStartTime = startDate.ToLocalTime().ToString(DateFormats.ClerkWaitingRoomPageTime);
+            var endTime = startDate.ToLocalTime().AddMinutes((int) _tc.Hearing.Scheduled_duration)
                 .ToString(DateFormats.ClerkWaitingRoomPageTimeEnd);
 
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_clerkPage.HearingDateTime).Text.Should()
-                .Be($"{dateAndStartTime} to {endtime}");
+                .Be($"{dateAndStartTime} to {endTime}");
 
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_clerkPage.StartHearingText).Displayed
                 .Should().BeTrue();
