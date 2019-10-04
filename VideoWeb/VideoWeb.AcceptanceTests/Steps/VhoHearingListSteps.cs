@@ -33,7 +33,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WaitUntilVisible(
                     _vhoPage.VideoHearingsOfficerSelectHearingButton(_tc.Hearing.Cases.First().Number))
                 .Click();
-;
+
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_adminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
         }
 

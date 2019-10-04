@@ -49,7 +49,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithContext(_tc)
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
-                .Execute();
+                .SendToVideoApi();
         }
 
         [When(@"the judge has disconnected from the hearing")]
@@ -66,7 +66,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithContext(_tc)
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
-                .Execute();
+                .SendToVideoApi();
         }
 
         [When(@"a (.*) has disconnected from the (.*)")]
@@ -85,7 +85,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithContext(_tc)
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
-                .Execute();
+                .SendToVideoApi();
         }
 
         private ParticipantDetailsResponse GetUserFromConferenceDetails(string userRole)
@@ -114,7 +114,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithContext(_tc)
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
-                .Execute();
+                .SendToVideoApi();
         }
 
         [When(@"a participant has failed the self-test with (.*)")]
@@ -131,7 +131,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithContext(_tc)
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
-                .Execute();
+                .SendToVideoApi();
         }
 
         [When(@"the user selects the (.*) alert")]
@@ -156,7 +156,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithContext(_tc)
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
-                .Execute();
+                .SendToVideoApi();
 
             _scenarioContext.Remove(ParticipantKey);
             _scenarioContext.Remove(AlertTimeKey);
