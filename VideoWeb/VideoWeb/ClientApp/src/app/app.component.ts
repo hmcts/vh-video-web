@@ -1,5 +1,5 @@
 import { Component, OnInit, Renderer, ElementRef, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { ConfigService } from './services/api/config.service';
 import { DeviceTypeService } from './services/device-type.service';
@@ -7,6 +7,8 @@ import { PageUrls } from './shared/page-url.constants';
 import { ProfileService } from './services/api/profile.service';
 import { ErrorService } from './services/error.service';
 import { UserRole } from './services/clients/api-client';
+import { Title } from '@angular/platform-browser';
+import { filter, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -21,13 +23,16 @@ export class AppComponent implements OnInit {
 
   loggedIn: boolean;
   isRepresentativeOrIndividual: boolean;
+  pageTitle = 'Video Hearings - ';
   constructor(private adalService: AdalService,
     private configService: ConfigService,
     private router: Router,
     private deviceTypeService: DeviceTypeService,
     private profileService: ProfileService,
     private errorService: ErrorService,
-    private renderer: Renderer
+    private renderer: Renderer,
+    private titleService: Title,
+    private activatedRoute: ActivatedRoute
   ) {
     this.loggedIn = false;
     this.isRepresentativeOrIndividual = false;
@@ -48,6 +53,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.checkBrowser();
     this.checkAuth();
+    this.setPageTitle();
   }
 
   checkBrowser(): void {
@@ -87,5 +93,25 @@ export class AppComponent implements OnInit {
 
   skipToContent() {
     this.renderer.invokeElementMethod(this.main.nativeElement, 'focus');
+  }
+
+  setPageTitle(): void {
+    const applTitle = this.titleService.getTitle() + ' - ';
+    this.router
+      .events.pipe(
+        filter(event => event instanceof NavigationEnd),
+        map(() => {
+          let child = this.activatedRoute.firstChild;
+          while (child.firstChild) {
+            child = child.firstChild;
+          }
+          if (child.snapshot.data['title']) {
+            return child.snapshot.data['title'];
+          }
+          return applTitle;
+        })
+      ).subscribe((appendTitle: string) => {
+        this.titleService.setTitle(applTitle + appendTitle);
+      });
   }
 }

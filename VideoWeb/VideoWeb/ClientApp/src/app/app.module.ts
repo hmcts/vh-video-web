@@ -1,7 +1,7 @@
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, Title } from '@angular/platform-browser';
 import { AdalGuard, AdalInterceptor, AdalService } from 'adal-angular4';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -50,7 +50,8 @@ export function getSettings(configService: ConfigService) {
     AdalService,
     AdalGuard,
     ConfigService,
-    AuthGuard
+    AuthGuard,
+    Title
   ],
   bootstrap: [AppComponent]
 })
