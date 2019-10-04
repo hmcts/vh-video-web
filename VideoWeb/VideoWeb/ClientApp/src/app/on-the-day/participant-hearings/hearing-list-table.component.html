@@ -20,7 +20,7 @@
       <td class="govuk-table__cell">
         <input type="button" id="start-hearing-btn-{{conference.id}}" class="govuk-button" role="button"
           value="Sign into hearing" *ngIf="canStartHearing(conference)" (click)="signIntoConference(conference)"
-          alt="Sign into hearing" />
+          aria-label="Sign into hearing" />
         <span *ngIf="!canStartHearing(conference)">
           <p class="govuk-!-margin-0 govuk-!-padding-0">Sign in {{getSignInDate(conference) }}</p>
           <p class="govuk-!-margin-0 govuk-!-padding-0">from {{getSignInTime(conference) | date:'HH:mm' }} </p>

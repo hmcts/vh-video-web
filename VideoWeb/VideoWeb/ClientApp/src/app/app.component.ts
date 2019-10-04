@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Renderer, ElementRef, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { ConfigService } from './services/api/config.service';
@@ -18,6 +18,9 @@ import { filter, map } from 'rxjs/operators';
 
 export class AppComponent implements OnInit {
 
+  @ViewChild('maincontent')
+  main: ElementRef;
+
   loggedIn: boolean;
   isRepresentativeOrIndividual: boolean;
   pageTitle = 'Video Hearings - ';
@@ -27,6 +30,7 @@ export class AppComponent implements OnInit {
     private deviceTypeService: DeviceTypeService,
     private profileService: ProfileService,
     private errorService: ErrorService,
+    private renderer: Renderer,
     private titleService: Title,
     private activatedRoute: ActivatedRoute
   ) {
@@ -85,6 +89,10 @@ export class AppComponent implements OnInit {
     this.loggedIn = false;
     sessionStorage.clear();
     this.adalService.logOut();
+  }
+
+  skipToContent() {
+    this.renderer.invokeElementMethod(this.main.nativeElement, 'focus');
   }
 
   setPageTitle(): void {

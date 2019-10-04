@@ -1,7 +1,7 @@
-@import "~govuk-frontend/all";
+@import "~govuk-frontend/govuk/all";
 
 .task-header {
-  background: govuk-colour("grey-3");
+  background: govuk-colour("light-grey");
 }
 
 .pending-alert-text {
@@ -29,5 +29,5 @@
 }
 
 .task-completed {
-  color: govuk-colour("grey-2");
+  color: govuk-colour("mid-grey");
 }
