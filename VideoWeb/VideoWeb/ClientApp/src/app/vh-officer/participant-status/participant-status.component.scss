@@ -1,11 +1,11 @@
-@import "~govuk-frontend/all";
+@import "~govuk-frontend/govuk/all";
 
 .participant-status-header {
-  background: govuk-colour("grey-3");
+  background: govuk-colour("light-grey");
 }
 
 .participant-not-signed-in {
-  color: govuk-colour("grey-1");
+  color: govuk-colour("dark-grey");
 }
 
 .participant-disconnected {

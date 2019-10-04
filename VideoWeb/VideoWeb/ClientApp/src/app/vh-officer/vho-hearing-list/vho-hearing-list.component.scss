@@ -1,4 +1,4 @@
-@import "~govuk-frontend/all";
+@import "~govuk-frontend/govuk/all";
 
 .conference-suspended,
 .conference-delayed,
@@ -38,35 +38,35 @@
 }
 
 .selected-conference {
-  background: govuk-colour("grey-3");
+  background: govuk-colour("light-grey");
 }
 
 .report-conference {
   background: transparent;
   border-style: solid;
   border-width: 1.5px;
-  border-color: govuk-colour("grey-1");
-  color: govuk-colour("grey-1");
+  border-color: govuk-colour("dark-grey");
+  color: govuk-colour("dark-grey");
   font-weight: bold;
 }
 
 .selected-conference .report-conference {
-  background: govuk-colour("grey-1");
+  background: govuk-colour("dark-grey");
   border-style: solid;
   border-width: 1.5px;
-  border-color: govuk-colour("grey-1");
+  border-color: govuk-colour("dark-grey");
   color: govuk-colour("white");
   font-weight: bold;
 }
 
 .report-conference:active {
-  background: govuk-colour("grey-1");
+  background: govuk-colour("dark-grey");
   color: govuk-colour("white");
 }
 
 .selected-conference .report-conference:active {
   background: govuk-colour("white");
-  color: govuk-colour("grey-1");
+  color: govuk-colour("dark-grey");
 }
 
 .copy-clipboard {
