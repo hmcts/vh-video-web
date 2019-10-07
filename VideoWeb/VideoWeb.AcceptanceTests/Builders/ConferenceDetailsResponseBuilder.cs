@@ -136,7 +136,7 @@ namespace VideoWeb.AcceptanceTests.Builders
         {
             new ExecuteRequestBuilder()
                 .WithContext(_context)
-                .SendWithoutVerification();
+                .SendToVideoApiWithoutVerification();
 
             return ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_context.Response.Content);            
         }
