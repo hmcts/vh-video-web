@@ -24,7 +24,7 @@ namespace VideoWeb.AcceptanceTests.Pages
 
         public By DelayedHeader => CommonLocators.ElementContainingText("Your video hearing is delayed");
         public By DelayedText => CommonLocators.ElementContainingText("We're really sorry your hearing is delayed");
-        public string DelayedBgColour = "#ffbf47";
+        public string DelayedBgColour = "#ffdd00";
 
         public By ScheduledHeader => CommonLocators.ElementContainingText("Your video hearing");
         public By ScheduledText => CommonLocators.ElementContainingText("The video hearings team will contact you by video before the hearing"); 
