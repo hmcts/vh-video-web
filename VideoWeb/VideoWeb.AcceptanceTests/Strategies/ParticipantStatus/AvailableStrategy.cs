@@ -1,5 +1,4 @@
-﻿using System.Net;
-using VideoWeb.AcceptanceTests.Builders;
+﻿using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.Services.Video;
 

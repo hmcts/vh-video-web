@@ -19,7 +19,7 @@ namespace VideoWeb.AcceptanceTests.Strategies.HearingStatus
             new ExecuteEventBuilder()
                 .WithContext(context)
                 .WithRequest(request)
-                .SendToVideoApi();
+                .SendToVideoWeb();
 
             request = new EventRequestBuilder()
                 .WithConferenceId(context.NewConferenceId)
@@ -32,7 +32,7 @@ namespace VideoWeb.AcceptanceTests.Strategies.HearingStatus
             new ExecuteEventBuilder()
                 .WithContext(context)
                 .WithRequest(request)
-                .SendToVideoApi();
+                .SendToVideoWeb();
         }
     }
 }
