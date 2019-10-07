@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Net;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using OpenQA.Selenium.Support.Extensions;
@@ -41,7 +42,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void GivenTheVideoHearingsOfficerHasNoHearings()
         {
             _tc.Request = _tc.Get(new VideoApiUriFactory().ConferenceEndpoints.GetTodaysConferences);
-            new ExecuteRequestBuilder().WithContext(_tc).SendToVideoApi();
+            new ExecuteRequestBuilder().WithContext(_tc).WithExpectedStatusCode(HttpStatusCode.OK).SendToVideoApi();
             var conferences = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ConferenceSummaryResponse>>(_tc.Json);
             if (conferences.Count >  0)
             {

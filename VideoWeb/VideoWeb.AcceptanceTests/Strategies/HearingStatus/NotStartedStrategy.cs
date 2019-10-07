@@ -17,7 +17,7 @@ namespace VideoWeb.AcceptanceTests.Strategies.HearingStatus
             new ExecuteEventBuilder()
                 .WithContext(context)
                 .WithRequest(request)
-                .SendToVideoApi();
+                .SendToVideoWeb();
         }
     }
 }
