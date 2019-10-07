@@ -2,8 +2,10 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 
@@ -17,11 +19,15 @@ namespace VideoWeb.Controllers
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IEventHandlerFactory _eventHandlerFactory;
+        private readonly IMemoryCache _memoryCache;
 
-        public VideoEventsController(IVideoApiClient videoApiClient, IEventHandlerFactory eventHandlerFactory)
+        public VideoEventsController(IVideoApiClient videoApiClient, 
+            IEventHandlerFactory eventHandlerFactory, 
+            IMemoryCache memoryCache)
         {
             _videoApiClient = videoApiClient;
             _eventHandlerFactory = eventHandlerFactory;
+            _memoryCache = memoryCache;
         }
 
         [HttpPost]
@@ -33,9 +39,22 @@ namespace VideoWeb.Controllers
             try
             {
                 var callbackEvent = new CallbackEventMapper().MapConferenceEventToCallbackEventModel(request);
+                if (_memoryCache.Get<Conference>(callbackEvent.ConferenceId) == null)
+                {
+                    try
+                    {
+                        var conference = await _videoApiClient.GetConferenceDetailsByIdAsync(callbackEvent.ConferenceId);
+                        await ConferenceCache.AddConferenceToCache(conference, _memoryCache);
+                    }
+                    catch (VideoApiException e)
+                    {
+                        return StatusCode(e.StatusCode, e.Response);
+                    }
+                }
+
                 var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
-                
                 await handler.HandleAsync(callbackEvent);
+
                 await _videoApiClient.RaiseVideoEventAsync(request);
                 
                 return NoContent();

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
@@ -14,6 +15,7 @@ using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
+using MemoryCache = Microsoft.Extensions.Caching.Memory.MemoryCache;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 using Role = VideoWeb.EventHub.Enums.UserRole;
 
@@ -47,10 +49,16 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 }
             };
             
-            _controller = new VideoEventsController(_videoApiClientMock.Object, eventHandlerFactory)
+            _controller = new VideoEventsController(_videoApiClientMock.Object, eventHandlerFactory, new MemoryCache(new MemoryCacheOptions()))
             {
                 ControllerContext = context
             };
+
+            var conference = CreateValidConferenceResponse(null);
+            _videoApiClientMock
+                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(conference);
+
         }
 
         [Test]
@@ -124,5 +132,21 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 }
             };
         }
+
+        private ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@doe.com")
+        {
+            var participants = Builder<ParticipantDetailsResponse>.CreateListOfSize(2).Build().ToList();
+            if (!string.IsNullOrWhiteSpace(username))
+            {
+                participants.First().Username = username;
+            }
+
+            var conference = Builder<ConferenceDetailsResponse>.CreateNew()
+                .With(x => x.Participants = participants)
+                .Build();
+            return conference;
+        }
+
+
     }
 }
