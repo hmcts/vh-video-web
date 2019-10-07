@@ -1,23 +1,23 @@
-@import "~govuk-frontend/all";
+@import "~govuk-frontend/govuk/all";
 @import "~@hmcts/frontend/all";
 @import "~ng-snotify/styles/simple";
 
 .grey-btn {
-  background-color: govuk-colour("grey-3");
+  background-color: govuk-colour("light-grey");
   color: $govuk-text-colour;
   box-shadow: 0 2px 0 $govuk-border-colour;
 }
 
 .grey-btn:hover {
-  background-color: govuk-colour("grey-2");
+  background-color: govuk-colour("mid-grey");
   color: $govuk-text-colour;
-  box-shadow: 0 2px 0 govuk-colour("grey-1");
+  box-shadow: 0 2px 0 govuk-colour("dark-grey");
 }
 
 .grey-btn:focus {
-  background-color: govuk-colour("grey-2");
+  background-color: govuk-colour("mid-grey");
   color: $govuk-text-colour;
-  box-shadow: 0 2px 0 govuk-colour("grey-1");
+  box-shadow: 0 2px 0 govuk-colour("dark-grey");
 }
 
 .hearing-details-col1-width {

@@ -1,4 +1,4 @@
-@import "~govuk-frontend/all";
+@import "~govuk-frontend/govuk/all";
 
 .outer_face.ontime {
   position: relative;
@@ -10,7 +10,7 @@
   /* clock round corner radius */
   background: govuk-colour("blue");
   //box-shadow: inset 0 0 10px gray;
-  border: 0 solid govuk-colour("grey-2");
+  border: 0 solid govuk-colour("mid-grey");
   /* thickness of outer border */
 }
 
@@ -24,7 +24,7 @@
   /* clock round corner radius */
   background: govuk-colour("black");
   //box-shadow: inset 0 0 10px gray;
-  border: 0 solid govuk-colour("grey-2");
+  border: 0 solid govuk-colour("mid-grey");
   /* thickness of outer border */
 }
 
@@ -38,7 +38,7 @@
   /* clock round corner radius */
   background: govuk-colour("yellow");
   //box-shadow: inset 0 0 10px gray;
-  border: 0 solid govuk-colour("grey-2");
+  border: 0 solid govuk-colour("mid-grey");
   /* thickness of outer border */
 }
 

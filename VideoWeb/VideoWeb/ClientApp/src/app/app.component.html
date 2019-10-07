@@ -1,11 +1,11 @@
 <div>
-
+  <a href="javascript:void(0)" class="govuk-skip-link" (click)="skipToContent()">Skip to main content</a>
   <app-header [loggedIn]="loggedIn"></app-header>
 
   <div class="govuk-width-container" id="master-container">
     <app-beta-banner *ngIf="loggedIn" [isRepresentativeOrIndividual]="isRepresentativeOrIndividual"></app-beta-banner>
 
-    <main class="govuk-main-wrapper" id="main-content" role="main"
+    <main #maincontent class="govuk-main-wrapper" id="main-content" role="main" tabindex="-1"
       [ngClass]="!loggedIn ? 'pad-unactivated-router' : ''">
 
       <router-outlet></router-outlet>
