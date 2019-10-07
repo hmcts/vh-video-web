@@ -28,9 +28,9 @@ namespace VideoWeb.AcceptanceTests.Pages
 
         public By ScheduledHeader => CommonLocators.ElementContainingText("Your video hearing");
         public By ScheduledText => CommonLocators.ElementContainingText("The video hearings team will contact you by video before the hearing"); 
-        public string ScheduledBgColour = "#005ea5";
+        public string ScheduledBgColour = "#1d70b8";
 
-        public By TimePanel => By.XPath("//div[contains(@class,'govuk-panel')][1]");
+        public By TimePanel => By.XPath("(//div[contains(@class,'govuk-panel')])[1]");
 
         public By PausedTitle => CommonLocators.ElementContainingText("Your video hearing is paused");
         public By ClosedTitle => CommonLocators.ElementContainingText("Your video hearing is closed");
