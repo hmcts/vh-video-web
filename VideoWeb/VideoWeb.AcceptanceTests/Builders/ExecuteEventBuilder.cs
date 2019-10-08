@@ -4,7 +4,7 @@ using FluentAssertions;
 using TechTalk.SpecFlow;
 using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Contexts;
-using VideoWeb.Services.Video;
+using VideoWeb.EventHub.Models;
 
 namespace VideoWeb.AcceptanceTests.Builders
 {
@@ -15,7 +15,7 @@ namespace VideoWeb.AcceptanceTests.Builders
         private readonly VideoWebCallbackEndpoints _videoWebCallbackEndpoints = new VideoWebUriFactory().CallbackEndpoints;
         private TestContext _context;
         private ScenarioContext _scenarioContext;
-        private ConferenceEventRequest _request;
+        private CallbackEvent _request;
 
         public ExecuteEventBuilder WithContext(TestContext context)
         {
@@ -30,7 +30,7 @@ namespace VideoWeb.AcceptanceTests.Builders
             return this;
         }
 
-        public ExecuteEventBuilder WithRequest(ConferenceEventRequest request)
+        public ExecuteEventBuilder WithRequest(CallbackEvent request)
         {
             _request = request;
             return this;
