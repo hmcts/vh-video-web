@@ -54,7 +54,9 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             foreach (var participant in participants)
             {
-                participantStatuses[action].Execute(_tc, participant.Id.ToString());
+                if (participant.Id == null)
+                    throw new DataMisalignedException("Participant Id cannot be null");
+                participantStatuses[action].Execute(_tc, (Guid)participant.Id);
             }
         }
 
