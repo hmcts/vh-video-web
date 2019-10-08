@@ -103,9 +103,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             return ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_tc.Response.Content);
         }
 
-        private string GetJudgeParticipantId()
+        private Guid GetJudgeParticipantId()
         {
-            return _tc.Conference.Participants.Find(x => x.User_role.Equals(UserRole.Judge)).Id.ToString();
+            var id = _tc.Conference.Participants.Find(x => x.User_role.Equals(UserRole.Judge)).Id;
+            if (id == null)
+                throw new DataMisalignedException("Participant Id cannot be null");
+
+            return (Guid)id;
         }
     }
 }
