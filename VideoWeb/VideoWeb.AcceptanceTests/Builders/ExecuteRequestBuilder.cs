@@ -37,6 +37,7 @@ namespace VideoWeb.AcceptanceTests.Builders
 
         public void SendToVideoWeb()
         {
+            _context.SetDefaultVideoWebBearerToken();
             _context.Response = _context.VideoWebClient().Execute(_context.Request);
             GetTheResponse();
             VerifyTheResponse();
