@@ -21,6 +21,9 @@ export class AppComponent implements OnInit {
   @ViewChild('maincontent')
   main: ElementRef;
 
+  @ViewChild('skipLink')
+  skipLinkDiv: ElementRef;
+
   loggedIn: boolean;
   isRepresentativeOrIndividual: boolean;
   pageTitle = 'Video Hearings - ';
@@ -54,6 +57,7 @@ export class AppComponent implements OnInit {
     this.checkBrowser();
     this.checkAuth();
     this.setPageTitle();
+    this.scrollToTop();
   }
 
   checkBrowser(): void {
@@ -113,5 +117,12 @@ export class AppComponent implements OnInit {
       ).subscribe((appendTitle: string) => {
         this.titleService.setTitle(applTitle + appendTitle);
       });
+  }
+
+  scrollToTop() {
+    this.router.events.subscribe((event: NavigationEnd) => {
+      window.scroll(0, 0);
+      this.skipLinkDiv.nativeElement.focus();
+    });
   }
 }

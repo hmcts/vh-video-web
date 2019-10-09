@@ -1,14 +1,15 @@
-﻿using VideoWeb.AcceptanceTests.Builders;
+﻿using System;
+using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Contexts;
-using VideoWeb.Services.Video;
+using VideoWeb.EventHub.Enums;
 
 namespace VideoWeb.AcceptanceTests.Strategies.HearingStatus
 {
     internal class InSessionStrategy : IHearingStatusStrategies
     {
-        public void Execute(TestContext context, string participantId)
+        public void Execute(TestContext context, Guid participantId)
         {
-            var request = new EventRequestBuilder()
+            var request = new CallbackEventRequestBuilder()
                 .WithConferenceId(context.NewConferenceId)
                 .WithParticipantId(participantId)
                 .WithEventType(EventType.Transfer)
@@ -21,7 +22,7 @@ namespace VideoWeb.AcceptanceTests.Strategies.HearingStatus
                 .WithRequest(request)
                 .SendToVideoWeb();
 
-            request = new EventRequestBuilder()
+            request = new CallbackEventRequestBuilder()
                 .WithConferenceId(context.NewConferenceId)
                 .WithParticipantId(participantId)
                 .WithEventType(EventType.Joined)
