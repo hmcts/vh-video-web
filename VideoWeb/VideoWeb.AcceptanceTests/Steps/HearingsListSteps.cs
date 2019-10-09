@@ -38,18 +38,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             _clerkPage = clerkPage;
         }
 
-        [Given(@"the Video Hearings Officer has no hearings")]
-        public void GivenTheVideoHearingsOfficerHasNoHearings()
-        {
-            _tc.Request = _tc.Get(new VideoApiUriFactory().ConferenceEndpoints.GetTodaysConferences);
-            new ExecuteRequestBuilder().WithContext(_tc).WithExpectedStatusCode(HttpStatusCode.OK).SendToVideoApi();
-            var conferences = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ConferenceSummaryResponse>>(_tc.Json);
-            if (conferences.Count >  0)
-            {
-                throw new TestPlatformException($"Test requires no other hearings to be present but found {conferences.Count} other hearings.");
-            }
-        }
-
         [When(@"the user clicks on the Start Hearing button")]
         public void ProgressToNextPage()
         {
