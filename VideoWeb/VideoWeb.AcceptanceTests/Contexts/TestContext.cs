@@ -49,7 +49,7 @@ namespace VideoWeb.AcceptanceTests.Contexts
         public BookNewHearingRequest HearingRequest { get; set; }
         public bool Selftest { get; set; }
         public CustomTokenSettings CustomTokenSettings { get; set; }
-        public IOptions<AzureAdConfiguration> AzureAdConfiguration { get; set; }
+        public AzureAdConfiguration AzureAdConfiguration { get; set; }
 
         public TestContext()
         {
@@ -187,11 +187,11 @@ namespace VideoWeb.AcceptanceTests.Contexts
             return request;
         }
 
-        public void SetDefaultVideoApiBearerToken()
+        public void SetDefaultVideoWebBearerToken()
         {
-            VideoApiBearerToken = new TokenProvider(AzureAdConfiguration).GetClientAccessToken(
+            VideoWebBearerToken = new TokenProvider(Options.Create(AzureAdConfiguration)).GetClientAccessToken(
                 TestSettings.TestClientId, TestSettings.TestClientSecret,
-                AzureAdConfiguration.Value.VhVideoApiResourceId);
+                AzureAdConfiguration.ClientId);
         }
 
         public void SetCustomJwTokenForCallback()

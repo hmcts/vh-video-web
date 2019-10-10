@@ -42,6 +42,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         public void BeforeScenario(TestContext testContext)
         {
             var azureAdConfiguration = new BookingsConfigLoader().ReadAzureAdSettings();
+            testContext.AzureAdConfiguration = azureAdConfiguration;
             testContext.CustomTokenSettings = new BookingsConfigLoader().ReadCustomTokenSettings();
             testContext.CustomTokenSettings.Secret.Should().NotBeNullOrEmpty();
             testContext.CustomTokenSettings.ThirdPartySecret.Should().NotBeNullOrEmpty();

@@ -74,7 +74,7 @@ namespace VideoWeb.AcceptanceTests.Users
             foreach (var window in Driver.WrappedDriver.WindowHandles)
             {
                 var tab = Driver.SwitchTo().Window(window);
-                if (tab.Title.Trim().ToLower().Equals(title.ToLower()))
+                if (tab.Title.Trim().ToLower().Contains(title.ToLower()))
                 {
                     return window;
                 }
