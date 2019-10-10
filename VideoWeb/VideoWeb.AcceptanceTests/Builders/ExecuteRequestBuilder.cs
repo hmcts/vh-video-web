@@ -37,8 +37,17 @@ namespace VideoWeb.AcceptanceTests.Builders
 
         public void SendToVideoWeb()
         {
-            _context.SetDefaultVideoWebBearerToken();
-            _context.Response = _context.VideoWebClient().Execute(_context.Request);
+            if (_context.RunningVideoWebLocally)
+            {
+                _context.SetDefaultVideoWebBearerToken();
+                _context.Response = _context.VideoWebClient().Execute(_context.Request);
+            }
+            else
+            {
+                _context.SetCustomJwTokenForCallback();
+                _context.Response = _context.VideoWebEventCallbackClient().Execute(_context.Request);
+            }
+
             GetTheResponse();
             VerifyTheResponse();
         }
