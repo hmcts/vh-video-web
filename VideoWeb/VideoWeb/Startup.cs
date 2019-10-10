@@ -144,16 +144,6 @@ namespace VideoWeb
                 app.UseHsts();
             }
             
-            app.UseSignalR(routes =>
-            {
-                const string path = "/eventhub";
-                routes.MapHub<EventHub.Hub.EventHub>(path,
-                    options =>
-                    {
-                        options.Transports = HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling |
-                                             HttpTransportType.WebSockets;
-                    });
-            });
             app.UseAuthentication();
 
             app.UseHttpsRedirection();
