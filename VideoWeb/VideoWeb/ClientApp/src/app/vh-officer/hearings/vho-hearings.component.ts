@@ -202,7 +202,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     if (!this.participants) {
       return;
     }
-    const participantToUpdate = this.participants.find(x => x.username === message.email);
+    const participantToUpdate = this.participants.find(x => x.id === message.participantId);
     if (participantToUpdate) {
       participantToUpdate.status = message.status;
     }
