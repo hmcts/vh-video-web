@@ -79,8 +79,8 @@ export class UserMediaService {
   }
 
   getDeviceId(deviceName: string) {
-    let availableDevices: MediaDeviceInfo[] = this._navigator.mediaDevices.enumerateDevices();
-    var filteredDevices = availableDevices.filter(x => x.label === deviceName);
+    const availableDevices: MediaDeviceInfo[] = this._navigator.mediaDevices.enumerateDevices();
+    const filteredDevices = availableDevices.filter(x => x.label === deviceName);
     return filteredDevices[0].deviceId;
   }
 

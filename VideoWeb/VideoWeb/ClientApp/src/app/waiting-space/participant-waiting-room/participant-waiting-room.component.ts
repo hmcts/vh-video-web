@@ -252,7 +252,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       this.getConferenceClosedTime(this.hearing.id);
     }
   }
-  
+
   async setupPexipClient() {
     this.logger.debug('Setting up pexip client...');
     const self = this;
@@ -266,9 +266,9 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     const preferredMic = await this.userMediaService.getPreferredMicrophone();
     if (preferredMic) {
-      let deviceId = this.userMediaService.getDeviceId(preferredMic.label);
+      const deviceId = this.userMediaService.getDeviceId(preferredMic.label);
       this.pexipAPI.audio_source = deviceId;
-      //this.pexipAPI.audio_source = preferredMic.deviceId;
+      // this.pexipAPI.audio_source = preferredMic.deviceId;
       self.logger.info(`Using preferred microphone: ${preferredMic.label}`);
     }
 
