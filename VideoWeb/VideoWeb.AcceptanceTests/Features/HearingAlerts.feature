@@ -7,10 +7,10 @@
 Scenario: Video Hearings Officer receieves media blocked alert
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	When a participant has chosen to block user media
-	Then the Video Hearings Officer user should see a Not Started notification and a Media blocked alert
-	When the user selects the Media blocked alert
-	Then the Media blocked checkbox is no longer enabled
-	And the Media blocked alert should be updated with the details of the user that actioned the alert
+	Then the Video Hearings Officer user should see a Not Started notification and a Failed self-test (Camera) alert
+	When the user selects the Failed self-test (Camera) alert
+	Then the Failed self-test (Camera) checkbox is no longer enabled
+	And the Failed self-test (Camera) alert should be updated with the details of the user that actioned the alert
 
 @VIH-4419
 Scenario: Video Hearings Officer receieves suspended alert
@@ -46,10 +46,11 @@ Scenario Outline: Video Hearings Officer receieves failed self test alert
 	Then the <Reason> checkbox is no longer enabled
 	And the <Reason> alert should be updated with the details of the user that actioned the alert
 	Examples:
-	| Reason                        |
+	| Reason						|
 	| Failed self-test (Camera)     |
 	| Failed self-test (Microphone) |
 	| Failed self-test (Video)      |
+	| Failed self-test (Bad Score)  |
 
 @VIH-4418
 Scenario: Video Hearings Officer does not receive disconnected alert when hearing is closed

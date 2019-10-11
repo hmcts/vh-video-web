@@ -37,14 +37,21 @@ namespace VideoWeb.AcceptanceTests.Builders
 
         public void SendToVideoWeb()
         {
+            _context.SetDefaultVideoWebBearerToken();
             _context.Response = _context.VideoWebClient().Execute(_context.Request);
             GetTheResponse();
             VerifyTheResponse();
         }
 
-        public void SendWithoutVerification()
+        public void SendToVideoApiWithoutVerification()
         {
             _context.Response = _context.VideoApiClient().Execute(_context.Request);
+            GetTheResponse();
+        }
+
+        public void SendToVideoWebWithoutVerification()
+        {
+            _context.Response = _context.VideoWebClient().Execute(_context.Request);
             GetTheResponse();
         }
 

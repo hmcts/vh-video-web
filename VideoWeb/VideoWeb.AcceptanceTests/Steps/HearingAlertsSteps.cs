@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using Testing.Common.Helpers;
@@ -9,7 +10,11 @@ using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.AcceptanceTests.Users;
+using VideoWeb.Contract.Request;
 using VideoWeb.Services.Video;
+using EventType = VideoWeb.EventHub.Enums.EventType;
+using RoomType = VideoWeb.EventHub.Enums.RoomType;
+using UserRole = VideoWeb.EventHub.Enums.UserRole;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -39,23 +44,25 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var participantUser = GetUserFromConferenceDetails(UserRole.Individual.ToString());
 
-            var request = new EventRequestBuilder()
-                .WithConferenceId(_tc.NewConferenceId)
-                .WithParticipantId(participantUser.Id.ToString())
-                .WithEventType(EventType.MediaPermissionDenied)
+            var request = new MediaEventBuilder()
+                .ForParticipant(participantUser.Id)
+                .WithReason(SelfTestFailureReason.Camera)
+                .WithScenarioContext(_scenarioContext)
                 .Build();
 
-            new ExecuteEventBuilder()
+            _tc.Request = _tc.Post(new VideoWebMediaEventEndpoints().SelfTestFailureEvents(_tc.NewConferenceId),
+                request);
+
+            new ExecuteRequestBuilder()
                 .WithContext(_tc)
-                .WithScenarioContext(_scenarioContext)
-                .WithRequest(request)
-                .SendToVideoApi();
+                .WithExpectedStatusCode(HttpStatusCode.NoContent)
+                .SendToVideoWeb();
         }
 
         [When(@"the judge has disconnected from the hearing")]
         public void WhenTheJudgeHasSuspendedTheHearing()
         {
-            var request = new EventRequestBuilder()
+            var request = new CallbackEventRequestBuilder()
                 .WithConferenceId(_tc.NewConferenceId)
                 .WithParticipantId(GetClerkParticipantId())
                 .WithEventType(EventType.Disconnected)
@@ -66,7 +73,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithContext(_tc)
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
-                .SendToVideoApi();
+                .SendToVideoWeb();
         }
 
         [When(@"a (.*) has disconnected from the (.*)")]
@@ -74,9 +81,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var participantUser = GetUserFromConferenceDetails(participant);
 
-            var request = new EventRequestBuilder()
+            var request = new CallbackEventRequestBuilder()
                 .WithConferenceId(_tc.NewConferenceId)
-                .WithParticipantId(participantUser.Id.ToString())
+                .WithParticipantId(participantUser.Id)
                 .WithEventType(EventType.Disconnected)
                 .WithRoomType(room)
                 .Build();
@@ -85,14 +92,14 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithContext(_tc)
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
-                .SendToVideoApi();
+                .SendToVideoWeb();
         }
 
         private ParticipantDetailsResponse GetUserFromConferenceDetails(string userRole)
         {
             var participantUser = userRole.ToLower().Equals("judge") || userRole.ToLower().Equals("clerk")
-                ? _tc.Conference.Participants.Find(x => x.User_role.Equals(UserRole.Judge))
-                : _tc.Conference.Participants.Find(x => x.User_role.Equals(UserRole.Individual));
+                ? _tc.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Judge.ToString()))
+                : _tc.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Individual.ToString()));
 
             if (participantUser.Id == null)
                 throw new DataMisalignedException("Participant Id is not set");
@@ -104,48 +111,63 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"a participant has failed the self-test")]
         public void WhenAParticipantHasFailedTheSelf_Test()
         {
-            var request = new EventRequestBuilder()
-                .WithConferenceId(_tc.NewConferenceId)
-                .WithParticipantId(GetIndividualParticipantId())
-                .WithEventType(EventType.SelfTestFailed)
+            var request = new MediaEventBuilder()
+                .ForParticipant(GetIndividualParticipantId())
+                .WithReason(SelfTestFailureReason.Camera)
+                .WithScenarioContext(_scenarioContext)
                 .Build();
 
-            new ExecuteEventBuilder()
+            _tc.Request = _tc.Post(new VideoWebMediaEventEndpoints().SelfTestFailureEvents(_tc.NewConferenceId),
+                request);
+
+            new ExecuteRequestBuilder()
                 .WithContext(_tc)
-                .WithScenarioContext(_scenarioContext)
-                .WithRequest(request)
-                .SendToVideoApi();
+                .WithExpectedStatusCode(HttpStatusCode.NoContent)
+                .SendToVideoWeb();
         }
 
         [When(@"a participant has failed the self-test with (.*)")]
         public void WhenAParticipantHasFailedTheSelfTestWithReason(string reason)
         {
-            var request = new EventRequestBuilder()
-                .WithConferenceId(_tc.NewConferenceId)
-                .WithParticipantId(GetIndividualParticipantId())
-                .WithEventType(EventType.SelfTestFailed)
-                .WithReason(reason)
+            var request = new MediaEventBuilder()
+                .ForParticipant(GetUserFromConferenceDetails(UserRole.Individual.ToString()).Id)
+                .WithReason(ParseReason(reason))
+                .WithScenarioContext(_scenarioContext)
                 .Build();
 
-            new ExecuteEventBuilder()
+            _tc.Request = _tc.Post(new VideoWebMediaEventEndpoints().SelfTestFailureEvents(_tc.NewConferenceId),
+                request);
+
+            new ExecuteRequestBuilder()
                 .WithContext(_tc)
-                .WithScenarioContext(_scenarioContext)
-                .WithRequest(request)
-                .SendToVideoApi();
+                .WithExpectedStatusCode(HttpStatusCode.NoContent)
+                .SendToVideoWeb();
+        }
+
+        private static SelfTestFailureReason ParseReason(string entireReason)
+        {
+            const string standardText = "Failed test-score";
+
+            if (!entireReason.Contains("("))
+                throw new InvalidCastException($"Reason does not contain the standard '{standardText}' text");
+
+            var shortenedReason = entireReason.Substring(standardText.Length).Replace("(","").Replace(")", "").Replace(" ","").Trim();
+            Enum.TryParse(shortenedReason, out SelfTestFailureReason failureReason);
+            return failureReason;
         }
 
         [When(@"the user selects the (.*) alert")]
         public void WhenTheUserSelectsTheAlert(string alertType)
         {
             var alerts = GetAlerts();
-            var alert = alerts.First(x => x.AlertType.ToLower().Equals(alertType.ToLower()));
+            var alert = alerts.First(x => x.AlertType.ToLower().Contains(alertType.ToLower()));
             _browsers[_tc.CurrentUser.Key].Driver.ClickAndWaitForPageToLoad(_adminPanelPage.AlertCheckbox(alert.Row + 1));
         }
 
         [When(@"the hearing has been closed")]
         public void WhenTheHearingHasBeenClosed()
         {
-            var request = new EventRequestBuilder()
+            var request = new CallbackEventRequestBuilder()
                 .WithConferenceId(_tc.NewConferenceId)
                 .WithParticipantId(GetClerkParticipantId())
                 .WithEventType(EventType.Close)
@@ -156,7 +178,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithContext(_tc)
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
-                .SendToVideoApi();
+                .SendToVideoWeb();
 
             _scenarioContext.Remove(ParticipantKey);
             _scenarioContext.Remove(AlertTimeKey);
@@ -210,18 +232,12 @@ namespace VideoWeb.AcceptanceTests.Steps
                 alert.Timestamp.Should().Match<string>(t=> t.Equals(timeOfAlert) || t.Equals(timeOfAlertMinusAMinute) || t.Equals(timeOfAlertPlusAMinute));
             }
 
-            var alertTypeExists = false;
-            foreach (var alert in alerts)
-            {
-                if (!alert.AlertType.ToLower().Equals(alertType.ToLower())) continue;
-                alertTypeExists = true;
-                break;
-            }
+            var alertTypeExists = alerts.Any(alert => alert.AlertType.ToLower().Contains(alertType.ToLower()));
             alertTypeExists.Should().BeTrue();
 
-            if (alertType.ToLower().Equals("media blocked") || alertType.ToLower().Equals("disconnected"))
+            if (alertType.ToLower().Contains("failed self-test") || alertType.ToLower().Equals("disconnected"))
             {
-                alerts.First(x => x.AlertType.ToLower().Equals(alertType.ToLower())).Username.Should()
+                alerts.First(x => x.AlertType.ToLower().Contains(alertType.ToLower())).Username.Should()
                     .Be(_scenarioContext.Get<ParticipantDetailsResponse>(ParticipantKey).Name);
             }
         }
@@ -230,7 +246,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheCheckboxIsNoLongerEnabled(string alertType)
         {
             var alerts = GetAlerts();
-            var alert = alerts.First(x => x.AlertType.ToLower().Equals(alertType.ToLower()));
+            var alert = alerts.First(x => x.AlertType.ToLower().Contains(alertType.ToLower()));
             alert.Checkbox.Enabled.Should().BeFalse();
         }
 
@@ -245,7 +261,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheAlertShouldBeUpdatedWithTheDetailsOfTheUserThatActionedTheAlert(string alertType)
         {
             var alerts = GetAlerts();
-            var alert = alerts.First(x => x.AlertType.ToLower().Equals(alertType.ToLower()));
+            var alert = alerts.First(x => x.AlertType.ToLower().Contains(alertType.ToLower()));
             var time = DateTime.Now.ToString(DateFormats.AlertMessageTimestamp);
             var timeMinusAMinute = DateTime.Now.AddMinutes(-1).ToString(DateFormats.AlertMessageTimestamp);
             var timePlusAMinute = DateTime.Now.AddMinutes(1).ToString(DateFormats.AlertMessageTimestamp);
@@ -253,14 +269,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             alert.ActionedBy.Should().Be(_tc.CurrentUser.Username.ToLower());
         }
 
-        private string GetClerkParticipantId()
+        private Guid? GetClerkParticipantId()
         {
-            return _tc.Conference.Participants.Find(x => x.User_role.Equals(UserRole.Judge)).Id.ToString();
+            return _tc.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Judge.ToString())).Id;
         }
 
-        private string GetIndividualParticipantId()
+        private Guid? GetIndividualParticipantId()
         {
-            return _tc.Conference.Participants.Find(x => x.User_role.Equals(UserRole.Individual)).Id.ToString();
+            return _tc.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Individual.ToString())).Id;
         }
 
         private List<Alert> GetAlerts()

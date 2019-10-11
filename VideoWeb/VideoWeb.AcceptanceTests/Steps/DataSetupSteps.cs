@@ -7,7 +7,7 @@ using TechTalk.SpecFlow;
 using Testing.Common.Assertions;
 using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Builders;
-using VideoWeb.AcceptanceTests.Configuration;
+using VideoWeb.AcceptanceTests.Configuration.ConferenceRetrievers;
 using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.Common.Helpers;
 using VideoWeb.Services.Bookings;

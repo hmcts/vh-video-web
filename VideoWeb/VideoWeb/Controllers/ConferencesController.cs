@@ -248,37 +248,12 @@ namespace VideoWeb.Controllers
 
             var mapper = new ConferenceResponseMapper();
             var response = mapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
-            AddConferenceToCache(conference);
-
-            return Ok(response);
-        }
-
-        private async Task AddConferenceToCache(ConferenceDetailsResponse conferenceResponse)
-        {
-            var participants = new List<Participant>();
-            foreach (var participant in conferenceResponse.Participants)
+            if (!isVhOfficer)
             {
-                participants.Add(new Participant
-                {
-                    Id = participant.Id.Value,
-                    DisplayName = participant.Display_name,
-                    Role = (VideoWeb.EventHub.Enums.UserRole) Enum.Parse(typeof(UserRole), participant.User_role.ToString()),
-                    Username = participant.Username
-                });
+                await ConferenceCache.AddConferenceToCache(conference, _memoryCache);
             }
 
-            var conference = new Conference
-            {
-                Id = conferenceResponse.Id.Value,
-                HearingId = conferenceResponse.Hearing_id.Value,
-                Participants = participants
-            };
-
-            await _memoryCache.GetOrCreateAsync(conference.Id, entry =>
-            {
-                entry.SlidingExpiration = TimeSpan.FromHours(8);
-                return Task.FromResult(conference);
-            });
+            return Ok(response);
         }
 
         private static void ValidateConferenceAndBookingParticipantsMatch(List<ParticipantDetailsResponse> participants,

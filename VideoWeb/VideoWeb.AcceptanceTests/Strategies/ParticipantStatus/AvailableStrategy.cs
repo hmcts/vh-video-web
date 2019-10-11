@@ -1,15 +1,15 @@
-﻿using System.Net;
+﻿using System;
 using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Contexts;
-using VideoWeb.Services.Video;
+using VideoWeb.EventHub.Enums;
 
 namespace VideoWeb.AcceptanceTests.Strategies.ParticipantStatus
 {
     internal class AvailableStrategy : IParticipantStatusStrategy
     {
-        public void Execute(TestContext context, string participantId)
+        public void Execute(TestContext context, Guid participantId)
         {
-            var request = new EventRequestBuilder()
+            var request = new CallbackEventRequestBuilder()
                 .WithConferenceId(context.NewConferenceId)
                 .WithParticipantId(participantId)
                 .WithEventType(EventType.Transfer)
