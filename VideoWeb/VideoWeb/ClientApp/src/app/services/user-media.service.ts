@@ -76,7 +76,13 @@ export class UserMediaService {
 
     getPreferredMicrophone() {
         return this.getCachedDeviceIfStillConnected(this.preferredMicCache);
-    }
+  }
+
+  getDeviceId(deviceName: string) {
+    let availableDevices: MediaDeviceInfo[] = this._navigator.mediaDevices.enumerateDevices();
+    var filteredDevices = availableDevices.filter(x => x.label === deviceName);
+    return filteredDevices[0].deviceId;
+  }
 
     async getCachedDeviceIfStillConnected(cache: SessionStorage<UserMediaDevice>): Promise<UserMediaDevice> {
         const device = cache.get();
