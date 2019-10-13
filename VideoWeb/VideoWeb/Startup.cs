@@ -124,7 +124,6 @@ namespace VideoWeb
                 app.UseSwagger();
                 app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Video App"); });
             }
-
             
             app.UseSignalR(routes =>
             {
