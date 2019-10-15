@@ -78,7 +78,8 @@ export class VideoWebService {
     return this.apiClient.getPexipConfig();
   }
 
-  updateTestResultScoreForParticipant(conferenceId: string, participantId: string, updateSelfTestScoreRequest: UpdateSelfTestScoreRequest): Observable<void> {
+  updateTestResultScoreForParticipant(conferenceId: string, participantId: string,
+    updateSelfTestScoreRequest: UpdateSelfTestScoreRequest): Observable<void> {
     return this.apiClient.updateSelfTestScore(conferenceId, participantId, updateSelfTestScoreRequest);
   }
 }

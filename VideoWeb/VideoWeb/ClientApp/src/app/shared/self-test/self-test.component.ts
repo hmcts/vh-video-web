@@ -210,7 +210,8 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         const testScore = new UpdateSelfTestScoreRequest();
         testScore.passed = this.testCallResult.passed;
         testScore.score = this.testCallResult.score;
-        const score = await this.videoWebService.updateTestResultScoreForParticipant(this.conference.id, this.selfTestParticipantId, testScore).toPromise();
+        const score = await this.videoWebService.updateTestResultScoreForParticipant(this.conference.id,
+          this.selfTestParticipantId, testScore).toPromise();
       } else {
         this.testCallResult = await this.videoWebService.getIndependentTestCallScore(this.selfTestParticipantId).toPromise();
       }
