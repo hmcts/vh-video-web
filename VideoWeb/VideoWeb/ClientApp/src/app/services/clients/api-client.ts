@@ -966,6 +966,78 @@ export class ApiClient {
     }
 
     /**
+     * Updates the test result score for a participant
+     * @param conferenceId The conference id
+     * @param participantId The participant id
+     * @param updateSelfTestScoreRequest (optional) The self test score
+     * @return Success
+     */
+    updateSelfTestScore(conferenceId: string, participantId: string, updateSelfTestScoreRequest: UpdateSelfTestScoreRequest | null | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/conferences/{conferenceId}/participants/{participantId}/updatescore";
+        if (conferenceId === undefined || conferenceId === null)
+            throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace("{conferenceId}", encodeURIComponent("" + conferenceId)); 
+        if (participantId === undefined || participantId === null)
+            throw new Error("The parameter 'participantId' must be defined.");
+        url_ = url_.replace("{participantId}", encodeURIComponent("" + participantId)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(updateSelfTestScoreRequest);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json", 
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateSelfTestScore(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateSelfTestScore(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdateSelfTestScore(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("Unauthorized", status, _responseText, _headers);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
      * @return Success
      */
     getUserProfile(): Observable<UserProfileResponse> {
@@ -2323,6 +2395,46 @@ export class UpdateParticipantStatusEventRequest implements IUpdateParticipantSt
 export interface IUpdateParticipantStatusEventRequest {
     participant_id?: string | undefined;
     event_type?: EventType | undefined;
+}
+
+export class UpdateSelfTestScoreRequest implements IUpdateSelfTestScoreRequest {
+    score?: TestScore | undefined;
+    passed?: boolean | undefined;
+
+    constructor(data?: IUpdateSelfTestScoreRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(data?: any) {
+        if (data) {
+            this.score = data["score"];
+            this.passed = data["passed"];
+        }
+    }
+
+    static fromJS(data: any): UpdateSelfTestScoreRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateSelfTestScoreRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["score"] = this.score;
+        data["passed"] = this.passed;
+        return data; 
+    }
+}
+
+export interface IUpdateSelfTestScoreRequest {
+    score?: TestScore | undefined;
+    passed?: boolean | undefined;
 }
 
 export class UserProfileResponse implements IUserProfileResponse {
