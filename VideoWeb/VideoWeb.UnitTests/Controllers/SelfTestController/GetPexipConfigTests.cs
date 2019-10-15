@@ -10,6 +10,7 @@ using Testing.Common.Helpers;
 using VideoWeb.Controllers;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
+using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.SelfTestController
 {
@@ -44,6 +45,20 @@ namespace VideoWeb.UnitTests.Controllers.SelfTestController
             var result = _controller.GetPexipConfig();
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
+        }
+
+        [Test]
+        public void should_return_not_found_code_when_config_is_not_found()
+        {
+            var apiException = new VideoApiException<ProblemDetails>("User not found", (int)HttpStatusCode.NotFound,
+                "Config Not Found", null, default(ProblemDetails), null);
+            _videoApiClientMock
+                .Setup(x => x.GetPexipServicesConfiguration())
+                .Throws(apiException);
+
+            var result = _controller.GetPexipConfig();
+            var typedResult = (ObjectResult)result.Result;
+            typedResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
         }
     }
 }

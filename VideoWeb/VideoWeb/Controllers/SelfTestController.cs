@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Controllers
@@ -33,7 +34,8 @@ namespace VideoWeb.Controllers
             try
             {
                 _logger.LogDebug("GetPexipNodeForIndependentSelfTest");
-                var response = _videoApiClient.GetPexipServicesConfiguration();
+                var config = _videoApiClient.GetPexipServicesConfiguration();
+                var response = new PexipServiceConfigurationResponseMapper().MapConfigToResponseModel(config);
                 return Ok(response);
             }
             catch (VideoApiException e)

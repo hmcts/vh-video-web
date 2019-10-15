@@ -161,7 +161,6 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         [Test]
         public async Task should_update_test_score_to_database()
         {
-
             var conferenceId = Guid.NewGuid();
             var participantId = Guid.NewGuid();
 
@@ -169,7 +168,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _videoApiClientMock
                 .Setup(x => x.GetIndependentTestCallResultAsync(participantId))
                 .Returns(Task.FromResult(testCallResponse));
-            // var testResult = new UpdateSelfTestScoreRequest() { Passed = true, Score = TestScore.Good };
+
             var testResult = new UpdateSelfTestScoreRequest() { Passed = testCallResponse.Passed, Score = testCallResponse.Score };
 
             var response = await _controller.UpdateSelfTestScore(Guid.NewGuid(), Guid.NewGuid(), testResult);
