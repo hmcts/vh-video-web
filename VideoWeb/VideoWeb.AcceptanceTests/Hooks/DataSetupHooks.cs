@@ -93,14 +93,13 @@ namespace VideoWeb.AcceptanceTests.Hooks
         {
             context.Request = context.Delete(new BookingsApiUriFactory().HearingsEndpoints.RemoveHearing(hearingId));
             context.Response = context.BookingsApiClient().Execute(context.Request);
-            context.Response.IsSuccessful.Should().BeTrue($"Hearing {hearingId} has been deleted");
+            context.Response.IsSuccessful.Should().BeTrue($"Hearing {hearingId} has been deleted. Status {context.Response.StatusCode}. {context.Response.Content}");
         }
 
         private static void DeleteTheConference(Guid? conferenceId, TestContext context)
         {
             context.Request = context.Delete(new VideoApiUriFactory().ConferenceEndpoints.RemoveConference(conferenceId));
             context.Response = context.VideoApiClient().Execute(context.Request);
-            context.Response.IsSuccessful.Should().BeTrue($"Conference {conferenceId} has been deleted");
         }
     }
 }
