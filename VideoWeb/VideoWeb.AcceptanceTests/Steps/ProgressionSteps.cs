@@ -26,6 +26,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly RulesSteps _rulesSteps;
         private readonly DeclarationSteps _declarationSteps;
         private readonly WaitingRoomSteps _waitingRoomSteps;
+        private readonly HearingRoomSteps _hearingRoomSteps;
 
         public ProgressionSteps(
             TestContext testContext, 
@@ -60,6 +61,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _equipmentWorkingSteps = equipmentWorkingSteps;
             _rulesSteps = rulesSteps;
             _declarationSteps = declarationSteps;
+            _hearingRoomSteps = hearingRoomSteps;
         }
 
         [Given(@"the (.*) user has progressed to the (.*) page")]
@@ -67,7 +69,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _dataSetupSteps.GivenIHaveAHearing(0);
             _dataSetupSteps.GetTheNewConferenceDetails();
-            _commonSteps.GivenANewBrowserIsOpenFor(user.ToLower().Equals("clerk self test") ? "clerk" : user);
+            _commonSteps.GivenANewBrowserIsOpenFor(user.ToLower().Contains("self test") ? user.Split(" ")[0] : user);
             Progression(FromString(user), page);
         }
 
@@ -94,6 +96,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 case "clerk": case "judge": return Journey.Clerk;
                 case "clerk self test": return Journey.ClerkSelftest;
+                case "representative self test": return Journey.RepSelfTest;
                 case "participant": case "individual": case "representative": return Journey.Participant;
                 case "video hearings officer": return Journey.Vho;
             }
@@ -113,11 +116,12 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {Journey.Clerk, new ClerkJourney()},
                 {Journey.ClerkSelftest, new ClerkSelfTestJourney()},
                 {Journey.Participant, new ParticipantJourney()},
+                {Journey.RepSelfTest, new RepSelfTestJourney()},
                 {Journey.Vho, new VhoJourney()}
             };
             journeys[userJourney].VerifyUserIsApplicableToJourney(_tc.CurrentUser.Role);
             journeys[userJourney].VerifyDestinationIsInThatJourney(endPage);
-            if (userJourney == Journey.ClerkSelftest) _tc.Selftest = true;           
+            if (userJourney == Journey.ClerkSelftest || userJourney == Journey.RepSelfTest) _tc.Selftest = true;           
             var journey = journeys[userJourney].Journey();
             var steps = Steps();
             foreach (var page in journey)
@@ -144,7 +148,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {Page.SeeAndHearVideo, _equipmentWorkingSteps},
                 {Page.Rules, _rulesSteps},
                 {Page.Declaration, _declarationSteps},
-                {Page.WaitingRoom, _waitingRoomSteps}
+                {Page.WaitingRoom, _waitingRoomSteps},
+                {Page.HearingRoom, _hearingRoomSteps}
             };
         }
 

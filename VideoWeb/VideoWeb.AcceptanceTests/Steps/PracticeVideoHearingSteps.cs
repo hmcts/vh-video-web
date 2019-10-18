@@ -55,17 +55,20 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user selects a new microphone")]
         public void WhenTheUserSelectsANewMicrophone()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementExists(_practiceVideoHearingPage.MicsList).Displayed.Should()
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementExists(_practiceVideoHearingPage.MicsList).Displayed
+                .Should()
                 .BeTrue();
 
             new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(_practiceVideoHearingPage.PreferredCameraVideo);
 
-            var micOptions = new SelectElement(_browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementExists(_practiceVideoHearingPage.MicsList));
+            var micOptions = new SelectElement(_browsers[_tc.CurrentUser.Key].Driver
+                .WaitUntilElementExists(_practiceVideoHearingPage.MicsList));
             var micOptionsCount = micOptions.Options.Count;
             micOptionsCount.Should().BeGreaterThan(1);
-            micOptions.SelectByIndex(micOptionsCount -1);
+            micOptions.SelectByIndex(micOptionsCount - 1);
 
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementClickable(_practiceVideoHearingPage.ChangeButton).Click();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementClickable(_practiceVideoHearingPage.ChangeButton)
+                .Click();
         }
 
         [Then(@"the choose your camera and microphone popup should disappear")]
@@ -92,7 +95,8 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             PollForTestScore();
 
-            var selfScore = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<TestCallScoreResponse>(_tc.Response.Content);
+            var selfScore =
+                ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<TestCallScoreResponse>(_tc.Response.Content);
             selfScore.Score.ToString().Should().ContainAny("Good", "Okay", "Bad");
         }
 
@@ -122,15 +126,17 @@ namespace VideoWeb.AcceptanceTests.Steps
             }
 
             found.Should().BeTrue(
-                    $"Expected the status code after {Retries * Delay} seconds to be OK, but found {_tc.Response.StatusCode}");
+                $"Expected the status code after {Retries * Delay} seconds to be OK, but found {_tc.Response.StatusCode}");
         }
 
         public void ProgressToNextPage()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_practiceVideoHearingPage.IncomingVideo, ExtraTimeoutToLoadVideoFromKinly)
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_practiceVideoHearingPage.IncomingVideo,
+                    ExtraTimeoutToLoadVideoFromKinly)
                 .Displayed.Should().BeTrue();
-            _browsers[_tc.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browsers[_tc.CurrentUser.Key].Driver.FindElement(CommonLocators.ButtonWithLabel("Continue")));
-            _commonSteps.WhentheUserClicksTheButton("Continue");
+            _browsers[_tc.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);",
+                _browsers[_tc.CurrentUser.Key].Driver.FindElement(CommonLocators.ButtonWithInnertext("Continue")));
+            _commonSteps.WhenTheUserClicksTheButton("Continue");
         }
     }
 }
