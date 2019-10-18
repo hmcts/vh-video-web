@@ -276,11 +276,13 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       self.logger.info('running pexip setup');
       this.connect('0000', null);
       // self.outgoingStream = stream;
-      const selfvideo = document.getElementById('outgoingFeedVideo') as any;
-      if (typeof (MediaStream) !== 'undefined' && stream instanceof MediaStream) {
-        selfvideo.srcObject = stream;
-      } else {
-        selfvideo.src = stream;
+      if (stream) {
+        const selfvideo = document.getElementById('outgoingFeedVideo') as any;
+        if (typeof (MediaStream) !== 'undefined' && stream instanceof MediaStream) {
+          selfvideo.srcObject = stream;
+        } else {
+          selfvideo.src = stream;
+        }
       }
     };
 
