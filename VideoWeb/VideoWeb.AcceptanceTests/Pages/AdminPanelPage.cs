@@ -22,7 +22,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By VhoPrivateConsultationLink(Guid? participantId) => By.XPath($"//a[contains(@href,'{participantId}') and @aria-label='Private consultation']");
 
         public By IncomingCallMessage => CommonLocators.ElementContainingText("Incoming call from Video Hearings Team");
-        public By AcceptPrivateCall => CommonLocators.ButtonWithLabel("Accept call");
+        public By AcceptPrivateCall => CommonLocators.ButtonWithInnertext("Accept call");
         public By IncomingVideo = By.Id("incomingVideo");
         public By IncomingFeed = By.Id("incomingFeed");
         public By SelfViewVideo = By.Id("selfviewVideo");
