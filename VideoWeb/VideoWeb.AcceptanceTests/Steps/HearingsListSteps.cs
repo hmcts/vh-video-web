@@ -2,18 +2,13 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Net;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using OpenQA.Selenium.Support.Extensions;
 using TechTalk.SpecFlow;
 using Testing.Common.Helpers;
-using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.AcceptanceTests.Users;
-using VideoWeb.Common.Helpers;
-using VideoWeb.Services.Video;
 using ParticipantResponse = VideoWeb.Services.Bookings.ParticipantResponse;
 using TestContext = VideoWeb.AcceptanceTests.Contexts.TestContext;
 using UserRole = VideoWeb.Contract.Responses.UserRole;

@@ -8,7 +8,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By NoHearingsWarningMessage => CommonLocators.ElementContainingText("You have no video hearings");
         public By HearingWithCaseNumber(string caseNumber) => CommonLocators.ElementContainingText(caseNumber);
         public By WaitToSignInText(string caseNumber) => By.XPath($"//tr//*[contains(text(),'{caseNumber}')]/../../..//td//p[contains(text(),'Sign in Today')]/../p[contains(text(),':')]");
-        public By SignInButton(string caseNumber) => By.XPath($"//*[contains(text(),'{caseNumber}')]/ancestor::tr//input[@role='button' and @value='Sign into hearing']");
+        public By SignInButton(string caseNumber) => By.XPath($"//*[contains(text(),'{caseNumber}')]/ancestor::tr//button[contains(text(),'Sign into hearing')]");
         public By ParticipantHearingDate(string caseNumber) => By.XPath($"//strong[contains(text(),'{caseNumber}')]/../../..//td/p[contains(text(),'20')]");
         public By ParticipantHearingTime(string caseNumber) => By.XPath($"//strong[contains(text(),'{caseNumber}')]/../../..//td/p[contains(text(),':')]");
 

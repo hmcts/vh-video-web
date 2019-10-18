@@ -8,5 +8,5 @@ Scenario: Participant Introduction
 	Given the Participant user has progressed to the Introduction page
 	Then contact us details are available
 	And the participant status will be updated to Joining
-	When the user clicks the button with innertext Next
+	When the user clicks the Next button
 	Then the user is on the Equipment Check page

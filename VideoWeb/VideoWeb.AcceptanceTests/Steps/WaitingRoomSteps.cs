@@ -195,9 +195,10 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .Displayed.Should().BeTrue();
         }
 
-        [Then(@"the user can see a (.*) box and a (.*) message")]
-        [Then(@"the user can see a (.*) box and an (.*) message")]
-        public void ThenTheUserCanSeeABlackBoxAndAAboutToBeginMessage(string colour, string message)
+        [Then(@"the user can see a (.*) box and a delayed message")]
+        [Then(@"the user can see a (.*) box and a scheduled message")]
+        [Then(@"the user can see a (.*) box and an about to begin message")]
+        public void ThenTheUserCanSeeABlackBoxAndAAboutToBeginMessage(string colour)
         {
             _browsers[_tc.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browsers[_tc.CurrentUser.Key].Driver.FindElement(_page.TimePanel));
 

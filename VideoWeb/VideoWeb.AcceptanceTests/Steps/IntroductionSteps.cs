@@ -11,7 +11,7 @@
 
         public void ProgressToNextPage()
         {
-            _commonSteps.WhentheUserClicksTheButtonWithInnertext("Next");
+            _commonSteps.WhenTheUserClicksTheButton("Next");
         }
     }
 }
