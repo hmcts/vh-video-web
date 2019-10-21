@@ -5,16 +5,18 @@
 <div *ngIf="!loadingData && hasHearings()">
   <h1 class="govuk-heading-xl">Your hearings</h1>
   <div class="govuk-!-margin-top-1" *ngIf="isRepresentative">
-    <input type="button" id="check-equipment-btn" class="govuk-button" role="button" value="Check equipment"
-           (click)="goToEquipmentCheck()" alt="Check equipment" />
+    <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button"
+            (click)="goToEquipmentCheck()" alt="Check equipment">
+      Check equipment
+    </button>
   </div>
   <app-hearing-list-table [conferences]="conferences"></app-hearing-list-table>
 </div>
 <div *ngIf="!loadingData && !hasHearings()">
   <h1 class="govuk-heading-xl">Video hearings</h1>
   <div class="govuk-!-margin-top-1" *ngIf="isRepresentative">
-    <input type="button" id="check-equipment-btn" class="govuk-button" role="button" value="Check equipment"
-           (click)="goToEquipmentCheck()" alt="Check equipment" />
+    <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button"
+           (click)="goToEquipmentCheck()" alt="Check equipment">Check equipment</button>
   </div>
   <h3 class="govuk-heading-m"> You have no video hearings</h3>
   <p class="govuk-body">
