@@ -161,7 +161,6 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         [Test]
         public async Task should_update_test_score_to_database()
         {
-            var conferenceId = Guid.NewGuid();
             var participantId = Guid.NewGuid();
 
             var testCallResponse = Builder<TestCallScoreResponse>.CreateNew().Build();

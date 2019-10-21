@@ -14,7 +14,9 @@ Scenario Outline: Hearing List page accessibility
 
 @Accessibility
 Scenario: VHO Hearing List page accessibility
-	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
+	Given the Video Hearings Officer user has progressed to the VHO Hearing List page	
+	Then the page should be accessible 
+	When the VHO selects the hearing
 	Then the page should be accessible 
 
 @Accessibility
