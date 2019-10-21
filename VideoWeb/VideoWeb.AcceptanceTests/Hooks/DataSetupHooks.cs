@@ -40,12 +40,11 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
             foreach (var conference in todaysConferences)
             {
-                if (!ClerkUserIsAParticipantInTheConference(conference.Participants, context.GetClerkUser().Username) ||
-                    !conference.Status.Equals(ConferenceState.Closed)) continue;
-
+                if (!ClerkUserIsAParticipantInTheConference(conference.Participants, context.GetClerkUser().Username)) continue;
+                
                 var hearingId = GetTheHearingIdFromTheConference(conference.Id, context);
 
-                if (HearingHasNotBeenDeletedAlready(hearingId, context))
+                if (HearingHasNotBeenDeletedAlready(hearingId, context) && !hearingId.Equals(Guid.Empty))
                     DeleteTheHearing(hearingId, context);
 
                 if (ConferenceHasNotBeenDeletedAlready(conference.Id, context))
@@ -68,7 +67,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             var conference = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(context.Response.Content);
 
             if (conference.Hearing_id == null)
-                throw new DataMisalignedException("Hearing Id must be set");
+                return Guid.Empty;
 
             return (Guid)conference.Hearing_id;
         }
@@ -94,14 +93,13 @@ namespace VideoWeb.AcceptanceTests.Hooks
         {
             context.Request = context.Delete(new BookingsApiUriFactory().HearingsEndpoints.RemoveHearing(hearingId));
             context.Response = context.BookingsApiClient().Execute(context.Request);
-            context.Response.IsSuccessful.Should().BeTrue($"Hearing {hearingId} has been deleted");
+            context.Response.IsSuccessful.Should().BeTrue($"Hearing {hearingId} has been deleted. Status {context.Response.StatusCode}. {context.Response.Content}");
         }
 
         private static void DeleteTheConference(Guid? conferenceId, TestContext context)
         {
             context.Request = context.Delete(new VideoApiUriFactory().ConferenceEndpoints.RemoveConference(conferenceId));
             context.Response = context.VideoApiClient().Execute(context.Request);
-            context.Response.IsSuccessful.Should().BeTrue($"Conference {conferenceId} has been deleted");
         }
     }
 }

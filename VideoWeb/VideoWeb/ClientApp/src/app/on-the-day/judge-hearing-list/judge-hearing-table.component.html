@@ -78,9 +78,9 @@
           <!-- Conference Status -->
           <td class="govuk-table__cell">
             <div *ngIf="!hearing.isClosed() && hearing.isReadyToStart()">
-              <input type="button" id="start-hearing-btn-{{ hearing.id }}"
-                class="govuk-button govuk-!-margin-top-3 govuk-!-margin-bottom-3" role="button" value="Select"
-                (click)="signIntoConference(hearing)" alt="Sign into the conference" />
+              <button id="start-hearing-btn-{{ hearing.id }}"
+                class="govuk-button govuk-!-margin-top-3 govuk-!-margin-bottom-3" data-module="govuk-button"
+                (click)="signIntoConference(hearing)" alt="Sign into the conference">Select</button>
             </div>
             <div *ngIf="!hearing.isClosed() && !hearing.isReadyToStart()">
               Not ready to start

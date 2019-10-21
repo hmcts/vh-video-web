@@ -35,13 +35,17 @@
       <h3 class="govuk-heading-m govuk-!-margin-bottom-7">Helpline: {{contact.phone}}</h3>
     </div>
 
-    <input *ngIf="!userPrompted" type="button" id="switch-on-btn" class="govuk-button govuk-!-margin-bottom-9"
-      role="button" value="Switch on" (click)="requestMedia()" alt="Request camera and microphone" />
+    <button *ngIf="!userPrompted" id="switch-on-btn" class="govuk-button govuk-!-margin-bottom-9"
+            data-module="govuk-button" (click)="requestMedia()" alt="Request camera and microphone">
+            Switch on
+    </button>
 
-    <input *ngIf="userPrompted && mediaAccepted" type="button" id="watch-video-btn"
-      class="govuk-button govuk-!-margin-bottom-9" role="button" value="Watch video" (click)="goVideoTest()"
-      alt="Request camera and microphone" />
+    <button *ngIf="userPrompted && mediaAccepted" id="watch-video-btn"
+            class="govuk-button govuk-!-margin-bottom-9" data-module="govuk-button" (click)="goVideoTest()"
+            alt="Request camera and microphone">
+            Watch video
+    </button>
 
-    <app-contact-us-folding></app-contact-us-folding>
-  </div>
+      <app-contact-us-folding></app-contact-us-folding>
+</div>
 </div>

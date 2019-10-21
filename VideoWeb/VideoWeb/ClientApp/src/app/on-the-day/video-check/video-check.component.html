@@ -40,11 +40,15 @@
         </fieldset>
       </div>
       <div class="govuk-!-margin-top-6">
-        <input type="button" id="continue-btn" class="govuk-button govuk-!-margin-right-1" role="button"
-          value="Continue" (click)="onSubmit()" alt="video Check" />
+        <button id="continue-btn" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button"
+                (click)="onSubmit()" alt="video Check">
+          Continue
+        </button>
 
-        <input type="button" id="check-equipment-btn" class="govuk-button govuk-button--secondary" role="button"
-          value="Check my equipment again" (click)="checkEquipmentAgain()" alt="video Check" />
+        <button id="check-equipment-btn" class="govuk-button govuk-button--secondary" data-module="govuk-button"
+                (click)="checkEquipmentAgain()" alt="video Check">
+          Check my equipment again
+        </button>
       </div>
     </form>
 

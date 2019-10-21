@@ -12,7 +12,7 @@
         public void ProgressToNextPage()
         {
             _commonSteps.WhenTheUserSelectsTheRadiobutton("Yes");
-            _commonSteps.WhentheUserClicksTheButton("Continue");
+            _commonSteps.WhenTheUserClicksTheButton("Continue");
         }
     }
 }
