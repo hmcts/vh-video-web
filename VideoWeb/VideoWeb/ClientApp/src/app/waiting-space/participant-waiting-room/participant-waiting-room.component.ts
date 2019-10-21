@@ -277,12 +277,22 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       this.connect('0000', null);
       // self.outgoingStream = stream;
       if (stream) {
+        this.selfViewOpen = true;
         const selfvideo = document.getElementById('outgoingFeedVideo') as any;
-        if (typeof (MediaStream) !== 'undefined' && stream instanceof MediaStream) {
-          selfvideo.srcObject = stream;
-        } else {
-          selfvideo.src = stream;
+
+        if (selfvideo) {
+          console.log('##############  selfVideo is not null');
+          if (typeof (MediaStream) !== 'undefined' && stream instanceof MediaStream) {
+            selfvideo.srcObject = stream;
+          } else {
+            selfvideo.src = stream;
+          }
         }
+        else {
+          console.log('##############  selfVideo is null ###########');
+        }
+
+        
       }
     };
 
