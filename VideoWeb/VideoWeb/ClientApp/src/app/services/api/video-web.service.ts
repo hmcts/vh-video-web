@@ -4,8 +4,7 @@ import {
   TaskResponse, AddMediaEventRequest, TestCallScoreResponse, TokenResponse,
   AddSelfTestFailureEventRequest,
   UpdateParticipantStatusEventRequest,
-  SelfTestPexipResponse,
-  UpdateSelfTestScoreRequest
+  SelfTestPexipResponse
 } from '../clients/api-client';
 import { Observable } from 'rxjs';
 
@@ -76,10 +75,5 @@ export class VideoWebService {
 
   getPexipConfig(): Observable<SelfTestPexipResponse> {
     return this.apiClient.getPexipConfig();
-  }
-
-  updateTestResultScoreForParticipant(conferenceId: string, participantId: string,
-    updateSelfTestScoreRequest: UpdateSelfTestScoreRequest): Observable<void> {
-    return this.apiClient.updateSelfTestScore(conferenceId, participantId, updateSelfTestScoreRequest);
   }
 }

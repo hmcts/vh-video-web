@@ -100,30 +100,5 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
-
-        /// <summary>
-        /// Updates the test result score for a participant
-        /// </summary>
-        /// <param name="conferenceId">The conference id</param>
-        /// <param name="participantId">The participant id</param>
-        /// <param name="updateSelfTestScoreRequest">The self test score</param>
-        /// <returns></returns>
-        [HttpPost("{conferenceId}/participants/{participantId}/updatescore", Name = "UpdateSelfTestScore")]
-        [SwaggerOperation(OperationId = "UpdateSelfTestScore")]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> UpdateSelfTestScore(Guid conferenceId,
-            Guid participantId, Services.Video.UpdateSelfTestScoreRequest updateSelfTestScoreRequest)
-        {
-            try
-            {
-                await _videoApiClient.UpdateSelfTestScoreAsync(conferenceId, participantId, updateSelfTestScoreRequest);
-                return NoContent();
-            }
-            catch (VideoApiException e)
-            {
-                return StatusCode(e.StatusCode, e.Response);
-            }
-        }
     }
 }

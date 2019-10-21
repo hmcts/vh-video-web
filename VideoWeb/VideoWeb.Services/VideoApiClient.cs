@@ -318,31 +318,6 @@ namespace VideoWeb.Services.Video
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<TestCallScoreResponse> GetIndependentTestCallResultAsync(System.Guid? participantId, System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Updates the test result score for a participant</summary>
-        /// <param name="conferenceId">The conference id</param>
-        /// <param name="participantId">The participant id</param>
-        /// <param name="updateSelfTestScoreRequest">The self test score</param>
-        /// <returns>Success</returns>
-        /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task UpdateSelfTestScoreAsync(System.Guid conferenceId, System.Guid participantId, UpdateSelfTestScoreRequest updateSelfTestScoreRequest);
-    
-        /// <summary>Updates the test result score for a participant</summary>
-        /// <param name="conferenceId">The conference id</param>
-        /// <param name="participantId">The participant id</param>
-        /// <param name="updateSelfTestScoreRequest">The self test score</param>
-        /// <returns>Success</returns>
-        /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        void UpdateSelfTestScore(System.Guid conferenceId, System.Guid participantId, UpdateSelfTestScoreRequest updateSelfTestScoreRequest);
-    
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Updates the test result score for a participant</summary>
-        /// <param name="conferenceId">The conference id</param>
-        /// <param name="participantId">The participant id</param>
-        /// <param name="updateSelfTestScoreRequest">The self test score</param>
-        /// <returns>Success</returns>
-        /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task UpdateSelfTestScoreAsync(System.Guid conferenceId, System.Guid participantId, UpdateSelfTestScoreRequest updateSelfTestScoreRequest, System.Threading.CancellationToken cancellationToken);
-    
         /// <summary>Get the pexip service configuration.</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
@@ -1993,111 +1968,6 @@ namespace VideoWeb.Services.Video
             }
         }
     
-        /// <summary>Updates the test result score for a participant</summary>
-        /// <param name="conferenceId">The conference id</param>
-        /// <param name="participantId">The participant id</param>
-        /// <param name="updateSelfTestScoreRequest">The self test score</param>
-        /// <returns>Success</returns>
-        /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task UpdateSelfTestScoreAsync(System.Guid conferenceId, System.Guid participantId, UpdateSelfTestScoreRequest updateSelfTestScoreRequest)
-        {
-            return UpdateSelfTestScoreAsync(conferenceId, participantId, updateSelfTestScoreRequest, System.Threading.CancellationToken.None);
-        }
-    
-        /// <summary>Updates the test result score for a participant</summary>
-        /// <param name="conferenceId">The conference id</param>
-        /// <param name="participantId">The participant id</param>
-        /// <param name="updateSelfTestScoreRequest">The self test score</param>
-        /// <returns>Success</returns>
-        /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public void UpdateSelfTestScore(System.Guid conferenceId, System.Guid participantId, UpdateSelfTestScoreRequest updateSelfTestScoreRequest)
-        {
-            System.Threading.Tasks.Task.Run(async () => await UpdateSelfTestScoreAsync(conferenceId, participantId, updateSelfTestScoreRequest, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
-        }
-    
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Updates the test result score for a participant</summary>
-        /// <param name="conferenceId">The conference id</param>
-        /// <param name="participantId">The participant id</param>
-        /// <param name="updateSelfTestScoreRequest">The self test score</param>
-        /// <returns>Success</returns>
-        /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task UpdateSelfTestScoreAsync(System.Guid conferenceId, System.Guid participantId, UpdateSelfTestScoreRequest updateSelfTestScoreRequest, System.Threading.CancellationToken cancellationToken)
-        {
-            if (conferenceId == null)
-                throw new System.ArgumentNullException("conferenceId");
-    
-            if (participantId == null)
-                throw new System.ArgumentNullException("participantId");
-    
-            var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/{conferenceId}/participants/{participantId}/updatescore");
-            urlBuilder_.Replace("{conferenceId}", System.Uri.EscapeDataString(ConvertToString(conferenceId, System.Globalization.CultureInfo.InvariantCulture)));
-            urlBuilder_.Replace("{participantId}", System.Uri.EscapeDataString(ConvertToString(participantId, System.Globalization.CultureInfo.InvariantCulture)));
-    
-            var client_ = _httpClient;
-            try
-            {
-                using (var request_ = new System.Net.Http.HttpRequestMessage())
-                {
-                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(updateSelfTestScoreRequest, _settings.Value));
-                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
-                    request_.Content = content_;
-                    request_.Method = new System.Net.Http.HttpMethod("POST");
-    
-                    PrepareRequest(client_, request_, urlBuilder_);
-                    var url_ = urlBuilder_.ToString();
-                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
-                    PrepareRequest(client_, request_, url_);
-    
-                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-                    try
-                    {
-                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-                        if (response_.Content != null && response_.Content.Headers != null)
-                        {
-                            foreach (var item_ in response_.Content.Headers)
-                                headers_[item_.Key] = item_.Value;
-                        }
-    
-                        ProcessResponse(client_, response_);
-    
-                        var status_ = ((int)response_.StatusCode).ToString();
-                        if (status_ == "204") 
-                        {
-                            return;
-                        }
-                        else
-                        if (status_ == "400") 
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
-                            throw new VideoApiException<ProblemDetails>("Bad Request", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-                        if (status_ == "401") 
-                        {
-                            string responseText_ = ( response_.Content == null ) ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new VideoApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
-                        }
-                        else
-                        if (status_ != "200" && status_ != "204")
-                        {
-                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new VideoApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
-                        }
-                    }
-                    finally
-                    {
-                        if (response_ != null)
-                            response_.Dispose();
-                    }
-                }
-            }
-            finally
-            {
-            }
-        }
-    
         /// <summary>Get the pexip service configuration.</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
@@ -3145,20 +3015,6 @@ namespace VideoWeb.Services.Video
         /// <summary>Representee</summary>
         [Newtonsoft.Json.JsonProperty("representee", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Representee { get; set; }
-    
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.23.0 (Newtonsoft.Json v11.0.0.0)")]
-    public partial class UpdateSelfTestScoreRequest 
-    {
-        [Newtonsoft.Json.JsonProperty("score", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public TestScore? Score { get; set; }
-    
-        /// <summary>If the participants score constitutes a pass</summary>
-        [Newtonsoft.Json.JsonProperty("passed", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool? Passed { get; set; }
     
     
     }

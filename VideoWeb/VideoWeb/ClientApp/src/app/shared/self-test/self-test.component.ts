@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, OnDestroy, HostListener
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
   ConferenceResponse, ParticipantResponse, TokenResponse, TestCallScoreResponse, TestScore,
-  AddSelfTestFailureEventRequest, SelfTestFailureReason, SelfTestPexipResponse, UpdateSelfTestScoreRequest
+  AddSelfTestFailureEventRequest, SelfTestFailureReason, SelfTestPexipResponse
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -178,7 +178,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
   async call() {
     this.didTestComplete = false;
-    // const pexipNode = this.conference.pexip_self_test_node_uri;
     const conferenceAlias = 'testcall2';
     const tokenOptions = btoa(`${this.token.expires_on};${this.selfTestParticipantId};${this.token.token}`);
     this.pexipAPI.makeCall(this.selfTestPexipNode, `${conferenceAlias};${tokenOptions}`, this.selfTestParticipantId, this.maxBandwidth);
@@ -207,11 +206,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     try {
       if (this.conference) {
         this.testCallResult = await this.videoWebService.getTestCallScore(this.conference.id, this.selfTestParticipantId).toPromise();
-        const testScore = new UpdateSelfTestScoreRequest();
-        testScore.passed = this.testCallResult.passed;
-        testScore.score = this.testCallResult.score;
-        const score = await this.videoWebService.updateTestResultScoreForParticipant(this.conference.id,
-          this.selfTestParticipantId, testScore).toPromise();
       } else {
         this.testCallResult = await this.videoWebService.getIndependentTestCallScore(this.selfTestParticipantId).toPromise();
       }
