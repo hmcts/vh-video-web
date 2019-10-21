@@ -4,7 +4,7 @@ namespace Testing.Common.Helpers
 {
     public class VideoApiUriFactory
     {
-        public CallbackEndpoints CallbackEndpoints { get; }
+        public VideoEventsEndpoints VideoEventsEndpoints { get; }
         public ParticipantsEndpoints ParticipantsEndpoints { get; }
         public ConferenceEndpoints ConferenceEndpoints { get; }
         public VideoApiHealthCheckEndpoints HealthCheckEndpoints { get; set; }
@@ -13,15 +13,15 @@ namespace Testing.Common.Helpers
         {
             ParticipantsEndpoints = new ParticipantsEndpoints();
             ConferenceEndpoints = new ConferenceEndpoints();
-            CallbackEndpoints = new CallbackEndpoints();
+            VideoEventsEndpoints = new VideoEventsEndpoints();
             HealthCheckEndpoints = new VideoApiHealthCheckEndpoints();
         }
     }
 
-    public class CallbackEndpoints
+    public class VideoEventsEndpoints
     {
-        private static string ApiRoot => "callback";
-        public string Event => $"{ApiRoot}/conference";
+        private static string ApiRoot => "events";
+        public string Event => $"{ApiRoot}";
     }
 
     public class ParticipantsEndpoints
