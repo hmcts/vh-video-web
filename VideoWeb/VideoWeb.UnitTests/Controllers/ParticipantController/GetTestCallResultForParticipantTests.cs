@@ -158,21 +158,5 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
 
-        [Test]
-        public async Task should_update_test_score_to_database()
-        {
-            var participantId = Guid.NewGuid();
-
-            var testCallResponse = Builder<TestCallScoreResponse>.CreateNew().Build();
-            _videoApiClientMock
-                .Setup(x => x.GetIndependentTestCallResultAsync(participantId))
-                .Returns(Task.FromResult(testCallResponse));
-
-            var testResult = new UpdateSelfTestScoreRequest() { Passed = testCallResponse.Passed, Score = testCallResponse.Score };
-
-            var response = await _controller.UpdateSelfTestScore(Guid.NewGuid(), Guid.NewGuid(), testResult);
-            var typedResult = (NoContentResult)response;
-            typedResult.Should().NotBeNull();
-        }
     }
 }
