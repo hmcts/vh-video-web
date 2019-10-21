@@ -75,7 +75,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     this.loadingData = true;
     this.showVideo = false;
     this.showConsultationControls = false;
-    this.selfViewOpen = false;
+    this.selfViewOpen = true;
   }
 
   ngOnInit() {
