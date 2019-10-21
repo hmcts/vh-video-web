@@ -6,25 +6,14 @@ namespace Testing.Common.Helpers
     {
         public VideoWebParticipantsEndpoints ParticipantsEndpoints { get; }
         public VideoWebCallbackEndpoints CallbackEndpoints { get; }
-        public VideoWebConferenceEndpoints ConferenceEndpoints { get; }
         public VideoWebMediaEventEndpoints MediaEventEndpoints { get; }
 
         public VideoWebUriFactory()
         {
             ParticipantsEndpoints = new VideoWebParticipantsEndpoints();
             CallbackEndpoints = new VideoWebCallbackEndpoints();
-            ConferenceEndpoints = new VideoWebConferenceEndpoints();
             MediaEventEndpoints = new VideoWebMediaEventEndpoints();
         }
-    }
-
-    public class VideoWebConferenceEndpoints
-    {
-        private static string ApiRoot => "conferences";
-
-        public string GetConferencesForVhOfficer = $"{ApiRoot}/vhofficer";
-
-        public string GetConferenceById(Guid conferenceId) => $"/conferences/{conferenceId}";
     }
 
     public class VideoWebMediaEventEndpoints

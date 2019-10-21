@@ -13,7 +13,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By SuccessMessage => CommonLocators.ElementContainingText(SuccessMessageText);
         public By UnsuccessfulTitle => CommonLocators.ElementContainingText(UnsuccessfulHeadingText);
         public By UnsuccessfulMessage => CommonLocators.ElementContainingText(UnsuccessfulMessageText);
-        public By ContinueButton => CommonLocators.ButtonWithLabel("Continue");
+        public By ContinueButton => CommonLocators.ButtonWithInnertext("Continue");
 
         private const string SwitchOnTitleText = "Use your camera and microphone";
         private const string SuccessHeadingText = "Your camera and microphone are switched on";

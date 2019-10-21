@@ -51,16 +51,13 @@
     </fieldset>
   </div>
   <div class="govuk-body govuk-!-margin-top-3">
-    <input
-      type="button"
-      id="nextButton"
-      class="govuk-button"
-      role="button"
-      value="Continue"
-      style="margin-right:25px;"
-      (click)="onSubmit()"
-      alt="Declaration"
-    />
+    <button id="nextButton"
+            class="govuk-button"
+            data-module="govuk-button"
+            style="margin-right:25px;"
+            (click)="onSubmit()"
+            alt="Declaration">Continue
+      </button>
   </div>
   <app-contact-us-folding></app-contact-us-folding>
 </form>
