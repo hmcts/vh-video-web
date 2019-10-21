@@ -287,12 +287,9 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
           } else {
             selfvideo.src = stream;
           }
-        }
-        else {
+        } else {
           console.log('##############  selfVideo is null ###########');
         }
-
-        
       }
     };
 
