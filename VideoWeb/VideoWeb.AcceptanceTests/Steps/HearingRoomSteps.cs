@@ -14,7 +14,7 @@ using VideoWeb.AcceptanceTests.Users;
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
-    public sealed class HearingRoomSteps
+    public sealed class HearingRoomSteps : ISteps
     {
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _tc;
@@ -148,6 +148,11 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 new VideoIsPlaying(_browsers[_tc.CurrentUser.Key]).Feed(_page.ParticipantIncomingVideo);
             }
+        }
+
+        public void ProgressToNextPage()
+        {
+            WhenTheUserClicksClose();
         }
     }
 }

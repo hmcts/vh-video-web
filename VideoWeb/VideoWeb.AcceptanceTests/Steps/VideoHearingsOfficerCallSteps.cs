@@ -18,18 +18,16 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _tc;
         private readonly CommonSteps _commonSteps;
-        private readonly WaitingRoomPage _page;
         private readonly VhoHearingListPage _hearingListPage;
         private readonly AdminPanelPage _adminPage;
         private const int SecondsWaitToCallAndAnswer = 3;
 
         public VideoHearingsOfficerCallSteps(Dictionary<string, UserBrowser> browsers, TestContext tc, CommonSteps commonSteps,
-            WaitingRoomPage page, VhoHearingListPage hearingListPage, AdminPanelPage adminPage)
+            VhoHearingListPage hearingListPage, AdminPanelPage adminPage)
         {
             _browsers = browsers;
             _tc = tc;
             _commonSteps = commonSteps;
-            _page = page;
             _hearingListPage = hearingListPage;
             _adminPage = adminPage;
         }
