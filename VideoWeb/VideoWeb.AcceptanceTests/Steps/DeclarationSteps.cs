@@ -41,7 +41,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ProgressToNextPage()
         {
             WhenTheUserGivesTheirConsent();
-            _commonSteps.WhentheUserClicksTheButton("Continue");
+            _commonSteps.WhenTheUserClicksTheButton("Continue");
         }
     }
 }

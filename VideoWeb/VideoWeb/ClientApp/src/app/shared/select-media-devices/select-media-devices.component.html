@@ -66,11 +66,15 @@
 
         <div class="govuk-grid-column-full">
           <div ng class="govuk-!-margin-top-6">
-            <input type="button" id="change-device-btn" class="govuk-button govuk-!-margin-right-9" role="button"
-              value="Change" (click)="onSubmit()" alt="Continue" />
+            <button id="change-device-btn" class="govuk-button govuk-!-margin-right-9" data-module="govuk-button"
+                    (click)="onSubmit()" alt="Continue">
+              Change
+            </button>
 
-            <input type="button" id="cancel-btn" class="govuk-button govuk-button--secondary" role="button" value="Cancel"
-              (click)="onCancel()" alt="Cancel camera and microphone change" />
+            <button id="cancel-btn" class="govuk-button govuk-button--secondary" data-module="govuk-button"
+                    (click)="onCancel()" alt="Cancel camera and microphone change">
+              Cancel
+            </button>
           </div>
         </div>
       </div>

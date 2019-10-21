@@ -5,6 +5,7 @@
         Clerk,
         ClerkSelftest,
         Participant,
-        Vho
+        Vho,
+        RepSelfTest
     }
 }
