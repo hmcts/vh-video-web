@@ -1,6 +1,6 @@
 import {
     ConferenceForUserResponse, ConferenceResponse, ConferenceStatus,
-    ParticipantResponse, ParticipantStatus, UserRole, ParticipantForUserResponse, TaskResponse, TaskType
+    ParticipantResponse, ParticipantStatus, UserRole, ParticipantForUserResponse, TaskResponse, TaskType, SelfTestPexipResponse
 } from 'src/app/services/clients/api-client';
 
 export class ConferenceTestData {
@@ -207,5 +207,12 @@ export class ConferenceTestData {
         const tasks: TaskResponse[] = [];
         tasks.push(task);
         return tasks;
-    }
+  }
+
+  getPexipConfig(): SelfTestPexipResponse {
+    const pexipConfig = new SelfTestPexipResponse({
+      pexip_self_test_node: 'sip.dev.self-test.hearings.hmcts.net'
+    });
+    return pexipConfig;
+  }
 }
