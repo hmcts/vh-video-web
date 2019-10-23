@@ -44,8 +44,11 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
   }
 
   async ngOnInit() {
+    this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
     this.retrieveProfile();
-    this.getConference();
+    if (this.conferenceId) {
+      this.getConference();
+    }
   }
 
   async retrieveProfile(): Promise<void> {
@@ -74,9 +77,17 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
 
   goVideoTest() {
     if (this.isJudge) {
-      this.router.navigate([PageUrls.JudgeSelfTestVideo, this.conferenceId]);
+      if (this.conferenceId) {
+        this.router.navigate([PageUrls.JudgeSelfTestVideo, this.conferenceId]);
+      } else {
+        this.router.navigate([PageUrls.IndependentSelfTestVideo]);
+      }
     } else {
-      this.router.navigate([PageUrls.ParticipantSelfTestVideo, this.conferenceId]);
+      if (this.conferenceId) {
+        this.router.navigate([PageUrls.ParticipantSelfTestVideo, this.conferenceId]);
+      } else {
+        this.router.navigate([PageUrls.IndependentSelfTestVideo]);
+      }
     }
   }
 

@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, OnDestroy, HostListener
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
   ConferenceResponse, ParticipantResponse, TokenResponse, TestCallScoreResponse, TestScore,
-  AddSelfTestFailureEventRequest, SelfTestFailureReason
+  AddSelfTestFailureEventRequest, SelfTestFailureReason, SelfTestPexipResponse
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -10,6 +10,7 @@ import { UserMediaStreamService } from 'src/app/services/user-media-stream.servi
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
 import { Subscription } from 'rxjs';
+import { Guid } from 'guid-typescript';
 declare var PexRTC: any;
 declare var AdapterJS: any;
 
@@ -22,6 +23,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
   @Input() conference: ConferenceResponse;
   @Input() participant: ParticipantResponse;
+  @Input() selfTestPexipConfig: SelfTestPexipResponse;
 
   @Output() testStarted = new EventEmitter();
   @Output() testCompleted = new EventEmitter<TestCallScoreResponse>();
@@ -42,6 +44,9 @@ export class SelfTestComponent implements OnInit, OnDestroy {
   testCallResult: TestCallScoreResponse = null;
   scoreSent: boolean;
 
+  selfTestParticipantId: string;
+  selfTestPexipNode: string;
+
   private maxBandwidth = 768;
   subscription: Subscription;
   edgeAdapter: any;
@@ -58,11 +63,29 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.logger.debug('loading self test');
+
+    this.initialiseData();
+
     this.displayFeed = false;
     this.displayDeviceChangeModal = false;
     this.scoreSent = false;
     this.setupSubscribers();
     this.setupTestAndCall();
+  }
+
+  initialiseData(): void {
+    if (this.participant) {
+      this.selfTestParticipantId = this.participant.id;
+      this.logger.debug(this.selfTestParticipantId);
+    } else {
+      this.selfTestParticipantId = Guid.create().toString();
+      this.logger.debug(this.selfTestParticipantId);
+    }
+    if (this.conference) {
+      this.selfTestPexipNode = this.conference.pexip_self_test_node_uri;
+    } else {
+      this.selfTestPexipNode = this.selfTestPexipConfig.pexip_self_test_node;
+    }
   }
 
   get streamsActive() {
@@ -72,7 +95,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
   setupTestAndCall(): void {
     this.logger.debug('setting up pexip client and call');
     this.setupPexipClient();
-    this.subscription = this.videoWebService.getToken(this.participant.id).subscribe((token: TokenResponse) => {
+    this.subscription = this.videoWebService.getToken(this.selfTestParticipantId).subscribe((token: TokenResponse) => {
       this.logger.debug('retrieved token for self test');
       this.token = token;
       this.call();
@@ -165,10 +188,9 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
   async call() {
     this.didTestComplete = false;
-    const pexipNode = this.conference.pexip_self_test_node_uri;
     const conferenceAlias = 'testcall2';
-    const tokenOptions = btoa(`${this.token.expires_on};${this.participant.id};${this.token.token}`);
-    this.pexipAPI.makeCall(pexipNode, `${conferenceAlias};${tokenOptions}`, this.participant.id, this.maxBandwidth);
+    const tokenOptions = btoa(`${this.token.expires_on};${this.selfTestParticipantId};${this.token.token}`);
+    this.pexipAPI.makeCall(this.selfTestPexipNode, `${conferenceAlias};${tokenOptions}`, this.selfTestParticipantId, this.maxBandwidth);
   }
 
   replayVideo() {
@@ -192,7 +214,12 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     this.logger.debug('retrieving self test score');
     this.didTestComplete = true;
     try {
-      this.testCallResult = await this.videoWebService.getTestCallScore(this.conference.id, this.participant.id).toPromise();
+      if (this.conference) {
+        this.testCallResult = await this.videoWebService.getTestCallScore(this.conference.id, this.selfTestParticipantId).toPromise();
+      } else {
+        this.testCallResult = await this.videoWebService.getIndependentTestCallScore(this.selfTestParticipantId).toPromise();
+      }
+
       this.logger.info(`test call score: ${this.testCallResult.score}`);
       if (this.testCallResult.score === TestScore.Bad) {
         await this.raiseFailedSelfTest(SelfTestFailureReason.BadScore);
@@ -215,14 +242,16 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
     this.disconnect();
 
-    let reason: SelfTestFailureReason;
-    if (this.testCallResult && this.testCallResult.score === TestScore.Bad) {
-      reason = SelfTestFailureReason.BadScore;
-    } else if (!this.testCallResult) {
-      reason = SelfTestFailureReason.IncompleteTest;
-    }
+    if (this.conference) {
+      let reason: SelfTestFailureReason;
+      if (this.testCallResult && this.testCallResult.score === TestScore.Bad) {
+        reason = SelfTestFailureReason.BadScore;
+      } else if (!this.testCallResult) {
+        reason = SelfTestFailureReason.IncompleteTest;
+      }
 
-    await this.raiseFailedSelfTest(reason);
+      await this.raiseFailedSelfTest(reason);
+    }
   }
 
   async raiseFailedSelfTest(reason: SelfTestFailureReason) {
@@ -231,15 +260,18 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     }
 
     const request = new AddSelfTestFailureEventRequest({
-      participant_id: this.participant.id,
+      participant_id: this.selfTestParticipantId,
       self_test_failure_reason: reason
     });
-    try {
-      await this.videoWebService.raiseSelfTestFailureEvent(this.conference.id, request).toPromise();
-      this.logger.info(`Notified failed test test because of ${reason}`);
-      this.scoreSent = true;
-    } catch (err) {
-      this.logger.error('There was a problem raising a failed self test event', err);
+    if (this.conference) {
+      try {
+        await this.videoWebService.raiseSelfTestFailureEvent(this.conference.id, request).toPromise();
+        this.logger.info(`Notified failed test test because of ${reason}`);
+        this.scoreSent = true;
+      } catch (err) {
+        this.logger.error('There was a problem raising a failed self test event', err);
+      }
     }
+
   }
 }

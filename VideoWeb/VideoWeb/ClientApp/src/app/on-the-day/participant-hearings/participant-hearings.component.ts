@@ -1,8 +1,11 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { ConferenceForUserResponse } from 'src/app/services/clients/api-client';
+import { ConferenceForUserResponse, UserProfileResponse, UserRole } from 'src/app/services/clients/api-client';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { Subscription } from 'rxjs';
+import { ProfileService } from '../../services/api/profile.service';
+import { PageUrls } from '../../shared/page-url.constants';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-participant-hearings',
@@ -15,15 +18,24 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
   loadingData: boolean;
   interval: any;
   errorCount: number;
+  profile: UserProfileResponse;
+  isRepresentative: boolean;
 
   constructor(
     private videoWebService: VideoWebService,
-    private errorService: ErrorService
+    private errorService: ErrorService,
+    private router: Router,
+    private profileService: ProfileService
   ) {
     this.loadingData = true;
+    this.isRepresentative = false;
   }
 
   ngOnInit() {
+    this.profileService.getUserProfile().then((profile) => {
+      this.profile = profile;
+      this.isRepresentative = profile.role === UserRole.Representative;
+    });
     this.errorCount = 0;
     this.retrieveHearingsForUser();
     this.interval = setInterval(() => {
@@ -56,5 +68,9 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
 
   hasHearings() {
     return this.conferences !== undefined && this.conferences.length > 0;
+  }
+
+  goToEquipmentCheck() {
+    this.router.navigate([PageUrls.EquipmentCheck]);
   }
 }
