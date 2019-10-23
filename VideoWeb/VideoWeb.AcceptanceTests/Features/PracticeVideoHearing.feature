@@ -24,8 +24,7 @@ Scenario: Representative video hearing practice
 	Then the incoming and self video should be playing video
 	And contact us details are available
 	When the video has ended
-	Then the test score should be produced
-	When the user clicks the Check equipment again button
+	And the user clicks the Check equipment again button
 	Then the incoming and self video should be playing video
 	When the user clicks the Change camera or microphone link
 	Then the choose your camera and microphone popup should appear
@@ -38,8 +37,7 @@ Scenario: Clerk video hearing practice
 	Then the incoming and self video should be playing video
 	And contact us details are available
 	When the video has ended
-	Then the test score should be produced
-	When the user clicks the Check equipment again button
+	And the user clicks the Check equipment again button
 	Then the incoming and self video should be playing video
 	When the user clicks the Change camera or microphone link
 	Then the choose your camera and microphone popup should appear
