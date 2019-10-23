@@ -45,7 +45,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By ClosePrivateConsultationButton => By.Id("close-pc-btn");
         public By CallRejectedMessage => CommonLocators.ElementContainingText("Your call request has not been accepted");
         public By CallRejectedCloseButton => By.Id("close-pc-rejection-btn");
-        public By AcceptPrivateCall() => By.XPath("//input[@value='Accept call']");
-        public By RejectPrivateCall() => By.XPath("//input[@value='Reject call']");
+        public By AcceptPrivateCall() => CommonLocators.ButtonWithInnertext("Accept call");
+        public By RejectPrivateCall() => CommonLocators.ButtonWithInnertext("Reject call");
     }
 }

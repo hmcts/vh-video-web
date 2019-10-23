@@ -18,6 +18,7 @@ import { SignonAComputerComponent } from '../shared/signon-a-computer/signon-a-c
 import { IntroductionComponent } from './introduction/introduction.component';
 import { ParticipantSelfTestComponent } from './participant-self-test/participant-self-test.component';
 import { JudgeSelfTestComponent } from './judge-self-test/judge-self-test.component';
+import { IndependentSelfTestComponent } from './independent-self-test/independent-self-test.component';
 
 @NgModule({
   imports: [
@@ -42,6 +43,7 @@ import { JudgeSelfTestComponent } from './judge-self-test/judge-self-test.compon
     IntroductionComponent,
     ParticipantSelfTestComponent,
     JudgeSelfTestComponent,
+    IndependentSelfTestComponent
   ],
   exports: [
     DeclarationComponent
