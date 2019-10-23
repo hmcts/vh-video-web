@@ -129,11 +129,9 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     this.updatePexipAudioVideoSource();
     this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
       self.logger.info('running pexip test call setup');
-      // self.outgoingStream = stream;
       console.log(stream);
       self.outgoingStream = stream;
       console.log(self.outgoingStream);
-      //self.outgoingStream = this.edgeAdapter.attachMediaStream(self.outgoingStream, stream);
       this.connect('0000', null);
     };
 
@@ -143,7 +141,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
       self.incomingStream = stream;
       console.log(self.outgoingStream);
       self.incomingStream = stream;
-      //self.incomingStream = this.edgeAdapter.attachMediaStream(self.incomingStream, stream);
       self.displayFeed = true;
       self.testStarted.emit();
     };
