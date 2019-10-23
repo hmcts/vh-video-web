@@ -68,7 +68,10 @@ Scenario: Two participants join hearing
 	And Individual01 can see the other participants
 	And Representative01 can see the other participants
 
-@Chrome @Video @HearingTest @Ignore
+# Ignoring test as Saucelabs is not powerful enough to run the test consistently without at least
+# 1 participant being disocnnected by the time the hearing is due to start. On a sufficiently powerful 
+# machine this test should still be able to run.
+@Chrome @Video @HearingTest @Ignore 
 Scenario: Four participants join hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
