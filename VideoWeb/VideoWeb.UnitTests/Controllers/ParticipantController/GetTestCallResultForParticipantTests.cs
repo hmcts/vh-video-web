@@ -127,5 +127,36 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var typedResult = (ObjectResult)result;
             typedResult.Should().NotBeNull();
         }
+
+        [Test]
+        public async Task should_return_ok_when_independent_testcall_result_returned()
+        {
+            var testCallResponse = Builder<TestCallScoreResponse>.CreateNew().Build();
+            var participantId = Guid.NewGuid();
+            _videoApiClientMock
+                .Setup(x => x.GetIndependentTestCallResultAsync(participantId))
+                .Returns(Task.FromResult(testCallResponse));
+
+            var result = await _controller.GetIndependentTestCallResult(participantId);
+            var typedResult = (OkObjectResult)result;
+            typedResult.Should().NotBeNull();
+            typedResult.Value.Should().BeEquivalentTo(testCallResponse);
+        }
+
+        [Test]
+        public async Task should_forward_error_code_on_failure_when_independent_testcall()
+        {
+            var apiException = new VideoApiException<Microsoft.AspNetCore.Mvc.ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
+                "Please provide a valid participant Id", null, default(Microsoft.AspNetCore.Mvc.ProblemDetails), null);
+            var participantId = Guid.NewGuid();
+            _videoApiClientMock
+                .Setup(x => x.GetIndependentTestCallResultAsync(participantId))
+                .ThrowsAsync(apiException);
+
+            var result = await _controller.GetIndependentTestCallResult(participantId);
+            var typedResult = (ObjectResult)result;
+            typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
+        }
+
     }
 }

@@ -4,7 +4,7 @@
       *ngFor="let conference of conferences" (click)="selectConference(conference)">
       <dd class="govuk-summary-list__value govuk-!-padding-left-4">
         <p class="govuk-!-margin-0 govuk-!-padding-0">{{conference.scheduled_date_time | date:'HH:mm' }}</p>
-        <span id="with-hint-hint" class="govuk-hint">
+        <span class="govuk-hint">
           {{ getDuration(conference) }}
         </span>
         <p *ngIf="conference.no_of_pending_tasks === 1" class="pending-alerts">{{ conference.no_of_pending_tasks }}

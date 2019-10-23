@@ -11,7 +11,7 @@ namespace VideoWeb.AcceptanceTests.Builders
     internal class ExecuteEventBuilder
     {
         private const string AlertTimeKey = "alert time";
-        private readonly CallbackEndpoints _videoApiCallbackEndpoints = new VideoApiUriFactory().CallbackEndpoints;
+        private readonly VideoEventsEndpoints _videoApiVideoEventsEndpoints = new VideoApiUriFactory().VideoEventsEndpoints;
         private readonly VideoWebCallbackEndpoints _videoWebCallbackEndpoints = new VideoWebUriFactory().CallbackEndpoints;
         private TestContext _context;
         private ScenarioContext _scenarioContext;
@@ -38,9 +38,8 @@ namespace VideoWeb.AcceptanceTests.Builders
 
         public void SendToVideoApi()
         {
-            _context.SetCustomJwTokenForCallback();
-            _context.Request = _context.Post(_videoApiCallbackEndpoints.Event, _request);
-            _context.Response = _context.VideoApiEventCallbackClient().Execute(_context.Request);
+            _context.Request = _context.Post(_videoApiVideoEventsEndpoints.Event, _request);
+            _context.Response = _context.VideoApiClient().Execute(_context.Request);
             _context.Response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             _context.Response.IsSuccessful.Should().Be(true);
         }
