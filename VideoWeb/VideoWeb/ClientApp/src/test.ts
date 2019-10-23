@@ -7,7 +7,7 @@ import {
   platformBrowserDynamicTesting
 } from '@angular/platform-browser-dynamic/testing';
 
-import 'webrtc-adapter';
+import 'adapterjs';
 
 declare const require: any;
 

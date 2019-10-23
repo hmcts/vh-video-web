@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, OnDestroy, HostListener } from '@angular/core';
-import 'webrtc-adapter';
+import 'adapterjs';
 
 @Component({
   selector: 'app-mic-visualiser',
