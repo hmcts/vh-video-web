@@ -11,7 +11,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
 import { Subscription } from 'rxjs';
 declare var PexRTC: any;
-declare var adapterjs: any;
+declare var AdapterJS: any;
 
 @Component({
   selector: 'app-self-test',
@@ -130,14 +130,20 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
       self.logger.info('running pexip test call setup');
       // self.outgoingStream = stream;
-      self.outgoingStream = this.edgeAdapter.attachMediaStream(self.outgoingStream, stream);
+      console.log(stream);
+      self.outgoingStream = stream;
+      console.log(self.outgoingStream);
+      //self.outgoingStream = this.edgeAdapter.attachMediaStream(self.outgoingStream, stream);
       this.connect('0000', null);
     };
 
     this.pexipAPI.onConnect = function (stream) {
       self.logger.info('successfully connected');
-      // self.incomingStream = stream;
-      self.incomingStream = this.edgeAdapter.attachMediaStream(self.incomingStream, stream);
+      console.log(stream);
+      self.incomingStream = stream;
+      console.log(self.outgoingStream);
+      self.incomingStream = stream;
+      //self.incomingStream = this.edgeAdapter.attachMediaStream(self.incomingStream, stream);
       self.displayFeed = true;
       self.testStarted.emit();
     };

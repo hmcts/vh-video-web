@@ -7,7 +7,7 @@ import {
   platformBrowserDynamicTesting
 } from '@angular/platform-browser-dynamic/testing';
 
-import 'adapterjs';
+import 'AdapterJS';
 
 declare const require: any;
 

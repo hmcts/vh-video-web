@@ -1,5 +1,5 @@
 import { Injectable, } from '@angular/core';
-import 'adapterjs';
+import 'AdapterJS';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { SessionStorage } from './session-storage';
 import { Logger } from './logging/logger-base';

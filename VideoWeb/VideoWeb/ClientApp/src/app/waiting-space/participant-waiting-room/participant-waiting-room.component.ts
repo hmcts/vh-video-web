@@ -18,6 +18,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { Subscription } from 'rxjs';
+import 'AdapterJS';
 declare var PexRTC: any;
 declare var HeartbeatFactory: any;
 declare var adapterjs: any;
@@ -259,7 +260,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     this.logger.debug('Setting up pexip client...');
     const self = this;
     this.pexipAPI = new PexRTC();
-    this.edgeAdapter = new adapterjs();
 
     const preferredCam = await this.userMediaService.getPreferredCamera();
     if (preferredCam) {
@@ -275,10 +275,10 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
       self.logger.info('running pexip setup');
+      self.outgoingStream = stream;
       this.connect('0000', null);
-      // self.outgoingStream = stream;
       // incomingVideo = attachMediaStream(incomingVideo, stream);
-      self.outgoingStream = this.edgeAdapter.attachMediaStream(self.outgoingStream, stream);
+      // self.outgoingStream = this.attachMediaStream(self.outgoingStream, stream);
     };
 
     this.pexipAPI.onConnect = function (stream) {
@@ -286,8 +286,8 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       self.connected = true;
       self.updateShowVideo();
       self.logger.info('successfully connected to call');
-      // self.stream = stream;
-      self.stream = this.edgeAdapter.attachMediaStream(self.stream, stream);
+      self.stream = stream;
+      // self.stream = this.edgeAdapter.attachMediaStream(self.stream, stream);
 
       const baseUrl = self.conference.pexip_node_uri.replace('sip.', '');
       const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${self.conference.id}`;

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, OnDestroy, HostListener } from '@angular/core';
-import 'adapterjs';
+import 'AdapterJS';
 
 @Component({
   selector: 'app-mic-visualiser',

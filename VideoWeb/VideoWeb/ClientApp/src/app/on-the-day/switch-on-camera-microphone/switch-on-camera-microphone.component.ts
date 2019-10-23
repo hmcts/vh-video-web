@@ -4,7 +4,7 @@ import { AdalService } from 'adal-angular4';
 import { AddMediaEventRequest, ConferenceResponse, UserRole } from 'src/app/services/clients/api-client';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
-import 'adapterjs';
+import 'AdapterJS';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VhContactDetails } from 'src/app/shared/contact-information';
