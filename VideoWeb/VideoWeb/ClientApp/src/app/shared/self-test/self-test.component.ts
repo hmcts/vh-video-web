@@ -11,6 +11,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
 import { Subscription } from 'rxjs';
 declare var PexRTC: any;
+declare var adapterjs: any;
 
 @Component({
   selector: 'app-self-test',
@@ -43,6 +44,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
   private maxBandwidth = 768;
   subscription: Subscription;
+  edgeAdapter: any;
 
   constructor(
     private logger: Logger,
@@ -127,13 +129,15 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     this.updatePexipAudioVideoSource();
     this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
       self.logger.info('running pexip test call setup');
-      self.outgoingStream = stream;
+      // self.outgoingStream = stream;
+      self.outgoingStream = this.edgeAdapter.attachMediaStream(self.outgoingStream, stream);
       this.connect('0000', null);
     };
 
     this.pexipAPI.onConnect = function (stream) {
       self.logger.info('successfully connected');
-      self.incomingStream = stream;
+      // self.incomingStream = stream;
+      self.incomingStream = this.edgeAdapter.attachMediaStream(self.incomingStream, stream);
       self.displayFeed = true;
       self.testStarted.emit();
     };
