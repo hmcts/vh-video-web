@@ -277,6 +277,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       // self.outgoingStream = stream;
       if (stream) {
         this.selfViewOpen = true;
+        /*
         const selfvideo = document.getElementById('outgoingFeedVideo') as any;
 
         if (selfvideo) {
@@ -289,6 +290,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         } else {
           console.log('##############  selfVideo is null ###########');
         }
+        */
       }
       this.connect('0000', null);
     };
