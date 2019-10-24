@@ -25,7 +25,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly PracticeVideoHearingPage _practiceVideoHearingPage;
         private readonly CommonSteps _commonSteps;
         private const int VideoFinishedPlayingTimeout = 120;
-        private const int Retries = 10;
+        private const int Retries = 50;
         private const int Delay = 3;
         private const int ExtraTimeoutToLoadVideoFromKinly = 60;
 
