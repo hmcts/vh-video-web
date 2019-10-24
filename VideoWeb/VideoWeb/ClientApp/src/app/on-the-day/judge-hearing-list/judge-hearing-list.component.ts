@@ -87,7 +87,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
   }
 
   goToEquipmentCheck() {
-    this.router.navigate([PageUrls.EquipmentCheck, this.conferences[0].id]);
+    this.router.navigate([PageUrls.EquipmentCheck]);
   }
 
   enableFullScreen(fullScreen: boolean) {

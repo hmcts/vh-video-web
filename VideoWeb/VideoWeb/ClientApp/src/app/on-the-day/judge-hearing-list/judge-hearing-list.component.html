@@ -5,9 +5,9 @@
 <div id="hearing-list" *ngIf="!loadingData && hasHearings()">
   <h1 class="govuk-heading-xl">Video hearings for {{courtName}}</h1>
   <div class="govuk-!-margin-top-4">
-    <input type="button" id="check-equipment-btn" class="govuk-button" role="button" value="Check equipment"
-      (click)="goToEquipmentCheck()" alt="Check equipment" />
-  </div>
+    <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button"
+            (click)="goToEquipmentCheck()" alt="Check equipment">Check equipment</button>
+</div>
   <div>
     <p class="govuk-caption-xl">{{ today | date:'fullDate' }}</p>
   </div>
@@ -16,13 +16,13 @@
 
 <div *ngIf="!loadingData && !hasHearings()">
   <h1 class="govuk-heading-xl">Video hearings for {{courtName}}</h1>
-  <h3 class="govuk-heading-m"> You have no video hearings</h3>
+  <h2 class="govuk-heading-m"> You have no video hearings</h2>
   <p class="govuk-body">If you are expecting to see details of your hearing listed here, please contact us using the
     options below.</p>
 </div>
 
 <div id="contact-team" *ngIf="!loadingData">
-  <h3 class="govuk-heading-m govuk-!-margin-top-8 govuk-!-margin-bottom-1">Do you need help?</h3>
+  <h2 class="govuk-heading-m govuk-!-margin-top-8 govuk-!-margin-bottom-1">Do you need help?</h2>
   <p class="govuk-body">Call the video hearings team on <span class="govuk-!-font-weight-bold">{{contact.phone}}</span>
   </p>
 </div>

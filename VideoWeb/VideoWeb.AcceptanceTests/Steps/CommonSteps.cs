@@ -7,6 +7,7 @@ using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.AcceptanceTests.Users;
 using TestContext = VideoWeb.AcceptanceTests.Contexts.TestContext;
+using Selenium.Axe;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -66,21 +67,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [When(@"the user clicks the (.*) button")]
-        public void WhentheUserClicksTheButton(string label)
+        public void WhenTheUserClicksTheButton(string label)
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(CommonLocators.ButtonWithLabel(label))
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(CommonLocators.ButtonWithInnertext(label))
                 .Displayed.Should().BeTrue();
 
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(CommonLocators.ButtonWithLabel(label)).Click();
-        }
-
-        [When(@"the user clicks the button with innertext (.*)")]
-        public void WhentheUserClicksTheButtonWithInnertext(string innertext)
-        {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(CommonLocators.ButtonWithInnertext(innertext))
-                .Displayed.Should().BeTrue();
-
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(CommonLocators.ButtonWithInnertext(innertext)).Click();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(CommonLocators.ButtonWithInnertext(label)).Click();
         }
 
         [When(@"the user selects the (.*) radiobutton")]
@@ -132,8 +124,22 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the (.*) button is disabled")]
         public void ThenTheButtonIsDisabled(string label)
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(CommonLocators.ButtonWithLabel(label)).GetAttribute("class")
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(CommonLocators.ButtonWithInnertext(label)).GetAttribute("class")
                 .Should().Contain("disabled");
+        }
+
+        [Then(@"the page should be accessible")]
+        public void ThenThePageShouldBeAccessible()
+        {
+            var axeResult = new AxeBuilder(_browsers[_tc.CurrentUser.Key].Driver)
+                .DisableRules( // BUG: Once VIH-5174 bug is fixed, remove these exclusions
+                    "region", // https://dequeuniversity.com/rules/axe/3.3/region?application=axeAPI
+                    "landmark-one-main", // https://dequeuniversity.com/rules/axe/3.3/landmark-one-main?application=axeAPI
+                    "landmark-no-duplicate-banner", // https://dequeuniversity.com/rules/axe/3.3/landmark-no-duplicate-banner?application=axeAPI
+                    "landmark-no-duplicate-contentinfo", // https://dequeuniversity.com/rules/axe/3.3/landmark-no-duplicate-contentinfo?application=axeAPI
+                    "page-has-heading-one") // https://dequeuniversity.com/rules/axe/3.3/page-has-heading-one?application=axeAPI
+                .Analyze();
+            axeResult.Violations.Should().BeEmpty();
         }
     }
 }

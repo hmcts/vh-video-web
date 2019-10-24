@@ -42,8 +42,10 @@
           {{consultationRequestee.initialedName}}
         </p>
         <p class="govuk-!-font-size-19 govuk-body--white">Please wait while the other participant responds</p>
-        <input type="button" id="cancel-pc-request-btn" class="govuk-button govuk-button--warning govuk-!-margin-top-9"
-          role="button" value="Cancel call" (click)="cancelConsultationRequest()" alt="Cancel call" />
+        <button id="cancel-pc-request-btn" class="govuk-button govuk-button--warning govuk-!-margin-top-9"
+                data-module="govuk-button" (click)="cancelConsultationRequest()" alt="Cancel call">
+          Cancel call
+        </button>
       </div>
     </div>
   </div>
@@ -59,12 +61,16 @@
         </p>
       </div>
       <div class="govuk-grid-column-one-half">
-        <input type="button" id="accept-pc-request-btn" class="govuk-button govuk-!-margin-top-9" role="button"
-          value="Accept call" (click)="answerConsultationRequest('Accepted')" alt="Accept call" />
+        <button id="accept-pc-request-btn" class="govuk-button govuk-!-margin-top-9" data-module="govuk-button"
+                (click)="answerConsultationRequest('Accepted')" alt="Accept call">
+          Accept call
+        </button>
       </div>
       <div class="govuk-grid-column-one-half">
-        <input type="button" id="reject-pc-request-btn" class="govuk-button govuk-button--warning govuk-!-margin-top-9"
-          role="button" value="Reject call" (click)="answerConsultationRequest('Rejected')" alt="Reject call" />
+        <button id="reject-pc-request-btn" class="govuk-button govuk-button--warning govuk-!-margin-top-9"
+                data-module="govuk-button" (click)="answerConsultationRequest('Rejected')" alt="Reject call">
+          Reject call
+        </button>
       </div>
     </div>
   </div>
@@ -93,8 +99,10 @@
       </div>
 
       <div class="govuk-grid-column-full">
-        <input type="button" id="close-pc-rejection-btn" class="govuk-button govuk-!-margin-top-3" role="button"
-          value="Close" (click)="closeConsultationRejection()" alt="Close consultation rejection modal" />
+        <button id="close-pc-rejection-btn" class="govuk-button govuk-!-margin-top-3" data-module="govuk-button"
+                (click)="closeConsultationRejection()" alt="Close consultation rejection modal">
+          Close
+        </button>
       </div>
 
     </div>
@@ -113,8 +121,10 @@
         </p>
       </div>
       <div class="govuk-grid-column-full">
-        <input type="button" id="accept-pc-request-btn" class="govuk-button govuk-!-margin-top-9" role="button"
-          value="Accept call" (click)="acceptVhoConsultationRequest()" alt="Accept call" />
+        <button id="accept-pc-request-btn" class="govuk-button govuk-!-margin-top-9" data-module="govuk-button"
+                (click)="acceptVhoConsultationRequest()" alt="Accept call">
+          Accept call
+        </button>
       </div>
     </div>
   </div>

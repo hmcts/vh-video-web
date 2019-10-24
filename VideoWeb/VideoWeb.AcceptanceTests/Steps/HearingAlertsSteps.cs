@@ -44,19 +44,17 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var participantUser = GetUserFromConferenceDetails(UserRole.Individual.ToString());
 
-            var request = new MediaEventBuilder()
-                .ForParticipant(participantUser.Id)
-                .WithReason(SelfTestFailureReason.Camera)
-                .WithScenarioContext(_scenarioContext)
+            var request = new CallbackEventRequestBuilder()
+                .WithConferenceId(_tc.NewConferenceId)
+                .WithParticipantId(participantUser.Id)
+                .WithEventType(EventType.MediaPermissionDenied)
                 .Build();
 
-            _tc.Request = _tc.Post(new VideoWebMediaEventEndpoints().SelfTestFailureEvents(_tc.NewConferenceId),
-                request);
-
-            new ExecuteRequestBuilder()
+            new ExecuteEventBuilder()
                 .WithContext(_tc)
-                .WithExpectedStatusCode(HttpStatusCode.NoContent)
-                .SendToVideoWeb();
+                .WithScenarioContext(_scenarioContext)
+                .WithRequest(request)
+                .SendToVideoApi();
         }
 
         [When(@"the judge has disconnected from the hearing")]
@@ -129,14 +127,28 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"a participant has failed the self-test with (.*)")]
         public void WhenAParticipantHasFailedTheSelfTestWithReason(string reason)
         {
-            var request = new MediaEventBuilder()
-                .ForParticipant(GetUserFromConferenceDetails(UserRole.Individual.ToString()).Id)
-                .WithReason(ParseReason(reason))
+            var participant = GetUserFromConferenceDetails(UserRole.Individual.ToString());
+
+            var request = new CallbackEventRequestBuilder()
+                .WithConferenceId(_tc.NewConferenceId)
+                .WithParticipantId(participant.Id)
+                .WithEventType(EventType.SelfTestFailed)
+                .WithReason(reason)
+                .Build();
+
+            new ExecuteEventBuilder()
+                .WithContext(_tc)
                 .WithScenarioContext(_scenarioContext)
+                .WithRequest(request)
+                .SendToVideoApi();
+
+            var mediaEvent = new MediaEventBuilder()
+                .ForParticipant(participant.Id)
+                .WithReason(ParseReason(reason))
                 .Build();
 
             _tc.Request = _tc.Post(new VideoWebMediaEventEndpoints().SelfTestFailureEvents(_tc.NewConferenceId),
-                request);
+                mediaEvent);
 
             new ExecuteRequestBuilder()
                 .WithContext(_tc)

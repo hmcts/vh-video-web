@@ -37,8 +37,8 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         public void ProgressToNextPage()
         {
-            _commonSteps.WhentheUserClicksTheButton("Switch on");
-            _commonSteps.WhentheUserClicksTheButton("Watch video");
+            _commonSteps.WhenTheUserClicksTheButton("Switch on");
+            _commonSteps.WhenTheUserClicksTheButton("Watch video");
         }
     }
 }
