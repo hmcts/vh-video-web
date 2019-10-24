@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using Testing.Common.Helpers;
@@ -10,7 +9,6 @@ using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.AcceptanceTests.Users;
-using VideoWeb.Contract.Request;
 using VideoWeb.Services.Video;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using RoomType = VideoWeb.EventHub.Enums.RoomType;
@@ -93,37 +91,6 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .SendToVideoWeb();
         }
 
-        private ParticipantDetailsResponse GetUserFromConferenceDetails(string userRole)
-        {
-            var participantUser = userRole.ToLower().Equals("judge") || userRole.ToLower().Equals("clerk")
-                ? _tc.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Judge.ToString()))
-                : _tc.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Individual.ToString()));
-
-            if (participantUser.Id == null)
-                throw new DataMisalignedException("Participant Id is not set");
-
-            _scenarioContext.Add(ParticipantKey, participantUser);
-            return participantUser;
-        }
-
-        [When(@"a participant has failed the self-test")]
-        public void WhenAParticipantHasFailedTheSelf_Test()
-        {
-            var request = new MediaEventBuilder()
-                .ForParticipant(GetIndividualParticipantId())
-                .WithReason(SelfTestFailureReason.Camera)
-                .WithScenarioContext(_scenarioContext)
-                .Build();
-
-            _tc.Request = _tc.Post(new VideoWebMediaEventEndpoints().SelfTestFailureEvents(_tc.NewConferenceId),
-                request);
-
-            new ExecuteRequestBuilder()
-                .WithContext(_tc)
-                .WithExpectedStatusCode(HttpStatusCode.NoContent)
-                .SendToVideoWeb();
-        }
-
         [When(@"a participant has failed the self-test with (.*)")]
         public void WhenAParticipantHasFailedTheSelfTestWithReason(string reason)
         {
@@ -141,31 +108,19 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithScenarioContext(_scenarioContext)
                 .WithRequest(request)
                 .SendToVideoApi();
-
-            var mediaEvent = new MediaEventBuilder()
-                .ForParticipant(participant.Id)
-                .WithReason(ParseReason(reason))
-                .Build();
-
-            _tc.Request = _tc.Post(new VideoWebMediaEventEndpoints().SelfTestFailureEvents(_tc.NewConferenceId),
-                mediaEvent);
-
-            new ExecuteRequestBuilder()
-                .WithContext(_tc)
-                .WithExpectedStatusCode(HttpStatusCode.NoContent)
-                .SendToVideoWeb();
         }
 
-        private static SelfTestFailureReason ParseReason(string entireReason)
+        private ParticipantDetailsResponse GetUserFromConferenceDetails(string userRole)
         {
-            const string standardText = "Failed test-score";
+            var participantUser = userRole.ToLower().Equals("judge") || userRole.ToLower().Equals("clerk")
+                ? _tc.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Judge.ToString()))
+                : _tc.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Individual.ToString()));
 
-            if (!entireReason.Contains("("))
-                throw new InvalidCastException($"Reason does not contain the standard '{standardText}' text");
+            if (participantUser.Id == null)
+                throw new DataMisalignedException("Participant Id is not set");
 
-            var shortenedReason = entireReason.Substring(standardText.Length).Replace("(","").Replace(")", "").Replace(" ","").Trim();
-            Enum.TryParse(shortenedReason, out SelfTestFailureReason failureReason);
-            return failureReason;
+            _scenarioContext.Add(ParticipantKey, participantUser);
+            return participantUser;
         }
 
         [When(@"the user selects the (.*) alert")]
@@ -284,11 +239,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         private Guid? GetClerkParticipantId()
         {
             return _tc.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Judge.ToString())).Id;
-        }
-
-        private Guid? GetIndividualParticipantId()
-        {
-            return _tc.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Individual.ToString())).Id;
         }
 
         private List<Alert> GetAlerts()

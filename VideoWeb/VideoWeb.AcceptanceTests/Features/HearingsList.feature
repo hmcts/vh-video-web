@@ -4,7 +4,7 @@ Feature: Hearing List
 	I would like to login and access the hearing details
 	So that I can have an overview of all the scheduled hearings I am involved in
 
-@smoketest
+@Smoketest
 Scenario: Participant has 1 or more hearings
 	Given I have a hearing and a conference
 	And a new browser is open for a Participant
