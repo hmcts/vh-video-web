@@ -13,7 +13,7 @@ Scenario: Participant waiting room
 	And the user can see a list of participants and their representatives
 	And the user can see a black box and an about to begin message
 
-@smoketest @VIH-4610
+@VIH-4610
 Scenario: Clerk waiting room
 	Given the Clerk user has progressed to the Waiting Room page
 	Then the user is on the Waiting Room page

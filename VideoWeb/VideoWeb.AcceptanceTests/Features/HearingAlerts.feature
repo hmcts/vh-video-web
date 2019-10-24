@@ -37,7 +37,7 @@ Scenario Outline: Video Hearings Officer receieves disconnected alert
 	| Participant | HearingRoom       | Not Started	 |
 	| Participant | ConsultationRoom1 | Not Started	 |
 
-@VIH-1630 @VIH-4416
+@VIH-1630 @VIH-4416 @Smoketest
 Scenario Outline: Video Hearings Officer receieves failed self test alert
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	When a participant has failed the self-test with <Reason>

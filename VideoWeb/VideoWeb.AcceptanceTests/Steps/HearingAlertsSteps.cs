@@ -129,22 +129,23 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var participant = GetUserFromConferenceDetails(UserRole.Individual.ToString());
 
-            var request = new CallbackEventRequestBuilder()
-                .WithConferenceId(_tc.NewConferenceId)
-                .WithParticipantId(participant.Id)
-                .WithEventType(EventType.SelfTestFailed)
-                .WithReason(reason)
-                .Build();
+            //var request = new CallbackEventRequestBuilder()
+            //    .WithConferenceId(_tc.NewConferenceId)
+            //    .WithParticipantId(participant.Id)
+            //    .WithEventType(EventType.SelfTestFailed)
+            //    .WithReason(reason)
+            //    .Build();
 
-            new ExecuteEventBuilder()
-                .WithContext(_tc)
-                .WithScenarioContext(_scenarioContext)
-                .WithRequest(request)
-                .SendToVideoApi();
+            //new ExecuteEventBuilder()
+            //    .WithContext(_tc)
+            //    .WithScenarioContext(_scenarioContext)
+            //    .WithRequest(request)
+            //    .SendToVideoApi();
 
             var mediaEvent = new MediaEventBuilder()
                 .ForParticipant(participant.Id)
                 .WithReason(ParseReason(reason))
+                .WithScenarioContext(_scenarioContext)
                 .Build();
 
             _tc.Request = _tc.Post(new VideoWebMediaEventEndpoints().SelfTestFailureEvents(_tc.NewConferenceId),
