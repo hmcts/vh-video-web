@@ -80,7 +80,7 @@
             <div *ngIf="!hearing.isClosed() && hearing.isReadyToStart()">
               <button id="start-hearing-btn-{{ hearing.id }}"
                 class="govuk-button govuk-!-margin-top-3 govuk-!-margin-bottom-3" data-module="govuk-button"
-                (click)="signIntoConference(hearing)" alt="Sign into the conference">Select</button>
+                type="button" (click)="signIntoConference(hearing)" alt="Sign into the conference">Select</button>
             </div>
             <div *ngIf="!hearing.isClosed() && !hearing.isReadyToStart()">
               Not ready to start

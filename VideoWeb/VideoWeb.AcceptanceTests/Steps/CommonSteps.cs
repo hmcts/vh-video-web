@@ -137,7 +137,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                     "landmark-one-main", // https://dequeuniversity.com/rules/axe/3.3/landmark-one-main?application=axeAPI
                     "landmark-no-duplicate-banner", // https://dequeuniversity.com/rules/axe/3.3/landmark-no-duplicate-banner?application=axeAPI
                     "landmark-no-duplicate-contentinfo", // https://dequeuniversity.com/rules/axe/3.3/landmark-no-duplicate-contentinfo?application=axeAPI
-                    "page-has-heading-one") // https://dequeuniversity.com/rules/axe/3.3/page-has-heading-one?application=axeAPI
+                    "page-has-heading-one", // https://dequeuniversity.com/rules/axe/3.3/page-has-heading-one?application=axeAPI
+                    "landmark-unique") // https://dequeuniversity.com/rules/axe/3.3/landmark-unique?application=axeAPI
                 .Analyze();
             axeResult.Violations.Should().BeEmpty();
         }
