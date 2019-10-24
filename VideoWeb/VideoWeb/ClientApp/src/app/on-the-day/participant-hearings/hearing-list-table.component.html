@@ -18,15 +18,14 @@
         <p class="govuk-!-margin-0 govuk-!-padding-0">Case number: <strong>{{conference.case_number}}</strong></p>
       </td>
       <td class="govuk-table__cell">
-        <button id="start-hearing-btn-{{conference.id}}" class="govuk-button" data-module="govuk-button"
-                *ngIf="canStartHearing(conference)" (click)="signIntoConference(conference)"
-                aria-label="Sign into hearing">
-                Sign into hearing
+        <button id="start-hearing-btn-{{conference.id}}" class="govuk-button" data-module="govuk-button" type="button"
+          *ngIf="canStartHearing(conference)" (click)="signIntoConference(conference)" aria-label="Sign into hearing">
+          Sign into hearing
         </button>
-          <span *ngIf="!canStartHearing(conference)">
-            <p class="govuk-!-margin-0 govuk-!-padding-0">Sign in {{getSignInDate(conference) }}</p>
-            <p class="govuk-!-margin-0 govuk-!-padding-0">from {{getSignInTime(conference) | date:'HH:mm' }} </p>
-          </span>
+        <span *ngIf="!canStartHearing(conference)">
+          <p class="govuk-!-margin-0 govuk-!-padding-0">Sign in {{getSignInDate(conference) }}</p>
+          <p class="govuk-!-margin-0 govuk-!-padding-0">from {{getSignInTime(conference) | date:'HH:mm' }} </p>
+        </span>
       </td>
     </tr>
 
