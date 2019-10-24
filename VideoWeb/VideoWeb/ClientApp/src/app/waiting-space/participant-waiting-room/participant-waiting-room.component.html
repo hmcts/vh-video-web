@@ -10,16 +10,16 @@
     </video>
   </div>
 </div>
-<div *ngIf="showVideo" class="govuk-grid-row">
+<div class="govuk-grid-row">
   <div class="govuk-grid-column-one-half" id="outgoingFeedDiv">
     <button id="outgoingFeedButton" type="button" class="govuk-button govuk-button--secondary reduce-margin"
       data-module="govuk-button" (click)="toggleView()">
       {{ selfViewOpen ? 'Close' : 'Open' }} self-view
     </button>
-    <!--<video *ngIf="selfViewOpen" id="outgoingFeedVideo" [muted]="true" autoplay="autoplay"
+    <video id="outgoingFeedVideo" [muted]="true" autoplay="autoplay"
       height="auto">
       Your browser does not support Video
-    </video>-->
+    </video>
   </div>
 </div>
 
