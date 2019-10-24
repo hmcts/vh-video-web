@@ -274,14 +274,13 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
       self.logger.info('running pexip setup');
-      this.connect('0000', null);
       // self.outgoingStream = stream;
       if (stream) {
         this.selfViewOpen = true;
         const selfvideo = document.getElementById('outgoingFeedVideo') as any;
 
         if (selfvideo) {
-          console.log('##############  selfVideo is not null');
+          console.log('##############  selfVideo is not null  ##############');
           if (typeof (MediaStream) !== 'undefined' && stream instanceof MediaStream) {
             selfvideo.srcObject = stream;
           } else {
@@ -291,14 +290,31 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
           console.log('##############  selfVideo is null ###########');
         }
       }
+      this.connect('0000', null);
     };
 
-    this.pexipAPI.onConnect = function (stream) {
+    this.pexipAPI.onConnect = function (stream1) {
       self.errorCount = 0;
       self.connected = true;
       self.updateShowVideo();
       self.logger.info('successfully connected to call');
-      self.stream = stream;
+      // self.stream = stream;
+
+      if (stream1) {
+        self.showVideo = true;
+        const incomingFeedElemenet = document.getElementById('incomingFeed') as any;
+
+        if (incomingFeedElemenet) {
+          console.log('##############  incomingFeedElement is not null  ##############');
+          if (typeof (MediaStream) !== 'undefined' && stream1 instanceof MediaStream) {
+            incomingFeedElemenet.srcObject = stream1;
+          } else {
+            incomingFeedElemenet.src = stream1;
+          }
+        } else {
+          console.log('##############  incomingFeedElement is null ###########');
+        }
+      }
 
       const baseUrl = self.conference.pexip_node_uri.replace('sip.', '');
       const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${self.conference.id}`;

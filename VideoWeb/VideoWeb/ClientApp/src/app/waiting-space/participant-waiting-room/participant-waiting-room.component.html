@@ -5,7 +5,7 @@
 <div *ngIf="showVideo" class="govuk-grid-row">
   <div class="video-background"></div>
   <div class="govuk-grid-column-one-half">
-    <video id="incomingFeed" [srcObject]="this.stream" autoplay height="auto">
+    <video id="incomingFeed" autoplay="autoplay" height="auto">
       Your browser does not support Video
     </video>
   </div>
@@ -16,7 +16,7 @@
       data-module="govuk-button" (click)="toggleView()">
       {{ selfViewOpen ? 'Close' : 'Open' }} self-view
     </button>
-    <video *ngIf="selfViewOpen" id="outgoingFeedVideo" [muted]="true" autoplay
+    <video *ngIf="selfViewOpen" id="outgoingFeedVideo" [muted]="true" autoplay="autoplay"
       height="auto">
       Your browser does not support Video
     </video>
