@@ -16,7 +16,7 @@
       data-module="govuk-button" (click)="toggleView()">
       {{ selfViewOpen ? 'Close' : 'Open' }} self-view
     </button>
-    <video id="outgoingFeedVideo" [muted]="true" [srcObject]="this.outgoingStream" autoplay
+    <video id="outgoingFeedVideo" [muted]="true" autoplay="autoplay"
       height="auto">
       Your browser does not support Video
     </video>

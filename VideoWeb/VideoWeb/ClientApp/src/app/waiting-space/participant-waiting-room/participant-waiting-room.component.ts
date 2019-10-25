@@ -266,7 +266,8 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     const preferredMic = await this.userMediaService.getPreferredMicrophone();
     if (preferredMic) {
-      this.pexipAPI.audio_source = preferredMic.deviceId;
+      const deviceId = this.userMediaService.getDeviceId(preferredMic.label);
+      this.pexipAPI.audio_source = deviceId;
       self.logger.info(`Using preferred microphone: ${preferredMic.label}`);
     }
 
@@ -276,18 +277,26 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       self.outgoingStream = stream;
     };
 
-    this.pexipAPI.onConnect = function (stream) {
-      self.errorCount = 0;
-      self.connected = true;
-      self.updateShowVideo();
-      self.logger.info('successfully connected to call');
-      self.stream = stream;
+    this.pexipAPI.onSetup = function (outStream, pin_status, conference_extension) {
+      self.logger.info('running pexip setup');
+      // self.outgoingStream = outStream;
+      if (outStream) {
+        this.selfViewOpen = true;
+        const selfvideo = document.getElementById('outgoingFeedVideo') as any;
 
-      const baseUrl = self.conference.pexip_node_uri.replace('sip.', '');
-      const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${self.conference.id}`;
-      self.logger.debug(`heartbeat uri: ${url}`);
-      const bearerToken = `Bearer ${self.token.token}`;
-      self.heartbeat = new HeartbeatFactory(self.pexipAPI, url, self.conference.id, self.participant.id, bearerToken);
+        if (selfvideo) {
+          console.log('##############  selfVideo is not null  ##############');
+          if (typeof (MediaStream) !== 'undefined' && outStream instanceof MediaStream) {
+            selfvideo.srcObject = outStream;
+          } else {
+            selfvideo.src = outStream;
+          }
+        } else {
+          console.log('##############  selfVideo is null ###########');
+        }
+      }
+      this.connect('0000', null);
+      self.outgoingStream = outStream;
     };
 
     this.pexipAPI.onError = function (reason) {
