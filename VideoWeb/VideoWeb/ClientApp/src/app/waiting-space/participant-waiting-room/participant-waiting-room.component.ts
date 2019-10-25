@@ -296,7 +296,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         }
       }
       this.connect('0000', null);
-      self.outgoingStream = outStream;
     };
 
     this.pexipAPI.onError = function (reason) {
