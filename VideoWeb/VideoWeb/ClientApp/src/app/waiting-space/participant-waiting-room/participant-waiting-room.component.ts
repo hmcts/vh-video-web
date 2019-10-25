@@ -271,12 +271,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       self.logger.info(`Using preferred microphone: ${preferredMic.label}`);
     }
 
-    this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
-      self.logger.info('running pexip setup');
-      this.connect('0000', null);
-      self.outgoingStream = stream;
-    };
-
     this.pexipAPI.onSetup = function (outStream, pin_status, conference_extension) {
       self.logger.info('running pexip setup');
       // self.outgoingStream = outStream;
@@ -296,6 +290,20 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         }
       }
       this.connect('0000', null);
+    };
+
+    this.pexipAPI.onConnect = function (stream) {
+      self.errorCount = 0;
+      self.connected = true;
+      self.updateShowVideo();
+      self.logger.info('successfully connected to call');
+      self.stream = stream;
+
+      const baseUrl = self.conference.pexip_node_uri.replace('sip.', '');
+      const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${self.conference.id}`;
+      self.logger.debug(`heartbeat uri: ${url}`);
+      const bearerToken = `Bearer ${self.token.token}`;
+      self.heartbeat = new HeartbeatFactory(self.pexipAPI, url, self.conference.id, self.participant.id, bearerToken);
     };
 
     this.pexipAPI.onError = function (reason) {
