@@ -292,12 +292,27 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       this.connect('0000', null);
     };
 
-    this.pexipAPI.onConnect = function (stream) {
+    this.pexipAPI.onConnect = function (inStream) {
       self.errorCount = 0;
       self.connected = true;
       self.updateShowVideo();
       self.logger.info('successfully connected to call');
-      self.stream = stream;
+
+      if (inStream) {
+        self.showVideo = true;
+        const incomingFeedElemenet = document.getElementById('incomingFeed') as any;
+
+        if (incomingFeedElemenet) {
+          console.log('##############  incomingFeedElement is not null  ##############');
+          if (typeof (MediaStream) !== 'undefined' && inStream instanceof MediaStream) {
+            incomingFeedElemenet.srcObject = inStream;
+          } else {
+            incomingFeedElemenet.src = inStream;
+          }
+        } else {
+          console.log('##############  incomingFeedElement is null ###########');
+        }
+      }
 
       const baseUrl = self.conference.pexip_node_uri.replace('sip.', '');
       const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${self.conference.id}`;
