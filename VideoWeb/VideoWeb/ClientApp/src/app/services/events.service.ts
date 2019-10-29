@@ -75,8 +75,8 @@ export class EventsService {
   }
 
   getParticipantStatusMessage(): Observable<ParticipantStatusMessage> {
-    this.connection.on('ParticipantStatusMessage', (email: string, status: ParticipantStatus) => {
-      const message = new ParticipantStatusMessage(email, status);
+    this.connection.on('ParticipantStatusMessage', (participantId: string, status: ParticipantStatus) => {
+      const message = new ParticipantStatusMessage(participantId, status);
       this.logger.event('ParticipantStatusMessage received', message);
       this.participantStatusSubject.next(message);
     });
