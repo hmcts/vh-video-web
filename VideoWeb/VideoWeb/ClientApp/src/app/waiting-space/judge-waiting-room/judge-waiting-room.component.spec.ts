@@ -82,7 +82,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
   it('should update participant status', () => {
     const message = eventService.nextParticipantStatusMessage;
     component.handleParticipantStatusChange(message);
-    const participant = component.conference.participants.find(x => x.username === message.email);
+    const participant = component.conference.participants.find(x => x.id === message.participantId);
     expect(participant.status === message.status);
   });
 

@@ -34,7 +34,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             await _eventHandler.HandleAsync(callbackEvent);
 
             EventHubClientMock.Verify(
-                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Username,
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id,
                     ParticipantState.Available), Times.Exactly(participantCount));
         }
 
@@ -61,7 +61,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             // Verify event hub client
             EventHubClientMock.Verify(
-                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Username,
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id,
                     ParticipantState.InHearing), Times.Exactly(participantCount));
 
             EventHubClientMock.Verify(
