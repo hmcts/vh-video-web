@@ -46,11 +46,11 @@ namespace VideoWeb.EventHub.Handlers.Core
             foreach (var participant in SourceConference.Participants)
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
-                    .ParticipantStatusMessage(SourceParticipant.Username, participantState);
+                    .ParticipantStatusMessage(SourceParticipant.Id, participantState);
             }
             
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
-                .ParticipantStatusMessage(SourceParticipant.Username, participantState);
+                .ParticipantStatusMessage(SourceParticipant.Id, participantState);
         }
 
         /// <summary>

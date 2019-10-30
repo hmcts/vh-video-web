@@ -1,10 +1,10 @@
 import { ParticipantStatus } from '../clients/api-client';
 
 export class ParticipantStatusMessage {
-    constructor(email: string, status: ParticipantStatus) {
-        this.email = email;
+  constructor(participantId: string, status: ParticipantStatus) {
+        this.participantId = participantId;
         this.status = status;
-    }
-    email: string;
+  }
+    participantId: string;
     status: ParticipantStatus;
 }

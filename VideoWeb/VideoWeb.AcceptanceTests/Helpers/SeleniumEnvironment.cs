@@ -80,7 +80,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 default:
                     caps.SetCapability("browserName", "Chrome");
                     caps.SetCapability("platform", "Windows 10");
-                    caps.SetCapability("version", "74.0");
+                    caps.SetCapability("version", "78.0");
                     caps.SetCapability("autoAcceptAlerts", true);
                     var chromeOptions = new Dictionary<string, List<string>>
                     {
