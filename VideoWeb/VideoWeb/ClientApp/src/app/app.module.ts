@@ -19,6 +19,8 @@ import { LOG_ADAPTER, LoggerService } from './services/logging/logger.service';
 import { ConsoleLogger } from './services/logging/loggers/console-logger';
 import { AppInsightsLoggerService } from './services/logging/loggers/app-insights-logger.service';
 import { Logger } from './services/logging/logger-base';
+import { ScrollTriggerDirective } from './directives/scroll-trigger.directive';
+import { WindowScrolling } from './directives/window-scrolling';
 
 export function getSettings(configService: ConfigService) {
   return () => configService.loadConfig();
@@ -28,7 +30,8 @@ export function getSettings(configService: ConfigService) {
   declarations: [
     AppComponent,
     HomeComponent,
-    SendVideoEventsComponent
+    SendVideoEventsComponent,
+    ScrollTriggerDirective
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -51,7 +54,8 @@ export function getSettings(configService: ConfigService) {
     AdalGuard,
     ConfigService,
     AuthGuard,
-    Title
+    Title,
+    WindowScrolling
   ],
   bootstrap: [AppComponent]
 })

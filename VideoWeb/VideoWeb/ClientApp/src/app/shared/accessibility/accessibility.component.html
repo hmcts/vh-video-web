@@ -1,3 +1,287 @@
-<p>
-  accessibility works!
-</p>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds" id="accessContent">
+    <img src="/assets/images/hmcts-logo.gif" alt="HMCTS logo crest image" />
+  </div>
+</div>
+<div class="govuk-grid-row govuk-!-margin-top-9">
+  <div class="govuk-grid-column-one-quarter">
+    <nav role="navigation">
+      <span class="govuk-body">Contents</span>
+
+      <div id="contents" appScrollTrigger (scrolledPast)="scrollHandler($event)" (scrollFooter)="scrollFooter($event)">
+        <ol class="vh-text">
+          <li class="vh-text">
+            <a href="javascript:void(0)" (click)="goToDiv('accessibilityStatment')">
+              Accessibility statement for the HMCTS video hearing service
+            </a>
+          </li>
+          <li class="vh-text">
+            <a href="javascript:void(0)" (click)="goToDiv('how-accessible-this-website-is')">
+              How accessible is this website?
+            </a>
+          </li>
+          <li class="vh-text">
+            <a href="javascript:void(0)" (click)="goToDiv('what-to-do-if-you-cant-access-parts-of-this-website')">
+              What to do if you cannot access parts of this website
+            </a>
+          </li>
+          <li class="vh-text">
+            <a href="javascript:void(0)" (click)="goToDiv('reporting-accessibility-problems-with-this-website')">
+              Reporting accessibility problems with this website
+            </a>
+          </li>
+          <li class="vh-text">
+            <a href="javascript:void(0)" (click)="goToDiv('enforcement-procedure')">
+              Enforcement procedure
+            </a>
+          </li>
+          <li class="vh-text">
+            <a href="javascript:void(0)" (click)="goToDiv('technicalInformation')">
+              Technical information about this website’s accessibility
+            </a>
+          </li>
+          <li class="vh-text">
+            <a href="javascript:void(0)" (click)="goToDiv('nonAccessibleContent')">
+              Non accessible content
+            </a>
+          </li>
+          <li class="vh-text">
+            <a href="javascript:void(0)" (click)="goToDiv('non-compliance-with-the-accessibility-regulations')">
+              Non compliance with the accessibility regulations
+            </a>
+          </li>
+          <li class="vh-text">
+            <a href="javascript:void(0)"
+              (click)="goToDiv('content-thats-not-within-the-scope-of-the-accessibility-regulations')">
+              Not within scope/not applicable
+            </a>
+          </li>
+          <li class="vh-text">
+            <a href="javascript:void(0)" (click)="goToDiv('howWeTested')">
+              How we tested this website
+            </a>
+          </li>
+        </ol>
+      </div>
+    </nav>
+  </div>
+  <div class="govuk-grid-column-three-quarters">
+
+    <div id="accessibilityStatment" class="vh-section">
+      <h1 class="govuk-heading-l">Accessibility statement for the HMCTS video hearing service</h1>
+      <div>
+        <p class="govuk-body">
+          This service allows all participants to take part in a court hearing by video - from their home,
+          office or somewhere else using a laptop or desktop computer.
+        </p>
+        <p class="govuk-body">
+          This accessibility statement is based on evaluation conducted by the
+          Digital Accessibility Centre (DAC), Neath, during September 2019.
+        </p>
+        <p class="govuk-body">
+          This website is run by HM Courts and Tribunals Service. We want as many people as possible to be able to use
+          this service.
+          For example, this means you should be able to:
+        </p>
+        <ul class="govuk-body">
+          <li>change colours, contrast levels and fonts</li>
+          <li>zoom in up to 300% without the text spilling off the screen</li>
+          <li>navigate most of the website using just a keyboard</li>
+          <li>navigate most of the website using speech recognition software</li>
+          <li>listen to most of the website using a screen reader</li>
+        </ul>
+        <p class="govuk-body">We’ve also made the website text as simple as possible
+          to understand.</p>
+        <p class="govuk-body">
+          <a rel="external" href="https://mcmw.abilitynet.org.uk/">AbilityNet</a> has advice on making your device
+          easier to use if you have a disability.
+        </p>
+      </div>
+    </div>
+
+    <div id="how-accessible-this-website-is" class="vh-section">
+      <h2 class="govuk-heading-m">How accessible is this website? </h2>
+
+      <p class="govuk-body">
+        Fully video hearings provide an additional channel for conducting a hearing.
+        While they are being made as accessible as possible, they may not be suitable for everyone.
+      </p>
+      <p class="govuk-body">
+        The video hearings service includes a triage process so that people can make the court aware of any
+        particular condition or impairment that may impact their ability to take part in a video hearing.
+      </p>
+
+      <p class="govuk-body">
+        It will always be for a judge to decide whether to use the option of a fully video hearing,
+        and to ensure the interests of justice are served in any given hearing.
+      </p>
+
+      <p class="govuk-body">
+        During testing by DAC, users with cognitive impairment and dyslexia were able to navigate the website
+        ‘completely independently, with no issues’.
+        The access issues reported particularly affected those who are visually impaired or use voice activation
+        technology.
+      </p>
+
+    </div>
+    <div id="what-to-do-if-you-cant-access-parts-of-this-website" class="vh-section">
+      <h2 class="govuk-heading-m">What to do if you cannot access parts of this
+        website</h2>
+
+      <p class="govuk-body">
+        If you need help to access the information on this website, contact the video hearings team:
+      </p>
+
+      <ul class="govuk-body">
+        <li>email video-hearings@justice.gov.uk</li>
+        <li>call 0300 303 0655 </li>
+      </ul>
+
+      <p class="govuk-body">Available between 9am and 5pm, Monday to Friday.</p>
+
+    </div>
+    <div id="reporting-accessibility-problems-with-this-website" class="vh-section">
+      <h2 class="govuk-heading-m">Reporting accessibility problems with this
+        website</h2>
+
+      <p class="govuk-body">
+        We’re always looking to improve the accessibility of this website. If you find any
+        problems not listed on this page or think we’re not meeting accessibility requirements, contact the video
+        hearings team (above).
+      </p>
+    </div>
+    <div id="enforcement-procedure" class="vh-section">
+      <h2 class="govuk-heading-m">Enforcement procedure</h2>
+
+      <p class="govuk-body">
+        The Equality and Human Rights Commission (EHRC) is responsible for enforcing the
+        Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018
+        (the ‘accessibility regulations’). If you’re not happy with how we respond to your complaint, <a rel="external"
+          href="https://www.equalityadvisoryservice.com/">contact the Equality Advisory and Support Service (EASS)</a>.
+      </p>
+    </div>
+
+    <div id="technicalInformation" class="vh-section">
+
+      <h2 class="govuk-heading-m" id="technical-information-about-this-websites-accessibility">Technical information
+        about this website’s accessibility</h2>
+
+      <p class="govuk-body">
+        HM Courts and Tribunals Service is committed to making its website accessible, in accordance with the Public
+        Sector Bodies (Websites and Mobile Applications)
+        (No. 2) Accessibility Regulations 2018.
+      </p>
+
+      <p class="govuk-body">
+        This website is partially compliant with the <a rel="external" href="https://www.w3.org/TR/WCAG21/">Web Content
+          Accessibility Guidelines version 2.1</a> AA standard,
+        due to the non-compliances listed below.
+      </p>
+    </div>
+
+    <div id="nonAccessibleContent" class="vh-section">
+      <h2 class="govuk-heading-m" id="non-accessible-content">Non accessible
+        content</h2>
+
+      <p class="govuk-body">
+        A number of accessibility and usability issues were reported.
+        These particularly impacted those who are visually impaired or use voice activation technology.
+        Most issues were resolved before the private beta was released.
+        Those that remain are shown below.
+      </p>
+    </div>
+
+    <div id="non-compliance-with-the-accessibility-regulations" class="vh-section">
+      <h2 class="govuk-heading-m">Non compliance with the accessibility regulations
+      </h2>
+
+      <h3 class="govuk-heading-s">Information videos</h3>
+      <p class="govuk-body">
+        We currently use video to help users see what their experience would be like either attending a court building
+        or taking part in a video hearing.
+        This has proved popular in user testing and we’ll make the necessary changes to make the videos more accessible
+        by the end of 2019.
+      </p>
+
+      <h3 class="govuk-heading-s">Equipment check</h3>
+      <p class="govuk-body">
+        We use video to help users test whether their computer equipment is suitable for a video hearing. This has
+        caused some accessibility issues, detailed below.
+      </p>
+
+      <p class="govuk-body">
+        We use a visual method to indicate to the user that their microphone is working. This is not suitable for those
+        with visual impairments. We’re considering providing an audible indicator so they know their microphone is
+        picking up sound.
+      </p>
+
+      <p class="govuk-body">
+        The video intentionally has no controls. It needs to play to the end to detect the strength of the user’s
+        internet connection. This takes at least 20 to 30 seconds. We’ve added an explanation.
+      </p>
+
+      <p class="govuk-body">
+        By Spring 2020 we’ll review the way we help users test their equipment to address the accessibility issues
+        identified in the DAC report.
+      </p>
+    </div>
+
+
+    <div id="content-thats-not-within-the-scope-of-the-accessibility-regulations" class="vh-section">
+      <h2 class="govuk-heading-m">Not within scope/not applicable</h2>
+
+      <p class="govuk-body">
+        In preparing for a video hearing, potential participants are asked a series of questions. These are presented as
+        one question per page, with the option of a ‘yes’ or ‘no’ answer.
+        DAC advised that we should group the ‘yes’ and ‘no’ buttons to assist screen reader users.
+        (WCAG reference 1.3.1 – A). This advice reflects guidance for longer forms with separate groups of questions on
+        a single page,
+        which is not applicable in this instance.
+      </p>
+    </div>
+
+    <div id="howWeTested" class="vh-section">
+      <h2 class="govuk-heading-m" id="how-we-tested-this-website">How we tested this website</h2>
+
+      <p class="govuk-body">
+        The website was tested by the Digital Accessibility Centre, Neath, during September 2019.
+      </p>
+
+      <p class="govuk-body">
+        This is an excerpt from their report explaining their methodology:
+      </p>
+
+      <div class="vh-left20">
+        <p class="govuk-body">
+          “The website was tested by a team of experienced auditors, many of who are disabled individuals and users of
+          adaptive technology. The combination of subjective pan-disability user feedback and comprehensive technical
+          auditing allows us to measure how the website performs technically and practically, thereby offering an
+          essential added dimension to our test results that other methods of testing cannot provide.”
+        </p>
+        <p class="govuk-body">User testing:</p>
+        <p class="govuk-body">
+          “Manual accessibility checking was conducted by a team of disabled individuals, using a range of adaptive
+          technologies (hardware and software designed to facilitate the use of computers by people with disabilities).”
+        </p>
+        <p class="govuk-body">Technical auditing:</p>
+        <p class="govuk-body">
+          “Technical auditing involves the experienced application of a number of technical auditing and standards
+          compliance assessment tools. This combined with an extensive knowledge of WCAG, its application and wider
+          global practice provides the DAC website with further credibility and quality.”
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div data-sticky-element [ngClass]="{'govuk-sticky-element-footer': sFooter, 'govuk-sticky-element': !isFooter}" *ngIf="!isVisibleContents" id="sticky-element">
+  <a class="app-c-back-to-top dont-print" href="javascript:void(0)" (click)="goToDiv('accessContent')">
+    <svg class="app-c-back-to-top__icon" xmlns="http://www.w3.org/2000/svg" width="13" height="17" viewbox="0 0 13 17">
+      <path fill="currentColor" d="M6.5 0L0 6.5 1.4 8l4-4v12.7h2V4l4.3 4L13 6.4z"></path>
+    </svg>
+    Contents
+  </a>
+
+</div>
+
