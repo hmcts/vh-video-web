@@ -21,6 +21,7 @@ import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-b
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { ModalComponent } from './modal/modal.component';
 import { BetaBannerComponent } from './beta-banner/beta-banner.component';
+import { AccessibilityComponent } from './accessibility/accessibility.component';
 
 @NgModule({
   imports: [
@@ -47,7 +48,8 @@ import { BetaBannerComponent } from './beta-banner/beta-banner.component';
     UnsupportedBrowserComponent,
     PrivacyPolicyComponent,
     ModalComponent,
-    BetaBannerComponent
+    BetaBannerComponent,
+    AccessibilityComponent
   ],
   providers: [
     { provide: 'SnotifyToastConfig', useValue: ToastDefaults},

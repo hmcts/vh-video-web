@@ -11,6 +11,7 @@ import { PageUrls } from '../page-url.constants';
 export class FooterComponent implements OnInit {
   hideContactUsLink = false;
   privacyPolicyUri = PageUrls.PrivacyPolicy;
+  accessibilityUri = PageUrls.Accessibility;
 
   constructor(private router: Router) {
     this.router.events.pipe(
