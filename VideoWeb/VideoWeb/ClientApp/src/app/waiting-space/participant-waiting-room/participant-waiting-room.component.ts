@@ -399,8 +399,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   }
 
   toggleView(): boolean {
-    console.log('################ showSelfView : ' + this.showSelfView);
-    console.log('################ selfViewOpen : ' + this.selfViewOpen);
     return this.selfViewOpen = !this.selfViewOpen;
   }
 

@@ -16,7 +16,7 @@
       data-module="govuk-button" (click)="toggleView()">
       {{ selfViewOpen ? 'Close' : 'Open' }} self-view
     </button>
-    <video *ngIf="selfViewOpen" id="outgoingFeedVideo" [muted]="true" autoplay="autoplay"
+    <video *ngIf="selfViewOpen" id="outgoingFeedVideo" [muted]="true" autoplay="autoplay" [ngClass]="{'showVideo': selfViewOpen, 'hideVideo': !selfViewOpen}"
       height="auto">
       Your browser does not support Video
     </video>
