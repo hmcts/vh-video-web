@@ -395,13 +395,13 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   }
 
   assignStream(videoElement, stream) {
-    if (typeof (MediaStream) !== "undefined" && stream instanceof MediaStream) {
+    if (typeof (MediaStream) !== 'undefined' && stream instanceof MediaStream) {
       videoElement.srcObject = stream;
     } else {
       videoElement.src = stream;
     }
   }
-  
+
   getConferenceClosedTime(conferenceId: string): void {
     this.videoWebService.getConferenceById(conferenceId)
       .subscribe(async (data: ConferenceResponse) => {
