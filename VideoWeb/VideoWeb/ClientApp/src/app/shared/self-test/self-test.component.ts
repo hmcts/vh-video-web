@@ -240,7 +240,9 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         reason = SelfTestFailureReason.IncompleteTest;
       }
 
-      await this.raiseFailedSelfTest(reason);
+      if (reason) {
+        await this.raiseFailedSelfTest(reason);
+      }
     }
   }
 
