@@ -18,6 +18,8 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { Subscription } from 'rxjs';
+import { MediaObject } from '../../shared/utility/media-object';
+
 declare var PexRTC: any;
 declare var HeartbeatFactory: any;
 
@@ -77,7 +79,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     this.showVideo = false;
     this.showSelfView = false;
     this.showConsultationControls = false;
-    this.selfViewOpen = false;
+    this.selfViewOpen = true;
   }
 
   ngOnInit() {
@@ -282,15 +284,16 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       if (outStream) {
         const selfvideo = document.getElementById('outgoingFeedVideo') as any;
         if (selfvideo) {
-          if (typeof (MediaStream) !== 'undefined' && outStream instanceof MediaStream) {
-            selfvideo.srcObject = outStream;
-          } else {
-            selfvideo.src = outStream;
-          }
+          //if (typeof (MediaStream) !== 'undefined' && outStream instanceof MediaStream) {
+          //  selfvideo.srcObject = outStream;
+          //} else {
+          //  selfvideo.src = outStream;
+          //}
+          MediaObject.assignStream(selfvideo, outStream);
         }
       }
       // this.showSelfView = false;
-      this.selfViewOpen = false;
+      // this.selfViewOpen = false;
       this.connect('0000', null);
     };
 
@@ -301,13 +304,14 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       self.logger.info('successfully connected to call');
 
       if (inStream) {
-        const incomingFeedElemenet = document.getElementById('incomingFeed') as any;
-        if (incomingFeedElemenet) {
-          if (typeof (MediaStream) !== 'undefined' && inStream instanceof MediaStream) {
-            incomingFeedElemenet.srcObject = inStream;
-          } else {
-            incomingFeedElemenet.src = inStream;
-          }
+        const incomingFeedElement = document.getElementById('incomingFeed') as any;
+        if (incomingFeedElement) {
+          //if (typeof (MediaStream) !== 'undefined' && inStream instanceof MediaStream) {
+          //  incomingFeedElemenet.srcObject = inStream;
+          //} else {
+          //  incomingFeedElemenet.src = inStream;
+          //}
+          MediaObject.assignStream(incomingFeedElement, inStream);
         }
       }
 
