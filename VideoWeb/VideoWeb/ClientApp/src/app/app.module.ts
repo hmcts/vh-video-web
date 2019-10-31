@@ -57,6 +57,9 @@ export function getSettings(configService: ConfigService) {
     Title,
     WindowScrolling
   ],
+  exports: [
+    ScrollTriggerDirective
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
