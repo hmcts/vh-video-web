@@ -244,7 +244,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   }
 
   handleParticipantStatusChange(message: ParticipantStatusMessage): any {
-    const participant = this.hearing.getConference().participants.find(p => p.username.toLowerCase() === message.email.toLowerCase());
+    const participant = this.hearing.getConference().participants.find(p => p.id === message.participantId);
     participant.status = message.status;
     if (message.status !== ParticipantStatus.InConsultation) {
       this.isAdminConsultation = false;
