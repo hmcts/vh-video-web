@@ -95,7 +95,7 @@ export class JudgeWaitingRoomComponent implements OnInit {
   }
 
   handleParticipantStatusChange(message: ParticipantStatusMessage): any {
-    const participant = this.conference.participants.find(p => p.username.toLowerCase().trim() === message.email.toLowerCase().trim());
+    const participant = this.conference.participants.find(p => p.id === message.participantId);
     const status = <ParticipantStatus>message.status;
     participant.status = status;
   }
