@@ -282,14 +282,10 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       if (outStream) {
         const selfvideo = document.getElementById('outgoingFeedVideo') as any;
         if (selfvideo) {
-          if (typeof (MediaStream) !== 'undefined' && outStream instanceof MediaStream) {
-            selfvideo.srcObject = outStream;
-          } else {
-            selfvideo.src = outStream;
-          }
+          this.assignStream(selfvideo, outStream);
         }
       }
-      // this.showSelfView = false;
+
       this.selfViewOpen = false;
       this.connect('0000', null);
     };
@@ -303,11 +299,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       if (inStream) {
         const incomingFeedElemenet = document.getElementById('incomingFeed') as any;
         if (incomingFeedElemenet) {
-          if (typeof (MediaStream) !== 'undefined' && inStream instanceof MediaStream) {
-            incomingFeedElemenet.srcObject = inStream;
-          } else {
-            incomingFeedElemenet.src = inStream;
-          }
+          this.assignStream(incomingFeedElemenet, inStream);
         }
       }
 
@@ -402,6 +394,14 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     return this.selfViewOpen = !this.selfViewOpen;
   }
 
+  assignStream(videoElement, stream) {
+    if (typeof (MediaStream) !== "undefined" && stream instanceof MediaStream) {
+      videoElement.srcObject = stream;
+    } else {
+      videoElement.src = stream;
+    }
+  }
+  
   getConferenceClosedTime(conferenceId: string): void {
     this.videoWebService.getConferenceById(conferenceId)
       .subscribe(async (data: ConferenceResponse) => {
