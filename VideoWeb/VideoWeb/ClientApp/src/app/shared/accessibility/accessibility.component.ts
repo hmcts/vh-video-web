@@ -12,21 +12,16 @@ export class AccessibilityComponent implements OnInit {
 
   constructor() { }
   ngOnInit() {
-    console.log('Accessibility ->');
   }
   goToDiv(fragment: string): void {
     window.document.getElementById(fragment).scrollIntoView();
   }
 
   scrollHandler(e) {
-    console.log('444444444');
-    console.log(this.isVisibleContents);
     this.isVisibleContents = e.makeVisible;
   }
 
   scrollFooter(e) {
-    console.log('242342343244');
-    console.log(this.isFooter);
     this.isFooter = !e.footer;
   }
 }
