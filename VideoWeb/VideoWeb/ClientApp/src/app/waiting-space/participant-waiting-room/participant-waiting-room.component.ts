@@ -284,16 +284,9 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       if (outStream) {
         const selfvideo = document.getElementById('outgoingFeedVideo') as any;
         if (selfvideo) {
-          //if (typeof (MediaStream) !== 'undefined' && outStream instanceof MediaStream) {
-          //  selfvideo.srcObject = outStream;
-          //} else {
-          //  selfvideo.src = outStream;
-          //}
           MediaObject.assignStream(selfvideo, outStream);
         }
       }
-      // this.showSelfView = false;
-      // this.selfViewOpen = false;
       this.connect('0000', null);
     };
 
@@ -306,11 +299,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       if (inStream) {
         const incomingFeedElement = document.getElementById('incomingFeed') as any;
         if (incomingFeedElement) {
-          //if (typeof (MediaStream) !== 'undefined' && inStream instanceof MediaStream) {
-          //  incomingFeedElemenet.srcObject = inStream;
-          //} else {
-          //  incomingFeedElemenet.src = inStream;
-          //}
           MediaObject.assignStream(incomingFeedElement, inStream);
         }
       }
