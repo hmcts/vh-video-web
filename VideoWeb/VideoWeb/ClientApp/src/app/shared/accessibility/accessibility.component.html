@@ -8,7 +8,7 @@
     <nav role="navigation">
       <span class="govuk-body">Contents</span>
 
-      <div id="contents">
+      <div id="contents" appScrollTrigger (scrolledPast)="scrollHandler($event)" (scrollFooter)="scrollFooter($event)">
         <ol class="vh-text">
           <li class="vh-text">
             <a class="govuk-link" href="javascript:void(0)" (click)="goToDiv('accessibilityStatment')">
@@ -21,12 +21,14 @@
             </a>
           </li>
           <li class="vh-text">
-            <a class="govuk-link" href="javascript:void(0)" (click)="goToDiv('what-to-do-if-you-cant-access-parts-of-this-website')">
+            <a class="govuk-link" href="javascript:void(0)"
+              (click)="goToDiv('what-to-do-if-you-cant-access-parts-of-this-website')">
               What to do if you cannot access parts of this website
             </a>
           </li>
           <li class="vh-text">
-            <a class="govuk-link" href="javascript:void(0)" (click)="goToDiv('reporting-accessibility-problems-with-this-website')">
+            <a class="govuk-link" href="javascript:void(0)"
+              (click)="goToDiv('reporting-accessibility-problems-with-this-website')">
               Reporting accessibility problems with this website
             </a>
           </li>
@@ -46,7 +48,8 @@
             </a>
           </li>
           <li class="vh-text">
-            <a class="govuk-link" href="javascript:void(0)" (click)="goToDiv('non-compliance-with-the-accessibility-regulations')">
+            <a class="govuk-link" href="javascript:void(0)"
+              (click)="goToDiv('non-compliance-with-the-accessibility-regulations')">
               Non compliance with the accessibility regulations
             </a>
           </li>
@@ -93,7 +96,8 @@
         <p class="govuk-body">We’ve also made the website text as simple as possible
           to understand.</p>
         <p class="govuk-body">
-          <a class="govuk-link" rel="external" href="https://mcmw.abilitynet.org.uk/">AbilityNet</a> has advice on making your device
+          <a class="govuk-link" rel="external" href="https://mcmw.abilitynet.org.uk/">AbilityNet</a> has advice on
+          making your device
           easier to use if you have a disability.
         </p>
       </div>
@@ -156,8 +160,9 @@
       <p class="govuk-body">
         The Equality and Human Rights Commission (EHRC) is responsible for enforcing the
         Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018
-        (the ‘accessibility regulations’). If you’re not happy with how we respond to your complaint, <a class="govuk-link" rel="external"
-          href="https://www.equalityadvisoryservice.com/">contact the Equality Advisory and Support Service (EASS)</a>.
+        (the ‘accessibility regulations’). If you’re not happy with how we respond to your complaint, <a
+          class="govuk-link" rel="external" href="https://www.equalityadvisoryservice.com/">contact the Equality
+          Advisory and Support Service (EASS)</a>.
       </p>
     </div>
 
@@ -173,7 +178,8 @@
       </p>
 
       <p class="govuk-body">
-        This website is partially compliant with the <a class="govuk-link" rel="external" href="https://www.w3.org/TR/WCAG21/">Web Content
+        This website is partially compliant with the <a class="govuk-link" rel="external"
+          href="https://www.w3.org/TR/WCAG21/">Web Content
           Accessibility Guidelines version 2.1</a> AA standard,
         due to the non-compliances listed below.
       </p>
@@ -275,8 +281,8 @@
   </div>
 </div>
 
-<div data-sticky-element id="sticky-element">
-  <a  class="app-c-back-to-top dont-print govuk-link" href="javascript:void(0)" (click)="goToDiv('accessContent')">
+<div data-sticky-element [ngClass]="{'govuk-sticky-element-footer': sFooter, 'govuk-sticky-element': !isFooter}" *ngIf="!isVisibleContents" id="sticky-element">
+  <a class="app-c-back-to-top dont-print" href="javascript:void(0)" (click)="goToDiv('accessContent')">
     <svg class="app-c-back-to-top__icon" xmlns="http://www.w3.org/2000/svg" width="13" height="17" viewbox="0 0 13 17">
       <path fill="currentColor" d="M6.5 0L0 6.5 1.4 8l4-4v12.7h2V4l4.3 4L13 6.4z"></path>
     </svg>

@@ -22,6 +22,8 @@ import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.componen
 import { ModalComponent } from './modal/modal.component';
 import { BetaBannerComponent } from './beta-banner/beta-banner.component';
 import { AccessibilityComponent } from './accessibility/accessibility.component';
+import { WindowScrolling } from './directives/window-scrolling';
+import { ScrollTriggerDirective } from './directives/scroll-trigger.directive';
 
 @NgModule({
   imports: [
@@ -49,11 +51,13 @@ import { AccessibilityComponent } from './accessibility/accessibility.component'
     PrivacyPolicyComponent,
     ModalComponent,
     BetaBannerComponent,
-    AccessibilityComponent
+    AccessibilityComponent,
+    ScrollTriggerDirective
   ],
   providers: [
     { provide: 'SnotifyToastConfig', useValue: ToastDefaults},
-    SnotifyService
+    SnotifyService,
+    WindowScrolling
   ],
   exports: [
     HeaderComponent,
@@ -71,7 +75,8 @@ import { AccessibilityComponent } from './accessibility/accessibility.component'
     HttpClientModule,
     SnotifyModule,
     DeviceDetectorModule,
-    BetaBannerComponent
+    BetaBannerComponent,
+    ScrollTriggerDirective
   ]
 })
 export class SharedModule { }
