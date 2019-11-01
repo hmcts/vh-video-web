@@ -69,7 +69,7 @@ namespace VideoWeb.AcceptanceTests.Users
                 .Execute(action);
         }
 
-        public string SwitchTab(string title)
+        public string SwitchTabByTitle(string title)
         {
             foreach (var window in Driver.WrappedDriver.WindowHandles)
             {
@@ -80,6 +80,19 @@ namespace VideoWeb.AcceptanceTests.Users
                 }
             }
             throw new ArgumentException($"No windows with title '{title}' were found.");
+        }
+
+        public string SwitchTabByUrl(string url)
+        {
+            foreach (var window in Driver.WrappedDriver.WindowHandles)
+            {
+                var tab = Driver.SwitchTo().Window(window);
+                if (tab.Url.Trim().ToLower().Contains(url.ToLower()))
+                {
+                    return window;
+                }
+            }
+            throw new ArgumentException($"No windows with url '{url}' were found.");
         }
 
         public void BrowserTearDown()
