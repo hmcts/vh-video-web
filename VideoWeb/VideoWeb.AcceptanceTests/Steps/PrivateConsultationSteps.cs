@@ -20,7 +20,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly CommonSteps _commonSteps;
         private readonly WaitingRoomPage _page;
         private const int SecondsWaitToCallAndAnswer = 3;
-        private const int ExtraTimeToConnectTheParticipantsInSaucelabs = 120;
+        private const int ExtraTimeToConnectTheParticipantsInSaucelabs = 300;
 
         public PrivateConsultationSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, 
             CommonSteps commonSteps, WaitingRoomPage page)
