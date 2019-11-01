@@ -66,6 +66,12 @@ namespace VideoWeb.AcceptanceTests.Steps
                 throw new ArgumentOutOfRangeException($"There are no users configured called '{user}'");
         }
 
+        [When(@"switches to the (.*) tab")]
+        public void WhenSwitchesToTheNewTab(string url)
+        {
+            _browsers[_tc.CurrentUser.Key].LastWindowName = _browsers[_tc.CurrentUser.Key].SwitchTabByUrl(url);
+        }
+
         [When(@"the user clicks the (.*) button")]
         public void WhenTheUserClicksTheButton(string label)
         {
@@ -105,6 +111,21 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 _commonPages.TheCaseNumberIsDisplayedInTheContactDetails(_tc.Hearing.Cases.First().Number)
                     .Should().BeFalse();
+            }
+        }
+
+        [Then(@"the banner should (.*) displayed")]
+        public void ThenTheBannerShouldNotBeDisplayed(string expected)
+        {
+            if (expected.ToLower().Equals("not be"))
+            { 
+                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementNotVisible(_commonPages.BetaBanner)
+                    .Should().BeTrue();
+            }
+            else
+            {
+                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_commonPages.BetaBanner)
+                    .Displayed.Should().BeTrue();
             }
         }
 
