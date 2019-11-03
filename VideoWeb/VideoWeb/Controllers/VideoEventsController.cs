@@ -8,6 +8,7 @@ using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
+using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.Controllers
 {
@@ -54,9 +55,11 @@ namespace VideoWeb.Controllers
 
                 var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
                 await handler.HandleAsync(callbackEvent);
+                if (callbackEvent.EventType != EventType.VhoCall)
+                {
+                    await _videoApiClient.RaiseVideoEventAsync(request);
+                }
 
-                await _videoApiClient.RaiseVideoEventAsync(request);
-                
                 return NoContent();
             }
             catch (VideoApiException e)
