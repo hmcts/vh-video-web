@@ -18,3 +18,4 @@ Scenario: Unauthorised error page
 	Given a new browser is open for a Case admin
 	When the user attempts to login with valid credentials
 	Then the user is on the Unauthorised page
+	And the Unauthorised error page displays text of how to rectify the problem
