@@ -13,6 +13,7 @@ Scenario: Page not found error
 	And the Not Found error page displays text of how to rectify the problem
 	And contact us details are available
 
+@VIH-5235
 Scenario: Unauthorised error page
 	Given a new browser is open for a Case admin
 	When the user attempts to login with valid credentials
