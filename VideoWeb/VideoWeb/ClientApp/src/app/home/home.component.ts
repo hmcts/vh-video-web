@@ -35,10 +35,10 @@ export class HomeComponent implements OnInit {
       this.router.navigate([PageUrls.JudgeHearingList]);
     } else if (userProfile.role === UserRole.VideoHearingsOfficer) {
       this.router.navigate([PageUrls.AdminHearingList]);
-    } else if (userProfile.role === UserRole.CaseAdmin) {
-      this.router.navigate([PageUrls.Unauthorised]);
-    } else {
+    } else if (userProfile.role === UserRole.Individual || userProfile.role === UserRole.Representative) {
       this.router.navigate([PageUrls.ParticipantHearingList]);
+    } else {
+      this.router.navigate([PageUrls.Unauthorised]);
     }
   }
 }
