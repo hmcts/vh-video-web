@@ -35,6 +35,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly Page Feedback = new Page("Feedback", "VideoHearings_Feedback");
         public static readonly Page PrivacyPolicy = new Page("Privacy Policy", "privacy-policy");
         public static readonly Page Accessibility = new Page("Accessibility", "accessibility");
+        public static readonly Page OpenGovernmentLicence = new Page("Open Government Licence", "open-government-licence");
 
         public string ToString(Page page)
         {
@@ -78,6 +79,7 @@ namespace VideoWeb.AcceptanceTests.Pages
                 yield return Feedback;
                 yield return PrivacyPolicy;
                 yield return Accessibility;
+                yield return OpenGovernmentLicence;
             }
         }
     }
