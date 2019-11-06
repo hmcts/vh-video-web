@@ -32,6 +32,10 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly Page NotFound = new Page("Not Found", "not-found");
         public static readonly Page Unauthorised = new Page("Unauthorised", "unauthorised");
         public static readonly Page Help = new Page("Help", "get-help");
+        public static readonly Page Feedback = new Page("Feedback", "VideoHearings_Feedback");
+        public static readonly Page PrivacyPolicy = new Page("Privacy Policy", "privacy-policy");
+        public static readonly Page Accessibility = new Page("Accessibility", "accessibility");
+        public static readonly Page OpenGovernmentLicence = new Page("Open Government Licence", "open-government-licence");
 
         public string ToString(Page page)
         {
@@ -72,6 +76,10 @@ namespace VideoWeb.AcceptanceTests.Pages
                 yield return NotFound;
                 yield return Unauthorised;
                 yield return Help;
+                yield return Feedback;
+                yield return PrivacyPolicy;
+                yield return Accessibility;
+                yield return OpenGovernmentLicence;
             }
         }
     }

@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, OnDestroy, HostListener
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
   ConferenceResponse, ParticipantResponse, TokenResponse, TestCallScoreResponse, TestScore,
-  AddSelfTestFailureEventRequest, SelfTestFailureReason, SelfTestPexipResponse
+  AddSelfTestFailureEventRequest, SelfTestFailureReason, SelfTestPexipResponse, UserRole
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -240,7 +240,9 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         reason = SelfTestFailureReason.IncompleteTest;
       }
 
-      await this.raiseFailedSelfTest(reason);
+      if (reason) {
+        await this.raiseFailedSelfTest(reason);
+      }
     }
   }
 
@@ -253,15 +255,14 @@ export class SelfTestComponent implements OnInit, OnDestroy {
       participant_id: this.selfTestParticipantId,
       self_test_failure_reason: reason
     });
-    if (this.conference) {
+    if (this.conference && this.participant.role !== UserRole.Judge) {
       try {
         await this.videoWebService.raiseSelfTestFailureEvent(this.conference.id, request).toPromise();
-        this.logger.info(`Notified failed test test because of ${reason}`);
+        this.logger.info(`Notified failed self test because of ${reason}`);
         this.scoreSent = true;
       } catch (err) {
         this.logger.error('There was a problem raising a failed self test event', err);
       }
     }
-
   }
 }

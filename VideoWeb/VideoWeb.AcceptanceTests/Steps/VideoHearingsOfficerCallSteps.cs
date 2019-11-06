@@ -47,7 +47,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_adminPage.ParticipantInIframe(participant.Display_name)).Click();
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_adminPage.VhoPrivateConsultationLink(participant.Id)).Click();
 
-            _browsers[_tc.CurrentUser.Key].LastWindowName = _browsers[_tc.CurrentUser.Key].SwitchTab("Private Consultation");
+            _browsers[_tc.CurrentUser.Key].LastWindowName = _browsers[_tc.CurrentUser.Key].SwitchTabByTitle("Private Consultation");
 
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_adminPage.CloseButton).
                 Displayed.Should().BeTrue();
@@ -71,7 +71,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _commonSteps.GivenInTheUsersBrowser(user);
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_adminPage.CloseButton).Click();
-            _browsers[_tc.CurrentUser.Key].LastWindowName = _browsers[_tc.CurrentUser.Key].SwitchTab("Video Hearings");
+            _browsers[_tc.CurrentUser.Key].LastWindowName = _browsers[_tc.CurrentUser.Key].SwitchTabByTitle("Video Hearings");
         }
 
         [Then(@"the (.*) can see and hear the other user")]

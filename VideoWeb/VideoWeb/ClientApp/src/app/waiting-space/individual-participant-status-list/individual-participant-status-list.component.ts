@@ -127,7 +127,8 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   }
 
   handleParticipantStatusChange(message: ParticipantStatusMessage): void {
-    const isCurrentUser = this.adalService.userInfo.userName.toLocaleLowerCase() === message.email.toLowerCase();
+    // const isCurrentUser = this.adalService.userInfo.userName.toLocaleLowerCase() === message.email.toLowerCase();
+    const isCurrentUser = this.conference.participants.find(p => p.id === message.participantId);
     if (isCurrentUser && message.status === ParticipantStatus.InConsultation) {
       this.closeAllPCModals();
     }
