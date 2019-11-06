@@ -18,8 +18,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { Subscription } from 'rxjs';
-import { MediaObject } from '../../shared/utility/media-object';
-
 declare var PexRTC: any;
 declare var HeartbeatFactory: any;
 
@@ -49,7 +47,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   hearingAlertSound: HTMLAudioElement;
 
   showVideo: boolean;
-  showSelfView: boolean;
   showConsultationControls: boolean;
   selfViewOpen: boolean;
   isAdminConsultation: boolean;
@@ -77,9 +74,8 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     this.isAdminConsultation = false;
     this.loadingData = true;
     this.showVideo = false;
-    this.showSelfView = false;
     this.showConsultationControls = false;
-    this.selfViewOpen = true;
+    this.selfViewOpen = false;
   }
 
   ngOnInit() {
@@ -109,7 +105,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     this.outgoingStream = null;
     this.connected = false;
     this.showVideo = false;
-    this.showSelfView = false;
   }
 
   initHearingAlert() {
@@ -271,37 +266,22 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     const preferredMic = await this.userMediaService.getPreferredMicrophone();
     if (preferredMic) {
-      const deviceId = this.userMediaService.getDeviceId(preferredMic.label);
-      this.pexipAPI.audio_source = deviceId;
+      this.pexipAPI.audio_source = preferredMic.deviceId;
       self.logger.info(`Using preferred microphone: ${preferredMic.label}`);
     }
 
-    this.pexipAPI.onSetup = function (outStream, pin_status, conference_extension) {
+    this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
       self.logger.info('running pexip setup');
-      this.showSelfView = true;
-      this.selfViewOpen = true;
-
-      if (outStream) {
-        const selfvideo = document.getElementById('outgoingFeedVideo') as any;
-        if (selfvideo) {
-          MediaObject.assignStream(selfvideo, outStream);
-        }
-      }
       this.connect('0000', null);
+      self.outgoingStream = stream;
     };
 
-    this.pexipAPI.onConnect = function (inStream) {
+    this.pexipAPI.onConnect = function (stream) {
       self.errorCount = 0;
       self.connected = true;
       self.updateShowVideo();
       self.logger.info('successfully connected to call');
-
-      if (inStream) {
-        const incomingFeedElement = document.getElementById('incomingFeed') as any;
-        if (incomingFeedElement) {
-          MediaObject.assignStream(incomingFeedElement, inStream);
-        }
-      }
+      self.stream = stream;
 
       const baseUrl = self.conference.pexip_node_uri.replace('sip.', '');
       const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${self.conference.id}`;
@@ -353,7 +333,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   updateShowVideo(): void {
     if (!this.connected) {
       this.logger.debug('Not showing video because not connecting to node');
-      this.showSelfView = false;
       this.showVideo = false;
       this.showConsultationControls = false;
       return;
@@ -361,7 +340,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     if (this.hearing.isInSession()) {
       this.logger.debug('Showing video because hearing is in session');
-      this.showSelfView = true;
       this.showVideo = true;
       this.showConsultationControls = false;
       return;
@@ -369,14 +347,12 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     if (this.participant.status === ParticipantStatus.InConsultation) {
       this.logger.debug('Showing video because hearing is in session');
-      this.showSelfView = true;
       this.showVideo = true;
       this.showConsultationControls = !this.isAdminConsultation;
       return;
     }
 
     this.logger.debug('Not showing video because hearing is not in session and user is not in consultation');
-    this.showSelfView = false;
     this.showVideo = false;
     this.showConsultationControls = false;
   }
