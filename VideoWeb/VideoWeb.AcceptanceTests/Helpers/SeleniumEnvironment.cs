@@ -41,11 +41,10 @@ namespace VideoWeb.AcceptanceTests.Helpers
             switch (_targetBrowser)
             {
                 case TargetBrowser.Firefox:
-                    var profile = new Dictionary<string, object>
-                    {
-                        ["args"] = new List<string>{ "media.navigator.permission.disabled", "media.navigator.streams.fake"}
-                    };
-                    caps.SetCapability(FirefoxDriver.ProfileCapabilityName, profile);
+                    var options = new FirefoxOptions();
+                    options.SetPreference("media.navigator.streams.fake", true);
+                    options.SetPreference("media.navigator.permission.disabled", true);
+                    caps.SetCapability("moz:firefoxOptions", options.ToCapabilities());
                     caps.SetCapability("browserName", "Firefox");
                     caps.SetCapability("platform", "Windows 10");
                     caps.SetCapability("version", "latest");
