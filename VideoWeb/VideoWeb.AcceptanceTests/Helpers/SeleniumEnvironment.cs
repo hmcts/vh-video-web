@@ -36,12 +36,13 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
         private IWebDriver InitialiseSauceLabsDriver()
         {
+            var buildName = $"{Environment.GetEnvironmentVariable("Build_DefinitionName")} {Environment.GetEnvironmentVariable("RELEASE_RELEASENAME")}";
             var sauceOptions = new Dictionary<string, object>
             {
                 {"username", _saucelabsSettings.Username},
                 {"accessKey", _saucelabsSettings.AccessKey},
                 {"name", _scenario.Title},
-                {"build", $"{Environment.GetEnvironmentVariable("Build_DefinitionName")} {Environment.GetEnvironmentVariable("RELEASE_RELEASENAME")}"},
+                {"build", buildName},
                 {"idleTimeout", SaucelabsIdleTimeoutInSeconds},
                 {"seleniumVersion", SauceLabSeleniumVersion},
                 {
