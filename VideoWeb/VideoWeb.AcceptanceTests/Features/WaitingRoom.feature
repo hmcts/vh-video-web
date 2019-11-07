@@ -4,7 +4,7 @@ Feature: Waiting Room
 	I need to access a waiting room prior to my hearing
 	So that I am ready for the video hearing to begin
 
-@VIH-4233
+@VIH-4233 @Smoketest
 Scenario: Participant waiting room
 	Given the Participant user has progressed to the Waiting Room page
 	Then the user is on the Waiting Room page
