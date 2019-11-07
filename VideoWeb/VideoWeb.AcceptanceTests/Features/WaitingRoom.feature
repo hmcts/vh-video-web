@@ -4,7 +4,7 @@ Feature: Waiting Room
 	I need to access a waiting room prior to my hearing
 	So that I am ready for the video hearing to begin
 
-@VIH-4233 @Smoketest
+@VIH-4233
 Scenario: Participant waiting room
 	Given the Participant user has progressed to the Waiting Room page
 	Then the user is on the Waiting Room page
@@ -13,7 +13,7 @@ Scenario: Participant waiting room
 	And the user can see a list of participants and their representatives
 	And the user can see a black box and an about to begin message
 
-@VIH-4610 @Smoketest
+@VIH-4610
 Scenario: Clerk waiting room
 	Given the Clerk user has progressed to the Waiting Room page
 	Then the user is on the Waiting Room page

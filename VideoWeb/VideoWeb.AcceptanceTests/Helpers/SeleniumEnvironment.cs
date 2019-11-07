@@ -19,6 +19,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
         private const string SaucelabsWindowsScreenResolution = "1920x1200";
         private const string SaucelabsMacScreenResolution = "2048x1536";
         private const int SaucelabsIdleTimeoutInSeconds = 60 * 30;
+        private const int SaucelabsCommandTimeoutInSeconds = 60 * 3;
         private const string SauceLabSeleniumVersion = "3.141.59";
 
         public SeleniumEnvironment(SauceLabsSettings saucelabsSettings, ScenarioInfo scenario, TargetBrowser targetBrowser)
@@ -39,11 +40,8 @@ namespace VideoWeb.AcceptanceTests.Helpers
             {
                 {"username", _saucelabsSettings.Username},
                 {"accessKey", _saucelabsSettings.AccessKey},
-                {"name", TestContext.CurrentContext.Test.Name},
-                {
-                    "build",
-                    $"{Environment.GetEnvironmentVariable("Build_DefinitionName")} {Environment.GetEnvironmentVariable("RELEASE_RELEASENAME")}"
-                },
+                {"name", _scenario.Title},
+                {"build", $"{Environment.GetEnvironmentVariable("Build_DefinitionName")} {Environment.GetEnvironmentVariable("RELEASE_RELEASENAME")}"},
                 {"idleTimeout", SaucelabsIdleTimeoutInSeconds},
                 {"seleniumVersion", SauceLabSeleniumVersion},
                 {
@@ -63,10 +61,11 @@ namespace VideoWeb.AcceptanceTests.Helpers
             };
 
             drivers[TargetBrowser.IE11].SauceOptions = sauceOptions;
-            drivers[TargetBrowser.IE11].Timeout = TimeSpan.FromSeconds(SaucelabsIdleTimeoutInSeconds);
+            drivers[TargetBrowser.IE11].IdleTimeout = TimeSpan.FromSeconds(SaucelabsIdleTimeoutInSeconds);
+            drivers[TargetBrowser.IE11].Timeout = TimeSpan.FromSeconds(SaucelabsCommandTimeoutInSeconds);
             drivers[TargetBrowser.IE11].Uri = new Uri(_saucelabsSettings.RemoteServerUrl);
             
-            return drivers[TargetBrowser.IE11].Initialise();
+            return drivers[_targetBrowser].Initialise();
         }
 
         private static IWebDriver InitialiseLocalDriver(string filename, ScenarioInfo scenario)

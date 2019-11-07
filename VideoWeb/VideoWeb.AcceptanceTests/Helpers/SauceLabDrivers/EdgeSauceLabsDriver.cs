@@ -7,7 +7,7 @@ namespace VideoWeb.AcceptanceTests.Helpers.SauceLabDrivers
     {
         public override RemoteWebDriver Initialise()
         {
-            var edgeOptions = new EdgeOptions() { PlatformName = "Windows 10", BrowserVersion = "latest"};
+            var edgeOptions = new EdgeOptions() { PlatformName = "Windows 10", BrowserVersion = "latest", AcceptInsecureCertificates = true };
             edgeOptions.AddAdditionalCapability("dom.webnotifications.enabled", 1);
             edgeOptions.AddAdditionalCapability("permissions.default.microphone", 1);
             edgeOptions.AddAdditionalCapability("permissions.default.camera", 1);

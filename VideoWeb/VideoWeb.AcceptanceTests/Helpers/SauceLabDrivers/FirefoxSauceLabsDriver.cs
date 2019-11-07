@@ -7,7 +7,7 @@ namespace VideoWeb.AcceptanceTests.Helpers.SauceLabDrivers
     {
         public override RemoteWebDriver Initialise()
         {
-            var ffOptions = new FirefoxOptions { PlatformName = "Windows 10", BrowserVersion = "latest" };
+            var ffOptions = new FirefoxOptions { PlatformName = "Windows 10", BrowserVersion = "latest", AcceptInsecureCertificates = true };
             ffOptions.SetPreference("media.navigator.streams.fake", true);
             ffOptions.SetPreference("media.navigator.permission.disabled", true);
             ffOptions.AddAdditionalCapability("sauce:options", SauceOptions, true);
