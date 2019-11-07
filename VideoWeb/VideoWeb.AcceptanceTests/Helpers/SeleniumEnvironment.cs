@@ -6,9 +6,8 @@ using System.Reflection;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Firefox;
-using OpenQA.Selenium.Remote;
 using TechTalk.SpecFlow;
+using VideoWeb.AcceptanceTests.Helpers.SauceLabDrivers;
 
 namespace VideoWeb.AcceptanceTests.Helpers
 {
@@ -38,23 +37,20 @@ namespace VideoWeb.AcceptanceTests.Helpers
             {
                 {"username", _saucelabsSettings.Username},
                 {"accessKey", _saucelabsSettings.AccessKey},
-                {"name", TestContext.CurrentContext.Test.Name}
+                {"name", TestContext.CurrentContext.Test.Name},
+                {"screenResolution", SaucelabsScreenResolution}
             };
 
-            // Set up the browser options
-            var ffOptions = new FirefoxOptions {PlatformName = "Windows 10", BrowserVersion = "latest"};
+            var drivers = new Dictionary<TargetBrowser, SaucelabsDriver>
+            {
+                {TargetBrowser.Chrome, new ChromeSauceLabsDriver()},
+                {TargetBrowser.Firefox, new FirefoxSauceLabsDriver()},
+            };
 
-            // Add section that allows access to the device camera and microphone and fakes a video stream
-            ffOptions.SetPreference("media.navigator.streams.fake", true);
-            ffOptions.SetPreference("media.navigator.permission.disabled", true);
-
-            // seleniumVersion is REQUIRED for any browser other than Chrome
-            sauceOptions.Add("seleniumVersion", "3.141.59");
-
-            ffOptions.AddAdditionalCapability("sauce:options", sauceOptions, true);
-
-            var uri = new Uri(_saucelabsSettings.RemoteServerUrl);
-            return new RemoteWebDriver(uri, ffOptions);
+            drivers[_targetBrowser].SauceOptions = sauceOptions;
+            drivers[_targetBrowser].Timeout = TimeSpan.FromSeconds(SaucelabsIdleTimeoutInSeconds);
+            drivers[_targetBrowser].Uri = new Uri(_saucelabsSettings.RemoteServerUrl);
+            return drivers[_targetBrowser].Initialise();
 
 
 

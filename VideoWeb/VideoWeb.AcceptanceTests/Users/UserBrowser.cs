@@ -97,8 +97,8 @@ namespace VideoWeb.AcceptanceTests.Users
 
         public void BrowserTearDown()
         {
-            Driver.Quit();
-            Driver.Dispose();
+            Driver?.Quit();
+            Driver?.Dispose();
         }
     }
 }
