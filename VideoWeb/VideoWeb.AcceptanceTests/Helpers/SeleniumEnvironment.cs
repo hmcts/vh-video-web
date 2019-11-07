@@ -38,19 +38,22 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 {"username", _saucelabsSettings.Username},
                 {"accessKey", _saucelabsSettings.AccessKey},
                 {"name", TestContext.CurrentContext.Test.Name},
-                {"screenResolution", SaucelabsScreenResolution}
+                {"build", $"{Environment.GetEnvironmentVariable("Build_DefinitionName")} {Environment.GetEnvironmentVariable("RELEASE_RELEASENAME")}"},
+                {"screenResolution", SaucelabsScreenResolution},
+                {"idleTimeout", SaucelabsIdleTimeoutInSeconds}
             };
 
             var drivers = new Dictionary<TargetBrowser, SaucelabsDriver>
             {
                 {TargetBrowser.Chrome, new ChromeSauceLabsDriver()},
                 {TargetBrowser.Firefox, new FirefoxSauceLabsDriver()},
+                {TargetBrowser.Edge, new EdgeSauceLabsDriver() }
             };
 
-            drivers[_targetBrowser].SauceOptions = sauceOptions;
-            drivers[_targetBrowser].Timeout = TimeSpan.FromSeconds(SaucelabsIdleTimeoutInSeconds);
-            drivers[_targetBrowser].Uri = new Uri(_saucelabsSettings.RemoteServerUrl);
-            return drivers[_targetBrowser].Initialise();
+            drivers[TargetBrowser.Edge].SauceOptions = sauceOptions;
+            drivers[TargetBrowser.Edge].Timeout = TimeSpan.FromSeconds(SaucelabsIdleTimeoutInSeconds);
+            drivers[TargetBrowser.Edge].Uri = new Uri(_saucelabsSettings.RemoteServerUrl);
+            return drivers[TargetBrowser.Edge].Initialise();
 
 
 
