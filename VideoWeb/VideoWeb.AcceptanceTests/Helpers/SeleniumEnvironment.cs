@@ -18,6 +18,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
         private static TargetBrowser _targetBrowser;
         private const string SaucelabsScreenResolution = "1920x1200";
         private const int SaucelabsIdleTimeoutInSeconds = 60 * 30;
+        private const string SauceLabSeleniumVersion = "3.141.59";
 
         public SeleniumEnvironment(SauceLabsSettings saucelabsSettings, ScenarioInfo scenario, TargetBrowser targetBrowser)
         {
@@ -47,13 +48,16 @@ namespace VideoWeb.AcceptanceTests.Helpers
             {
                 {TargetBrowser.Chrome, new ChromeSauceLabsDriver()},
                 {TargetBrowser.Firefox, new FirefoxSauceLabsDriver()},
-                {TargetBrowser.Edge, new EdgeSauceLabsDriver() }
+                {TargetBrowser.Edge, new EdgeSauceLabsDriver() },
+                {TargetBrowser.IE11, new InternetExplorerSauceLabsDriver() },
+                {TargetBrowser.Safari, new SafariSauceLabsDriver() }
             };
 
-            drivers[TargetBrowser.Edge].SauceOptions = sauceOptions;
-            drivers[TargetBrowser.Edge].Timeout = TimeSpan.FromSeconds(SaucelabsIdleTimeoutInSeconds);
-            drivers[TargetBrowser.Edge].Uri = new Uri(_saucelabsSettings.RemoteServerUrl);
-            return drivers[TargetBrowser.Edge].Initialise();
+            drivers[TargetBrowser.Safari].SauceOptions = sauceOptions;
+            drivers[TargetBrowser.Safari].Timeout = TimeSpan.FromSeconds(SaucelabsIdleTimeoutInSeconds);
+            drivers[TargetBrowser.Safari].Uri = new Uri(_saucelabsSettings.RemoteServerUrl);
+            drivers[TargetBrowser.Safari].SeleniumVersion = SauceLabSeleniumVersion;
+            return drivers[TargetBrowser.Safari].Initialise();
 
 
 
