@@ -65,7 +65,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             drivers[TargetBrowser.IE11].Timeout = TimeSpan.FromSeconds(SaucelabsCommandTimeoutInSeconds);
             drivers[TargetBrowser.IE11].Uri = new Uri(_saucelabsSettings.RemoteServerUrl);
             
-            return drivers[_targetBrowser].Initialise();
+            return drivers[TargetBrowser.IE11].Initialise();
         }
 
         private static IWebDriver InitialiseLocalDriver(string filename, ScenarioInfo scenario)
