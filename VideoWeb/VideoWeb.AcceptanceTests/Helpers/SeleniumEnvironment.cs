@@ -29,77 +29,109 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
         public IWebDriver GetDriver(string filename)
         {
-            return _saucelabsSettings.RunWithSaucelabs ? InitSauceLabsDriver() : InitLocalDriver(filename,  _scenario);
+            return _saucelabsSettings.RunWithSaucelabs ? InitialiseSauceLabsDriver() : InitLocalDriver(filename,  _scenario);
         }
 
-        private IWebDriver InitSauceLabsDriver()
+        private IWebDriver InitialiseSauceLabsDriver()
         {
-#pragma warning disable 618
-            // disable warning of using desired capabilities
-
-            var caps = new DesiredCapabilities();
-            switch (_targetBrowser)
+            var sauceOptions = new Dictionary<string, object>
             {
-                case TargetBrowser.Firefox:
-                    var options = new FirefoxOptions();
-                    options.SetPreference("media.navigator.streams.fake", true);
-                    options.SetPreference("media.navigator.permission.disabled", true);
-                    caps.SetCapability("moz:firefoxOptions", options.ToCapabilities());
-                    caps.SetCapability("browserName", "Firefox");
-                    caps.SetCapability("platform", "Windows 10");
-                    caps.SetCapability("version", "latest");
-                    caps.SetCapability("autoAcceptAlerts", true);
-                    break;
-                case TargetBrowser.Safari:
-                    caps.SetCapability("browserName", "Safari");
-                    caps.SetCapability("platform", "macOS 10.14");
-                    caps.SetCapability("version", "12.0");
-                    break;
-                case TargetBrowser.Edge:
-                    caps.SetCapability("browserName", "MicrosoftEdge");
-                    caps.SetCapability("platform", "Windows 10");
-                    caps.SetCapability("version", "16.16299");
-                    caps.SetCapability("dom.webnotifications.enabled", 1);
-                    caps.SetCapability("permissions.default.microphone", 1);
-                    caps.SetCapability("permissions.default.camera", 1);
-                    break;
-                case TargetBrowser.IE11:
-                    caps.SetCapability("browserName", "Internet Explorer");
-                    caps.SetCapability("platform", "Windows 10");
-                    caps.SetCapability("version", "11.285");
-                    break;
-                case TargetBrowser.IPhoneSafari:
-                    caps.SetCapability("appiumVersion", "1.9.1");
-                    caps.SetCapability("deviceName", "iPhone 8 Simulator");
-                    caps.SetCapability("deviceOrientation", "portrait");
-                    caps.SetCapability("platformVersion", "12.0");
-                    caps.SetCapability("platformName", "iOS");
-                    caps.SetCapability("browserName", "Safari");
-                    break;
-                default:
-                    caps.SetCapability("browserName", "Chrome");
-                    caps.SetCapability("platform", "Windows 10");
-                    caps.SetCapability("version", "78.0");
-                    caps.SetCapability("autoAcceptAlerts", true);
-                    var chromeOptions = new Dictionary<string, List<string>>
-                    {
-                        ["args"] = new List<string>{ "use-fake-ui-for-media-stream", "use-fake-device-for-media-stream" }
-                    };                    
-                    caps.SetCapability(ChromeOptions.Capability, chromeOptions);
-                    break;
-            }
+                {"username", _saucelabsSettings.Username},
+                {"accessKey", _saucelabsSettings.AccessKey},
+                {"name", TestContext.CurrentContext.Test.Name}
+            };
 
-            caps.SetCapability("name", _scenario.Title);
-            caps.SetCapability("build", $"{Environment.GetEnvironmentVariable("Build_DefinitionName")} {Environment.GetEnvironmentVariable("RELEASE_RELEASENAME")}");
-            caps.SetCapability("screenResolution", SaucelabsScreenResolution);
-            caps.SetCapability("idleTimeout", SaucelabsIdleTimeoutInSeconds);
+            // Set up the browser options
+            var ffOptions = new FirefoxOptions {PlatformName = "Windows 10", BrowserVersion = "latest"};
 
-            // It can take quite a bit of time for some commands to execute remotely so this is higher than default
-            var commandTimeout = TimeSpan.FromMinutes(3);
+            // Add section that allows access to the device camera and microphone and fakes a video stream
+            ffOptions.SetPreference("media.navigator.streams.fake", true);
+            ffOptions.SetPreference("media.navigator.permission.disabled", true);
 
-            var remoteUrl = new Uri(_saucelabsSettings.RemoteServerUrl);
+            // seleniumVersion is REQUIRED for any browser other than Chrome
+            sauceOptions.Add("seleniumVersion", "3.141.59");
 
-            return new RemoteWebDriver(remoteUrl, caps, commandTimeout);
+            ffOptions.AddAdditionalCapability("sauce:options", sauceOptions, true);
+
+            var uri = new Uri(_saucelabsSettings.RemoteServerUrl);
+            return new RemoteWebDriver(uri, ffOptions);
+
+
+
+
+
+
+
+
+#pragma warning disable 618
+            //// disable warning of using desired capabilities
+
+
+            //var caps = new DesiredCapabilities();
+            ////switch (_targetBrowser)
+            ////{
+            ////    case TargetBrowser.Firefox:
+            //        var options = new FirefoxOptions();
+            //        options.SetPreference("media.navigator.streams.fake", true);
+            //        options.SetPreference("media.navigator.permission.disabled", true);
+            //        options.AddAdditionalCapability("moz:firefoxOptions", options.ToCapabilities());
+            //        options.AddAdditionalCapability("browserName", "Firefox");
+            //        options.AddAdditionalCapability("marionette", true);
+            //        options.AddAdditionalCapability("platform", "Windows 10");
+            //        options.AddAdditionalCapability("version", "latest");
+            //        options.AddAdditionalCapability("autoAcceptAlerts", true);
+
+            //        //    break;
+            //    //case TargetBrowser.Safari:
+            //    //    caps.SetCapability("browserName", "Safari");
+            //    //    caps.SetCapability("platform", "macOS 10.14");
+            //    //    caps.SetCapability("version", "12.0");
+            //    //    break;
+            //    //case TargetBrowser.Edge:
+            //    //    caps.SetCapability("browserName", "MicrosoftEdge");
+            //    //    caps.SetCapability("platform", "Windows 10");
+            //    //    caps.SetCapability("version", "16.16299");
+            //    //    caps.SetCapability("dom.webnotifications.enabled", 1);
+            //    //    caps.SetCapability("permissions.default.microphone", 1);
+            //    //    caps.SetCapability("permissions.default.camera", 1);
+            //    //    break;
+            //    //case TargetBrowser.IE11:
+            //    //    caps.SetCapability("browserName", "Internet Explorer");
+            //    //    caps.SetCapability("platform", "Windows 10");
+            //    //    caps.SetCapability("version", "11.285");
+            //    //    break;
+            //    //case TargetBrowser.IPhoneSafari:
+            //    //    caps.SetCapability("appiumVersion", "1.9.1");
+            //    //    caps.SetCapability("deviceName", "iPhone 8 Simulator");
+            //    //    caps.SetCapability("deviceOrientation", "portrait");
+            //    //    caps.SetCapability("platformVersion", "12.0");
+            //    //    caps.SetCapability("platformName", "iOS");
+            //    //    caps.SetCapability("browserName", "Safari");
+            //    //    break;
+            //    //default:
+            //    //    caps.SetCapability("browserName", "Chrome");
+            //    //    caps.SetCapability("platform", "Windows 10");
+            //    //    caps.SetCapability("version", "78.0");
+            //    //    caps.SetCapability("autoAcceptAlerts", true);
+            //    //    var chromeOptions = new Dictionary<string, List<string>>
+            //    //    {
+            //    //        ["args"] = new List<string>{ "use-fake-ui-for-media-stream", "use-fake-device-for-media-stream" }
+            //    //    };                    
+            //    //    caps.SetCapability(ChromeOptions.Capability, chromeOptions);
+            //    //    break;
+            ////}
+
+            //caps.SetCapability("name", _scenario.Title);
+            //caps.SetCapability("build", $"{Environment.GetEnvironmentVariable("Build_DefinitionName")} {Environment.GetEnvironmentVariable("RELEASE_RELEASENAME")}");
+            //caps.SetCapability("screenResolution", SaucelabsScreenResolution);
+            //caps.SetCapability("idleTimeout", SaucelabsIdleTimeoutInSeconds);
+
+            //// It can take quite a bit of time for some commands to execute remotely so this is higher than default
+            //var commandTimeout = TimeSpan.FromMinutes(3);
+
+            //var remoteUrl = new Uri(_saucelabsSettings.RemoteServerUrl);
+            //return new RemoteWebDriver(remoteUrl, options);
+            //return new RemoteWebDriver(remoteUrl, caps, commandTimeout);
         }
 
         private static IWebDriver InitLocalDriver(string filename, ScenarioInfo scenario)
