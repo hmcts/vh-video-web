@@ -93,5 +93,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_errorPage.IsThisAMistakeErrorMessage)
                 .Displayed.Should().BeTrue();
         }
+
+        [Then(@"the Unsupported Browser error page displays text of how to rectify the problem")]
+        public void ThenTheUnsupportedBrowserErrorPageDisplaysTextOfHowToRectifyTheProblem()
+        {
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_errorPage.UnsupportedBrowserTitle)
+                .Displayed.Should().BeTrue();
+        }
     }
 }

@@ -2,7 +2,6 @@
 {
     public enum TargetBrowser
     {
-        IPhoneSafari,
         Firefox,
         Safari,
         Chrome,

@@ -36,6 +36,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly Page PrivacyPolicy = new Page("Privacy Policy", "privacy-policy");
         public static readonly Page Accessibility = new Page("Accessibility", "accessibility");
         public static readonly Page OpenGovernmentLicence = new Page("Open Government Licence", "open-government-licence");
+        public static readonly Page UnsupportedBrowser = new Page("Unsupported Browser", "unsupported-browser");
 
         public string ToString(Page page)
         {
@@ -80,6 +81,7 @@ namespace VideoWeb.AcceptanceTests.Pages
                 yield return PrivacyPolicy;
                 yield return Accessibility;
                 yield return OpenGovernmentLicence;
+                yield return UnsupportedBrowser;
             }
         }
     }
