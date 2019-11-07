@@ -16,8 +16,8 @@ namespace VideoWeb.AcceptanceTests.Helpers
         private readonly SauceLabsSettings _saucelabsSettings;
         private readonly ScenarioInfo _scenario;
         private static TargetBrowser _targetBrowser;
-        private const string SaucelabsWindowsScreenResolution = "1920x1200";
-        private const string SaucelabsMacScreenResolution = "2048x1536";
+        private const string SaucelabsWindowsScreenResolution = "2560x1600";
+        private const string SaucelabsMacScreenResolution = "2360x1770";
         private const int SaucelabsIdleTimeoutInSeconds = 60 * 30;
         private const int SaucelabsCommandTimeoutInSeconds = 60 * 3;
         private const string SauceLabSeleniumVersion = "3.141.59";
@@ -60,12 +60,12 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 {TargetBrowser.Safari, new SafariSauceLabsDriver()}
             };
 
-            drivers[TargetBrowser.IE11].SauceOptions = sauceOptions;
-            drivers[TargetBrowser.IE11].IdleTimeout = TimeSpan.FromSeconds(SaucelabsIdleTimeoutInSeconds);
-            drivers[TargetBrowser.IE11].Timeout = TimeSpan.FromSeconds(SaucelabsCommandTimeoutInSeconds);
-            drivers[TargetBrowser.IE11].Uri = new Uri(_saucelabsSettings.RemoteServerUrl);
+            drivers[_targetBrowser].SauceOptions = sauceOptions;
+            drivers[_targetBrowser].IdleTimeout = TimeSpan.FromSeconds(SaucelabsIdleTimeoutInSeconds);
+            drivers[_targetBrowser].Timeout = TimeSpan.FromSeconds(SaucelabsCommandTimeoutInSeconds);
+            drivers[_targetBrowser].Uri = new Uri(_saucelabsSettings.RemoteServerUrl);
             
-            return drivers[TargetBrowser.IE11].Initialise();
+            return drivers[_targetBrowser].Initialise();
         }
 
         private static IWebDriver InitialiseLocalDriver(string filename, ScenarioInfo scenario)
@@ -75,13 +75,9 @@ namespace VideoWeb.AcceptanceTests.Helpers
             options.AddArgument("use-fake-ui-for-media-stream");
             options.AddArgument("use-fake-device-for-media-stream");
             if (scenario.Tags.Contains("Video"))
-            {
                 options.AddArgument($"use-file-for-fake-video-capture={GetBuildPath}/Videos/{filename}");
-            }       
             var commandTimeout = TimeSpan.FromSeconds(30);
-
             _targetBrowser = TargetBrowser.Chrome;
-
             return new ChromeDriver(GetBuildPath, options, commandTimeout);
         }
 

@@ -11,7 +11,6 @@ namespace VideoWeb.AcceptanceTests.Helpers.SauceLabDrivers
             ffOptions.SetPreference("media.navigator.streams.fake", true);
             ffOptions.SetPreference("media.navigator.permission.disabled", true);
             ffOptions.AddAdditionalCapability("sauce:options", SauceOptions, true);
-
             return new RemoteWebDriver(Uri, ffOptions);
         }
     }
