@@ -7,9 +7,6 @@ namespace VideoWeb.AcceptanceTests.Helpers.SauceLabDrivers
     {
         public override RemoteWebDriver Initialise()
         {
-            // seleniumVersion is REQUIRED for any browser other than Chrome
-            SauceOptions.Add("seleniumVersion", SeleniumVersion);
-            
             var edgeOptions = new EdgeOptions() { PlatformName = "Windows 10", BrowserVersion = "latest"};
             edgeOptions.AddAdditionalCapability("dom.webnotifications.enabled", 1);
             edgeOptions.AddAdditionalCapability("permissions.default.microphone", 1);

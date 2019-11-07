@@ -7,9 +7,6 @@ namespace VideoWeb.AcceptanceTests.Helpers.SauceLabDrivers
     {
         public override RemoteWebDriver Initialise()
         {
-            // seleniumVersion is REQUIRED for any browser other than Chrome
-            SauceOptions.Add("seleniumVersion", SeleniumVersion);
-
             var ffOptions = new FirefoxOptions { PlatformName = "Windows 10", BrowserVersion = "latest" };
             ffOptions.SetPreference("media.navigator.streams.fake", true);
             ffOptions.SetPreference("media.navigator.permission.disabled", true);

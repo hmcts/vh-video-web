@@ -16,7 +16,8 @@ namespace VideoWeb.AcceptanceTests.Helpers
         private readonly SauceLabsSettings _saucelabsSettings;
         private readonly ScenarioInfo _scenario;
         private static TargetBrowser _targetBrowser;
-        private const string SaucelabsScreenResolution = "1920x1200";
+        private const string SaucelabsWindowsScreenResolution = "1920x1200";
+        private const string SaucelabsMacScreenResolution = "2048x1536";
         private const int SaucelabsIdleTimeoutInSeconds = 60 * 30;
         private const string SauceLabSeleniumVersion = "3.141.59";
 
@@ -29,7 +30,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
         public IWebDriver GetDriver(string filename)
         {
-            return _saucelabsSettings.RunWithSaucelabs ? InitialiseSauceLabsDriver() : InitLocalDriver(filename,  _scenario);
+            return _saucelabsSettings.RunWithSaucelabs ? InitialiseSauceLabsDriver() : InitialiseLocalDriver(filename,  _scenario);
         }
 
         private IWebDriver InitialiseSauceLabsDriver()
@@ -39,105 +40,36 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 {"username", _saucelabsSettings.Username},
                 {"accessKey", _saucelabsSettings.AccessKey},
                 {"name", TestContext.CurrentContext.Test.Name},
-                {"build", $"{Environment.GetEnvironmentVariable("Build_DefinitionName")} {Environment.GetEnvironmentVariable("RELEASE_RELEASENAME")}"},
-                {"screenResolution", SaucelabsScreenResolution},
-                {"idleTimeout", SaucelabsIdleTimeoutInSeconds}
+                {
+                    "build",
+                    $"{Environment.GetEnvironmentVariable("Build_DefinitionName")} {Environment.GetEnvironmentVariable("RELEASE_RELEASENAME")}"
+                },
+                {"idleTimeout", SaucelabsIdleTimeoutInSeconds},
+                {"seleniumVersion", SauceLabSeleniumVersion},
+                {
+                    "screenResolution", _targetBrowser == TargetBrowser.Safari
+                        ? SaucelabsMacScreenResolution
+                        : SaucelabsWindowsScreenResolution
+                }
             };
 
             var drivers = new Dictionary<TargetBrowser, SaucelabsDriver>
             {
                 {TargetBrowser.Chrome, new ChromeSauceLabsDriver()},
                 {TargetBrowser.Firefox, new FirefoxSauceLabsDriver()},
-                {TargetBrowser.Edge, new EdgeSauceLabsDriver() },
-                {TargetBrowser.IE11, new InternetExplorerSauceLabsDriver() },
-                {TargetBrowser.Safari, new SafariSauceLabsDriver() }
+                {TargetBrowser.Edge, new EdgeSauceLabsDriver()},
+                {TargetBrowser.IE11, new InternetExplorerSauceLabsDriver()},
+                {TargetBrowser.Safari, new SafariSauceLabsDriver()}
             };
 
-            drivers[TargetBrowser.Safari].SauceOptions = sauceOptions;
-            drivers[TargetBrowser.Safari].Timeout = TimeSpan.FromSeconds(SaucelabsIdleTimeoutInSeconds);
-            drivers[TargetBrowser.Safari].Uri = new Uri(_saucelabsSettings.RemoteServerUrl);
-            drivers[TargetBrowser.Safari].SeleniumVersion = SauceLabSeleniumVersion;
-            return drivers[TargetBrowser.Safari].Initialise();
-
-
-
-
-
-
-
-
-#pragma warning disable 618
-            //// disable warning of using desired capabilities
-
-
-            //var caps = new DesiredCapabilities();
-            ////switch (_targetBrowser)
-            ////{
-            ////    case TargetBrowser.Firefox:
-            //        var options = new FirefoxOptions();
-            //        options.SetPreference("media.navigator.streams.fake", true);
-            //        options.SetPreference("media.navigator.permission.disabled", true);
-            //        options.AddAdditionalCapability("moz:firefoxOptions", options.ToCapabilities());
-            //        options.AddAdditionalCapability("browserName", "Firefox");
-            //        options.AddAdditionalCapability("marionette", true);
-            //        options.AddAdditionalCapability("platform", "Windows 10");
-            //        options.AddAdditionalCapability("version", "latest");
-            //        options.AddAdditionalCapability("autoAcceptAlerts", true);
-
-            //        //    break;
-            //    //case TargetBrowser.Safari:
-            //    //    caps.SetCapability("browserName", "Safari");
-            //    //    caps.SetCapability("platform", "macOS 10.14");
-            //    //    caps.SetCapability("version", "12.0");
-            //    //    break;
-            //    //case TargetBrowser.Edge:
-            //    //    caps.SetCapability("browserName", "MicrosoftEdge");
-            //    //    caps.SetCapability("platform", "Windows 10");
-            //    //    caps.SetCapability("version", "16.16299");
-            //    //    caps.SetCapability("dom.webnotifications.enabled", 1);
-            //    //    caps.SetCapability("permissions.default.microphone", 1);
-            //    //    caps.SetCapability("permissions.default.camera", 1);
-            //    //    break;
-            //    //case TargetBrowser.IE11:
-            //    //    caps.SetCapability("browserName", "Internet Explorer");
-            //    //    caps.SetCapability("platform", "Windows 10");
-            //    //    caps.SetCapability("version", "11.285");
-            //    //    break;
-            //    //case TargetBrowser.IPhoneSafari:
-            //    //    caps.SetCapability("appiumVersion", "1.9.1");
-            //    //    caps.SetCapability("deviceName", "iPhone 8 Simulator");
-            //    //    caps.SetCapability("deviceOrientation", "portrait");
-            //    //    caps.SetCapability("platformVersion", "12.0");
-            //    //    caps.SetCapability("platformName", "iOS");
-            //    //    caps.SetCapability("browserName", "Safari");
-            //    //    break;
-            //    //default:
-            //    //    caps.SetCapability("browserName", "Chrome");
-            //    //    caps.SetCapability("platform", "Windows 10");
-            //    //    caps.SetCapability("version", "78.0");
-            //    //    caps.SetCapability("autoAcceptAlerts", true);
-            //    //    var chromeOptions = new Dictionary<string, List<string>>
-            //    //    {
-            //    //        ["args"] = new List<string>{ "use-fake-ui-for-media-stream", "use-fake-device-for-media-stream" }
-            //    //    };                    
-            //    //    caps.SetCapability(ChromeOptions.Capability, chromeOptions);
-            //    //    break;
-            ////}
-
-            //caps.SetCapability("name", _scenario.Title);
-            //caps.SetCapability("build", $"{Environment.GetEnvironmentVariable("Build_DefinitionName")} {Environment.GetEnvironmentVariable("RELEASE_RELEASENAME")}");
-            //caps.SetCapability("screenResolution", SaucelabsScreenResolution);
-            //caps.SetCapability("idleTimeout", SaucelabsIdleTimeoutInSeconds);
-
-            //// It can take quite a bit of time for some commands to execute remotely so this is higher than default
-            //var commandTimeout = TimeSpan.FromMinutes(3);
-
-            //var remoteUrl = new Uri(_saucelabsSettings.RemoteServerUrl);
-            //return new RemoteWebDriver(remoteUrl, options);
-            //return new RemoteWebDriver(remoteUrl, caps, commandTimeout);
+            drivers[TargetBrowser.IE11].SauceOptions = sauceOptions;
+            drivers[TargetBrowser.IE11].Timeout = TimeSpan.FromSeconds(SaucelabsIdleTimeoutInSeconds);
+            drivers[TargetBrowser.IE11].Uri = new Uri(_saucelabsSettings.RemoteServerUrl);
+            
+            return drivers[TargetBrowser.IE11].Initialise();
         }
 
-        private static IWebDriver InitLocalDriver(string filename, ScenarioInfo scenario)
+        private static IWebDriver InitialiseLocalDriver(string filename, ScenarioInfo scenario)
         {            
             var options = new ChromeOptions();
             options.AddArgument("ignore-certificate-errors");

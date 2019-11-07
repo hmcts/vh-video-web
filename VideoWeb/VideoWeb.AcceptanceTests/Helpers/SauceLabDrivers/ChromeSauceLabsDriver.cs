@@ -7,11 +7,12 @@ namespace VideoWeb.AcceptanceTests.Helpers.SauceLabDrivers
     {
         public override RemoteWebDriver Initialise()
         {
-            var chromeOptions = new ChromeOptions()
+            var chromeOptions = new ChromeOptions
             {
                 BrowserVersion = "latest",
                 PlatformName = "Windows 10",
-                UseSpecCompliantProtocol = true
+                UseSpecCompliantProtocol = true,
+                AcceptInsecureCertificates = true
             };
 
             chromeOptions.AddArgument("use-fake-ui-for-media-stream");
