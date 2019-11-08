@@ -3,14 +3,14 @@ using OpenQA.Selenium.Remote;
 
 namespace VideoWeb.AcceptanceTests.Helpers.SauceLabDrivers
 {
-    internal class MacChromeSauceLabsDriver : SaucelabsDriver
+    internal class ChromeMacSauceLabsDriver : SaucelabsDriver
     {
         public override RemoteWebDriver Initialise()
         {
             var chromeOptions = new ChromeOptions
             {
                 BrowserVersion = "latest",
-                PlatformName = "Windows 10",
+                PlatformName = "macOS 10.14",
                 UseSpecCompliantProtocol = true,
                 AcceptInsecureCertificates = true
             };

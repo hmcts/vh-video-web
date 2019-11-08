@@ -102,8 +102,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             if (_tc.TargetBrowser == TargetBrowser.Edge)
                 _commonPages.PageUrl(Page.UnsupportedBrowser.Url);
 
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_errorPage.UnsupportedBrowserTitle)
-                    .Displayed.Should().BeTrue();
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementExists(_errorPage.UnsupportedBrowserTitle)
+                .Displayed.Should().BeTrue();
         }
     }
 }

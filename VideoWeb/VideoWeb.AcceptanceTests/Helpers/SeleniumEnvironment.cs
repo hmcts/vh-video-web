@@ -62,7 +62,9 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 {TargetBrowser.Firefox, new FirefoxSauceLabsDriver()},
                 {TargetBrowser.Edge, new EdgeSauceLabsDriver()},
                 {TargetBrowser.IE11, new InternetExplorerSauceLabsDriver()},
-                {TargetBrowser.Safari, new SafariSauceLabsDriver()}
+                {TargetBrowser.Safari, new SafariSauceLabsDriver()},
+                {TargetBrowser.ChromeMac, new ChromeMacSauceLabsDriver()},
+                {TargetBrowser.FirefoxMac, new FirefoxMacSauceLabsDriver()}
             };
 
             drivers[_targetBrowser].SauceOptions = sauceOptions;
