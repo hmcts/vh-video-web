@@ -100,16 +100,10 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheUnsupportedBrowserErrorPageDisplaysTextOfHowToRectifyTheProblem()
         {
             if (_tc.TargetBrowser == TargetBrowser.Edge)
-            {
                 _commonPages.PageUrl(Page.UnsupportedBrowser.Url);
-                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_errorPage.EdgeUnsupportedBrowserTitle)
+
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_errorPage.UnsupportedBrowserTitle)
                     .Displayed.Should().BeTrue();
-            }
-            else
-            {
-                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_errorPage.UnsupportedBrowserTitle)
-                    .Displayed.Should().BeTrue();
-            }
         }
     }
 }

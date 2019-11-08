@@ -16,8 +16,8 @@ namespace VideoWeb.AcceptanceTests.Helpers
         private readonly SauceLabsSettings _saucelabsSettings;
         private readonly ScenarioInfo _scenario;
         private static TargetBrowser _targetBrowser;
-        private const string SaucelabsWindowsScreenResolution = "2560x1600";
-        private const string SaucelabsMacScreenResolution = "2360x1770";
+        private const string WindowsScreenResolution = "2560x1600";
+        private const string MacScreenResolution = "2360x1770";
         private const int SaucelabsIdleTimeoutInSeconds = 60 * 30;
         private const int SaucelabsCommandTimeoutInSeconds = 60 * 3;
         private const string SauceLabSeleniumVersion = "3.141.59";
@@ -39,19 +39,20 @@ namespace VideoWeb.AcceptanceTests.Helpers
             _targetBrowser = TargetBrowser.Edge;
             var buildName = Environment.GetEnvironmentVariable("Build_DefinitionName");
             var releaseName = Environment.GetEnvironmentVariable("RELEASE_RELEASENAME");
-            
+            var shortBuildName = buildName?.Replace("hmcts.vh-", "");
+
             var sauceOptions = new Dictionary<string, object>
             {
                 {"username", _saucelabsSettings.Username},
                 {"accessKey", _saucelabsSettings.AccessKey},
                 {"name", _scenario.Title},
-                {"build", $"{buildName} {releaseName} {_targetBrowser}"},
+                {"build", $"{shortBuildName} {releaseName} {_targetBrowser}"},
                 {"idleTimeout", SaucelabsIdleTimeoutInSeconds},
                 {"seleniumVersion", SauceLabSeleniumVersion},
                 {
                     "screenResolution", _targetBrowser == TargetBrowser.Safari
-                        ? SaucelabsMacScreenResolution
-                        : SaucelabsWindowsScreenResolution
+                        ? MacScreenResolution
+                        : WindowsScreenResolution
                 }
             };
 
