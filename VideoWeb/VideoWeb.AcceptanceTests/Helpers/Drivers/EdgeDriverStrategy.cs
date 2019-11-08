@@ -1,11 +1,12 @@
-﻿using OpenQA.Selenium.Edge;
+﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Remote;
 
-namespace VideoWeb.AcceptanceTests.Helpers.SauceLabDrivers
+namespace VideoWeb.AcceptanceTests.Helpers.Drivers
 {
-    internal class EdgeSauceLabsDriver : SaucelabsDriver
+    internal class EdgeDriverStrategy : Drivers
     {
-        public override RemoteWebDriver Initialise()
+        public override RemoteWebDriver InitialiseForSauceLabs()
         {
             var edgeOptions = new EdgeOptions() { PlatformName = "Windows 10", BrowserVersion = "latest" };
             edgeOptions.AddAdditionalCapability("dom.webnotifications.enabled", 1);
@@ -14,6 +15,12 @@ namespace VideoWeb.AcceptanceTests.Helpers.SauceLabDrivers
             edgeOptions.AddAdditionalCapability("avoidProxy", true);
             edgeOptions.AddAdditionalCapability("sauce:options", SauceOptions);
             return new RemoteWebDriver(Uri, edgeOptions);
+        }
+
+        public override IWebDriver InitialiseForLocal()
+        {
+            var edgeOptions = new EdgeOptions();
+            return new EdgeDriver(BuildPath, edgeOptions, LocalTimeout);
         }
     }
 }
