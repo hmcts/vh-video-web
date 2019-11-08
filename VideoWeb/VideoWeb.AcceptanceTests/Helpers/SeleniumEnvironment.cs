@@ -36,6 +36,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
         private IWebDriver InitialiseSauceLabsDriver()
         {
+            _targetBrowser = TargetBrowser.Edge;
             var buildName = Environment.GetEnvironmentVariable("Build_DefinitionName");
             var releaseName = Environment.GetEnvironmentVariable("RELEASE_RELEASENAME");
             
@@ -44,7 +45,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 {"username", _saucelabsSettings.Username},
                 {"accessKey", _saucelabsSettings.AccessKey},
                 {"name", _scenario.Title},
-                {"build", $"{buildName} {releaseName}"},
+                {"build", $"{buildName} {releaseName} {_targetBrowser}"},
                 {"idleTimeout", SaucelabsIdleTimeoutInSeconds},
                 {"seleniumVersion", SauceLabSeleniumVersion},
                 {
