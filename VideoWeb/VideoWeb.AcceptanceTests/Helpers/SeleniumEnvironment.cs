@@ -37,7 +37,6 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
         private IWebDriver InitialiseSauceLabsDriver()
         {
-            _targetBrowser = TargetBrowser.Edge;
             var buildName = Environment.GetEnvironmentVariable("Build_DefinitionName");
             var releaseName = Environment.GetEnvironmentVariable("RELEASE_RELEASENAME");
             var shortBuildName = buildName?.Replace("hmcts.vh-", "");

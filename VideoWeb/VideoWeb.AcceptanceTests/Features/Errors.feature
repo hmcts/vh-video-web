@@ -20,7 +20,7 @@ Scenario: Unauthorised error page
 	Then the user is on the Unauthorised page
 	And the Unauthorised error page displays text of how to rectify the problem
 
-@VIH-4677 @UnsupportedBrowser @Smoketest
+@VIH-4677 @UnsupportedBrowser
 Scenario: Unsupported browser error page
 	Given a new browser is open for a Participant
 	When the user attempts to login with valid credentials
