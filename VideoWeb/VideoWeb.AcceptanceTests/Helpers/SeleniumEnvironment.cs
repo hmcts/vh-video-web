@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using NUnit.Framework;
 using OpenQA.Selenium;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers.Drivers;
@@ -22,6 +21,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
         private const int LocalCommandTimeoutInSeconds = 20;
         private const string SauceLabSeleniumVersion = "3.141.59";
         private const string SauceLabsMacPlatformVersion = "macOS 10.14";
+        private const string OsxPath = "/usr/local/bin";
 
         public SeleniumEnvironment(SauceLabsSettings saucelabsSettings, ScenarioInfo scenario, TargetBrowser targetBrowser)
         {
@@ -87,23 +87,11 @@ namespace VideoWeb.AcceptanceTests.Helpers
             };
 
             drivers[_targetBrowser].SaucelabsTimeout = TimeSpan.FromSeconds(SaucelabsCommandTimeoutInSeconds);
-            drivers[_targetBrowser].BuildPath = GetBuildPath;
+            drivers[_targetBrowser].BuildPath = Directory.Exists(OsxPath) ? OsxPath : Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             drivers[_targetBrowser].Filename = filename;
             drivers[_targetBrowser].UseVideoFiles = scenario.Tags.Contains("Video");
             drivers[_targetBrowser].LocalTimeout = TimeSpan.FromSeconds(LocalCommandTimeoutInSeconds);
             return drivers[_targetBrowser].InitialiseForLocal();
-        }
-
-        private static string GetBuildPath
-        {
-            get
-            {
-                const string osxPath = "/usr/local/bin";
-                var assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var path = Directory.Exists(osxPath) ? osxPath : assemblyPath;
-                TestContext.WriteLine($"looking for local build path {path}");
-                return assemblyPath;
-            }
         }
     }
 }
