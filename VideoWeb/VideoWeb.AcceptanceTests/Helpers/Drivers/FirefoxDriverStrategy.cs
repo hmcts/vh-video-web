@@ -17,10 +17,12 @@ namespace VideoWeb.AcceptanceTests.Helpers.Drivers
 
         public override IWebDriver InitialiseForLocal()
         {
+            var geckoService = FirefoxDriverService.CreateDefaultService(BuildPath);
+            geckoService.Host = "::1";
             var ffOptions = new FirefoxOptions(){ AcceptInsecureCertificates = true };
             ffOptions.SetPreference("media.navigator.streams.fake", true);
             ffOptions.SetPreference("media.navigator.permission.disabled", true);
-            return new FirefoxDriver(BuildPath, ffOptions, LocalTimeout);
+            return new FirefoxDriver(geckoService, ffOptions, LocalTimeout);
         }
     }
 }
