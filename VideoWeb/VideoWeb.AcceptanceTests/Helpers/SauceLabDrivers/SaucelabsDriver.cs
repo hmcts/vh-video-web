@@ -10,6 +10,7 @@ namespace VideoWeb.AcceptanceTests.Helpers.SauceLabDrivers
         internal Dictionary<string, object> SauceOptions { get; set; }
         internal Uri Uri { get; set; }
         internal TimeSpan Timeout { get; set; }
+        internal string MacPlatform { get; set; }
 
         public abstract RemoteWebDriver Initialise();
     }

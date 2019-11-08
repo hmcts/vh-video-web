@@ -21,6 +21,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
         private const int SaucelabsIdleTimeoutInSeconds = 60 * 30;
         private const int SaucelabsCommandTimeoutInSeconds = 60 * 3;
         private const string SauceLabSeleniumVersion = "3.141.59";
+        private const string SauceLabsMacPlatformVersion = "macOS 10.14";
 
         public SeleniumEnvironment(SauceLabsSettings saucelabsSettings, ScenarioInfo scenario, TargetBrowser targetBrowser)
         {
@@ -71,7 +72,8 @@ namespace VideoWeb.AcceptanceTests.Helpers
             drivers[_targetBrowser].IdleTimeout = TimeSpan.FromSeconds(SaucelabsIdleTimeoutInSeconds);
             drivers[_targetBrowser].Timeout = TimeSpan.FromSeconds(SaucelabsCommandTimeoutInSeconds);
             drivers[_targetBrowser].Uri = new Uri(_saucelabsSettings.RemoteServerUrl);
-            
+            drivers[_targetBrowser].MacPlatform = SauceLabsMacPlatformVersion;
+
             return drivers[_targetBrowser].Initialise();
         }
 

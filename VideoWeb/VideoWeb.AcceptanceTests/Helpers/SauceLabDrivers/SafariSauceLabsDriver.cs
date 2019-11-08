@@ -7,7 +7,7 @@ namespace VideoWeb.AcceptanceTests.Helpers.SauceLabDrivers
     {
         public override RemoteWebDriver Initialise()
         {
-            var safariOptions = new SafariOptions() { PlatformName = "macOS 10.14", BrowserVersion = "latest" };
+            var safariOptions = new SafariOptions() { PlatformName = MacPlatform, BrowserVersion = "latest" };
             safariOptions.AddAdditionalCapability("autoAcceptAlerts",true);
             safariOptions.AddAdditionalCapability("sauce:options", safariOptions);
             return new RemoteWebDriver(Uri, safariOptions);

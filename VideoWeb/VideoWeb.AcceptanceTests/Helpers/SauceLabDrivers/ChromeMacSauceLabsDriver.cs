@@ -10,7 +10,7 @@ namespace VideoWeb.AcceptanceTests.Helpers.SauceLabDrivers
             var chromeOptions = new ChromeOptions
             {
                 BrowserVersion = "latest",
-                PlatformName = "macOS 10.14",
+                PlatformName = MacPlatform,
                 UseSpecCompliantProtocol = true,
                 AcceptInsecureCertificates = true
             };

@@ -58,7 +58,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [When(@"the user tries to navigate back to the waiting room page")]
-        public void WhenTheUserNtrieToNavigateBackToTheWaitingRoomPage()
+        public void WhenTheUserTriesToNavigateBackToTheWaitingRoomPage()
         {
             _browsers[_tc.CurrentUser.Key].Driver.Navigate().Back();
             _browsers[_tc.CurrentUser.Key].Driver.Navigate().Forward();
@@ -103,7 +103,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _commonPages.PageUrl(Page.UnsupportedBrowser.Url);
 
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementExists(_errorPage.UnsupportedBrowserTitle)
-                .Displayed.Should().BeTrue();
+                .Size.Width.Should().BeGreaterThan(0);
         }
     }
 }
