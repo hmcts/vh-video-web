@@ -56,16 +56,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 }
             };
 
-            var drivers = new Dictionary<TargetBrowser, Drivers.Drivers>
-            {
-                {TargetBrowser.Chrome, new ChromeDriverStrategy()},
-                {TargetBrowser.Firefox, new FirefoxDriverStrategy()},
-                {TargetBrowser.Edge, new EdgeDriverStrategy()},
-                {TargetBrowser.Ie11, new InternetExplorerDriverStrategy()},
-                {TargetBrowser.Safari, new SafariDriverStrategy()},
-                {TargetBrowser.ChromeMac, new ChromeMacDriverStrategy()},
-                {TargetBrowser.FirefoxMac, new FirefoxMacDriverStrategy()}
-            };
+            var drivers = GetDrivers();
 
             drivers[_targetBrowser].SauceOptions = sauceOptions;
             drivers[_targetBrowser].IdleTimeout = TimeSpan.FromSeconds(SaucelabsIdleTimeoutInSeconds);
@@ -77,14 +68,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
         private static IWebDriver InitialiseLocalDriver(string filename, ScenarioInfo scenario)
         {
-            var drivers = new Dictionary<TargetBrowser, Drivers.Drivers>
-            {
-                {TargetBrowser.Chrome, new ChromeDriverStrategy()},
-                {TargetBrowser.Firefox, new FirefoxDriverStrategy()},
-                {TargetBrowser.Edge, new EdgeDriverStrategy()},
-                {TargetBrowser.Ie11, new InternetExplorerDriverStrategy()},
-                {TargetBrowser.Safari, new SafariDriverStrategy()}
-            };
+            var drivers = GetDrivers();
 
             drivers[_targetBrowser].SaucelabsTimeout = TimeSpan.FromSeconds(SaucelabsCommandTimeoutInSeconds);
             drivers[_targetBrowser].BuildPath = Directory.Exists(OsxPath) ? OsxPath : Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -92,6 +76,21 @@ namespace VideoWeb.AcceptanceTests.Helpers
             drivers[_targetBrowser].UseVideoFiles = scenario.Tags.Contains("Video");
             drivers[_targetBrowser].LocalTimeout = TimeSpan.FromSeconds(LocalCommandTimeoutInSeconds);
             return drivers[_targetBrowser].InitialiseForLocal();
+        }
+
+        private static Dictionary<TargetBrowser, Drivers.Drivers> GetDrivers()
+        {
+            var drivers = new Dictionary<TargetBrowser, Drivers.Drivers>
+            {
+                {TargetBrowser.Chrome, new ChromeDriverStrategy()},
+                {TargetBrowser.Firefox, new FirefoxDriverStrategy()},
+                {TargetBrowser.Edge, new EdgeDriverStrategy()},
+                {TargetBrowser.Ie11, new InternetExplorerDriverStrategy()},
+                {TargetBrowser.Safari, new SafariDriverStrategy()},
+                {TargetBrowser.ChromeMac, new ChromeMacDriverStrategy()},
+                {TargetBrowser.FirefoxMac, new FirefoxMacDriverStrategy()}
+            };
+            return drivers;
         }
     }
 }
