@@ -17,7 +17,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         private const string IsThisAMistakeError =
             "If you think this is a mistake and you need to speak to someone, please contact us using the options below.";
 
-        private const string ThisBrowserIsUnsupportedError = "using an unsupported browser";
+        private const string ThisBrowserIsUnsupportedError = "This website is not supported on this browser";
 
         public By NotFoundPageTitle = CommonLocators.ElementContainingText("Page not found");
         public By UnauthorisedPageTitle = CommonLocators.ElementContainingText("You are not authorised to use this service");

@@ -18,12 +18,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _tc;
         private readonly ErrorPage _errorPage;
+        private readonly CommonPages _commonPages;
 
-        public ErrorSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, ErrorPage errorPage)
+        public ErrorSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, ErrorPage errorPage, CommonPages commonPages)
         {
             _browsers = browsers;
             _tc = testContext;
             _errorPage = errorPage;
+            _commonPages = commonPages;
         }
 
         [When(@"the user attempts to navigate to a nonexistent page")]
@@ -94,11 +96,18 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .Displayed.Should().BeTrue();
         }
 
-        [Then(@"the Unsupported Browser error page displays text of how to rectify the problem")]
+        [Then(@"the user is on the Unsupported Browser error page with text of how to rectify the problem")]
         public void ThenTheUnsupportedBrowserErrorPageDisplaysTextOfHowToRectifyTheProblem()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_errorPage.UnsupportedBrowserTitle)
-                .Displayed.Should().BeTrue();
+            if (_tc.TargetBrowser == TargetBrowser.Edge)
+            {
+                _commonPages.PageUrl(Page.UnsupportedBrowser.Url);
+            }
+            else
+            {
+                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_errorPage.UnsupportedBrowserTitle)
+                    .Displayed.Should().BeTrue();
+            }
         }
     }
 }
