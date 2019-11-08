@@ -16,11 +16,12 @@ namespace VideoWeb.AcceptanceTests.Helpers
         private readonly SauceLabsSettings _saucelabsSettings;
         private readonly ScenarioInfo _scenario;
         private static TargetBrowser _targetBrowser;
-        private const string SaucelabsWindowsScreenResolution = "2560x1600";
-        private const string SaucelabsMacScreenResolution = "2360x1770";
+        private const string WindowsScreenResolution = "2560x1600";
+        private const string MacScreenResolution = "2360x1770";
         private const int SaucelabsIdleTimeoutInSeconds = 60 * 30;
         private const int SaucelabsCommandTimeoutInSeconds = 60 * 3;
         private const string SauceLabSeleniumVersion = "3.141.59";
+        private const string SauceLabsMacPlatformVersion = "macOS 10.14";
 
         public SeleniumEnvironment(SauceLabsSettings saucelabsSettings, ScenarioInfo scenario, TargetBrowser targetBrowser)
         {
@@ -38,19 +39,20 @@ namespace VideoWeb.AcceptanceTests.Helpers
         {
             var buildName = Environment.GetEnvironmentVariable("Build_DefinitionName");
             var releaseName = Environment.GetEnvironmentVariable("RELEASE_RELEASENAME");
-            
+            var shortBuildName = buildName?.Replace("hmcts.vh-", "");
+
             var sauceOptions = new Dictionary<string, object>
             {
                 {"username", _saucelabsSettings.Username},
                 {"accessKey", _saucelabsSettings.AccessKey},
                 {"name", _scenario.Title},
-                {"build", $"{buildName} {releaseName}"},
+                {"build", $"{shortBuildName} {releaseName} {_targetBrowser}"},
                 {"idleTimeout", SaucelabsIdleTimeoutInSeconds},
                 {"seleniumVersion", SauceLabSeleniumVersion},
                 {
                     "screenResolution", _targetBrowser == TargetBrowser.Safari
-                        ? SaucelabsMacScreenResolution
-                        : SaucelabsWindowsScreenResolution
+                        ? MacScreenResolution
+                        : WindowsScreenResolution
                 }
             };
 
@@ -60,14 +62,17 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 {TargetBrowser.Firefox, new FirefoxSauceLabsDriver()},
                 {TargetBrowser.Edge, new EdgeSauceLabsDriver()},
                 {TargetBrowser.IE11, new InternetExplorerSauceLabsDriver()},
-                {TargetBrowser.Safari, new SafariSauceLabsDriver()}
+                {TargetBrowser.Safari, new SafariSauceLabsDriver()},
+                {TargetBrowser.ChromeMac, new ChromeMacSauceLabsDriver()},
+                {TargetBrowser.FirefoxMac, new FirefoxMacSauceLabsDriver()}
             };
 
             drivers[_targetBrowser].SauceOptions = sauceOptions;
             drivers[_targetBrowser].IdleTimeout = TimeSpan.FromSeconds(SaucelabsIdleTimeoutInSeconds);
             drivers[_targetBrowser].Timeout = TimeSpan.FromSeconds(SaucelabsCommandTimeoutInSeconds);
             drivers[_targetBrowser].Uri = new Uri(_saucelabsSettings.RemoteServerUrl);
-            
+            drivers[_targetBrowser].MacPlatform = SauceLabsMacPlatformVersion;
+
             return drivers[_targetBrowser].Initialise();
         }
 

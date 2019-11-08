@@ -24,4 +24,4 @@ Scenario: Unauthorised error page
 Scenario: Unsupported browser error page
 	Given a new browser is open for a Participant
 	When the user attempts to login with valid credentials
-	Then the Unsupported Browser error page displays text of how to rectify the problem
+	Then the user is on the Unsupported Browser error page with text of how to rectify the problem
