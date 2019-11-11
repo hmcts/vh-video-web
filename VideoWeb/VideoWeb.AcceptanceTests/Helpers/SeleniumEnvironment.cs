@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using NUnit.Framework;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 using TechTalk.SpecFlow;
-using VideoWeb.AcceptanceTests.Helpers.SauceLabDrivers;
+using VideoWeb.AcceptanceTests.Helpers.Drivers;
 
 namespace VideoWeb.AcceptanceTests.Helpers
 {
@@ -20,8 +18,10 @@ namespace VideoWeb.AcceptanceTests.Helpers
         private const string MacScreenResolution = "2360x1770";
         private const int SaucelabsIdleTimeoutInSeconds = 60 * 30;
         private const int SaucelabsCommandTimeoutInSeconds = 60 * 3;
+        private const int LocalCommandTimeoutInSeconds = 20;
         private const string SauceLabSeleniumVersion = "3.141.59";
         private const string SauceLabsMacPlatformVersion = "macOS 10.14";
+        private const string OsxPath = "/usr/local/bin";
 
         public SeleniumEnvironment(SauceLabsSettings saucelabsSettings, ScenarioInfo scenario, TargetBrowser targetBrowser)
         {
@@ -56,49 +56,41 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 }
             };
 
-            var drivers = new Dictionary<TargetBrowser, SaucelabsDriver>
-            {
-                {TargetBrowser.Chrome, new ChromeSauceLabsDriver()},
-                {TargetBrowser.Firefox, new FirefoxSauceLabsDriver()},
-                {TargetBrowser.Edge, new EdgeSauceLabsDriver()},
-                {TargetBrowser.IE11, new InternetExplorerSauceLabsDriver()},
-                {TargetBrowser.Safari, new SafariSauceLabsDriver()},
-                {TargetBrowser.ChromeMac, new ChromeMacSauceLabsDriver()},
-                {TargetBrowser.FirefoxMac, new FirefoxMacSauceLabsDriver()}
-            };
+            var drivers = GetDrivers();
 
             drivers[_targetBrowser].SauceOptions = sauceOptions;
             drivers[_targetBrowser].IdleTimeout = TimeSpan.FromSeconds(SaucelabsIdleTimeoutInSeconds);
-            drivers[_targetBrowser].Timeout = TimeSpan.FromSeconds(SaucelabsCommandTimeoutInSeconds);
+            drivers[_targetBrowser].SaucelabsTimeout = TimeSpan.FromSeconds(SaucelabsCommandTimeoutInSeconds);
             drivers[_targetBrowser].Uri = new Uri(_saucelabsSettings.RemoteServerUrl);
             drivers[_targetBrowser].MacPlatform = SauceLabsMacPlatformVersion;
-
-            return drivers[_targetBrowser].Initialise();
+            return drivers[_targetBrowser].InitialiseForSauceLabs();
         }
 
         private static IWebDriver InitialiseLocalDriver(string filename, ScenarioInfo scenario)
-        {            
-            var options = new ChromeOptions();
-            options.AddArgument("ignore-certificate-errors");
-            options.AddArgument("use-fake-ui-for-media-stream");
-            options.AddArgument("use-fake-device-for-media-stream");
-            if (scenario.Tags.Contains("Video"))
-                options.AddArgument($"use-file-for-fake-video-capture={GetBuildPath}/Videos/{filename}");
-            var commandTimeout = TimeSpan.FromSeconds(30);
-            _targetBrowser = TargetBrowser.Chrome;
-            return new ChromeDriver(GetBuildPath, options, commandTimeout);
+        {
+            var drivers = GetDrivers();
+
+            drivers[_targetBrowser].SaucelabsTimeout = TimeSpan.FromSeconds(SaucelabsCommandTimeoutInSeconds);
+            drivers[_targetBrowser].BuildPath = Directory.Exists(OsxPath) ? OsxPath : Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            drivers[_targetBrowser].Filename = filename;
+            drivers[_targetBrowser].UseVideoFiles = scenario.Tags.Contains("Video");
+            drivers[_targetBrowser].LocalTimeout = TimeSpan.FromSeconds(LocalCommandTimeoutInSeconds);
+            return drivers[_targetBrowser].InitialiseForLocal();
         }
 
-        private static string GetBuildPath
+        private static Dictionary<TargetBrowser, Drivers.Drivers> GetDrivers()
         {
-            get
+            var drivers = new Dictionary<TargetBrowser, Drivers.Drivers>
             {
-                const string osxPath = "/usr/local/bin";
-                var assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var path = Directory.Exists(osxPath) ? osxPath : assemblyPath;
-                TestContext.WriteLine($"looking for local build path {path}");
-                return assemblyPath;
-            }
+                {TargetBrowser.Chrome, new ChromeDriverStrategy()},
+                {TargetBrowser.Firefox, new FirefoxDriverStrategy()},
+                {TargetBrowser.Edge, new EdgeDriverStrategy()},
+                {TargetBrowser.Ie11, new InternetExplorerDriverStrategy()},
+                {TargetBrowser.Safari, new SafariDriverStrategy()},
+                {TargetBrowser.ChromeMac, new ChromeMacDriverStrategy()},
+                {TargetBrowser.FirefoxMac, new FirefoxMacDriverStrategy()}
+            };
+            return drivers;
         }
     }
 }
