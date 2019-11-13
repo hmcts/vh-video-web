@@ -2,7 +2,7 @@
   <p class="govuk-body">Loading please wait...</p>
 </div>
 
-<div *ngIf="showVideo" class="govuk-grid-row">
+<div class="govuk-grid-row"  [ngClass]="{'showVideo': showVideo, 'hideVideo': !showVideo}">
   <div class="video-background"></div>
   <div class="govuk-grid-column-one-half">
     <video id="incomingFeed" [srcObject]="this.stream" autoplay height="auto">
@@ -10,13 +10,14 @@
     </video>
   </div>
 </div>
-<div class="govuk-grid-row" [ngClass]="{'showVideo': showVideo, 'hideVideo': !showVideo}">
+<div class="govuk-grid-row" >
   <div class="govuk-grid-column-one-half" id="outgoingFeedDiv">
     <button id="outgoingFeedButton" type="button" class="govuk-button govuk-button--secondary reduce-margin"
+      [ngClass]="{'showVideo': showVideo, 'hideVideo': !showVideo}"
       data-module="govuk-button" (click)="toggleView()">
       {{ selfViewOpen ? 'Close' : 'Open' }} self-view
     </button>
-    <video id="outgoingFeedVideo" [muted]="true" [srcObject]="this.outgoingStream" autoplay [ngClass]="{'showVideo': selfViewOpen, 'hideVideo': !selfViewOpen}"
+    <video id="outgoingFeedVideo" [muted]="true" [srcObject]="this.outgoingStream" autoplay  [ngClass]="{'showVideo': selfViewOpen, 'hideVideo': !selfViewOpen}"
       height="auto">
       Your browser does not support Video
     </video>

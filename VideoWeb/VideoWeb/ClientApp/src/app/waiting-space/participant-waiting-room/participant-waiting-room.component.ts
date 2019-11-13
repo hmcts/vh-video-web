@@ -271,12 +271,14 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
+      console.log('#######################  onSetup #######################');
       self.logger.info('running pexip setup');
-      this.connect('0000', null);
       self.outgoingStream = stream;
+      this.connect('0000', null);
     };
 
     this.pexipAPI.onConnect = function (stream) {
+      console.log('#######################  onConnect #######################');
       self.errorCount = 0;
       self.connected = true;
       self.updateShowVideo();
