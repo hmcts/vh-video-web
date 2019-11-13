@@ -4,7 +4,6 @@ Feature: Hearing List
 	I would like to login and access the hearing details
 	So that I can have an overview of all the scheduled hearings I am involved in
 
-@Smoketest
 Scenario: Participant has 1 or more hearings
 	Given I have a hearing and a conference
 	And a new browser is open for a Participant
@@ -52,7 +51,7 @@ Scenario: Clerk has 1 or more hearings
 	When the user clicks on the Start Hearing button
 	Then the user is on the Waiting Room page
 
-@VIH-4156 @VIH-4507
+@VIH-4156 @VIH-4507 @Smoketest
 Scenario: Video Hearings Officer has 1 or more hearings
 	Given I have a hearing and a conference
 	And a new browser is open for a Video Hearings Officer
