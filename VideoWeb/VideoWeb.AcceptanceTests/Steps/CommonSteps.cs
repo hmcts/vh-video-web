@@ -17,6 +17,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly TestContext _tc;
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly CommonPages _commonPages;
+        private const string VhoEmail = "video-hearings@justice.gov.uk";
+        private const string VhoPhone = "0300 303 0655";
 
         public CommonSteps(TestContext testContext, Dictionary<string, UserBrowser> browsers, CommonPages commonPages)
         {
@@ -105,6 +107,17 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_commonPages.ContactUsLink)
                 .Displayed.Should().BeTrue();
 
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_commonPages.ContactUsLink).Click();
+
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_commonPages.ContactUsPhone(VhoPhone))
+                .Displayed.Should().BeTrue();
+
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_commonPages.ContactUsEmail)
+                .Displayed.Should().BeTrue();
+
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_commonPages.ContactUsEmail).GetAttribute("href")
+                .Should().Contain(VhoEmail);
+
             if (!_browsers[_tc.CurrentUser.Key].Driver.Url.Contains(Page.HearingList.Url)) return;
 
             if (_tc.Hearing != null)
@@ -112,6 +125,13 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _commonPages.TheCaseNumberIsDisplayedInTheContactDetails(_tc.Hearing.Cases.First().Number)
                     .Should().BeFalse();
             }
+        }
+
+        [Then(@"a phone number for help is provided")]
+        public void ThenAPhoneNumberForHelpIsProvided()
+        {
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_commonPages.ContactUsPhone(VhoPhone))
+                .Displayed.Should().BeTrue();
         }
 
         [Then(@"the banner should (.*) displayed")]
