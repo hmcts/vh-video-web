@@ -45,6 +45,7 @@ Scenario: Clerk has 1 or more hearings
 	And a new browser is open for a Clerk
 	When the user attempts to login with valid credentials
 	Then the user is on the Hearing List page
+	And a phone number for help is provided
 	And the user can see their details at the top of the hearing list 
 	And the Clerk can see a list of hearings including the new hearing
 	And contact us details for the clerk are available
