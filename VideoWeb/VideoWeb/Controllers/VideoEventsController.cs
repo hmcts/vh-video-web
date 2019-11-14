@@ -55,7 +55,7 @@ namespace VideoWeb.Controllers
 
                 var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
                 await handler.HandleAsync(callbackEvent);
-                if (callbackEvent.EventType != EventType.VhoCall)
+                if (callbackEvent.EventType != EventType.VhoCall && callbackEvent.EventType != EventType.Close)
                 {
                     await _videoApiClient.RaiseVideoEventAsync(request);
                 }
