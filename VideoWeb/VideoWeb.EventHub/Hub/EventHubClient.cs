@@ -33,16 +33,16 @@ namespace VideoWeb.EventHub.Hub
         }
         public override async Task OnConnectedAsync()
         {
+            var userName = await GetUsername(Context.User.Identity.Name);
+            _logger.LogError($"Connected to event hub server-side: { userName } ");
             var isAdmin = await IsVhOfficerAsync(Context.User.Identity.Name);
             if (isAdmin)
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, VhOfficersGroupName);
-                _logger.LogError($"EVENTHUB: Added { VhOfficersGroupName } to { Context.ConnectionId } at { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
             }
             else
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, Context.UserIdentifier);
-                _logger.LogError($"EVENTHUB: Added { Context.UserIdentifier } to { Context.ConnectionId } at { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
             }
 
             await base.OnConnectedAsync();
@@ -50,24 +50,30 @@ namespace VideoWeb.EventHub.Hub
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
+            var userName = await GetUsername(Context.User.Identity.Name);
+            _logger.LogError($"Disconnected from event hub server-side: { userName } ");
             var isAdmin = await IsVhOfficerAsync(Context.User.Identity.Name);
             if (isAdmin)
             {
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, VhOfficersGroupName);
-                _logger.LogError($"EVENTHUB: Removed { VhOfficersGroupName } to { Context.ConnectionId } at { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
             }
             else
             {
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, Context.UserIdentifier);
-                _logger.LogError($"EVENTHUB: Removed { Context.UserIdentifier } to { Context.ConnectionId } at { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
             }
-            
+
             await base.OnDisconnectedAsync(exception);
+            _logger.LogError($"Disconnected from event hub server-side: { exception.Message } ");
         }
 
         private async Task<bool> IsVhOfficerAsync(string username)
         {
             return await _userProfileService.IsAdmin(username);
+        }
+
+        private async Task<string> GetUsername(string username)
+        {
+            return await _userProfileService.GetUsername(username);
         }
     }
 }
