@@ -41,7 +41,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             browser.LaunchBrowser();
             browser.NavigateToPage();
 
-            browser.Retry(() => browser.PageUrl().Should().Contain("login.microsoftonline.com"), 10);
+            if (_tc.TargetBrowser != TargetBrowser.Ie11)
+            {
+                browser.Retry(() => browser.PageUrl().Should().Contain("login.microsoftonline.com"), 4);
+            }
         }
 
         [Given(@"in (.*)'s browser")]
