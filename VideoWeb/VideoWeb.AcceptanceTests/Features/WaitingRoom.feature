@@ -8,6 +8,7 @@ Feature: Waiting Room
 Scenario: Participant waiting room
 	Given the Participant user has progressed to the Waiting Room page
 	Then the user is on the Waiting Room page
+	And a phone number for help is provided
 	And the participant status will be updated to Available
 	And the participant can see information about their case
 	And the user can see a list of participants and their representatives
@@ -17,6 +18,7 @@ Scenario: Participant waiting room
 Scenario: Clerk waiting room
 	Given the Clerk user has progressed to the Waiting Room page
 	Then the user is on the Waiting Room page
+	And a phone number for help is provided
 	And the participant status will be updated to Joining
 	And the Clerk can see information about their case 
 	And the user can see other participants status
