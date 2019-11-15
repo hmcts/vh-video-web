@@ -16,7 +16,9 @@ namespace VideoWeb.AcceptanceTests.Pages
         public By SignInLink => By.PartialLinkText("here");
         public By QuoteYourCaseNumberText => CommonLocators.ElementContainingText("Call us on");
         public By ContactUsLink => CommonLocators.ElementContainingText("Contact us for help");
+        public By ContactUsEmail => CommonLocators.ElementContainingText("Send us a message");
         public By BetaBanner => CommonLocators.ElementContainingText("beta");
+        public By ContactUsPhone(string phone) => CommonLocators.ElementContainingText(phone);
 
         public CommonPages(Dictionary<string, UserBrowser> browsers, TestContext testContext)
         {
