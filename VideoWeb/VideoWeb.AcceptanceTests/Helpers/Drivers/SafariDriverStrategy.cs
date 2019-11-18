@@ -13,7 +13,7 @@ namespace VideoWeb.AcceptanceTests.Helpers.Drivers
                 BrowserVersion = "latest"
             };
             safariOptions.AddAdditionalCapability("sauce:options", SauceOptions);
-            return new RemoteWebDriver(Uri, safariOptions.ToCapabilities(), SaucelabsTimeout);
+            return new RemoteWebDriver(Uri, safariOptions);
         }
 
         public override IWebDriver InitialiseForLocal()
