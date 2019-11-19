@@ -7,5 +7,7 @@
         public string VideoApiUrl { get; set; }
         public string VideoApiResourceId { get; set; }
         public string VideoWebUrl { get; set; }
+        public string UserApiUrl { get; set; }
+        public string UserApiResourceId { get; set; }
     }
 }

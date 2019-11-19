@@ -62,6 +62,10 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 testSettings.TestClientId, testSettings.TestClientSecret,
                 hearingServiceSettings.BookingsApiResourceId);
 
+            testContext.UserApiBearerToken = new TokenProvider(Options.Create(azureAdConfiguration)).GetClientAccessToken(
+                testSettings.TestClientId, testSettings.TestClientSecret,
+                hearingServiceSettings.UserApiResourceId);
+
             testContext.VideoApiBearerToken = new TokenProvider(Options.Create(azureAdConfiguration)).GetClientAccessToken(
                 testSettings.TestClientId, testSettings.TestClientSecret,
                 hearingServiceSettings.VideoApiResourceId);
@@ -77,17 +81,19 @@ namespace VideoWeb.AcceptanceTests.Hooks
             testSettings.UserAccounts.Should().HaveCountGreaterThan(0);
 
             testContext.BookingsApiUrl = hearingServiceSettings.BookingsApiUrl;
+            testContext.UserApiUrl = hearingServiceSettings.UserApiUrl;
             testContext.VideoApiUrl = hearingServiceSettings.VideoApiUrl;
             testContext.VideoWebUrl = hearingServiceSettings.VideoWebUrl;
 
             testContext.TestSettings = testSettings;
 
             CheckBookingsApiHealth(testContext);
+            CheckUserApiHealth(testContext);
             CheckVideoApiHealth(testContext);
 
             testContext.SaucelabsSettings = _saucelabsSettings;
-            KillAnyChromeDriverProcesses(_saucelabsSettings);
             testContext.TargetBrowser = GetTargetBrowser(testContext);
+            KillAnyLocalDriverProcesses(testContext.TargetBrowser, _saucelabsSettings);
             testContext.RunningVideoWebLocally = testContext.VideoWebUrl.Contains("localhost");
             testContext.RunningVideoApiLocally = testContext.VideoApiUrl.Contains("localhost");
             testContext.DefaultParticipant = testSettings.UserAccounts.First(x => x.DefaultParticipant.Equals(true));
@@ -100,30 +106,20 @@ namespace VideoWeb.AcceptanceTests.Hooks
             return context.TargetBrowser;
         }
 
-        public static void KillAnyChromeDriverProcesses(SauceLabsSettings sauceLabsSettings)
-        {
-            if (sauceLabsSettings.RunWithSaucelabs) return;
-            var chromeDriverProcesses = Process.GetProcessesByName("ChromeDriver");
-
-            foreach (var chromeDriverProcess in chromeDriverProcesses)
-            {
-                try
-                {
-                    chromeDriverProcess.Kill();
-                }
-                catch (Exception ex)
-                {
-                    NUnit.Framework.TestContext.WriteLine(ex.Message);
-                }
-            }
-        }
-
         public static void CheckBookingsApiHealth(TestContext testContext)
         {
             var endpoint = new BookingsApiUriFactory().HealthCheckEndpoints;
             testContext.Request = testContext.Get(endpoint.HealthCheck);
             testContext.Response = testContext.BookingsApiClient().Execute(testContext.Request);
             testContext.Response.StatusCode.Should().Be(HttpStatusCode.OK, "Unable to connect to the Bookings Api");
+        }
+
+        public static void CheckUserApiHealth(TestContext testContext)
+        {
+            var endpoint = new UserApiUriFactory().HealthCheckEndpoints;
+            testContext.Request = testContext.Get(endpoint.CheckServiceHealth());
+            testContext.Response = testContext.UserApiClient().Execute(testContext.Request);
+            testContext.Response.StatusCode.Should().Be(HttpStatusCode.OK, "Unable to connect to the User Api");
         }
 
         public static void CheckVideoApiHealth(TestContext testContext)
@@ -148,13 +144,20 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 browser.BrowserTearDown();
             }
 
-            var chromeDriverProcesses = Process.GetProcessesByName("ChromeDriver");
+            KillAnyLocalDriverProcesses(context.TargetBrowser, _saucelabsSettings);
+        }
 
-            foreach (var chromeDriverProcess in chromeDriverProcesses)
+        public static void KillAnyLocalDriverProcesses(TargetBrowser browser, SauceLabsSettings sauceLabsSettings)
+        {
+            if (sauceLabsSettings.RunWithSaucelabs) return;
+            Process[] driverProcesses = null;
+            driverProcesses = Process.GetProcessesByName(browser == TargetBrowser.Firefox ? "geckodriver" : "ChromeDriver");
+
+            foreach (var driverProcess in driverProcesses)
             {
                 try
                 {
-                     chromeDriverProcess.Kill();
+                    driverProcess.Kill();
                 }
                 catch (Exception ex)
                 {
