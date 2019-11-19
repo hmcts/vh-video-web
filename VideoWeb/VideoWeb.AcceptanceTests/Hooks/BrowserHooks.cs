@@ -62,10 +62,6 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 testSettings.TestClientId, testSettings.TestClientSecret,
                 hearingServiceSettings.BookingsApiResourceId);
 
-            testContext.UserApiBearerToken = new TokenProvider(Options.Create(azureAdConfiguration)).GetClientAccessToken(
-                testSettings.TestClientId, testSettings.TestClientSecret,
-                hearingServiceSettings.UserApiResourceId);
-
             testContext.VideoApiBearerToken = new TokenProvider(Options.Create(azureAdConfiguration)).GetClientAccessToken(
                 testSettings.TestClientId, testSettings.TestClientSecret,
                 hearingServiceSettings.VideoApiResourceId);
@@ -80,22 +76,20 @@ namespace VideoWeb.AcceptanceTests.Hooks
             testSettings.TestUsernameStem.Should().NotBeNullOrEmpty();
             testSettings.UserAccounts.Should().HaveCountGreaterThan(0);
 
-            testContext.BookingsApiBaseUrl = hearingServiceSettings.BookingsApiUrl;
-            testContext.UserApiBaseUrl = hearingServiceSettings.UserApiUrl;
-            testContext.VideoApiBaseUrl = hearingServiceSettings.VideoApiUrl;
+            testContext.BookingsApiUrl = hearingServiceSettings.BookingsApiUrl;
+            testContext.VideoApiUrl = hearingServiceSettings.VideoApiUrl;
             testContext.VideoWebUrl = hearingServiceSettings.VideoWebUrl;
 
             testContext.TestSettings = testSettings;
 
             CheckBookingsApiHealth(testContext);
-            CheckUserApiHealth(testContext);
             CheckVideoApiHealth(testContext);
 
             testContext.SaucelabsSettings = _saucelabsSettings;
             KillAnyChromeDriverProcesses(_saucelabsSettings);
             testContext.TargetBrowser = GetTargetBrowser(testContext);
             testContext.RunningVideoWebLocally = testContext.VideoWebUrl.Contains("localhost");
-            testContext.RunningVideoApiLocally = testContext.VideoApiBaseUrl.Contains("localhost");
+            testContext.RunningVideoApiLocally = testContext.VideoApiUrl.Contains("localhost");
             testContext.DefaultParticipant = testSettings.UserAccounts.First(x => x.DefaultParticipant.Equals(true));
             testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, testContext.TargetBrowser);            
         }
@@ -130,14 +124,6 @@ namespace VideoWeb.AcceptanceTests.Hooks
             testContext.Request = testContext.Get(endpoint.HealthCheck);
             testContext.Response = testContext.BookingsApiClient().Execute(testContext.Request);
             testContext.Response.StatusCode.Should().Be(HttpStatusCode.OK, "Unable to connect to the Bookings Api");
-        }
-
-        public static void CheckUserApiHealth(TestContext testContext)
-        {
-            var endpoint = new UserApiUriFactory().HealthCheckEndpoints;
-            testContext.Request = testContext.Get(endpoint.CheckServiceHealth());
-            testContext.Response = testContext.UserApiClient().Execute(testContext.Request);
-            testContext.Response.StatusCode.Should().Be(HttpStatusCode.OK, "Unable to connect to the User Api");
         }
 
         public static void CheckVideoApiHealth(TestContext testContext)
