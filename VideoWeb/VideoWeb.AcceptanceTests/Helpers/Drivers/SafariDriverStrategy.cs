@@ -8,13 +8,11 @@ namespace VideoWeb.AcceptanceTests.Helpers.Drivers
     {
         public override RemoteWebDriver InitialiseForSauceLabs()
         {
-            var safariOptions = new SafariOptions()
-            {
-                PlatformName = MacPlatform, 
-                BrowserVersion = "latest",
-                UnhandledPromptBehavior = UnhandledPromptBehavior.Accept
+            var safariOptions = new SafariOptions(){
+                PlatformName = MacPlatform,
+                BrowserVersion = "latest"
             };
-            safariOptions.AddAdditionalCapability("sauce:options", safariOptions);
+            safariOptions.AddAdditionalCapability("sauce:options", SauceOptions);
             return new RemoteWebDriver(Uri, safariOptions);
         }
 
