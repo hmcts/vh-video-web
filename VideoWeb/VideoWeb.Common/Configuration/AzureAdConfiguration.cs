@@ -6,7 +6,6 @@
         public string ClientSecret { get; set; }
         public string Authority { get; set; }
         public string TenantId { get; set; }
-        public string VhVideoApiResourceId { get; set; }
         public string RedirectUri { get; set; }
         public string PostLogoutRedirectUri { get; set; }
         public ApplicationInsightsConfiguration ApplicationInsights { get; set; }
@@ -15,5 +14,11 @@
     public class ApplicationInsightsConfiguration
     {
         public string InstrumentationKey { get; set; }
+    }
+
+    public class ConnectionStrings
+    {
+        public string RedisCache { get; set; }
+        public string SignalR { get; set; }
     }
 }

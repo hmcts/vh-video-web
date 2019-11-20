@@ -40,7 +40,6 @@ namespace VideoWeb.AcceptanceTests.Helpers
             var buildName = Environment.GetEnvironmentVariable("Build_DefinitionName");
             var releaseName = Environment.GetEnvironmentVariable("RELEASE_RELEASENAME");
             var shortBuildName = buildName?.Replace("hmcts.vh-", "");
-
             var sauceOptions = new Dictionary<string, object>
             {
                 {"username", _saucelabsSettings.Username},
@@ -57,19 +56,17 @@ namespace VideoWeb.AcceptanceTests.Helpers
             };
 
             var drivers = GetDrivers();
-
+            drivers[_targetBrowser].MacPlatform = SauceLabsMacPlatformVersion;
             drivers[_targetBrowser].SauceOptions = sauceOptions;
             drivers[_targetBrowser].IdleTimeout = TimeSpan.FromSeconds(SaucelabsIdleTimeoutInSeconds);
             drivers[_targetBrowser].SaucelabsTimeout = TimeSpan.FromSeconds(SaucelabsCommandTimeoutInSeconds);
             drivers[_targetBrowser].Uri = new Uri(_saucelabsSettings.RemoteServerUrl);
-            drivers[_targetBrowser].MacPlatform = SauceLabsMacPlatformVersion;
             return drivers[_targetBrowser].InitialiseForSauceLabs();
         }
 
         private static IWebDriver InitialiseLocalDriver(string filename, ScenarioInfo scenario)
         {
             var drivers = GetDrivers();
-
             drivers[_targetBrowser].SaucelabsTimeout = TimeSpan.FromSeconds(SaucelabsCommandTimeoutInSeconds);
             drivers[_targetBrowser].BuildPath = Directory.Exists(OsxPath) ? OsxPath : Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             drivers[_targetBrowser].Filename = filename;

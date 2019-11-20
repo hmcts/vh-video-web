@@ -50,6 +50,8 @@ namespace Testing.Common.Configuration
             hearingServiceOptions.Value.VideoApiUrl.Should().NotBeNullOrEmpty();
             hearingServiceOptions.Value.VideoApiResourceId.Should().NotBeNullOrEmpty();
             hearingServiceOptions.Value.VideoWebUrl.Should().NotBeNullOrEmpty();
+            hearingServiceOptions.Value.UserApiResourceId.Should().NotBeNullOrEmpty();
+            hearingServiceOptions.Value.UserApiUrl.Should().NotBeNullOrEmpty();
             return hearingServiceOptions.Value;
         }
 
