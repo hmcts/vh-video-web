@@ -8,16 +8,22 @@ namespace VideoWeb.AcceptanceTests.Helpers.Drivers
     {
         public override RemoteWebDriver InitialiseForSauceLabs()
         {
-            var safariOptions = new SafariOptions() { PlatformName = MacPlatform, BrowserVersion = "latest" };
-            safariOptions.AddAdditionalCapability("autoAcceptAlerts",true);
-            safariOptions.AddAdditionalCapability("sauce:options", safariOptions);
+            var safariOptions = new SafariOptions(){
+                PlatformName = MacPlatform,
+                BrowserVersion = "latest"
+            };
+            safariOptions.AddAdditionalCapability("sauce:options", SauceOptions);
             return new RemoteWebDriver(Uri, safariOptions);
         }
 
         public override IWebDriver InitialiseForLocal()
         {
-            var safariOptions = new SafariOptions();
-            safariOptions.AddAdditionalCapability("autoAcceptAlerts", true);
+            var safariOptions = new SafariOptions()
+            {
+                PlatformName = MacPlatform,
+                BrowserVersion = "latest",
+                UnhandledPromptBehavior = UnhandledPromptBehavior.Accept
+            };
             return new SafariDriver(BuildPath,safariOptions, LocalTimeout);
         }
     }
