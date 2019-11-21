@@ -28,7 +28,6 @@ namespace VideoWeb.AcceptanceTests.Pages
 
         public bool TheCaseNumberIsDisplayedInTheContactDetails(string caseNumber)
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementClickable(ContactUsLink).Click();
             return _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(QuoteYourCaseNumberText).Text.Contains($"and quote your case number {caseNumber}");
         }
 

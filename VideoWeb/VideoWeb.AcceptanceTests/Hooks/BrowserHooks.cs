@@ -80,9 +80,9 @@ namespace VideoWeb.AcceptanceTests.Hooks
             testSettings.TestUsernameStem.Should().NotBeNullOrEmpty();
             testSettings.UserAccounts.Should().HaveCountGreaterThan(0);
 
-            testContext.BookingsApiBaseUrl = hearingServiceSettings.BookingsApiUrl;
-            testContext.UserApiBaseUrl = hearingServiceSettings.UserApiUrl;
-            testContext.VideoApiBaseUrl = hearingServiceSettings.VideoApiUrl;
+            testContext.BookingsApiUrl = hearingServiceSettings.BookingsApiUrl;
+            testContext.UserApiUrl = hearingServiceSettings.UserApiUrl;
+            testContext.VideoApiUrl = hearingServiceSettings.VideoApiUrl;
             testContext.VideoWebUrl = hearingServiceSettings.VideoWebUrl;
 
             testContext.TestSettings = testSettings;
@@ -92,10 +92,10 @@ namespace VideoWeb.AcceptanceTests.Hooks
             CheckVideoApiHealth(testContext);
 
             testContext.SaucelabsSettings = _saucelabsSettings;
-            KillAnyChromeDriverProcesses(_saucelabsSettings);
             testContext.TargetBrowser = GetTargetBrowser(testContext);
+            KillAnyLocalDriverProcesses(testContext.TargetBrowser, _saucelabsSettings);
             testContext.RunningVideoWebLocally = testContext.VideoWebUrl.Contains("localhost");
-            testContext.RunningVideoApiLocally = testContext.VideoApiBaseUrl.Contains("localhost");
+            testContext.RunningVideoApiLocally = testContext.VideoApiUrl.Contains("localhost");
             testContext.DefaultParticipant = testSettings.UserAccounts.First(x => x.DefaultParticipant.Equals(true));
             testContext.Environment = new SeleniumEnvironment(_saucelabsSettings, _scenarioContext.ScenarioInfo, testContext.TargetBrowser);            
         }
@@ -104,24 +104,6 @@ namespace VideoWeb.AcceptanceTests.Hooks
         {
             context.TargetBrowser = Enum.TryParse(NUnit.Framework.TestContext.Parameters["TargetBrowser"], true, out TargetBrowser targetTargetBrowser) ? targetTargetBrowser : TargetBrowser.Chrome;
             return context.TargetBrowser;
-        }
-
-        public static void KillAnyChromeDriverProcesses(SauceLabsSettings sauceLabsSettings)
-        {
-            if (sauceLabsSettings.RunWithSaucelabs) return;
-            var chromeDriverProcesses = Process.GetProcessesByName("ChromeDriver");
-
-            foreach (var chromeDriverProcess in chromeDriverProcesses)
-            {
-                try
-                {
-                    chromeDriverProcess.Kill();
-                }
-                catch (Exception ex)
-                {
-                    NUnit.Framework.TestContext.WriteLine(ex.Message);
-                }
-            }
         }
 
         public static void CheckBookingsApiHealth(TestContext testContext)
@@ -162,13 +144,20 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 browser.BrowserTearDown();
             }
 
-            var chromeDriverProcesses = Process.GetProcessesByName("ChromeDriver");
+            KillAnyLocalDriverProcesses(context.TargetBrowser, _saucelabsSettings);
+        }
 
-            foreach (var chromeDriverProcess in chromeDriverProcesses)
+        public static void KillAnyLocalDriverProcesses(TargetBrowser browser, SauceLabsSettings sauceLabsSettings)
+        {
+            if (sauceLabsSettings.RunWithSaucelabs) return;
+            Process[] driverProcesses = null;
+            driverProcesses = Process.GetProcessesByName(browser == TargetBrowser.Firefox ? "geckodriver" : "ChromeDriver");
+
+            foreach (var driverProcess in driverProcesses)
             {
                 try
                 {
-                     chromeDriverProcess.Kill();
+                    driverProcess.Kill();
                 }
                 catch (Exception ex)
                 {
