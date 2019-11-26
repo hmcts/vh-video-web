@@ -25,7 +25,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         public async Task should_send_participant__status_messages_to_clients_and_asb_when_transfer_occurs(
             RoomType from, RoomType to, ParticipantState status)
         {
-            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, MemoryCache);
+            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == UserRole.Individual);
@@ -52,7 +52,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public void should_throw_exception_when_transfer_cannot_be_mapped_to_participant_status()
         {
-            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, MemoryCache);
+            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == UserRole.Individual);
