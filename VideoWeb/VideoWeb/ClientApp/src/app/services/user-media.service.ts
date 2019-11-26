@@ -61,7 +61,6 @@ export class UserMediaService {
         if (stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0) {
           updatedDevices = await navigator.mediaDevices.enumerateDevices();
         }
-    
 
         updatedDevices = updatedDevices.filter(x => x.deviceId !== 'default' && x.kind !== 'audiooutput');
         this.availableDeviceList = Array.from(updatedDevices, device =>
