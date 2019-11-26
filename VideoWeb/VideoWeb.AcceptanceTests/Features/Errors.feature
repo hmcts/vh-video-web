@@ -20,13 +20,8 @@ Scenario: Unauthorised error page
 	Then the user is on the Unauthorised page
 	And the Unauthorised error page displays text of how to rectify the problem
 
-@VIH-4677 @VIH-5219 @UnsupportedBrowserEdge
-Scenario: Edge Unsupported browser error page
+@VIH-4677 @VIH-5219 @UnsupportedBrowser
+Scenario: Unsupported browser error page
 	Given a new browser is open for a Participant
-	When the user attempts to login with valid credentials
-	Then the user is on the Unsupported Browser error page with text of how to rectify the problem
-
-@VIH-4677 @VIH-5219 @UnsupportedBrowserIe11
-Scenario: IE11 Unsupported browser error page
-	Given a new browser is open for a Participant
+	When the user attempts to access the page on their unsupported browser
 	Then the user is on the Unsupported Browser error page with text of how to rectify the problem

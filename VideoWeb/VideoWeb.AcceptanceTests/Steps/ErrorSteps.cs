@@ -19,13 +19,15 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly TestContext _tc;
         private readonly ErrorPage _errorPage;
         private readonly CommonPages _commonPages;
+        private readonly LoginSteps _loginSteps;
 
-        public ErrorSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, ErrorPage errorPage, CommonPages commonPages)
+        public ErrorSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, ErrorPage errorPage, CommonPages commonPages, LoginSteps loginSteps)
         {
             _browsers = browsers;
             _tc = testContext;
             _errorPage = errorPage;
             _commonPages = commonPages;
+            _loginSteps = loginSteps;
         }
 
         [When(@"the user attempts to navigate to a nonexistent page")]
@@ -62,6 +64,15 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_tc.CurrentUser.Key].Driver.Navigate().Back();
             _browsers[_tc.CurrentUser.Key].Driver.Navigate().Forward();
+        }
+
+        [When(@"the user attempts to access the page on their unsupported browser")]
+        public void WhenTheUserAttemptsToAccessThePageOnTheirUnsupportedBrowser()
+        {
+            if (_tc.TargetBrowser == TargetBrowser.Edge)
+            {
+                _loginSteps.ProgressToNextPage();
+            }
         }
 
         [Then(@"the Not Found error page displays text of how to rectify the problem")]
