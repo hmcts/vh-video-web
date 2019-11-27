@@ -20,7 +20,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [TestCase(RoomType.WaitingRoom)]
         public void should_throw_exception_when_transfer_to_is_not_a_consultation_room(RoomType? transferTo)
         {
-            _eventHandler = new VhOfficerCallEventHandler(EventHubContextMock.Object, MemoryCache);
+            _eventHandler = new VhOfficerCallEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
             
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == UserRole.Individual);
@@ -44,7 +44,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [TestCase(RoomType.ConsultationRoom2)]
         public async Task should_raise_admin_consultation_message(RoomType? transferTo)
         {
-            _eventHandler = new VhOfficerCallEventHandler(EventHubContextMock.Object, MemoryCache);
+            _eventHandler = new VhOfficerCallEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
             
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == UserRole.Individual);
