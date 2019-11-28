@@ -56,7 +56,6 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
     const profile = await this.profileService.getUserProfile();
     this.isJudge = profile.role === UserRole.Judge;
     this.participantName = this.videoWebService.getObfuscatedName(profile.first_name + ' ' + profile.last_name);
-    
   }
 
   getConference(): void {

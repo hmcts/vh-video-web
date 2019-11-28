@@ -167,8 +167,8 @@ export class IndividualParticipantStatusListComponent implements OnInit {
       this.consultationRequester = new Participant(requester);
       this.consultationRequestee = new Participant(requestee);
       this.logger.event(`${requester.username} requesting private consultation with ${this.videoWebService.getObfuscatedName(requestee.username)}`);
-      this.logger.info(`Individual participant status list: Conference Id: ${this.conference.id} 
-        Participant ${requester.id}, ${this.videoWebService.getObfuscatedName(requester.first_name + ' ' + requester.last_name)} 
+      this.logger.info(`Individual participant status list: Conference Id: ${this.conference.id}
+        Participant ${requester.id}, ${this.videoWebService.getObfuscatedName(requester.first_name + ' ' + requester.last_name)}
         calling Participant ${requestee.id}, ${this.videoWebService.getObfuscatedName(requestee.first_name + ' ' + requestee.last_name)}}`);
 
       this.consultationService.raiseConsultationRequest(this.conference, requester, requestee)
