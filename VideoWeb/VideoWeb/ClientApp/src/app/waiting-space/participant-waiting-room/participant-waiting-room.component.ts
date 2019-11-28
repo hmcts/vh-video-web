@@ -162,7 +162,8 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.hearing = new Hearing(data);
         this.conference = this.hearing.getConference();
         this.participant = data.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
-        this.logger.info(`Participant waiting room : Conference Id: ${conferenceId} and participantId: ${this.participant.id}, participant name : ${this.videoWebService.getObfuscatedName(this.participant.display_name)}`);
+        this.logger.info(`Participant waiting room : Conference Id: ${conferenceId} and participantId: ${this.participant.id},
+          participant name : ${this.videoWebService.getObfuscatedName(this.participant.first_name + ' ' + this.participant.last_name)}`);
         this.getJwtoken();
       },
         (error) => {
