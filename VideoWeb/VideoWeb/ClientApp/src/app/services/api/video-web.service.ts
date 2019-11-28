@@ -76,4 +76,8 @@ export class VideoWebService {
   getPexipConfig(): Observable<SelfTestPexipResponse> {
     return this.apiClient.getPexipConfig();
   }
+
+  getObfuscatedName(displayName: string): string {
+    return displayName.replace(/(?!\b)\w/g, '*');
+  }
 }

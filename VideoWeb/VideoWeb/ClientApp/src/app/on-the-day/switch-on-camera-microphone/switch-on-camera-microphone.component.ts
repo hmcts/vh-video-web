@@ -23,6 +23,7 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
   conferenceId: string;
   loadingData: boolean;
   conference: ConferenceResponse;
+  participantName: string;
 
   contact = {
     phone: VhContactDetails.phone
@@ -54,6 +55,8 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
   async retrieveProfile(): Promise<void> {
     const profile = await this.profileService.getUserProfile();
     this.isJudge = profile.role === UserRole.Judge;
+    this.participantName = this.videoWebService.getObfuscatedName(profile.first_name + ' ' + profile.last_name);
+    
   }
 
   getConference(): void {
@@ -71,6 +74,7 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
     this.mediaAccepted = await this.userMediaStreamService.requestAccess();
     this.userPrompted = true;
     if (!this.mediaAccepted) {
+      this.logger.info(`Switch on Camera-Microphone | ConferenceId : ${this.conferenceId}, CaseName : ${this.conference.case_name} | Participant : ${this.participantName} denied access to camera.`);
       this.postPermissionDeniedAlert();
     }
   }

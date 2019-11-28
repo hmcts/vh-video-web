@@ -12,6 +12,7 @@ import { Participant } from 'src/app/shared/models/participant';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 
 @Component({
   selector: 'app-individual-participant-status-list',
@@ -46,7 +47,8 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     private eventService: EventsService,
     private ngZone: NgZone,
     private modalService: ModalService,
-    private logger: Logger
+    private logger: Logger,
+    private videoWebService: VideoWebService
   ) { }
 
   ngOnInit() {
@@ -164,7 +166,11 @@ export class IndividualParticipantStatusListComponent implements OnInit {
 
       this.consultationRequester = new Participant(requester);
       this.consultationRequestee = new Participant(requestee);
-      this.logger.event(`${requester.username} requesting private consultation with ${requestee.username}`);
+      this.logger.event(`${requester.username} requesting private consultation with ${this.videoWebService.getObfuscatedName(requestee.username)}`);
+      this.logger.info(`Individual participant status list: Conference Id: ${this.conference.id} 
+        Participant ${requester.id}, ${this.videoWebService.getObfuscatedName(requester.first_name + ' ' + requester.last_name)} 
+        calling Participant ${requestee.id}, ${this.videoWebService.getObfuscatedName(requestee.first_name + ' ' + requestee.last_name)}}`);
+
       this.consultationService.raiseConsultationRequest(this.conference, requester, requestee)
         .subscribe(() => {
           this.logger.info('Raised consultation request event');
