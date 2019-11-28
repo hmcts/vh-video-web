@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Moq;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers;
@@ -19,34 +20,38 @@ namespace Testing.Common.Helpers
         public Mock<IHubContext<EventHub, IEventHubClient>> EventHubContextMock { get; set; }
         public Mock<IEventHubClient> EventHubClientMock { get; set; }
 
+        public Mock<ILogger<EventHandlerBase>> EventHandlerBaseMock { get; set; }
+
 
         public List<IEventHandler> GetHandlers()
         {
             var cache = new MemoryCache(new MemoryCacheOptions());
             var eventHubContextMock = new Mock<IHubContext<EventHub, IEventHubClient>>();
+            var logger = new Mock<ILogger<EventHandlerBase>>();
 
-            return GetHandlers(eventHubContextMock, cache);
+            return GetHandlers(eventHubContextMock, cache, logger);
         }
 
         public List<IEventHandler> GetHandlers(Mock<IHubContext<EventHub, IEventHubClient>> eventHubContextMock,
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache, Mock<ILogger<EventHandlerBase>> logger)
         {
             Cache = memoryCache;
             EventHubContextMock = eventHubContextMock;
             EventHubClientMock = new Mock<IEventHubClient>();
+            EventHandlerBaseMock = new Mock<ILogger<EventHandlerBase>>();
             return new List<IEventHandler>
             {
-                new CloseEventHandler(eventHubContextMock.Object, memoryCache),
-                new DisconnectedEventHandler(eventHubContextMock.Object, memoryCache),
-                new HelpEventHandler(eventHubContextMock.Object, memoryCache),
-                new JoinedEventHandler(eventHubContextMock.Object, memoryCache),
-                new JudgeAvailableEventHandler(eventHubContextMock.Object, memoryCache),
-                new LeaveEventHandler(eventHubContextMock.Object, memoryCache),
-                new PauseEventHandler(eventHubContextMock.Object, memoryCache),
-                new SuspendEventHandler(eventHubContextMock.Object, memoryCache),
-                new TransferEventHandler(eventHubContextMock.Object, memoryCache),
-                new ParticipantJoiningEventHandler(eventHubContextMock.Object, memoryCache),
-                new VhOfficerCallEventHandler(eventHubContextMock.Object, memoryCache)
+                new CloseEventHandler(eventHubContextMock.Object, memoryCache, logger.Object),
+                new DisconnectedEventHandler(eventHubContextMock.Object, memoryCache, logger.Object),
+                new HelpEventHandler(eventHubContextMock.Object, memoryCache, logger.Object),
+                new JoinedEventHandler(eventHubContextMock.Object, memoryCache, logger.Object),
+                new JudgeAvailableEventHandler(eventHubContextMock.Object, memoryCache, logger.Object),
+                new LeaveEventHandler(eventHubContextMock.Object, memoryCache, logger.Object),
+                new PauseEventHandler(eventHubContextMock.Object, memoryCache, logger.Object),
+                new SuspendEventHandler(eventHubContextMock.Object, memoryCache, logger.Object),
+                new TransferEventHandler(eventHubContextMock.Object, memoryCache, logger.Object),
+                new ParticipantJoiningEventHandler(eventHubContextMock.Object, memoryCache, logger.Object),
+                new VhOfficerCallEventHandler(eventHubContextMock.Object, memoryCache, logger.Object)
             };
         }
 

@@ -1,7 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using VideoWeb.EventHub.Enums;
 
 namespace VideoWeb.EventHub.Hub
@@ -23,12 +24,17 @@ namespace VideoWeb.EventHub.Hub
         private readonly IUserProfileService _userProfileService;
         public static string VhOfficersGroupName => "VhOfficers";
 
-        public EventHub(IUserProfileService userProfileService)
+        private readonly ILogger<EventHub> _logger;
+
+        public EventHub(IUserProfileService userProfileService, ILogger<EventHub> logger)
         {
             _userProfileService = userProfileService;
+            _logger = logger;
         }
         public override async Task OnConnectedAsync()
         {
+            var userName = await GetUsername(Context.User.Identity.Name);
+            _logger.LogError($"Connected to event hub server-side: { userName } ");
             var isAdmin = await IsVhOfficerAsync(Context.User.Identity.Name);
             if (isAdmin)
             {
@@ -44,6 +50,8 @@ namespace VideoWeb.EventHub.Hub
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
+            var userName = await GetUsername(Context.User.Identity.Name);
+            _logger.LogError($"Disconnected from event hub server-side: { userName } ");
             var isAdmin = await IsVhOfficerAsync(Context.User.Identity.Name);
             if (isAdmin)
             {
@@ -53,13 +61,19 @@ namespace VideoWeb.EventHub.Hub
             {
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, Context.UserIdentifier);
             }
-            
+
             await base.OnDisconnectedAsync(exception);
+            _logger.LogError($"Disconnected from event hub server-side: { exception.Message } ");
         }
 
         private async Task<bool> IsVhOfficerAsync(string username)
         {
             return await _userProfileService.IsAdmin(username);
+        }
+
+        private async Task<string> GetUsername(string username)
+        {
+            return await _userProfileService.GetUsername(username);
         }
     }
 }
