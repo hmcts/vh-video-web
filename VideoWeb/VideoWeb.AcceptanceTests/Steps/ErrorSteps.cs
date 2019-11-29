@@ -117,10 +117,9 @@ namespace VideoWeb.AcceptanceTests.Steps
             else
             {
                 _browsers[_tc.CurrentUser.Key].Driver.Url.Should().NotContain(Page.HearingList.Url);
+                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_errorPage.UnsupportedBrowserTitle)
+                    .Displayed.Should().BeTrue();
             }
-
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_errorPage.UnsupportedBrowserTitle)
-                .Displayed.Should().BeTrue();
         }
     }
 }

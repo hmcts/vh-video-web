@@ -21,7 +21,6 @@ namespace VideoWeb.AcceptanceTests.Helpers
         private const int LocalCommandTimeoutInSeconds = 20;
         private const string SauceLabSeleniumVersion = "3.141.59";
         private const string SauceLabsMacPlatformVersion = "macOS 10.14";
-        private const string OsxPath = "/usr/local/bin";
 
         public SeleniumEnvironment(SauceLabsSettings saucelabsSettings, ScenarioInfo scenario, TargetBrowser targetBrowser)
         {
@@ -68,7 +67,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
         {
             var drivers = GetDrivers();
             drivers[_targetBrowser].SaucelabsTimeout = TimeSpan.FromSeconds(SaucelabsCommandTimeoutInSeconds);
-            drivers[_targetBrowser].BuildPath = Directory.Exists(OsxPath) ? OsxPath : Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            drivers[_targetBrowser].BuildPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             drivers[_targetBrowser].Filename = filename;
             drivers[_targetBrowser].UseVideoFiles = scenario.Tags.Contains("Video");
             drivers[_targetBrowser].LocalTimeout = TimeSpan.FromSeconds(LocalCommandTimeoutInSeconds);
