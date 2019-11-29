@@ -19,14 +19,12 @@ namespace VideoWeb.AcceptanceTests.Helpers.Drivers
 
         public override IWebDriver InitialiseForLocal()
         {
-            var edgeDriverService = EdgeDriverService.CreateDefaultService(
-                BuildPath, "C:\\Windows\\system32\\MicrosoftWebDriver.exe", 52296);
             var edgeOptions = new EdgeOptions
             {
                 UnhandledPromptBehavior = UnhandledPromptBehavior.Accept,
                 UseInPrivateBrowsing = true
             };
-            return new EdgeDriver(edgeDriverService, edgeOptions, LocalTimeout);
+            return new EdgeDriver("C:\\Windows\\system32\\", edgeOptions, LocalTimeout);
         }
     }
 }
