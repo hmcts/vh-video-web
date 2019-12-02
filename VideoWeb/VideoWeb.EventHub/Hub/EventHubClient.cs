@@ -52,7 +52,7 @@ namespace VideoWeb.EventHub.Hub
         {
             var userName = await GetUsername(Context.User.Identity.Name);
             _logger.LogError($"Disconnected from event hub server-side: { userName } ");
-            _logger.LogError($"Disconnected from event hub server-side: { exception } ");
+            _logger.LogError($"Disconnected from event hub server-side: { exception.Message } ");
             var isAdmin = await IsVhOfficerAsync(Context.User.Identity.Name);
             if (isAdmin)
             {
