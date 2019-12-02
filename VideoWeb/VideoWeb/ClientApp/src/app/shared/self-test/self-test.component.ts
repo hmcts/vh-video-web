@@ -95,6 +95,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     this.setupPexipClient();
     this.subscription = this.videoWebService.getToken(this.selfTestParticipantId).subscribe((token: TokenResponse) => {
       this.logger.debug('retrieved token for self test');
+      this.logger.info(`Self test : Conference ${this.conference.id} | setupTestAndCall for Participant Id : ${this.participant.id} | Participant : ${this.participant.display_name}`);
       this.token = token;
       this.call();
     },
@@ -102,7 +103,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.errorService.handleApiError(error);
       });
   }
-
 
   async changeDevices() {
     this.disconnect();
@@ -205,8 +205,10 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     this.didTestComplete = true;
     try {
       if (this.conference) {
+        this.logger.info(`Self test : ConferenceId : ${this.conference.id} | retrieveSelfTestScore for Participant Id : ${this.participant.id} | Participant : ${this.participant.display_name}`);
         this.testCallResult = await this.videoWebService.getTestCallScore(this.conference.id, this.selfTestParticipantId).toPromise();
       } else {
+        this.logger.info(`Self test : retrieveSelfTestScore for Participant Id : ${this.participant.id} | Participant : ${this.participant.display_name}`);
         this.testCallResult = await this.videoWebService.getIndependentTestCallScore(this.selfTestParticipantId).toPromise();
       }
 
