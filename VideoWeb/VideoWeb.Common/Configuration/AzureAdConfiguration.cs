@@ -15,10 +15,4 @@
     {
         public string InstrumentationKey { get; set; }
     }
-
-    public class ConnectionStrings
-    {
-        public string RedisCache { get; set; }
-        public string SignalR { get; set; }
-    }
 }
