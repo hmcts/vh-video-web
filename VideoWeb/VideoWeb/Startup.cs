@@ -45,6 +45,7 @@ namespace VideoWeb
         
         private void RegisterSettings(IServiceCollection services)
         {
+            
             services.Configure<AzureAdConfiguration>(options =>
             {
                 Configuration.Bind("AzureAd", options);
@@ -54,10 +55,6 @@ namespace VideoWeb
             services.Configure<HearingServicesConfiguration>(options => Configuration.Bind("VhServices",options));
             var customTokenSettings = Configuration.GetSection("CustomToken").Get<CustomTokenSettings>();
             services.AddSingleton(customTokenSettings);
-
-            var connectionStrings = Configuration.GetSection("ConnectionStrings").Get<ConnectionStrings>();
-            services.AddSingleton(connectionStrings);
-
         }
 
         private void RegisterAuth(IServiceCollection serviceCollection)
@@ -128,10 +125,15 @@ namespace VideoWeb
                 app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Video App"); });
             }
             
-            app.UseAzureSignalR(routes =>
+            app.UseSignalR(routes =>
             {
                 const string path = "/eventhub";
-                routes.MapHub<EventHub.Hub.EventHub>(path);
+                routes.MapHub<EventHub.Hub.EventHub>(path,
+                    options =>
+                    {
+                        options.Transports = HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling |
+                                             HttpTransportType.WebSockets;
+                    });
             });
             
             if (env.IsDevelopment())
