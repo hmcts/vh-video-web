@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { SelectedUserMediaDevice } from 'src/app/shared/models/selected-user-media-device';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { FormBuilder, FormGroup, AbstractControl, Validators } from '@angular/forms';
@@ -10,7 +10,7 @@ import { UserMediaStreamService } from 'src/app/services/user-media-stream.servi
   templateUrl: './select-media-devices.component.html',
   styleUrls: ['./select-media-devices.component.css']
 })
-export class SelectMediaDevicesComponent implements OnInit {
+export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
 
   @Output() cancelMediaDeviceChange = new EventEmitter();
   @Output() acceptMediaDeviceChange = new EventEmitter<SelectedUserMediaDevice>();
@@ -145,8 +145,21 @@ export class SelectMediaDevicesComponent implements OnInit {
     if (this.preferredMicrophoneStream) {
       this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
     }
-    this.userMediaService.updatePreferredMicrophone(newMic);
     this.preferredMicrophoneStream = null;
     this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(newMic);
+    if (this.preferredMicrophoneStream) {
+      this.userMediaService.updatePreferredMicrophone(newMic);
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.preferredCameraStream) {
+      this.userMediaStreamService.stopStream(this.preferredCameraStream);
+    }
+    this.preferredCameraStream = null;
+    if (this.preferredMicrophoneStream) {
+      this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
+    }
+    this.preferredMicrophoneStream = null;
   }
 }

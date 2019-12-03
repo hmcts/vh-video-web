@@ -195,10 +195,18 @@ export class SelfTestComponent implements OnInit, OnDestroy {
       this.logger.info('disconnecting from pexip node');
       this.pexipAPI.disconnect();
     }
+    this.closeStreams();
     this.incomingStream = null;
     this.outgoingStream = null;
     this.didTestComplete = true;
     this.displayFeed = false;
+  }
+
+  closeStreams() {
+    if (this.preferredMicrophoneStream) {
+      this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
+    }
+    this.preferredMicrophoneStream = null;
   }
 
   async retrieveSelfTestScore() {
