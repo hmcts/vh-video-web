@@ -95,8 +95,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     this.setupPexipClient();
     this.subscription = this.videoWebService.getToken(this.selfTestParticipantId).subscribe((token: TokenResponse) => {
       this.logger.debug('retrieved token for self test');
-      this.logger.info(`Self test : Conference ${this.conference.id} | setupTestAndCall for Participant Id : ${this.participant.id}
-        | Participant : ${this.videoWebService.getObfuscatedName(this.participant.first_name + ' ' + this.participant.last_name)}`);
       this.token = token;
       this.call();
     },
