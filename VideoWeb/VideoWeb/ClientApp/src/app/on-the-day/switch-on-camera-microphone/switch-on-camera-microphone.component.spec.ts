@@ -35,7 +35,11 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
     profileServiceSpy.getUserProfile.and.returnValue(judgerProfile);
     TestBed.configureTestingModule({
       imports: [HttpClientModule, RouterTestingModule],
-      declarations: [SwitchOnCameraMicrophoneComponent, ContactUsFoldingStubComponent, BackNavigationStubComponent],
+      declarations: [
+        SwitchOnCameraMicrophoneComponent,
+        ContactUsFoldingStubComponent,
+        BackNavigationStubComponent
+      ],
       providers: [
         {
           provide: ActivatedRoute,

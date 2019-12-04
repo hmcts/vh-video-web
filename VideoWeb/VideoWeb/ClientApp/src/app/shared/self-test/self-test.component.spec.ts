@@ -42,7 +42,12 @@ describe('SelfTestComponent', () => {
                 { provide: UserMediaService, useClass: MockUserMediaService },
                 { provide: UserMediaStreamService, useValue: userMediaStreamServiceSpy }
             ],
-            declarations: [SelfTestComponent, MicVisualiserStubComponent, ContactUsFoldingStubComponent, SelectMediaDevicesStubComponent, BackNavigationStubComponent]
+            declarations: [
+                SelfTestComponent,
+                MicVisualiserStubComponent,
+                ContactUsFoldingStubComponent,
+                SelectMediaDevicesStubComponent,
+                BackNavigationStubComponent]
         });
     });
 
