@@ -15,6 +15,7 @@ import { ContactUsFoldingStubComponent } from 'src/app/testing/stubs/contact-us-
 import { MicVisualiserStubComponent } from 'src/app/testing/stubs/mic-visualiser-stub';
 import { SelectMediaDevicesStubComponent } from 'src/app/testing/stubs/select-media-devices-stub';
 import { SelfTestComponent } from './self-test.component';
+import { BackNavigationStubComponent } from 'src/app/testing/stubs/back-navigation-stub';
 
 describe('SelfTestComponent', () => {
     let component: SelfTestComponent;
@@ -41,7 +42,7 @@ describe('SelfTestComponent', () => {
                 { provide: UserMediaService, useClass: MockUserMediaService },
                 { provide: UserMediaStreamService, useValue: userMediaStreamServiceSpy }
             ],
-            declarations: [SelfTestComponent, MicVisualiserStubComponent, ContactUsFoldingStubComponent, SelectMediaDevicesStubComponent]
+            declarations: [SelfTestComponent, MicVisualiserStubComponent, ContactUsFoldingStubComponent, SelectMediaDevicesStubComponent, BackNavigationStubComponent]
         });
     });
 
