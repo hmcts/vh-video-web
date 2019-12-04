@@ -37,6 +37,7 @@ namespace VideoWeb.EventHub.Handlers.Core
             SourceParticipant = SourceConference.Participants
                 .SingleOrDefault(x => x.Id == callbackEvent.ParticipantId);
 
+            _logger.LogError($"Callback Event: { callbackEvent.ConferenceId }, { callbackEvent.EventType }, { callbackEvent.Reason }");
             await PublishStatusAsync(callbackEvent);
         }
 

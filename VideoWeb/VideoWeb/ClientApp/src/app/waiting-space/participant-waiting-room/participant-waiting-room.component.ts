@@ -320,10 +320,12 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     this.pexipAPI.onParticipantCreate = function (participant) {
       self.logger.debug(`Participant added : ${participant}`);
+      self.logger.info(`Participant added : ${participant} - ${this.videoWebService.getObfuscatedName(this.participant.first_name + ' ' + this.participant.last_name)}`);
     };
 
     this.pexipAPI.onParticipantDelete = function (participant) {
       self.logger.debug(`Participant removed : ${participant}`);
+      self.logger.info(`Participant removed : ${participant} - ${this.videoWebService.getObfuscatedName(this.participant.first_name + ' ' + this.participant.last_name)}`);
     };
   }
 
@@ -358,6 +360,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     this.logger.debug('Not showing video because hearing is not in session and user is not in consultation');
+    this.logger.info(`Not showing video because hearing is not in session ${this.participant.id} - ${this.videoWebService.getObfuscatedName(this.participant.first_name + ' ' + this.participant.last_name)}`);
     this.showVideo = false;
     this.showConsultationControls = false;
   }
