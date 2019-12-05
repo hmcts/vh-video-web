@@ -68,7 +68,7 @@ namespace VideoWeb
             services.AddTransient<BookingsApiTokenHandler>();
             services.AddTransient<VideoApiTokenHandler>();
             services.AddTransient<UserApiTokenHandler>();
-
+            
             services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
             services.AddScoped<ITokenProvider, TokenProvider>();
             services.AddScoped<ICustomJwtTokenProvider, CustomJwtTokenProvider>();
@@ -100,8 +100,8 @@ namespace VideoWeb
             {
                 NamingStrategy = new SnakeCaseNamingStrategy()
             };
-            var connectionStrings = container.GetService<ConnectionStrings>();
-            services.AddSignalR().AddAzureSignalR(connectionStrings.SignalR)
+            
+            services.AddSignalR()
                 .AddJsonProtocol(options =>
                 {
                     options.PayloadSerializerSettings.ContractResolver = contractResolver;

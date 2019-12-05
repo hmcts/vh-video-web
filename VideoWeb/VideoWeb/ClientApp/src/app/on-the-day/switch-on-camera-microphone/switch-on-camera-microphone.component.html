@@ -1,5 +1,10 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
+    <app-back-navigation></app-back-navigation>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
 
     <div *ngIf="!userPrompted">
       <h1 class="govuk-heading-l">Use your camera and microphone</h1>
@@ -36,16 +41,15 @@
     </div>
 
     <button *ngIf="!userPrompted" id="switch-on-btn" class="govuk-button govuk-!-margin-bottom-9"
-            data-module="govuk-button" (click)="requestMedia()" alt="Request camera and microphone">
-            Switch on
+      data-module="govuk-button" (click)="requestMedia()" alt="Request camera and microphone">
+      Switch on
     </button>
 
-    <button *ngIf="userPrompted && mediaAccepted" id="watch-video-btn"
-            class="govuk-button govuk-!-margin-bottom-9" data-module="govuk-button" (click)="goVideoTest()"
-            alt="Request camera and microphone">
-            Watch video
+    <button *ngIf="userPrompted && mediaAccepted" id="watch-video-btn" class="govuk-button govuk-!-margin-bottom-9"
+      data-module="govuk-button" (click)="goVideoTest()" alt="Request camera and microphone">
+      Watch video
     </button>
 
-      <app-contact-us-folding></app-contact-us-folding>
-</div>
+    <app-contact-us-folding></app-contact-us-folding>
+  </div>
 </div>
