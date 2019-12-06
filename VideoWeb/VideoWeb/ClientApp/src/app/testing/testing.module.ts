@@ -24,6 +24,7 @@ import { SelectMediaDevicesStubComponent } from './stubs/select-media-devices-st
 import { IndividualConsultationControlsStubComponent } from './stubs/individual-consultation-controls-stub';
 import { BetaBannerStubComponent } from './stubs/beta-banner-stub';
 import { BackNavigationStubComponent } from './stubs/back-navigation-stub';
+import { UnsupportedBrowserStubComponent } from './stubs/unsupported-browser-stub';
 
 @NgModule({
   imports: [
@@ -52,7 +53,8 @@ import { BackNavigationStubComponent } from './stubs/back-navigation-stub';
     IndividualParticipantStatusListStubComponent,
     IndividualConsultationControlsStubComponent,
     BetaBannerStubComponent,
-    BackNavigationStubComponent
+    BackNavigationStubComponent,
+    UnsupportedBrowserStubComponent,
   ]
 })
 export class TestingModule { }

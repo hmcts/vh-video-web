@@ -3,7 +3,7 @@ import { AppInsights } from 'applicationinsights-js';
 import { Injectable } from '@angular/core';
 import { ConfigService } from '../../api/config.service';
 import { LogAdapter } from '../log-adapter';
-import { Router, ResolveEnd, ActivatedRouteSnapshot } from '@angular/router';
+import { Router, ResolveEnd, ActivatedRouteSnapshot, RouterEvent } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
 enum SeverityLevel {
@@ -77,7 +77,7 @@ export class AppInsightsLoggerService implements LogAdapter {
 
   private trackNavigation() {
     this.router.events.pipe(
-      filter((event: Event) => event instanceof ResolveEnd)
+      filter((event: RouterEvent) => event instanceof ResolveEnd)
     ).subscribe((event: ResolveEnd) => this.logPageResolved(event));
   }
 
