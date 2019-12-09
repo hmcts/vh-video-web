@@ -46,7 +46,7 @@ describe('AppComponent', () => {
     configServiceSpy.getClientSettings.and.returnValue(clientSettings);
 
     adalServiceSpy = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut']);
-    adalServiceSpy.userInfo.and.returnValue(userInfo);
+  //  adalServiceSpy.userInfo.and.returnValue(userInfo);
 
     deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isSupportedBrowser']);
 
