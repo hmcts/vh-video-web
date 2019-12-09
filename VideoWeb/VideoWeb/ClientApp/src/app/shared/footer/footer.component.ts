@@ -14,9 +14,9 @@ export class FooterComponent implements OnInit {
   accessibilityUri = PageUrls.Accessibility;
 
   constructor(private router: Router) {
-    this.router.events.pipe(
-      filter((event: Event) => event instanceof NavigationEnd)
-    ).subscribe(x => {
+    this.router.events
+    .pipe(filter(event => event instanceof NavigationEnd))
+    .subscribe((event: NavigationEnd) => {
       this.hideContactUs();
     });
   }

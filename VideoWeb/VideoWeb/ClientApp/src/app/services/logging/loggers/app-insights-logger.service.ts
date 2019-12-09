@@ -76,9 +76,11 @@ export class AppInsightsLoggerService implements LogAdapter {
   }
 
   private trackNavigation() {
-    this.router.events.pipe(
-      filter((event: Event) => event instanceof ResolveEnd)
-    ).subscribe((event: ResolveEnd) => this.logPageResolved(event));
+    this.router.events
+      .pipe(filter(event => event instanceof ResolveEnd))
+      .subscribe((event: ResolveEnd) => {
+        this.logPageResolved(event)
+      });
   }
 
   private logPageResolved(event: ResolveEnd): void {

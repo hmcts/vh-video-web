@@ -18,10 +18,10 @@ import { filter, map } from 'rxjs/operators';
 
 export class AppComponent implements OnInit {
 
-  @ViewChild('maincontent')
+  @ViewChild('maincontent', { static: true })
   main: ElementRef;
 
-  @ViewChild('skipLink')
+  @ViewChild('skipLink', { static: true })
   skipLinkDiv: ElementRef;
 
   loggedIn: boolean;
