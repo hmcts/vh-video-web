@@ -79,7 +79,7 @@ export class AppInsightsLoggerService implements LogAdapter {
     this.router.events
       .pipe(filter(event => event instanceof ResolveEnd))
       .subscribe((event: ResolveEnd) => {
-        this.logPageResolved(event)
+        this.logPageResolved(event);
       });
   }
 
