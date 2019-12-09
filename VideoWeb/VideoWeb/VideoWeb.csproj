@@ -40,10 +40,18 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="ClientApp\src\app\shared\Utility\media-object.ts" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />
       <ProjectReference Include="..\VideoWeb.Contract\VideoWeb.Contract.csproj" />
       <ProjectReference Include="..\VideoWeb.EventHub\VideoWeb.EventHub.csproj" />
       <ProjectReference Include="..\VideoWeb.Services\VideoWeb.Services.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <TypeScriptCompile Include="ClientApp\src\app\shared\Utility\media-object.ts" />
     </ItemGroup>
 
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
