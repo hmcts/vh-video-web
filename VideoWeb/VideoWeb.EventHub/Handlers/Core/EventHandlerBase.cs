@@ -1,6 +1,8 @@
+using System;
 using System.Linq;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Hub;
@@ -13,11 +15,13 @@ namespace VideoWeb.EventHub.Handlers.Core
     {
         protected readonly IHubContext<Hub.EventHub, IEventHubClient> HubContext;
         private readonly IMemoryCache _memoryCache;
+        private readonly ILogger<EventHandlerBase> _logger;
 
-        protected EventHandlerBase(IHubContext<Hub.EventHub, IEventHubClient> hubContext, IMemoryCache memoryCache)
+        protected EventHandlerBase(IHubContext<Hub.EventHub, IEventHubClient> hubContext, IMemoryCache memoryCache, ILogger<EventHandlerBase> logger)
         {
             HubContext = hubContext;
             _memoryCache = memoryCache;
+            _logger = logger;
         }
 
         public Conference SourceConference { get; set; }
@@ -46,11 +50,15 @@ namespace VideoWeb.EventHub.Handlers.Core
             foreach (var participant in SourceConference.Participants)
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
-                    .ParticipantStatusMessage(SourceParticipant.Username, participantState);
+                    .ParticipantStatusMessage(SourceParticipant.Id, participantState);
+                _logger.LogError($"Participant Status: Participant Id: { participant.Id } | " +
+                    $"Role: { participant.Role } | Participant State: { participantState } | Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
             }
             
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
-                .ParticipantStatusMessage(SourceParticipant.Username, participantState);
+                .ParticipantStatusMessage(SourceParticipant.Id, participantState);
+            _logger.LogError($"Participant Status: Participant Id: { SourceParticipant.Id } | " +
+                $"Role: { SourceParticipant.Role } | Participant State: { participantState } | Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
         }
 
         /// <summary>
@@ -64,6 +72,8 @@ namespace VideoWeb.EventHub.Handlers.Core
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
                     .ConferenceStatusMessage(SourceConference.Id, hearingEventStatus);
+                _logger.LogError($"Conference Status: Conference Id: { SourceConference.Id } | Participant Id: { participant.Id } | " +
+                    $"Role: { participant.Role } | Participant State: { hearingEventStatus } | Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
             }
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .ConferenceStatusMessage(SourceConference.Id, hearingEventStatus);

@@ -21,6 +21,10 @@ import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-b
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { ModalComponent } from './modal/modal.component';
 import { BetaBannerComponent } from './beta-banner/beta-banner.component';
+import { AccessibilityComponent } from './accessibility/accessibility.component';
+import { WindowScrolling } from './directives/window-scrolling';
+import { ScrollTriggerDirective } from './directives/scroll-trigger.directive';
+import { BackNavigationComponent } from './back-navigation/back-navigation.component';
 
 @NgModule({
   imports: [
@@ -47,11 +51,15 @@ import { BetaBannerComponent } from './beta-banner/beta-banner.component';
     UnsupportedBrowserComponent,
     PrivacyPolicyComponent,
     ModalComponent,
-    BetaBannerComponent
+    BetaBannerComponent,
+    AccessibilityComponent,
+    ScrollTriggerDirective,
+    BackNavigationComponent
   ],
   providers: [
     { provide: 'SnotifyToastConfig', useValue: ToastDefaults},
-    SnotifyService
+    SnotifyService,
+    WindowScrolling
   ],
   exports: [
     HeaderComponent,
@@ -69,7 +77,9 @@ import { BetaBannerComponent } from './beta-banner/beta-banner.component';
     HttpClientModule,
     SnotifyModule,
     DeviceDetectorModule,
-    BetaBannerComponent
+    BetaBannerComponent,
+    ScrollTriggerDirective,
+    BackNavigationComponent
   ]
 })
 export class SharedModule { }

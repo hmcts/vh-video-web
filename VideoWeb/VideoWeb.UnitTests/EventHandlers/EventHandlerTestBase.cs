@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using Testing.Common.Helpers;
@@ -19,6 +20,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         protected Mock<IEventHubClient> EventHubClientMock { get; private set; }
         protected Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> EventHubContextMock { get; private set; }
         protected IMemoryCache MemoryCache { get; private set; }
+        protected Mock<ILogger<EventHandlerBase>> LoggerMock { get; private set; }
 
         protected Conference TestConference;
         
@@ -30,6 +32,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             EventHubContextMock = helper.EventHubContextMock;
             EventHubClientMock = helper.EventHubClientMock;
             MemoryCache = helper.Cache;
+            LoggerMock = helper.EventHandlerBaseMock;
 
             TestConference = BuildConferenceForTest();
             MemoryCache.Set(TestConference.Id, TestConference);

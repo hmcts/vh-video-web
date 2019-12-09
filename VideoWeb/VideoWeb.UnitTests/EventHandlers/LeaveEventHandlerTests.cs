@@ -16,7 +16,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task should_send_available_message_to_participants_and_service_bus_when_participant_joins()
         {
-            _eventHandler = new LeaveEventHandler(EventHubContextMock.Object, MemoryCache);
+            _eventHandler = new LeaveEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == UserRole.Individual);
@@ -35,7 +35,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             await _eventHandler.HandleAsync(callbackEvent);
 
             EventHubClientMock.Verify(
-                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Username,
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id,
                     ParticipantState.Disconnected), Times.Exactly(participantCount));
         }
     }

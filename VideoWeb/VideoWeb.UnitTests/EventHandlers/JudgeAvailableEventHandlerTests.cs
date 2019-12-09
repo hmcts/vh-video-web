@@ -16,7 +16,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task should_send_available_participant_messages_when_judge_available()
         {
-            _eventHandler = new JudgeAvailableEventHandler(EventHubContextMock.Object, MemoryCache);
+            _eventHandler = new JudgeAvailableEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
 
             var conference = TestConference;
             var participantCount = conference.Participants.Count + 1; // plus one for admin
@@ -34,7 +34,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             // Verify messages sent to event hub clients
             EventHubClientMock.Verify(
-                x => x.ParticipantStatusMessage(participantForEvent.Username, ParticipantState.Available),
+                x => x.ParticipantStatusMessage(participantForEvent.Id, ParticipantState.Available),
                 Times.Exactly(participantCount));
         }
     }

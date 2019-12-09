@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Handlers.Core;
@@ -11,7 +12,7 @@ namespace VideoWeb.EventHub.Handlers
 {
     public class TransferEventHandler : EventHandlerBase
     {
-        public TransferEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext, IMemoryCache memoryCache) : base(hubContext, memoryCache)
+        public TransferEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext, IMemoryCache memoryCache, ILogger<EventHandlerBase> logger) : base(hubContext, memoryCache, logger)
         {
         }
 

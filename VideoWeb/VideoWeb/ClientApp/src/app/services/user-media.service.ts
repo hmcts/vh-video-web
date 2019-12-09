@@ -49,18 +49,27 @@ export class UserMediaService {
         }
     }
 
-    async updateAvailableDevicesList(): Promise<void> {
+  async updateAvailableDevicesList(): Promise<void> {
         if (!this._navigator.mediaDevices || !this._navigator.mediaDevices.enumerateDevices) {
             this.logger.error('enumerateDevices() not supported.', new Error('enumerateDevices() not supported.'));
             throw new Error('enumerateDevices() not supported.');
         }
 
-        let updatedDevices: MediaDeviceInfo[] = await this._navigator.mediaDevices.enumerateDevices();
+        let updatedDevices: MediaDeviceInfo[];
+
+        const stream = await this._navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+        if (stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0) {
+          updatedDevices = await navigator.mediaDevices.enumerateDevices();
+        }
+
         updatedDevices = updatedDevices.filter(x => x.deviceId !== 'default' && x.kind !== 'audiooutput');
         this.availableDeviceList = Array.from(updatedDevices, device =>
             new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)
         );
 
+        stream.getTracks().forEach((track) => {
+          track.stop();
+        });
         this.connectedDevices.next(this.availableDeviceList);
     }
 
@@ -76,12 +85,6 @@ export class UserMediaService {
 
     getPreferredMicrophone() {
         return this.getCachedDeviceIfStillConnected(this.preferredMicCache);
-  }
-
-    getDeviceId(deviceName: string) {
-      const availableDevices: MediaDeviceInfo[] = this._navigator.mediaDevices.enumerateDevices();
-      const filteredDevices = availableDevices.filter(x => x.label === deviceName);
-      return filteredDevices[0].deviceId;
     }
 
     async getCachedDeviceIfStillConnected(cache: SessionStorage<UserMediaDevice>): Promise<UserMediaDevice> {
@@ -110,5 +113,5 @@ export class UserMediaService {
     updatePreferredMicrophone(microphone: UserMediaDevice) {
         this.preferredMicCache.set(microphone);
         this.logger.info(`Updating preferred microphone to ${microphone.label}`);
-    }
+  }
 }

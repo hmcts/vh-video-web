@@ -9,6 +9,7 @@ import {
 } from 'src/app/services/clients/api-client';
 import { AdalService } from 'adal-angular4';
 import { ErrorService } from 'src/app/services/error.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 @Component({
   selector: 'app-video-check',
@@ -20,6 +21,7 @@ export class VideoCheckComponent implements OnInit {
   conferenceId: string;
   conference: ConferenceResponse;
   participantId: string;
+  participantName: string;
 
   constructor(
     private router: Router,
@@ -27,7 +29,8 @@ export class VideoCheckComponent implements OnInit {
     private fb: FormBuilder,
     private videoWebService: VideoWebService,
     private adalService: AdalService,
-    private errorService: ErrorService
+    private errorService: ErrorService,
+    private logger: Logger
   ) { }
 
   ngOnInit() {
@@ -45,6 +48,7 @@ export class VideoCheckComponent implements OnInit {
         const participant = this.conference.participants.
           find(x => x.username.toLocaleLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
         this.participantId = participant.id.toString();
+        this.participantName = this.videoWebService.getObfuscatedName(participant.first_name + ' ' + participant.last_name);
       },
         (error) => {
           if (!this.errorService.returnHomeIfUnauthorised(error)) {
@@ -72,6 +76,7 @@ export class VideoCheckComponent implements OnInit {
             (error) => {
               console.error(error);
             });
+        this.logger.info(`Video check | ConferenceId : ${this.conferenceId}, CaseName : ${this.conference.case_name} | Participant : ${this.participantName} responded could not see and hear video.`);
         this.router.navigate([PageUrls.GetHelp]);
       }
       return;
@@ -80,6 +85,7 @@ export class VideoCheckComponent implements OnInit {
   }
 
   checkEquipmentAgain() {
+    this.logger.info(`Video check | ConferenceId : ${this.conferenceId}, CaseName : ${this.conference.case_name} | Participant : ${this.participantName} requested check equipment again.`);
     this.router.navigate([PageUrls.EquipmentCheck, this.conferenceId]);
   }
 }

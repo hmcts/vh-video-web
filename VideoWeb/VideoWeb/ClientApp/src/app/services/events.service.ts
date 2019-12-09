@@ -35,7 +35,10 @@ export class EventsService {
     this.connectionStarted = false;
     this.eventServiceBaseUri = this.configService.clientSettings.video_api_url;
     this.connection = new signalR.HubConnectionBuilder()
-      .withUrl('/eventhub?access_token=' + this.adalService.userInfo.token)
+      .configureLogging(signalR.LogLevel.Debug)
+      .withUrl('/eventhub',
+      { accessTokenFactory: () => this.adalService.userInfo.token
+      })
       .build();
   }
 
@@ -75,8 +78,8 @@ export class EventsService {
   }
 
   getParticipantStatusMessage(): Observable<ParticipantStatusMessage> {
-    this.connection.on('ParticipantStatusMessage', (email: string, status: ParticipantStatus) => {
-      const message = new ParticipantStatusMessage(email, status);
+    this.connection.on('ParticipantStatusMessage', (participantId: string, status: ParticipantStatus) => {
+      const message = new ParticipantStatusMessage(participantId, status);
       this.logger.event('ParticipantStatusMessage received', message);
       this.participantStatusSubject.next(message);
     });

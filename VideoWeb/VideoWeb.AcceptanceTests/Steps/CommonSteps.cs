@@ -17,6 +17,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly TestContext _tc;
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly CommonPages _commonPages;
+        private const string VhoEmail = "video-hearings@justice.gov.uk";
+        private const string VhoPhone = "0300 303 0655";
 
         public CommonSteps(TestContext testContext, Dictionary<string, UserBrowser> browsers, CommonPages commonPages)
         {
@@ -39,7 +41,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             browser.LaunchBrowser();
             browser.NavigateToPage();
 
-            browser.Retry(() => browser.PageUrl().Should().Contain("login.microsoftonline.com"), 10);
+            if (_tc.TargetBrowser != TargetBrowser.Ie11)
+            {
+                browser.Retry(() => browser.PageUrl().Should().Contain("login.microsoftonline.com"), 4);
+            }
         }
 
         [Given(@"in (.*)'s browser")]
@@ -64,6 +69,12 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             if (_tc.CurrentUser == null)
                 throw new ArgumentOutOfRangeException($"There are no users configured called '{user}'");
+        }
+
+        [When(@"switches to the (.*) tab")]
+        public void WhenSwitchesToTheNewTab(string url)
+        {
+            _browsers[_tc.CurrentUser.Key].LastWindowName = _browsers[_tc.CurrentUser.Key].SwitchTabByUrl(url);
         }
 
         [When(@"the user clicks the (.*) button")]
@@ -99,12 +110,45 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_commonPages.ContactUsLink)
                 .Displayed.Should().BeTrue();
 
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_commonPages.ContactUsLink).Click();
+
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_commonPages.ContactUsPhone(VhoPhone))
+                .Displayed.Should().BeTrue();
+
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_commonPages.ContactUsEmail)
+                .Displayed.Should().BeTrue();
+
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_commonPages.ContactUsEmail).GetAttribute("href")
+                .Should().Contain(VhoEmail);
+
             if (!_browsers[_tc.CurrentUser.Key].Driver.Url.Contains(Page.HearingList.Url)) return;
 
             if (_tc.Hearing != null)
             {
                 _commonPages.TheCaseNumberIsDisplayedInTheContactDetails(_tc.Hearing.Cases.First().Number)
                     .Should().BeFalse();
+            }
+        }
+
+        [Then(@"a phone number for help is provided")]
+        public void ThenAPhoneNumberForHelpIsProvided()
+        {
+            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_commonPages.ContactUsPhone(VhoPhone))
+                .Displayed.Should().BeTrue();
+        }
+
+        [Then(@"the banner should (.*) displayed")]
+        public void ThenTheBannerShouldNotBeDisplayed(string expected)
+        {
+            if (expected.ToLower().Equals("not be"))
+            { 
+                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementNotVisible(_commonPages.BetaBanner)
+                    .Should().BeTrue();
+            }
+            else
+            {
+                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_commonPages.BetaBanner)
+                    .Displayed.Should().BeTrue();
             }
         }
 

@@ -2,11 +2,12 @@
 {
     public enum TargetBrowser
     {
-        IPhoneSafari,
         Firefox,
         Safari,
         Chrome,
         Edge,
-        IE11
+        Ie11,
+        ChromeMac,
+        FirefoxMac
     }
 }
