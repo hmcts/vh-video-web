@@ -41,3 +41,15 @@ Scenario: Participant accessibility statement
 	Given the Participant user has progressed to the Hearing List page
 	When the user clicks the Accessibility link
 	Then the user is on the Accessibility page 
+
+@VIH-4090
+Scenario: Clerk open government licence
+	Given the Clerk user has progressed to the Hearing List page
+	When the user clicks the Open Government Licence link
+	Then the user is on the Open Government Licence page 
+
+@VIH-4090	
+Scenario: Participant open government licence
+	Given the Participant user has progressed to the Hearing List page
+	When the user clicks the Open Government Licence link
+	Then the user is on the Open Government Licence page 

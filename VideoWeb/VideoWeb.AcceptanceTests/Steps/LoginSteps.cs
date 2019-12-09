@@ -72,7 +72,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Then(@"the sign out link is displayed")]
-        public void ThenTheHearingListPageIsDisplayed()
+        public void ThenTheSignOutLinkIsDisplayed()
         {
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_commonPages.SignOutLink).Displayed.Should().BeTrue();
         }

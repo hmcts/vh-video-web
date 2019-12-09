@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, OnDestroy, HostListener
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
   ConferenceResponse, ParticipantResponse, TokenResponse, TestCallScoreResponse, TestScore,
-  AddSelfTestFailureEventRequest, SelfTestFailureReason, SelfTestPexipResponse
+  AddSelfTestFailureEventRequest, SelfTestFailureReason, SelfTestPexipResponse, UserRole
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -103,7 +103,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
       });
   }
 
-
   async changeDevices() {
     this.disconnect();
     this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
@@ -194,10 +193,18 @@ export class SelfTestComponent implements OnInit, OnDestroy {
       this.logger.info('disconnecting from pexip node');
       this.pexipAPI.disconnect();
     }
+    this.closeStreams();
     this.incomingStream = null;
     this.outgoingStream = null;
     this.didTestComplete = true;
     this.displayFeed = false;
+  }
+
+  closeStreams() {
+    if (this.preferredMicrophoneStream) {
+      this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
+    }
+    this.preferredMicrophoneStream = null;
   }
 
   async retrieveSelfTestScore() {
@@ -205,8 +212,12 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     this.didTestComplete = true;
     try {
       if (this.conference) {
+        this.logger.info(`Self test : ConferenceId : ${this.conference.id} | retrieveSelfTestScore for Participant Id : ${this.participant.id}
+          | Participant : ${this.videoWebService.getObfuscatedName(this.participant.first_name + ' ' + this.participant.last_name)}`);
         this.testCallResult = await this.videoWebService.getTestCallScore(this.conference.id, this.selfTestParticipantId).toPromise();
       } else {
+        this.logger.info(`Self test : retrieveSelfTestScore for Participant Id : ${this.participant.id}
+          | Participant : ${this.videoWebService.getObfuscatedName(this.participant.first_name + ' ' + this.participant.last_name)}`);
         this.testCallResult = await this.videoWebService.getIndependentTestCallScore(this.selfTestParticipantId).toPromise();
       }
 
@@ -255,7 +266,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
       participant_id: this.selfTestParticipantId,
       self_test_failure_reason: reason
     });
-    if (this.conference) {
+    if (this.conference && this.participant.role !== UserRole.Judge) {
       try {
         await this.videoWebService.raiseSelfTestFailureEvent(this.conference.id, request).toPromise();
         this.logger.info(`Notified failed self test because of ${reason}`);
@@ -264,6 +275,5 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.logger.error('There was a problem raising a failed self test event', err);
       }
     }
-
   }
 }

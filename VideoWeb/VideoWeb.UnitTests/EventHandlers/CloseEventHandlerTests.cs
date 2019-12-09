@@ -15,7 +15,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task should_send_messages_to_participants_and_service_bus_on_close()
         {
-            _eventHandler = new CloseEventHandler(EventHubContextMock.Object, MemoryCache);
+            _eventHandler = new CloseEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
 
             var conference = TestConference;
             var participantCount = conference.Participants.Count + 1; // plus one for admin

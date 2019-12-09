@@ -24,6 +24,7 @@ import { BetaBannerComponent } from './beta-banner/beta-banner.component';
 import { AccessibilityComponent } from './accessibility/accessibility.component';
 import { WindowScrolling } from './directives/window-scrolling';
 import { ScrollTriggerDirective } from './directives/scroll-trigger.directive';
+import { BackNavigationComponent } from './back-navigation/back-navigation.component';
 
 @NgModule({
   imports: [
@@ -52,7 +53,8 @@ import { ScrollTriggerDirective } from './directives/scroll-trigger.directive';
     ModalComponent,
     BetaBannerComponent,
     AccessibilityComponent,
-    ScrollTriggerDirective
+    ScrollTriggerDirective,
+    BackNavigationComponent
   ],
   providers: [
     { provide: 'SnotifyToastConfig', useValue: ToastDefaults},
@@ -76,7 +78,8 @@ import { ScrollTriggerDirective } from './directives/scroll-trigger.directive';
     SnotifyModule,
     DeviceDetectorModule,
     BetaBannerComponent,
-    ScrollTriggerDirective
+    ScrollTriggerDirective,
+    BackNavigationComponent
   ]
 })
 export class SharedModule { }

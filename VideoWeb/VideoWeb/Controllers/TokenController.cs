@@ -16,11 +16,15 @@ namespace VideoWeb.Controllers
     {
         private readonly IHashGenerator _hashGenerator;
         private readonly ICustomJwtTokenProvider _customJwtTokenProvider;
+        private readonly CustomTokenSettings _customTokenSettings;
 
-        public TokenController(IHashGenerator hashGenerator, ICustomJwtTokenProvider customJwtTokenProvider)
+        public TokenController(IHashGenerator hashGenerator, 
+            ICustomJwtTokenProvider customJwtTokenProvider,
+            CustomTokenSettings customTokenSettings)
         {
             _hashGenerator = hashGenerator;
             _customJwtTokenProvider = customJwtTokenProvider;
+            _customTokenSettings = customTokenSettings;
         }
 
         [HttpGet("{participantId}/token")]
@@ -35,7 +39,7 @@ namespace VideoWeb.Controllers
                 return BadRequest(ModelState);
             }
 
-            var expiresOn = DateTime.UtcNow.AddMinutes(20).ToUniversalTime().ToString("dd.MM.yyyy-H:mmZ");
+            var expiresOn = DateTime.UtcNow.AddMinutes(_customTokenSettings.HashExpiresInMinutes).ToUniversalTime().ToString("dd.MM.yyyy-H:mmZ");
             var token = _hashGenerator.GenerateHash(expiresOn, participantId.ToString());
             var tokenResponse = new TokenResponse {ExpiresOn = expiresOn, Token = token};
             return Ok(tokenResponse);
@@ -53,8 +57,8 @@ namespace VideoWeb.Controllers
                 return BadRequest(ModelState);
             }
 
-            var expiresOn = DateTime.UtcNow.AddMinutes(180).ToUniversalTime().ToString(CultureInfo.InvariantCulture);
-            var token = _customJwtTokenProvider.GenerateToken(participantId.ToString(), 240);
+            var expiresOn = DateTime.UtcNow.AddMinutes(_customTokenSettings.ExpiresInMinutes).ToUniversalTime().ToString(CultureInfo.InvariantCulture);
+            var token = _customJwtTokenProvider.GenerateToken(participantId.ToString(), _customTokenSettings.ExpiresInMinutes);
             var tokenResponse = new TokenResponse {ExpiresOn = expiresOn, Token = token}; 
             return Ok(tokenResponse);
         }
