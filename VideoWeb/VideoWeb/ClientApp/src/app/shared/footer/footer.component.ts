@@ -30,7 +30,7 @@ export class FooterComponent implements OnInit {
   hideContactUs() {
     this.hideContactUsLink = this.router.url === '/contact-us';
   }
-  
+
   hideLinks() {
     this.hideLinksForUnsupportedBrowser = this.router.url === `/${PageUrls.UnsupportedBrowser}`;
   }

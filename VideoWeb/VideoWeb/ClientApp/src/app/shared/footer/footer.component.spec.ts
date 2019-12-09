@@ -23,8 +23,8 @@ describe('FooterComponent', () => {
       declarations: [FooterComponent, DashboardStubComponent,
         ContactUsStubComponent, UnsupportedBrowserStubComponent],
       imports: [RouterTestingModule.withRoutes([{ path: 'dashboard', component: DashboardStubComponent },
-        { path: 'contact-us', component: ContactUsStubComponent },
-        { path: 'unsupported-browser', component: UnsupportedBrowserStubComponent }])],
+      { path: 'contact-us', component: ContactUsStubComponent },
+      { path: 'unsupported-browser', component: UnsupportedBrowserStubComponent }])],
       schemas: [NO_ERRORS_SCHEMA]
 
     });
