@@ -101,6 +101,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   }
 
   disconnect() {
+    alert('disconnect');
     if (this.pexipAPI) {
       this.logger.info('disconnecting from pexip node');
       this.pexipAPI.disconnect();
@@ -283,6 +284,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     this.pexipAPI.onSetup = function (outStream, pin_status, conference_extension) {
+      alert('this.pexipAPI.onSetup');
       self.logger.info('running pexip setup');
       this.showSelfView = true;
       this.selfViewOpen = true;
@@ -297,6 +299,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     };
 
     this.pexipAPI.onConnect = function (inStream) {
+      alert('this.pexipAPI.onConnect');
       self.errorCount = 0;
       self.connected = true;
       self.updateShowVideo();
@@ -328,6 +331,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     };
 
     this.pexipAPI.onDisconnect = function (reason) {
+      alert('this.pexipAPI.onDisconnect');
       self.connected = false;
       self.heartbeat.kill();
       self.updateShowVideo();
