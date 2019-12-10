@@ -53,3 +53,4 @@ jobs:
     coverletCoverageExclusions: $(coverletCoverageExclusions)
     apiDirectory: $(apiDirectory)
     dalWorkingDirectory: $(dalWorkingDirectory)
+    nodeVersion: 12.13.0
