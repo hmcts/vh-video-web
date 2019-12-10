@@ -239,6 +239,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     this.eventService.getAdminConsultationMessage().subscribe(message => {
       this.ngZone.run(() => {
         if (message.answer && message.answer === ConsultationAnswer.Accepted) {
+          console.warn('################### ConsultationAnswer.Accepted');
           this.isAdminConsultation = true;
         }
       });
@@ -248,6 +249,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   handleParticipantStatusChange(message: ParticipantStatusMessage): any {
     const participant = this.hearing.getConference().participants.find(p => p.id === message.participantId);
     participant.status = message.status;
+    console.warn('################### handleParticipantStatusChange' + message.status);
     this.logger.info(`Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}, Participant status : ${participant.status}`);
     if (message.status !== ParticipantStatus.InConsultation) {
       this.isAdminConsultation = false;
@@ -256,6 +258,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
   handleConferenceStatusChange(message: ConferenceStatusMessage) {
     this.hearing.getConference().status = message.status;
+    console.warn('################### handleConferenceStatusChange' + message.status);
     this.logger.info(`Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}, Conference status : ${message.status}`);
     if (message.status === ConferenceStatus.Closed) {
       this.getConferenceClosedTime(this.hearing.id);
@@ -353,6 +356,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   }
 
   call() {
+    console.warn('################### pexip makeCall');
     const pexipNode = this.hearing.getConference().pexip_node_uri;
     const conferenceAlias = this.hearing.getConference().participant_uri;
     const displayName = this.participant.tiled_display_name;
@@ -362,6 +366,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
   updateShowVideo(): void {
     if (!this.connected) {
+      console.warn('################### updateShowVideo: Not Connected');
       this.logger.debug('Not showing video because not connecting to node');
       this.showSelfView = false;
       this.showVideo = false;
@@ -378,6 +383,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     if (this.participant.status === ParticipantStatus.InConsultation) {
+      console.warn('################### updateShowVideo: InConsultation');
       this.logger.debug('Showing video because hearing is in session');
       this.showSelfView = true;
       this.showVideo = true;
