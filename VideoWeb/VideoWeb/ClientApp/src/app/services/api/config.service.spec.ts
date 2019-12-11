@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { configureTestSuite } from 'ng-bullet';
-import { Observable } from 'rxjs';
+import { of } from 'rxjs';
 import { SharedModule } from '../../shared/shared.module';
 import { ApiClient, ClientSettingsResponse } from '../clients/api-client';
 import { ConfigService } from './config.service';
@@ -24,7 +24,7 @@ describe('ConfigService', () => {
     clientSettings.client_id = 'clientId';
     clientSettings.post_logout_redirect_uri = '/dashboard';
     clientSettings.redirect_uri = '/dashboard';
-    apiClientSpy.getClientConfigurationSettings.and.returnValue(Observable.create(clientSettings));
+    apiClientSpy.getClientConfigurationSettings.and.returnValue(of(clientSettings));
     configService = TestBed.get(ConfigService);
   });
 

@@ -16,7 +16,7 @@ import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component'
 })
 export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
 
-  @ViewChild(SelfTestComponent) selfTestComponent: SelfTestComponent;
+  @ViewChild(SelfTestComponent, { static: true }) selfTestComponent: SelfTestComponent;
 
   constructor(private router: Router,
     protected route: ActivatedRoute,
