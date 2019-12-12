@@ -17,6 +17,7 @@ import { ContactUsFoldingStubComponent } from 'src/app/testing/stubs/contact-us-
 import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone.component';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { UserRole, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { BackNavigationStubComponent } from 'src/app/testing/stubs/back-navigation-stub';
 
 describe('SwitchOnCameraMicrophoneComponent', () => {
   let component: SwitchOnCameraMicrophoneComponent;
@@ -34,7 +35,11 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
     profileServiceSpy.getUserProfile.and.returnValue(judgerProfile);
     TestBed.configureTestingModule({
       imports: [HttpClientModule, RouterTestingModule],
-      declarations: [SwitchOnCameraMicrophoneComponent, ContactUsFoldingStubComponent],
+      declarations: [
+        SwitchOnCameraMicrophoneComponent,
+        ContactUsFoldingStubComponent,
+        BackNavigationStubComponent
+      ],
       providers: [
         {
           provide: ActivatedRoute,

@@ -6,6 +6,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { configureTestSuite } from 'ng-bullet';
 import { ContactUsStubComponent } from 'src/app/testing/stubs/contact-us-stub';
 import { DashboardStubComponent } from 'src/app/testing/stubs/dashboard-stub';
+import { UnsupportedBrowserStubComponent } from 'src/app/testing/stubs/unsupported-browser-stub';
+
 import { FooterComponent } from './footer.component';
 
 
@@ -19,9 +21,10 @@ describe('FooterComponent', () => {
   configureTestSuite(() => {
     TestBed.configureTestingModule({
       declarations: [FooterComponent, DashboardStubComponent,
-        ContactUsStubComponent],
+        ContactUsStubComponent, UnsupportedBrowserStubComponent],
       imports: [RouterTestingModule.withRoutes([{ path: 'dashboard', component: DashboardStubComponent },
-      { path: 'contact-us', component: ContactUsStubComponent }])],
+      { path: 'contact-us', component: ContactUsStubComponent },
+      { path: 'unsupported-browser', component: UnsupportedBrowserStubComponent }])],
       schemas: [NO_ERRORS_SCHEMA]
 
     });
@@ -56,4 +59,22 @@ describe('FooterComponent', () => {
     expect(location.path()).toBe('/contact-us');
     expect(component.hideContactUsLink).toBeTruthy();
   }));
+  it('navigate to any page with supported browser you should see the links in the footer',
+    fakeAsync(() => {
+      fixture.ngZone.run(() => {
+        router.navigate(['dashboard']);
+        tick();
+        expect(location.path()).toBe('/dashboard');
+        expect(component.hideLinksForUnsupportedBrowser).toBeFalsy();
+      });
+    }));
+  it('navigate to unsupported browser you should not see the links in the footer',
+    fakeAsync(() => {
+      fixture.ngZone.run(() => {
+        router.navigate(['unsupported-browser']);
+        tick();
+        expect(location.path()).toBe('/unsupported-browser');
+        expect(component.hideLinksForUnsupportedBrowser).toBeTruthy();
+      });
+    }));
 });

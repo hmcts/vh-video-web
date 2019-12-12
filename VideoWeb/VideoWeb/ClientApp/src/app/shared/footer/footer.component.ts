@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router, RouterEvent } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { PageUrls } from '../page-url.constants';
 
@@ -12,12 +12,14 @@ export class FooterComponent implements OnInit {
   hideContactUsLink = false;
   privacyPolicyUri = PageUrls.PrivacyPolicy;
   accessibilityUri = PageUrls.Accessibility;
+  hideLinksForUnsupportedBrowser = false;
 
   constructor(private router: Router) {
     this.router.events.pipe(
-      filter((event: Event) => event instanceof NavigationEnd)
+      filter((event: RouterEvent) => event instanceof NavigationEnd)
     ).subscribe(x => {
       this.hideContactUs();
+      this.hideLinks();
     });
   }
 
@@ -27,6 +29,10 @@ export class FooterComponent implements OnInit {
 
   hideContactUs() {
     this.hideContactUsLink = this.router.url === '/contact-us';
+  }
+
+  hideLinks() {
+    this.hideLinksForUnsupportedBrowser = this.router.url === `/${PageUrls.UnsupportedBrowser}`;
   }
 }
 

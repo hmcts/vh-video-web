@@ -162,7 +162,8 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.hearing = new Hearing(data);
         this.conference = this.hearing.getConference();
         this.participant = data.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
-        this.logger.info(`Participant waiting room for conference: ${conferenceId} and participant: ${this.participant.id}`);
+        this.logger.info(`Participant waiting room : Conference Id: ${conferenceId} and participantId: ${this.participant.id},
+          participant name : ${this.videoWebService.getObfuscatedName(this.participant.first_name + ' ' + this.participant.last_name)}`);
         this.getJwtoken();
       },
         (error) => {
@@ -241,6 +242,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   handleParticipantStatusChange(message: ParticipantStatusMessage): any {
     const participant = this.hearing.getConference().participants.find(p => p.id === message.participantId);
     participant.status = message.status;
+    this.logger.info(`Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}, Participant status : ${participant.status}`);
     if (message.status !== ParticipantStatus.InConsultation) {
       this.isAdminConsultation = false;
     }
@@ -248,6 +250,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
   handleConferenceStatusChange(message: ConferenceStatusMessage) {
     this.hearing.getConference().status = message.status;
+    this.logger.info(`Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}, Conference status : ${message.status}`);
     if (message.status === ConferenceStatus.Closed) {
       this.getConferenceClosedTime(this.hearing.id);
     }
@@ -261,13 +264,15 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     const preferredCam = await this.userMediaService.getPreferredCamera();
     if (preferredCam) {
       this.pexipAPI.video_source = preferredCam.deviceId;
-      self.logger.info(`Using preferred camera: ${preferredCam.label}`);
+      self.logger.info(`Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}, Using preferred camera: ${preferredCam.label}`);
+      // self.logger.info(`Using preferred camera: ${preferredCam.label}`);
     }
 
     const preferredMic = await this.userMediaService.getPreferredMicrophone();
     if (preferredMic) {
       this.pexipAPI.audio_source = preferredMic.deviceId;
-      self.logger.info(`Using preferred microphone: ${preferredMic.label}`);
+      self.logger.info(`Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}, Using preferred microphone: ${preferredMic.label}`);
+      // self.logger.info(`Using preferred microphone: ${preferredMic.label}`);
     }
 
     this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
@@ -360,7 +365,8 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   }
 
   async onConsultationCancelled() {
-    this.logger.debug(`Participant ${this.participant.id} Attempting to leave conference: ${this.conference.id}`);
+    // this.logger.debug(`Participant ${this.participant.id} Attempting to leave conference: ${this.conference.id}`);
+    this.logger.info(`Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}. Participant ${this.participant.id} attempting to leave conference: ${this.conference.id}`);
     try {
       await this.consultationService.leaveConsultation(this.conference, this.participant).toPromise();
     } catch (error) {
@@ -378,7 +384,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.hearing = new Hearing(data);
         this.conference = this.hearing.getConference();
         this.participant = data.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
-        this.logger.info(`Participant waiting room for conference: ${conferenceId} and participant: ${this.participant.id}`);
+        this.logger.info(`Participant waiting room : Conference with id ${conferenceId} closed | Participant Id : ${this.participant.id}, ${this.participant.display_name}.`);
       },
         (error) => {
           this.logger.error(`There was an error getting a conference ${conferenceId}`, error);

@@ -103,7 +103,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
       });
   }
 
-
   async changeDevices() {
     this.disconnect();
     this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
@@ -194,10 +193,18 @@ export class SelfTestComponent implements OnInit, OnDestroy {
       this.logger.info('disconnecting from pexip node');
       this.pexipAPI.disconnect();
     }
+    this.closeStreams();
     this.incomingStream = null;
     this.outgoingStream = null;
     this.didTestComplete = true;
     this.displayFeed = false;
+  }
+
+  closeStreams() {
+    if (this.preferredMicrophoneStream) {
+      this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
+    }
+    this.preferredMicrophoneStream = null;
   }
 
   async retrieveSelfTestScore() {
@@ -205,8 +212,12 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     this.didTestComplete = true;
     try {
       if (this.conference) {
+        this.logger.info(`Self test : ConferenceId : ${this.conference.id} | retrieveSelfTestScore for Participant Id : ${this.participant.id}
+          | Participant : ${this.videoWebService.getObfuscatedName(this.participant.first_name + ' ' + this.participant.last_name)}`);
         this.testCallResult = await this.videoWebService.getTestCallScore(this.conference.id, this.selfTestParticipantId).toPromise();
       } else {
+        this.logger.info(`Self test : retrieveSelfTestScore for Participant Id : ${this.participant.id}
+          | Participant : ${this.videoWebService.getObfuscatedName(this.participant.first_name + ' ' + this.participant.last_name)}`);
         this.testCallResult = await this.videoWebService.getIndependentTestCallScore(this.selfTestParticipantId).toPromise();
       }
 

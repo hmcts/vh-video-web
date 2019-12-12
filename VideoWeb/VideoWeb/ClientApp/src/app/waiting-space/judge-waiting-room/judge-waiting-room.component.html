@@ -35,7 +35,7 @@
 
 <div *ngIf="!loadingData && conference" class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l" [ngClass]="hearingSuspended() ? 'text-highlight-red' : ''">
+    <h1 class="govuk-heading-xl" [ngClass]="hearingSuspended() ? 'text-highlight-red' : ''">
       {{ getConferenceStatusText() }}</h1>
 
     <h2 class="govuk-heading-m" *ngIf="isNotStarted()">Is everyone connected?</h2>
