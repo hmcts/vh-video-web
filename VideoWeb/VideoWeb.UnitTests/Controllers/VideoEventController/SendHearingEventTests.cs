@@ -66,14 +66,14 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         }
 
         [Test]
-        public async Task should_return_ok_result_when_event_is_sent()
+        public async Task should_return_no_content_when_event_is_sent()
         {
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .Returns(Task.FromResult(default(object)));
             
             var result = await _controller.SendHearingEvent(CreateRequest());
-            var typedResult = (OkResult) result;
+            var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
         }
         

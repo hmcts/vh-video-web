@@ -36,7 +36,7 @@ namespace VideoWeb.Controllers
 
         [HttpPost]
         [SwaggerOperation(OperationId = "SendEvent")]
-        [ProducesResponseType((int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> SendHearingEvent(ConferenceEventRequest request)
         {
@@ -68,7 +68,7 @@ namespace VideoWeb.Controllers
                     await _videoApiClient.RaiseVideoEventAsync(request);
                 }
 
-                return Ok();
+                return NoContent();
             }
             catch (VideoApiException e)
             {
