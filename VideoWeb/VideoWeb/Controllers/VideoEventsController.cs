@@ -43,19 +43,19 @@ namespace VideoWeb.Controllers
             try
             {
                 _logger.LogTrace("Received callback from Kinly");
-                _logger.LogError($"ConferenceId: ${request.Conference_id}, EventType: ${request.Event_type}");
+                _logger.LogError($"ConferenceId: {request.Conference_id}, EventType: {request.Event_type}");
                 var callbackEvent = new CallbackEventMapper().MapConferenceEventToCallbackEventModel(request);
                 if (_memoryCache.Get<Conference>(callbackEvent.ConferenceId) == null)
                 {
                     try
                     {
-                        _logger.LogError($"Retrieving conference details for conference: ${callbackEvent.ConferenceId}");
+                        _logger.LogError($"Retrieving conference details for conference: {callbackEvent.ConferenceId}");
                         var conference = await _videoApiClient.GetConferenceDetailsByIdAsync(callbackEvent.ConferenceId);
                         await ConferenceCache.AddConferenceToCache(conference, _memoryCache);
                     }
                     catch (VideoApiException e)
                     {
-                        _logger.LogError($"ConferenceId: ${request.Conference_id}, ErrorCode: ${e.StatusCode}");
+                        _logger.LogError($"ConferenceId: {request.Conference_id}, ErrorCode: {e.StatusCode}");
                         return StatusCode(e.StatusCode, e.Response);
                     }
                 }
@@ -72,7 +72,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError($"ConferenceId: ${request.Conference_id}, ErrorCode: ${e.StatusCode}");
+                _logger.LogError($"ConferenceId: {request.Conference_id}, ErrorCode: {e.StatusCode}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
