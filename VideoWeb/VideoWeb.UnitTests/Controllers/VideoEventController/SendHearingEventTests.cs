@@ -8,6 +8,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using Testing.Common.Helpers;
@@ -26,6 +27,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         private VideoEventsController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
         private Conference _testConference;
+        private Mock<ILogger<VideoEventsController>> _mockLogger;
 
         [SetUp]
         public void Setup()
@@ -33,7 +35,8 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             _videoApiClientMock = new Mock<IVideoApiClient>();
             _testConference = BuildConferenceForTest();
             var helper = new EventComponentHelper();
-            
+            _mockLogger = new Mock<ILogger<VideoEventsController>>();
+
             var handlerList = helper.GetHandlers();
             helper.Cache.Set(_testConference.Id, _testConference);
             helper.RegisterUsersForHubContext(_testConference.Participants);
@@ -49,7 +52,8 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 }
             };
             
-            _controller = new VideoEventsController(_videoApiClientMock.Object, eventHandlerFactory, new MemoryCache(new MemoryCacheOptions()))
+            _controller = new VideoEventsController(_videoApiClientMock.Object, eventHandlerFactory, 
+                new MemoryCache(new MemoryCacheOptions()), _mockLogger.Object)
             {
                 ControllerContext = context
             };

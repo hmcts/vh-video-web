@@ -1,4 +1,4 @@
-import { Component, OnInit, Renderer, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { ConfigService } from './services/api/config.service';
@@ -33,7 +33,6 @@ export class AppComponent implements OnInit {
     private deviceTypeService: DeviceTypeService,
     private profileService: ProfileService,
     private errorService: ErrorService,
-    private renderer: Renderer,
     private titleService: Title,
     private activatedRoute: ActivatedRoute
   ) {
@@ -96,7 +95,7 @@ export class AppComponent implements OnInit {
   }
 
   skipToContent() {
-    this.renderer.invokeElementMethod(this.main.nativeElement, 'focus');
+    this.main.nativeElement.focus();
   }
 
   setPageTitle(): void {
