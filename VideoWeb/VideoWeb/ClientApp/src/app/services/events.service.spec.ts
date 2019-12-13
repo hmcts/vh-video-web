@@ -16,7 +16,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 describe('EventsService', () => {
   const conference = new ConferenceTestData().getConferenceDetail();
-  
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, RouterTestingModule],
