@@ -294,7 +294,11 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
       if (outStream) {
         const selfvideo = document.getElementById('outgoingFeedVideo') as any;
-        if (selfvideo) {
+          if (selfvideo) {
+              selfvideo.pause();
+              selfvideo.removeAttribute('src'); // empty source
+              console.warn('################### Removing Selfview source');
+              selfvideo.load();
           MediaObject.assignStream(selfvideo, outStream);
         }
       }
@@ -310,7 +314,11 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
       if (inStream) {
         const incomingFeedElement = document.getElementById('incomingFeed') as any;
-        if (incomingFeedElement) {
+          if (incomingFeedElement) {
+              incomingFeedElement.pause();
+              incomingFeedElement.removeAttribute('src'); // empty source
+              console.warn('################### Removing Selfview source');
+              incomingFeedElement.load();
           MediaObject.assignStream(incomingFeedElement, inStream);
         }
       }
