@@ -7,15 +7,33 @@ import { ConfigService } from './api/config.service';
 import { MockConfigService } from '../testing/mocks/MockConfigService';
 import { Logger } from './logging/logger-base';
 import { MockLogger } from '../testing/mocks/MockLogger';
+import { VideoWebService } from './api/video-web.service';
+import { MockVideoWebService } from '../testing/mocks/MockVideoService';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { ConferenceTestData } from '../testing/mocks/data/conference-test-data';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('EventsService', () => {
+  const conference = new ConferenceTestData().getConferenceDetail();
+  
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule, RouterTestingModule],
       providers: [
         EventsService,
         { provide: AdalService, useClass: MockAdalService },
         { provide: ConfigService, useClass: MockConfigService },
-        { provide: Logger, useClass: MockLogger }
+        { provide: Logger, useClass: MockLogger },
+        { provide: VideoWebService, useClass: MockVideoWebService },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              paramMap: convertToParamMap({ conferenceId: conference.id })
+            }
+          },
+        },
       ]
     });
   });
