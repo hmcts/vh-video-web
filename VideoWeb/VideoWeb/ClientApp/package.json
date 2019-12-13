@@ -10,7 +10,9 @@
     "test": "ng test --code-coverage",
     "test-once": "ng test --watch=false --code-coverage",
     "test-once-ci": "ng test --browsers=ChromeHeadless --watch=false --code-coverage",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "private": true,
   "dependencies": {
@@ -47,7 +49,8 @@
     "popper.js": "^1.16.0",
     "rxjs": "^6.5.3",
     "webrtc-adapter": "^7.3.0",
-    "zone.js": "^0.8.29"
+    "zone.js": "^0.8.29",
+    "snyk": "^1.259.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.13.9",
@@ -76,5 +79,6 @@
     "protractor": "~5.4.0",
     "ts-node": "~5.0.1",
     "tslint": "~5.19.0"
-  }
+  },
+  "snyk": true
 }
