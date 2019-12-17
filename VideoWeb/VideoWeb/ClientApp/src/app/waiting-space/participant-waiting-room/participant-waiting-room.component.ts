@@ -296,12 +296,11 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             const selfvideo = document.getElementById('outgoingFeedVideo') as any;
             if (selfvideo) {
                 selfvideo.pause();
-                //selfvideo.removeAttribute('src'); // empty source
+                // selfvideo.removeAttribute('src'); // empty source
                 console.warn('################### this.pexipAPI.onSetup ########### Removing source');
                 selfvideo.load();
                 MediaObject.assignStream(selfvideo, outStream);
-          }
-          else {
+          } else {
               console.warn('################### this.pexipAPI.onSetup ########### Else element is missing for outgoing feed');
           }
         } else {
@@ -321,12 +320,11 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         const incomingFeedElement = document.getElementById('incomingFeed') as any;
         if (incomingFeedElement) {
           incomingFeedElement.pause();
-          //incomingFeedElement.removeAttribute('src'); // empty source
+          // incomingFeedElement.removeAttribute('src'); // empty source
           console.warn('################### this.pexipAPI.onConnect ########### Removing source');
           incomingFeedElement.load();
           MediaObject.assignStream(incomingFeedElement, inStream);
-        }
-        else {
+        } else {
           console.warn('################### this.pexipAPI.onConnect ########### Else video is missing for incoming feed');
         }
         console.warn('################### this.pexipAPI.onConnect  Stream1 ######### ');
