@@ -19,7 +19,20 @@ Scenario: Individual video hearing practice
 	Then the choose your camera and microphone popup should disappear
 
 @VIH-4997 @Chrome @Firefox @Video
-Scenario: Representative video hearing practice
+Scenario: Individual self test video hearing practice
+	Given the Individual Self Test user has progressed to the Practice video hearing page
+	Then the incoming and self video should be playing video
+	And contact us details are available
+	When the video has ended
+	And the user clicks the Check equipment again button
+	Then the incoming and self video should be playing video
+	When the user clicks the Change camera or microphone link
+	Then the choose your camera and microphone popup should appear
+	When the user selects a new microphone
+	Then the choose your camera and microphone popup should disappear
+
+@VIH-4997 @Chrome @Firefox @Video
+Scenario: Representative self test video hearing practice
 	Given the Representative Self Test user has progressed to the Practice video hearing page
 	Then the incoming and self video should be playing video
 	And contact us details are available
