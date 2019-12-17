@@ -292,12 +292,18 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       this.showSelfView = true;
       this.selfViewOpen = true;
 
-      if (outStream) {
-        const selfvideo = document.getElementById('outgoingFeedVideo') as any;
-        if (selfvideo) {
-          MediaObject.assignStream(selfvideo, outStream);
+        if (outStream) {
+            const selfvideo = document.getElementById('outgoingFeedVideo') as any;
+            if (selfvideo) {
+                selfvideo.pause();
+                selfvideo.removeAttribute('src'); // empty source
+                console.warn('################### this.pexipAPI.onSetup ########### Removing source');
+                selfvideo.load();
+                MediaObject.assignStream(selfvideo, outStream);
+            }
+        } else {
+            console.warn('################### this.pexipAPI.onSetup ############## No stream' + outStream);
         }
-      }
       this.connect('0000', null);
     };
 
@@ -310,10 +316,17 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
       if (inStream) {
         const incomingFeedElement = document.getElementById('incomingFeed') as any;
-        if (incomingFeedElement) {
-          MediaObject.assignStream(incomingFeedElement, inStream);
+          if (incomingFeedElement) {
+              incomingFeedElement.pause();
+              incomingFeedElement.removeAttribute('src'); // empty source
+              console.warn('################### this.pexipAPI.onConnect ########### Removing source');
+              incomingFeedElement.load();
+              MediaObject.assignStream(incomingFeedElement, inStream);
         }
+       } else {
+          console.warn('################### this.pexipAPI.onConnect ############## No stream' + inStream);
       }
+
 
       const baseUrl = self.conference.pexip_node_uri.replace('sip.', '');
       const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${self.conference.id}`;
