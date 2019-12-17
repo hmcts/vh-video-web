@@ -18,7 +18,7 @@ Scenario: Individual video hearing practice
 	When the user selects a new microphone
 	Then the choose your camera and microphone popup should disappear
 
-@VIH-4997 @Chrome @Firefox @Video
+@VIH-5386 @Chrome @Firefox @Video
 Scenario: Individual self test video hearing practice
 	Given the Individual Self Test user has progressed to the Practice video hearing page
 	Then the incoming and self video should be playing video
