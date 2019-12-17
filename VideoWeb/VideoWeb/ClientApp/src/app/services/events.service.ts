@@ -67,7 +67,7 @@ export class EventsService {
     this.attemptingConnection = false;
     this.logger.error('EventHub connection closed', error);
 
-    if (this.connectionAttempt < 3) {
+    if (this.connectionAttempt < 6) {
       this.logger.info(`Attempting to re-connect to eventhub. Attempt #${this.connectionAttempt + 1}`);
       this.start();
     }
