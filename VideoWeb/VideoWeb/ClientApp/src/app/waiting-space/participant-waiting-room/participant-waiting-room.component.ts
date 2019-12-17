@@ -296,11 +296,14 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             const selfvideo = document.getElementById('outgoingFeedVideo') as any;
             if (selfvideo) {
                 selfvideo.pause();
-                selfvideo.removeAttribute('src'); // empty source
+                //selfvideo.removeAttribute('src'); // empty source
                 console.warn('################### this.pexipAPI.onSetup ########### Removing source');
                 selfvideo.load();
                 MediaObject.assignStream(selfvideo, outStream);
-            }
+          }
+          else {
+              console.warn('################### this.pexipAPI.onSetup ########### Else element is missing for outgoing feed');
+          }
         } else {
             console.warn('################### this.pexipAPI.onSetup ############## No stream' + outStream);
         }
@@ -316,13 +319,19 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
       if (inStream) {
         const incomingFeedElement = document.getElementById('incomingFeed') as any;
-          if (incomingFeedElement) {
-              incomingFeedElement.pause();
-              incomingFeedElement.removeAttribute('src'); // empty source
-              console.warn('################### this.pexipAPI.onConnect ########### Removing source');
-              incomingFeedElement.load();
-              MediaObject.assignStream(incomingFeedElement, inStream);
+        if (incomingFeedElement) {
+          incomingFeedElement.pause();
+          //incomingFeedElement.removeAttribute('src'); // empty source
+          console.warn('################### this.pexipAPI.onConnect ########### Removing source');
+          incomingFeedElement.load();
+          MediaObject.assignStream(incomingFeedElement, inStream);
         }
+        else {
+          console.warn('################### this.pexipAPI.onConnect ########### Else video is missing for incoming feed');
+        }
+        console.warn('################### this.pexipAPI.onConnect  Stream1 ######### ');
+        console.warn(inStream);
+        console.warn('################### this.pexipAPI.onConnect  Stream2 ######### ');
        } else {
           console.warn('################### this.pexipAPI.onConnect ############## No stream' + inStream);
       }

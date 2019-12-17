@@ -12,4 +12,12 @@ export class MediaObject {
       videoElement.src = stream;
     }
   }
+
+  public static clearStream(videoElement, stream) {
+    if (typeof (MediaStream) !== 'undefined' && stream instanceof MediaStream) {
+      videoElement.srcObject = null;
+    } else {
+      videoElement.src = null;
+    }
+  }
 }
