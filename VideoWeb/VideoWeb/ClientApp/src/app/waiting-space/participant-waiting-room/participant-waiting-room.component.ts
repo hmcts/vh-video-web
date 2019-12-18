@@ -293,6 +293,9 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       this.selfViewOpen = true;
 
       if (outStream) {
+        console.warn('################### this.pexipAPI.onSetup  Stream1 ######### ');
+        console.warn(outStream);
+        console.warn('################### this.pexipAPI.onSetup  Stream2 ######### ');
         const selfvideo = document.getElementById('outgoingFeedVideo') as any;
         if (selfvideo) {
           MediaObject.assignStream(selfvideo, outStream);
@@ -309,6 +312,9 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       self.logger.info('successfully connected to call');
 
       if (inStream) {
+        console.warn('################### this.pexipAPI.onConnect  Stream1 ######### ');
+        console.warn(inStream);
+        console.warn('################### this.pexipAPI.onConnect  Stream2 ######### ');
         const incomingFeedElement = document.getElementById('incomingFeed') as any;
         if (incomingFeedElement) {
           MediaObject.assignStream(incomingFeedElement, inStream);
