@@ -64,7 +64,9 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
     this.conferencesSubscription = this.videoWebService.getConferencesForJudge().subscribe((data: ConferenceForUserResponse[]) => {
       this.loadingData = false;
       this.conferences = data;
-      this.enableFullScreen(true);
+        if (this.conferences.length > 0) {
+           this.enableFullScreen(true);
+        }
     },
       (error) => {
         this.loadingData = false;
