@@ -3,7 +3,7 @@
 </div>
 
 <div class="govuk-grid-row">
-  <div class="video-background"></div>
+  <div *ngIf="showVideo" class="video-background"></div>
   <div class="govuk-grid-column-one-half">
     <video id="incomingFeed" autoplay="autoplay" height="auto" [ngClass]="{'showVideo': showVideo, 'hideVideo': !showVideo}">
       Your browser does not support Video
