@@ -300,6 +300,12 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         if (selfvideo) {
           MediaObject.assignStream(selfvideo, outStream);
         }
+        else {
+          console.warn('################### this.pexipAPI.onSetup ########### Else element is missing for outgoing feed');
+        }
+      }
+      else {
+        console.warn('################### this.pexipAPI.onSetup ############## No stream');
       }
       this.connect('0000', null);
     };
@@ -319,6 +325,12 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         if (incomingFeedElement) {
           MediaObject.assignStream(incomingFeedElement, inStream);
         }
+        else {
+          console.warn('################### this.pexipAPI.onConnect ########### Else element is missing for outgoing feed');
+        }
+      }
+      else {
+        console.warn('################### this.pexipAPI.onConnect ############## No stream');
       }
 
       const baseUrl = self.conference.pexip_node_uri.replace('sip.', '');
