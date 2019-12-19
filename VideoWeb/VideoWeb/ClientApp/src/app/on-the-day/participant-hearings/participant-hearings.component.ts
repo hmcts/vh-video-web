@@ -19,7 +19,6 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
   interval: any;
   errorCount: number;
   profile: UserProfileResponse;
-  isRepresentative: boolean;
 
   constructor(
     private videoWebService: VideoWebService,
@@ -28,13 +27,11 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
     private profileService: ProfileService
   ) {
     this.loadingData = true;
-    this.isRepresentative = false;
-  }
+   }
 
   ngOnInit() {
     this.profileService.getUserProfile().then((profile) => {
       this.profile = profile;
-      this.isRepresentative = profile.role === UserRole.Representative;
     });
     this.errorCount = 0;
     this.retrieveHearingsForUser();

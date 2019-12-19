@@ -86,7 +86,7 @@ Scenario: Help page accessibility
 	Then the user is on the Help page
 	And the page should be accessible 
 
-@Accessibility @Chrome @Video @HearingTest
+@Accessibility @Video @HearingTest
 Scenario: Hearing Room page accessibility
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing

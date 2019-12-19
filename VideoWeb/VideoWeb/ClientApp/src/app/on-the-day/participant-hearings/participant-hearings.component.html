@@ -4,7 +4,7 @@
 
 <div *ngIf="!loadingData && hasHearings()">
   <h1 class="govuk-heading-xl">Your hearings</h1>
-  <div class="govuk-!-margin-top-1" *ngIf="isRepresentative">
+  <div class="govuk-!-margin-top-1">
     <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button"
             (click)="goToEquipmentCheck()" alt="Check equipment">
       Check equipment
@@ -14,7 +14,7 @@
 </div>
 <div *ngIf="!loadingData && !hasHearings()">
   <h1 class="govuk-heading-xl">Video hearings</h1>
-  <div class="govuk-!-margin-top-1" *ngIf="isRepresentative">
+  <div class="govuk-!-margin-top-1">
     <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button"
            (click)="goToEquipmentCheck()" alt="Check equipment">Check equipment</button>
   </div>

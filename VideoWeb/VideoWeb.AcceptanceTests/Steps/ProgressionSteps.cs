@@ -97,8 +97,9 @@ namespace VideoWeb.AcceptanceTests.Steps
                 return Journey.Clerk;
             else if (RemoveNumbersFromUsername(user.ToLower()) == "clerk self test")
                 return Journey.ClerkSelftest;
-            else if (RemoveNumbersFromUsername(user.ToLower()) == "representative self test")
-                return Journey.RepSelfTest;
+            else if (RemoveNumbersFromUsername(user.ToLower()) == "individual self test" ||
+                     RemoveNumbersFromUsername(user.ToLower()) == "representative self test")
+                return Journey.SelfTest;
             else if (RemoveNumbersFromUsername(user.ToLower()) == "participant" ||
                      RemoveNumbersFromUsername(user.ToLower()) == "individual" ||
                      RemoveNumbersFromUsername(user.ToLower()) == "representative")
@@ -121,12 +122,12 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {Journey.Clerk, new ClerkJourney()},
                 {Journey.ClerkSelftest, new ClerkSelfTestJourney()},
                 {Journey.Participant, new ParticipantJourney()},
-                {Journey.RepSelfTest, new RepSelfTestJourney()},
+                {Journey.SelfTest, new SelfTestJourney()},
                 {Journey.Vho, new VhoJourney()}
             };
             journeys[userJourney].VerifyUserIsApplicableToJourney(_tc.CurrentUser.Role);
             journeys[userJourney].VerifyDestinationIsInThatJourney(endPage);
-            if (userJourney == Journey.ClerkSelftest || userJourney == Journey.RepSelfTest) _tc.Selftest = true;           
+            if (userJourney == Journey.ClerkSelftest || userJourney == Journey.SelfTest) _tc.Selftest = true;           
             var journey = journeys[userJourney].Journey();
             var steps = Steps();
             foreach (var page in journey)

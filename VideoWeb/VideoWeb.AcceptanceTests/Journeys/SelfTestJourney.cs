@@ -5,7 +5,7 @@ using VideoWeb.AcceptanceTests.Pages;
 namespace VideoWeb.AcceptanceTests.Journeys
 {
 
-    public class RepSelfTestJourney : IJourney
+    public class SelfTestJourney : IJourney
     {
         public List<Page> Journey()
         {
@@ -21,7 +21,7 @@ namespace VideoWeb.AcceptanceTests.Journeys
 
         public void VerifyUserIsApplicableToJourney(string currentUserRole)
         {
-            currentUserRole.ToLower().Should().BeOneOf("representative");
+            currentUserRole.ToLower().Should().BeOneOf("individual","representative");
         }
 
         public void VerifyDestinationIsInThatJourney(Page destinationPage)
