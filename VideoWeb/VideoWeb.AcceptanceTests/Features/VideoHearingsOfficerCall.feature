@@ -3,7 +3,7 @@
 	As a VHO
 	I want to be able to call a participant
 
-@VIH-4611 @VIH-4613 @VIH-4730 @Video @Chrome
+@VIH-4611 @VIH-4613 @VIH-4730 @Video
 Scenario: Video Hearings Officer Call
 	Given the Individual01 user has progressed to the Waiting Room page with a hearing in 30 minutes time
 	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
@@ -23,7 +23,7 @@ Scenario: No Answer on a Video Hearings Officer Call
 	And the user does not answer after 2 minutes
 	Then the Individual01 user can no longer see the alert
 
-@VIH-4613 @Video @Chrome
+@VIH-4613 @Video
 Scenario: Video Hearings Officer cannot call users in private consultation
 	Given the Individual01 user has progressed to the Waiting Room page with a hearing in 30 minutes time
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
@@ -34,7 +34,7 @@ Scenario: Video Hearings Officer cannot call users in private consultation
 	When the Video Hearings Officer starts a call with Individual01
 	Then the Individual01 user does not see an alert
 
-@VIH-4613 @Video @Chrome
+@VIH-4613 @Video
 Scenario: Video Hearings Officer cannot call users in a hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing

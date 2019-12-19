@@ -4,7 +4,7 @@ Feature: Practice video hearing
 	As a participant in a video hearing
 	I want to be able to see my microphone and camera are responding
 
-@Chrome @Firefox @Video
+@Video
 Scenario: Individual video hearing practice
 	Given the Individual user has progressed to the Practice video hearing page
 	Then the incoming and self video should be playing video
@@ -18,7 +18,7 @@ Scenario: Individual video hearing practice
 	When the user selects a new microphone
 	Then the choose your camera and microphone popup should disappear
 
-@VIH-5386 @Chrome @Firefox @Video
+@VIH-5386 @Video
 Scenario: Individual self test video hearing practice
 	Given the Individual Self Test user has progressed to the Practice video hearing page
 	Then the incoming and self video should be playing video
@@ -31,7 +31,7 @@ Scenario: Individual self test video hearing practice
 	When the user selects a new microphone
 	Then the choose your camera and microphone popup should disappear
 
-@VIH-4997 @Chrome @Firefox @Video
+@VIH-4997 @Video
 Scenario: Representative self test video hearing practice
 	Given the Representative Self Test user has progressed to the Practice video hearing page
 	Then the incoming and self video should be playing video
@@ -44,7 +44,7 @@ Scenario: Representative self test video hearing practice
 	When the user selects a new microphone
 	Then the choose your camera and microphone popup should disappear
 
-@VIH-4671 @Chrome @Firefox @Video
+@VIH-4671 @Video
 Scenario: Clerk video hearing practice
 	Given the Clerk Self Test user has progressed to the Practice video hearing page
 	Then the incoming and self video should be playing video
@@ -57,14 +57,14 @@ Scenario: Clerk video hearing practice
 	When the user selects a new microphone
 	Then the choose your camera and microphone popup should disappear
 
-@VIH-4671 @Chrome @Firefox @Video
+@VIH-4671 @Video
 Scenario: Clerk confirms the equipment is working
 	Given the Clerk Self Test user has progressed to the Practice video hearing page
 	Then the incoming and self video should be playing video
 	When the user clicks the Equipment is working button
 	Then the user is on the Hearing List page
 
-@VIH-4671 @Chrome @Firefox @Video
+@VIH-4671 @Video
 Scenario: Clerk does not confirm the equipment is working
 	Given the Clerk Self Test user has progressed to the Practice video hearing page
 	Then the incoming and self video should be playing video
