@@ -91,3 +91,8 @@
 .showIncomingFeed {
   display: block;
 }
+
+.hideIncomingFeedVideo {
+  min-height: 10% !important;
+  max-height: 10vh !important;
+}
