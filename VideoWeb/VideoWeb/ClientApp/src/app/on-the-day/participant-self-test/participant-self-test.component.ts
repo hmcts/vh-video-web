@@ -16,7 +16,8 @@ import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component'
 })
 export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
 
-  @ViewChild(SelfTestComponent) selfTestComponent: SelfTestComponent;
+  @ViewChild(SelfTestComponent)
+  selfTestComponent: SelfTestComponent;
 
   constructor(private router: Router,
     protected route: ActivatedRoute,
@@ -43,4 +44,11 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
     this.selfTestComponent.replayVideo();
   }
 
+  testCompleted(): boolean {
+    if (this.selfTestComponent) {
+      return this.selfTestComponent.didTestComplete;
+    } else {
+      return false;
+    }
+  }
 }
