@@ -50,7 +50,7 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
   testCompleted(): boolean {
     if (this.selfTestComponent) {
       this.videoCompleted = this.selfTestComponent.didTestComplete;
-    } 
+    }
     return this.videoCompleted;
   }
 }
