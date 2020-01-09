@@ -16,6 +16,7 @@ import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component'
 })
 export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
 
+  videoCompleted: boolean;
   @ViewChild(SelfTestComponent) selfTestComponent: SelfTestComponent;
 
   constructor(private router: Router,
@@ -25,6 +26,7 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
     protected adalService: AdalService,
     protected logger: Logger) {
     super(route, videoWebService, errorService, adalService, logger);
+    this.videoCompleted = false;
   }
 
   onSelfTestCompleted(testcallScore: TestCallScoreResponse): void {
@@ -43,4 +45,10 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
     this.selfTestComponent.replayVideo();
   }
 
+  testCompleted(): boolean {
+    if (this.selfTestComponent) {
+      this.videoCompleted = this.selfTestComponent.didTestComplete;
+    }
+    return this.videoCompleted;
+  }
 }
