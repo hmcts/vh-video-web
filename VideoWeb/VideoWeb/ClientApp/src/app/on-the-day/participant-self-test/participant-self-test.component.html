@@ -15,8 +15,8 @@
 
 <div class="govuk-!-margin-top-6">
   <button id="continue-btn" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button"
-    [ngClass]="testCompleted() ? 'govuk-button' : 'govuk-button--disabled'" (click)="continueParticipantJourney()"
-    alt="Continue">Continue</button>
+    [disabled]="!videoCompleted" [ngClass]="testCompleted() ? 'govuk-button' : 'govuk-button--disabled'"
+    (click)="continueParticipantJourney()" alt="Continue">Continue</button>
 
   <button id="check-equipment-btn" class="govuk-button govuk-button--secondary" data-module="govuk-button"
     (click)="restartTest()" alt="Re-play the video message">
