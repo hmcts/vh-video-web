@@ -21,6 +21,7 @@ import { Subscription } from 'rxjs';
 declare var PexRTC: any;
 declare var HeartbeatFactory: any;
 
+
 @Component({
   selector: 'app-participant-waiting-room',
   templateUrl: './participant-waiting-room.component.html',
@@ -275,18 +276,48 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       // self.logger.info(`Using preferred microphone: ${preferredMic.label}`);
     }
 
-    this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
+      this.pexipAPI.onSetup = function (outStream, pin_status, conference_extension) {
       self.logger.info('running pexip setup');
       this.connect('0000', null);
-      self.outgoingStream = stream;
+          self.outgoingStream = outStream;
+        if (outStream) {
+            console.warn('################### this.pexipAPI.onSetup  Stream1 ######### ');
+            console.warn(outStream);
+            console.warn('################### this.pexipAPI.onSetup  Stream2 ######### ');
+            const selfvideo = document.getElementById('outgoingFeedVideo') as any;
+            if (selfvideo) {
+                self.assignStream(selfvideo, outStream);
+            } else {
+                console.warn('################### this.pexipAPI.onSetup ########### Else element is missing for outgoing feed');
+            }
+        } else {
+            console.warn('################### this.pexipAPI.onSetup ############## No stream');
+        }
+
     };
 
-    this.pexipAPI.onConnect = function (stream) {
+    this.pexipAPI.onConnect = function (inStream) {
       self.errorCount = 0;
       self.connected = true;
-      self.updateShowVideo();
+      //self.updateShowVideo();
       self.logger.info('successfully connected to call');
-      self.stream = stream;
+        self.stream = inStream;
+        const incomingFeedElement = document.getElementById('incomingFeed') as any;
+        if (inStream) {
+            //this. = true;
+            self.updateShowVideo();
+            console.warn('################### this.pexipAPI.onConnect  Stream1 ######### ');
+            console.warn(inStream);
+            console.warn('################### this.pexipAPI.onConnect  Stream2 ######### ');
+
+            if (incomingFeedElement) {
+                self.assignStream(incomingFeedElement, inStream);
+            } else {
+                console.warn('################### this.pexipAPI.onConnect ########### Else element is missing for outgoing feed');
+            }
+        } else {
+            console.warn('################### this.pexipAPI.onConnect ############## No stream');
+        }
 
       const baseUrl = self.conference.pexip_node_uri.replace('sip.', '');
       const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${self.conference.id}`;
@@ -387,5 +418,13 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         (error) => {
           this.logger.error(`There was an error getting a conference ${conferenceId}`, error);
         });
-  }
+    }
+
+    assignStream(videoElement, stream) {
+        if (typeof (MediaStream) !== 'undefined' && stream instanceof MediaStream) {
+            videoElement.srcObject = stream;
+        } else {
+            videoElement.src = stream;
+        }
+    }
 }
