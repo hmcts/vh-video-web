@@ -1,6 +1,7 @@
 import { Component, Output, EventEmitter, OnInit } from '@angular/core';
 import { HearingsFilter, ListFilter } from '../../shared/models/hearings-filter';
 import { ConferenceStatus } from '../../services/clients/api-client';
+import { HearingsFilterOptionsService } from '../services/hearings-filter-options.service';
 
 @Component({
     selector: 'app-vho-hearings-filter',
@@ -11,6 +12,9 @@ export class VhoHearingsFilterComponent implements OnInit {
     @Output()
     optionsCounterEvent = new EventEmitter<number>();
 
+    @Output()
+    fiterOptionsEvent = new EventEmitter<HearingsFilter>();
+
     statusAllChecked = true
     locationAllChecked = true;
     alertsAllChecked = true;
@@ -18,20 +22,11 @@ export class VhoHearingsFilterComponent implements OnInit {
 
     hearingsFilter: HearingsFilter;
 
+    constructor(private hearingsFilterOptionsService: HearingsFilterOptionsService) { }
+
     ngOnInit() {
-        this.hearingsFilter = new HearingsFilter();
-        this.setLocations();
-        this.setAlerts();
-    }
-
-    setLocations() {
-        const locations = ['Taylor House', 'Ambridge MC', 'Manchester', 'Glasgow'];
-        this.hearingsFilter.addLocations(locations);
-    }
-
-    setAlerts() {
-        const alerts = ['Suspended', 'Disconnected', 'Messages', 'Failed kit check', 'Cam/mic blocked'];
-        this.hearingsFilter.addAlerts(alerts);
+        this.hearingsFilter = this.hearingsFilterOptionsService.filter;
+        this.countOptions();
     }
 
     statusAllSelected() {
@@ -99,5 +94,15 @@ export class VhoHearingsFilterComponent implements OnInit {
             }
         });
         return countOptions;
+    }
+
+    clearFilters() {
+        this.statusAllSelected();
+        this.alertAllSelected();
+        this.locationAllSelected();
+    }
+
+    applyFilters() {
+        this.fiterOptionsEvent.emit(this.hearingsFilter);
     }
 }

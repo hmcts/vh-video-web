@@ -9,6 +9,7 @@ import { ParticipantInfoTooltipComponent } from './participant-info-tooltip/part
 import { VhOfficerRoutingModule } from './vh-officer-routing.module';
 import { ClipboardModule } from 'ngx-clipboard';
 import { VhoHearingsFilterComponent } from '../vh-officer/vho-herings-filter/vho-hearings-filter.component';
+import { HearingsFilterOptionsService } from '../vh-officer/services/hearings-filter-options.service';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,9 @@ import { VhoHearingsFilterComponent } from '../vh-officer/vho-herings-filter/vho
     SharedModule,
     ClipboardModule,
     VhOfficerRoutingModule
-  ]
+    ],
+    providers: [
+        HearingsFilterOptionsService
+    ]
 })
 export class VhOfficerModule { }

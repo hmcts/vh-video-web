@@ -18,6 +18,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import * as $ from 'jquery';
 import { Subscription } from 'rxjs';
 import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
+import { HearingsFilter } from '../../shared/models/hearings-filter';
 
 @Component({
     selector: 'app-vho-hearings',
@@ -33,6 +34,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     loadingData: boolean;
 
     conferences: ConferenceForUserResponse[];
+    conferencesAll: ConferenceForUserResponse[];
     selectedHearing: Hearing;
     participants: ParticipantResponse[];
     selectedConferenceUrl: SafeResourceUrl;
@@ -42,7 +44,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     conferencesSubscription: Subscription;
 
     displayFilter = false;
-    filterOptions = 0;
+    filterOptionsCount = 0;
 
     @HostListener('window:resize', ['$event'])
     onResize(event) {
@@ -102,6 +104,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.conferencesSubscription = this.videoWebService.getConferencesForVHOfficer().subscribe((data: ConferenceForUserResponse[]) => {
             this.loadingData = false;
             this.conferences = data;
+            this.conferencesAll = data;
             if (data && data.length > 0) {
                 this.logger.debug('VH Officer has conferences');
                 this.enableFullScreen(true);
@@ -287,6 +290,19 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     }
 
     filterOptionsCounter(optionsNumber: number) {
-        this.filterOptions = optionsNumber;
+        this.filterOptionsCount = optionsNumber;
+    }
+
+    applyFilters(filterOptions: HearingsFilter) {
+        console.log('VHO hearings applyed filters');
+        this.displayFilter = false;
+        const selectedStatuses = filterOptions.filterStatuses.filter(x => x.Selected).map(s => s.Status);
+           
+        if (selectedStatuses.length > 0) {
+            this.conferences = this.conferencesAll.filter(x => selectedStatuses.includes(x.status));
+        } else {
+            this.conferences = this.conferencesAll;
+        }
+
     }
 }
