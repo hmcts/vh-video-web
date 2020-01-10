@@ -1,10 +1,27 @@
+
+<div id="filterButton" *ngIf="!loadingData && hasHearings()">
+  <span class="govuk-!-padding-1 govuk-!-margin-left-2 report-conference govuk-body"
+        (click)="showFilter()">
+    Filter {{filterOptions > 0 ? '('+ filterOptions +')' : ''}}
+    <i [ngClass]="{'triangle-up':!displayFilter, 'triangle-down': displayFilter}"></i>
+  </span>
+
+</div>
+<div *ngIf="displayFilter" class="connected">
+  <app-vho-hearings-filter (optionsCounterEvent)="filterOptionsCounter($event)"></app-vho-hearings-filter>
+</div>
+
+
+
 <div *ngIf="loadingData">
   <p class="govuk-body">Loading please wait...</p>
 </div>
 
 <div *ngIf="!loadingData && hasHearings()" class="govuk-grid-row">
+ 
   <app-vho-hearing-list [conferences]="conferences" (selectedConference)="onConferenceSelected($event)">
   </app-vho-hearing-list>
+   
   <div class="govuk-grid-row">
     <div *ngIf="!loadingData && isHearingSelected()" id="conference-frame" class="govuk-grid-column-one-half">
 
@@ -13,13 +30,12 @@
       </div>
 
       <div id="vho-admin-view" class="govuk-grid-column-one-third govuk-!-padding-0">
-            <iframe id="admin-frame" [width]='adminFrameWidth' [height]="adminFrameHeight" [src]='selectedConferenceUrl'
-              allowfullscreen frameborder="0" webkitallowfullscreen mozallowfullscreen title="Admin overview of the hearings">
-            </iframe>
-          </div>
+        <iframe id="admin-frame" [width]='adminFrameWidth' [height]="adminFrameHeight" [src]='selectedConferenceUrl'
+                allowfullscreen frameborder="0" webkitallowfullscreen mozallowfullscreen title="Admin overview of the hearings"></iframe>
+      </div>
       <div class="govuk-grid-column-full">
         <app-tasks-table *ngIf="!loadingData && hasTasks()" [conference]="selectedHearing.getConference()"
-          [tasks]="tasks" (taskCompleted)="onTaskCompleted($event)"></app-tasks-table>
+                         [tasks]="tasks" (taskCompleted)="onTaskCompleted($event)"></app-tasks-table>
       </div>
     </div>
   </div>
@@ -30,3 +46,4 @@
   <h1 class="govuk-heading-xl">Video hearings</h1>
   <h3 class="govuk-heading-m"> You have no video hearings</h3>
 </div>
+

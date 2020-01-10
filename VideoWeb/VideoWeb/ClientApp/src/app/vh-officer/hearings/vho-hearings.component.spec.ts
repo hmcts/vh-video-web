@@ -22,6 +22,7 @@ import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { VhoHearingsComponent } from './vho-hearings.component';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { VhoHearingsFilterStubComponent } from '../../testing/stubs/vho-hearings-filter-stub';
 
 describe('VhoHearingsComponent', () => {
   let component: VhoHearingsComponent;
@@ -40,7 +41,11 @@ describe('VhoHearingsComponent', () => {
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [VhoHearingsComponent, TasksTableStubComponent, VhoHearingListStubComponent, VhoParticipantStatusStubComponent],
+      declarations: [VhoHearingsComponent,
+        TasksTableStubComponent,
+        VhoHearingListStubComponent,
+        VhoParticipantStatusStubComponent,
+        VhoHearingsFilterStubComponent],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },
