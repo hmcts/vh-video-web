@@ -280,32 +280,15 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       self.logger.info('running pexip setup');
       this.connect('0000', null);
       self.outgoingStream = stream;
-        //if (outStream) {
-        //    console.warn('################### this.pexipAPI.onSetup  Stream1 ######### ');
-        //    console.warn(outStream);
-        //    console.warn('################### this.pexipAPI.onSetup  Stream2 ######### ');
-        //    const selfvideo = document.getElementById('outgoingFeedVideo') as any;
-        //    if (selfvideo) {
-        //        self.assignStream(selfvideo, outStream);
-        //    } else {
-        //        console.warn('################### this.pexipAPI.onSetup ########### Else element is missing for outgoing feed');
-        //    }
-        //} else {
-        //    console.warn('################### this.pexipAPI.onSetup ############## No stream');
-        //}
-
     };
 
       this.pexipAPI.onConnect = function (stream) {
       self.errorCount = 0;
       self.connected = true;
-      //self.updateShowVideo();
       self.logger.info('successfully connected to call');
           self.stream = stream;
           const incomingFeedElement = document.getElementById('incomingFeed') as any;
-          const incomingFeedPrivateElement = document.getElementById('incomingFeedPrivate') as any;
-          if (stream) {
-            //this. = true;f
+           if (stream) {
             self.updateShowVideo();
             console.warn('################### this.pexipAPI.onConnect  Stream1 ######### ');
               console.warn(stream);
@@ -317,9 +300,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
                 console.warn('################### this.pexipAPI.onConnect ########### Else element is missing for outgoing feed');
             }
 
-              //if (incomingFeedPrivateElement) {
-              //    self.assignStream(incomingFeedPrivateElement, stream);
-              //} 
+             
         } else {
             console.warn('################### this.pexipAPI.onConnect ############## No stream');
         }
