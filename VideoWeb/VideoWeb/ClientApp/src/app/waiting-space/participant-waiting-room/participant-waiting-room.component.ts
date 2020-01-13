@@ -51,7 +51,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   showConsultationControls: boolean;
   selfViewOpen: boolean;
   isAdminConsultation: boolean;
-
+  
   subscription: Subscription;
   errorCount: number;
 
@@ -276,45 +276,50 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       // self.logger.info(`Using preferred microphone: ${preferredMic.label}`);
     }
 
-      this.pexipAPI.onSetup = function (outStream, pin_status, conference_extension) {
+      this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
       self.logger.info('running pexip setup');
       this.connect('0000', null);
-          self.outgoingStream = outStream;
-        if (outStream) {
-            console.warn('################### this.pexipAPI.onSetup  Stream1 ######### ');
-            console.warn(outStream);
-            console.warn('################### this.pexipAPI.onSetup  Stream2 ######### ');
-            const selfvideo = document.getElementById('outgoingFeedVideo') as any;
-            if (selfvideo) {
-                self.assignStream(selfvideo, outStream);
-            } else {
-                console.warn('################### this.pexipAPI.onSetup ########### Else element is missing for outgoing feed');
-            }
-        } else {
-            console.warn('################### this.pexipAPI.onSetup ############## No stream');
-        }
+      self.outgoingStream = stream;
+        //if (outStream) {
+        //    console.warn('################### this.pexipAPI.onSetup  Stream1 ######### ');
+        //    console.warn(outStream);
+        //    console.warn('################### this.pexipAPI.onSetup  Stream2 ######### ');
+        //    const selfvideo = document.getElementById('outgoingFeedVideo') as any;
+        //    if (selfvideo) {
+        //        self.assignStream(selfvideo, outStream);
+        //    } else {
+        //        console.warn('################### this.pexipAPI.onSetup ########### Else element is missing for outgoing feed');
+        //    }
+        //} else {
+        //    console.warn('################### this.pexipAPI.onSetup ############## No stream');
+        //}
 
     };
 
-    this.pexipAPI.onConnect = function (inStream) {
+      this.pexipAPI.onConnect = function (stream) {
       self.errorCount = 0;
       self.connected = true;
       //self.updateShowVideo();
       self.logger.info('successfully connected to call');
-        self.stream = inStream;
-        const incomingFeedElement = document.getElementById('incomingFeed') as any;
-        if (inStream) {
-            //this. = true;
+          self.stream = stream;
+          const incomingFeedElement = document.getElementById('incomingFeed') as any;
+          const incomingFeedPrivateElement = document.getElementById('incomingFeedPrivate') as any;
+          if (stream) {
+            //this. = true;f
             self.updateShowVideo();
             console.warn('################### this.pexipAPI.onConnect  Stream1 ######### ');
-            console.warn(inStream);
+              console.warn(stream);
             console.warn('################### this.pexipAPI.onConnect  Stream2 ######### ');
 
             if (incomingFeedElement) {
-                self.assignStream(incomingFeedElement, inStream);
+                self.assignStream(incomingFeedElement, stream);
             } else {
                 console.warn('################### this.pexipAPI.onConnect ########### Else element is missing for outgoing feed');
             }
+
+              //if (incomingFeedPrivateElement) {
+              //    self.assignStream(incomingFeedPrivateElement, stream);
+              //} 
         } else {
             console.warn('################### this.pexipAPI.onConnect ############## No stream');
         }
