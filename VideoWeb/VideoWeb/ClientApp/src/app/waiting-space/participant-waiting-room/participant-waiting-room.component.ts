@@ -51,7 +51,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   showConsultationControls: boolean;
   selfViewOpen: boolean;
   isAdminConsultation: boolean;
-  
+
   subscription: Subscription;
   errorCount: number;
 
@@ -290,19 +290,9 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
           const incomingFeedElement = document.getElementById('incomingFeed') as any;
            if (stream) {
             self.updateShowVideo();
-            console.warn('################### this.pexipAPI.onConnect  Stream1 ######### ');
-              console.warn(stream);
-            console.warn('################### this.pexipAPI.onConnect  Stream2 ######### ');
-
             if (incomingFeedElement) {
                 self.assignStream(incomingFeedElement, stream);
-            } else {
-                console.warn('################### this.pexipAPI.onConnect ########### Else element is missing for outgoing feed');
             }
-
-             
-        } else {
-            console.warn('################### this.pexipAPI.onConnect ############## No stream');
         }
 
       const baseUrl = self.conference.pexip_node_uri.replace('sip.', '');
