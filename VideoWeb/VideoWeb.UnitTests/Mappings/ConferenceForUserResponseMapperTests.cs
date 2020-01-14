@@ -49,6 +49,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.NoOfParticipantsInConsultation.Should().Be(2);
             response.NoOfParticipantsUnavailable.Should().Be(1);
             response.NoOfPendingTasks.Should().Be(conference.Pending_tasks);
+            response.HearingVenueName.Should().Be(conference.Hearing_venue_name);
         }
 
         [Test]
