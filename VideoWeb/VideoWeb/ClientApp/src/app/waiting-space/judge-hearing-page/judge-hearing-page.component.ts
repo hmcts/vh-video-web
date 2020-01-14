@@ -1,13 +1,13 @@
-import { Component, NgZone, OnInit } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ConferenceResponse, ConferenceStatus, UserRole } from 'src/app/services/clients/api-client';
-import { EventsService } from 'src/app/services/events.service';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ErrorService } from 'src/app/services/error.service';
-import { PageUrls } from 'src/app/shared/page-url.constants';
-import { UserMediaService } from 'src/app/services/user-media.service';
-import { Logger } from 'src/app/services/logging/logger-base';
+import {Component, NgZone, OnInit} from '@angular/core';
+import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
+import {ActivatedRoute, Router} from '@angular/router';
+import {ConferenceResponse, ConferenceStatus, UserRole} from 'src/app/services/clients/api-client';
+import {EventsService} from 'src/app/services/events.service';
+import {VideoWebService} from 'src/app/services/api/video-web.service';
+import {ErrorService} from 'src/app/services/error.service';
+import {PageUrls} from 'src/app/shared/page-url.constants';
+import {UserMediaService} from 'src/app/services/user-media.service';
+import {Logger} from 'src/app/services/logging/logger-base';
 
 @Component({
   selector: 'app-judge-hearing-page',
@@ -37,6 +37,7 @@ export class JudgeHearingPageComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.logger.info('**************************************ngOnInit()');
     this.getConference();
   }
 
@@ -44,6 +45,11 @@ export class JudgeHearingPageComponent implements OnInit {
     const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
     this.videoWebService.getConferenceById(conferenceId)
       .subscribe((data: ConferenceResponse) => {
+        if (data.status === ConferenceStatus.Closed) {
+          this.logger.info('Returning back to hearing list because status closed');
+          this.router.navigate([PageUrls.Home]);
+        }
+
         this.loadingData = false;
         this.conference = data;
         this.sanitiseIframeUrl();
