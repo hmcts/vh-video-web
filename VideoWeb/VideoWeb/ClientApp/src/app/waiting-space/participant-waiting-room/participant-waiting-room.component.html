@@ -19,7 +19,7 @@
       </video>
     </div>
 </div>
-<div class="govuk-grid-row">
+<div class="govuk-grid-row" *ngIf="showSelfView">
   <div class="govuk-grid-column-one-half" id="outgoingFeedDiv">
     <button id="outgoingFeedButton" type="button" class="govuk-button govuk-button--secondary reduce-margin"
       data-module="govuk-button" (click)="toggleView()">

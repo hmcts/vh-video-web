@@ -48,6 +48,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   hearingAlertSound: HTMLAudioElement;
 
   showVideo: boolean;
+  showSelfView: boolean;
   showConsultationControls: boolean;
   selfViewOpen: boolean;
   isAdminConsultation: boolean;
@@ -77,6 +78,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     this.showVideo = false;
     this.showConsultationControls = false;
     this.selfViewOpen = false;
+    this.showSelfView = false;
   }
 
   ngOnInit() {
@@ -106,6 +108,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     this.outgoingStream = null;
     this.connected = false;
     this.showVideo = false;
+    this.showSelfView = false;
   }
 
   initHearingAlert() {
@@ -280,6 +283,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       self.logger.info('running pexip setup');
       this.connect('0000', null);
       self.outgoingStream = stream;
+      this.showSelfView = true;
     };
 
       this.pexipAPI.onConnect = function (stream) {
@@ -345,6 +349,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   updateShowVideo(): void {
     if (!this.connected) {
       this.logger.debug('Not showing video because not connecting to node');
+      this.showSelfView = false;
       this.showVideo = false;
       this.showConsultationControls = false;
       return;
@@ -352,6 +357,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     if (this.hearing.isInSession()) {
       this.logger.debug('Showing video because hearing is in session');
+      this.showSelfView = true;
       this.showVideo = true;
       this.showConsultationControls = false;
       return;
@@ -359,12 +365,14 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     if (this.participant.status === ParticipantStatus.InConsultation) {
       this.logger.debug('Showing video because hearing is in session');
+      this.showSelfView = true;
       this.showVideo = true;
       this.showConsultationControls = !this.isAdminConsultation;
       return;
     }
 
     this.logger.debug('Not showing video because hearing is not in session and user is not in consultation');
+    this.showSelfView = false;
     this.showVideo = false;
     this.showConsultationControls = false;
   }
