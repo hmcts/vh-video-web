@@ -1,6 +1,6 @@
-/deep/ #master-container.fullscreen{
-    margin-left: 10px !important;
-    margin-right: 10px !important;
+/deep/ #master-container.fullscreen {
+  margin-left: 10px !important;
+  margin-right: 10px !important;
 }
 
 .report-conference {
@@ -9,7 +9,7 @@
   border-width: 1.5px;
   border-color: govuk-colour("dark-grey");
   color: govuk-colour("dark-grey");
-  margin-top:0;
+  margin-top: 0;
 }
 
 i {
@@ -17,7 +17,7 @@ i {
   border-width: 0 2px 2px 0;
   display: inline-block;
   padding: 3px;
-  margin-left:25px;
+  margin-left: 25px;
 }
 
 .triangle-up {
@@ -33,10 +33,14 @@ i {
 .connected {
   position: element(#filterButton);
   transform: translateY(-100%);
-  margin-top:5px;
-  z-index:1;
+  margin-top: 5px;
 }
 
-#filterButton{
-  cursor:pointer;
+.vh-top {
+  position: relative;
+  z-index: 9999 !important;
+}
+
+#filterButton {
+  cursor: pointer;
 }

@@ -1,35 +1,142 @@
 import { Injectable } from '@angular/core';
-import { HearingsFilter } from '../../shared/models/hearings-filter';
+import { HearingsFilter, ListFilter, StatusFilter, ExtendedConferenceStatus, AlertsStatus, AlertFilter } from '../../shared/models/hearings-filter';
+import { SessionStorage } from '../../services/session-storage';
+import { ConferenceStatus, HearingVenueResponse } from 'src/app/services/clients/api-client';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class HearingsFilterOptionsService {
 
-    hearingsFilter: HearingsFilter;
+    private hearingsFilter: HearingsFilter;
+    private readonly hearingsFilterStorage: SessionStorage<HearingsFilter>;
+    readonly HEARINGS_FITER_KEY = 'vho.hearings.filter';
 
-    setFilterOptions() {
+    constructor(private videoWebService: VideoWebService) {
+        this.hearingsFilterStorage = new SessionStorage(this.HEARINGS_FITER_KEY);
+    }
+
+    getFilter() {
+        this.hearingsFilter = this.hearingsFilterStorage.get();
+        if (!this.hearingsFilter) {
+            this.setFilterOptions();
+        }
+        this.hearingsFilter.numberFilterOptions = this.countOptions(this.hearingsFilter);
+        return this.hearingsFilter;
+    }
+
+    private setFilterOptions() {
         this.hearingsFilter = new HearingsFilter();
+        this.setStatuses();
         this.setLocations();
         this.setAlerts();
+
         return this.hearingsFilter;
     }
 
     private setLocations() {
-        const locations = ['Taylor House', 'Ambridge MC', 'Manchester', 'Glasgow'];
-        this.hearingsFilter.addLocations(locations);
+        this.videoWebService.getHearingsVenue().subscribe((data: HearingVenueResponse[]) => {
+            const locations = data;
+            this.addLocations(locations)
+        })
     }
 
     private setAlerts() {
-        const alerts = ['Suspended', 'Disconnected', 'Cam/mic blocked', 'Self-test failed'];
-        this.hearingsFilter.addAlerts(alerts);
+        const alertsStatuses = Object.values(AlertsStatus);
+        this.addAlerts(alertsStatuses);
     }
 
-    get filter() {
-        if (!this.hearingsFilter) {
-            this.setFilterOptions();
+    private setStatuses() {
+        const hearingsStatuses = Object.values(ConferenceStatus);
+        this.addStatuses(hearingsStatuses);
+    }
+
+    private addStatuses(hearingsStatuses: ConferenceStatus[]) {
+        hearingsStatuses.forEach(conferenceStatus => {
+            const description = this.setHearingsStatuses(conferenceStatus);
+            const itemStatus = new StatusFilter(description, conferenceStatus, false);
+            this.hearingsFilter.statuses.push(itemStatus);
+        });
+        this.hearingsFilter.statuses.push(new StatusFilter('Delayed', ExtendedConferenceStatus.Delayed, false));
+    }
+
+    private addLocations(locations: HearingVenueResponse[]) {
+        locations.forEach(location => {
+            const itemLocation = new ListFilter(location.name, false);
+            this.hearingsFilter.locations.push(itemLocation);
+        });
+    }
+
+    private addAlerts(alerts: AlertsStatus[]) {
+        alerts.forEach(alert => {
+            const itemAlert = this.setAlertStatuses(alert);
+            this.hearingsFilter.alerts.push(itemAlert);
+        });
+    }
+    private setAlertStatuses(alertStatus: AlertsStatus) {
+        let description = '';
+        let bodyText = '';
+        switch (alertStatus) {
+            case AlertsStatus.Disconnected:
+                description = 'Disconnected';
+                bodyText = 'Disconnected';
+                break;
+            case AlertsStatus.Suspended:
+                description = 'Suspended';
+                bodyText = 'Suspended';
+                break;
+            case AlertsStatus.FailedSelfTest:
+                description = 'Self-test failed';
+                bodyText = 'Failed self-test';
+                break;
+            case AlertsStatus.MediaBlocked:
+                description = 'Cam/mic blocked';
+                bodyText = 'Media blocked';
+                break;
+            default:
         }
-        return this.hearingsFilter;
+
+        return new AlertFilter(description, alertStatus, bodyText, false);
+    }
+
+    private setHearingsStatuses(conferenceStatus: ConferenceStatus) {
+        let description = '';
+        switch (conferenceStatus) {
+            case ConferenceStatus.Suspended:
+                description = 'Suspended';
+                break;
+            case ConferenceStatus.NotStarted:
+                description = 'Not started';
+                break;
+            case ConferenceStatus.InSession:
+                description = 'In session';
+                break;
+            case ConferenceStatus.Paused:
+                description = 'Paused';
+                break;
+            case ConferenceStatus.Closed:
+                description = 'Closed';
+                break;
+            default:
+                description = '';
+        }
+
+        return description;
+    }
+
+    countOptions(filter: HearingsFilter) {
+        return this.count(filter.statuses) + this.count(filter.locations) + this.count(filter.alerts);
+    }
+
+    private count(options: ListFilter[]) {
+        let countOptions = 0;
+        options.forEach(x => {
+            if (x.Selected) {
+                countOptions++;
+            }
+        });
+        return countOptions;
     }
 }
 

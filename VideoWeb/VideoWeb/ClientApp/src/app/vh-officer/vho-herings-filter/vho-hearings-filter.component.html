@@ -11,7 +11,7 @@
           <label class="govuk-label govuk-checkboxes__label" for="status-all">All</label>
         </div>
         <hr />
-        <div *ngFor="let child of hearingsFilter.filterStatuses; let i=index">
+        <div *ngFor="let child of hearingsFilter.statuses; let i=index">
           <div class="govuk-checkboxes__item vh-mb10">
             <input class="govuk-checkboxes__input"
                    type="checkbox"
@@ -32,7 +32,7 @@
           <label class="govuk-label govuk-checkboxes__label" for="location-all">All</label>
         </div>
         <hr />
-        <div *ngFor="let child of hearingsFilter.filterLocations; let i=index">
+        <div *ngFor="let child of hearingsFilter.locations; let i=index">
           <div class="govuk-checkboxes__item vh-mb10">
             <input class="govuk-checkboxes__input"
                    type="checkbox"
@@ -51,7 +51,7 @@
           <label class="govuk-label govuk-checkboxes__label" for="alert-all">All</label>
         </div>
         <hr />
-        <div *ngFor="let child of hearingsFilter.filterAlerts; let i=index">
+        <div *ngFor="let child of hearingsFilter.alerts; let i=index">
           <div class="govuk-checkboxes__item vh-mb10">
             <input class="govuk-checkboxes__input"
                    type="checkbox"
@@ -67,7 +67,7 @@
       <div class="govuk-grid-column-one-half vh-mt20">
         <input type="button" value="Apply filters" (click)="applyFilters()"
                id="applyFilter"
-               class="govuk-button" />
+               class="govuk-button" [disabled]="disableFilterApply ? 'disabled' : false" />
       </div>
       <div class="govuk-grid-column-one-half vh-mt30" style="align-content:center;">
         <a href="javascript:void(0);" class="govuk-link" (click)="clearFilters()" >Clear filters</a>

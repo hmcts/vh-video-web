@@ -23,6 +23,7 @@ import { VhoHearingsComponent } from './vho-hearings.component';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { VhoHearingsFilterStubComponent } from '../../testing/stubs/vho-hearings-filter-stub';
+import { HearingsFilter, ConferenceForUser, ExtendedConferenceStatus } from '../../shared/models/hearings-filter';
 
 describe('VhoHearingsComponent', () => {
   let component: VhoHearingsComponent;
@@ -121,4 +122,5 @@ describe('VhoHearingsComponent', () => {
     component.onTaskCompleted(new TaskCompleted(currentConference.id, 3));
     expect(component.conferences[0].no_of_pending_tasks).toBeLessThan(initPendingTasks);
   });
+    
 });

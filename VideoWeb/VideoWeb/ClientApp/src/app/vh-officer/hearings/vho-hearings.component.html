@@ -1,5 +1,5 @@
 
-<div *ngIf="!loadingData && hasHearings()">
+<div *ngIf="!loadingData && hasHearings()" class="govuk-grid-row">
   <span id="filterButton" class="govuk-!-padding-1 govuk-!-margin-left-2 report-conference govuk-body"
         (click)="showFilter()">
     Filter {{filterOptionsCount > 0 ? '('+ filterOptionsCount +')' : ''}}
@@ -7,10 +7,11 @@
   </span>
 
 </div>
-<div *ngIf="displayFilter" class="connected">
-  <app-vho-hearings-filter (optionsCounterEvent)="filterOptionsCounter($event)"
-     (fiterOptionsEvent)="applyFilters($event)">
-  </app-vho-hearings-filter>
+<div *ngIf="displayFilter" class="connected vh-top">
+  <div class=" govuk-grid-row">
+    <app-vho-hearings-filter (fiterOptionsEvent)="applyFilters($event)">
+    </app-vho-hearings-filter>
+  </div>
 </div>
 
 
@@ -21,7 +22,7 @@
 
 <div *ngIf="!loadingData && hasHearings()" class="govuk-grid-row">
  
-  <app-vho-hearing-list [conferences]="conferences" (selectedConference)="onConferenceSelected($event)">
+  <app-vho-hearing-list #conferenceList [conferences]="conferences" (selectedConference)="onConferenceSelected($event)">
   </app-vho-hearing-list>
    
   <div class="govuk-grid-row">

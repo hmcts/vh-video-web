@@ -1,7 +1,8 @@
 import { Component, EventEmitter, Output} from '@angular/core';
+import { HearingsFilter } from '../../shared/models/hearings-filter';
 
 @Component({ selector: 'app-vho-hearings-filter', template: '' })
 export class VhoHearingsFilterStubComponent {
     @Output()
-    optionsCounterEvent = new EventEmitter<number>();
+    fiterOptionsEvent = new EventEmitter<HearingsFilter>();
 }

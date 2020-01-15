@@ -9,9 +9,7 @@ import { HearingsFilterOptionsService } from '../services/hearings-filter-option
     styleUrls: ['./vho-hearings-filter.component.scss']
 })
 export class VhoHearingsFilterComponent implements OnInit {
-    @Output()
-    optionsCounterEvent = new EventEmitter<number>();
-
+  
     @Output()
     fiterOptionsEvent = new EventEmitter<HearingsFilter>();
 
@@ -19,20 +17,21 @@ export class VhoHearingsFilterComponent implements OnInit {
     locationAllChecked = true;
     alertsAllChecked = true;
     filterOptionsCounter = 0;
+    disableFilterApply = true;
 
     hearingsFilter: HearingsFilter;
 
     constructor(private hearingsFilterOptionsService: HearingsFilterOptionsService) { }
 
     ngOnInit() {
-        this.hearingsFilter = this.hearingsFilterOptionsService.filter;
-        this.countOptions();
+        this.hearingsFilter = this.hearingsFilterOptionsService.getFilter();
+        this.countOptions(false);
     }
 
     statusAllSelected() {
         this.statusAllChecked = !this.statusAllChecked;
         if (this.statusAllChecked) {
-            this.removeOptions(this.hearingsFilter.filterStatuses);
+            this.removeOptions(this.hearingsFilter.statuses);
         }
         this.countOptions();
     }
@@ -40,7 +39,7 @@ export class VhoHearingsFilterComponent implements OnInit {
     locationAllSelected() {
         this.locationAllChecked = !this.locationAllChecked;
         if (this.locationAllChecked) {
-            this.removeOptions(this.hearingsFilter.filterLocations);
+            this.removeOptions(this.hearingsFilter.locations);
         }
         this.countOptions();
     }
@@ -48,52 +47,40 @@ export class VhoHearingsFilterComponent implements OnInit {
     alertAllSelected() {
         this.alertsAllChecked = !this.alertsAllChecked;
         if (this.alertsAllChecked) {
-            this.removeOptions(this.hearingsFilter.filterAlerts);
+            this.removeOptions(this.hearingsFilter.alerts);
         }
         this.countOptions();
     }
 
-    removeOptions(options: ListFilter[]) {
+    private removeOptions(options: ListFilter[]) {
         options.forEach(x => x.Selected = false);
     }
 
     statusOptionSelected(optionIndex: number) {
-        this.hearingsFilter.filterStatuses[optionIndex].Selected = !this.hearingsFilter.filterStatuses[optionIndex].Selected;
-        this.countOptions();
+        this.hearingsFilter.statuses[optionIndex].Selected = !this.hearingsFilter.statuses[optionIndex].Selected;
+       this.countOptions();
     }
 
     locationOptionSelected(optionIndex: number) {
-        this.hearingsFilter.filterLocations[optionIndex].Selected = !this.hearingsFilter.filterLocations[optionIndex].Selected;
-        this.countOptions();
+        this.hearingsFilter.locations[optionIndex].Selected = !this.hearingsFilter.locations[optionIndex].Selected;
+      this.countOptions();
     }
 
     alertOptionSelected(optionIndex: number) {
-        this.hearingsFilter.filterAlerts[optionIndex].Selected = !this.hearingsFilter.filterAlerts[optionIndex].Selected;
-        this.countOptions();
+        this.hearingsFilter.alerts[optionIndex].Selected = !this.hearingsFilter.alerts[optionIndex].Selected;
+       this.countOptions();
     }
 
-    countOptions() {
-        const countStatus = this.count(this.hearingsFilter.filterStatuses);
-        this.statusAllChecked = countStatus == 0;
-
-        const countLocation = this.count(this.hearingsFilter.filterLocations);
-        this.locationAllChecked = countLocation == 0;
-
-        const countAlert = this.count(this.hearingsFilter.filterAlerts);
-        this.alertsAllChecked = countAlert == 0;
-
-        this.filterOptionsCounter = countStatus + countLocation + countAlert;
-        this.optionsCounterEvent.emit(this.filterOptionsCounter);
+    private countOptions(changesMade:boolean = true) {
+        this.statusAllChecked = !this.isSelectedFilterOptions(this.hearingsFilter.statuses);
+        this.locationAllChecked = !this.isSelectedFilterOptions(this.hearingsFilter.locations);
+        this.alertsAllChecked = !this.isSelectedFilterOptions(this.hearingsFilter.alerts);
+        this.disableFilterApply = !changesMade; 
     }
 
-    count(options: ListFilter[]) {
-        let countOptions = 0;
-        options.forEach(x => {
-            if (x.Selected) {
-                countOptions++;
-            }
-        });
-        return countOptions;
+    private isSelectedFilterOptions(options: ListFilter[]): boolean {
+        const selectedOptions = options.filter(x => x.Selected);
+        return selectedOptions && selectedOptions.length > 0;
     }
 
     clearFilters() {
@@ -103,6 +90,7 @@ export class VhoHearingsFilterComponent implements OnInit {
     }
 
     applyFilters() {
+        this.hearingsFilter.numberFilterOptions = this.hearingsFilterOptionsService.countOptions(this.hearingsFilter);
         this.fiterOptionsEvent.emit(this.hearingsFilter);
     }
 }

@@ -203,9 +203,15 @@ export class ConferenceTestData {
             type: TaskType.Participant,
             created: new Date()
         });
+        const task1 = new TaskResponse({
+            body: 'Disconnected',
+            type: TaskType.Participant,
+            created: new Date()
+        });
         const participants: ParticipantResponse[] = [];
         const tasks: TaskResponse[] = [];
         tasks.push(task);
+        tasks.push(task1);
         return tasks;
   }
 

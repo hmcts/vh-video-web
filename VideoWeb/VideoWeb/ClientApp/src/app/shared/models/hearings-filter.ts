@@ -1,94 +1,58 @@
-import { ConferenceStatus } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, ConferenceForUserResponse } from 'src/app/services/clients/api-client';
 
+export enum AlertsStatus {
+    Disconnected = "Disconnected",
+    FailedSelfTest = "FailedSelfTest",
+    MediaBlocked ="MediaBlocked",
+    Suspended ="Suspended"
+}
+
+export enum ExtendedConferenceStatus {
+    Delayed = "Delayed"
+}
 export class ListFilter {
 
-  constructor(description: string, selected: boolean) {
-    this.Description = description;
-    this.Selected = selected;
-  }
+    constructor(description: string, selected: boolean) {
+        this.Description = description;
+        this.Selected = selected;
+    }
 
-  Description: string;
-  Selected: boolean;
+    Description: string;
+    Selected: boolean;
 }
 export class StatusFilter extends ListFilter {
 
-  constructor(description: string, status: ConferenceStatus, selected: boolean) {
-    super(description, selected);
-    this.Status = status;
-  }
+    constructor(description: string, status: ConferenceStatus | ExtendedConferenceStatus, selected: boolean) {
+        super(description, selected);
+        this.Status = status;
+    }
 
-  Status: ConferenceStatus;
+    Status: ConferenceStatus | ExtendedConferenceStatus;
+}
+
+export class AlertFilter extends ListFilter {
+
+    constructor(description: string, status: AlertsStatus, bodyText:string, selected: boolean) {
+        super(description, selected);
+        this.Status = status;
+        this.BodyText = bodyText;
+    }
+
+    Status: AlertsStatus;
+    BodyText: string
+}
+
+export class ConferenceForUser extends ConferenceForUserResponse {
+    constructor(conference: ConferenceForUserResponse) {
+        super(conference);
+        this.StatusExtended = conference.status;
+    }
+    StatusExtended: ConferenceStatus | ExtendedConferenceStatus;
 }
 
 export class HearingsFilter {
-
-  constructor() {
-    const hearingsStatuses = Object.values(ConferenceStatus);
-    this.addStatuses(hearingsStatuses);
-  }
-
-  private statuses: StatusFilter[] =[];
-  private locations: ListFilter[] = [];
-  private alerts: ListFilter[] = [];
-
-  get filterStatuses() {
-    return this.statuses;
-  }
-
-  get filterLocations() {
-    return this.locations;
-  }
-
-  get filterAlerts() {
-    return this.alerts;
-  }
-
-  private addStatuses(hearingsStatuses: ConferenceStatus[]) {
-    hearingsStatuses.forEach(conferenceStatus => {
-      const description = this.setHearingsStatuses(conferenceStatus);
-      const itemStatus = new StatusFilter(description, conferenceStatus, false);
-      this.statuses.push(itemStatus);
-    });
-  }
-
-  addLocations(locations: string[]) {
-    locations.forEach(location => {
-      const itemLocation = new ListFilter(location, false);
-      this.locations.push(itemLocation);
-    });
-  }
-
-  addAlerts(alerts: string[]) {
-    alerts.forEach(alert => {
-      const itemAlert = new ListFilter(alert, false);
-      this.alerts.push(itemAlert);
-    });
-  }
- 
-  setHearingsStatuses(conferenceStatus:ConferenceStatus) {
-    let description = '';
-    switch (conferenceStatus) {
-      case ConferenceStatus.Suspended:
-        description = 'Suspended';
-        break;
-      case ConferenceStatus.NotStarted:
-        description = 'Not started';
-        break;
-      case ConferenceStatus.InSession:
-        description = 'In session';
-        break;
-      case ConferenceStatus.Paused:
-        description = 'Paused';
-        break;
-      case ConferenceStatus.Closed:
-        description = 'Closed';
-        break;
-      default:
-        description = '';
-    }
-
-    return description;
-  }
-
- 
+    statuses: StatusFilter[] = [];
+    locations: ListFilter[] = [];
+    alerts: AlertFilter[] = [];
+    numberFilterOptions = 0;
 }

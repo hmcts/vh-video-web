@@ -4,7 +4,8 @@ import {
   TaskResponse, AddMediaEventRequest, TestCallScoreResponse, TokenResponse,
   AddSelfTestFailureEventRequest,
   UpdateParticipantStatusEventRequest,
-  SelfTestPexipResponse
+  SelfTestPexipResponse,
+  HearingVenueResponse
 } from '../clients/api-client';
 import { Observable } from 'rxjs';
 
@@ -79,5 +80,9 @@ export class VideoWebService {
 
   getObfuscatedName(displayName: string): string {
     return displayName.replace(/(?!\b)\w/g, '*');
+  }
+
+  getHearingsVenue(): Observable<HearingVenueResponse[]> {
+        return this.apiClient.getHearingsVenues();
   }
 }
