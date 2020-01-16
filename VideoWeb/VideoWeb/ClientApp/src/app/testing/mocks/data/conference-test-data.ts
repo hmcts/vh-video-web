@@ -2,6 +2,7 @@ import {
     ConferenceForUserResponse, ConferenceResponse, ConferenceStatus,
     ParticipantResponse, ParticipantStatus, UserRole, ParticipantForUserResponse, TaskResponse, TaskType, SelfTestPexipResponse
 } from 'src/app/services/clients/api-client';
+import { HearingsFilter, StatusFilter, ListFilter, AlertsStatus, AlertFilter } from '../../../shared/models/hearings-filter';
 
 export class ConferenceTestData {
 
@@ -18,7 +19,8 @@ export class ConferenceTestData {
             no_of_participants_in_consultation: 2,
             scheduled_duration: 50,
             status: ConferenceStatus.NotStarted,
-            participants: this.getListOfParticipants()
+            participants: this.getListOfParticipants(),
+            hearing_venue_name:'Birmingham'
         });
 
         return conference;
@@ -67,6 +69,21 @@ export class ConferenceTestData {
         const conference1 = this.getConferenceNow();
         const conference2 = this.getConferencePast();
         const conference3 = this.getConferenceFuture();
+        testData.push(conference1);
+        testData.push(conference2);
+        testData.push(conference3);
+        return testData;
+    }
+
+    getTestDataForFilter(): Array<ConferenceForUserResponse> {
+        const testData: Array<ConferenceForUserResponse> = [];
+        const conference1 = this.getConferenceNow();
+        const conference2 = this.getConferenceNow();
+        conference2.status = ConferenceStatus.InSession;
+        conference2.hearing_venue_name = 'Manchester';
+        const conference3 = this.getConferenceNow();
+        conference3.status = ConferenceStatus.InSession;
+        conference3.hearing_venue_name = 'Manchester';
         testData.push(conference1);
         testData.push(conference2);
         testData.push(conference3);
@@ -220,5 +237,18 @@ export class ConferenceTestData {
       pexip_self_test_node: 'sip.dev.self-test.hearings.hmcts.net'
     });
     return pexipConfig;
-  }
+    }
+
+    getHearingsFilter(): HearingsFilter {
+        const filter = new HearingsFilter();
+        filter.statuses.push(new StatusFilter('In Session', ConferenceStatus.InSession, false));
+        filter.statuses.push(new StatusFilter('Not started', ConferenceStatus.NotStarted, false));
+
+        filter.locations.push(new ListFilter('Birmingham', false));
+        filter.locations.push(new ListFilter('Manchester', false));
+
+        filter.alerts.push(new AlertFilter('Disconnected', AlertsStatus.Disconnected,'Disconnected', false));
+        filter.alerts.push(new AlertFilter('Self-test failed', AlertsStatus.FailedSelfTest, 'self-test', false));
+        return filter;
+    }
 }
