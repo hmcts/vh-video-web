@@ -1,7 +1,7 @@
-import { VhoHearingsFilterComponent } from "./vho-hearings-filter.component";
-import { HearingsFilterOptionsService } from "../services/hearings-filter-options.service";
-import { HearingsFilter, StatusFilter, AlertFilter, AlertsStatus, ListFilter } from "../../shared/models/hearings-filter";
-import { ConferenceStatus } from "../../services/clients/api-client";
+import { VhoHearingsFilterComponent } from './vho-hearings-filter.component';
+import { HearingsFilterOptionsService } from '../services/hearings-filter-options.service';
+import { HearingsFilter, StatusFilter, AlertFilter, AlertsStatus, ListFilter } from "../../shared/models/hearings-filter';
+import { ConferenceStatus } from '../../services/clients/api-client';
 
 describe('VhoHearingsFilterComponent', () => {
     const hearingFilter = new HearingsFilter();
@@ -83,8 +83,8 @@ describe('VhoHearingsFilterComponent', () => {
         expect(component.statusAllChecked).toBe(true);
     });
     it('shoould apply filter and set number selected filter options', () => {
-    
+
         component.applyFilters();
         expect(component.hearingsFilter.numberFilterOptions).toBe(3);
-    })
+    });
 });

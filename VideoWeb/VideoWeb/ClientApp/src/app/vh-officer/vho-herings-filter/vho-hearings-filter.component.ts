@@ -9,11 +9,11 @@ import { HearingsFilterOptionsService } from '../services/hearings-filter-option
     styleUrls: ['./vho-hearings-filter.component.scss']
 })
 export class VhoHearingsFilterComponent implements OnInit {
-  
+
     @Output()
     fiterOptionsEvent = new EventEmitter<HearingsFilter>();
 
-    statusAllChecked = true
+    statusAllChecked = true;
     locationAllChecked = true;
     alertsAllChecked = true;
     filterOptionsCounter = 0;
@@ -58,24 +58,24 @@ export class VhoHearingsFilterComponent implements OnInit {
 
     statusOptionSelected(optionIndex: number) {
         this.hearingsFilter.statuses[optionIndex].Selected = !this.hearingsFilter.statuses[optionIndex].Selected;
-       this.countOptions();
+        this.countOptions();
     }
 
     locationOptionSelected(optionIndex: number) {
         this.hearingsFilter.locations[optionIndex].Selected = !this.hearingsFilter.locations[optionIndex].Selected;
-      this.countOptions();
+        this.countOptions();
     }
 
     alertOptionSelected(optionIndex: number) {
         this.hearingsFilter.alerts[optionIndex].Selected = !this.hearingsFilter.alerts[optionIndex].Selected;
-       this.countOptions();
+        this.countOptions();
     }
 
-    private countOptions(changesMade:boolean = true) {
+    private countOptions(changesMade: boolean = true) {
         this.statusAllChecked = !this.isSelectedFilterOptions(this.hearingsFilter.statuses);
         this.locationAllChecked = !this.isSelectedFilterOptions(this.hearingsFilter.locations);
         this.alertsAllChecked = !this.isSelectedFilterOptions(this.hearingsFilter.alerts);
-        this.disableFilterApply = !changesMade; 
+        this.disableFilterApply = !changesMade;
     }
 
     private isSelectedFilterOptions(options: ListFilter[]): boolean {

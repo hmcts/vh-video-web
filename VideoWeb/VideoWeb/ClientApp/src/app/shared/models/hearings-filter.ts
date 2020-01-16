@@ -1,14 +1,14 @@
 import { ConferenceStatus, ConferenceForUserResponse } from 'src/app/services/clients/api-client';
 
 export enum AlertsStatus {
-    Disconnected = "Disconnected",
-    FailedSelfTest = "FailedSelfTest",
-    MediaBlocked ="MediaBlocked",
-    Suspended ="Suspended"
+    Disconnected = 'Disconnected',
+    FailedSelfTest = 'FailedSelfTest',
+    MediaBlocked = 'MediaBlocked',
+    Suspended = 'Suspended'
 }
 
 export enum ExtendedConferenceStatus {
-    Delayed = "Delayed"
+    Delayed = 'Delayed'
 }
 export class ListFilter {
 
@@ -32,14 +32,14 @@ export class StatusFilter extends ListFilter {
 
 export class AlertFilter extends ListFilter {
 
-    constructor(description: string, status: AlertsStatus, bodyText:string, selected: boolean) {
+    constructor(description: string, status: AlertsStatus, bodyText: string, selected: boolean) {
         super(description, selected);
         this.Status = status;
         this.BodyText = bodyText;
     }
 
     Status: AlertsStatus;
-    BodyText: string
+    BodyText: string;
 }
 
 export class ConferenceForUser extends ConferenceForUserResponse {

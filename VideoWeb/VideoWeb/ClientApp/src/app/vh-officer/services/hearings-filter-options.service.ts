@@ -8,7 +8,6 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
     providedIn: 'root'
 })
 export class HearingsFilterOptionsService {
-
     private hearingsFilter: HearingsFilter;
     private readonly hearingsFilterStorage: SessionStorage<HearingsFilter>;
     readonly HEARINGS_FITER_KEY = 'vho.hearings.filter';
@@ -38,8 +37,8 @@ export class HearingsFilterOptionsService {
     private setLocations() {
         this.videoWebService.getHearingsVenue().subscribe((data: HearingVenueResponse[]) => {
             const locations = data;
-            this.addLocations(locations)
-        })
+            this.addLocations(locations);
+        });
     }
 
     private setAlerts() {

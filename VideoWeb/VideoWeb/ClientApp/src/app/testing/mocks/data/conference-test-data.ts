@@ -20,7 +20,7 @@ export class ConferenceTestData {
             scheduled_duration: 50,
             status: ConferenceStatus.NotStarted,
             participants: this.getListOfParticipants(),
-            hearing_venue_name:'Birmingham'
+            hearing_venue_name: 'Birmingham'
         });
 
         return conference;
@@ -230,13 +230,13 @@ export class ConferenceTestData {
         tasks.push(task);
         tasks.push(task1);
         return tasks;
-  }
+    }
 
-  getPexipConfig(): SelfTestPexipResponse {
-    const pexipConfig = new SelfTestPexipResponse({
-      pexip_self_test_node: 'sip.dev.self-test.hearings.hmcts.net'
-    });
-    return pexipConfig;
+    getPexipConfig(): SelfTestPexipResponse {
+        const pexipConfig = new SelfTestPexipResponse({
+            pexip_self_test_node: 'sip.dev.self-test.hearings.hmcts.net'
+        });
+        return pexipConfig;
     }
 
     getHearingsFilter(): HearingsFilter {
@@ -247,7 +247,7 @@ export class ConferenceTestData {
         filter.locations.push(new ListFilter('Birmingham', false));
         filter.locations.push(new ListFilter('Manchester', false));
 
-        filter.alerts.push(new AlertFilter('Disconnected', AlertsStatus.Disconnected,'Disconnected', false));
+        filter.alerts.push(new AlertFilter('Disconnected', AlertsStatus.Disconnected, 'Disconnected', false));
         filter.alerts.push(new AlertFilter('Self-test failed', AlertsStatus.FailedSelfTest, 'self-test', false));
         return filter;
     }

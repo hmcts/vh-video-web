@@ -330,7 +330,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.selectFilteredConference(selectedConferenceId);
     }
 
-    selectFilteredConference(selectedConferenceId:string) {
+    selectFilteredConference(selectedConferenceId: string) {
         if (selectedConferenceId) {
             const selectedConferenceFound = this.conferences.filter(x => x.id === selectedConferenceId);
             if (selectedConferenceFound) {
@@ -339,7 +339,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         }
     }
 
-    activateTaskFilterOptions(filterOptions:HearingsFilter) {
+    activateTaskFilterOptions(filterOptions: HearingsFilter) {
         const selectedAlerts = filterOptions.alerts.filter(x => x.Selected).map(x => x.BodyText);
         this.tasks = Object.assign(this.tasksAll);
         if (selectedAlerts.length > 0) {
@@ -349,7 +349,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         }
     }
 
-    private filterTaskByBody(selectedAlerts: string[], body:string):boolean {
+    private filterTaskByBody(selectedAlerts: string[], body: string): boolean {
         let result = false;
         selectedAlerts.forEach(x => {
             if (body.includes(x)) {

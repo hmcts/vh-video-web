@@ -7,7 +7,7 @@ import {of } from 'rxjs';
 describe('HearingFilterOptionsService', () => {
     const venueList = [new HearingVenueResponse({ id: 1, name: 'Birmingham' })];
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getHearingsVenue']); videoWebServiceSpy
+    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getHearingsVenue']);
     videoWebServiceSpy.getHearingsVenue.and.returnValue(of(venueList));
 
     const component = new HearingsFilterOptionsService(videoWebServiceSpy);
@@ -24,7 +24,8 @@ describe('HearingFilterOptionsService', () => {
         filter.statuses.forEach(x => x.Selected = true);
         filter.alerts.forEach(x => x.Selected = true);
         const count = component.countOptions(filter);
-        //we know statuses otions 6, alerts options 4, number the locations options is dynamic
+
+        // we know statuses otions 6, alerts options 4, number the locations options is dynamic
         expect(count).toBeGreaterThan(9);
     });
 });

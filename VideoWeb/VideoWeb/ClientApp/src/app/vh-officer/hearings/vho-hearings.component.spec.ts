@@ -188,19 +188,19 @@ describe('VhoHearingsComponent Filter', () => {
         const currentConference = conferences[0];
         component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
         component.getTasksForConference(currentConference.id);
-        expect(component.tasks.length == 2).toBeTruthy();
+        expect(component.tasks.length === 2).toBeTruthy();
 
         component.activateTaskFilterOptions(filter);
-        expect(component.tasks.length == 2).toBeTruthy();
+        expect(component.tasks.length === 2).toBeTruthy();
     });
     it('should apply filter with selected alert status to tasks records', () => {
         const currentConference = conferences[0];
         component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
         component.getTasksForConference(currentConference.id);
-        expect(component.tasks.length == 2).toBeTruthy();
+        expect(component.tasks.length === 2).toBeTruthy();
         filter.alerts[0].Selected = true;
         component.activateTaskFilterOptions(filter);
-        expect(component.tasks.length == 1).toBeTruthy();
+        expect(component.tasks.length === 1).toBeTruthy();
         expect(component.tasks[0].body.includes(filter.alerts[0].BodyText)).toBeTruthy();
     });
 });
