@@ -82,7 +82,7 @@ describe('VhoHearingsFilterComponent', () => {
         expect(component.locationAllChecked).toBe(true);
         expect(component.statusAllChecked).toBe(true);
     });
-    it('shoould apply filter and set number selected filter options', () => {
+    it('should apply filter and set number selected filter options', () => {
 
         component.applyFilters();
         expect(component.hearingsFilter.numberFilterOptions).toBe(3);
