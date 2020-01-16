@@ -343,11 +343,22 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         const selectedAlerts = filterOptions.alerts.filter(x => x.Selected).map(x => x.BodyText);
         this.tasks = Object.assign(this.tasksAll);
         if (selectedAlerts.length > 0) {
-            this.tasks = this.tasks.filter(x => selectedAlerts.includes(x.body));
+            this.tasks = this.tasks.filter(x => this.filterTaskByBody(selectedAlerts, x.body));
         } else {
             this.tasks = this.tasksAll;
         }
     }
+
+    private filterTaskByBody(selectedAlerts: string[], body:string):boolean {
+        let result = false;
+        selectedAlerts.forEach(x => {
+            if (body.includes(x)) {
+                result = true;
+            }
+        });
+        return result;
+    }
+
     activateFilterOptions(filterOptions: HearingsFilter) {
         this.filterOptionsCount = filterOptions.numberFilterOptions;
 

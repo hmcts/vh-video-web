@@ -88,7 +88,7 @@ export class HearingsFilterOptionsService {
                 break;
             case AlertsStatus.FailedSelfTest:
                 description = 'Self-test failed';
-                bodyText = 'Failed self-test';
+                bodyText = 'self-test';
                 break;
             case AlertsStatus.MediaBlocked:
                 description = 'Cam/mic blocked';
