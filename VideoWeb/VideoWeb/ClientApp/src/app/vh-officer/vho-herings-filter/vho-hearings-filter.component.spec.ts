@@ -11,9 +11,8 @@ describe('VhoHearingsFilterComponent', () => {
 
     let hearingsFilterOptionsServiceSpy: jasmine.SpyObj<HearingsFilterOptionsService>;
     hearingsFilterOptionsServiceSpy = jasmine.createSpyObj<HearingsFilterOptionsService>('HearingsFilterOptionsService',
-        ['getFilter', 'setFilterOptions', 'countOptions', 'count']);
+        ['getFilter', 'countOptions']);
     hearingsFilterOptionsServiceSpy.getFilter.and.returnValue(hearingFilter);
-    hearingsFilterOptionsServiceSpy.count.and.returnValue(0);
     hearingsFilterOptionsServiceSpy.countOptions.and.returnValue(3);
 
     const component = new VhoHearingsFilterComponent(hearingsFilterOptionsServiceSpy);
