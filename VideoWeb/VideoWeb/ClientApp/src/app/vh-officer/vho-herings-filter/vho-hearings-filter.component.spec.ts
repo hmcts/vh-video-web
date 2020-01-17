@@ -1,6 +1,6 @@
 import { VhoHearingsFilterComponent } from './vho-hearings-filter.component';
 import { HearingsFilterOptionsService } from '../services/hearings-filter-options.service';
-import { HearingsFilter, StatusFilter, AlertFilter, AlertsStatus, ListFilter } from "../../shared/models/hearings-filter';
+import { HearingsFilter, StatusFilter, AlertFilter, AlertsStatus, ListFilter } from '../../shared/models/hearings-filter';
 import { ConferenceStatus } from '../../services/clients/api-client';
 
 describe('VhoHearingsFilterComponent', () => {
