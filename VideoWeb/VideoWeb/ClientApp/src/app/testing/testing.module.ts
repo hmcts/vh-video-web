@@ -9,8 +9,8 @@ import { FooterStubComponent } from './stubs/footer-stub';
 import { HeaderStubComponent } from './stubs/header-stub';
 import { HearingListTableStubComponent } from './stubs/hearing-list-table-stub';
 import {
-  JudgeParticipantStatusListStubComponent,
-  IndividualParticipantStatusListStubComponent
+    JudgeParticipantStatusListStubComponent,
+    IndividualParticipantStatusListStubComponent
 } from './stubs/participant-status-list-stub';
 import { JudgeHearingTableStubComponent } from './stubs/judge-hearing-list-table-stub';
 import { SnotifyStubComponent } from './stubs/snotify-stub';
@@ -25,36 +25,38 @@ import { IndividualConsultationControlsStubComponent } from './stubs/individual-
 import { BetaBannerStubComponent } from './stubs/beta-banner-stub';
 import { BackNavigationStubComponent } from './stubs/back-navigation-stub';
 import { UnsupportedBrowserStubComponent } from './stubs/unsupported-browser-stub';
+import { VhoHearingsFilterStubComponent } from './stubs/vho-hearings-filter-stub';
 
 @NgModule({
-  imports: [
-    CommonModule
-  ],
-  declarations: [
-    BreadcrumbStubComponent,
-    CancelPopupStubComponent,
-    ConfirmationPopupStubComponent,
-    ContactUsStubComponent,
-    DashboardStubComponent,
-    FooterStubComponent,
-    HeaderStubComponent,
-    HearingListTableStubComponent,
-    JudgeParticipantStatusListStubComponent,
-    JudgeHearingTableStubComponent,
-    SnotifyStubComponent,
-    ContactUsFoldingStubComponent,
-    AnalogueClockStubComponent,
-    TasksTableStubComponent,
-    VhoHearingListStubComponent,
-    MicVisualiserStubComponent,
-    VhoParticipantStatusStubComponent,
-    SelfTestStubComponent,
-    SelectMediaDevicesStubComponent,
-    IndividualParticipantStatusListStubComponent,
-    IndividualConsultationControlsStubComponent,
-    BetaBannerStubComponent,
-    BackNavigationStubComponent,
-    UnsupportedBrowserStubComponent,
-  ]
+    imports: [
+        CommonModule
+    ],
+    declarations: [
+        BreadcrumbStubComponent,
+        CancelPopupStubComponent,
+        ConfirmationPopupStubComponent,
+        ContactUsStubComponent,
+        DashboardStubComponent,
+        FooterStubComponent,
+        HeaderStubComponent,
+        HearingListTableStubComponent,
+        JudgeParticipantStatusListStubComponent,
+        JudgeHearingTableStubComponent,
+        SnotifyStubComponent,
+        ContactUsFoldingStubComponent,
+        AnalogueClockStubComponent,
+        TasksTableStubComponent,
+        VhoHearingListStubComponent,
+        MicVisualiserStubComponent,
+        VhoParticipantStatusStubComponent,
+        SelfTestStubComponent,
+        SelectMediaDevicesStubComponent,
+        IndividualParticipantStatusListStubComponent,
+        IndividualConsultationControlsStubComponent,
+        BetaBannerStubComponent,
+        BackNavigationStubComponent,
+        UnsupportedBrowserStubComponent,
+        VhoHearingsFilterStubComponent
+    ]
 })
 export class TestingModule { }
