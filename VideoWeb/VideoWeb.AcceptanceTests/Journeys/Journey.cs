@@ -6,6 +6,6 @@
         ClerkSelftest,
         Participant,
         Vho,
-        RepSelfTest
+        SelfTest
     }
 }

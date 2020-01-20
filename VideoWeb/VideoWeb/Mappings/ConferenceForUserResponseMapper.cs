@@ -45,6 +45,7 @@ namespace VideoWeb.Mappings
             conferenceForUserResponse.ScheduledDuration = conference.Scheduled_duration.GetValueOrDefault();
             conferenceForUserResponse.Status = MapConferenceStatus(conference.Status);
             conferenceForUserResponse.NoOfPendingTasks = conference.Pending_tasks.GetValueOrDefault();
+            conferenceForUserResponse.HearingVenueName = conference.Hearing_venue_name;
 
             return conferenceForUserResponse;
         }
