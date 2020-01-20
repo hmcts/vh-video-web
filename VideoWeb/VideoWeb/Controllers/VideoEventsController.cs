@@ -42,7 +42,7 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                _logger.LogTrace("Received callback from Kinly");
+                _logger.LogTrace("Received callback from Kinly.");
                 _logger.LogTrace($"ConferenceId: {request.Conference_id}, EventType: {request.Event_type}");
                 var callbackEvent = new CallbackEventMapper().MapConferenceEventToCallbackEventModel(request);
                 if (_memoryCache.Get<Conference>(callbackEvent.ConferenceId) == null)
