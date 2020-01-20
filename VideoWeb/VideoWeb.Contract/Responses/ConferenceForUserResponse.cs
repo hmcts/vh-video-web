@@ -68,6 +68,9 @@ namespace VideoWeb.Contract.Responses
         /// </summary>
         public int NoOfPendingTasks { get; set; }
 
+        /// <summary>
+        /// The name of the hearing venue
+        /// </summary>
         public string HearingVenueName { get; set; }
     }
 }
