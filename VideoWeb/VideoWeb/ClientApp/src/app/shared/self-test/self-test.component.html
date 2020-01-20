@@ -1,4 +1,9 @@
 <div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <app-back-navigation></app-back-navigation>
+  </div>
+</div>
+<div class="govuk-grid-row">
   <div *ngIf="!displayFeed && !didTestComplete" class="govuk-grid-column-full">
     <p class="govuk-body-l">Please wait to be connected...</p>
   </div>
@@ -28,11 +33,11 @@
 
 <div class="govuk-grid-row">
   <div *ngIf="hasMultipleDevices" class="govuk-grid-column-full govuk-!-margin-bottom-6">
-    <a id="change-device-link" href="javascript:void(0);" role="button" (click)="changeDevices()" class="govuk-link">Change
+    <a id="change-device-link" href="javascript:void(0);" role="button" (click)="changeDevices()"
+      class="govuk-link">Change
       camera or microphone</a>
   </div>
 </div>
 
-<app-select-media-devices *ngIf="displayDeviceChangeModal"
-  (cancelMediaDeviceChange)="onMediaDeviceChangeCancelled()"
+<app-select-media-devices *ngIf="displayDeviceChangeModal" (cancelMediaDeviceChange)="onMediaDeviceChangeCancelled()"
   (acceptMediaDeviceChange)="onMediaDeviceChangeAccepted($event)"></app-select-media-devices>
