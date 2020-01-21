@@ -1,7 +1,6 @@
 "use strict";
 
 (function (scope) {
-
   var heartbeatFactoryInstance;
 
   var HeartbeatFactory = function (pexrtc, cmdurl, hearingId, participantId, token, delay, interval) {
