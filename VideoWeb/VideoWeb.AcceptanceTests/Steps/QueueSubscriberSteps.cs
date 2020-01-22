@@ -24,7 +24,10 @@ namespace VideoWeb.AcceptanceTests.Steps
     {
         private readonly TestContext _context;
         private readonly HearingsEndpoints _hearingsEndpoints = new BookingsApiUriFactory().HearingsEndpoints;
-        private readonly BookingsParticipantsEndpoints _bookingParticipantsEndpoints = new BookingsApiUriFactory().BookingsParticipantsEndpoints;
+
+        private readonly BookingsParticipantsEndpoints _bookingParticipantsEndpoints =
+            new BookingsApiUriFactory().BookingsParticipantsEndpoints;
+
         private const string UpdatedWord = "Updated";
         private const int UpdatedTimeInMins = 1;
         private UserAccount _addedUser;
@@ -39,8 +42,8 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         [When(@"I attempt to update the hearing details")]
         public void WhenIAttemptToUpdateTheHearingDetails()
-        {         
-            var request = new UpdateHearingRequestBuilder()           
+        {
+            var request = new UpdateHearingRequestBuilder()
                 .ForHearing(_context.Hearing)
                 .AddWordToStrings(UpdatedWord)
                 .AddMinutesToTimes(UpdatedTimeInMins)
@@ -62,7 +65,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var request = new UpdateBookingStatusRequest()
             {
                 Updated_by = _context.GetCaseAdminUser().Username,
-                Status = UpdateBookingStatusRequestStatus.Cancelled
+                Status = UpdateBookingStatus.Cancelled
             };
             _context.Request = _context.Patch(_hearingsEndpoints.UpdateHearingDetails(_context.NewHearingId), request);
 
@@ -95,7 +98,8 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             var list = new AddParticipantsToHearingRequest() {Participants = new List<ParticipantRequest>() {request}};
 
-            _context.Request = _context.Post(_bookingParticipantsEndpoints.AddParticipantsToHearing(_context.NewHearingId), list);
+            _context.Request =
+                _context.Post(_bookingParticipantsEndpoints.AddParticipantsToHearing(_context.NewHearingId), list);
 
             new ExecuteRequestBuilder()
                 .WithContext(_context)
@@ -112,12 +116,15 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .AddWordToStrings(UpdatedWord)
                 .Build();
 
-            if (_updatedUser.Id == null)
+            if (_updatedUser.Id == Guid.Empty)
             {
                 throw new DataException("Participant Id must be set");
             }
 
-            _context.Request = _context.Put(_bookingParticipantsEndpoints.UpdateParticipantDetails(_context.NewHearingId, (Guid)_updatedUser.Id), _updatedRequest);
+            _context.Request =
+                _context.Put(
+                    _bookingParticipantsEndpoints.UpdateParticipantDetails(_context.NewHearingId, _updatedUser.Id),
+                    _updatedRequest);
 
             new ExecuteRequestBuilder()
                 .WithContext(_context)
@@ -128,12 +135,16 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"I remove a participant from the hearing")]
         public void WhenIRemoveAParticipantFromTheHearing()
         {
-            _deletedUser = _context.Hearing.Participants.Find(x => x.User_role_name.Equals(UserRole.Individual.ToString()));
-            if (_deletedUser.Id == null)
+            _deletedUser =
+                _context.Hearing.Participants.Find(x => x.User_role_name.Equals(UserRole.Individual.ToString()));
+            if (_deletedUser.Id == Guid.Empty)
             {
                 throw new DataException("User id must be set");
             }
-            _context.Request = _context.Delete(_bookingParticipantsEndpoints.RemoveParticipantFromHearing(_context.NewHearingId, (Guid)_deletedUser.Id));
+
+            _context.Request =
+                _context.Delete(
+                    _bookingParticipantsEndpoints.RemoveParticipantFromHearing(_context.NewHearingId, _deletedUser.Id));
 
             new ExecuteRequestBuilder()
                 .WithContext(_context)
@@ -146,7 +157,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _context.Conference.Current_status.Should().Be(ConferenceState.NotStarted);
             new AssertConference(_context.Conference).MatchesHearing(_context.Hearing);
-        }      
+        }
 
         [Then(@"the conference details have been updated")]
         public void ThenTheConferenceDetailsHaveBeenUpdated()
@@ -157,14 +168,15 @@ namespace VideoWeb.AcceptanceTests.Steps
             conference.Case_name.Should().Contain(UpdatedWord);
             conference.Case_number.Should().Contain(UpdatedWord);
             conference.Scheduled_date_time.Should()
-                .Be(_context.Hearing.Scheduled_date_time?.AddMinutes(UpdatedTimeInMins));
+                .Be(_context.Hearing.Scheduled_date_time.AddMinutes(UpdatedTimeInMins));
             conference.Scheduled_duration.Should().Be(_context.Hearing.Scheduled_duration + UpdatedTimeInMins);
         }
 
         [Then(@"the conference has been deleted")]
         public void ThenTheConferenceHasBeenDeleted()
         {
-            new ConferenceDetailsResponseBuilder(_context).PollForExpectedStatus(HttpStatusCode.NotFound).Should().BeTrue();
+            new ConferenceDetailsResponseBuilder(_context).PollForExpectedStatus(HttpStatusCode.NotFound).Should()
+                .BeTrue();
 
             _context.NewHearingId = Guid.Empty;
             _context.NewConferenceId = Guid.Empty;
@@ -220,18 +232,19 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .AddWordToStrings(UpdatedWord)
                 .Reset();
 
-            if (updatedUser.Id == null)
+            if (updatedUser.Id == Guid.Empty)
             {
                 throw new DataException("Participant Id must be set");
             }
 
-            context.Request = context.Put(endpoints.UpdateParticipantDetails(context.NewHearingId, (Guid)updatedUser.Id), updatedRequest);
+            context.Request = context.Put(endpoints.UpdateParticipantDetails(context.NewHearingId, updatedUser.Id),
+                updatedRequest);
 
             new ExecuteRequestBuilder()
                 .WithContext(context)
                 .WithExpectedStatusCode(HttpStatusCode.OK)
                 .SendToBookingsApi();
-        }        
+        }
     }
 }
 

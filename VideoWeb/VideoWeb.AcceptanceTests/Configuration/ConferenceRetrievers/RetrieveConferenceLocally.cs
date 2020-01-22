@@ -20,13 +20,13 @@ namespace VideoWeb.AcceptanceTests.Configuration.ConferenceRetrievers
             {
                 Enum.TryParse(p.User_role_name, out UserRole role);
                 var participantsRequest =
-                    new VideoWeb.Services.Video.ParticipantRequest
+                    new ParticipantRequest
                     {
                         Participant_ref_id = p.Id,
                         Name = p.Title + " " + p.First_name + " " + p.Last_name,
                         Display_name = p.Display_name,
                         Username = p.Username,
-                        User_role = (UserRole?)role,
+                        User_role = role,
                         Case_type_group = p.Case_role_name,
                         Representee = p.Representee
                     };

@@ -66,10 +66,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             context.Response = context.VideoApiClient().Execute(context.Request);
             var conference = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(context.Response.Content);
 
-            if (conference.Hearing_id == null)
-                return Guid.Empty;
-
-            return (Guid)conference.Hearing_id;
+            return conference.Hearing_id == Guid.Empty ? Guid.Empty : conference.Hearing_id;
         }
 
         private static bool HearingHasNotBeenDeletedAlready(Guid hearingId, TestContext context)

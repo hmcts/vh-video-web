@@ -14,12 +14,8 @@
         <PackageReference Include="Moq" Version="4.13.1" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
         <PackageReference Include="NUnit" Version="3.12.0" />
-        <PackageReference Include="dotnet-reportgenerator-cli" Version="4.4.5" />
         <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
         <PackageReference Include="NBuilder" Version="6.1.0" />
-    </ItemGroup>
-    <ItemGroup>
-        <DotNetCliToolReference Include="dotnet-reportgenerator-cli" Version="4.0.11" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Testing.Common\Testing.Common.csproj" />

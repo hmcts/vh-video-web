@@ -147,24 +147,21 @@ namespace VideoWeb.Services.Video
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<ConferenceDetailsResponse> GetConferenceByHearingRefIdAsync(System.Guid hearingRefId, System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Get conferences where the scheduledDate is lower or equal to the scheduled date time and which are open. i.e. not in the state 'closed'</summary>
-        /// <param name="scheduledDate">The conference scheduled date time e.g 2019-09-13 16:13</param>
+        /// <summary>Get list of expired conferences</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<ExpiredConferencesResponse>> GetExpiredOpenConferencesAsync(System.DateTime? scheduledDate);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<ExpiredConferencesResponse>> GetExpiredOpenConferencesAsync();
     
-        /// <summary>Get conferences where the scheduledDate is lower or equal to the scheduled date time and which are open. i.e. not in the state 'closed'</summary>
-        /// <param name="scheduledDate">The conference scheduled date time e.g 2019-09-13 16:13</param>
+        /// <summary>Get list of expired conferences</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Collections.Generic.List<ExpiredConferencesResponse> GetExpiredOpenConferences(System.DateTime? scheduledDate);
+        System.Collections.Generic.List<ExpiredConferencesResponse> GetExpiredOpenConferences();
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Get conferences where the scheduledDate is lower or equal to the scheduled date time and which are open. i.e. not in the state 'closed'</summary>
-        /// <param name="scheduledDate">The conference scheduled date time e.g 2019-09-13 16:13</param>
+        /// <summary>Get list of expired conferences</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<ExpiredConferencesResponse>> GetExpiredOpenConferencesAsync(System.DateTime? scheduledDate, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<ExpiredConferencesResponse>> GetExpiredOpenConferencesAsync(System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Close a conference, set its state to closed</summary>
         /// <param name="conferenceId">conference id</param>
@@ -434,25 +431,6 @@ namespace VideoWeb.Services.Video
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task RaiseVideoEventAsync(ConferenceEventRequest body, System.Threading.CancellationToken cancellationToken);
-    
-        /// <summary>Remove a virtual court room</summary>
-        /// <param name="virtualCourtRoomId">The virtual court room id</param>
-        /// <returns>Success</returns>
-        /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task RemoveVirtualCourtRoomAsync(System.Guid virtualCourtRoomId);
-    
-        /// <summary>Remove a virtual court room</summary>
-        /// <param name="virtualCourtRoomId">The virtual court room id</param>
-        /// <returns>Success</returns>
-        /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        void RemoveVirtualCourtRoom(System.Guid virtualCourtRoomId);
-    
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Remove a virtual court room</summary>
-        /// <param name="virtualCourtRoomId">The virtual court room id</param>
-        /// <returns>Success</returns>
-        /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task RemoveVirtualCourtRoomAsync(System.Guid virtualCourtRoomId, System.Threading.CancellationToken cancellationToken);
     
     }
     
@@ -1152,38 +1130,30 @@ namespace VideoWeb.Services.Video
             }
         }
     
-        /// <summary>Get conferences where the scheduledDate is lower or equal to the scheduled date time and which are open. i.e. not in the state 'closed'</summary>
-        /// <param name="scheduledDate">The conference scheduled date time e.g 2019-09-13 16:13</param>
+        /// <summary>Get list of expired conferences</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.List<ExpiredConferencesResponse>> GetExpiredOpenConferencesAsync(System.DateTime? scheduledDate)
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<ExpiredConferencesResponse>> GetExpiredOpenConferencesAsync()
         {
-            return GetExpiredOpenConferencesAsync(scheduledDate, System.Threading.CancellationToken.None);
+            return GetExpiredOpenConferencesAsync(System.Threading.CancellationToken.None);
         }
     
-        /// <summary>Get conferences where the scheduledDate is lower or equal to the scheduled date time and which are open. i.e. not in the state 'closed'</summary>
-        /// <param name="scheduledDate">The conference scheduled date time e.g 2019-09-13 16:13</param>
+        /// <summary>Get list of expired conferences</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public System.Collections.Generic.List<ExpiredConferencesResponse> GetExpiredOpenConferences(System.DateTime? scheduledDate)
+        public System.Collections.Generic.List<ExpiredConferencesResponse> GetExpiredOpenConferences()
         {
-            return System.Threading.Tasks.Task.Run(async () => await GetExpiredOpenConferencesAsync(scheduledDate, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+            return System.Threading.Tasks.Task.Run(async () => await GetExpiredOpenConferencesAsync(System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Get conferences where the scheduledDate is lower or equal to the scheduled date time and which are open. i.e. not in the state 'closed'</summary>
-        /// <param name="scheduledDate">The conference scheduled date time e.g 2019-09-13 16:13</param>
+        /// <summary>Get list of expired conferences</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.List<ExpiredConferencesResponse>> GetExpiredOpenConferencesAsync(System.DateTime? scheduledDate, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<ExpiredConferencesResponse>> GetExpiredOpenConferencesAsync(System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/fromdate?");
-            if (scheduledDate != null) 
-            {
-                urlBuilder_.Append(System.Uri.EscapeDataString("scheduledDate") + "=").Append(System.Uri.EscapeDataString(scheduledDate.Value.ToString("s", System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            }
-            urlBuilder_.Length--;
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/expired");
     
             var client_ = _httpClient;
             try
@@ -2603,104 +2573,6 @@ namespace VideoWeb.Services.Video
             }
         }
     
-        /// <summary>Remove a virtual court room</summary>
-        /// <param name="virtualCourtRoomId">The virtual court room id</param>
-        /// <returns>Success</returns>
-        /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task RemoveVirtualCourtRoomAsync(System.Guid virtualCourtRoomId)
-        {
-            return RemoveVirtualCourtRoomAsync(virtualCourtRoomId, System.Threading.CancellationToken.None);
-        }
-    
-        /// <summary>Remove a virtual court room</summary>
-        /// <param name="virtualCourtRoomId">The virtual court room id</param>
-        /// <returns>Success</returns>
-        /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public void RemoveVirtualCourtRoom(System.Guid virtualCourtRoomId)
-        {
-            System.Threading.Tasks.Task.Run(async () => await RemoveVirtualCourtRoomAsync(virtualCourtRoomId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
-        }
-    
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Remove a virtual court room</summary>
-        /// <param name="virtualCourtRoomId">The virtual court room id</param>
-        /// <returns>Success</returns>
-        /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task RemoveVirtualCourtRoomAsync(System.Guid virtualCourtRoomId, System.Threading.CancellationToken cancellationToken)
-        {
-            if (virtualCourtRoomId == null)
-                throw new System.ArgumentNullException("virtualCourtRoomId");
-    
-            var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/virtualCourtRooms/{virtualCourtRoomId}");
-            urlBuilder_.Replace("{virtualCourtRoomId}", System.Uri.EscapeDataString(ConvertToString(virtualCourtRoomId, System.Globalization.CultureInfo.InvariantCulture)));
-    
-            var client_ = _httpClient;
-            try
-            {
-                using (var request_ = new System.Net.Http.HttpRequestMessage())
-                {
-                    request_.Method = new System.Net.Http.HttpMethod("DELETE");
-    
-                    PrepareRequest(client_, request_, urlBuilder_);
-                    var url_ = urlBuilder_.ToString();
-                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
-                    PrepareRequest(client_, request_, url_);
-    
-                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-                    try
-                    {
-                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-                        if (response_.Content != null && response_.Content.Headers != null)
-                        {
-                            foreach (var item_ in response_.Content.Headers)
-                                headers_[item_.Key] = item_.Value;
-                        }
-    
-                        ProcessResponse(client_, response_);
-    
-                        var status_ = ((int)response_.StatusCode).ToString();
-                        if (status_ == "204") 
-                        {
-                            return;
-                        }
-                        else
-                        if (status_ == "400") 
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
-                            throw new VideoApiException<ProblemDetails>("Bad Request", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-                        if (status_ == "404") 
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
-                            throw new VideoApiException<ProblemDetails>("Not Found", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-                        if (status_ == "401") 
-                        {
-                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new VideoApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
-                        }
-                        else
-                        if (status_ != "200" && status_ != "204")
-                        {
-                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new VideoApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
-                        }
-                    }
-                    finally
-                    {
-                        if (response_ != null)
-                            response_.Dispose();
-                    }
-                }
-            }
-            finally
-            {
-            }
-        }
-    
         protected struct ObjectResponseResult<T>
         {
             public ObjectResponseResult(T responseObject, string responseText)
@@ -3205,11 +3077,13 @@ namespace VideoWeb.Services.Video
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
     public partial class ExpiredConferencesResponse 
     {
+        /// <summary>The conference's UUID</summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid Id { get; set; }
     
-        [Newtonsoft.Json.JsonProperty("hearing_ref_id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid Hearing_ref_id { get; set; }
+        [Newtonsoft.Json.JsonProperty("current_status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public ConferenceState Current_status { get; set; }
     
     
     }

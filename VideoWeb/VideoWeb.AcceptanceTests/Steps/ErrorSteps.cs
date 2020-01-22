@@ -49,10 +49,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             var participantId = _tc.Conference.Participants.Find(x => x.Display_name == _tc.CurrentUser.Displayname).Id;            
             var endpoint = new VideoApiUriFactory().ParticipantsEndpoints;
 
-            if (_tc.Conference.Id == null || participantId == null)
+            if (_tc.Conference.Id == Guid.Empty || participantId == Guid.Empty)
                 throw new DataMisalignedException("Values cannot be null");
 
-            _tc.Request = _tc.Delete(endpoint.RemoveParticipantFromConference((Guid) _tc.Conference.Id, (Guid) participantId));
+            _tc.Request = _tc.Delete(endpoint.RemoveParticipantFromConference(_tc.Conference.Id, participantId));
             _tc.Response = _tc.VideoApiClient().Execute(_tc.Request);
             _tc.Response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             _tc.Response.ResponseStatus.Should().Be(ResponseStatus.Completed);
