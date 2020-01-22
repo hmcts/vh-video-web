@@ -1,7 +1,6 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +8,6 @@ using Moq;
 using NUnit.Framework;
 using Testing.Common.Helpers;
 using VideoWeb.Contract.Request;
-using VideoWeb.Services;
 using VideoWeb.Services.Video;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 

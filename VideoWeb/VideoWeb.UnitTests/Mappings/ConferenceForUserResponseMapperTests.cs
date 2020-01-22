@@ -38,13 +38,13 @@ namespace VideoWeb.UnitTests.Mappings
 
             var response = _mapper.MapConferenceSummaryToResponseModel(conference);
 
-            response.Id.Should().Be(conference.Id.GetValueOrDefault());
+            response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.Case_name);
             response.CaseNumber.Should().Be(conference.Case_number);
             response.CaseType.Should().Be(conference.Case_type);
-            response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time.GetValueOrDefault());
-            response.ScheduledDuration.Should().Be(conference.Scheduled_duration.GetValueOrDefault());
-            response.Status.ToString().Should().Be(conference.Status.GetValueOrDefault().ToString());
+            response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);
+            response.ScheduledDuration.Should().Be(conference.Scheduled_duration);
+            response.Status.ToString().Should().Be(conference.Status.ToString());
             response.NoOfParticipantsAvailable.Should().Be(1);
             response.NoOfParticipantsInConsultation.Should().Be(2);
             response.NoOfParticipantsUnavailable.Should().Be(1);

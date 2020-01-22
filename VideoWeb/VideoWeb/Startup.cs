@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
@@ -37,7 +38,7 @@ namespace VideoWeb
             services.AddCustomTypes();
             
             RegisterAuth(services);
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddApplicationInsightsTelemetry(Configuration["ApplicationInsights:InstrumentationKey"]);
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
@@ -117,24 +118,13 @@ namespace VideoWeb
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (!env.IsProduction())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Video App"); });
+                app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Video Web App API V1"); });
             }
-            
-            app.UseSignalR(routes =>
-            {
-                const string path = "/eventhub";
-                routes.MapHub<EventHub.Hub.EventHub>(path,
-                    options =>
-                    {
-                        options.Transports = HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling |
-                                             HttpTransportType.WebSockets;
-                    });
-            });
             
             if (env.IsDevelopment())
             {
@@ -147,28 +137,34 @@ namespace VideoWeb
                 app.UseHsts();
             }
             
+            if (!env .IsDevelopment())
+            {
+                app.UseSpaStaticFiles();
+            }
+            
+            app.UseRouting();
             app.UseAuthentication();
-
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles();
-
             app.UseMiddleware<ExceptionMiddleware>();
 
-            app.UseMvc(routes =>
+            app.UseEndpoints(endpoints =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller}/{action=Index}/{id?}");
+                const string path = "/eventhub";
+                endpoints.MapDefaultControllerRoute();
+                endpoints.MapHub<EventHub.Hub.EventHub>(path, options =>
+                {
+                    options.Transports = HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling |
+                                         HttpTransportType.WebSockets;
+                });
             });
-
+            
             app.UseSpa(spa =>
             {
                 // To learn more about options for serving an Angular SPA from ASP.NET Core,
                 // see https://go.microsoft.com/fwlink/?linkid=864501
-
+            
                 spa.Options.SourcePath = "ClientApp";
-
+            
                 if (env.IsDevelopment())
                 {
                     spa.UseAngularCliServer(npmScript: "start");
