@@ -50,10 +50,10 @@
     "rxjs": "^6.5.3",
     "webrtc-adapter": "^7.3.0",
     "zone.js": "^0.8.29",
-    "snyk": "^1.259.0"
+    "snyk": "^1.278.2"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^0.13.9",
+    "@angular-devkit/build-angular": "^0.803.0",
     "@angular/cli": "^7.3.9",
     "@angular/compiler-cli": "^7.2.15",
     "@angular/language-service": "^7.1.0",
