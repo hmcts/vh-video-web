@@ -85,21 +85,14 @@ namespace VideoWeb.AcceptanceTests.Hooks
             return participants.Any(x => x.Username.ToLower().Equals(username.ToLower()));
         }
 
-        private Guid GetTheHearingIdFromTheConference(Guid? conferenceId)
+        private Guid GetTheHearingIdFromTheConference(Guid conferenceId)
         {
-            if (conferenceId == null)
-                throw new DataMisalignedException("Conference Id must be set");
-
-            var endpoint = new VideoApiUriFactory().ConferenceEndpoints.GetConferenceDetailsById((Guid)conferenceId);
+            var endpoint = new VideoApiUriFactory().ConferenceEndpoints.GetConferenceDetailsById(conferenceId);
             var request = new RequestBuilder().Get(endpoint);
             var client = new ApiClient(_videoApiUrl, _videoApiBearerToken).GetClient();
             var response = new RequestExecutor(request).SendToApi(client);
             var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
-
-            if (conference.Hearing_id == null)
-                return Guid.Empty;
-
-            return (Guid)conference.Hearing_id;
+            return conference.Hearing_id;
         }
 
         private bool HearingHasNotBeenDeletedAlready(Guid hearingId)

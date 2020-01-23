@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using AcceptanceTests.Common.Driver;
 using AcceptanceTests.Common.Driver.Browser;
 using BoDi;
@@ -30,7 +28,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         }
 
         [BeforeScenario(Order = (int)HooksSequence.ConfigureDriverHooks)]
-        private void ConfigureDriver(TestContext context, ScenarioContext scenarioContext)
+        public void ConfigureDriver(TestContext context, ScenarioContext scenarioContext)
         {
             context.VideoWebConfig.TestConfig.TargetBrowser = _driverManager.GetTargetBrowser(NUnit.Framework.TestContext.Parameters["TargetBrowser"]);
             context.VideoWebConfig.TestConfig.TargetDevice = _driverManager.GetTargetDevice(NUnit.Framework.TestContext.Parameters["TargetDevice"]);

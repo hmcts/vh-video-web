@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
-using System.Threading;
 using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Requests;
-using AcceptanceTests.Common.Api.Uris;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.Test.Helpers;
@@ -73,7 +70,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the test score should be produced")]
         public void ThenTheTestScoreShouldBeProduced()
         {
-            var participantId = _c.Conference.Participants.Find(x => x.Display_name.ToLower().Equals(_c.CurrentUser.DisplayName.ToLower())).Id.Value;
+            var participantId = _c.Conference.Participants.Find(x => x.Display_name.ToLower().Equals(_c.CurrentUser.DisplayName.ToLower())).Id;
             var videoApiManager = new VideoApiManager(_c.VideoWebConfig.VhServices.VideoApiUrl, _c.Tokens.VideoApiBearerToken);
             var response = videoApiManager.PollForSelfTestScoreResponse(_c.Test.NewConferenceId, participantId);
             response.StatusCode.Should().Be(HttpStatusCode.OK);

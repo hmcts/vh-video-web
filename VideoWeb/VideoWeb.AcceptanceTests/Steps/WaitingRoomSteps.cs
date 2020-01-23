@@ -60,32 +60,21 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the participant status for (.*) is displayed as (.*)")]
         public void ThenTheFirstParticipantStatusIsDisplayedAsNotSignedIn(string name, string status)
         {
-            var participant = _tc.Conference.Participants.First(x => x.Name.Contains(name));
-            if (participant.Id != Guid.Empty)
-            {
-                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ParticipantStatus((Guid)participant.Id)).Text.ToUpper().Trim().Should().Be(status.ToUpper());
-            }
-            else
-            {
-                throw new DataMisalignedException("Participant id is not set");
-            }
+            var participant = _c.Conference.Participants.First(x => x.Name.Contains(name));
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ParticipantStatus(participant.Id)).Text.ToUpper().Trim().Should().Be(status.ToUpper());
         }
 
         [Then(@"the Clerk can see information about their case")]
         [Then(@"the Judge can see information about their case")]
         public void ThenTheClerkCanSeeInformationAboutTheirCase()
         {
-            if (_tc.Hearing.Scheduled_date_time.ToLocalTime() == null || _tc.Hearing.Scheduled_duration == 0)
-            {
-                throw new DataMisalignedException("Scheduled dates and times must be set");
-
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ReturnToHearingRoomLink).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ContactVho).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.HearingTitle).Text.Should().Be($"{_c.Test.Hearing.Cases.First().Name} ({_c.Hearing.Case_type_name}) case number: {_c.Test.Hearing.Cases.First().Number}");
 
-            var startDate = (DateTime) _c.Hearing.Scheduled_date_time;
+            var startDate = _c.Hearing.Scheduled_date_time;
             var dateAndStartTime = startDate.ToLocalTime().ToString(DateFormats.ClerkWaitingRoomPageTime);
-            var endTime = startDate.ToLocalTime().AddMinutes((int) _c.Hearing.Scheduled_duration).ToString(DateFormats.ClerkWaitingRoomPageTimeEnd);
+            var endTime = startDate.ToLocalTime().AddMinutes( _c.Hearing.Scheduled_duration).ToString(DateFormats.ClerkWaitingRoomPageTimeEnd);
 
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.HearingDateTime).Text.Should().Be($"{dateAndStartTime} to {endTime}");
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.StartHearingText).Displayed.Should().BeTrue();
@@ -97,15 +86,10 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails).Text.Should().Contain(_c.Hearing.Cases.First().Name);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails).Text.Should().Contain($"case number: {_c.Hearing.Cases.First().Number}");
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingDate).Text.Should().Contain(_c.Hearing.Scheduled_date_time?.ToString(DateFormats.WaitingRoomPageDate));
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingDate).Text.Should().Contain(_c.Hearing.Scheduled_date_time?.ToLocalTime().ToString(DateFormats.WaitingRoomPageTime));
-
-            if (_c.Hearing.Scheduled_duration != null)
-            {
-                var endTime = _c.Hearing.Scheduled_date_time?.AddMinutes((int)_c.Hearing.Scheduled_duration).ToLocalTime().ToString(DateFormats.WaitingRoomPageTime);
-                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingDate).Text.Should().Contain(endTime);
-            }
-
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingDate).Text.Should().Contain(_c.Hearing.Scheduled_date_time.ToString(DateFormats.WaitingRoomPageDate));
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingDate).Text.Should().Contain(_c.Hearing.Scheduled_date_time.ToLocalTime().ToString(DateFormats.WaitingRoomPageTime));
+            var endTime = _c.Hearing.Scheduled_date_time.AddMinutes(_c.Hearing.Scheduled_duration).ToLocalTime().ToString(DateFormats.WaitingRoomPageTime);
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingDate).Text.Should().Contain(endTime);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.ContactVhTeam).Displayed.Should().BeTrue();
         }
 
@@ -226,10 +210,10 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private void CheckParticipantsAreStillConnected()
         {
-            foreach (var user in _browsers.Keys.Select(lastname => _c.Conference.Participants.First(x => x.Name.ToLower().Contains(lastname.ToLower()))).Where(user => !user.User_role.Equals(UserRole.Judge) && user.Id != null))
+            foreach (var user in _browsers.Keys.Select(lastname => _c.Conference.Participants.First(x => x.Name.ToLower().Contains(lastname.ToLower()))).Where(user => !user.User_role.Equals(UserRole.Judge)))
             {
-                _browsers[_c.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browsers[_c.CurrentUser.Key].Driver.FindElement(ClerkWaitingRoomPage.ParticipantStatus((Guid)user.Id)));
-                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ParticipantStatus((Guid)user.Id)).Text.ToUpper().Trim()
+                _browsers[_c.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browsers[_c.CurrentUser.Key].Driver.FindElement(ClerkWaitingRoomPage.ParticipantStatus(user.Id)));
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ParticipantStatus(user.Id)).Text.ToUpper().Trim()
                     .Should().Be("CONNECTED");
             }
         }

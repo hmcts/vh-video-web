@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
@@ -8,7 +7,6 @@ using FluentAssertions;
 using OpenQA.Selenium.Support.Extensions;
 using TechTalk.SpecFlow;
 using Testing.Common.Helpers;
-using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using ParticipantResponse = VideoWeb.Services.Bookings.ParticipantResponse;
@@ -63,16 +61,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the participant can see a list of hearings including the new hearing")]
         public void ThenTheParticipantCanSeeAListOfHearingsIncludingTheNewHearing()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.HearingWithCaseNumber(_c.Hearing.Cases.First().Number)).Displayed
-                .Should().BeTrue();
-
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantHearingDate(_c.Hearing.Cases.First().Number)).Text
-                .Should().Be(
-                    $"{_c.Hearing.Scheduled_date_time?.ToString(DateFormats.HearingListPageDate)}");
-
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantHearingTime(_c.Hearing.Cases.First().Number)).Text
-                .Should().Be(
-                    $"{_c.Hearing.Scheduled_date_time?.ToLocalTime():HH:mm}");
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.HearingWithCaseNumber(_c.Hearing.Cases.First().Number)).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantHearingDate(_c.Hearing.Cases.First().Number)).Text.Should().Be($"{_c.Hearing.Scheduled_date_time.ToString(DateFormats.HearingListPageDate)}");
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantHearingTime(_c.Hearing.Cases.First().Number)).Text.Should().Be($"{_c.Hearing.Scheduled_date_time.ToLocalTime():HH:mm}");
         }
 
         [Then(@"the user can see their details at the top of the hearing list")]
@@ -86,14 +77,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Clerk can see a list of hearings including the new hearing")]
         public void ThenTheClerkCanSeeAListOfHearingsIncludingTheNewHearing()
         {
-            if (_c.Hearing.Scheduled_date_time == null || _c.Hearing.Scheduled_duration == null)
-            {
-                throw new DataException("Required hearing values are null");
-            }
-
-            var scheduledDateTime = (DateTime)_c.Hearing.Scheduled_date_time;
+            var scheduledDateTime = _c.Hearing.Scheduled_date_time;
             scheduledDateTime = scheduledDateTime.ToLocalTime();
-            var scheduledDuration = (int)_c.Hearing.Scheduled_duration;
+            var scheduledDuration = _c.Hearing.Scheduled_duration;
 
             var rowData = new GetHearingRow()
                 .ForCaseNumber(_c.CaseNumber())

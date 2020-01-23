@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using AcceptanceTests.Common.Api.Requests;
 using AcceptanceTests.Common.Configuration.Users;
 using AcceptanceTests.Common.Driver;
-using Microsoft.Extensions.Options;
 using RestSharp;
 using VideoWeb.AcceptanceTests.Configuration;
-using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Services.Bookings;

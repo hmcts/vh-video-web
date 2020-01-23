@@ -49,7 +49,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             var hearing = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(hearingResponse.Content);
             hearing.Should().NotBeNull();
             _c.Test.Hearing = hearing;
-            ParticipantExistsInTheDb(hearing.Id.Value).Should().BeTrue();
+            ParticipantExistsInTheDb(hearing.Id).Should().BeTrue();
             _userApiManager.ParticipantsExistInAad(_c.UserAccounts, Timeout).Should().BeTrue();
         }
 

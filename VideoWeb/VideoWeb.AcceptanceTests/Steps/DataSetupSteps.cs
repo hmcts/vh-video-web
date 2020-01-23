@@ -69,7 +69,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var hearing = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(hearingResponse.Content);
             hearing.Should().NotBeNull();
             _c.Test.Hearing = hearing;
-            _c.Test.NewHearingId = hearing.Id.Value;
+            _c.Test.NewHearingId = hearing.Id;
 
             ThenTheHearingDetailsShouldBeRetrieved();
         }
@@ -80,7 +80,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var updateRequest = new UpdateBookingStatusRequest
             {
-                Status = UpdateBookingStatusRequestStatus.Created,
+                Status = UpdateBookingStatus.Created,
                 Updated_by = UserManager.GetCaseAdminUser(_c.UserAccounts).Username
             };
 
@@ -93,7 +93,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
             AssertConferenceDetailsResponse.ForConference(conference);
             _c.Test.Conference = conference;
-            _c.Test.NewConferenceId = conference.Id.Value;
+            _c.Test.NewConferenceId = conference.Id;
         }
 
         [Then(@"hearing details should be retrieved")]
@@ -103,7 +103,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             hearing.Should().NotBeNull();
             AssertHearingResponse.ForHearing(hearing);
             _c.Test.Hearing = hearing;
-            _c.Test.NewHearingId = hearing.Id.Value;
+            _c.Test.NewHearingId = hearing.Id;
         }
     }
 }

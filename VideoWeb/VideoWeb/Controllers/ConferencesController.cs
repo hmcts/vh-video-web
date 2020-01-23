@@ -207,7 +207,7 @@ namespace VideoWeb.Controllers
                 return Unauthorized();
             }
 
-            var bookingParticipants = new List<BookingParticipant>();
+            List<BookingParticipant> bookingParticipants = null;
             try
             {
                 _logger.LogTrace($"Retrieving booking participants for hearing ${conference.Hearing_id}");

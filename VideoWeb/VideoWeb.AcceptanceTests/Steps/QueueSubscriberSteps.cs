@@ -58,7 +58,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var request = new UpdateBookingStatusRequest()
             {
                 Updated_by = UserManager.GetCaseAdminUser(_c.UserAccounts).Username,
-                Status = UpdateBookingStatusRequestStatus.Cancelled
+                Status = UpdateBookingStatus.Cancelled
             };
 
             _c.Response = _bookingsApiManager.UpdateHearingDetails(_c.Test.NewHearingId, request);
@@ -92,7 +92,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .AddWordToStrings(UpdatedWord)
                 .Build();
 
-            _c.Response = _bookingsApiManager.UpdateParticipantDetails(_c.Test.NewHearingId, _updatedUser.Id.Value, _updatedRequest);
+            _c.Response = _bookingsApiManager.UpdateParticipantDetails(_c.Test.NewHearingId, _updatedUser.Id, _updatedRequest);
             _c.Response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
@@ -100,7 +100,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenIRemoveAParticipantFromTheHearing()
         {
             _deletedUser = _c.Hearing.Participants.Find(x => x.User_role_name.Equals(UserRole.Individual.ToString()));
-            _c.Response = _bookingsApiManager.RemoveParticipant(_c.Test.NewHearingId, _deletedUser.Id.Value);
+            _c.Response = _bookingsApiManager.RemoveParticipant(_c.Test.NewHearingId, _deletedUser.Id);
             _c.Response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
@@ -119,7 +119,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var conference = new ConferenceDetailsResponseBuilder(_c).GetConferenceDetails();
             conference.Case_name.Should().Contain(UpdatedWord);
             conference.Case_number.Should().Contain(UpdatedWord);
-            conference.Scheduled_date_time.Should().Be(_c.Hearing.Scheduled_date_time?.AddMinutes(UpdatedTimeInMins));
+            conference.Scheduled_date_time.Should().Be(_c.Hearing.Scheduled_date_time.AddMinutes(UpdatedTimeInMins));
             conference.Scheduled_duration.Should().Be(_c.Hearing.Scheduled_duration + UpdatedTimeInMins);
         }
 
@@ -179,7 +179,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .ForParticipant(updatedUser)
                 .AddWordToStrings(UpdatedWord)
                 .Reset();
-            var endpoint = new BookingsApiUriFactory().HearingsParticipantsEndpoints.UpdateParticipantDetails(context.Test.NewHearingId, updatedUser.Id.Value);
+            var endpoint = new BookingsApiUriFactory().HearingsParticipantsEndpoints.UpdateParticipantDetails(context.Test.NewHearingId, updatedUser.Id);
             context.Request = context.Put(endpoint, updatedRequest);
 
             new ExecuteRequestBuilder()

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace VideoWeb.IntegrationTests.Config
+﻿namespace VideoWeb.IntegrationTests.Config
 {
     public class TestSettings
     {
