@@ -116,7 +116,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 ? _tc.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Judge.ToString()))
                 : _tc.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Individual.ToString()));
 
-            if (participantUser.Id == null)
+            if (participantUser.Id == Guid.Empty)
                 throw new DataMisalignedException("Participant Id is not set");
 
             _scenarioContext.Add(ParticipantKey, participantUser);

@@ -14,7 +14,6 @@ using NUnit.Framework;
 using Testing.Common.Helpers;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
-using VideoWeb.EventHub;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;

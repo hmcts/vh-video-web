@@ -54,9 +54,9 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             foreach (var participant in participants)
             {
-                if (participant.Id == null)
+                if (participant.Id == Guid.Empty)
                     throw new DataMisalignedException("Participant Id cannot be null");
-                participantStatuses[action].Execute(_tc, (Guid)participant.Id);
+                participantStatuses[action].Execute(_tc, participant.Id);
             }
         }
 
@@ -136,10 +136,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 var participantName = NameInCorrectFormat(participant);
 
-                if (participant.Id != null)
+                if (participant.Id != Guid.Empty)
                     _browsers[_tc.CurrentUser.Key].Driver
                         .WaitUntilVisible(
-                            _adminPanelPage.ParticipantStatus((Guid) participant.Id, participantName))
+                            _adminPanelPage.ParticipantStatus(participant.Id, participantName))
                         .Text.Trim().Should().Be(participantStatus);
             }
         }

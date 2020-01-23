@@ -7,7 +7,7 @@ import { PageUrls } from './shared/page-url.constants';
 
 export const routes: Routes = [
   { path: '', redirectTo: `${PageUrls.Home}`, pathMatch: 'full' },
-  { path: `${PageUrls.AdminHearingList}`, loadChildren: './vh-officer/vh-officer.module#VhOfficerModule' },
+  { path: `${PageUrls.AdminHearingList}`, loadChildren: () => import('./vh-officer/vh-officer.module').then(m => m.VhOfficerModule) },
   { path: 'events/:conferenceId', component: SendVideoEventsComponent },
   { path: `${PageUrls.Home}`, component: HomeComponent, canActivate: [AuthGuard] },
   { path: '**', redirectTo: `${PageUrls.NotFound}`, pathMatch: 'full', canActivate: [AuthGuard] }

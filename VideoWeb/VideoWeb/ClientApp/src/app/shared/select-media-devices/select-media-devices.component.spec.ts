@@ -82,22 +82,20 @@ describe('SelectMediaDevicesComponent', () => {
     component.onCancel();
   }));
 
-  it('should not emit device updated event when form is invalid', () => {
+  it('should not emit device updated event when form is invalid', async (done) => {
     spyOn(component.acceptMediaDeviceChange, 'emit');
-    fixture.whenStable().then(() => {
-      component.selectedMediaDevicesForm.setValue({ camera: '', microphone: '' });
-      component.onSubmit();
-    }).then(() => {
-      expect(component.acceptMediaDeviceChange.emit).toHaveBeenCalledTimes(0);
-    });
+    await fixture.whenStable();
+    component.selectedMediaDevicesForm.setValue({ camera: '', microphone: '' });
+    component.onSubmit();
+    expect(component.acceptMediaDeviceChange.emit).toHaveBeenCalledTimes(0);
+    done();
   });
 
-  it('should emit device updated event when form is valid', () => {
+  it('should emit device updated event when form is valid', async (done) => {
     spyOn(component.acceptMediaDeviceChange, 'emit');
-    fixture.whenStable().then(() => {
-      component.onSubmit();
-    }).then(() => {
-      expect(component.acceptMediaDeviceChange.emit).toHaveBeenCalled();
-    });
+    await fixture.whenStable();
+    component.onSubmit();
+    expect(component.acceptMediaDeviceChange.emit).toHaveBeenCalled();
+    done();
   });
 });

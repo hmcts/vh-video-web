@@ -12,7 +12,7 @@ namespace VideoWeb.AcceptanceTests.Configuration.ConferenceRetrievers
         {
             var updateRequest = new UpdateBookingStatusRequest
             {
-                Status = UpdateBookingStatusRequestStatus.Created,
+                Status = UpdateBookingStatus.Created,
                 Updated_by = context.GetCaseAdminUser().Username
             };
 
