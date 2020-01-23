@@ -1,7 +1,7 @@
 <div id="filterPopup" class="vh-popup-overlay">
   <div class="vh-popup vh-popup-xsmall">
     <div class="govuk-grid-row">
-      <div class="govuk-grid-column-one-half">
+      <div class="govuk-grid-column-one-third">
         <p class="govuk-body-l">Statuses</p>
         <div class="govuk-checkboxes__item vh-mb10">
           <input class="govuk-checkboxes__input"
@@ -22,7 +22,7 @@
         </div>
       </div>
 
-      <div class="govuk-grid-column-one-half">
+      <div class="govuk-grid-column-one-third">
         <p class="govuk-body-l">Locations</p>
         <div class="govuk-checkboxes__item vh-mb10">
           <input class="govuk-checkboxes__input"
@@ -42,7 +42,11 @@
             <label class="govuk-label govuk-checkboxes__label" for="{{'location' + i}}">{{child.Description}}</label>
           </div>
         </div>
-        <p class="govuk-body-l vh-mt20">Alerts</p>
+
+      </div>
+      <div class="govuk-grid-column-one-third">
+       
+        <p class="govuk-body-l">Alerts</p>
         <div class="govuk-checkboxes__item vh-mb10">
           <input class="govuk-checkboxes__input"
                  type="checkbox"
@@ -61,17 +65,17 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="govuk-grid-row">
-      <hr />
-      <div class="govuk-grid-column-one-half vh-mt20">
-        <input type="button" value="Apply filters" (click)="applyFilters()"
-               id="applyFilter"
-               class="govuk-button" [disabled]="disableFilterApply ? 'disabled' : false" />
       </div>
-      <div class="govuk-grid-column-one-half vh-mt30" style="align-content:center;">
-        <a href="javascript:void(0);" class="govuk-link" (click)="clearFilters()" >Clear filters</a>
+      <div class="govuk-grid-row">
+        <hr />
+        <div class="govuk-grid-column-one-half vh-mt20">
+          <input type="button" value="Apply filters" (click)="applyFilters()"
+                 id="applyFilter"
+                 class="govuk-button" [disabled]="disableFilterApply ? 'disabled' : false" />
+        </div>
+        <div class="govuk-grid-column-one-half vh-mt30" style="align-content:center;">
+          <a href="javascript:void(0);" class="govuk-link" (click)="clearFilters()">Clear filters</a>
+        </div>
       </div>
     </div>
-  </div>
 </div>
