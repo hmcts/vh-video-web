@@ -8,6 +8,7 @@ using FluentAssertions;
 using OpenQA.Selenium.Support.Extensions;
 using TechTalk.SpecFlow;
 using Testing.Common.Helpers;
+using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using ParticipantResponse = VideoWeb.Services.Bookings.ParticipantResponse;

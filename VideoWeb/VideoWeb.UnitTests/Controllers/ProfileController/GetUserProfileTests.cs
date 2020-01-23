@@ -9,6 +9,7 @@ using NUnit.Framework;
 using Testing.Common.Helpers;
 using VideoWeb.Controllers;
 using VideoWeb.Services.User;
+using ProblemDetails = VideoWeb.Services.User.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ProfileController
 {
@@ -69,7 +70,7 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
         public async Task should_return_exception()
         {
             var apiException = new UserApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
-                "Stacktrace goes here", null, default(ProblemDetails), null);
+                "Stacktrace goes here", null, default, null);
             _userApiClientMock
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);

@@ -26,7 +26,7 @@ namespace VideoWeb.UnitTests.Mappings
                 x => x.Id = participant.Ref_id).Build();
             
             var response = _mapper.MapParticipantToResponseModel(participant, bookingParticipant);
-            response.Id.Should().Be(participant.Id.GetValueOrDefault());
+            response.Id.Should().Be(participant.Id);
             response.Name.Should().Be(participant.Name);
             response.Username.Should().Be(participant.Username);
             response.Status.Should().Be(expectedStatus);

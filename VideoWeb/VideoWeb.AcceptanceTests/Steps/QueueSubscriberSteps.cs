@@ -186,7 +186,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithContext(context)
                 .WithExpectedStatusCode(HttpStatusCode.OK)
                 .SendToBookingsApi();
-        }        
+        }
     }
 }
 

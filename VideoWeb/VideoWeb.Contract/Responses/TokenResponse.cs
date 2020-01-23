@@ -1,5 +1,3 @@
-using System;
-
 namespace VideoWeb.Contract.Responses
 {
     public class TokenResponse

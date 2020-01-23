@@ -25,7 +25,7 @@ namespace VideoWeb.Mappings
                 Reason = request.Reason,
                 TransferTo = transferTo,
                 TransferFrom = transferFrom,
-                TimeStampUtc = request.Time_stamp_utc.GetValueOrDefault(),
+                TimeStampUtc = request.Time_stamp_utc,
                 ParticipantId = participantId
             };
 

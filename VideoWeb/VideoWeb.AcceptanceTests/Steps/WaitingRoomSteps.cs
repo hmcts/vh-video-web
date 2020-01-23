@@ -60,8 +60,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the participant status for (.*) is displayed as (.*)")]
         public void ThenTheFirstParticipantStatusIsDisplayedAsNotSignedIn(string name, string status)
         {
-            var participant = _c.Conference.Participants.First(x => x.Name.Contains(name));
-            if (participant.Id != null)
+            var participant = _tc.Conference.Participants.First(x => x.Name.Contains(name));
+            if (participant.Id != Guid.Empty)
             {
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ParticipantStatus((Guid)participant.Id)).Text.ToUpper().Trim().Should().Be(status.ToUpper());
             }
@@ -75,7 +75,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Judge can see information about their case")]
         public void ThenTheClerkCanSeeInformationAboutTheirCase()
         {
-            if (_c.Hearing.Scheduled_date_time?.ToLocalTime() == null || _c.Hearing.Scheduled_duration == null)
+            if (_tc.Hearing.Scheduled_date_time.ToLocalTime() == null || _tc.Hearing.Scheduled_duration == 0)
+            {
                 throw new DataMisalignedException("Scheduled dates and times must be set");
 
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ReturnToHearingRoomLink).Displayed.Should().BeTrue();
@@ -131,7 +132,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 }
             }
         }
-    
+
         [Then(@"the user can see other participants status")]
         public void ThenTheUserCanSeeOtherParticipantsStatus()
         {
@@ -165,21 +166,21 @@ namespace VideoWeb.AcceptanceTests.Steps
                     backgroundColourInHex.Should().Be(WaitingRoomPage.AboutToBeginBgColour);
                     _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(WaitingRoomPage.AboutToBeginText)
                         .Displayed.Should().BeTrue();
-                        break;
+                    break;
                 }
                 case "yellow":
                 {
                     backgroundColourInHex.Should().Be(WaitingRoomPage.DelayedBgColour);
                     _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(WaitingRoomPage.DelayedText)
                         .Displayed.Should().BeTrue();
-                        break;
+                    break;
                 }
                 case "blue":
                 {
                     backgroundColourInHex.Should().Be(WaitingRoomPage.ScheduledBgColour);
                     _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(WaitingRoomPage.ScheduledText)
                         .Displayed.Should().BeTrue();
-                        break;
+                    break;
                 }
                 default: throw new ArgumentOutOfRangeException($"No defined colour: '{colour}'");
             }

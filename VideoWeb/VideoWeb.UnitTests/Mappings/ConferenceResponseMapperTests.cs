@@ -48,12 +48,12 @@ namespace VideoWeb.UnitTests.Mappings
 
             var response = _mapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
 
-            response.Id.Should().Be(conference.Id.GetValueOrDefault());
+            response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.Case_name);
             response.CaseType.Should().Be(conference.Case_type);
             response.CaseNumber.Should().Be(conference.Case_number);
-            response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time.GetValueOrDefault());
-            response.ScheduledDuration.Should().Be(conference.Scheduled_duration.GetValueOrDefault());
+            response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);
+            response.ScheduledDuration.Should().Be(conference.Scheduled_duration);
             response.Status.Should().Be(expectedConferenceStatus);
 
             var participantsResponse = response.Participants;

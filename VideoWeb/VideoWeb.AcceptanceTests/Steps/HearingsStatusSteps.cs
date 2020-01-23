@@ -88,13 +88,13 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private ConferenceDetailsResponse GetConferenceDetails()
         {
-            if (_tc.Conference.Id == null)
+            if (_tc.Conference.Id == Guid.Empty)
             {
                 throw new DataMisalignedException("Conference Id is not set");
             }
             var endpoint =
                 new VideoApiUriFactory().ConferenceEndpoints
-                    .GetConferenceDetailsById((Guid)_tc.Conference.Id);
+                    .GetConferenceDetailsById(_tc.Conference.Id);
             _tc.Request = _tc.Get(endpoint);
             _tc.Response = _tc.VideoApiClient().Execute(_tc.Request);
             _tc.Response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -104,10 +104,10 @@ namespace VideoWeb.AcceptanceTests.Steps
         private Guid GetJudgeParticipantId()
         {
             var id = _tc.Conference.Participants.Find(x => x.User_role.Equals(UserRole.Judge)).Id;
-            if (id == null)
+            if (id == Guid.Empty)
                 throw new DataMisalignedException("Participant Id cannot be null");
 
-            return (Guid)id;
+            return id;
         }
     }
 }
