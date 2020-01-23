@@ -54,3 +54,4 @@ jobs:
     apiDirectory: $(apiDirectory)
     dalWorkingDirectory: $(dalWorkingDirectory)
     dotNetCoreVersion: '3.1.100'
+    nodeVersion: '10.x'
