@@ -342,6 +342,10 @@ export class ApiClient {
             result200 = ClientSettingsResponse.fromJS(resultData200);
             return _observableOf(result200);
             }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("Unauthorized", status, _responseText, _headers);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -352,21 +356,21 @@ export class ApiClient {
 
     /**
      * Raise or answer to a private consultation request with another participant
-     * @param request (optional) Private consultation request with or without an answer
+     * @param body (optional) Private consultation request with or without an answer
      * @return Success
      */
-    handleConsultationRequest(request: ConsultationRequest | null | undefined): Observable<void> {
+    handleConsultationRequest(body: ConsultationRequest | undefined): Observable<void> {
         let url_ = this.baseUrl + "/consultations";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(request);
+        const content_ = JSON.stringify(body);
 
         let options_ : any = {
             body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json", 
+                "Content-Type": "application/json-patch+json", 
             })
         };
 
@@ -415,21 +419,21 @@ export class ApiClient {
     }
 
     /**
-     * @param request (optional) 
+     * @param body (optional) 
      * @return Success
      */
-    leavePrivateConsultation(request: LeaveConsultationRequest | null | undefined): Observable<void> {
+    leavePrivateConsultation(body: LeaveConsultationRequest | undefined): Observable<void> {
         let url_ = this.baseUrl + "/consultations/leave";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(request);
+        const content_ = JSON.stringify(body);
 
         let options_ : any = {
             body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json", 
+                "Content-Type": "application/json-patch+json", 
             })
         };
 
@@ -485,21 +489,21 @@ export class ApiClient {
     }
 
     /**
-     * @param request (optional) 
+     * @param body (optional) 
      * @return Success
      */
-    respondToAdminConsultationRequest(request: AdminConsultationRequest | null | undefined): Observable<void> {
+    respondToAdminConsultationRequest(body: AdminConsultationRequest | undefined): Observable<void> {
         let url_ = this.baseUrl + "/consultations/vhofficer/respond";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(request);
+        const content_ = JSON.stringify(body);
 
         let options_ : any = {
             body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json", 
+                "Content-Type": "application/json-patch+json", 
             })
         };
 
@@ -605,6 +609,10 @@ export class ApiClient {
             result500 = HealthCheckResponse.fromJS(resultData500);
             return throwException("Server Error", status, _responseText, _headers, result500);
             }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("Unauthorized", status, _responseText, _headers);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -614,24 +622,24 @@ export class ApiClient {
     }
 
     /**
-     * @param addMediaEventRequest (optional) 
+     * @param body (optional) 
      * @return Success
      */
-    addMediaEventToConference(conferenceId: string, addMediaEventRequest: AddMediaEventRequest | null | undefined): Observable<void> {
+    addMediaEventToConference(conferenceId: string, body: AddMediaEventRequest | undefined): Observable<void> {
         let url_ = this.baseUrl + "/conferences/{conferenceId}/mediaevents";
         if (conferenceId === undefined || conferenceId === null)
             throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace("{conferenceId}", encodeURIComponent("" + conferenceId)); 
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(addMediaEventRequest);
+        const content_ = JSON.stringify(body);
 
         let options_ : any = {
             body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json", 
+                "Content-Type": "application/json-patch+json", 
             })
         };
 
@@ -687,24 +695,24 @@ export class ApiClient {
     }
 
     /**
-     * @param addSelfTestFailureEventRequest (optional) 
+     * @param body (optional) 
      * @return Success
      */
-    addSelfTestFailureEventToConference(conferenceId: string, addSelfTestFailureEventRequest: AddSelfTestFailureEventRequest | null | undefined): Observable<void> {
+    addSelfTestFailureEventToConference(conferenceId: string, body: AddSelfTestFailureEventRequest | undefined): Observable<void> {
         let url_ = this.baseUrl + "/conferences/{conferenceId}/selftestfailureevents";
         if (conferenceId === undefined || conferenceId === null)
             throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace("{conferenceId}", encodeURIComponent("" + conferenceId)); 
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(addSelfTestFailureEventRequest);
+        const content_ = JSON.stringify(body);
 
         let options_ : any = {
             body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json", 
+                "Content-Type": "application/json-patch+json", 
             })
         };
 
@@ -828,24 +836,24 @@ export class ApiClient {
     }
 
     /**
-     * @param updateParticipantStatusEventRequest (optional) 
+     * @param body (optional) 
      * @return Success
      */
-    updateParticipantStatus(conferenceId: string, updateParticipantStatusEventRequest: UpdateParticipantStatusEventRequest | null | undefined): Observable<void> {
+    updateParticipantStatus(conferenceId: string, body: UpdateParticipantStatusEventRequest | undefined): Observable<void> {
         let url_ = this.baseUrl + "/conferences/{conferenceId}/participantstatus";
         if (conferenceId === undefined || conferenceId === null)
             throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace("{conferenceId}", encodeURIComponent("" + conferenceId)); 
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(updateParticipantStatusEventRequest);
+        const content_ = JSON.stringify(body);
 
         let options_ : any = {
             body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json", 
+                "Content-Type": "application/json-patch+json", 
             })
         };
 
@@ -904,9 +912,11 @@ export class ApiClient {
      * @param participantId (optional) 
      * @return Success
      */
-    getIndependentTestCallResult(participantId: string | null | undefined): Observable<TestCallScoreResponse> {
+    getIndependentTestCallResult(participantId: string | undefined): Observable<TestCallScoreResponse> {
         let url_ = this.baseUrl + "/conferences/independentselftestresult?";
-        if (participantId !== undefined)
+        if (participantId === null)
+            throw new Error("The parameter 'participantId' cannot be null.");
+        else if (participantId !== undefined)
             url_ += "participantId=" + encodeURIComponent("" + participantId) + "&"; 
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1421,21 +1431,21 @@ export class ApiClient {
     }
 
     /**
-     * @param request (optional) 
+     * @param body (optional) 
      * @return Success
      */
-    sendEvent(request: ConferenceEventRequest | null | undefined): Observable<void> {
+    sendEvent(body: ConferenceEventRequest | undefined): Observable<void> {
         let url_ = this.baseUrl + "/callback";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(request);
+        const content_ = JSON.stringify(body);
 
         let options_ : any = {
             body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json", 
+                "Content-Type": "application/json-patch+json", 
             })
         };
 
@@ -1484,98 +1494,7 @@ export class ApiClient {
     }
 }
 
-export class ConferenceForUserResponse implements IConferenceForUserResponse {
-    id?: string | undefined;
-    scheduled_date_time?: Date | undefined;
-    case_type?: string | undefined;
-    case_number?: string | undefined;
-    case_name?: string | undefined;
-    scheduled_duration?: number | undefined;
-    status?: ConferenceStatus | undefined;
-    participants?: ParticipantForUserResponse[] | undefined;
-    no_of_participants_available?: number | undefined;
-    no_of_participants_unavailable?: number | undefined;
-    no_of_participants_in_consultation?: number | undefined;
-    no_of_pending_tasks?: number | undefined;
-    hearing_venue_name?: string | undefined;
-
-    constructor(data?: IConferenceForUserResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.scheduled_date_time = _data["scheduled_date_time"] ? new Date(_data["scheduled_date_time"].toString()) : <any>undefined;
-            this.case_type = _data["case_type"];
-            this.case_number = _data["case_number"];
-            this.case_name = _data["case_name"];
-            this.scheduled_duration = _data["scheduled_duration"];
-            this.status = _data["status"];
-            if (Array.isArray(_data["participants"])) {
-                this.participants = [] as any;
-                for (let item of _data["participants"])
-                    this.participants!.push(ParticipantForUserResponse.fromJS(item));
-            }
-            this.no_of_participants_available = _data["no_of_participants_available"];
-            this.no_of_participants_unavailable = _data["no_of_participants_unavailable"];
-            this.no_of_participants_in_consultation = _data["no_of_participants_in_consultation"];
-            this.no_of_pending_tasks = _data["no_of_pending_tasks"];
-            this.hearing_venue_name = _data["hearing_venue_name"];
-        }
-    }
-
-    static fromJS(data: any): ConferenceForUserResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new ConferenceForUserResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["scheduled_date_time"] = this.scheduled_date_time ? this.scheduled_date_time.toISOString() : <any>undefined;
-        data["case_type"] = this.case_type;
-        data["case_number"] = this.case_number;
-        data["case_name"] = this.case_name;
-        data["scheduled_duration"] = this.scheduled_duration;
-        data["status"] = this.status;
-        if (Array.isArray(this.participants)) {
-            data["participants"] = [];
-            for (let item of this.participants)
-                data["participants"].push(item.toJSON());
-        }
-        data["no_of_participants_available"] = this.no_of_participants_available;
-        data["no_of_participants_unavailable"] = this.no_of_participants_unavailable;
-        data["no_of_participants_in_consultation"] = this.no_of_participants_in_consultation;
-        data["no_of_pending_tasks"] = this.no_of_pending_tasks;
-        data["hearing_venue_name"] = this.hearing_venue_name;
-        return data; 
-    }
-}
-
-export interface IConferenceForUserResponse {
-    id?: string | undefined;
-    scheduled_date_time?: Date | undefined;
-    case_type?: string | undefined;
-    case_number?: string | undefined;
-    case_name?: string | undefined;
-    scheduled_duration?: number | undefined;
-    status?: ConferenceStatus | undefined;
-    participants?: ParticipantForUserResponse[] | undefined;
-    no_of_participants_available?: number | undefined;
-    no_of_participants_unavailable?: number | undefined;
-    no_of_participants_in_consultation?: number | undefined;
-    no_of_pending_tasks?: number | undefined;
-    hearing_venue_name?: string | undefined;
-}
-
+/** Known states of a conference */
 export enum ConferenceStatus {
     NotStarted = "NotStarted",
     InSession = "InSession",
@@ -1584,11 +1503,38 @@ export enum ConferenceStatus {
     Closed = "Closed",
 }
 
+/** Known user roles */
+export enum UserRole {
+    None = "None",
+    CaseAdmin = "CaseAdmin",
+    VideoHearingsOfficer = "VideoHearingsOfficer",
+    HearingFacilitationSupport = "HearingFacilitationSupport",
+    Judge = "Judge",
+    Individual = "Individual",
+    Representative = "Representative",
+}
+
+/** Known states of a participant */
+export enum ParticipantStatus {
+    None = "None",
+    NotSignedIn = "NotSignedIn",
+    UnableToJoin = "UnableToJoin",
+    Joining = "Joining",
+    Available = "Available",
+    InHearing = "InHearing",
+    InConsultation = "InConsultation",
+    Disconnected = "Disconnected",
+}
+
 export class ParticipantForUserResponse implements IParticipantForUserResponse {
+    /** The participant username */
     username?: string | undefined;
     display_name?: string | undefined;
-    role?: UserRole | undefined;
-    status?: ParticipantStatus | undefined;
+    /** The participant role in conference */
+    role?: UserRole;
+    /** The current status of a participant */
+    status?: ParticipantStatus;
+    /** The representee (if participant is a representative) */
     representee?: string | undefined;
     case_type_group?: string | undefined;
 
@@ -1632,33 +1578,170 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
 }
 
 export interface IParticipantForUserResponse {
+    /** The participant username */
     username?: string | undefined;
     display_name?: string | undefined;
-    role?: UserRole | undefined;
-    status?: ParticipantStatus | undefined;
+    /** The participant role in conference */
+    role?: UserRole;
+    /** The current status of a participant */
+    status?: ParticipantStatus;
+    /** The representee (if participant is a representative) */
     representee?: string | undefined;
     case_type_group?: string | undefined;
 }
 
-export enum UserRole {
-    None = "None",
-    CaseAdmin = "CaseAdmin",
-    VideoHearingsOfficer = "VideoHearingsOfficer",
-    HearingFacilitationSupport = "HearingFacilitationSupport",
-    Judge = "Judge",
-    Individual = "Individual",
-    Representative = "Representative",
+export class TaskUserResponse implements ITaskUserResponse {
+    id?: number;
+    body?: string | undefined;
+
+    constructor(data?: ITaskUserResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.body = _data["body"];
+        }
+    }
+
+    static fromJS(data: any): TaskUserResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new TaskUserResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["body"] = this.body;
+        return data; 
+    }
 }
 
-export enum ParticipantStatus {
-    None = "None",
-    NotSignedIn = "NotSignedIn",
-    UnableToJoin = "UnableToJoin",
-    Joining = "Joining",
-    Available = "Available",
-    InHearing = "InHearing",
-    InConsultation = "InConsultation",
-    Disconnected = "Disconnected",
+export interface ITaskUserResponse {
+    id?: number;
+    body?: string | undefined;
+}
+
+/** High level summary of a conference for a user */
+export class ConferenceForUserResponse implements IConferenceForUserResponse {
+    /** Conference ID */
+    id?: string;
+    scheduled_date_time?: Date;
+    case_type?: string | undefined;
+    case_number?: string | undefined;
+    case_name?: string | undefined;
+    scheduled_duration?: number;
+    /** The current conference status */
+    status?: ConferenceStatus;
+    /** The conference participants */
+    participants?: ParticipantForUserResponse[] | undefined;
+    no_of_participants_available?: number;
+    no_of_participants_unavailable?: number;
+    no_of_participants_in_consultation?: number;
+    no_of_pending_tasks?: number;
+    hearing_venue_name?: string | undefined;
+    /** The conferences tasks */
+    tasks?: TaskUserResponse[] | undefined;
+
+    constructor(data?: IConferenceForUserResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.scheduled_date_time = _data["scheduled_date_time"] ? new Date(_data["scheduled_date_time"].toString()) : <any>undefined;
+            this.case_type = _data["case_type"];
+            this.case_number = _data["case_number"];
+            this.case_name = _data["case_name"];
+            this.scheduled_duration = _data["scheduled_duration"];
+            this.status = _data["status"];
+            if (Array.isArray(_data["participants"])) {
+                this.participants = [] as any;
+                for (let item of _data["participants"])
+                    this.participants!.push(ParticipantForUserResponse.fromJS(item));
+            }
+            this.no_of_participants_available = _data["no_of_participants_available"];
+            this.no_of_participants_unavailable = _data["no_of_participants_unavailable"];
+            this.no_of_participants_in_consultation = _data["no_of_participants_in_consultation"];
+            this.no_of_pending_tasks = _data["no_of_pending_tasks"];
+            this.hearing_venue_name = _data["hearing_venue_name"];
+            if (Array.isArray(_data["tasks"])) {
+                this.tasks = [] as any;
+                for (let item of _data["tasks"])
+                    this.tasks!.push(TaskUserResponse.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): ConferenceForUserResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ConferenceForUserResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["scheduled_date_time"] = this.scheduled_date_time ? this.scheduled_date_time.toISOString() : <any>undefined;
+        data["case_type"] = this.case_type;
+        data["case_number"] = this.case_number;
+        data["case_name"] = this.case_name;
+        data["scheduled_duration"] = this.scheduled_duration;
+        data["status"] = this.status;
+        if (Array.isArray(this.participants)) {
+            data["participants"] = [];
+            for (let item of this.participants)
+                data["participants"].push(item.toJSON());
+        }
+        data["no_of_participants_available"] = this.no_of_participants_available;
+        data["no_of_participants_unavailable"] = this.no_of_participants_unavailable;
+        data["no_of_participants_in_consultation"] = this.no_of_participants_in_consultation;
+        data["no_of_pending_tasks"] = this.no_of_pending_tasks;
+        data["hearing_venue_name"] = this.hearing_venue_name;
+        if (Array.isArray(this.tasks)) {
+            data["tasks"] = [];
+            for (let item of this.tasks)
+                data["tasks"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+/** High level summary of a conference for a user */
+export interface IConferenceForUserResponse {
+    /** Conference ID */
+    id?: string;
+    scheduled_date_time?: Date;
+    case_type?: string | undefined;
+    case_number?: string | undefined;
+    case_name?: string | undefined;
+    scheduled_duration?: number;
+    /** The current conference status */
+    status?: ConferenceStatus;
+    /** The conference participants */
+    participants?: ParticipantForUserResponse[] | undefined;
+    no_of_participants_available?: number;
+    no_of_participants_unavailable?: number;
+    no_of_participants_in_consultation?: number;
+    no_of_pending_tasks?: number;
+    hearing_venue_name?: string | undefined;
+    /** The conferences tasks */
+    tasks?: TaskUserResponse[] | undefined;
 }
 
 export class ProblemDetails implements IProblemDetails {
@@ -1667,6 +1750,7 @@ export class ProblemDetails implements IProblemDetails {
     status?: number | undefined;
     detail?: string | undefined;
     instance?: string | undefined;
+    readonly extensions?: { [key: string]: any; } | undefined;
 
     constructor(data?: IProblemDetails) {
         if (data) {
@@ -1684,6 +1768,13 @@ export class ProblemDetails implements IProblemDetails {
             this.status = _data["status"];
             this.detail = _data["detail"];
             this.instance = _data["instance"];
+            if (_data["extensions"]) {
+                (<any>this).extensions = {} as any;
+                for (let key in _data["extensions"]) {
+                    if (_data["extensions"].hasOwnProperty(key))
+                        (<any>this).extensions![key] = _data["extensions"][key];
+                }
+            }
         }
     }
 
@@ -1701,6 +1792,13 @@ export class ProblemDetails implements IProblemDetails {
         data["status"] = this.status;
         data["detail"] = this.detail;
         data["instance"] = this.instance;
+        if (this.extensions) {
+            data["extensions"] = {};
+            for (let key in this.extensions) {
+                if (this.extensions.hasOwnProperty(key))
+                    data["extensions"][key] = this.extensions[key];
+            }
+        }
         return data; 
     }
 }
@@ -1711,21 +1809,124 @@ export interface IProblemDetails {
     status?: number | undefined;
     detail?: string | undefined;
     instance?: string | undefined;
+    extensions?: { [key: string]: any; } | undefined;
 }
 
+/** Information about a participant in a conference */
+export class ParticipantResponse implements IParticipantResponse {
+    /** The participant id in a conference */
+    id?: string;
+    first_name?: string | undefined;
+    last_name?: string | undefined;
+    contact_email?: string | undefined;
+    contact_telephone?: string | undefined;
+    /** The participant's full name */
+    name?: string | undefined;
+    /** The participant's username */
+    username?: string | undefined;
+    /** The participant's role */
+    role?: UserRole;
+    /** The participant's status */
+    status?: ParticipantStatus;
+    display_name?: string | undefined;
+    tiled_display_name?: string | undefined;
+    case_type_group?: string | undefined;
+    /** The representee the participant is acting on behalf */
+    representee?: string | undefined;
+
+    constructor(data?: IParticipantResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.first_name = _data["first_name"];
+            this.last_name = _data["last_name"];
+            this.contact_email = _data["contact_email"];
+            this.contact_telephone = _data["contact_telephone"];
+            this.name = _data["name"];
+            this.username = _data["username"];
+            this.role = _data["role"];
+            this.status = _data["status"];
+            this.display_name = _data["display_name"];
+            this.tiled_display_name = _data["tiled_display_name"];
+            this.case_type_group = _data["case_type_group"];
+            this.representee = _data["representee"];
+        }
+    }
+
+    static fromJS(data: any): ParticipantResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ParticipantResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["first_name"] = this.first_name;
+        data["last_name"] = this.last_name;
+        data["contact_email"] = this.contact_email;
+        data["contact_telephone"] = this.contact_telephone;
+        data["name"] = this.name;
+        data["username"] = this.username;
+        data["role"] = this.role;
+        data["status"] = this.status;
+        data["display_name"] = this.display_name;
+        data["tiled_display_name"] = this.tiled_display_name;
+        data["case_type_group"] = this.case_type_group;
+        data["representee"] = this.representee;
+        return data; 
+    }
+}
+
+/** Information about a participant in a conference */
+export interface IParticipantResponse {
+    /** The participant id in a conference */
+    id?: string;
+    first_name?: string | undefined;
+    last_name?: string | undefined;
+    contact_email?: string | undefined;
+    contact_telephone?: string | undefined;
+    /** The participant's full name */
+    name?: string | undefined;
+    /** The participant's username */
+    username?: string | undefined;
+    /** The participant's role */
+    role?: UserRole;
+    /** The participant's status */
+    status?: ParticipantStatus;
+    display_name?: string | undefined;
+    tiled_display_name?: string | undefined;
+    case_type_group?: string | undefined;
+    /** The representee the participant is acting on behalf */
+    representee?: string | undefined;
+}
+
+/** Detailed information about a conference */
 export class ConferenceResponse implements IConferenceResponse {
-    id?: string | undefined;
-    scheduled_date_time?: Date | undefined;
-    scheduled_duration?: number | undefined;
+    /** Conference ID */
+    id?: string;
+    scheduled_date_time?: Date;
+    scheduled_duration?: number;
     case_type?: string | undefined;
     case_number?: string | undefined;
     case_name?: string | undefined;
-    status?: ConferenceStatus | undefined;
+    /** The current conference Status */
+    status?: ConferenceStatus;
     judge_i_frame_uri?: string | undefined;
     admin_i_frame_uri?: string | undefined;
     participant_uri?: string | undefined;
     pexip_node_uri?: string | undefined;
     pexip_self_test_node_uri?: string | undefined;
+    /** The participants in the conference */
     participants?: ParticipantResponse[] | undefined;
     closed_date_time?: Date | undefined;
 
@@ -1792,107 +1993,28 @@ export class ConferenceResponse implements IConferenceResponse {
     }
 }
 
+/** Detailed information about a conference */
 export interface IConferenceResponse {
-    id?: string | undefined;
-    scheduled_date_time?: Date | undefined;
-    scheduled_duration?: number | undefined;
+    /** Conference ID */
+    id?: string;
+    scheduled_date_time?: Date;
+    scheduled_duration?: number;
     case_type?: string | undefined;
     case_number?: string | undefined;
     case_name?: string | undefined;
-    status?: ConferenceStatus | undefined;
+    /** The current conference Status */
+    status?: ConferenceStatus;
     judge_i_frame_uri?: string | undefined;
     admin_i_frame_uri?: string | undefined;
     participant_uri?: string | undefined;
     pexip_node_uri?: string | undefined;
     pexip_self_test_node_uri?: string | undefined;
+    /** The participants in the conference */
     participants?: ParticipantResponse[] | undefined;
     closed_date_time?: Date | undefined;
 }
 
-export class ParticipantResponse implements IParticipantResponse {
-    id?: string | undefined;
-    first_name?: string | undefined;
-    last_name?: string | undefined;
-    contact_email?: string | undefined;
-    contact_telephone?: string | undefined;
-    name?: string | undefined;
-    username?: string | undefined;
-    role?: UserRole | undefined;
-    status?: ParticipantStatus | undefined;
-    display_name?: string | undefined;
-    tiled_display_name?: string | undefined;
-    case_type_group?: string | undefined;
-    representee?: string | undefined;
-
-    constructor(data?: IParticipantResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.first_name = _data["first_name"];
-            this.last_name = _data["last_name"];
-            this.contact_email = _data["contact_email"];
-            this.contact_telephone = _data["contact_telephone"];
-            this.name = _data["name"];
-            this.username = _data["username"];
-            this.role = _data["role"];
-            this.status = _data["status"];
-            this.display_name = _data["display_name"];
-            this.tiled_display_name = _data["tiled_display_name"];
-            this.case_type_group = _data["case_type_group"];
-            this.representee = _data["representee"];
-        }
-    }
-
-    static fromJS(data: any): ParticipantResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new ParticipantResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["first_name"] = this.first_name;
-        data["last_name"] = this.last_name;
-        data["contact_email"] = this.contact_email;
-        data["contact_telephone"] = this.contact_telephone;
-        data["name"] = this.name;
-        data["username"] = this.username;
-        data["role"] = this.role;
-        data["status"] = this.status;
-        data["display_name"] = this.display_name;
-        data["tiled_display_name"] = this.tiled_display_name;
-        data["case_type_group"] = this.case_type_group;
-        data["representee"] = this.representee;
-        return data; 
-    }
-}
-
-export interface IParticipantResponse {
-    id?: string | undefined;
-    first_name?: string | undefined;
-    last_name?: string | undefined;
-    contact_email?: string | undefined;
-    contact_telephone?: string | undefined;
-    name?: string | undefined;
-    username?: string | undefined;
-    role?: UserRole | undefined;
-    status?: ParticipantStatus | undefined;
-    display_name?: string | undefined;
-    tiled_display_name?: string | undefined;
-    case_type_group?: string | undefined;
-    representee?: string | undefined;
-}
-
+/** Configuration to initialise the UI application */
 export class ClientSettingsResponse implements IClientSettingsResponse {
     tenant_id?: string | undefined;
     client_id?: string | undefined;
@@ -1940,6 +2062,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     }
 }
 
+/** Configuration to initialise the UI application */
 export interface IClientSettingsResponse {
     tenant_id?: string | undefined;
     client_id?: string | undefined;
@@ -1949,10 +2072,17 @@ export interface IClientSettingsResponse {
     app_insights_instrumentation_key?: string | undefined;
 }
 
+export enum ConsultationAnswer {
+    None = "None",
+    Accepted = "Accepted",
+    Rejected = "Rejected",
+    Cancelled = "Cancelled",
+}
+
 export class ConsultationRequest implements IConsultationRequest {
-    conference_id?: string | undefined;
-    requested_by?: string | undefined;
-    requested_for?: string | undefined;
+    conference_id!: string;
+    requested_by!: string;
+    requested_for!: string;
     answer?: ConsultationAnswer | undefined;
 
     constructor(data?: IConsultationRequest) {
@@ -1991,22 +2121,15 @@ export class ConsultationRequest implements IConsultationRequest {
 }
 
 export interface IConsultationRequest {
-    conference_id?: string | undefined;
-    requested_by?: string | undefined;
-    requested_for?: string | undefined;
+    conference_id: string;
+    requested_by: string;
+    requested_for: string;
     answer?: ConsultationAnswer | undefined;
 }
 
-export enum ConsultationAnswer {
-    None = "None",
-    Accepted = "Accepted",
-    Rejected = "Rejected",
-    Cancelled = "Cancelled",
-}
-
 export class LeaveConsultationRequest implements ILeaveConsultationRequest {
-    conference_id?: string | undefined;
-    participant_id?: string | undefined;
+    conference_id!: string;
+    participant_id!: string;
 
     constructor(data?: ILeaveConsultationRequest) {
         if (data) {
@@ -2040,14 +2163,22 @@ export class LeaveConsultationRequest implements ILeaveConsultationRequest {
 }
 
 export interface ILeaveConsultationRequest {
-    conference_id?: string | undefined;
-    participant_id?: string | undefined;
+    conference_id: string;
+    participant_id: string;
+}
+
+export enum RoomType {
+    WaitingRoom = "WaitingRoom",
+    HearingRoom = "HearingRoom",
+    ConsultationRoom1 = "ConsultationRoom1",
+    ConsultationRoom2 = "ConsultationRoom2",
+    AdminRoom = "AdminRoom",
 }
 
 export class AdminConsultationRequest implements IAdminConsultationRequest {
-    conference_id?: string | undefined;
-    participant_id?: string | undefined;
-    consultation_room?: RoomType | undefined;
+    conference_id!: string;
+    participant_id!: string;
+    consultation_room?: RoomType;
     answer?: ConsultationAnswer | undefined;
 
     constructor(data?: IAdminConsultationRequest) {
@@ -2086,66 +2217,14 @@ export class AdminConsultationRequest implements IAdminConsultationRequest {
 }
 
 export interface IAdminConsultationRequest {
-    conference_id?: string | undefined;
-    participant_id?: string | undefined;
-    consultation_room?: RoomType | undefined;
+    conference_id: string;
+    participant_id: string;
+    consultation_room?: RoomType;
     answer?: ConsultationAnswer | undefined;
 }
 
-export enum RoomType {
-    WaitingRoom = "WaitingRoom",
-    HearingRoom = "HearingRoom",
-    ConsultationRoom1 = "ConsultationRoom1",
-    ConsultationRoom2 = "ConsultationRoom2",
-    AdminRoom = "AdminRoom",
-}
-
-export class HealthCheckResponse implements IHealthCheckResponse {
-    bookings_api_health?: HealthCheck | undefined;
-    user_api_health?: HealthCheck | undefined;
-    video_api_health?: HealthCheck | undefined;
-
-    constructor(data?: IHealthCheckResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.bookings_api_health = _data["bookings_api_health"] ? HealthCheck.fromJS(_data["bookings_api_health"]) : <any>undefined;
-            this.user_api_health = _data["user_api_health"] ? HealthCheck.fromJS(_data["user_api_health"]) : <any>undefined;
-            this.video_api_health = _data["video_api_health"] ? HealthCheck.fromJS(_data["video_api_health"]) : <any>undefined;
-        }
-    }
-
-    static fromJS(data: any): HealthCheckResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new HealthCheckResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["bookings_api_health"] = this.bookings_api_health ? this.bookings_api_health.toJSON() : <any>undefined;
-        data["user_api_health"] = this.user_api_health ? this.user_api_health.toJSON() : <any>undefined;
-        data["video_api_health"] = this.video_api_health ? this.video_api_health.toJSON() : <any>undefined;
-        return data; 
-    }
-}
-
-export interface IHealthCheckResponse {
-    bookings_api_health?: HealthCheck | undefined;
-    user_api_health?: HealthCheck | undefined;
-    video_api_health?: HealthCheck | undefined;
-}
-
 export class HealthCheck implements IHealthCheck {
-    successful?: boolean | undefined;
+    successful?: boolean;
     error_message?: string | undefined;
     data?: { [key: string]: any; } | undefined;
 
@@ -2195,16 +2274,17 @@ export class HealthCheck implements IHealthCheck {
 }
 
 export interface IHealthCheck {
-    successful?: boolean | undefined;
+    successful?: boolean;
     error_message?: string | undefined;
     data?: { [key: string]: any; } | undefined;
 }
 
-export class AddMediaEventRequest implements IAddMediaEventRequest {
-    participant_id?: string | undefined;
-    event_type?: EventType | undefined;
+export class HealthCheckResponse implements IHealthCheckResponse {
+    bookings_api_health?: HealthCheck | undefined;
+    user_api_health?: HealthCheck | undefined;
+    video_api_health?: HealthCheck | undefined;
 
-    constructor(data?: IAddMediaEventRequest) {
+    constructor(data?: IHealthCheckResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -2215,29 +2295,32 @@ export class AddMediaEventRequest implements IAddMediaEventRequest {
 
     init(_data?: any) {
         if (_data) {
-            this.participant_id = _data["participant_id"];
-            this.event_type = _data["event_type"];
+            this.bookings_api_health = _data["bookings_api_health"] ? HealthCheck.fromJS(_data["bookings_api_health"]) : <any>undefined;
+            this.user_api_health = _data["user_api_health"] ? HealthCheck.fromJS(_data["user_api_health"]) : <any>undefined;
+            this.video_api_health = _data["video_api_health"] ? HealthCheck.fromJS(_data["video_api_health"]) : <any>undefined;
         }
     }
 
-    static fromJS(data: any): AddMediaEventRequest {
+    static fromJS(data: any): HealthCheckResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new AddMediaEventRequest();
+        let result = new HealthCheckResponse();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["participant_id"] = this.participant_id;
-        data["event_type"] = this.event_type;
+        data["bookings_api_health"] = this.bookings_api_health ? this.bookings_api_health.toJSON() : <any>undefined;
+        data["user_api_health"] = this.user_api_health ? this.user_api_health.toJSON() : <any>undefined;
+        data["video_api_health"] = this.video_api_health ? this.video_api_health.toJSON() : <any>undefined;
         return data; 
     }
 }
 
-export interface IAddMediaEventRequest {
-    participant_id?: string | undefined;
-    event_type?: EventType | undefined;
+export interface IHealthCheckResponse {
+    bookings_api_health?: HealthCheck | undefined;
+    user_api_health?: HealthCheck | undefined;
+    video_api_health?: HealthCheck | undefined;
 }
 
 export enum EventType {
@@ -2258,10 +2341,58 @@ export enum EventType {
     VhoCall = "VhoCall",
 }
 
+export class AddMediaEventRequest implements IAddMediaEventRequest {
+    participant_id?: string;
+    readonly event_type?: EventType;
+
+    constructor(data?: IAddMediaEventRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.participant_id = _data["participant_id"];
+            (<any>this).event_type = _data["event_type"];
+        }
+    }
+
+    static fromJS(data: any): AddMediaEventRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new AddMediaEventRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["participant_id"] = this.participant_id;
+        data["event_type"] = this.event_type;
+        return data; 
+    }
+}
+
+export interface IAddMediaEventRequest {
+    participant_id?: string;
+    event_type?: EventType;
+}
+
+export enum SelfTestFailureReason {
+    Camera = "Camera",
+    Microphone = "Microphone",
+    Video = "Video",
+    BadScore = "BadScore",
+    IncompleteTest = "IncompleteTest",
+}
+
 export class AddSelfTestFailureEventRequest implements IAddSelfTestFailureEventRequest {
-    participant_id?: string | undefined;
-    event_type?: EventType | undefined;
-    self_test_failure_reason?: SelfTestFailureReason | undefined;
+    participant_id?: string;
+    readonly event_type?: EventType;
+    self_test_failure_reason?: SelfTestFailureReason;
 
     constructor(data?: IAddSelfTestFailureEventRequest) {
         if (data) {
@@ -2275,7 +2406,7 @@ export class AddSelfTestFailureEventRequest implements IAddSelfTestFailureEventR
     init(_data?: any) {
         if (_data) {
             this.participant_id = _data["participant_id"];
-            this.event_type = _data["event_type"];
+            (<any>this).event_type = _data["event_type"];
             this.self_test_failure_reason = _data["self_test_failure_reason"];
         }
     }
@@ -2297,22 +2428,20 @@ export class AddSelfTestFailureEventRequest implements IAddSelfTestFailureEventR
 }
 
 export interface IAddSelfTestFailureEventRequest {
-    participant_id?: string | undefined;
-    event_type?: EventType | undefined;
-    self_test_failure_reason?: SelfTestFailureReason | undefined;
+    participant_id?: string;
+    event_type?: EventType;
+    self_test_failure_reason?: SelfTestFailureReason;
 }
 
-export enum SelfTestFailureReason {
-    Camera = "Camera",
-    Microphone = "Microphone",
-    Video = "Video",
-    BadScore = "BadScore",
-    IncompleteTest = "IncompleteTest",
+export enum TestScore {
+    Good = "Good",
+    Okay = "Okay",
+    Bad = "Bad",
 }
 
 export class TestCallScoreResponse implements ITestCallScoreResponse {
-    score?: TestScore | undefined;
-    passed?: boolean | undefined;
+    score?: TestScore;
+    passed?: boolean;
 
     constructor(data?: ITestCallScoreResponse) {
         if (data) {
@@ -2346,19 +2475,13 @@ export class TestCallScoreResponse implements ITestCallScoreResponse {
 }
 
 export interface ITestCallScoreResponse {
-    score?: TestScore | undefined;
-    passed?: boolean | undefined;
-}
-
-export enum TestScore {
-    Good = "Good",
-    Okay = "Okay",
-    Bad = "Bad",
+    score?: TestScore;
+    passed?: boolean;
 }
 
 export class UpdateParticipantStatusEventRequest implements IUpdateParticipantStatusEventRequest {
-    participant_id?: string | undefined;
-    event_type?: EventType | undefined;
+    participant_id?: string;
+    readonly event_type?: EventType;
 
     constructor(data?: IUpdateParticipantStatusEventRequest) {
         if (data) {
@@ -2372,7 +2495,7 @@ export class UpdateParticipantStatusEventRequest implements IUpdateParticipantSt
     init(_data?: any) {
         if (_data) {
             this.participant_id = _data["participant_id"];
-            this.event_type = _data["event_type"];
+            (<any>this).event_type = _data["event_type"];
         }
     }
 
@@ -2392,12 +2515,12 @@ export class UpdateParticipantStatusEventRequest implements IUpdateParticipantSt
 }
 
 export interface IUpdateParticipantStatusEventRequest {
-    participant_id?: string | undefined;
-    event_type?: EventType | undefined;
+    participant_id?: string;
+    event_type?: EventType;
 }
 
 export class UserProfileResponse implements IUserProfileResponse {
-    role?: UserRole | undefined;
+    role?: UserRole;
     first_name?: string | undefined;
     last_name?: string | undefined;
     display_name?: string | undefined;
@@ -2438,7 +2561,7 @@ export class UserProfileResponse implements IUserProfileResponse {
 }
 
 export interface IUserProfileResponse {
-    role?: UserRole | undefined;
+    role?: UserRole;
     first_name?: string | undefined;
     last_name?: string | undefined;
     display_name?: string | undefined;
@@ -2480,13 +2603,24 @@ export interface ISelfTestPexipResponse {
     pexip_self_test_node?: string | undefined;
 }
 
+export enum TaskType {
+    Hearing = "Hearing",
+    Judge = "Judge",
+    Participant = "Participant",
+}
+
+export enum TaskStatus {
+    ToDo = "ToDo",
+    Done = "Done",
+}
+
 export class TaskResponse implements ITaskResponse {
-    id?: number | undefined;
-    origin_id?: string | undefined;
+    id?: number;
+    origin_id?: string;
     body?: string | undefined;
-    type?: TaskType | undefined;
-    status?: TaskStatus | undefined;
-    created?: Date | undefined;
+    type?: TaskType;
+    status?: TaskStatus;
+    created?: Date;
     updated?: Date | undefined;
     updated_by?: string | undefined;
 
@@ -2534,25 +2668,14 @@ export class TaskResponse implements ITaskResponse {
 }
 
 export interface ITaskResponse {
-    id?: number | undefined;
-    origin_id?: string | undefined;
+    id?: number;
+    origin_id?: string;
     body?: string | undefined;
-    type?: TaskType | undefined;
-    status?: TaskStatus | undefined;
-    created?: Date | undefined;
+    type?: TaskType;
+    status?: TaskStatus;
+    created?: Date;
     updated?: Date | undefined;
     updated_by?: string | undefined;
-}
-
-export enum TaskType {
-    Hearing = "Hearing",
-    Judge = "Judge",
-    Participant = "Participant",
-}
-
-export enum TaskStatus {
-    ToDo = "ToDo",
-    Done = "Done",
 }
 
 export class TokenResponse implements ITokenResponse {
@@ -2596,7 +2719,7 @@ export interface ITokenResponse {
 }
 
 export class HearingVenueResponse implements IHearingVenueResponse {
-    id?: number | undefined;
+    id?: number;
     name?: string | undefined;
 
     constructor(data?: IHearingVenueResponse) {
@@ -2631,15 +2754,15 @@ export class HearingVenueResponse implements IHearingVenueResponse {
 }
 
 export interface IHearingVenueResponse {
-    id?: number | undefined;
+    id?: number;
     name?: string | undefined;
 }
 
 export class ConferenceEventRequest implements IConferenceEventRequest {
-    event_id?: string | undefined;
-    event_type?: EventType | undefined;
-    time_stamp_utc?: Date | undefined;
-    conference_id?: string | undefined;
+    event_id!: string | undefined;
+    event_type?: EventType;
+    time_stamp_utc?: Date;
+    conference_id!: string | undefined;
     participant_id?: string | undefined;
     transfer_from?: RoomType | undefined;
     transfer_to?: RoomType | undefined;
@@ -2689,10 +2812,10 @@ export class ConferenceEventRequest implements IConferenceEventRequest {
 }
 
 export interface IConferenceEventRequest {
-    event_id?: string | undefined;
-    event_type?: EventType | undefined;
-    time_stamp_utc?: Date | undefined;
-    conference_id?: string | undefined;
+    event_id: string | undefined;
+    event_type?: EventType;
+    time_stamp_utc?: Date;
+    conference_id: string | undefined;
     participant_id?: string | undefined;
     transfer_from?: RoomType | undefined;
     transfer_to?: RoomType | undefined;

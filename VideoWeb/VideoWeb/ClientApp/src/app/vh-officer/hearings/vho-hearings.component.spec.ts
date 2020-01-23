@@ -211,29 +211,19 @@ describe('VhoHearingsComponent Filter', () => {
     expect(component.conferences[0].status).toBe(filter.statuses[0].Status);
     expect(component.conferences[1].status).toBe(filter.statuses[0].Status);
   });
-  it('should apply filter with selected all to tasks records', () => {
-    const currentConference = conferences[0];
-    component.selectedHearing = new Hearing(
-      new ConferenceResponse({ id: currentConference.id })
-    );
-    component.getTasksForConference(currentConference.id);
-    expect(component.tasks.length === 2).toBeTruthy();
+  it('should apply filter with selected alerts records', () => {
+    expect(component.conferences.length).toBe(3);
+    filter.locations.forEach(x => x.Selected = false);
+    filter.statuses.forEach(x => x.Selected = false);
+    filter.alerts[1].Selected = true;
+    const expectedAlerts1 = filter.alerts[1].BodyText;
+    component.activateFilterOptions(filter);
 
-    component.activateTaskFilterOptions(filter);
-    expect(component.tasks.length === 2).toBeTruthy();
-  });
-  it('should apply filter with selected alert status to tasks records', () => {
-    const currentConference = conferences[0];
-    component.selectedHearing = new Hearing(
-      new ConferenceResponse({ id: currentConference.id })
-    );
-    component.getTasksForConference(currentConference.id);
-    expect(component.tasks.length === 2).toBeTruthy();
-    filter.alerts[0].Selected = true;
-    component.activateTaskFilterOptions(filter);
-    expect(component.tasks.length === 1).toBeTruthy();
-    expect(
-      component.tasks[0].body.includes(filter.alerts[0].BodyText)
-    ).toBeTruthy();
+    expect(component.conferences.length).toBe(2);
+    const filtered1 = component.conferences[0].tasks.filter(x => x.body.includes(expectedAlerts1)).length > 0;
+    expect(filtered1).toBe(true);
+    const filtered2 = component.conferences[1].tasks.filter(x => x.body.includes(expectedAlerts1)).length > 0;
+    expect(filtered2).toBe(true);
+
   });
 });
