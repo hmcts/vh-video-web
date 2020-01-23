@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
+using AcceptanceTests.Common.Api.Uris;
+using AcceptanceTests.Common.Driver.Browser;
+using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
 using TechTalk.SpecFlow;
-using Testing.Common.Helpers;
-using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.AcceptanceTests.Strategies.HearingStatus;
-using VideoWeb.AcceptanceTests.Users;
 using VideoWeb.Common.Helpers;
 using VideoWeb.Services.Video;
 
@@ -22,13 +22,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         private const int MaxRetries = 20;
         private readonly TestContext _tc;
         private readonly Dictionary<string, UserBrowser> _browsers;
-        private readonly VhoHearingListPage _hearingListPage;
 
-        public HearingsStatusSteps(Dictionary<string, UserBrowser> browsers, TestContext tc, VhoHearingListPage hearingListPage)
+        public HearingsStatusSteps(Dictionary<string, UserBrowser> browsers, TestContext tc)
         {
             _tc = tc;
             _browsers = browsers;
-            _hearingListPage = hearingListPage;
         }
 
         [Given(@"the hearing status changes to (.*)")]
@@ -50,7 +48,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the hearings should be in chronological order")]
         public void ThenTheHearingsShouldBeInChronologicalOrder()
         {
-            var displayedCaseOrder = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementsVisible(_hearingListPage.VideoHearingsCaseNumbers);
+            var displayedCaseOrder = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementsVisible(VhoHearingListPage.VideoHearingsCaseNumbers);
             displayedCaseOrder.First().Text.Should().Be(_tc.Hearing.Cases.First().Number);
         }
 
@@ -59,7 +57,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_tc.CurrentUser.Key].Driver
                 .WaitUntilVisible(
-                    _hearingListPage.VideoHearingsOfficerAlertType(_tc.Hearing.Cases.First().Number))
+                    VhoHearingListPage.VideoHearingsOfficerAlertType(_tc.Hearing.Cases.First().Number))
                 .Text.Should().Be(notification);
         }
 

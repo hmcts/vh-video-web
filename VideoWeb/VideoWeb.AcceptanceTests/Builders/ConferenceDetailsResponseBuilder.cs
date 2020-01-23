@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
-using Testing.Common.Helpers;
-using VideoWeb.AcceptanceTests.Contexts;
-using VideoWeb.Common.Helpers;
+using AcceptanceTests.Common.Api.Requests;
+using AcceptanceTests.Common.Api.Uris;
+using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.Services.Video;
 using UpdateParticipantRequest = VideoWeb.Services.Bookings.UpdateParticipantRequest;
 
@@ -23,7 +23,7 @@ namespace VideoWeb.AcceptanceTests.Builders
         public ConferenceDetailsResponseBuilder(TestContext context)
         {
             _context = context;
-            _context.Request = _context.Get(new ConferenceEndpoints().GetConferenceDetailsById(_context.NewConferenceId));
+            _context.Request = _context.Get(new ConferenceEndpoints().GetConferenceDetailsById(_context.Test.NewConferenceId));
         }
 
         public ConferenceDetailsResponseBuilder WithUsername(string username)
@@ -138,7 +138,7 @@ namespace VideoWeb.AcceptanceTests.Builders
                 .WithContext(_context)
                 .SendToVideoApiWithoutVerification();
 
-            return ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_context.Response.Content);            
+            return RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_context.Response.Content);            
         }
     }
 }

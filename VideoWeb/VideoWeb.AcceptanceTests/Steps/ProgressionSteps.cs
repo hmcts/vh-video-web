@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using TechTalk.SpecFlow;
-using VideoWeb.AcceptanceTests.Contexts;
+using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Journeys;
 using VideoWeb.AcceptanceTests.Pages;
 
@@ -11,10 +11,10 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public class ProgressionSteps
     {
-        private readonly TestContext _tc;
+        private readonly TestContext _c;
         private readonly DataSetupSteps _dataSetupSteps;
         private readonly CommonSteps _commonSteps;
-        private readonly CommonPages _commonPages;
+        private readonly BrowserSteps _browserSteps;
         private readonly LoginSteps _loginSteps;
         private readonly HearingsListSteps _hearingListSteps;
         private readonly VhoHearingListSteps _vhoHearingListSteps;
@@ -32,7 +32,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             TestContext testContext, 
             DataSetupSteps dataSetupSteps, 
             CommonSteps commonSteps,
-            CommonPages commonPages,
             LoginSteps loginSteps, 
             HearingsListSteps hearingListSteps, 
             VhoHearingListSteps vhoHearingListSteps,
@@ -44,12 +43,11 @@ namespace VideoWeb.AcceptanceTests.Steps
             EquipmentWorkingSteps equipmentWorkingSteps, 
             RulesSteps rulesSteps, 
             DeclarationSteps declarationSteps,
-            WaitingRoomSteps waitingRoomSteps)
+            WaitingRoomSteps waitingRoomSteps, BrowserSteps browserSteps)
         {
-            _tc = testContext;
+            _c = testContext;
             _dataSetupSteps = dataSetupSteps;
             _commonSteps = commonSteps;
-            _commonPages = commonPages;
             _loginSteps = loginSteps;
             _hearingListSteps = hearingListSteps;
             _vhoHearingListSteps = vhoHearingListSteps;
@@ -57,6 +55,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _equipmentCheckSteps = equipmentCheckSteps;
             _switchOnCamAndMicSteps = switchOnCamAndMicSteps;
             _waitingRoomSteps = waitingRoomSteps;
+            _browserSteps = browserSteps;
             _practiceVideoHearingSteps = practiceVideoHearingSteps;
             _equipmentWorkingSteps = equipmentWorkingSteps;
             _rulesSteps = rulesSteps;
@@ -69,7 +68,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _dataSetupSteps.GivenIHaveAHearing(0);
             _dataSetupSteps.GetTheNewConferenceDetails();
-            _commonSteps.GivenANewBrowserIsOpenFor(user.ToLower().Contains("self test") ? user.Split(" ")[0] : user);
+            _browserSteps.GivenANewBrowserIsOpenFor(user.ToLower().Contains("self test") ? user.Split(" ")[0] : user);
             Progression(FromString(user), page);
         }
 
@@ -79,14 +78,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _dataSetupSteps.GivenIHaveAHearing(minutes);
             _dataSetupSteps.GetTheNewConferenceDetails();
-            _commonSteps.GivenANewBrowserIsOpenFor(user);
+            _browserSteps.GivenANewBrowserIsOpenFor(user);
             Progression(FromString(user), page);
         }
 
         [Given(@"the (.*) user has progressed to the (.*) page for the existing hearing")]
         public void GivenHearingExistsAndIAmOnThePage(string user, string page)
         {
-            _commonSteps.GivenANewBrowserIsOpenFor(user.ToLower().Equals("clerk self test") ? "clerk" : user);
+            _browserSteps.GivenANewBrowserIsOpenFor(user.ToLower().Equals("clerk self test") ? "clerk" : user);
             Progression(FromString(user), page);
         }
 
@@ -125,14 +124,14 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {Journey.SelfTest, new SelfTestJourney()},
                 {Journey.Vho, new VhoJourney()}
             };
-            journeys[userJourney].VerifyUserIsApplicableToJourney(_tc.CurrentUser.Role);
+            journeys[userJourney].VerifyUserIsApplicableToJourney(_c.CurrentUser.Role);
             journeys[userJourney].VerifyDestinationIsInThatJourney(endPage);
-            if (userJourney == Journey.ClerkSelftest || userJourney == Journey.SelfTest) _tc.Selftest = true;           
+            if (userJourney == Journey.ClerkSelftest || userJourney == Journey.SelfTest) _c.Test.SelfTestJourney = true;           
             var journey = journeys[userJourney].Journey();
             var steps = Steps();
             foreach (var page in journey)
             {
-                if (page != Page.Login) _commonPages.PageUrl(page.Url);
+                if (page != Page.Login) _commonSteps.ThenTheUserIsOnThePage(page.Name);
                 if (page.Equals(endPage)) break;
                 steps[page].ProgressToNextPage();
             }

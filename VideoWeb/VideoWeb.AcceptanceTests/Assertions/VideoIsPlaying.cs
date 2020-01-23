@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
+using AcceptanceTests.Common.Driver.Browser;
+using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
 using OpenQA.Selenium;
-using VideoWeb.AcceptanceTests.Helpers;
-using VideoWeb.AcceptanceTests.Users;
 
 namespace VideoWeb.AcceptanceTests.Assertions
 {

@@ -6,9 +6,8 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
-using Testing.Common.Configuration;
-using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security;
+using VideoWeb.IntegrationTests.Config;
 using AzureAdConfiguration = VideoWeb.Common.Configuration.AzureAdConfiguration;
 
 namespace VideoWeb.IntegrationTests.Api

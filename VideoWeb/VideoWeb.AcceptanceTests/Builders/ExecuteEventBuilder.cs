@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Net;
+using AcceptanceTests.Common.Api.Uris;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using Testing.Common.Helpers;
-using VideoWeb.AcceptanceTests.Contexts;
+using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.EventHub.Models;
 
 namespace VideoWeb.AcceptanceTests.Builders

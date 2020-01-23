@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using FluentAssertions;
-using VideoWeb.AcceptanceTests.Contexts;
+using VideoWeb.AcceptanceTests.Helpers;
 
 namespace VideoWeb.AcceptanceTests.Builders
 {
@@ -24,14 +24,12 @@ namespace VideoWeb.AcceptanceTests.Builders
         public void SendToBookingsApi()
         {
             _context.Response = _context.BookingsApiClient().Execute(_context.Request);
-            GetTheResponse();
             VerifyTheResponse();
         }
 
         public void SendToVideoApi()
         {
             _context.Response = _context.VideoApiClient().Execute(_context.Request);
-            GetTheResponse();
             VerifyTheResponse();
         }
 
@@ -39,26 +37,17 @@ namespace VideoWeb.AcceptanceTests.Builders
         {
             _context.SetDefaultVideoWebBearerToken();
             _context.Response = _context.VideoWebClient().Execute(_context.Request);
-            GetTheResponse();
             VerifyTheResponse();
         }
 
         public void SendToVideoApiWithoutVerification()
         {
             _context.Response = _context.VideoApiClient().Execute(_context.Request);
-            GetTheResponse();
         }
 
         public void SendToVideoWebWithoutVerification()
         {
             _context.Response = _context.VideoWebClient().Execute(_context.Request);
-            GetTheResponse();
-        }
-
-        private void GetTheResponse()
-        {
-            if (_context.Response.Content != null)
-                _context.Json = _context.Response.Content;
         }
 
         private void VerifyTheResponse()
