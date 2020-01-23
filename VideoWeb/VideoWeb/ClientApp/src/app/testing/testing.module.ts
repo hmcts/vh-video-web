@@ -13,7 +13,6 @@ import {
     IndividualParticipantStatusListStubComponent
 } from './stubs/participant-status-list-stub';
 import { JudgeHearingTableStubComponent } from './stubs/judge-hearing-list-table-stub';
-import { SnotifyStubComponent } from './stubs/snotify-stub';
 import { AnalogueClockStubComponent } from './stubs/analogue-clock-stub';
 import { TasksTableStubComponent } from './stubs/task-table-stub';
 import { VhoHearingListStubComponent } from './stubs/vho-hearing-list-stub';
@@ -42,7 +41,6 @@ import { VhoHearingsFilterStubComponent } from './stubs/vho-hearings-filter-stub
         HearingListTableStubComponent,
         JudgeParticipantStatusListStubComponent,
         JudgeHearingTableStubComponent,
-        SnotifyStubComponent,
         ContactUsFoldingStubComponent,
         AnalogueClockStubComponent,
         TasksTableStubComponent,

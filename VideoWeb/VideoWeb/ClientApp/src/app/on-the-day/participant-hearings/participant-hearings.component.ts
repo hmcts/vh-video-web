@@ -1,5 +1,8 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { ConferenceForUserResponse, UserProfileResponse, UserRole } from 'src/app/services/clients/api-client';
+import {
+  ConferenceForUserResponse,
+  UserProfileResponse,
+} from 'src/app/services/clients/api-client';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { Subscription } from 'rxjs';
@@ -10,7 +13,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-participant-hearings',
   templateUrl: './participant-hearings.component.html',
-  styleUrls: ['./participant-hearings.component.css']
+  styleUrls: ['./participant-hearings.component.css'],
 })
 export class ParticipantHearingsComponent implements OnInit, OnDestroy {
   conferences: ConferenceForUserResponse[];
@@ -27,10 +30,10 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
     private profileService: ProfileService
   ) {
     this.loadingData = true;
-   }
+  }
 
   ngOnInit() {
-    this.profileService.getUserProfile().then((profile) => {
+    this.profileService.getUserProfile().then(profile => {
       this.profile = profile;
     });
     this.errorCount = 0;
@@ -47,20 +50,24 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
   }
 
   retrieveHearingsForUser() {
-    this.conferencesSubscription = this.videoWebService.getConferencesForIndividual().subscribe((data: ConferenceForUserResponse[]) => {
-      this.errorCount = 0;
-      this.loadingData = false;
-      this.conferences = data;
-    },
-      (error) => {
-        this.errorCount++;
-        this.loadingData = false;
-        if (this.errorCount > 3) {
-          this.errorService.handleApiError(error);
-        } else {
-          this.errorService.handleApiError(error, true);
+    this.conferencesSubscription = this.videoWebService
+      .getConferencesForIndividual()
+      .subscribe(
+        (data: ConferenceForUserResponse[]) => {
+          this.errorCount = 0;
+          this.loadingData = false;
+          this.conferences = data;
+        },
+        error => {
+          this.errorCount++;
+          this.loadingData = false;
+          if (this.errorCount > 3) {
+            this.errorService.handleApiError(error);
+          } else {
+            this.errorService.handleApiError(error, true);
+          }
         }
-      });
+      );
   }
 
   hasHearings() {

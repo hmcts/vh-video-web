@@ -1,25 +1,20 @@
-import { Component, HostListener, NgZone, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import {
-    ConferenceForUserResponse, ConferenceResponse, ConsultationAnswer, ParticipantResponse, TaskResponse
-} from 'src/app/services/clients/api-client';
-import { ErrorService } from 'src/app/services/error.service';
-import { EventsService } from 'src/app/services/events.service';
-import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
-import { ConsultationMessage } from 'src/app/services/models/consultation-message';
-import { HelpMessage } from 'src/app/services/models/help-message';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { NotificationService } from 'src/app/services/notification.service';
-import { Hearing } from 'src/app/shared/models/hearing';
-import { TaskCompleted } from '../../on-the-day/models/task-completed';
-import { Logger } from 'src/app/services/logging/logger-base';
+import {Component, HostListener, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
+import {VideoWebService} from 'src/app/services/api/video-web.service';
+import {ConferenceForUserResponse, ConferenceResponse, ParticipantResponse, TaskResponse} from 'src/app/services/clients/api-client';
+import {ErrorService} from 'src/app/services/error.service';
+import {EventsService} from 'src/app/services/events.service';
+import {ConferenceStatusMessage} from 'src/app/services/models/conference-status-message';
+import {ParticipantStatusMessage} from 'src/app/services/models/participant-status-message';
+import {Hearing} from 'src/app/shared/models/hearing';
+import {TaskCompleted} from '../../on-the-day/models/task-completed';
+import {Logger} from 'src/app/services/logging/logger-base';
 
 import * as $ from 'jquery';
-import { Subscription } from 'rxjs';
-import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
-import { HearingsFilter, ConferenceForUser, ExtendedConferenceStatus } from '../../shared/models/hearings-filter';
-import { SessionStorage } from '../../services/session-storage';
+import {Subscription} from 'rxjs';
+import {VhoHearingListComponent} from '../vho-hearing-list/vho-hearing-list.component';
+import {ConferenceForUser, ExtendedConferenceStatus, HearingsFilter} from '../../shared/models/hearings-filter';
+import {SessionStorage} from '../../services/session-storage';
 
 @Component({
     selector: 'app-vho-hearings',
@@ -40,7 +35,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     participants: ParticipantResponse[];
     selectedConferenceUrl: SafeResourceUrl;
 
-    pendingTransferRequests: ConsultationMessage[] = [];
     tasks: TaskResponse[];
     tasksAll: TaskResponse[];
     conferencesSubscription: Subscription;
@@ -61,7 +55,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     constructor(
         private videoWebService: VideoWebService,
         public sanitizer: DomSanitizer,
-        private notificationService: NotificationService,
         private errorService: ErrorService,
         private ngZone: NgZone,
         private eventService: EventsService,
@@ -151,11 +144,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     }
 
     isHearingSelected(): boolean {
-        if (this.selectedHearing && this.selectedHearing.getConference()) {
-            return true;
-        } else {
-            return false;
-        }
+        return !!(this.selectedHearing && this.selectedHearing.getConference());
     }
 
     clearSelectedConference() {
@@ -190,14 +179,13 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     }
 
     updateWidthForAdminFrame(): void {
-        const listColumnElement: HTMLElement = document.getElementById('list-column');
-        let listWidth = 0;
-        if (listColumnElement) {
-            listWidth = listColumnElement.offsetWidth;
-        }
-        const windowWidth = window.innerWidth;
-        const frameWidth = windowWidth - listWidth - 350;
-        this.adminFrameWidth = frameWidth;
+      const listColumnElement: HTMLElement = document.getElementById('list-column');
+      let listWidth = 0;
+      if (listColumnElement) {
+        listWidth = listColumnElement.offsetWidth;
+      }
+      const windowWidth = window.innerWidth;
+      this.adminFrameWidth = windowWidth - listWidth - 350;
     }
 
     getHeightForFrame(): number {
@@ -241,36 +229,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         if (this.isCurrentConference(new ConferenceForUserResponse({ id: message.conferenceId }))) {
             this.selectedHearing.getConference().status = message.status;
         }
-    }
-
-    handleConsultationMessage(message: ConsultationMessage): void {
-        this.ngZone.run(() => {
-            if (message.result === ConsultationAnswer.Accepted) {
-                this.addTransferTask(message);
-            }
-        });
-    }
-
-    handleHelpMessage(message: HelpMessage): void {
-        this.ngZone.run(() => {
-            const toastMessage = message.participantName + ' requires assistance in hearing ' + message.conferenceId;
-            this.notificationService.info(toastMessage, 0, true);
-        });
-    }
-
-    addTransferTask(message: ConsultationMessage) {
-        this.pendingTransferRequests.push(message);
-        const conference = this.conferences.find(x => x.id === message.conferenceId);
-        const requester = conference.participants.find(x => x.username === message.requestedBy);
-        const requestee = conference.participants.find(x => x.username === message.requestedFor);
-
-        const toastMessage = `Hearing ${conference.case_name}: Please move ${requester.display_name} and
-    ${requestee.display_name} into a private room`;
-        this.notificationService.info(toastMessage, 0, true);
-    }
-
-    dismissTransferTask(message: ConsultationMessage) {
-        this.pendingTransferRequests.splice(this.pendingTransferRequests.indexOf(message), 1);
     }
 
     getTasksForConference(conferenceId: string) {

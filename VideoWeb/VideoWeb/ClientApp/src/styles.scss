@@ -1,23 +1,22 @@
-@import "~govuk-frontend/govuk/all";
-@import "~@hmcts/frontend/all";
-@import "~ng-snotify/styles/simple";
+@import '~govuk-frontend/govuk/all';
+@import '~@hmcts/frontend/all';
 
 .grey-btn {
-  background-color: govuk-colour("light-grey");
+  background-color: govuk-colour('light-grey');
   color: $govuk-text-colour;
   box-shadow: 0 2px 0 $govuk-border-colour;
 }
 
 .grey-btn:hover {
-  background-color: govuk-colour("mid-grey");
+  background-color: govuk-colour('mid-grey');
   color: $govuk-text-colour;
-  box-shadow: 0 2px 0 govuk-colour("dark-grey");
+  box-shadow: 0 2px 0 govuk-colour('dark-grey');
 }
 
 .grey-btn:focus {
-  background-color: govuk-colour("mid-grey");
+  background-color: govuk-colour('mid-grey');
   color: $govuk-text-colour;
-  box-shadow: 0 2px 0 govuk-colour("dark-grey");
+  box-shadow: 0 2px 0 govuk-colour('dark-grey');
 }
 
 .hearing-details-col1-width {
@@ -52,7 +51,7 @@
 .modal.clear {
   background-color: rgb(223, 223, 223);
   /* Fallback color */
-  background-color: rgba(223, 223, 223, 0.0);
+  background-color: rgba(223, 223, 223, 0);
 }
 
 .modal.consultation {
@@ -90,7 +89,7 @@
 .govuk-body--white,
 .govuk-body-l--white,
 .govuk-body-s--white {
-  color: govuk-colour("white");
+  color: govuk-colour('white');
   text-align: center;
 }
 
