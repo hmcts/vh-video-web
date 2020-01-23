@@ -44,7 +44,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     private readonly hearingsFilterStorage: SessionStorage<HearingsFilter>;
     readonly HEARINGS_FITER_KEY = 'vho.hearings.filter';
 
-    @ViewChild('conferenceList')
+    @ViewChild('conferenceList', { static: false })
     $conferenceList: VhoHearingListComponent;
 
     @HostListener('window:resize', ['$event'])
