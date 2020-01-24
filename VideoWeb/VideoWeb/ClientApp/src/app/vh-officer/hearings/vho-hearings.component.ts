@@ -272,7 +272,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     this.displayFilter = false;
 
     this.activateFilterOptions(filterOptions);
-   // this.activateTaskFilterOptions(filterOptions);
 
     this.selectFilteredConference(selectedConferenceId);
   }
