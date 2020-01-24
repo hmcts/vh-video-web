@@ -52,6 +52,8 @@ namespace VideoWeb.UnitTests.Mappings
             response.NoOfPendingTasks.Should().Be(conference.Pending_tasks);
             response.HearingVenueName.Should().Be(conference.Hearing_venue_name);
             response.Tasks.Count.Should().Be(1);
+            response.Tasks[0].Id.Should().Be(1);
+            response.Tasks[0].Body.Should().Be("self-test");
         }
 
         [Test]
