@@ -17,7 +17,7 @@
                    type="checkbox"
                    [checked]="child.Selected" id="{{'status' + i}}" name="{{'status'+i}}"
                    (click)="statusOptionSelected(i)">
-            <label class="govuk-label govuk-checkboxes__label" for="{{'status' + i}}">{{child.Description}}</label>
+            <label class="govuk-label govuk-checkboxes__label vh-word" for="{{'status' + i}}">{{child.Description}}</label>
           </div>
         </div>
       </div>
@@ -39,7 +39,7 @@
                    [checked]="child.Selected"
                    id="{{'location' + i}}" name="{{'location' + i}}"
                    (click)="locationOptionSelected(i)">
-            <label class="govuk-label govuk-checkboxes__label" for="{{'location' + i}}">{{child.Description}}</label>
+            <label class="govuk-label govuk-checkboxes__label vh-word" for="{{'location' + i}}">{{child.Description}}</label>
           </div>
         </div>
 
@@ -61,7 +61,7 @@
                    type="checkbox"
                    [checked]="child.Selected" id="{{'alert' + i}}" name="{{'alert' + i}}"
                    (click)="alertOptionSelected(i)">
-            <label class="govuk-label govuk-checkboxes__label" for="{{'alert' + i}}">{{child.Description}}</label>
+            <label class="govuk-label govuk-checkboxes__label vh-word" for="{{'alert' + i}}">{{child.Description}}</label>
           </div>
         </div>
       </div>
