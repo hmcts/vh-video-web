@@ -35,6 +35,7 @@ namespace VideoWeb.UnitTests.Mappings
             };
 
             conference.Participants = participants;
+            conference.Tasks = new List<TaskResponse> { new TaskResponse { Id = 1, Status = TaskStatus.ToDo, Body = "self-test" } };
 
             var response = _mapper.MapConferenceSummaryToResponseModel(conference);
 
@@ -50,6 +51,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.NoOfParticipantsUnavailable.Should().Be(1);
             response.NoOfPendingTasks.Should().Be(conference.Pending_tasks);
             response.HearingVenueName.Should().Be(conference.Hearing_venue_name);
+            response.Tasks.Count.Should().Be(1);
         }
 
         [Test]
