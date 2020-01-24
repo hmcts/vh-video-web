@@ -14,7 +14,7 @@ namespace VideoWeb.Mappings
         {
             var conferenceForUserResponse = new ConferenceForUserResponse();
 
-            
+
             if (conference.Participants != null)
             {
                 var participantStatusRoles = new List<ConferenceUserRole>
@@ -36,7 +36,13 @@ namespace VideoWeb.Mappings
 
                 conferenceForUserResponse.Participants = MapParticipants(conference.Participants);
             }
-            
+
+            if (conference.Tasks != null)
+            {
+                var conferenceTasks = conference.Tasks.Select(x => { return new TaskUserResponse { Id = x.Id, Body = x.Body }; }).ToList();
+                conferenceForUserResponse.Tasks = conferenceTasks;
+            }
+
             conferenceForUserResponse.Id = conference.Id;
             conferenceForUserResponse.CaseName = conference.Case_name;
             conferenceForUserResponse.CaseNumber = conference.Case_number;
