@@ -8,6 +8,8 @@ import { VhoHearingListComponent } from '../vh-officer/vho-hearing-list/vho-hear
 import { ParticipantInfoTooltipComponent } from './participant-info-tooltip/participant-info-tooltip.component';
 import { VhOfficerRoutingModule } from './vh-officer-routing.module';
 import { ClipboardModule } from 'ngx-clipboard';
+import { VhoHearingsFilterComponent } from '../vh-officer/vho-herings-filter/vho-hearings-filter.component';
+import { HearingsFilterOptionsService } from '../vh-officer/services/hearings-filter-options.service';
 
 @NgModule({
   declarations: [
@@ -15,13 +17,17 @@ import { ClipboardModule } from 'ngx-clipboard';
     TasksTableComponent,
     VhoHearingListComponent,
     ParticipantStatusComponent,
-    ParticipantInfoTooltipComponent
+    ParticipantInfoTooltipComponent,
+    VhoHearingsFilterComponent
   ],
   imports: [
     CommonModule,
     SharedModule,
     ClipboardModule,
     VhOfficerRoutingModule
-  ]
+    ],
+    providers: [
+        HearingsFilterOptionsService
+    ]
 })
 export class VhOfficerModule { }

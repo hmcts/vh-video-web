@@ -91,10 +91,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             var conference = conferenceRetriever.GetConference(_context);
             AssertConferenceDetailsResponse.ForConference(conference);
 
-            if (conference.Id != null)
+            if (conference.Id != Guid.Empty)
             {
                 _context.Conference = conference;
-                _context.NewConferenceId = (Guid)conference.Id;
+                _context.NewConferenceId = conference.Id;
             }
             else
             {
@@ -110,9 +110,9 @@ namespace VideoWeb.AcceptanceTests.Steps
             AssertHearingResponse.ForHearing(hearing);
             _context.Hearing = hearing;
             _context.Cases = hearing.Cases;
-            if (hearing.Id != null)
+            if (hearing.Id != Guid.Empty)
             {
-                _context.NewHearingId = (Guid)hearing.Id;
+                _context.NewHearingId = hearing.Id;
             }
             else
             {

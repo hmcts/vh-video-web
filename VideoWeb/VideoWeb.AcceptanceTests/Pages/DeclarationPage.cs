@@ -1,5 +1,4 @@
 ﻿using OpenQA.Selenium;
-using VideoWeb.AcceptanceTests.Contexts;
 
 namespace VideoWeb.AcceptanceTests.Pages
 {

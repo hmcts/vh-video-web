@@ -67,9 +67,15 @@ describe('JudgeSelfTestComponent', () => {
   });
 
   it('should show self test restarting video', () => {
+    const selfTestSpy = jasmine.createSpyObj<SelfTestComponent>('SelfTestComponent', ['replayVideo']);
+    selfTestSpy.replayVideo.and.callFake(() => {});
+    component.selfTestComponent = selfTestSpy;
+
     component.restartTest();
+
     expect(component.showEquipmentFaultMessage).toBeFalsy();
     expect(component.testInProgress).toBeFalsy();
     expect(component.hideSelfTest).toBeFalsy();
+    expect(selfTestSpy.replayVideo).toHaveBeenCalled();
   });
 });

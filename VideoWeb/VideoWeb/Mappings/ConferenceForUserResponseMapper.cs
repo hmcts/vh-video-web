@@ -14,7 +14,7 @@ namespace VideoWeb.Mappings
         {
             var conferenceForUserResponse = new ConferenceForUserResponse();
 
-            
+
             if (conference.Participants != null)
             {
                 var participantStatusRoles = new List<ConferenceUserRole>
@@ -22,7 +22,7 @@ namespace VideoWeb.Mappings
                     ConferenceUserRole.Individual, ConferenceUserRole.Representative
                 };
                 var filteredParticipants = conference.Participants
-                    .Where(x => participantStatusRoles.Contains(x.User_role.GetValueOrDefault())).ToList();
+                    .Where(x => participantStatusRoles.Contains(x.User_role)).ToList();
 
                 conferenceForUserResponse.NoOfParticipantsAvailable =
                     filteredParticipants.Count(x => x.Status == ParticipantState.Available);
@@ -36,15 +36,21 @@ namespace VideoWeb.Mappings
 
                 conferenceForUserResponse.Participants = MapParticipants(conference.Participants);
             }
-            
-            conferenceForUserResponse.Id = conference.Id.GetValueOrDefault();
+
+            if (conference.Tasks != null)
+            {
+                var conferenceTasks = conference.Tasks.Select(x => { return new TaskUserResponse { Id = x.Id, Body = x.Body }; }).ToList();
+                conferenceForUserResponse.Tasks = conferenceTasks;
+            }
+
+            conferenceForUserResponse.Id = conference.Id;
             conferenceForUserResponse.CaseName = conference.Case_name;
             conferenceForUserResponse.CaseNumber = conference.Case_number;
             conferenceForUserResponse.CaseType = conference.Case_type;
-            conferenceForUserResponse.ScheduledDateTime = conference.Scheduled_date_time.GetValueOrDefault();
-            conferenceForUserResponse.ScheduledDuration = conference.Scheduled_duration.GetValueOrDefault();
+            conferenceForUserResponse.ScheduledDateTime = conference.Scheduled_date_time;
+            conferenceForUserResponse.ScheduledDuration = conference.Scheduled_duration;
             conferenceForUserResponse.Status = MapConferenceStatus(conference.Status);
-            conferenceForUserResponse.NoOfPendingTasks = conference.Pending_tasks.GetValueOrDefault();
+            conferenceForUserResponse.NoOfPendingTasks = conference.Pending_tasks;
             conferenceForUserResponse.HearingVenueName = conference.Hearing_venue_name;
 
             return conferenceForUserResponse;

@@ -37,7 +37,7 @@ namespace VideoWeb.EventHub.Handlers.Core
             SourceParticipant = SourceConference.Participants
                 .SingleOrDefault(x => x.Id == callbackEvent.ParticipantId);
 
-            _logger.LogError($"Handling Event: {callbackEvent.EventType} for conferenceId {callbackEvent.ConferenceId} with reason " +
+            _logger.LogTrace($"Handling Event: {callbackEvent.EventType} for conferenceId {callbackEvent.ConferenceId} with reason " +
                 $"{callbackEvent.Reason} at Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") }");
             await PublishStatusAsync(callbackEvent);
         }
@@ -53,13 +53,13 @@ namespace VideoWeb.EventHub.Handlers.Core
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
                     .ParticipantStatusMessage(SourceParticipant.Id, participantState);
-                _logger.LogError($"Participant Status: Participant Id: { participant.Id } | " +
+                _logger.LogTrace($"Participant Status: Participant Id: { participant.Id } | " +
                     $"Role: { participant.Role } | Participant State: { participantState } | Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
             }
             
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .ParticipantStatusMessage(SourceParticipant.Id, participantState);
-            _logger.LogError($"Participant Status: Participant Id: { SourceParticipant.Id } | " +
+            _logger.LogTrace($"Participant Status: Participant Id: { SourceParticipant.Id } | " +
                 $"Role: { SourceParticipant.Role } | Participant State: { participantState } | Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
         }
 
@@ -74,7 +74,7 @@ namespace VideoWeb.EventHub.Handlers.Core
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
                     .ConferenceStatusMessage(SourceConference.Id, hearingEventStatus);
-                _logger.LogError($"Conference Status: Conference Id: { SourceConference.Id } | Participant Id: { participant.Id } | " +
+                _logger.LogTrace($"Conference Status: Conference Id: { SourceConference.Id } | Participant Id: { participant.Id } | " +
                     $"Role: { participant.Role } | Participant State: { hearingEventStatus } | Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
             }
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)

@@ -35,21 +35,25 @@ namespace VideoWeb.UnitTests.Mappings
             };
 
             conference.Participants = participants;
+            conference.Tasks = new List<TaskResponse> { new TaskResponse { Id = 1, Status = TaskStatus.ToDo, Body = "self-test" } };
 
             var response = _mapper.MapConferenceSummaryToResponseModel(conference);
 
-            response.Id.Should().Be(conference.Id.GetValueOrDefault());
+            response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.Case_name);
             response.CaseNumber.Should().Be(conference.Case_number);
             response.CaseType.Should().Be(conference.Case_type);
-            response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time.GetValueOrDefault());
-            response.ScheduledDuration.Should().Be(conference.Scheduled_duration.GetValueOrDefault());
-            response.Status.ToString().Should().Be(conference.Status.GetValueOrDefault().ToString());
+            response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);
+            response.ScheduledDuration.Should().Be(conference.Scheduled_duration);
+            response.Status.ToString().Should().Be(conference.Status.ToString());
             response.NoOfParticipantsAvailable.Should().Be(1);
             response.NoOfParticipantsInConsultation.Should().Be(2);
             response.NoOfParticipantsUnavailable.Should().Be(1);
             response.NoOfPendingTasks.Should().Be(conference.Pending_tasks);
             response.HearingVenueName.Should().Be(conference.Hearing_venue_name);
+            response.Tasks.Count.Should().Be(1);
+            response.Tasks[0].Id.Should().Be(1);
+            response.Tasks[0].Body.Should().Be("self-test");
         }
 
         [Test]

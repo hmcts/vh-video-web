@@ -6,14 +6,17 @@ import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { AppComponent } from './app.component';
 import { ConfigService } from './services/api/config.service';
-import { ClientSettingsResponse, UserProfileResponse, UserRole } from './services/clients/api-client';
+import {
+  ClientSettingsResponse,
+  UserProfileResponse,
+  UserRole,
+} from './services/clients/api-client';
 import { DeviceTypeService } from './services/device-type.service';
 import { Logger } from './services/logging/logger-base';
 import { PageUrls } from './shared/page-url.constants';
 import { MockLogger } from './testing/mocks/MockLogger';
 import { FooterStubComponent } from './testing/stubs/footer-stub';
 import { HeaderStubComponent } from './testing/stubs/header-stub';
-import { SnotifyStubComponent } from './testing/stubs/snotify-stub';
 import { ProfileService } from './services/api/profile.service';
 import { BetaBannerStubComponent } from './testing/stubs/beta-banner-stub';
 
@@ -28,29 +31,35 @@ describe('AppComponent', () => {
     client_id: 'clientid',
     post_logout_redirect_uri: '/logout',
     redirect_uri: '/home',
-    video_api_url: 'http://vh-video-api/'
+    video_api_url: 'http://vh-video-api/',
   });
-
-  const userInfo = {
-    authenticated: false,
-    userName: 'chris.green@hearings.net',
-    token: 'token'
-  };
 
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
   let router: Router;
 
   configureTestSuite(() => {
-    configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['clientSettings', 'getClientSettings', 'loadConfig']);
+    configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', [
+      'clientSettings',
+      'getClientSettings',
+      'loadConfig',
+    ]);
     configServiceSpy.getClientSettings.and.returnValue(clientSettings);
 
-    adalServiceSpy = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut']);
-  //  adalServiceSpy.userInfo.and.returnValue(userInfo);
+    adalServiceSpy = jasmine.createSpyObj<AdalService>('AdalService', [
+      'init',
+      'handleWindowCallback',
+      'userInfo',
+      'logOut',
+    ]);
 
-    deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isSupportedBrowser']);
+    deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>([
+      'isSupportedBrowser',
+    ]);
 
-    profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
+    profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', [
+      'getUserProfile',
+    ]);
     const profile = new UserProfileResponse({ role: UserRole.Representative });
     profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
 
@@ -60,18 +69,16 @@ describe('AppComponent', () => {
         AppComponent,
         HeaderStubComponent,
         FooterStubComponent,
-        SnotifyStubComponent,
-        BetaBannerStubComponent
+        BetaBannerStubComponent,
       ],
-      providers:
-        [
-          { provide: AdalService, useValue: adalServiceSpy },
-          { provide: ConfigService, useValue: configServiceSpy },
-          { provide: Logger, useClass: MockLogger },
-          { provide: DeviceTypeService, useValue: deviceTypeServiceSpy },
-          { provide: DeviceTypeService, useValue: deviceTypeServiceSpy },
-          { provide: ProfileService, useValue: profileServiceSpy }
-        ],
+      providers: [
+        { provide: AdalService, useValue: adalServiceSpy },
+        { provide: ConfigService, useValue: configServiceSpy },
+        { provide: Logger, useClass: MockLogger },
+        { provide: DeviceTypeService, useValue: deviceTypeServiceSpy },
+        { provide: DeviceTypeService, useValue: deviceTypeServiceSpy },
+        { provide: ProfileService, useValue: profileServiceSpy },
+      ],
     });
   });
 
@@ -92,7 +99,9 @@ describe('AppComponent', () => {
   it('should navigate to unsupported browser page if browser is not compatible', () => {
     deviceTypeServiceSpy.isSupportedBrowser.and.returnValue(false);
     component.checkBrowser();
-    expect(router.navigateByUrl).toHaveBeenCalledWith(PageUrls.UnsupportedBrowser);
+    expect(router.navigateByUrl).toHaveBeenCalledWith(
+      PageUrls.UnsupportedBrowser
+    );
   });
 
   it('should allow user to continue on a supported browser', () => {
@@ -109,6 +118,8 @@ describe('AppComponent', () => {
 
   it('should have a tag Skip to main content', async(() => {
     const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('a').textContent).toContain('Skip to main content');
+    expect(compiled.querySelector('a').textContent).toContain(
+      'Skip to main content'
+    );
   }));
 });

@@ -46,6 +46,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.HearingCaseDetails, 60).Text
                     .Should().Contain(_tc.Hearing.Cases.First().Name);
             }
+
             _commonSteps.GivenInTheUsersBrowser("Clerk");
         }
 
@@ -66,9 +67,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheFirstParticipantStatusIsDisplayedAsNotSignedIn(string name, string status)
         {
             var participant = _tc.Conference.Participants.First(x => x.Name.Contains(name));
-            if (participant.Id != null)
+            if (participant.Id != Guid.Empty)
             {
-                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_clerkPage.ParticipantStatus((Guid)participant.Id)).Text.ToUpper().Trim().Should().Be(status.ToUpper());
+                _browsers[_tc.CurrentUser.Key].Driver
+                    .WaitUntilVisible(_clerkPage.ParticipantStatus(participant.Id)).Text.ToUpper().Trim()
+                    .Should().Be(status.ToUpper());
             }
             else
             {
@@ -80,7 +83,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Judge can see information about their case")]
         public void ThenTheClerkCanSeeInformationAboutTheirCase()
         {
-            if (_tc.Hearing.Scheduled_date_time?.ToLocalTime() == null || _tc.Hearing.Scheduled_duration == null)
+            if (_tc.Hearing.Scheduled_date_time.ToLocalTime() == null || _tc.Hearing.Scheduled_duration == 0)
             {
                 throw new DataMisalignedException("Scheduled dates and times must be set");
             }
@@ -94,9 +97,9 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_clerkPage.HearingTitle).Text.Should()
                 .Be($"{_tc.Cases.First().Name} ({_tc.Hearing.Case_type_name}) case number: {_tc.Cases.First().Number}");
 
-            var startDate = (DateTime) _tc.Hearing.Scheduled_date_time;
+            var startDate = _tc.Hearing.Scheduled_date_time;
             var dateAndStartTime = startDate.ToLocalTime().ToString(DateFormats.ClerkWaitingRoomPageTime);
-            var endTime = startDate.ToLocalTime().AddMinutes((int) _tc.Hearing.Scheduled_duration)
+            var endTime = startDate.ToLocalTime().AddMinutes(_tc.Hearing.Scheduled_duration)
                 .ToString(DateFormats.ClerkWaitingRoomPageTimeEnd);
 
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_clerkPage.HearingDateTime).Text.Should()
@@ -119,14 +122,16 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .Should().Contain($"case number: {_tc.Hearing.Cases.First().Number}");
 
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.HearingDate).Text
-                .Should().Contain(_tc.Hearing.Scheduled_date_time?.ToString(DateFormats.WaitingRoomPageDate));
+                .Should().Contain(_tc.Hearing.Scheduled_date_time.ToString(DateFormats.WaitingRoomPageDate));
 
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.HearingDate).Text
-                .Should().Contain(_tc.Hearing.Scheduled_date_time?.ToLocalTime().ToString(DateFormats.WaitingRoomPageTime));
+                .Should().Contain(_tc.Hearing.Scheduled_date_time.ToLocalTime()
+                    .ToString(DateFormats.WaitingRoomPageTime));
 
-            if (_tc.Hearing.Scheduled_duration != null)
+            if (_tc.Hearing.Scheduled_duration != 0)
             {
-                var endTime = _tc.Hearing.Scheduled_date_time?.AddMinutes((int)_tc.Hearing.Scheduled_duration).ToLocalTime()
+                var endTime = _tc.Hearing.Scheduled_date_time.AddMinutes(_tc.Hearing.Scheduled_duration)
+                    .ToLocalTime()
                     .ToString(DateFormats.WaitingRoomPageTime);
                 _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.HearingDate).Text
                     .Should().Contain(endTime);
@@ -139,9 +144,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the user can see a list of participants and their representatives")]
         public void ThenTheUserCanSeeAListOfParticipantsAndTheirRepresentatives()
         {
-            var rowsElement = _tc.CurrentUser.Role.ToLower().Equals("individual") ? _page.IndividualParticipantsList : _page.ParticipantsList;
+            var rowsElement = _tc.CurrentUser.Role.ToLower().Equals("individual")
+                ? _page.IndividualParticipantsList
+                : _page.ParticipantsList;
             var allRows = _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementsVisible(rowsElement);
-            var participantRowIds = (from row in allRows where row.GetAttribute("id") != "" select row.GetAttribute("id")).ToList();
+            var participantRowIds =
+                (from row in allRows where row.GetAttribute("id") != "" select row.GetAttribute("id")).ToList();
             var participantsInformation = new List<ParticipantInformation>();
             foreach (var id in participantRowIds)
             {
@@ -171,7 +179,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 }
             }
         }
-    
+
         [Then(@"the user can see other participants status")]
         public void ThenTheUserCanSeeOtherParticipantsStatus()
         {
@@ -180,7 +188,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                 if (participant.Hearing_role_name.Equals("Individual") ||
                     participant.Hearing_role_name.Equals("Representative"))
                 {
-                    _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.OtherParticipantsStatus(participant.Display_name)).Text
+                    _browsers[_tc.CurrentUser.Key].Driver
+                        .WaitUntilVisible(_page.OtherParticipantsStatus(participant.Display_name)).Text
                         .Should().Be("Unavailable");
                 }
             }
@@ -200,12 +209,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the user can see a (.*) box and an about to begin message")]
         public void ThenTheUserCanSeeABlackBoxAndAAboutToBeginMessage(string colour)
         {
-            _browsers[_tc.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browsers[_tc.CurrentUser.Key].Driver.FindElement(_page.TimePanel));
+            _browsers[_tc.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);",
+                _browsers[_tc.CurrentUser.Key].Driver.FindElement(_page.TimePanel));
 
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.TimePanel)
                 .Displayed.Should().BeTrue();
 
-            var backgroundColourInHex = ConvertRgbToHex(_browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementExists(_page.TimePanel)
+            var backgroundColourInHex = ConvertRgbToHex(_browsers[_tc.CurrentUser.Key].Driver
+                .WaitUntilElementExists(_page.TimePanel)
                 .GetCssValue("background-color"));
 
             switch (colour)
@@ -215,21 +226,21 @@ namespace VideoWeb.AcceptanceTests.Steps
                     backgroundColourInHex.Should().Be(_page.AboutToBeginBgColour);
                     _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementExists(_page.AboutToBeginText)
                         .Displayed.Should().BeTrue();
-                        break;
+                    break;
                 }
                 case "yellow":
                 {
                     backgroundColourInHex.Should().Be(_page.DelayedBgColour);
                     _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementExists(_page.DelayedText)
                         .Displayed.Should().BeTrue();
-                        break;
+                    break;
                 }
                 case "blue":
                 {
                     backgroundColourInHex.Should().Be(_page.ScheduledBgColour);
                     _browsers[_tc.CurrentUser.Key].Driver.WaitUntilElementExists(_page.ScheduledText)
                         .Displayed.Should().BeTrue();
-                        break;
+                    break;
                 }
                 default: throw new ArgumentOutOfRangeException($"No defined colour: '{colour}'");
             }
@@ -281,9 +292,11 @@ namespace VideoWeb.AcceptanceTests.Steps
             foreach (var lastname in _browsers.Keys)
             {
                 var user = _tc.Conference.Participants.First(x => x.Name.ToLower().Contains(lastname.ToLower()));
-                if (user.User_role.Equals(UserRole.Judge) || user.Id == null) continue;
-                _browsers[_tc.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browsers[_tc.CurrentUser.Key].Driver.FindElement(_clerkPage.ParticipantStatus((Guid)user.Id)));
-                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_clerkPage.ParticipantStatus((Guid)user.Id)).Text.ToUpper().Trim()
+                if (user.User_role.Equals(UserRole.Judge) || user.Id == Guid.Empty) continue;
+                _browsers[_tc.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);",
+                    _browsers[_tc.CurrentUser.Key].Driver.FindElement(_clerkPage.ParticipantStatus(user.Id)));
+                _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_clerkPage.ParticipantStatus(user.Id))
+                    .Text.ToUpper().Trim()
                     .Should().Be("CONNECTED");
             }
         }

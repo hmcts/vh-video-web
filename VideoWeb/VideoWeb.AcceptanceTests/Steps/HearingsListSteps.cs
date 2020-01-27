@@ -6,12 +6,12 @@ using FluentAssertions;
 using OpenQA.Selenium.Support.Extensions;
 using TechTalk.SpecFlow;
 using Testing.Common.Helpers;
+using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.AcceptanceTests.Users;
+using VideoWeb.Contract.Responses;
 using ParticipantResponse = VideoWeb.Services.Bookings.ParticipantResponse;
-using TestContext = VideoWeb.AcceptanceTests.Contexts.TestContext;
-using UserRole = VideoWeb.Contract.Responses.UserRole;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -71,11 +71,11 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.ParticipantHearingDate(_tc.Hearing.Cases.First().Number)).Text
                 .Should().Be(
-                    $"{_tc.Hearing.Scheduled_date_time?.ToString(DateFormats.HearingListPageDate)}");
+                    $"{_tc.Hearing.Scheduled_date_time.ToString(DateFormats.HearingListPageDate)}");
 
             _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_page.ParticipantHearingTime(_tc.Hearing.Cases.First().Number)).Text
                 .Should().Be(
-                    $"{_tc.Hearing.Scheduled_date_time?.ToLocalTime():HH:mm}");
+                    $"{_tc.Hearing.Scheduled_date_time.ToLocalTime():HH:mm}");
         }
 
         [Then(@"the user can see their details at the top of the hearing list")]
@@ -89,14 +89,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Clerk can see a list of hearings including the new hearing")]
         public void ThenTheClerkCanSeeAListOfHearingsIncludingTheNewHearing()
         {
-            if (_tc.Hearing.Scheduled_date_time == null || _tc.Hearing.Scheduled_duration == null)
+            if (_tc.Hearing.Scheduled_date_time == DateTime.MinValue || _tc.Hearing.Scheduled_duration == 0)
             {
                 throw new DataException("Required hearing values are null");
             }
 
-            var scheduledDateTime = (DateTime)_tc.Hearing.Scheduled_date_time;
+            var scheduledDateTime = _tc.Hearing.Scheduled_date_time;
             scheduledDateTime = scheduledDateTime.ToLocalTime();
-            var scheduledDuration = (int)_tc.Hearing.Scheduled_duration;
+            var scheduledDuration = _tc.Hearing.Scheduled_duration;
 
             var rowData = new GetHearingRow()
                 .ForCaseNumber(_tc.CaseNumber())
