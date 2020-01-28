@@ -37,7 +37,6 @@ export class JudgeHearingPageComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.logger.info('**************************************ngOnInit()');
     this.getConference();
   }
 
@@ -45,11 +44,6 @@ export class JudgeHearingPageComponent implements OnInit {
     const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
     this.videoWebService.getConferenceById(conferenceId)
       .subscribe((data: ConferenceResponse) => {
-        if (data.status === ConferenceStatus.Closed) {
-          this.logger.info('Returning back to hearing list because status closed');
-          this.router.navigate([PageUrls.Home]);
-        }
-
         this.loadingData = false;
         this.conference = data;
         this.sanitiseIframeUrl();
