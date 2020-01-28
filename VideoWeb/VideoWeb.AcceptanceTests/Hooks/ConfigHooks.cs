@@ -43,7 +43,6 @@ namespace VideoWeb.AcceptanceTests.Hooks
             RegisterSauceLabsSettings(context);
             RunningAppsLocally(context);
             GenerateBearerTokens(context);
-            RegisterApis(context);
         }
 
         private void RegisterAzureSecrets(TestContext context)
@@ -125,17 +124,6 @@ namespace VideoWeb.AcceptanceTests.Hooks
             context.Tokens.VideoWebBearerToken = await ConfigurationManager.GetBearerToken(
                 context.VideoWebConfig.AzureAdConfiguration, context.VideoWebConfig.AzureAdConfiguration.ClientId);
             context.Tokens.VideoApiBearerToken.Should().NotBeNullOrEmpty();
-        }
-
-        private static void RegisterApis(TestContext context)
-        {
-            context.Apis = new Apis
-            {
-                BookingsApi = new BookingsApiManager(context.VideoWebConfig.VhServices.BookingsApiUrl, context.Tokens.BookingsApiBearerToken),
-                VideoApi = new VideoApiManager(context.VideoWebConfig.VhServices.VideoApiUrl, context.Tokens.VideoApiBearerToken),
-                VideoWebApi = new VideoWebApiManager(context.VideoWebConfig.VhServices.VideoWebUrl, context.Tokens.VideoWebBearerToken)
-            };
-            ConfigurationManager.VerifyConfigValuesSet(context.Apis);
         }
     }
 }

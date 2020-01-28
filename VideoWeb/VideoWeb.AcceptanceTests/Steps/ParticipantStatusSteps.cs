@@ -19,7 +19,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly TestContext _c;
         private readonly ScenarioContext _scenario;
         private const string ParticipantsKey = "participants";
-        private const int MaxRetries = 5;
+        private const int MaxRetries = 30;
 
         public ParticipantStatusSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext,
             ScenarioContext scenario)
@@ -62,7 +62,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the participant status will be updated to (.*)")]
         public void ThenTheParticipantStatusWillBeUpdatedToJoining(ParticipantState expectedState)
         {
-            var participantState = new PollForParticipantStatus(_c.VideoWebConfig.VhServices.VideoApiUrl, _c.Tokens.VideoApiBearerToken)
+            var participantState = new PollForParticipantStatus(_c.Apis.VideoApi)
                     .WithConferenceId(_c.Test.NewConferenceId)
                     .WithParticipant(_c.CurrentUser.Username)
                     .WithExpectedState(expectedState)

@@ -45,7 +45,6 @@ namespace VideoWeb.AcceptanceTests.Api
                 var response = _videoApi.GetConferenceByConferenceId(_conferenceId);
                 var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
                 var updatedParticipant = conference.Participants.Find(x => x.Username.ToLower().Equals(_username.ToLower()));
-
                 if (updatedParticipant.Display_name.Equals(_updatedRequest.Display_name) &&
                     updatedParticipant.Name.Contains($"{_updatedRequest.Title}"))
                 {

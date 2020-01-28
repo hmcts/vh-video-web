@@ -6,6 +6,7 @@
         HealthcheckHooks = 2,
         InitialiseBrowserHooks = 3,
         ConfigureDriverHooks = 4,
-        RemoveDataHooks = 5
+        RemoveDataHooks = 5,
+        RegisterApisHooks = 6
     }
 }

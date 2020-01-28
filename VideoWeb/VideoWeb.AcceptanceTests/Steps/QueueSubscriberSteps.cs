@@ -6,6 +6,7 @@ using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Requests;
 using AcceptanceTests.Common.Configuration.Users;
 using FluentAssertions;
+using RestSharp;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Api;
 using VideoWeb.AcceptanceTests.Assertions;
@@ -45,8 +46,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .UpdatedBy(UserManager.GetCaseAdminUser(_c.UserAccounts).Username)
                 .Build();
 
-            _c.Response = _c.Apis.BookingsApi.UpdateHearing(_c.Test.NewHearingId, request);
-            _c.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var response = _c.Apis.BookingsApi.UpdateHearing(_c.Test.NewHearingId, request);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [When(@"I attempt to cancel the hearing")]
@@ -58,15 +59,15 @@ namespace VideoWeb.AcceptanceTests.Steps
                 Status = UpdateBookingStatus.Cancelled
             };
 
-            _c.Response = _c.Apis.BookingsApi.UpdateHearingDetails(_c.Test.NewHearingId, request);
-            _c.Response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            var response = _c.Apis.BookingsApi.UpdateHearingDetails(_c.Test.NewHearingId, request);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
         [When(@"I attempt to delete the hearing")]
         public void WhenIAttemptToDeleteTheHearing()
         {
-            _c.Response = _c.Apis.BookingsApi.DeleteHearing(_c.Test.NewHearingId);
-            _c.Response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            var response = _c.Apis.BookingsApi.DeleteHearing(_c.Test.NewHearingId);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
         [When(@"I add a participant to the hearing")]
@@ -76,8 +77,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             _addedUser = UserManager.GetIndividualNotInHearing(_c.UserAccounts, participants);
             var request = new ParticipantsRequestBuilder().AddIndividual().WithUser(_addedUser).Build();
             var list = new AddParticipantsToHearingRequest() {Participants = new List<ParticipantRequest>() {request}};
-            _c.Response = _c.Apis.BookingsApi.AddParticipantsToHearing(_c.Test.NewHearingId, list);
-            _c.Response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            var response = _c.Apis.BookingsApi.AddParticipantsToHearing(_c.Test.NewHearingId, list);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
         [When(@"I update a participant from the hearing")]
@@ -89,16 +90,16 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .AddWordToStrings(_c.Test.TestData.UpdatedWord)
                 .Build();
 
-            _c.Response = _c.Apis.BookingsApi.UpdateParticipantDetails(_c.Test.NewHearingId, _updatedUser.Id, _updatedRequest);
-            _c.Response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var response = _c.Apis.BookingsApi.UpdateParticipantDetails(_c.Test.NewHearingId, _updatedUser.Id, _updatedRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [When(@"I remove a participant from the hearing")]
         public void WhenIRemoveAParticipantFromTheHearing()
         {
             _deletedUser = _c.Test.Hearing.Participants.Find(x => x.User_role_name.Equals(UserRole.Individual.ToString()));
-            _c.Response = _c.Apis.BookingsApi.RemoveParticipant(_c.Test.NewHearingId, _deletedUser.Id);
-            _c.Response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            var response =  _c.Apis.BookingsApi.RemoveParticipant(_c.Test.NewHearingId, _deletedUser.Id);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
         [Then(@"the conference has been created from the booking")]
@@ -132,6 +133,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             new PollForParticipant(_c.Apis.VideoApi)
                 .IsAdded()
+                .WithConferenceId(_c.Test.NewConferenceId)
                 .WithParticipant(_addedUser.Username)
                 .Poll()
                 .Should().BeTrue("Participant added");
@@ -153,7 +155,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the participant has been removed")]
         public void ThenTheParticipantHasBeenRemoved()
         {
-            new PollForParticipant(_c.Apis.VideoApi).WithParticipant(_addedUser.Username)
+            new PollForParticipant(_c.Apis.VideoApi).WithConferenceId(_c.Test.NewConferenceId).WithParticipant(_addedUser.Username)
                 .IsAdded().Poll()
                 .Should().BeTrue("Participant deleted");
 

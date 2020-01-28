@@ -9,17 +9,15 @@ namespace VideoWeb.AcceptanceTests.Api
 {
     public class PollForParticipantStatus
     {
-        private readonly string _videoApiUrl;
-        private readonly string _token;
+        private readonly VideoApiManager _videoApi;
         private Guid _conferenceId;
         private string _username;
         private ParticipantState _expectedState;
         private int _maxRetries = 5;
 
-        public PollForParticipantStatus(string videoApiUrl, string token)
+        public PollForParticipantStatus(VideoApiManager videoApi)
         {
-            _videoApiUrl = videoApiUrl;
-            _token = token;
+            _videoApi = videoApi;
         }
 
         public PollForParticipantStatus WithConferenceId(Guid conferenceId)
@@ -48,12 +46,11 @@ namespace VideoWeb.AcceptanceTests.Api
 
         public ParticipantState? Poll()
         {
-            var videoApiManager = new VideoApiManager(_videoApiUrl, _token);
-            var response = videoApiManager.GetConferenceByConferenceId(_conferenceId);
-            var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
-            conference.Should().NotBeNull();
             for (var i = 0; i < _maxRetries; i++)
             {
+                var response = _videoApi.GetConferenceByConferenceId(_conferenceId);
+                var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
+                conference.Should().NotBeNull();
                 var participant = conference.Participants.Find(x => x.Username.ToLower().Equals(_username.ToLower()));
                 var participantState = participant.Current_status?.Participant_state;
                 if (participantState != null && participantState.Equals(_expectedState))

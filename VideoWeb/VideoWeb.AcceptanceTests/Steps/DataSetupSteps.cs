@@ -72,8 +72,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             _c.Test.Hearing = hearing;
             _c.Test.NewHearingId = hearing.Id;
             _c.Test.Case = hearing.Cases.First();
-
-            ThenTheHearingDetailsShouldBeRetrieved();
         }
 
         [Given(@"Get the new conference details")]
@@ -95,16 +93,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             AssertConferenceDetailsResponse.ForConference(conference);
             _c.Test.Conference = conference;
             _c.Test.NewConferenceId = conference.Id;
-        }
-
-        [Then(@"hearing details should be retrieved")]
-        public void ThenTheHearingDetailsShouldBeRetrieved()
-        {
-            var hearing = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(_c.Response.Content);
-            hearing.Should().NotBeNull();
-            AssertHearingResponse.ForHearing(hearing);
-            _c.Test.Hearing = hearing;
-            _c.Test.NewHearingId = hearing.Id;
         }
     }
 }
