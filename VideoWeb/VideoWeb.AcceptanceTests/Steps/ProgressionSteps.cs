@@ -92,16 +92,17 @@ namespace VideoWeb.AcceptanceTests.Steps
             if (RemoveNumbersFromUsername(user.ToLower()) == "clerk" ||
                 RemoveNumbersFromUsername(user.ToLower()) == "judge")
                 return Journey.Clerk;
-            else if (RemoveNumbersFromUsername(user.ToLower()) == "clerk self test")
+            if (RemoveNumbersFromUsername(user.ToLower()) == "clerk self test")
                 return Journey.ClerkSelftest;
-            else if (RemoveNumbersFromUsername(user.ToLower()) == "individual self test" ||
+            if (RemoveNumbersFromUsername(user.ToLower()) == "individual self test" ||
                      RemoveNumbersFromUsername(user.ToLower()) == "representative self test")
-                return Journey.SelfTest;
-            else if (RemoveNumbersFromUsername(user.ToLower()) == "participant" ||
+                return Journey.SelfTest; 
+            if (RemoveNumbersFromUsername(user.ToLower()) == "participant" ||
                      RemoveNumbersFromUsername(user.ToLower()) == "individual" ||
                      RemoveNumbersFromUsername(user.ToLower()) == "representative")
                 return Journey.Participant;
-            else if (RemoveNumbersFromUsername(user.ToLower()) == "video hearings officer") return Journey.Vho;
+            if (RemoveNumbersFromUsername(user.ToLower()) == "video hearings officer") 
+                return Journey.Vho;
 
             throw new ArgumentOutOfRangeException($"No user journey found for '{user}'");
         }
