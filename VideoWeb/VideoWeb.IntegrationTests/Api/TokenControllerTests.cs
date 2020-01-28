@@ -12,12 +12,12 @@ namespace VideoWeb.IntegrationTests.Api
     public class TokenControllerTests : ControllerTestsBase
     {
         [Test]
-        public void should_get_token_when_requested_with_correct_participantid()
+        public void Should_get_token_when_requested_with_correct_participantid()
         {
             var responseMessage = SendGetRequestAsync($"/participants/{Guid.NewGuid()}/token").Result;
 
-            Stream receiveStream = responseMessage.Content.ReadAsStreamAsync().Result;
-            StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8);
+            var receiveStream = responseMessage.Content.ReadAsStreamAsync().Result;
+            var readStream = new StreamReader(receiveStream, Encoding.UTF8);
             var json = readStream.ReadToEnd();
             var tokenResponse = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<TokenResponse>(json);
 
@@ -27,19 +27,19 @@ namespace VideoWeb.IntegrationTests.Api
         }
 
         [Test]
-        public void should_return_bad_request_when_requested_with_incorrect_participantid()
+        public void Should_return_bad_request_when_requested_with_incorrect_participantid()
         {
             var responseMessage = SendGetRequestAsync($"/participants/{Guid.Empty}/token").Result;
             responseMessage.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         [Test]
-        public void should_get_Jwtoken_when_requested_with_correct_participantid()
+        public void Should_get_Jwtoken_when_requested_with_correct_participantid()
         {
             var responseMessage = SendGetRequestAsync($"/participants/{Guid.NewGuid()}/jwtoken").Result;
 
-            Stream receiveStream = responseMessage.Content.ReadAsStreamAsync().Result;
-            StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8);
+            var receiveStream = responseMessage.Content.ReadAsStreamAsync().Result;
+            var readStream = new StreamReader(receiveStream, Encoding.UTF8);
             var json = readStream.ReadToEnd();
             var tokenResponse = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<TokenResponse>(json);
 
@@ -49,7 +49,7 @@ namespace VideoWeb.IntegrationTests.Api
         }
 
         [Test]
-        public void should_return_bad_request_when_requested_with_incorrect_participantid_for_jwtoken()
+        public void Should_return_bad_request_when_requested_with_incorrect_participantid_for_jwtoken()
         {
             var responseMessage = SendGetRequestAsync($"/participants/{Guid.Empty}/jwtoken").Result;
             responseMessage.StatusCode.Should().Be(HttpStatusCode.BadRequest);
