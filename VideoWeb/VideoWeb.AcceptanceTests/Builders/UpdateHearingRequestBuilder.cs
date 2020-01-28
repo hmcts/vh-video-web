@@ -32,9 +32,9 @@ namespace VideoWeb.AcceptanceTests.Builders
             return this;
         }
 
-        public UpdateHearingRequestBuilder AddMinutesToTimes(int mins)
+        public UpdateHearingRequestBuilder AddMinutesToTimes(int minutes)
         {
-            _addMinutes = mins;
+            _addMinutes = minutes;
             return this;
         }
 

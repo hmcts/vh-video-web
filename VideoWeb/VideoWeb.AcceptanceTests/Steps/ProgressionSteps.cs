@@ -13,7 +13,6 @@ namespace VideoWeb.AcceptanceTests.Steps
     {
         private readonly TestContext _c;
         private readonly DataSetupSteps _dataSetupSteps;
-        private readonly CommonSteps _commonSteps;
         private readonly BrowserSteps _browserSteps;
         private readonly LoginSteps _loginSteps;
         private readonly HearingsListSteps _hearingListSteps;
@@ -30,8 +29,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         public ProgressionSteps(
             TestContext testContext, 
-            DataSetupSteps dataSetupSteps, 
-            CommonSteps commonSteps,
+            DataSetupSteps dataSetupSteps,
             LoginSteps loginSteps, 
             HearingsListSteps hearingListSteps, 
             VhoHearingListSteps vhoHearingListSteps,
@@ -43,11 +41,11 @@ namespace VideoWeb.AcceptanceTests.Steps
             EquipmentWorkingSteps equipmentWorkingSteps, 
             RulesSteps rulesSteps, 
             DeclarationSteps declarationSteps,
-            WaitingRoomSteps waitingRoomSteps, BrowserSteps browserSteps)
+            WaitingRoomSteps waitingRoomSteps, 
+            BrowserSteps browserSteps)
         {
             _c = testContext;
             _dataSetupSteps = dataSetupSteps;
-            _commonSteps = commonSteps;
             _loginSteps = loginSteps;
             _hearingListSteps = hearingListSteps;
             _vhoHearingListSteps = vhoHearingListSteps;
@@ -131,7 +129,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var steps = Steps();
             foreach (var page in journey)
             {
-                if (page != Page.Login) _commonSteps.ThenTheUserIsOnThePage(page.Name);
+                if (page != Page.Login) _browserSteps.ThenTheUserIsOnThePage(page.Name);
                 if (page.Equals(endPage)) break;
                 steps[page].ProgressToNextPage();
             }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
@@ -61,9 +60,9 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             if (!_browsers[_c.CurrentUser.Key].Driver.Url.Contains(Page.HearingList.Url)) return;
 
-            if (_c.Hearing != null)
+            if (_c.Test.Hearing != null)
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonPages.QuoteYourCaseNumberText).Text
-                    .Contains($"and quote your case number {_c.Hearing.Cases.First().Number}").Should().BeFalse();
+                    .Contains($"and quote your case number {_c.Test.Case.Number}").Should().BeFalse();
         }
 
         [Then(@"a phone number for help is provided")]
@@ -86,12 +85,6 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonPages.BetaBanner)
                     .Displayed.Should().BeTrue();
             }
-        }
-
-        [Then(@"the user is on the (.*) page")]
-        public void ThenTheUserIsOnThePage(string page)
-        {
-            _browsers[_c.CurrentUser.Key].PageUrl(Page.FromString(page).Url);
         }
 
         [Then(@"the (.*) error message appears")]

@@ -8,8 +8,10 @@ namespace VideoWeb.AcceptanceTests.Data
 {
     public class Test
     {
+        public CaseResponse Case { get; set; }
         public CommonData CommonData { get; set; }
         public ConferenceDetailsResponse Conference { get; set; }
+        public int DelayedStartTime { get; set; } = 0;
         public HearingDetailsResponse Hearing { get; set; }
         public Guid NewConferenceId { get; set; }
         public Guid NewHearingId { get; set; }

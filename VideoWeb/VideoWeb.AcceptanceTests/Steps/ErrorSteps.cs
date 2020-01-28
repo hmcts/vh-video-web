@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
-using AcceptanceTests.Common.Api.Uris;
+using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.Driver.Support;
@@ -43,13 +42,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user is removed from the hearing")]
         public void WhenTheUserIsRemovedFromTheHearing()
         {
-            var participantId = _c.Conference.Participants.Find(x => x.Display_name == _c.CurrentUser.DisplayName).Id;            
-            var endpoint = new VideoApiUriFactory().ParticipantsEndpoints;
-            _c.Request = _c.Delete(endpoint.RemoveParticipantFromConference( _c.Conference.Id, participantId));
-            _c.Response = _c.VideoApiClient().Execute(_c.Request);
-            _c.Response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-            _c.Response.ResponseStatus.Should().Be(ResponseStatus.Completed);
-            _c.Response.IsSuccessful.Should().BeTrue();
+            var participantId = _c.Test.Conference.Participants.Find(x => x.Display_name == _c.CurrentUser.DisplayName).Id;
+            var videoApiManager = new VideoApiManager(_c.VideoWebConfig.VhServices.VideoApiUrl, _c.Tokens.VideoApiBearerToken);
+            var response = videoApiManager.RemoveParticipantFromConference(_c.Test.NewConferenceId, participantId);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            response.ResponseStatus.Should().Be(ResponseStatus.Completed);
         }
 
         [When(@"the user tries to navigate back to the waiting room page")]
@@ -63,41 +60,24 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenTheUserAttemptsToAccessThePageOnTheirUnsupportedBrowser()
         {
             if (_c.VideoWebConfig.TestConfig.TargetBrowser == TargetBrowser.Edge)
-            {
                 _loginSteps.ProgressToNextPage();
-            }
         }
 
         [Then(@"the Not Found error page displays text of how to rectify the problem")]
         public void ThenTheNotFoundErrorPageDisplaysTextOfHowToRectifyTheProblem()
         {
-            _browsers[_c.CurrentUser.Key]
-                .Driver.WaitUntilVisible(ErrorPage.NotFoundPageTitle)
-                .Displayed.Should().BeTrue();
-
-            _browsers[_c.CurrentUser.Key]
-                .Driver.WaitUntilVisible(ErrorPage.TypedErrorMessage)
-                .Displayed.Should().BeTrue();
-
-            _browsers[_c.CurrentUser.Key]
-                .Driver.WaitUntilVisible(ErrorPage.PastedErrorMessage)
-                .Displayed.Should().BeTrue();
-
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ErrorPage.LinkErrorMessage)
-                .Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ErrorPage.NotFoundPageTitle).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ErrorPage.TypedErrorMessage).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ErrorPage.PastedErrorMessage).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ErrorPage.LinkErrorMessage).Displayed.Should().BeTrue();
         }
 
         [Then(@"the Unauthorised error page displays text of how to rectify the problem")]
         public void ThenTheUnauthorisedErrorPageDisplaysTextOfHowToRectifyTheProblem()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ErrorPage.UnauthorisedPageTitle)
-                .Displayed.Should().BeTrue();
-
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ErrorPage.NotRegisteredErrorMessage)
-                .Displayed.Should().BeTrue();
-
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ErrorPage.IsThisAMistakeErrorMessage)
-                .Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ErrorPage.UnauthorisedPageTitle).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ErrorPage.NotRegisteredErrorMessage).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ErrorPage.IsThisAMistakeErrorMessage).Displayed.Should().BeTrue();
         }
 
         [Then(@"the user is on the Unsupported Browser error page with text of how to rectify the problem")]
@@ -111,9 +91,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 _browsers[_c.CurrentUser.Key].Driver.Url.Should().NotContain(Page.HearingList.Url);
             }
-
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ErrorPage.UnsupportedBrowserTitle)
-                .Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ErrorPage.UnsupportedBrowserTitle).Displayed.Should().BeTrue();
         }
     }
 }

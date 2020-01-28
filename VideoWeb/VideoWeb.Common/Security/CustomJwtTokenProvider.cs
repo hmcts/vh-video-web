@@ -24,20 +24,20 @@ namespace VideoWeb.Common.Security
 
         public string GenerateTokenForCallbackEndpoint(string claims, int expiresInMinutes)
         {
-            byte[] key = new ASCIIEncoding().GetBytes(_customTokenSettings.ThirdPartySecret);
+            var key = new ASCIIEncoding().GetBytes(_customTokenSettings.ThirdPartySecret);
             return BuildToken(claims, expiresInMinutes, key);
         }
 
         public string GenerateToken(string claims, int expiresInMinutes)
         {
-            byte[] key = Convert.FromBase64String(_customTokenSettings.Secret);
+            var key = Convert.FromBase64String(_customTokenSettings.Secret);
             return BuildToken(claims, expiresInMinutes, key);
         }
 
         private string BuildToken(string claims, int expiresInMinutes, byte[] key)
         {
-            SymmetricSecurityKey securityKey = new SymmetricSecurityKey(key);
-            SecurityTokenDescriptor descriptor = new SecurityTokenDescriptor
+            var securityKey = new SymmetricSecurityKey(key);
+            var descriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] {new Claim(ClaimTypes.Name, claims)}),
                 NotBefore = DateTime.UtcNow.AddMinutes(-1),
@@ -46,8 +46,8 @@ namespace VideoWeb.Common.Security
                 SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature)
             };
 
-            JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
-            JwtSecurityToken token = handler.CreateJwtSecurityToken(descriptor);
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.CreateJwtSecurityToken(descriptor);
             return handler.WriteToken(token);
         }
     }

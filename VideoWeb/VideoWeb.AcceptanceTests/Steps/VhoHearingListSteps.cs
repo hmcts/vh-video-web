@@ -25,21 +25,19 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the VHO selects the hearing")]
         public void ProgressToNextPage()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Hearing.Cases.First().Number)).Click();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
         }
 
         [Then(@"the VHO can see a list of hearings including the new hearing")]
         public void ThenTheVhoCanSeeAListOfHearingsIncludingTheNewHearing()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.HearingWithCaseNumber(_c.Hearing.Cases.First().Number)).Displayed.Should().BeTrue();
-
-            var timespan = TimeSpan.FromMinutes(_c.Hearing.Scheduled_duration);
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.HearingWithCaseNumber(_c.Test.Case.Number)).Displayed.Should().BeTrue();
+            var timespan = TimeSpan.FromMinutes(_c.Test.Hearing.Scheduled_duration);
             var listedFor = GetListedForTimeAsString(timespan);
-
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerTime(_c.Hearing.Cases.First().Number)).Text
-                .Should().Be($"{_c.Hearing.Scheduled_date_time.ToLocalTime():HH:mm}");
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerListedFor(_c.Hearing.Cases.First().Number)).Text
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerTime(_c.Test.Case.Number)).Text
+                .Should().Be($"{_c.Test.Hearing.Scheduled_date_time.ToLocalTime():HH:mm}");
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerListedFor(_c.Test.Case.Number)).Text
                 .Should().Be($"{listedFor}");
         }
 
@@ -52,16 +50,15 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the VHO should see the participant contact details")]
         public void ThenTheVhoShouldSeeTheParticipantContactDetails()
         {
-            var hearingParticipants = _c.Hearing.Participants.FindAll(x => x.User_role_name.Equals("Individual") || x.User_role_name.Equals("Representative"));
+            var hearingParticipants = _c.Test.Hearing.Participants.FindAll(x => x.User_role_name.Equals("Individual") || x.User_role_name.Equals("Representative"));
             var user = hearingParticipants.First().Last_name;
             var hearingParticipant = hearingParticipants.First();
             var firstParticipantLink = _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantName(hearingParticipant.Last_name));
             firstParticipantLink.Displayed.Should().BeTrue();
             var action = new OpenQA.Selenium.Interactions.Actions(_browsers[_c.CurrentUser.Key].Driver.WrappedDriver);
             action.MoveToElement(firstParticipantLink).Perform();
-            var conferenceParticipant = _c.Conference.Participants.Find(x => x.Name.Contains(user));
+            var conferenceParticipant = _c.Test.Conference.Participants.Find(x => x.Name.Contains(user));
             var participantEmailAndRole = $"{conferenceParticipant.Name} ({conferenceParticipant.Case_type_group})";
-
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantContactDetails(user, participantEmailAndRole)).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantContactDetails(user, hearingParticipant.Contact_email)).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantContactDetails(user, hearingParticipant.Telephone_number)).Displayed.Should().BeTrue();

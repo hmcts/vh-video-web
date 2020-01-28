@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
@@ -16,13 +15,13 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public sealed class HearingRoomSteps : ISteps
     {
-        private readonly Dictionary<string, UserBrowser> _browsers;
-        private readonly TestContext _c;
-        private readonly BrowserSteps _browserSteps;
         private const int CountdownDuration = 30;
         private const int ExtraTimeAfterTheCountdown = 30;
         private const int PauseCloseTransferDuration = 15;
         private const int ExtraTimeForPageToRefresh = 60;
+        private readonly Dictionary<string, UserBrowser> _browsers;
+        private readonly TestContext _c;
+        private readonly BrowserSteps _browserSteps;
 
         public HearingRoomSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, BrowserSteps browserSteps)
         {
@@ -63,7 +62,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserSteps.GivenInTheUsersBrowser(user);
             _browsers[_c.CurrentUser.Key].Driver.Navigate().Refresh();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails, ExtraTimeForPageToRefresh).Text
-                .Should().Contain(_c.Hearing.Cases.First().Name);
+                .Should().Contain(_c.Test.Case.Name);
         }
 
         [Then(@"the Clerk is on the Hearing Room page for (.*) seconds")]

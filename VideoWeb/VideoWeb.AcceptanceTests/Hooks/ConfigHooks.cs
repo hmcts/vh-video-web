@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Configuration;
 using AcceptanceTests.Common.Configuration.Users;
 using AcceptanceTests.Common.Data.TestData;
@@ -11,6 +12,9 @@ using VideoWeb.AcceptanceTests.Configuration;
 using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Data.TestData;
 using VideoWeb.AcceptanceTests.Helpers;
+using VideoWeb.Common.Security.HashGen;
+using VideoWeb.Services.Bookings;
+using VideoWeb.Services.Video;
 
 namespace VideoWeb.AcceptanceTests.Hooks
 {
@@ -39,6 +43,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             RegisterSauceLabsSettings(context);
             RunningAppsLocally(context);
             GenerateBearerTokens(context);
+            RegisterApis(context);
         }
 
         private void RegisterAzureSecrets(TestContext context)
@@ -50,13 +55,12 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         private void RegisterCustomTokenSecrets(TestContext context)
         {
-            context.VideoWebConfig.VideoWebCustomToken = Options.Create(_configRoot.GetSection("CustomToken").Get<VideoWebCustomToken>()).Value;
-            ConfigurationManager.VerifyConfigValuesSet(context.VideoWebConfig.VideoWebCustomToken);
+            context.VideoWebConfig.VideoWebCustomTokenSettings = Options.Create(_configRoot.GetSection("CustomToken").Get<CustomTokenSettings>()).Value;
         }
 
         private void RegisterTestUserSecrets(TestContext context)
         {
-            context.VideoWebConfig.TestConfig = Options.Create(_configRoot.GetSection("TestUserSecrets").Get<VideoWebTestConfig>()).Value;
+            context.VideoWebConfig.TestConfig = Options.Create(_configRoot.GetSection("Testing").Get<VideoWebTestConfig>()).Value;
             ConfigurationManager.VerifyConfigValuesSet(context.VideoWebConfig.TestConfig);
         }
 
@@ -75,7 +79,12 @@ namespace VideoWeb.AcceptanceTests.Hooks
         {
             context.Test = new Test
             {
+                Case = new CaseResponse(),
                 CommonData = new LoadXmlFile().SerialiseCommonData(),
+                Conference = new ConferenceDetailsResponse(),
+                Hearing = new HearingDetailsResponse(),
+                NewConferenceId = Guid.Empty,
+                NewHearingId = Guid.Empty,
                 TestData = new DefaultDataManager().SerialiseTestData()
             };
         }
@@ -116,6 +125,17 @@ namespace VideoWeb.AcceptanceTests.Hooks
             context.Tokens.VideoWebBearerToken = await ConfigurationManager.GetBearerToken(
                 context.VideoWebConfig.AzureAdConfiguration, context.VideoWebConfig.AzureAdConfiguration.ClientId);
             context.Tokens.VideoApiBearerToken.Should().NotBeNullOrEmpty();
+        }
+
+        private static void RegisterApis(TestContext context)
+        {
+            context.Apis = new Apis
+            {
+                BookingsApi = new BookingsApiManager(context.VideoWebConfig.VhServices.BookingsApiUrl, context.Tokens.BookingsApiBearerToken),
+                VideoApi = new VideoApiManager(context.VideoWebConfig.VhServices.VideoApiUrl, context.Tokens.VideoApiBearerToken),
+                VideoWebApi = new VideoWebApiManager(context.VideoWebConfig.VhServices.VideoWebUrl, context.Tokens.VideoWebBearerToken)
+            };
+            ConfigurationManager.VerifyConfigValuesSet(context.Apis);
         }
     }
 }

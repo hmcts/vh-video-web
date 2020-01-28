@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Requests;
@@ -44,7 +45,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             GivenIHaveAHearing(minutes);
             GetTheNewConferenceDetails();
-            _c.DelayedStartTime = minutes;
+            _c.Test.DelayedStartTime = minutes;
         }
 
         [Given(@"I have a hearing and a conference in (.*) days time")]
@@ -64,12 +65,13 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithScheduledDuration(HearingDuration)
                 .Build();
 
-            var hearingResponse = new BookingsApiManager(_c.VideoWebConfig.VhServices.BookingsApiUrl, _c.Tokens.BookingsApiBearerToken).CreateHearing(request);
+            var hearingResponse = _c.Apis.BookingsApi.CreateHearing(request);
             hearingResponse.StatusCode.Should().Be(HttpStatusCode.Created);
             var hearing = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(hearingResponse.Content);
             hearing.Should().NotBeNull();
             _c.Test.Hearing = hearing;
             _c.Test.NewHearingId = hearing.Id;
+            _c.Test.Case = hearing.Cases.First();
 
             ThenTheHearingDetailsShouldBeRetrieved();
         }
@@ -84,8 +86,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 Updated_by = UserManager.GetCaseAdminUser(_c.UserAccounts).Username
             };
 
-            var bookingsApiManager = new BookingsApiManager(_c.VideoWebConfig.VhServices.BookingsApiUrl, _c.Tokens.BookingsApiBearerToken);
-            var response = bookingsApiManager.ConfirmHearingToCreateConference(_c.Test.NewHearingId, updateRequest);
+            var response = _c.Apis.BookingsApi.ConfirmHearingToCreateConference(_c.Test.NewHearingId, updateRequest);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             var videoApiManager = new VideoApiManager(_c.VideoWebConfig.VhServices.VideoApiUrl, _c.Tokens.VideoApiBearerToken);
             response = videoApiManager.PollForConferenceResponse(_c.Test.NewHearingId);

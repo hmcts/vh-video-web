@@ -8,7 +8,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
     public class HealthcheckHooks
     {
         [BeforeScenario(Order = (int)HooksSequence.HealthcheckHooks)]
-        private void CheckApiHealth(TestContext context)
+        public void CheckApiHealth(TestContext context)
         {
             CheckBookingsApiHealth(context.VideoWebConfig.VhServices.BookingsApiUrl, context.Tokens.BookingsApiBearerToken);
             CheckUserApiHealth(context.VideoWebConfig.VhServices.UserApiUrl, context.Tokens.UserApiBearerToken);

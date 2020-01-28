@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
+using RestSharp;
 using TechTalk.SpecFlow;
 using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Builders;
+using VideoWeb.AcceptanceTests.Configuration;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using RoomType = VideoWeb.EventHub.Enums.RoomType;
@@ -19,16 +24,16 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public sealed class HearingAlertsSteps
     {
+        private const string ParticipantKey = "participant";
+        private const string AlertTimeKey = "alert time";
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly ScenarioContext _scenarioContext;
-        private const string ParticipantKey = "participant";
-        private const string AlertTimeKey = "alert time";
 
-        public HearingAlertsSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, ScenarioContext scenarioContext)
+        public HearingAlertsSteps(Dictionary<string, UserBrowser> browsers, TestContext context, ScenarioContext scenarioContext)
         {
             _browsers = browsers;
-            _c = testContext;
+            _c = context;
             _scenarioContext = scenarioContext;
         }
 
@@ -43,11 +48,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithEventType(EventType.MediaPermissionDenied)
                 .Build();
 
-            new ExecuteEventBuilder()
-                .WithContext(_c)
-                .WithScenarioContext(_scenarioContext)
-                .WithRequest(request)
-                .SendToVideoApi();
+            var response = SendEventToVideoApi(request);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
         [When(@"the judge has disconnected from the hearing")]
@@ -60,11 +62,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithRoomType(RoomType.HearingRoom)
                 .Build();
 
-            new ExecuteEventBuilder()
-                .WithContext(_c)
-                .WithScenarioContext(_scenarioContext)
-                .WithRequest(request)
-                .SendToVideoWeb();
+            var response = SendEventToVideoWeb(request);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
         [When(@"a (.*) has disconnected from the (.*)")]
@@ -79,11 +78,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithRoomType(room)
                 .Build();
 
-            new ExecuteEventBuilder()
-                .WithContext(_c)
-                .WithScenarioContext(_scenarioContext)
-                .WithRequest(request)
-                .SendToVideoWeb();
+            var response = SendEventToVideoWeb(request);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
         [When(@"a participant has failed the self-test with (.*)")]
@@ -98,18 +94,15 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithReason(reason)
                 .Build();
 
-            new ExecuteEventBuilder()
-                .WithContext(_c)
-                .WithScenarioContext(_scenarioContext)
-                .WithRequest(request)
-                .SendToVideoApi();
+            var response = SendEventToVideoApi(request);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
         private ParticipantDetailsResponse GetUserFromConferenceDetails(string userRole)
         {
             var participantUser = userRole.ToLower().Equals("judge") || userRole.ToLower().Equals("clerk")
-                ? _c.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Judge.ToString()))
-                : _c.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Individual.ToString()));
+                ? _c.Test.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Judge.ToString()))
+                : _c.Test.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Individual.ToString()));
 
             if (participantUser.Id == Guid.Empty)
                 throw new DataMisalignedException("Participant Id is not set");
@@ -136,12 +129,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithRoomType(RoomType.HearingRoom)
                 .Build();
 
-            new ExecuteEventBuilder()
-                .WithContext(_c)
-                .WithScenarioContext(_scenarioContext)
-                .WithRequest(request)
-                .SendToVideoWeb();
-
+            var response = SendEventToVideoWeb(request);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             _scenarioContext.Remove(ParticipantKey);
             _scenarioContext.Remove(AlertTimeKey);
         }
@@ -150,7 +139,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheVideoHearingsOfficerUserShouldNotSeeAnAlert()
         {
             _browsers[_c.CurrentUser.Key].Driver.Navigate().Refresh();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Hearing.Cases.First().Number)).Click();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(AdminPanelPage.AlertsHeader).Should().BeTrue("Alerts box should not be visible.");
         }
 
@@ -158,9 +147,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheVideoHearingsOfficerUserShouldSeeAnAlert(string notification, string alertType)
         {
             _browsers[_c.CurrentUser.Key].Driver.Navigate().Refresh();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerNumberOfAlerts(_c.Hearing.Cases.First().Number)).Text.Should().Contain("Alert");
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerAlertType(_c.Hearing.Cases.First().Number)).Text.Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Hearing.Cases.First().Number)).Click();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerNumberOfAlerts(_c.Test.Case.Number)).Text.Should().Contain("Alert");
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerAlertType(_c.Test.Case.Number)).Text.Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
 
             var alerts = GetAlerts();
@@ -213,7 +202,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private Guid? GetClerkParticipantId()
         {
-            return _c.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Judge.ToString())).Id;
+            return _c.Test.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Judge.ToString())).Id;
         }
 
         private List<Alert> GetAlerts()
@@ -242,6 +231,19 @@ namespace VideoWeb.AcceptanceTests.Steps
             }
 
             return alerts;
+        }
+
+        private IRestResponse SendEventToVideoApi(CallbackEvent request)
+        {
+            _scenarioContext.Add(AlertTimeKey, DateTime.Now);
+            return _c.Apis.VideoApi.SendEvent(request);
+        }
+
+        private IRestResponse SendEventToVideoWeb(CallbackEvent request)
+        {
+            _scenarioContext.Add(AlertTimeKey, DateTime.Now);
+            _c.Tokens.CallbackBearerToken = GenerateTemporaryTokens.SetCustomJwTokenForCallback(_c.VideoWebConfig.VideoWebCustomTokenSettings);
+            return new VideoWebApiManager(_c.VideoWebConfig.VhServices.VideoWebUrl, _c.Tokens.CallbackBearerToken).SendCallBackEvent(request);
         }
     }
 }

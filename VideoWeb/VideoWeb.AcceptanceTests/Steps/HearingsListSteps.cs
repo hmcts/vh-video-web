@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
@@ -18,10 +17,10 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public sealed class HearingsListSteps : ISteps
     {
-        private readonly Dictionary<string, UserBrowser> _browsers;
-        private readonly TestContext _c;
         private const int ToleranceInMinutes = 3;
         private const int MinutesToWaitBeforeAllowedToJoinHearing = 30;
+        private readonly Dictionary<string, UserBrowser> _browsers;
+        private readonly TestContext _c;
 
         public HearingsListSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext)
         {
@@ -38,7 +37,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             }
             else
             {
-                var element = _c.CurrentUser.Role.Equals("Clerk") ? ClerkHearingListPage.StartHearingButton(_c.Hearing.Cases.First().Number) : HearingListPage.SignInButton(_c.Hearing.Cases.First().Number);
+                var element = _c.CurrentUser.Role.Equals("Clerk") ? ClerkHearingListPage.StartHearingButton(_c.Test.Case.Number) : HearingListPage.SignInButton(_c.Test.Case.Number);
                 var tolerance = _c.CurrentUser.Role.Equals("Clerk") ? 30 : ToleranceInMinutes * 60;
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.HearingListPageTitle).Displayed.Should().BeTrue();
                 _browsers[_c.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browsers[_c.CurrentUser.Key].Driver.FindElement(element));
@@ -61,9 +60,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the participant can see a list of hearings including the new hearing")]
         public void ThenTheParticipantCanSeeAListOfHearingsIncludingTheNewHearing()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.HearingWithCaseNumber(_c.Hearing.Cases.First().Number)).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantHearingDate(_c.Hearing.Cases.First().Number)).Text.Should().Be($"{_c.Hearing.Scheduled_date_time.ToString(DateFormats.HearingListPageDate)}");
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantHearingTime(_c.Hearing.Cases.First().Number)).Text.Should().Be($"{_c.Hearing.Scheduled_date_time.ToLocalTime():HH:mm}");
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.HearingWithCaseNumber(_c.Test.Case.Number)).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantHearingDate(_c.Test.Case.Number)).Text.Should().Be($"{_c.Test.Hearing.Scheduled_date_time.ToString(DateFormats.HearingListPageDate)}");
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantHearingTime(_c.Test.Case.Number)).Text.Should().Be($"{_c.Test.Hearing.Scheduled_date_time.ToLocalTime():HH:mm}");
         }
 
         [Then(@"the user can see their details at the top of the hearing list")]
@@ -77,64 +76,55 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Clerk can see a list of hearings including the new hearing")]
         public void ThenTheClerkCanSeeAListOfHearingsIncludingTheNewHearing()
         {
-            var scheduledDateTime = _c.Hearing.Scheduled_date_time;
+            var scheduledDateTime = _c.Test.Hearing.Scheduled_date_time;
             scheduledDateTime = scheduledDateTime.ToLocalTime();
-            var scheduledDuration = _c.Hearing.Scheduled_duration;
+            var scheduledDuration = _c.Test.Hearing.Scheduled_duration;
 
             var rowData = new GetHearingRow()
-                .ForCaseNumber(_c.CaseNumber())
+                .ForCaseNumber(_c.Test.Case.Number)
                 .ForJudge(_c.CurrentUser.DisplayName)
                 .WithDriver(_browsers[_c.CurrentUser.Key])
                 .Fetch();
 
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(
-                    ClerkHearingListPage.ClerkHearingDate(scheduledDateTime.ToString(DateFormats.ClerkHearingListDate)))
-                .Displayed.Should().BeTrue();
-
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkHearingListPage.ClerkHearingDate(scheduledDateTime.ToString(DateFormats.ClerkHearingListDate))).Displayed.Should().BeTrue();
             rowData.StartTime.Should().Be(scheduledDateTime.ToString(DateFormats.ClerkHearingListTime));
             rowData.EndTime.Should().Be(scheduledDateTime.AddMinutes(scheduledDuration).ToString(DateFormats.ClerkHearingListTime));
             rowData.Judge.Should().Be(_c.CurrentUser.DisplayName);
-            rowData.CaseName.Should().Be(_c.CaseName());
-            rowData.CaseType.Should().Be(_c.Hearing.Case_type_name);
-            rowData.CaseNumber.Should().Be(_c.CaseNumber());
-
-            ParticipantsDisplayed(_c.Hearing.Participants, rowData);
+            rowData.CaseName.Should().Be(_c.Test.Case.Name);
+            rowData.CaseType.Should().Be(_c.Test.Hearing.Case_type_name);
+            rowData.CaseNumber.Should().Be(_c.Test.Case.Number);
+            ParticipantsDisplayed(_c.Test.Hearing.Participants, rowData);
         }
 
         [Then(@"contact us details for the clerk are available")]
         public void ThenContactUsDetailsForTheClerkAreAvailable()
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkHearingListPage.ClerkContactUs).Displayed.Should().BeTrue();
-
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkHearingListPage.ClerkPhoneNumber).Displayed.Should().BeTrue();
         }
 
         [Then(@"the new hearing isn't available to join yet")]
         public void ThenTheNewHearingIsnTAvailableToJoinYet()
         {
-           var actualTime = _browsers[_c.CurrentUser.Key].Driver
-                .WaitUntilVisible(HearingListPage.WaitToSignInText(_c.Hearing.Cases.First().Number))
-                .Text;
+           var actualTime = _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.WaitToSignInText(_c.Test.Case.Number)).Text;
+           actualTime = actualTime.Substring(actualTime.Length - 5);
 
-            actualTime = actualTime.Substring(actualTime.Length - 5);
-
-            var isWithinTimeframe = false;
+            var isWithinTimeFrame = false;
             for (var i = -ToleranceInMinutes; i <= ToleranceInMinutes; i++)
             {
                 if (!actualTime.Equals(DateTime.Now
-                    .AddMinutes(_c.DelayedStartTime - MinutesToWaitBeforeAllowedToJoinHearing + i)
+                    .AddMinutes(_c.Test.DelayedStartTime - MinutesToWaitBeforeAllowedToJoinHearing + i)
                     .ToString("HH:mm"))) continue;
-                isWithinTimeframe = true;
+                isWithinTimeFrame = true;
                 break;
             }
-            isWithinTimeframe.Should().BeTrue();
+            isWithinTimeFrame.Should().BeTrue();
         }
 
         [Then(@"when the hearing is ready to start the hearing button appears")]
         public void ThenWhenTheHearingIsReadyToStartTheHearingButtonAppears()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.SignInButton(_c.Hearing.Cases.First().Number), ToleranceInMinutes * 60).Displayed
-                .Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.SignInButton(_c.Test.Case.Number), ToleranceInMinutes * 60).Displayed.Should().BeTrue();
         }
 
         private static void ParticipantsDisplayed(IEnumerable<ParticipantResponse> participants, HearingRow rowData)

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using AcceptanceTests.Common.Api.Requests;
-using AcceptanceTests.Common.Api.Uris;
+﻿using System.Collections.Generic;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
 using TechTalk.SpecFlow;
+using VideoWeb.AcceptanceTests.Api;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.AcceptanceTests.Strategies.ParticipantStatus;
@@ -22,7 +18,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly ScenarioContext _scenario;
-        private readonly ConferenceEndpoints _conferenceEndpoints = new VideoApiUriFactory().ConferenceEndpoints;
         private const string ParticipantsKey = "participants";
         private const int MaxRetries = 5;
 
@@ -57,69 +52,33 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the participants statuses should be (.*)")]
         public void ThenTheParticipantsStatusesShouldBeNotJoined(string participantStatus)
         {
-            _browsers[_c.CurrentUser.Key].Driver
-                .WaitUntilVisible(
-                    VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Hearing.Cases.First().Number))
-                .Click();
-
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
-
-            var participants = _c.Conference.Participants.FindAll(x =>
-                x.User_role == UserRole.Individual || x.User_role == UserRole.Representative);
-
+            var participants = _c.Test.Conference.Participants.FindAll(x => x.User_role == UserRole.Individual || x.User_role == UserRole.Representative);
             CheckParticipantStatus(participantStatus, participants);
-
             _scenario.Add(ParticipantsKey, participants);
         }
 
         [Then(@"the participant status will be updated to (.*)")]
         public void ThenTheParticipantStatusWillBeUpdatedToJoining(ParticipantState expectedState)
         {
-            _c.Request = _c.Get(_conferenceEndpoints.GetConferenceDetailsById(_c.Test.NewConferenceId));
-
-            var participantStatus = ParticipantState.None;
-
-            for (var i = 0; i < MaxRetries; i++)
-            {
-                _c.Response = _c.VideoApiClient().Execute(_c.Request);
-                _c.Response.IsSuccessful.Should().BeTrue();
-                var conference =
-                    RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(_c.Response
-                        .Content);
-                conference.Should().NotBeNull();
-
-                var participant = conference.Participants
-                    .Find(x => x.Username.ToLower().Equals(_c.CurrentUser.Username.ToLower()));
-
-                var participantState = participant.Current_status?.Participant_state;
-                if (participantState != null && participantState.Equals(expectedState))
-                {
-                    participantStatus = (ParticipantState)participantState;
-                    break;
-                }
-                Thread.Sleep(TimeSpan.FromSeconds(1));
-            }
-
-            if (participantStatus != ParticipantState.None)
-            {
-                participantStatus.Should().Be(expectedState);
-            }
+            var participantState = new PollForParticipantStatus(_c.VideoWebConfig.VhServices.VideoApiUrl, _c.Tokens.VideoApiBearerToken)
+                    .WithConferenceId(_c.Test.NewConferenceId)
+                    .WithParticipant(_c.CurrentUser.Username)
+                    .WithExpectedState(expectedState)
+                    .Retries(MaxRetries)
+                    .Poll();
+            if (participantState != ParticipantState.None)
+                participantState.Should().Be(expectedState);
         }
 
         [Then(@"the participants statuses should update to (.*)")]
         public void ThenTheParticipantsStatusesShouldUpdateToDisconnected(string participantStatus)
         {
             _browsers[_c.CurrentUser.Key].Driver.Navigate().Refresh();
-
-            _browsers[_c.CurrentUser.Key].Driver
-                .WaitUntilVisible(
-                    VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Hearing.Cases.First().Number))
-                .Click();
-
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
-
             var participants = _scenario.Get<List<ParticipantDetailsResponse>>(ParticipantsKey);
-
             CheckParticipantStatus(participantStatus, participants);
         }
 
