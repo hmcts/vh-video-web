@@ -76,6 +76,7 @@
 .tooltip-wrapper {
   /*position: relative;*/
   color: $govuk-link-colour;
+  white-space:nowrap;
 }
 
 .tooltip-wrapper:active {
