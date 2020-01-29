@@ -21,7 +21,12 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
             "assets": [
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "*",
+                "input": "node_modules/govuk-frontend/govuk/assets/fonts",
+                "output": "assets/fonts/"
+              }
             ],
             "styles": [
               "src/styles.css",
@@ -91,7 +96,12 @@
               "src/scripts/Heartbeat.js"
             ],
             "assets": [
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "*",
+                "input": "node_modules/govuk-frontend/govuk/assets/fonts",
+                "output": "assets/fonts/"
+              }
             ]
           }
         },
