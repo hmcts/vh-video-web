@@ -23,19 +23,17 @@ export class ConferenceGuard implements CanActivate {
     try {
       const conferenceId = next.paramMap.get('conferenceId');
 
-      this.videoWebService.getConferenceById(conferenceId)
-        .subscribe((data: ConferenceResponse) => {
-            if (data.status === ConferenceStatus.Closed) {
-              this.logger.info('Conference Guard - Returning back to hearing list because status closed');
-              this.router.navigate([PageUrls.Home]);
-              return false;
-            } else {
-              return true;
-            }
-          },
-          (err) => {
-            return this.handleError(err);
-          });
+      const data = await this.videoWebService.getConferenceById(conferenceId).toPromise();
+
+      if (data.status === ConferenceStatus.Closed) {
+        this.logger.info('Conference Guard - Returning back to hearing list because status closed');
+        this.router.navigate([PageUrls.Home]);
+
+        return false;
+      }
+
+      return true;
+
     } catch (err) {
       return this.handleError(err);
     }
@@ -44,6 +42,7 @@ export class ConferenceGuard implements CanActivate {
   private handleError(error) {
     this.logger.error(`Could not get conference data.`, error);
     this.router.navigate([PageUrls.Home]);
+
     return false;
   }
 }

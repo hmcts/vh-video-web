@@ -1,5 +1,4 @@
 import {async, TestBed} from '@angular/core/testing';
-
 import {RouterTestingModule} from '@angular/router/testing';
 import {SharedModule} from '../shared/shared.module';
 import {ActivatedRoute, ActivatedRouteSnapshot, convertToParamMap, Router} from '@angular/router';
@@ -35,15 +34,13 @@ describe('ConferenceGuard', () => {
     guard = TestBed.get(ConferenceGuard);
   });
 
-  // it('should be able to activate component', async(async () => {
-  //   const response = new ConferenceResponse({ status: ConferenceStatus.NotStarted });
-  //   videoWebServiceSpy.getConferenceById.and.returnValue(of(response));
-  //   guard.canActivate(activateRoute).then(value => {
-  //     expect(value).toBeTruthy();
-  //   });
-  //
-  //
-  // }));
+  it('should be able to activate component', async(async () => {
+    const response = new ConferenceResponse({ status: ConferenceStatus.NotStarted });
+    videoWebServiceSpy.getConferenceById.and.returnValue(of(response));
+    const result = await guard.canActivate(activateRoute);
+
+    expect(result).toBeTruthy();
+  }));
 
   it('should not be able to activate component when conference closed', async () => {
     const response = new ConferenceResponse({ status: ConferenceStatus.Closed });
@@ -53,13 +50,21 @@ describe('ConferenceGuard', () => {
     expect(result).toBeFalsy();
     expect(router.navigate).toHaveBeenCalledWith(['home']);
   });
-  //
-  // it('should not be able to activate component if conferenceId null', async(async () => {
-  //   activateRoute = {paramMap: convertToParamMap({conferenceId: null})};
-  //   videoWebServiceSpy.getConferenceById.and.returnValue(undefined);
-  //   const result = await guard.canActivate(activateRoute);
-  //
-  //   expect(result).toBeFalsy();
-  //   expect(router.navigate).toHaveBeenCalledWith(['home']);
-  // }));
+
+  it('should not be able to activate component if conferenceId null', async(async () => {
+    activateRoute = {paramMap: convertToParamMap({conferenceId: null})};
+    videoWebServiceSpy.getConferenceById.and.returnValue(undefined);
+    const result = await guard.canActivate(activateRoute);
+
+    expect(result).toBeFalsy();
+    expect(router.navigate).toHaveBeenCalledWith(['home']);
+  }));
+
+  it('should not be able to activate component when exception', async(async () => {
+    videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 500, isApiException: true }));
+    const result = await guard.canActivate(activateRoute);
+
+    expect(result).toBeFalsy();
+    expect(router.navigate).toHaveBeenCalledWith(['home']);
+  }));
 });
