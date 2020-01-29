@@ -41,7 +41,7 @@ namespace VideoWeb.UnitTests.Controllers.TasksController
         }
         
         [Test]
-        public async Task should_return_ok_with_completed_task()
+        public async Task Should_return_ok_with_completed_task()
         {
             var task = Builder<TaskResponse>.CreateNew().Build();
             
@@ -55,7 +55,7 @@ namespace VideoWeb.UnitTests.Controllers.TasksController
         }
 
         [Test]
-        public async Task should_return_exception()
+        public async Task Should_return_exception()
         {
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
                 (int) HttpStatusCode.InternalServerError,

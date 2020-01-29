@@ -16,7 +16,7 @@ namespace VideoWeb.UnitTests.Mappings
         private readonly ConferenceForUserResponseMapper _mapper = new ConferenceForUserResponseMapper();
 
         [Test]
-        public void should_map_all_properties()
+        public void Should_map_all_properties()
         {
             var conference = Builder<ConferenceSummaryResponse>.CreateNew().Build();
 
@@ -57,7 +57,7 @@ namespace VideoWeb.UnitTests.Mappings
         }
 
         [Test]
-        public void should_map_all_participants()
+        public void Should_map_all_participants()
         {
             var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(2).Build().ToList();
 
@@ -76,7 +76,7 @@ namespace VideoWeb.UnitTests.Mappings
         }
 
         [Test]
-        public void should_map_all_participant_statuses()
+        public void Should_map_all_participant_statuses()
         {
             var participantStatuses = Builder<ParticipantState>.CreateListOfSize(8).Build().ToList();
 

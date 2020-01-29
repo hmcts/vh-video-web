@@ -66,7 +66,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         }
 
         [Test]
-        public async Task should_return_no_content_when_event_is_sent()
+        public async Task Should_return_no_content_when_event_is_sent()
         {
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
@@ -78,7 +78,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         }
         
         [Test]
-        public async Task should_return_bad_request()
+        public async Task Should_return_bad_request()
         {
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id", null, default(ProblemDetails), null);
@@ -92,7 +92,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         }
         
         [Test]
-        public async Task should_return_exception()
+        public async Task Should_return_exception()
         {
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default(ProblemDetails), null);

@@ -52,7 +52,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         }
 
         [Test]
-        public async Task should_return_ok_when_testcall_result_returned()
+        public async Task Should_return_ok_when_testcall_result_returned()
         {
             var testCallResponse = Builder<TestCallScoreResponse>.CreateNew().Build();
             var conferenceId = Guid.NewGuid();
@@ -68,7 +68,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         }
 
         [Test]
-        public async Task should_forward_error_code_on_failure()
+        public async Task Should_forward_error_code_on_failure()
         {
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id", null, default(ProblemDetails), null);
@@ -84,7 +84,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         }
 
         [Test]
-        public async Task should_return_no_content_when_event_is_sent()
+        public async Task Should_return_no_content_when_event_is_sent()
         {
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
@@ -97,7 +97,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         }
 
         [Test]
-        public async Task should_return_bad_request()
+        public async Task Should_return_bad_request()
         {
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", 
                 (int)HttpStatusCode.BadRequest, "Please provide a valid conference Id", null, 
@@ -113,7 +113,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         }
 
         [Test]
-        public async Task should_return_exception()
+        public async Task Should_return_exception()
         {
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", 
                 (int)HttpStatusCode.InternalServerError, "Stacktrace goes here", null, 
@@ -129,7 +129,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         }
 
         [Test]
-        public async Task should_return_ok_when_independent_testcall_result_returned()
+        public async Task Should_return_ok_when_independent_testcall_result_returned()
         {
             var testCallResponse = Builder<TestCallScoreResponse>.CreateNew().Build();
             var participantId = Guid.NewGuid();
@@ -144,7 +144,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         }
 
         [Test]
-        public async Task should_forward_error_code_on_failure_when_independent_testcall()
+        public async Task Should_forward_error_code_on_failure_when_independent_testcall()
         {
             var apiException = new VideoApiException<Microsoft.AspNetCore.Mvc.ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
                 "Please provide a valid participant Id", null, default(Microsoft.AspNetCore.Mvc.ProblemDetails), null);

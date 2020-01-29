@@ -17,7 +17,7 @@ namespace VideoWeb.UnitTests.Mappings
         private readonly ConferenceResponseMapper _mapper = new ConferenceResponseMapper();
 
         [Test]
-        public void should_map_all_properties()
+        public void Should_map_all_properties()
         {
             var participants = new List<ParticipantDetailsResponse>
             {

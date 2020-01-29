@@ -51,7 +51,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
         
         [Test]
-        public async Task should_return_conference_not_found_when_request_is_sent()
+        public async Task Should_return_conference_not_found_when_request_is_sent()
         {
             _videoApiClientMock
                 .Setup(x => x.LeavePrivateConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
@@ -65,7 +65,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_return_participant_not_found_when_request_is_sent()
+        public async Task Should_return_participant_not_found_when_request_is_sent()
         {
             _videoApiClientMock
                 .Setup(x => x.LeavePrivateConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
@@ -81,7 +81,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_return_no_content_when_request_is_sent()
+        public async Task Should_return_no_content_when_request_is_sent()
         {
             _videoApiClientMock
                 .Setup(x => x.LeavePrivateConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
@@ -95,7 +95,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_return_bad_request()
+        public async Task Should_return_bad_request()
         {
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id", null, default(ProblemDetails), null);
@@ -109,7 +109,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_return_exception()
+        public async Task Should_return_exception()
         {
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
                 (int) HttpStatusCode.InternalServerError,

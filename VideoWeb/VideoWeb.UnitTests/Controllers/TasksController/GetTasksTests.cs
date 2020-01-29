@@ -42,7 +42,7 @@ namespace VideoWeb.UnitTests.Controllers.TasksController
         }
 
         [Test]
-        public async Task should_return_ok_when_get_tasks_is_called()
+        public async Task Should_return_ok_when_get_tasks_is_called()
         {
             var tasks = Builder<TaskResponse>.CreateListOfSize(4).Build().ToList();
             
@@ -56,7 +56,7 @@ namespace VideoWeb.UnitTests.Controllers.TasksController
         }
 
         [Test]
-        public async Task should_return_exception()
+        public async Task Should_return_exception()
         {
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int)HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default(ProblemDetails), null);

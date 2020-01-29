@@ -54,7 +54,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         }
         
         [Test]
-        public async Task should_return_unauthorised_when_not_a_vh_officer()
+        public async Task Should_return_unauthorised_when_not_a_vh_officer()
         {
             var userProfile = new UserProfile {User_role = "Judge"};
             _userApiClientMock
@@ -69,10 +69,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         }
         
         [Test]
-        public async Task should_forward_error_when_user_api_returns_error()
+        public async Task Should_forward_error_when_user_api_returns_error()
         {
             var apiException = new UserApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
-                "Stacktrace goes here", null, default(ProblemDetails), null);
+                "Stacktrace goes here", null, default, null);
             _userApiClientMock
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
@@ -84,7 +84,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         }
         
         [Test]
-        public async Task should_forward_error_when_video_api_returns_error()
+        public async Task Should_forward_error_when_video_api_returns_error()
         {
             var userProfile = new UserProfile {User_role = "VhOfficer"};
             _userApiClientMock
@@ -92,7 +92,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .ReturnsAsync(userProfile);       
 
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
-                "Stacktrace goes here", null, default(ProblemDetails), null);
+                "Stacktrace goes here", null, default, null);
             _videoApiClientMock
                 .Setup(x => x.GetConferencesTodayAsync())
                 .ThrowsAsync(apiException);
@@ -105,7 +105,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         
         
         [Test]
-        public async Task should_return_ok_with_list_of_conferences()
+        public async Task Should_return_ok_with_list_of_conferences()
         {
             var userProfile = new UserProfile {User_role = "VhOfficer"};
             _userApiClientMock

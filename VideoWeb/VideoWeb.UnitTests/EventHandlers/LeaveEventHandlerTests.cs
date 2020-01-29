@@ -14,7 +14,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         private LeaveEventHandler _eventHandler;
 
         [Test]
-        public async Task should_send_available_message_to_participants_and_service_bus_when_participant_joins()
+        public async Task Should_send_available_message_to_participants_and_service_bus_when_participant_joins()
         {
             _eventHandler = new LeaveEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
 

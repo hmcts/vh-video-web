@@ -13,7 +13,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         private HelpEventHandler _eventHandler;
 
         [Test]
-        public async Task should_send_messages_to_participants_on_help()
+        public async Task Should_send_messages_to_participants_on_help()
         {
             _eventHandler = new HelpEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
 
