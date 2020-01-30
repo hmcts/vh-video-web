@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Net;
+using AcceptanceTests.Common.Api.Hearings;
+using AcceptanceTests.Common.Api.Requests;
+using AcceptanceTests.Common.Configuration.Users;
 using FluentAssertions;
+using RestSharp;
 using TechTalk.SpecFlow;
-using Testing.Common.Configuration;
-using Testing.Common.Helpers;
+using VideoWeb.AcceptanceTests.Api;
 using VideoWeb.AcceptanceTests.Assertions;
 using VideoWeb.AcceptanceTests.Builders;
-using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
 using ParticipantRequest = VideoWeb.Services.Bookings.ParticipantRequest;
 using ParticipantResponse = VideoWeb.Services.Bookings.ParticipantResponse;
+using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
 using UpdateParticipantRequest = VideoWeb.Services.Bookings.UpdateParticipantRequest;
 using UserRole = VideoWeb.Contract.Responses.UserRole;
 
@@ -22,41 +24,30 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public sealed class QueueSubscriberSteps
     {
-        private readonly TestContext _context;
-        private readonly HearingsEndpoints _hearingsEndpoints = new BookingsApiUriFactory().HearingsEndpoints;
-
-        private readonly BookingsParticipantsEndpoints _bookingParticipantsEndpoints =
-            new BookingsApiUriFactory().BookingsParticipantsEndpoints;
-
-        private const string UpdatedWord = "Updated";
-        private const int UpdatedTimeInMins = 1;
+        private readonly TestContext _c;
         private UserAccount _addedUser;
         private ParticipantResponse _updatedUser;
         private UpdateParticipantRequest _updatedRequest;
         private ParticipantResponse _deletedUser;
 
-        public QueueSubscriberSteps(TestContext context)
+        public QueueSubscriberSteps(TestContext c)
         {
-            _context = context;
+            _c = c;
         }
 
         [When(@"I attempt to update the hearing details")]
         public void WhenIAttemptToUpdateTheHearingDetails()
-        {
-            var request = new UpdateHearingRequestBuilder()
-                .ForHearing(_context.Hearing)
-                .AddWordToStrings(UpdatedWord)
-                .AddMinutesToTimes(UpdatedTimeInMins)
+        {         
+            var request = new UpdateHearingRequestBuilder()           
+                .ForHearing(_c.Test.Hearing)
+                .AddWordToStrings(_c.Test.TestData.UpdatedWord)
+                .AddMinutesToTimes(_c.Test.TestData.UpdatedTimeInMinutes)
                 .ChangeVenue()
-                .UpdatedBy(_context.GetCaseAdminUser().Username)
+                .UpdatedBy(UserManager.GetCaseAdminUser(_c.UserAccounts).Username)
                 .Build();
 
-            _context.Request = _context.Put(_hearingsEndpoints.UpdateHearingDetails(_context.NewHearingId), request);
-
-            new ExecuteRequestBuilder()
-                .WithContext(_context)
-                .WithExpectedStatusCode(HttpStatusCode.OK)
-                .SendToBookingsApi();
+            var response = _c.Apis.BookingsApi.UpdateHearing(_c.Test.NewHearingId, request);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [When(@"I attempt to cancel the hearing")]
@@ -64,186 +55,128 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var request = new UpdateBookingStatusRequest()
             {
-                Updated_by = _context.GetCaseAdminUser().Username,
+                Updated_by = UserManager.GetCaseAdminUser(_c.UserAccounts).Username,
                 Status = UpdateBookingStatus.Cancelled
             };
-            _context.Request = _context.Patch(_hearingsEndpoints.UpdateHearingDetails(_context.NewHearingId), request);
 
-            new ExecuteRequestBuilder()
-                .WithContext(_context)
-                .WithExpectedStatusCode(HttpStatusCode.NoContent)
-                .SendToBookingsApi();
+            var response = _c.Apis.BookingsApi.UpdateHearingDetails(_c.Test.NewHearingId, request);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
         [When(@"I attempt to delete the hearing")]
         public void WhenIAttemptToDeleteTheHearing()
         {
-            _context.Request = _context.Delete(_hearingsEndpoints.RemoveHearing(_context.NewHearingId));
-
-            new ExecuteRequestBuilder()
-                .WithContext(_context)
-                .WithExpectedStatusCode(HttpStatusCode.NoContent)
-                .SendToBookingsApi();
+            var response = _c.Apis.BookingsApi.DeleteHearing(_c.Test.NewHearingId);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
         [When(@"I add a participant to the hearing")]
         public void WhenIAttemptToAddAParticipantToTheHearing()
         {
-            _addedUser = _context.GetIndividualNotInHearing(_context.Hearing.Participants);
-
-            var request = new ParticipantsRequestBuilder()
-                .AddIndividual()
-                .WithUser(_addedUser)
-                .Build();
-
+            var participants = (from participant in _c.Test.Hearing.Participants where participant.User_role_name.ToLower().Equals("individual") select participant.Last_name).ToList();
+            _addedUser = UserManager.GetIndividualNotInHearing(_c.UserAccounts, participants);
+            var request = new ParticipantsRequestBuilder().AddIndividual().WithUser(_addedUser).Build();
             var list = new AddParticipantsToHearingRequest() {Participants = new List<ParticipantRequest>() {request}};
-
-            _context.Request =
-                _context.Post(_bookingParticipantsEndpoints.AddParticipantsToHearing(_context.NewHearingId), list);
-
-            new ExecuteRequestBuilder()
-                .WithContext(_context)
-                .WithExpectedStatusCode(HttpStatusCode.NoContent)
-                .SendToBookingsApi();
+            var response = _c.Apis.BookingsApi.AddParticipantsToHearing(_c.Test.NewHearingId, list);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
         [When(@"I update a participant from the hearing")]
         public void WhenIUpdateAParticipantFromTheHearing()
         {
-            _updatedUser = _context.Hearing.Participants.First();
+            _updatedUser = _c.Test.Hearing.Participants.First();
             _updatedRequest = new UpdateParticipantBuilder()
                 .ForParticipant(_updatedUser)
-                .AddWordToStrings(UpdatedWord)
+                .AddWordToStrings(_c.Test.TestData.UpdatedWord)
                 .Build();
 
-            if (_updatedUser.Id == Guid.Empty)
-            {
-                throw new DataException("Participant Id must be set");
-            }
-
-            _context.Request =
-                _context.Put(
-                    _bookingParticipantsEndpoints.UpdateParticipantDetails(_context.NewHearingId, _updatedUser.Id),
-                    _updatedRequest);
-
-            new ExecuteRequestBuilder()
-                .WithContext(_context)
-                .WithExpectedStatusCode(HttpStatusCode.OK)
-                .SendToBookingsApi();
+            var response = _c.Apis.BookingsApi.UpdateParticipantDetails(_c.Test.NewHearingId, _updatedUser.Id, _updatedRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [When(@"I remove a participant from the hearing")]
         public void WhenIRemoveAParticipantFromTheHearing()
         {
-            _deletedUser =
-                _context.Hearing.Participants.Find(x => x.User_role_name.Equals(UserRole.Individual.ToString()));
-            if (_deletedUser.Id == Guid.Empty)
-            {
-                throw new DataException("User id must be set");
-            }
-
-            _context.Request =
-                _context.Delete(
-                    _bookingParticipantsEndpoints.RemoveParticipantFromHearing(_context.NewHearingId, _deletedUser.Id));
-
-            new ExecuteRequestBuilder()
-                .WithContext(_context)
-                .WithExpectedStatusCode(HttpStatusCode.NoContent)
-                .SendToBookingsApi();
+            _deletedUser = _c.Test.Hearing.Participants.Find(x => x.User_role_name.Equals(UserRole.Individual.ToString()));
+            var response =  _c.Apis.BookingsApi.RemoveParticipant(_c.Test.NewHearingId, _deletedUser.Id);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
 
         [Then(@"the conference has been created from the booking")]
         public void ThenTheConferenceHasBeenCreatedFromTheBooking()
         {
-            _context.Conference.Current_status.Should().Be(ConferenceState.NotStarted);
-            new AssertConference(_context.Conference).MatchesHearing(_context.Hearing);
-        }
+            _c.Test.Conference.Current_status.Should().Be(ConferenceState.NotStarted);
+            new AssertConference(_c.Test.Conference).MatchesHearing(_c.Test.Hearing);
+        }      
 
         [Then(@"the conference details have been updated")]
         public void ThenTheConferenceDetailsHaveBeenUpdated()
         {
-            new ConferenceDetailsResponseBuilder(_context).PollForUpdatedHearing(UpdatedWord);
-
-            var conference = new ConferenceDetailsResponseBuilder(_context).GetConferenceDetails();
-            conference.Case_name.Should().Contain(UpdatedWord);
-            conference.Case_number.Should().Contain(UpdatedWord);
-            conference.Scheduled_date_time.Should()
-                .Be(_context.Hearing.Scheduled_date_time.AddMinutes(UpdatedTimeInMins));
-            conference.Scheduled_duration.Should().Be(_context.Hearing.Scheduled_duration + UpdatedTimeInMins);
+            var conference = new PollForUpdatedConference(_c.Apis.VideoApi).WithConferenceId(_c.Test.NewConferenceId)
+                .WithUpdatedWord(_c.Test.TestData.UpdatedWord).Poll();
+            conference.Case_name.Should().Contain(_c.Test.TestData.UpdatedWord);
+            conference.Case_number.Should().Contain(_c.Test.TestData.UpdatedWord);
+            conference.Scheduled_date_time.Should().Be(_c.Test.Hearing.Scheduled_date_time.AddMinutes(_c.Test.TestData.UpdatedTimeInMinutes));
+            conference.Scheduled_duration.Should().Be(_c.Test.Hearing.Scheduled_duration + _c.Test.TestData.UpdatedTimeInMinutes);
         }
 
         [Then(@"the conference has been deleted")]
         public void ThenTheConferenceHasBeenDeleted()
         {
-            new ConferenceDetailsResponseBuilder(_context).PollForExpectedStatus(HttpStatusCode.NotFound).Should()
-                .BeTrue();
-
-            _context.NewHearingId = Guid.Empty;
-            _context.NewConferenceId = Guid.Empty;
+            _c.Apis.VideoApi.PollForConferenceDeleted(_c.Test.NewHearingId).Should().BeTrue();
+            _c.Test.NewHearingId = Guid.Empty;
+            _c.Test.NewConferenceId = Guid.Empty;
         }
 
         [Then(@"the participant has been added")]
         public void ThenTheParticipantHasBeenAdded()
         {
-            new ConferenceDetailsResponseBuilder(_context)
+            new PollForParticipant(_c.Apis.VideoApi)
                 .IsAdded()
-                .WithUsername(_addedUser.Username)
-                .PollForParticipant()
-                .Should().BeTrue("Participant found");
+                .WithConferenceId(_c.Test.NewConferenceId)
+                .WithParticipant(_addedUser.Username)
+                .Poll()
+                .Should().BeTrue("Participant added");
 
-            var conference = new ConferenceDetailsResponseBuilder(_context).GetConferenceDetails();
-            var participants = conference.Participants;
-            participants.Count.Should().Be(_context.Hearing.Participants.Count + 1);
-
-            new AssertParticipantFromAccount().User(_addedUser).Matches(participants);
+            var response = _c.Apis.VideoApi.GetConferenceByConferenceId(_c.Test.NewConferenceId);
+            var conference =  RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
+            conference.Participants.Count.Should().Be(_c.Test.Hearing.Participants.Count + 1);
+            new AssertParticipantFromAccount().User(_addedUser).Matches(conference.Participants);
         }
 
         [Then(@"the participant has been updated")]
         public void ThenTheParticipantDetailsHaveBeenUpdated()
         {
-            new ConferenceDetailsResponseBuilder(_context)
-                .IsAdded()
-                .WithUsername(_updatedUser.Username)
-                .ExpectedUpdate(_updatedRequest)
-                .PollForParticipantUpdated()
+            new PollForUpdatedParticipant(_c.Apis.VideoApi).WithUsername(_updatedUser.Username).WithConferenceId(_c.Test.NewConferenceId).WithUpdatedRequest(_updatedRequest)
+                .Poll()
                 .Should().BeTrue("Updated participant found");
         }
 
         [Then(@"the participant has been removed")]
         public void ThenTheParticipantHasBeenRemoved()
         {
-            new ConferenceDetailsResponseBuilder(_context)
-                .IsRemoved()
-                .WithUsername(_deletedUser.Username)
-                .PollForParticipant()
+            new PollForParticipant(_c.Apis.VideoApi).WithConferenceId(_c.Test.NewConferenceId).WithParticipant(_addedUser.Username)
+                .IsAdded().Poll()
                 .Should().BeTrue("Participant deleted");
 
-            var conference = new ConferenceDetailsResponseBuilder(_context).GetConferenceDetails();
+            var response = _c.Apis.VideoApi.GetConferenceByConferenceId(_c.Test.NewConferenceId);
+            var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
             conference.Participants.Any(x => x.Ref_id.Equals(_deletedUser.Id)).Should().BeFalse();
-            conference.Participants.Count.Should().Be(_context.Hearing.Participants.Count - 1);
+            conference.Participants.Count.Should().Be(_c.Test.Hearing.Participants.Count - 1);
         }
 
         [AfterScenario("UpdateParticipant")]
-        public static void ResetUpdatedParticipant(TestContext context, BookingsParticipantsEndpoints endpoints)
+        public static void ResetUpdatedParticipant(TestContext context)
         {
-            var updatedUser = context.Hearing.Participants.First();
+            var updatedUser = context.Test.Hearing.Participants.First();
             var updatedRequest = new UpdateParticipantBuilder()
                 .ForParticipant(updatedUser)
-                .AddWordToStrings(UpdatedWord)
+                .AddWordToStrings(context.Test.TestData.UpdatedWord)
                 .Reset();
 
-            if (updatedUser.Id == Guid.Empty)
-            {
-                throw new DataException("Participant Id must be set");
-            }
-
-            context.Request = context.Put(endpoints.UpdateParticipantDetails(context.NewHearingId, updatedUser.Id),
-                updatedRequest);
-
-            new ExecuteRequestBuilder()
-                .WithContext(context)
-                .WithExpectedStatusCode(HttpStatusCode.OK)
-                .SendToBookingsApi();
+            var bookingsApiManager = new BookingsApiManager(context.VideoWebConfig.VhServices.BookingsApiUrl, context.Tokens.BookingsApiBearerToken);
+            var response = bookingsApiManager.UpdateParticipantDetails(context.Test.NewHearingId, updatedUser.Id, updatedRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
     }
 }

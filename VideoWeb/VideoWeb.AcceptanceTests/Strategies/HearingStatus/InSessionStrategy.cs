@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Net;
+using FluentAssertions;
 using VideoWeb.AcceptanceTests.Builders;
-using VideoWeb.AcceptanceTests.Contexts;
+using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.EventHub.Enums;
 
 namespace VideoWeb.AcceptanceTests.Strategies.HearingStatus
@@ -9,31 +11,27 @@ namespace VideoWeb.AcceptanceTests.Strategies.HearingStatus
     {
         public void Execute(TestContext context, Guid participantId)
         {
-            var request = new CallbackEventRequestBuilder()
-                .WithConferenceId(context.NewConferenceId)
+            var transferRequest = new CallbackEventRequestBuilder()
+                .WithConferenceId(context.Test.NewConferenceId)
                 .WithParticipantId(participantId)
                 .WithEventType(EventType.Transfer)
                 .FromRoomType(RoomType.WaitingRoom)
                 .ToRoomType(RoomType.HearingRoom)
                 .Build();
 
-            new ExecuteEventBuilder()
-                .WithContext(context)
-                .WithRequest(request)
-                .SendToVideoWeb();
+            var transferResponse = context.Apis.VideoWebApi.SendCallBackEvent(transferRequest);
+            transferResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-            request = new CallbackEventRequestBuilder()
-                .WithConferenceId(context.NewConferenceId)
+            var joinedRequest = new CallbackEventRequestBuilder()
+                .WithConferenceId(context.Test.NewConferenceId)
                 .WithParticipantId(participantId)
                 .WithEventType(EventType.Joined)
                 .FromRoomType(null)
                 .ToRoomType(null)
                 .Build();
 
-            new ExecuteEventBuilder()
-                .WithContext(context)
-                .WithRequest(request)
-                .SendToVideoWeb();
+            var joinedResponse = context.Apis.VideoWebApi.SendCallBackEvent(joinedRequest);
+            joinedResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
     }
 }

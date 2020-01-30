@@ -39,7 +39,7 @@ namespace VideoWeb.UnitTests.Controllers
         }
 
         [Test]
-        public async Task should_return_error_when_unable_to_retrieve_venues()
+        public async Task Should_return_error_when_unable_to_retrieve_venues()
         {
             var apiException = new BookingsApiException("Venues not found", (int)HttpStatusCode.NotFound,
                "Error", null, null);

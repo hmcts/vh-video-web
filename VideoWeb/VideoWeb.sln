@@ -1,15 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.489
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29709.97
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{CB8C2DB8-804A-467F-B03A-68D2D968D237}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.UnitTests", "VideoWeb.UnitTests\VideoWeb.UnitTests.csproj", "{76118055-2379-410A-9D44-469175758F5D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.IntegrationTests", "VideoWeb.IntegrationTests\VideoWeb.IntegrationTests.csproj", "{0D96D662-B3D8-48FE-A57F-674CA986A733}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Testing.Common", "Testing.Common\Testing.Common.csproj", "{5224656F-D232-409E-BE10-BF20AC4A738A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb", "VideoWeb\VideoWeb.csproj", "{7949F512-2EBC-4DE9-A987-940439D93545}"
 EndProject
@@ -23,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.Services.Generator
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.AcceptanceTests", "VideoWeb.AcceptanceTests\VideoWeb.AcceptanceTests.csproj", "{E901FAB5-4429-4A0B-BEF0-058610D0EDB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoWeb.EventHub", "VideoWeb.EventHub\VideoWeb.EventHub.csproj", "{7D287149-3E23-429A-88C1-AC27C5F08B69}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.EventHub", "VideoWeb.EventHub\VideoWeb.EventHub.csproj", "{7D287149-3E23-429A-88C1-AC27C5F08B69}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,10 +37,6 @@ Global
 		{0D96D662-B3D8-48FE-A57F-674CA986A733}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D96D662-B3D8-48FE-A57F-674CA986A733}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D96D662-B3D8-48FE-A57F-674CA986A733}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5224656F-D232-409E-BE10-BF20AC4A738A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5224656F-D232-409E-BE10-BF20AC4A738A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5224656F-D232-409E-BE10-BF20AC4A738A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5224656F-D232-409E-BE10-BF20AC4A738A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7949F512-2EBC-4DE9-A987-940439D93545}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7949F512-2EBC-4DE9-A987-940439D93545}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7949F512-2EBC-4DE9-A987-940439D93545}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -78,7 +72,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{76118055-2379-410A-9D44-469175758F5D} = {CB8C2DB8-804A-467F-B03A-68D2D968D237}
 		{0D96D662-B3D8-48FE-A57F-674CA986A733} = {CB8C2DB8-804A-467F-B03A-68D2D968D237}
-		{5224656F-D232-409E-BE10-BF20AC4A738A} = {CB8C2DB8-804A-467F-B03A-68D2D968D237}
 		{E901FAB5-4429-4A0B-BEF0-058610D0EDB6} = {CB8C2DB8-804A-467F-B03A-68D2D968D237}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

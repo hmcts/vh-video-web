@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AcceptanceTests.Common.Driver.Browser;
+using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
-using Protractor;
 using VideoWeb.AcceptanceTests.Pages;
 
 namespace VideoWeb.AcceptanceTests.Helpers
@@ -12,8 +13,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
         private string _caseNumber;
         private string _judgeName;
         private readonly HearingRow _hearingRow;
-        private readonly ClerkHearingListPage _page = new ClerkHearingListPage();
-        private NgWebDriver _driver;
+        private UserBrowser _browser;
 
         public GetHearingRow()
         {          
@@ -22,12 +22,12 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
         private void CheckRowIsVisible()
         {
-            _driver.WaitUntilVisible(_page.ClerkHearingCaseName(_caseNumber)).Displayed.Should().BeTrue();
+            _browser.Driver.WaitUntilVisible(ClerkHearingListPage.ClerkHearingCaseName(_caseNumber)).Displayed.Should().BeTrue();
         }
 
         private void GetTime()
         {
-            var unformattedText = _driver.WaitUntilVisible(_page.ClerkHearingTime(_caseNumber)).Text;
+            var unformattedText = _browser.Driver.WaitUntilVisible(ClerkHearingListPage.ClerkHearingTime(_caseNumber)).Text;
             var listOfTimes = unformattedText.Split("-");
             _hearingRow.StartTime = listOfTimes[0].Replace("-","").Trim();
             _hearingRow.EndTime = listOfTimes[1].Replace("-", "").Trim();
@@ -35,21 +35,21 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
         private void GetJudge()
         {
-            _hearingRow.Judge = _driver.WaitUntilVisible(_page.ClerkHearingJudge(_caseNumber, _judgeName)).Text;
+            _hearingRow.Judge = _browser.Driver.WaitUntilVisible(ClerkHearingListPage.ClerkHearingJudge(_caseNumber, _judgeName)).Text;
         }
 
-        private void GetcaseDetails()
+        private void GetCaseDetails()
         {
-            _hearingRow.CaseName = _driver.WaitUntilVisible(_page.ClerkHearingCaseName(_caseNumber)).Text;
-            _hearingRow.CaseType = _driver.WaitUntilVisible(_page.ClerkHearingCaseType(_caseNumber)).Text;
+            _hearingRow.CaseName = _browser.Driver.WaitUntilVisible(ClerkHearingListPage.ClerkHearingCaseName(_caseNumber)).Text;
+            _hearingRow.CaseType = _browser.Driver.WaitUntilVisible(ClerkHearingListPage.ClerkHearingCaseType(_caseNumber)).Text;
             _hearingRow.CaseNumber = _caseNumber;
         }
 
         private void GetParticipants()
         {
             _hearingRow.Parties = new List<PartiesDetails>();
-            var repElements = _driver.WaitUntilElementsVisible(_page.ClerkHearingRepresentatives(_caseNumber));
-            var indElements = _driver.WaitUntilElementsVisible(_page.ClerkHearingIndividuals(_caseNumber));
+            var repElements = _browser.Driver.WaitUntilElementsVisible(ClerkHearingListPage.ClerkHearingRepresentatives(_caseNumber));
+            var indElements = _browser.Driver.WaitUntilElementsVisible(ClerkHearingListPage.ClerkHearingIndividuals(_caseNumber));
             var participants = repElements.Select(element => new PartiesDetails {RepresentativeName = element.Text}).ToList();
 
             for (var i = 0; i < participants.Count; i++)
@@ -72,15 +72,15 @@ namespace VideoWeb.AcceptanceTests.Helpers
             return this;
         }
 
-        public GetHearingRow WithDriver(NgWebDriver driver)
+        public GetHearingRow WithDriver(UserBrowser browser)
         {
-            _driver = driver;
+            _browser = browser;
             return this;
         }
 
         public HearingRow Fetch()
         {
-            if (_caseNumber == null || _judgeName == null || _driver == null)
+            if (_caseNumber == null || _judgeName == null || _browser == null)
             {
                 throw new NullReferenceException("Values must be set");
             }
@@ -88,7 +88,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             CheckRowIsVisible();
             GetTime();
             GetJudge();
-            GetcaseDetails();
+            GetCaseDetails();
             GetParticipants();
 
             return _hearingRow;

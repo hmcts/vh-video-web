@@ -3,11 +3,11 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Linq;
-using Testing.Common.Builders;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using ConferenceUserRole = VideoWeb.Services.Video.UserRole;
+using ParticipantSummaryResponseBuilder = VideoWeb.UnitTests.Builders.ParticipantSummaryResponseBuilder;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -16,7 +16,7 @@ namespace VideoWeb.UnitTests.Mappings
         private readonly ConferenceForUserResponseMapper _mapper = new ConferenceForUserResponseMapper();
 
         [Test]
-        public void should_map_all_properties()
+        public void Should_map_all_properties()
         {
             var conference = Builder<ConferenceSummaryResponse>.CreateNew().Build();
 
@@ -57,7 +57,7 @@ namespace VideoWeb.UnitTests.Mappings
         }
 
         [Test]
-        public void should_map_all_participants()
+        public void Should_map_all_participants()
         {
             var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(2).Build().ToList();
 
@@ -76,7 +76,7 @@ namespace VideoWeb.UnitTests.Mappings
         }
 
         [Test]
-        public void should_map_all_participant_statuses()
+        public void Should_map_all_participant_statuses()
         {
             var participantStatuses = Builder<ParticipantState>.CreateListOfSize(8).Build().ToList();
 

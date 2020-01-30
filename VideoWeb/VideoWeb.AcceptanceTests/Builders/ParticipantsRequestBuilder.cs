@@ -1,5 +1,5 @@
-﻿using FizzWare.NBuilder;
-using Testing.Common.Configuration;
+﻿using AcceptanceTests.Common.Configuration.Users;
+using FizzWare.NBuilder;
 using VideoWeb.Services.Bookings;
 
 namespace VideoWeb.AcceptanceTests.Builders
@@ -66,7 +66,7 @@ namespace VideoWeb.AcceptanceTests.Builders
         {
             return _request
                 .With(x => x.Contact_email = _user.AlternativeEmail)
-                .With(x => x.Display_name = _user.Displayname)
+                .With(x => x.Display_name = _user.DisplayName)
                 .With(x => x.First_name = _user.Firstname)
                 .With(x => x.Last_name = _user.Lastname)
                 .With(x => x.Middle_names = "")
