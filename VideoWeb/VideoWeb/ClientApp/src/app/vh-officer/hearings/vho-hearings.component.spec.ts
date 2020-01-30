@@ -22,6 +22,7 @@ import { VhoHearingsComponent } from './vho-hearings.component';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { VhoHearingsFilterStubComponent } from '../../testing/stubs/vho-hearings-filter-stub';
+import { UserRole } from 'src/app/services/clients/api-client';
 
 describe('VhoHearingsComponent', () => {
   let component: VhoHearingsComponent;
@@ -136,6 +137,26 @@ describe('VhoHearingsComponent', () => {
       initPendingTasks
     );
   });
+  it('should get the selected judge statuses from another hearings', () => {
+    component.selectedHearing = new Hearing(component.conferencesAll[0]);
+    component.participants = component.conferencesAll[0].participants;
+    component.getJudgeStatusDetails();
+    expect(component.participantStatusModel.JudgeStatuses.length).toBeGreaterThan(0);
+  });
+  it('should not return selected judge statuses from another hearings', () => {
+    component.clearSelectedConference();
+    const selectedConferenceId = component.conferencesAll[0].id;
+    component.selectedHearing = new Hearing(component.conferencesAll[0]);
+
+    component.participants = component.conferencesAll[0].participants;
+    component.participants.forEach(x => {
+      if (x.role === UserRole.Judge) {
+        x.username = 'changeName@email.com';
+      }
+    });
+    component.getJudgeStatusDetails();
+    expect(component.participantStatusModel.JudgeStatuses.length).toBe(0);
+  });
 });
 describe('VhoHearingsComponent Filter', () => {
   let component: VhoHearingsComponent;
@@ -224,6 +245,5 @@ describe('VhoHearingsComponent Filter', () => {
     expect(filtered1).toBe(true);
     const filtered2 = component.conferences[1].tasks.filter(x => x.body.includes(expectedAlerts1)).length > 0;
     expect(filtered2).toBe(true);
-
   });
 });
