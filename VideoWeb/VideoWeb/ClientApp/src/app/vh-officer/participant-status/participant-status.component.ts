@@ -1,28 +1,26 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { ParticipantResponse, ParticipantStatus, UserRole } from 'src/app/services/clients/api-client';
+import { Component, Input } from '@angular/core';
+import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { Participant } from 'src/app/shared/models/participant';
+import { ParticipantStatusModel } from 'src/app/shared/models/participants-status-model';
 
 @Component({
   selector: 'app-participant-status',
   templateUrl: './participant-status.component.html',
   styleUrls: ['./participant-status.component.scss']
 })
-export class ParticipantStatusComponent implements OnInit {
+export class ParticipantStatusComponent {
 
-  private _participants: ParticipantResponse[];
-  @Input() set participants(participants: ParticipantResponse[]) {
-    this._participants = participants;
-    this.filterNonJudgeParticipants();
-  }
-  nonJugdeParticipants: Participant[];
+  _participants: Participant[];
+  _judgeStatuses: ParticipantStatus[];
 
-  constructor() { }
-
-  ngOnInit() {
-    this.filterNonJudgeParticipants();
+  @Input() set participants(participants: ParticipantStatusModel) {
+    this._participants = participants.Participants;
+    this._judgeStatuses = participants.JudgeStatuses;
   }
 
-  getParticipantStatusClass(participant): string {
+
+  getParticipantStatusClass(participant: Participant): string {
+
     switch (participant.status) {
       case ParticipantStatus.None:
       case ParticipantStatus.NotSignedIn:
@@ -34,12 +32,6 @@ export class ParticipantStatusComponent implements OnInit {
       default:
         return 'participant-default-status';
     }
-  }
-
-  private filterNonJudgeParticipants(): void {
-    this.nonJugdeParticipants = this._participants
-      .filter(x => x.role !== UserRole.Judge)
-      .map(p => new Participant(p));
   }
 
 }
