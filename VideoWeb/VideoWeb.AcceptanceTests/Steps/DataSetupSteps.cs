@@ -9,7 +9,6 @@ using TechTalk.SpecFlow;
 using Testing.Common.Assertions;
 using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Helpers;
-using VideoWeb.Common.Helpers;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
 

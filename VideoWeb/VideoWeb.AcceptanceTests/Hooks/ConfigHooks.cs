@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Configuration;
 using AcceptanceTests.Common.Configuration.Users;
 using AcceptanceTests.Common.Data.TestData;
