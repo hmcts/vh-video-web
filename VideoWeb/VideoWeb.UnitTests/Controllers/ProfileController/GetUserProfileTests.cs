@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using Testing.Common.Helpers;
 using VideoWeb.Controllers;
 using VideoWeb.Services.User;
+using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.User.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ProfileController
@@ -56,7 +56,7 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
         public async Task Should_return_not_found_code_when_user_profile_is_not_found()
         {
             var apiException = new UserApiException<ProblemDetails>("User not found", (int) HttpStatusCode.NotFound,
-                "User Not Found", null, default(ProblemDetails), null);
+                "User Not Found", null, default, null);
             _userApiClientMock
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);

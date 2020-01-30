@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using VideoWeb.Services.Video;
 
-namespace Testing.Common.Assertions
+namespace VideoWeb.AcceptanceTests.Assertions
 {
     public class AssertConferenceDetailsResponse
     {

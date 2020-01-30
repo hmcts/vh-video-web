@@ -46,6 +46,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.1" />
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.6" />
+    <PackageReference Include="NBuilder" Version="6.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="nunit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
@@ -68,9 +69,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Testing.Common\Testing.Common.csproj" />
-    <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />
     <ProjectReference Include="..\VideoWeb.Contract\VideoWeb.Contract.csproj" />
+    <ProjectReference Include="..\VideoWeb.EventHub\VideoWeb.EventHub.csproj" />
     <ProjectReference Include="..\VideoWeb.Services\VideoWeb.Services.csproj" />
   </ItemGroup>
 </Project>

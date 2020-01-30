@@ -9,12 +9,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using NUnit.Framework;
-using Testing.Common.Helpers;
 using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
+using VideoWeb.UnitTests.Builders;
+using EventComponentHelper = VideoWeb.UnitTests.Builders.EventComponentHelper;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
@@ -71,7 +72,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         public async Task Should_forward_error_code_on_failure()
         {
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
-                "Please provide a valid conference Id", null, default(ProblemDetails), null);
+                "Please provide a valid conference Id", null, default, null);
             var conferenceId = Guid.NewGuid();
             var participantId = Guid.NewGuid();
             _videoApiClientMock
@@ -101,7 +102,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         {
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", 
                 (int)HttpStatusCode.BadRequest, "Please provide a valid conference Id", null, 
-                default(ProblemDetails), null);
+                default, null);
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
@@ -117,7 +118,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         {
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", 
                 (int)HttpStatusCode.InternalServerError, "Stacktrace goes here", null, 
-                default(ProblemDetails), null);
+                default, null);
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
@@ -147,7 +148,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         public async Task Should_forward_error_code_on_failure_when_independent_testcall()
         {
             var apiException = new VideoApiException<Microsoft.AspNetCore.Mvc.ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
-                "Please provide a valid participant Id", null, default(Microsoft.AspNetCore.Mvc.ProblemDetails), null);
+                "Please provide a valid participant Id", null, default, null);
             var participantId = Guid.NewGuid();
             _videoApiClientMock
                 .Setup(x => x.GetIndependentTestCallResultAsync(participantId))

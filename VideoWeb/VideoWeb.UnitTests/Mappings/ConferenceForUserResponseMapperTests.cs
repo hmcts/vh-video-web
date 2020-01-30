@@ -3,11 +3,11 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Linq;
-using Testing.Common.Builders;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using ConferenceUserRole = VideoWeb.Services.Video.UserRole;
+using ParticipantSummaryResponseBuilder = VideoWeb.UnitTests.Builders.ParticipantSummaryResponseBuilder;
 
 namespace VideoWeb.UnitTests.Mappings
 {

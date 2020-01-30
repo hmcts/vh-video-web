@@ -1,7 +1,7 @@
 using FizzWare.NBuilder;
 using VideoWeb.Services.Video;
 
-namespace Testing.Common.Builders
+namespace VideoWeb.AcceptanceTests.Assertions
 {
     public class ParticipantSummaryResponseBuilder
     {

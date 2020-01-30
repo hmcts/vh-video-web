@@ -18,7 +18,7 @@
         <PackageReference Include="NBuilder" Version="6.1.0" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\Testing.Common\Testing.Common.csproj" />
+      <ProjectReference Include="..\VideoWeb.AcceptanceTests\VideoWeb.AcceptanceTests.csproj" />
       <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />
       <ProjectReference Include="..\VideoWeb\VideoWeb.csproj" />
     </ItemGroup>

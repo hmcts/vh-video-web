@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 
-namespace Testing.Common.Helpers
+namespace VideoWeb.UnitTests.Builders
 {
     public class ClaimsPrincipalBuilder
     {

@@ -2,7 +2,7 @@ using System;
 using FizzWare.NBuilder;
 using VideoWeb.Services.Video;
 
-namespace Testing.Common.Builders
+namespace VideoWeb.UnitTests.Builders
 {
     public class ParticipantDetailsResponseBuilder 
     {

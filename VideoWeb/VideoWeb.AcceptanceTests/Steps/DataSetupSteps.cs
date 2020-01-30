@@ -6,7 +6,7 @@ using AcceptanceTests.Common.Api.Requests;
 using AcceptanceTests.Common.Configuration.Users;
 using FluentAssertions;
 using TechTalk.SpecFlow;
-using Testing.Common.Assertions;
+using VideoWeb.AcceptanceTests.Assertions;
 using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.Services.Bookings;
