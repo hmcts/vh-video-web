@@ -1,0 +1,35 @@
+{
+    "stryker-config":
+    {      
+        "reporters":[
+            "Progress",
+            "ClearText"
+        ],  
+        "log-level":"info",
+        "timeout-ms":10000,
+        "log-file":true,
+        "project-file":"VideoWeb.csproj",
+        "max-concurrent-test-runners":4,
+        "threshold-high":80,
+        "threshold-low":70,
+        "threshold-break":50,
+        "files-to-exclude": [       
+        ],
+		"excluded-mutations": [
+        ],
+		"ignore-methods": [
+			"*LogDebug",
+			"*LogTrace",
+			"*LogError",
+			"*LogInformation",
+			"*AddModelError"
+        ],
+		"mutate": [
+			"!Startup.cs",
+			"!Program.cs",
+			"!ConfigureServicesExtensions.cs",
+			"!Swagger/AuthResponsesOperationFilter.cs",		
+			"!Pages/Error.cshtml.cs"
+		]
+    }
+}

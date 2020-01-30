@@ -61,13 +61,15 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .With(x => x.Scheduled_duration = 20)
                 .With(x => x.Status = ConferenceState.NotStarted)
                 .With(x => x.Closed_date_time = null)
-                .Random(4).Do((response, i) =>
-                {
-                    response.Status = ConferenceState.Closed;
-                    response.Closed_date_time =
-                        i % 2 == 0 ? DateTime.UtcNow.AddMinutes(40) : DateTime.UtcNow.AddMinutes(10);
-                })
                 .Build().ToList();
+
+            var minutes = -60;
+            foreach (var conference in conferences)
+            {
+                conference.Status = minutes < 0 ? ConferenceState.Closed : ConferenceState.NotStarted;
+                conference.Closed_date_time = DateTime.UtcNow.AddMinutes(minutes);
+                minutes += 90;
+            }
 
             _videoApiClientMock
                 .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
@@ -80,6 +82,12 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             
             var conferencesForUser = (List<ConferenceForUserResponse>)typedResult.Value;
             conferencesForUser.Should().NotBeNullOrEmpty();
+            conferencesForUser.Count().Should().Be(10);
+            var i = 1;
+            foreach (var conference in conferencesForUser)
+            {
+                conference.CaseName.Should().Be($"Case_name{i++}");
+            }
         }
         
         [Test]

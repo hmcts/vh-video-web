@@ -137,6 +137,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             
             var typedResult = (ObjectResult) result.Result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.ExpectationFailed);
+            ((AggregateException) typedResult.Value).Message.Should()
+                .Contain("Unable to find a participant in bookings api with id ");
         }
 
         [Test]
