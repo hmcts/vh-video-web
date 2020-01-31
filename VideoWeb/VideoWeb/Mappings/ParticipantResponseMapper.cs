@@ -15,19 +15,18 @@ namespace VideoWeb.Mappings
             if (participant.Current_status?.Participant_state != null)
             {
                 status =
-                    Enum.Parse<ParticipantStatus>(participant.Current_status.Participant_state.GetValueOrDefault()
+                    Enum.Parse<ParticipantStatus>(participant.Current_status.Participant_state
                         .ToString());
             }
-
-            var role = UserRole.None;
-            if (participant.User_role != null)
+            
+            if (!Enum.TryParse(participant.User_role.ToString(), true, out UserRole role))
             {
-                role = Enum.Parse<UserRole>(participant.User_role.GetValueOrDefault().ToString());
+                role = UserRole.None;
             }
-
+            
             var response = new ParticipantResponse
             {
-                Id = participant.Id.GetValueOrDefault(),
+                Id = participant.Id,
                 FirstName = bookingParticipant?.First_name,
                 LastName = bookingParticipant?.Last_name,
                 Name = participant.Name,

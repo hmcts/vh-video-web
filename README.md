@@ -65,3 +65,5 @@ npm run test
 ```
 
 This will execute the angular tests files with the --code-coverage parameter. Once the coverage files have been produced, enable the watch command for Coverage Gutters.
+
+

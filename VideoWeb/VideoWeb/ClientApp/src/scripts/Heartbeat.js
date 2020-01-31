@@ -1,7 +1,6 @@
 "use strict";
 
 (function (scope) {
-
   var heartbeatFactoryInstance;
 
   var HeartbeatFactory = function (pexrtc, cmdurl, hearingId, participantId, token, delay, interval) {
@@ -141,9 +140,19 @@
     if (totalSent === 0) {
       return 0;
     }
+    this.correctForCorruptedPacketsLostValues(medium);
     var totalLost = medium.packetsLost[0] - medium.packetsLost[medium.packetsLost.length - 1];
     //console.log("packetratio : " + totalLost + " over " + totalSent);
     return (totalLost / (totalLost + totalSent)) * 100;
+  };
+
+  HeartbeatFactory.prototype.correctForCorruptedPacketsLostValues = function (medium) {
+    if (medium.packetsLost.length > 1 && medium.packetsLost[0] < medium.packetsLost[1]) {
+      var buffer = medium.packetsLost[1];
+      for (var i = 1; i < medium.packetsLost.length; i++) {
+        medium.packetsLost[i] = medium.packetsLost[i] - buffer;
+      }
+    }
   };
 
   HeartbeatFactory.prototype.postHeartbeat = function (heartbeat) {

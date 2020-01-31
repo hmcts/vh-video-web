@@ -11,7 +11,7 @@ namespace VideoWeb.UnitTests.Mappings
         private readonly ClientSettingsResponseMapper _mapper = new ClientSettingsResponseMapper();
 
         [Test]
-        public void should_map_all_properties()
+        public void Should_map_all_properties()
         {
             var azureAdConfiguration = Builder<AzureAdConfiguration>.CreateNew()
                 .With(x => x.ApplicationInsights = Builder<ApplicationInsightsConfiguration>.CreateNew().Build())

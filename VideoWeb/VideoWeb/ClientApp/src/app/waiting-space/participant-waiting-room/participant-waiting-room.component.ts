@@ -21,6 +21,7 @@ import { Subscription } from 'rxjs';
 declare var PexRTC: any;
 declare var HeartbeatFactory: any;
 
+
 @Component({
   selector: 'app-participant-waiting-room',
   templateUrl: './participant-waiting-room.component.html',
@@ -47,6 +48,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   hearingAlertSound: HTMLAudioElement;
 
   showVideo: boolean;
+  showSelfView: boolean;
   showConsultationControls: boolean;
   selfViewOpen: boolean;
   isAdminConsultation: boolean;
@@ -76,6 +78,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     this.showVideo = false;
     this.showConsultationControls = false;
     this.selfViewOpen = false;
+    this.showSelfView = false;
   }
 
   ngOnInit() {
@@ -105,6 +108,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     this.outgoingStream = null;
     this.connected = false;
     this.showVideo = false;
+    this.showSelfView = false;
   }
 
   initHearingAlert() {
@@ -275,18 +279,25 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       // self.logger.info(`Using preferred microphone: ${preferredMic.label}`);
     }
 
-    this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
+      this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
       self.logger.info('running pexip setup');
       this.connect('0000', null);
       self.outgoingStream = stream;
+      this.showSelfView = true;
     };
 
-    this.pexipAPI.onConnect = function (stream) {
+      this.pexipAPI.onConnect = function (stream) {
       self.errorCount = 0;
       self.connected = true;
-      self.updateShowVideo();
       self.logger.info('successfully connected to call');
-      self.stream = stream;
+          self.stream = stream;
+          const incomingFeedElement = document.getElementById('incomingFeed') as any;
+           if (stream) {
+            self.updateShowVideo();
+            if (incomingFeedElement) {
+                self.assignStream(incomingFeedElement, stream);
+            }
+        }
 
       const baseUrl = self.conference.pexip_node_uri.replace('sip.', '');
       const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${self.conference.id}`;
@@ -338,6 +349,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   updateShowVideo(): void {
     if (!this.connected) {
       this.logger.debug('Not showing video because not connecting to node');
+      this.showSelfView = false;
       this.showVideo = false;
       this.showConsultationControls = false;
       return;
@@ -345,6 +357,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     if (this.hearing.isInSession()) {
       this.logger.debug('Showing video because hearing is in session');
+      this.showSelfView = true;
       this.showVideo = true;
       this.showConsultationControls = false;
       return;
@@ -352,12 +365,14 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     if (this.participant.status === ParticipantStatus.InConsultation) {
       this.logger.debug('Showing video because hearing is in session');
+      this.showSelfView = true;
       this.showVideo = true;
       this.showConsultationControls = !this.isAdminConsultation;
       return;
     }
 
     this.logger.debug('Not showing video because hearing is not in session and user is not in consultation');
+    this.showSelfView = false;
     this.showVideo = false;
     this.showConsultationControls = false;
   }
@@ -387,5 +402,13 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         (error) => {
           this.logger.error(`There was an error getting a conference ${conferenceId}`, error);
         });
-  }
+    }
+
+    assignStream(videoElement, stream) {
+        if (typeof (MediaStream) !== 'undefined' && stream instanceof MediaStream) {
+            videoElement.srcObject = stream;
+        } else {
+            videoElement.src = stream;
+        }
+    }
 }

@@ -2,20 +2,20 @@
 
 namespace VideoWeb.AcceptanceTests.Pages
 {
-    public class PracticeVideoHearingPage
+    public static class PracticeVideoHearingPage
     {
         private const string PopupHeaderText = "Choose your camera and microphone";
-        public By IncomingVideo = By.Id("incomingStream");
-        public By SelfVideo = By.Id("outgoingStream");
-        public By SoundMeter = By.Id("meter");
-        public By TestScore = By.XPath("//p[contains(text(),'Test Score:')]/strong");
-        public By WarningMessage => CommonLocators.WarningMessageAfterRadioButton("No");
-        public By ReplayButton => CommonLocators.ButtonWithInnertext("Re-play the video message");
-        public By ChangeMicPopup => CommonLocators.ElementContainingText(PopupHeaderText);
-        public By MicsList = By.Id("available-mics-list");
-        public By ChangeButton => CommonLocators.ButtonWithInnertext("Change");
-        public By ProblemsTitle => CommonLocators.ElementContainingText("Problems with your equipment?");
-        public By PleaseCallTheVhoText => CommonLocators.ElementContainingText("Please call the video hearings team");
-        public By PreferredCameraVideo = By.Id("preferredCameraStream");
+        public static By IncomingVideo = By.Id("incomingStream");
+        public static By SelfVideo = By.Id("outgoingStream");
+        public static By SoundMeter = By.Id("meter");
+        public static By TestScore = By.XPath("//p[contains(text(),'Test Score:')]/strong");
+        public static By WarningMessage => CommonLocators.WarningMessageAfterRadioButton("No");
+        public static By ReplayButton => CommonLocators.ButtonWithInnertext("Re-play the video message");
+        public static By ChangeMicPopup => CommonLocators.ElementContainingText(PopupHeaderText);
+        public static By MicsList = By.Id("available-mics-list");
+        public static By ChangeButton => CommonLocators.ButtonWithInnertext("Change");
+        public static By ProblemsTitle => CommonLocators.ElementContainingText("Problems with your equipment?");
+        public static By PleaseCallTheVhoText => CommonLocators.ElementContainingText("Please call the video hearings team");
+        public static By PreferredCameraVideo = By.Id("preferredCameraStream");
     }
 }

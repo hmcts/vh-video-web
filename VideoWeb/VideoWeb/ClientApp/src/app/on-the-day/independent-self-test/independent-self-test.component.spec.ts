@@ -15,6 +15,8 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
 import { configureTestSuite } from 'ng-bullet';
+import { BaseSelfTestComponent } from '../models/base-self-test.component';
+import { ConferenceResponse } from 'src/app/services/clients/api-client';
 
 describe('IndependentSelfTestComponent', () => {
   let component: IndependentSelfTestComponent;
@@ -66,9 +68,15 @@ describe('IndependentSelfTestComponent', () => {
   });
 
   it('should show self test restarting video', () => {
+    const selfTestSpy = jasmine.createSpyObj<SelfTestComponent>('SelfTestComponent', ['replayVideo']);
+    selfTestSpy.replayVideo.and.callFake(() => { });
+    component.selfTestComponent = selfTestSpy;
+
     component.restartTest();
+
     expect(component.showEquipmentFaultMessage).toBeFalsy();
     expect(component.testInProgress).toBeFalsy();
     expect(component.hideSelfTest).toBeFalsy();
+    expect(selfTestSpy.replayVideo).toHaveBeenCalled();
   });
 });

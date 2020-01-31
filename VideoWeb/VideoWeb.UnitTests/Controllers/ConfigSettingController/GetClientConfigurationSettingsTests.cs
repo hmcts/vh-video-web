@@ -11,7 +11,7 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
     public class GetClientConfigurationSettingsTests
     {
         [Test]
-        public void should_return_response_with_settings()
+        public void Should_return_response_with_settings()
         {
             var securitySettings = new AzureAdConfiguration
             {

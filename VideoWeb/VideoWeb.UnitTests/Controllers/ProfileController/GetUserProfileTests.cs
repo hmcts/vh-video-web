@@ -6,9 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using Testing.Common.Helpers;
 using VideoWeb.Controllers;
 using VideoWeb.Services.User;
+using VideoWeb.UnitTests.Builders;
+using ProblemDetails = VideoWeb.Services.User.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ProfileController
 {
@@ -39,7 +40,7 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
         }
         
         [Test]
-        public async Task should_return_ok_code_when_user_profile_found()
+        public async Task Should_return_ok_code_when_user_profile_found()
         {
             var userProfile = new UserProfile() {User_role = "Judge"};
             _userApiClientMock
@@ -52,10 +53,10 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
         }
         
         [Test]
-        public async Task should_return_not_found_code_when_user_profile_is_not_found()
+        public async Task Should_return_not_found_code_when_user_profile_is_not_found()
         {
             var apiException = new UserApiException<ProblemDetails>("User not found", (int) HttpStatusCode.NotFound,
-                "User Not Found", null, default(ProblemDetails), null);
+                "User Not Found", null, default, null);
             _userApiClientMock
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
@@ -66,10 +67,10 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
         }
         
         [Test]
-        public async Task should_return_exception()
+        public async Task Should_return_exception()
         {
             var apiException = new UserApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
-                "Stacktrace goes here", null, default(ProblemDetails), null);
+                "Stacktrace goes here", null, default, null);
             _userApiClientMock
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);

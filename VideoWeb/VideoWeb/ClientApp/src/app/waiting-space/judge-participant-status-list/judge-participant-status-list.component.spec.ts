@@ -12,7 +12,7 @@ import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { JudgeParticipantStatusListComponent } from './judge-participant-status-list.component';
 
 
-describe('ParticipantStatusListComponent', () => {
+describe('JudgeParticipantStatusListComponent', () => {
   let component: JudgeParticipantStatusListComponent;
   let fixture: ComponentFixture<JudgeParticipantStatusListComponent>;
   let adalService: MockAdalService;
@@ -42,7 +42,7 @@ describe('ParticipantStatusListComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
     expect(component.judge).toBeDefined();
-    expect(component.nonJugdeParticipants).toBeDefined();
+    expect(component.nonJudgeParticipants).toBeDefined();
   });
 
   it('should return true when participant is available', () => {
@@ -86,22 +86,8 @@ describe('ParticipantStatusListComponent', () => {
     expect(component.canCallParticipant(participant)).toBeFalsy();
   });
 
-  it('should be able to call an available participant', () => {
+  it('should not be able to call an available participant', () => {
     const participant = new ParticipantResponse({ status: ParticipantStatus.Available, username: 'test@dot.com' });
-    expect(component.canCallParticipant(participant)).toBeTruthy();
-  });
-
-  it('should not be able to begin call self', () => {
-    const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'chris.green@hearings.net' });
-    const spiedObject = spyOn<any>(component, 'raiseConsultationRequestEvent');
-    component.begingCallWith(participant);
-    expect(spiedObject).toHaveBeenCalledTimes(0);
-  });
-
-  it('should be able to begin call with another participant', () => {
-    const participant = new ParticipantResponse({ status: ParticipantStatus.Available, username: 'test@dot.com' });
-    const spiedObject = spyOn<any>(component, 'raiseConsultationRequestEvent');
-    component.begingCallWith(participant);
-    expect(spiedObject).toHaveBeenCalled();
+    expect(component.canCallParticipant(participant)).toBeFalsy();
   });
 });

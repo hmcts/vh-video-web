@@ -1,9 +1,9 @@
 ﻿{
-  "runtime": "NetCore21",
+  "runtime": "NetCore31",
   "defaultVariables": null,
   "documentGenerator": {
     "fromDocument": {
-      "url": "https://localhost:59390/swagger/v1/swagger.json",
+      "url": "https://vh-video-api-dev.hearings.reform.hmcts.net/swagger/v1/swagger.json",
       "output": null
     }
   },

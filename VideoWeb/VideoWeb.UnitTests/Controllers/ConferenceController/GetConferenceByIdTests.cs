@@ -11,12 +11,11 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using Testing.Common.Helpers;
 using VideoWeb.Controllers;
-using VideoWeb.EventHub;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
+using VideoWeb.UnitTests.Builders;
 using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
@@ -60,10 +59,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         }
 
         [Test]
-        public async Task should_return_error_when_unable_to_retrieve_profile()
+        public async Task Should_return_error_when_unable_to_retrieve_profile()
         {
             var apiException = new UserApiException<ProblemDetails>("User not found", (int) HttpStatusCode.NotFound,
-                "User Not Found", null, default(ProblemDetails), null);
+                "User Not Found", null, default, null);
             _userApiClientMock
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
@@ -73,7 +72,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
 
-            var result = await _controller.GetConferenceById(conference.Id.GetValueOrDefault());
+            var result = await _controller.GetConferenceById(conference.Id);
             var typedResult = result.Value;
             typedResult.Should().BeNull();
             var objectResult = (ObjectResult) result.Result;
@@ -81,7 +80,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         }
         
         [Test]
-        public async Task should_return_error_when_unable_to_retrieve_booking_participants()
+        public async Task Should_return_error_when_unable_to_retrieve_booking_participants()
         {
             var apiException = new BookingsApiException("Hearing does not exist", (int) HttpStatusCode.NotFound,
                 "Invalid Hearing Id", null, null);
@@ -94,7 +93,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
 
-            var result = await _controller.GetConferenceById(conference.Id.GetValueOrDefault());
+            var result = await _controller.GetConferenceById(conference.Id);
             var typedResult = result.Value;
             typedResult.Should().BeNull();
             var objectResult = (ObjectResult) result.Result;
@@ -103,7 +102,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
 
         [Test]
-        public async Task should_return_ok_when_user_belongs_to_conference()
+        public async Task Should_return_ok_when_user_belongs_to_conference()
         {
             var conference = CreateValidConferenceResponse();
             _videoApiClientMock
@@ -115,13 +114,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetAllParticipantsInHearingAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(bookingParticipants);
             
-            var result = await _controller.GetConferenceById(conference.Id.GetValueOrDefault());
+            var result = await _controller.GetConferenceById(conference.Id);
             var typedResult = (OkObjectResult) result.Result;
             typedResult.Should().NotBeNull();
         }
 
         [Test]
-        public async Task should_return_error_when_booking_participants_are_missing()
+        public async Task Should_return_error_when_booking_participants_are_missing()
         {
             var conference = CreateValidConferenceResponse();
             _videoApiClientMock
@@ -134,14 +133,14 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetAllParticipantsInHearingAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(bookingParticipants);
             
-            var result = await _controller.GetConferenceById(conference.Id.GetValueOrDefault());
+            var result = await _controller.GetConferenceById(conference.Id);
             
             var typedResult = (ObjectResult) result.Result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.ExpectationFailed);
         }
 
         [Test]
-        public async Task should_return_ok_when_user_is_an_admin()
+        public async Task Should_return_ok_when_user_is_an_admin()
         {
             var userProfile = new UserProfile {User_role = "VhOfficer"};
             _userApiClientMock
@@ -158,29 +157,29 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetAllParticipantsInHearingAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(bookingParticipants);
 
-            var result = await _controller.GetConferenceById(conference.Id.GetValueOrDefault());
+            var result = await _controller.GetConferenceById(conference.Id);
             var typedResult = (OkObjectResult) result.Result;
             typedResult.Should().NotBeNull();
         }
 
         [Test]
-        public async Task should_return_unauthorised_when_getting_conference_user_does_not_belong_to()
+        public async Task Should_return_unauthorised_when_getting_conference_user_does_not_belong_to()
         {
             var conference = CreateValidConferenceResponse(null);
             _videoApiClientMock
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
 
-            var result = await _controller.GetConferenceById(conference.Id.GetValueOrDefault());
+            var result = await _controller.GetConferenceById(conference.Id);
             var typedResult = (UnauthorizedResult) result.Result;
             typedResult.Should().NotBeNull();
         }
 
         [Test]
-        public async Task should_return_bad_request()
+        public async Task Should_return_bad_request()
         {
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
-                "Please provide a valid conference Id", null, default(ProblemDetails), null);
+                "Please provide a valid conference Id", null, default, null);
             _videoApiClientMock
                 .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
@@ -192,11 +191,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         }
 
         [Test]
-        public async Task should_return_forbidden_request()
+        public async Task Should_return_forbidden_request()
         {
             var apiException = new VideoApiException<ProblemDetails>("Unauthorised Token",
                 (int) HttpStatusCode.Unauthorized,
-                "Invalid Client ID", null, default(ProblemDetails), null);
+                "Invalid Client ID", null, default, null);
             _videoApiClientMock
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ThrowsAsync(apiException);
@@ -208,11 +207,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         }
 
         [Test]
-        public async Task should_return_exception()
+        public async Task Should_return_exception()
         {
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
                 (int) HttpStatusCode.InternalServerError,
-                "Stacktrace goes here", null, default(ProblemDetails), null);
+                "Stacktrace goes here", null, default, null);
             _videoApiClientMock
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ThrowsAsync(apiException);

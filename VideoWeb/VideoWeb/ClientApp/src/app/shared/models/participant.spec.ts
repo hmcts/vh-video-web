@@ -62,4 +62,37 @@ describe('Participant', () => {
     expect(participant.status).toBe(p.status);
     expect(participant.role).toBe(p.role);
   });
+  it('should return judge status Unavailable if judge disconnected in another hearing', () => {
+    const judgeStatusInAnotherHearing = [ParticipantStatus.Disconnected];
+    const p = new ConferenceTestData().getConferenceDetail().participants[0];
+    p.status = ParticipantStatus.NotSignedIn;
+    const participant = new Participant(p);
+    expect(participant.getStatusAsTextForJudge(judgeStatusInAnotherHearing)).toBe('Unavailable');
+  });
+  it('should return judge status Unavailable if judge not signed in in another hearing', () => {
+    const judgeStatusInAnotherHearing = [ParticipantStatus.NotSignedIn];
+    const p = new ConferenceTestData().getConferenceDetail().participants[0];
+    p.status = ParticipantStatus.None;
+    const participant = new Participant(p);
+    expect(participant.getStatusAsTextForJudge(judgeStatusInAnotherHearing)).toBe('Unavailable');
+  });
+  it('should return judge status Available if judge not signed in in another hearing', () => {
+    const judgeStatusInAnotherHearing = [ParticipantStatus.NotSignedIn];
+    const p = new ConferenceTestData().getConferenceDetail().participants[0];
+    p.status = ParticipantStatus.Available;
+    const participant = new Participant(p);
+    expect(participant.getStatusAsTextForJudge(judgeStatusInAnotherHearing)).toBe('Available');
+  });
+  it('should return judge status In another hearing if judge is in the another hearing', () => {
+    const judgeStatusInAnotherHearing = [ParticipantStatus.InHearing];
+    const p = new ConferenceTestData().getConferenceDetail().participants[0];
+    p.status = ParticipantStatus.NotSignedIn;
+    const participant = new Participant(p);
+    expect(participant.getStatusAsTextForJudge(judgeStatusInAnotherHearing)).toBe('In another hearing');
+  });
+  it('should return true if a judge', () => {
+    const p = new ConferenceTestData().getConferenceDetail().participants[2];
+    const participant = new Participant(p);
+    expect(participant.isJudge).toBe(true);
+  });
 });

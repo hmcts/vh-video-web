@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using VideoWeb.EventHub.Models;
@@ -19,7 +18,7 @@ namespace VideoWeb
             {
                 participants.Add(new Participant
                 {
-                    Id = participant.Id.Value,
+                    Id = participant.Id,
                     DisplayName = participant.Display_name,
                     Role = (VideoWeb.EventHub.Enums.UserRole)Enum.Parse(typeof(UserRole), participant.User_role.ToString()),
                     Username = participant.Username
@@ -28,8 +27,8 @@ namespace VideoWeb
 
             var conference = new Conference
             {
-                Id = conferenceResponse.Id.Value,
-                HearingId = conferenceResponse.Hearing_id.Value,
+                Id = conferenceResponse.Id,
+                HearingId = conferenceResponse.Hearing_id,
                 Participants = participants
             };
 

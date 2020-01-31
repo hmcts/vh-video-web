@@ -13,11 +13,9 @@ namespace VideoWeb.Mappings
         public ConferenceResponse MapConferenceDetailsToResponseModel(ConferenceDetailsResponse conference,
             List<BookingParticipant> bookingParticipants)
         {
-            var status = ConferenceStatus.NotStarted;
-            if (conference.Current_status != null)
+            if (!Enum.TryParse(conference.Current_status.ToString(), true, out ConferenceStatus status))
             {
-                status = Enum.Parse<ConferenceStatus>(conference.Current_status.GetValueOrDefault()
-                    .ToString());
+                status = ConferenceStatus.NotStarted;
             }
 
             var participantMapper = new ParticipantResponseMapper();
@@ -30,12 +28,12 @@ namespace VideoWeb.Mappings
 
             var response = new ConferenceResponse
             {
-                Id = conference.Id.GetValueOrDefault(),
+                Id = conference.Id,
                 CaseName = conference.Case_name,
                 CaseNumber = conference.Case_number,
                 CaseType = conference.Case_type,
-                ScheduledDateTime = conference.Scheduled_date_time.GetValueOrDefault(),
-                ScheduledDuration = conference.Scheduled_duration.GetValueOrDefault(),
+                ScheduledDateTime = conference.Scheduled_date_time,
+                ScheduledDuration = conference.Scheduled_duration,
                 Status = status,
                 Participants = participants,
                 ClosedDateTime = conference.Closed_date_time

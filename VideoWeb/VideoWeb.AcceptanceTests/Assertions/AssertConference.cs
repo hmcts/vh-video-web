@@ -27,7 +27,6 @@ namespace VideoWeb.AcceptanceTests.Assertions
             _conference.Hearing_id.Should().Be(hearing.Id);
             _conference.Scheduled_date_time.Should().Be(hearing.Scheduled_date_time);
             _conference.Scheduled_duration.Should().Be(hearing.Scheduled_duration);
-
             ParticipantsMatch(hearing.Participants);
         }
 
@@ -48,19 +47,13 @@ namespace VideoWeb.AcceptanceTests.Assertions
                     if (!conferenceParticipant.Ref_id.Equals(hearingParticipant.Id)) continue;
                     conferenceParticipant.Case_type_group.Should().Be(hearingParticipant.Case_role_name);
                     conferenceParticipant.Display_name.Should().Be(hearingParticipant.Display_name);
-                    conferenceParticipant.Name.Should().Be(
-                            $"{hearingParticipant.Title} {hearingParticipant.First_name} {hearingParticipant.Last_name}");
+                    conferenceParticipant.Name.Should().Be($"{hearingParticipant.Title} {hearingParticipant.First_name} {hearingParticipant.Last_name}");
                     conferenceParticipant.Username.ToLower().Should().Be(hearingParticipant.Username.ToLower());
-
                     if (conferenceParticipant.User_role == UserRole.Representative)
-                    {
                         conferenceParticipant.Representee.Should().Be(hearingParticipant.Representee);
-                    }
-
                     participantFound = true;
                     break;
                 }
-
                 participantFound.Should().BeTrue("Participant found in the list of hearing participants");
             }
         }

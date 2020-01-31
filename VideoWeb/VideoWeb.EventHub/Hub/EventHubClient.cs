@@ -34,7 +34,7 @@ namespace VideoWeb.EventHub.Hub
         public override async Task OnConnectedAsync()
         {
             var userName = await GetUsername(Context.User.Identity.Name);
-            _logger.LogError($"Connected to event hub server-side: { userName } ");
+            _logger.LogTrace($"Connected to event hub server-side: { userName } ");
             var isAdmin = await IsVhOfficerAsync(Context.User.Identity.Name);
             if (isAdmin)
             {
@@ -51,8 +51,8 @@ namespace VideoWeb.EventHub.Hub
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             var userName = await GetUsername(Context.User.Identity.Name);
-            _logger.LogError($"Disconnected from event hub server-side: { userName } ");
-            _logger.LogError($"Disconnected from event hub server-side: { exception?.Message } ");
+            _logger.LogTrace($"Disconnected from event hub server-side: { userName } ");
+            _logger.LogTrace($"Disconnected from event hub server-side: { exception?.Message } ");
             var isAdmin = await IsVhOfficerAsync(Context.User.Identity.Name);
             if (isAdmin)
             {

@@ -3,10 +3,10 @@ using System.Linq;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
-using Testing.Common.Builders;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
+using VideoWeb.UnitTests.Builders;
 using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
 using UserRole = VideoWeb.Services.Video.UserRole;
 
@@ -17,7 +17,7 @@ namespace VideoWeb.UnitTests.Mappings
         private readonly ConferenceResponseMapper _mapper = new ConferenceResponseMapper();
 
         [Test]
-        public void should_map_all_properties()
+        public void Should_map_all_properties()
         {
             var participants = new List<ParticipantDetailsResponse>
             {
@@ -48,12 +48,12 @@ namespace VideoWeb.UnitTests.Mappings
 
             var response = _mapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
 
-            response.Id.Should().Be(conference.Id.GetValueOrDefault());
+            response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.Case_name);
             response.CaseType.Should().Be(conference.Case_type);
             response.CaseNumber.Should().Be(conference.Case_number);
-            response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time.GetValueOrDefault());
-            response.ScheduledDuration.Should().Be(conference.Scheduled_duration.GetValueOrDefault());
+            response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);
+            response.ScheduledDuration.Should().Be(conference.Scheduled_duration);
             response.Status.Should().Be(expectedConferenceStatus);
 
             var participantsResponse = response.Participants;

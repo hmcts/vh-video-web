@@ -20,8 +20,8 @@ namespace VideoWeb.AcceptanceTests.Builders
 
         public CallbackEventRequestBuilder WithRoomType(RoomType roomType)
         {
-            _request.With(x => x.TransferFrom = RoomType.WaitingRoom);
-            _request.With(x => x.TransferTo = RoomType.WaitingRoom);
+            _request.With(x => x.TransferFrom = roomType);
+            _request.With(x => x.TransferTo = roomType);
             return this;
         }
 
