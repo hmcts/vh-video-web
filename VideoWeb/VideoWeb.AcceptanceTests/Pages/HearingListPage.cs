@@ -4,7 +4,7 @@ namespace VideoWeb.AcceptanceTests.Pages
 {
     public static class HearingListPage
     {
-        public static By HearingListPageTitle => By.XPath("//*[contains(text(), 'Video hearings for') or contains(text(),'Your hearings')]");
+        public static By HearingListPageTitle => By.XPath("//*[contains(text(), 'Video hearings for') or contains(text(),'Your video hearing') or contains(text(),'Your video hearings')]");
         public static By NoHearingsWarningMessage => CommonLocators.ElementContainingText("You have no video hearings");
         public static By HearingWithCaseNumber(string caseNumber) => CommonLocators.ElementContainingText(caseNumber);
         public static By WaitToSignInText(string caseNumber) => By.XPath($"//tr//*[contains(text(),'{caseNumber}')]/../../..//td//p[contains(text(),'Sign in Today')]/../p[contains(text(),':')]");
