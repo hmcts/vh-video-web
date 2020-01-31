@@ -18,7 +18,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [TestCase(RoomType.AdminRoom)]
         [TestCase(RoomType.HearingRoom)]
         [TestCase(RoomType.WaitingRoom)]
-        public void should_throw_exception_when_transfer_to_is_not_a_consultation_room(RoomType? transferTo)
+        public void Should_throw_exception_when_transfer_to_is_not_a_consultation_room(RoomType? transferTo)
         {
             _eventHandler = new VhOfficerCallEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
             
@@ -42,7 +42,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
         [TestCase(RoomType.ConsultationRoom1)]
         [TestCase(RoomType.ConsultationRoom2)]
-        public async Task should_raise_admin_consultation_message(RoomType? transferTo)
+        public async Task Should_raise_admin_consultation_message(RoomType? transferTo)
         {
             _eventHandler = new VhOfficerCallEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
             

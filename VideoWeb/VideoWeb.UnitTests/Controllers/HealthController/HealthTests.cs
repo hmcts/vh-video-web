@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Controllers;
-using VideoWeb.Services;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
@@ -109,7 +108,7 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
         }
 
         [Test]
-        public async Task should_return_ok_when_exception_is_not_internal_server_error()
+        public async Task Should_return_ok_when_exception_is_not_internal_server_error()
         {
             var exception = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id", null, default(ProblemDetails), null);
@@ -126,7 +125,7 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
         }
 
         [Test]
-        public async Task should_return_ok_when_all_services_are_running()
+        public async Task Should_return_ok_when_all_services_are_running()
         {
             var result = await _controller.Health();
             var typedResult = (ObjectResult) result;

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using VideoWeb.Services.Bookings;
@@ -31,9 +32,9 @@ namespace VideoWeb.AcceptanceTests.Builders
             return this;
         }
 
-        public UpdateHearingRequestBuilder AddMinutesToTimes(int mins)
+        public UpdateHearingRequestBuilder AddMinutesToTimes(int minutes)
         {
-            _addMinutes = mins;
+            _addMinutes = minutes;
             return this;
         }
 
@@ -61,7 +62,7 @@ namespace VideoWeb.AcceptanceTests.Builders
             _request.Hearing_room_name = $"{_appendWord} {_hearing.Hearing_room_name}";
             _request.Hearing_venue_name = _venue;
             _request.Other_information = $"{_appendWord} {_hearing.Other_information}";
-            _request.Scheduled_date_time = _hearing.Scheduled_date_time?.AddMinutes(_addMinutes);
+            _request.Scheduled_date_time = _hearing.Scheduled_date_time.AddMinutes(_addMinutes);
             _request.Scheduled_duration = _hearing.Scheduled_duration + _addMinutes;
             _request.Updated_by = _updatedBy;
             return _request;
@@ -69,7 +70,7 @@ namespace VideoWeb.AcceptanceTests.Builders
 
         private void AssertDataNotNull()
         {
-            if (_hearing.Scheduled_date_time == null || _hearing.Scheduled_duration == null)
+            if (_hearing.Scheduled_date_time == DateTime.MinValue || _hearing.Scheduled_duration == 0)
             {
                 throw new DataException("Scheduled datetime or duration cannot be null");
             }

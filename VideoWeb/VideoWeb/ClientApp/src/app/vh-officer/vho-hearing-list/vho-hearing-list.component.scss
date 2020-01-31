@@ -74,15 +74,16 @@
 }
 
 .tooltip-wrapper {
-  position: relative;
+  /*position: relative;*/
   color: $govuk-link-colour;
+  white-space:nowrap;
 }
 
 .tooltip-wrapper:active {
   color: $govuk-link-hover-colour;
 }
 
-.tooltip-wrapper .tooltip {
+ .tooltip {
   visibility: hidden;
   width: 215px;
   height: 20px;
@@ -118,7 +119,7 @@
   visibility: visible;
 }
 
-.tooltip-wrapper .tooltip::after {
+ .tooltip::after {
   // content: " ";
   position: absolute;
   bottom: 100%;
@@ -143,3 +144,5 @@
 }
 @keyframes css  { to { visibility: hidden; } }
 @-webkit-keyframes css  { to { overflow: hidden; } }
+
+

@@ -10,11 +10,10 @@ import { HeaderComponent } from './header/header.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { SharedRoutingModule } from './shared-routing.module';
 import { ContactUsFoldingComponent } from './contact-us-folding/contact-us-folding.component';
-import { SnotifyModule, ToastDefaults, SnotifyService } from 'ng-snotify';
 import { ErrorComponent } from './error/error.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { SelectMediaDevicesComponent } from './select-media-devices/select-media-devices.component';
-import { MicVisualiserComponent } from '../shared/mic-visualiser/mic-visualiser.component';
+import { MicVisualiserComponent } from './mic-visualiser/mic-visualiser.component';
 import { EquipmentProblemComponent } from './equipment-problem/equipment-problem.component';
 import { SelfTestComponent } from './self-test/self-test.component';
 import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-browser.component';
@@ -33,8 +32,7 @@ import { BackNavigationComponent } from './back-navigation/back-navigation.compo
     ReactiveFormsModule,
     HttpClientModule,
     SharedRoutingModule,
-    SnotifyModule,
-    DeviceDetectorModule.forRoot()
+    DeviceDetectorModule.forRoot(),
   ],
   declarations: [
     HeaderComponent,
@@ -54,13 +52,9 @@ import { BackNavigationComponent } from './back-navigation/back-navigation.compo
     BetaBannerComponent,
     AccessibilityComponent,
     ScrollTriggerDirective,
-    BackNavigationComponent
+    BackNavigationComponent,
   ],
-  providers: [
-    { provide: 'SnotifyToastConfig', useValue: ToastDefaults},
-    SnotifyService,
-    WindowScrolling
-  ],
+  providers: [WindowScrolling],
   exports: [
     HeaderComponent,
     FooterComponent,
@@ -75,11 +69,10 @@ import { BackNavigationComponent } from './back-navigation/back-navigation.compo
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    SnotifyModule,
     DeviceDetectorModule,
     BetaBannerComponent,
     ScrollTriggerDirective,
-    BackNavigationComponent
-  ]
+    BackNavigationComponent,
+  ],
 })
-export class SharedModule { }
+export class SharedModule {}

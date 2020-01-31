@@ -3,11 +3,11 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Linq;
-using Testing.Common.Builders;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using ConferenceUserRole = VideoWeb.Services.Video.UserRole;
+using ParticipantSummaryResponseBuilder = VideoWeb.UnitTests.Builders.ParticipantSummaryResponseBuilder;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -16,7 +16,7 @@ namespace VideoWeb.UnitTests.Mappings
         private readonly ConferenceForUserResponseMapper _mapper = new ConferenceForUserResponseMapper();
 
         [Test]
-        public void should_map_all_properties()
+        public void Should_map_all_properties()
         {
             var conference = Builder<ConferenceSummaryResponse>.CreateNew().Build();
 
@@ -35,24 +35,29 @@ namespace VideoWeb.UnitTests.Mappings
             };
 
             conference.Participants = participants;
+            conference.Tasks = new List<TaskResponse> { new TaskResponse { Id = 1, Status = TaskStatus.ToDo, Body = "self-test" } };
 
             var response = _mapper.MapConferenceSummaryToResponseModel(conference);
 
-            response.Id.Should().Be(conference.Id.GetValueOrDefault());
+            response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.Case_name);
             response.CaseNumber.Should().Be(conference.Case_number);
             response.CaseType.Should().Be(conference.Case_type);
-            response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time.GetValueOrDefault());
-            response.ScheduledDuration.Should().Be(conference.Scheduled_duration.GetValueOrDefault());
-            response.Status.ToString().Should().Be(conference.Status.GetValueOrDefault().ToString());
+            response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);
+            response.ScheduledDuration.Should().Be(conference.Scheduled_duration);
+            response.Status.ToString().Should().Be(conference.Status.ToString());
             response.NoOfParticipantsAvailable.Should().Be(1);
             response.NoOfParticipantsInConsultation.Should().Be(2);
             response.NoOfParticipantsUnavailable.Should().Be(1);
             response.NoOfPendingTasks.Should().Be(conference.Pending_tasks);
+            response.HearingVenueName.Should().Be(conference.Hearing_venue_name);
+            response.Tasks.Count.Should().Be(1);
+            response.Tasks[0].Id.Should().Be(1);
+            response.Tasks[0].Body.Should().Be("self-test");
         }
 
         [Test]
-        public void should_map_all_participants()
+        public void Should_map_all_participants()
         {
             var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(2).Build().ToList();
 
@@ -71,7 +76,7 @@ namespace VideoWeb.UnitTests.Mappings
         }
 
         [Test]
-        public void should_map_all_participant_statuses()
+        public void Should_map_all_participant_statuses()
         {
             var participantStatuses = Builder<ParticipantState>.CreateListOfSize(8).Build().ToList();
 

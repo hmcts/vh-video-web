@@ -35,8 +35,9 @@ export class TasksTableComponent implements OnInit {
   }
 
   getOriginName(task: TaskResponse): string {
-    if (task.type !== TaskType.Hearing) {
-      return this.conference.participants.find(x => x.id === task.origin_id).name;
+      if (task.type !== TaskType.Hearing) {
+          const participantTask = this.conference.participants.find(x => x.id === task.origin_id);
+          return participantTask ? participantTask.name : '';
     } else {
       return '';
     }

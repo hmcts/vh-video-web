@@ -1,0 +1,81 @@
+<div id="filterPopup" class="vh-popup-overlay">
+  <div class="vh-popup vh-popup-xsmall">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-one-third">
+        <p class="govuk-body-l">Statuses</p>
+        <div class="govuk-checkboxes__item vh-mb10">
+          <input class="govuk-checkboxes__input"
+                 type="checkbox"
+                 [checked]="statusAllChecked" id="status-all" name="status-all"
+                 (click)="statusAllSelected()">
+          <label class="govuk-label govuk-checkboxes__label" for="status-all">All</label>
+        </div>
+        <hr />
+        <div *ngFor="let child of hearingsFilter.statuses; let i=index">
+          <div class="govuk-checkboxes__item vh-mb10">
+            <input class="govuk-checkboxes__input"
+                   type="checkbox"
+                   [checked]="child.Selected" id="{{'status' + i}}" name="{{'status'+i}}"
+                   (click)="statusOptionSelected(i)">
+            <label class="govuk-label govuk-checkboxes__label vh-word" for="{{'status' + i}}">{{child.Description}}</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="govuk-grid-column-one-third">
+        <p class="govuk-body-l">Locations</p>
+        <div class="govuk-checkboxes__item vh-mb10">
+          <input class="govuk-checkboxes__input"
+                 type="checkbox"
+                 [checked]="locationAllChecked" id="location-all" name="location-all"
+                 (click)="locationAllSelected()">
+          <label class="govuk-label govuk-checkboxes__label" for="location-all">All</label>
+        </div>
+        <hr />
+        <div *ngFor="let child of hearingsFilter.locations; let i=index">
+          <div class="govuk-checkboxes__item vh-mb10">
+            <input class="govuk-checkboxes__input"
+                   type="checkbox"
+                   [checked]="child.Selected"
+                   id="{{'location' + i}}" name="{{'location' + i}}"
+                   (click)="locationOptionSelected(i)">
+            <label class="govuk-label govuk-checkboxes__label vh-word" for="{{'location' + i}}">{{child.Description}}</label>
+          </div>
+        </div>
+
+      </div>
+      <div class="govuk-grid-column-one-third">
+       
+        <p class="govuk-body-l">Alerts</p>
+        <div class="govuk-checkboxes__item vh-mb10">
+          <input class="govuk-checkboxes__input"
+                 type="checkbox"
+                 [checked]="alertsAllChecked" id="alert-all" name="alert-all"
+                 (click)="alertAllSelected()">
+          <label class="govuk-label govuk-checkboxes__label" for="alert-all">All</label>
+        </div>
+        <hr />
+        <div *ngFor="let child of hearingsFilter.alerts; let i=index">
+          <div class="govuk-checkboxes__item vh-mb10">
+            <input class="govuk-checkboxes__input"
+                   type="checkbox"
+                   [checked]="child.Selected" id="{{'alert' + i}}" name="{{'alert' + i}}"
+                   (click)="alertOptionSelected(i)">
+            <label class="govuk-label govuk-checkboxes__label vh-word" for="{{'alert' + i}}">{{child.Description}}</label>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div class="govuk-grid-row">
+        <hr />
+        <div class="govuk-grid-column-one-half vh-mt20">
+          <input type="button" value="Apply filters" (click)="applyFilters()"
+                 id="applyFilter"
+                 class="govuk-button" [disabled]="disableFilterApply ? 'disabled' : false" />
+        </div>
+        <div class="govuk-grid-column-one-half vh-mt30" style="align-content:center;">
+          <a href="javascript:void(0);" class="govuk-link" (click)="clearFilters()">Clear filters</a>
+        </div>
+      </div>
+    </div>
+</div>

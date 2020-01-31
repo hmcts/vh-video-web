@@ -1,22 +1,23 @@
-import { Component, HostListener, NgZone, OnInit, OnDestroy } from '@angular/core';
+import { Component, HostListener, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import {
-  ConferenceForUserResponse, ConferenceResponse, ConsultationAnswer, ParticipantResponse, TaskResponse
-} from 'src/app/services/clients/api-client';
+import { ConferenceForUserResponse, ConferenceResponse, ParticipantResponse, TaskResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
-import { ConsultationMessage } from 'src/app/services/models/consultation-message';
-import { HelpMessage } from 'src/app/services/models/help-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { NotificationService } from 'src/app/services/notification.service';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { Logger } from 'src/app/services/logging/logger-base';
 
 import * as $ from 'jquery';
 import { Subscription } from 'rxjs';
+import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
+import { ConferenceForUser, ExtendedConferenceStatus, HearingsFilter } from '../../shared/models/hearings-filter';
+import { SessionStorage } from '../../services/session-storage';
+import { UserRole } from 'src/app/services/clients/api-client';
+import { ParticipantStatusModel } from 'src/app/shared/models/participants-status-model';
+import { Participant } from 'src/app/shared/models/participant';
 
 @Component({
   selector: 'app-vho-hearings',
@@ -32,13 +33,22 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
   loadingData: boolean;
 
   conferences: ConferenceForUserResponse[];
+  conferencesAll: ConferenceForUserResponse[];
   selectedHearing: Hearing;
   participants: ParticipantResponse[];
+  participantStatusModel: ParticipantStatusModel;
   selectedConferenceUrl: SafeResourceUrl;
 
-  pendingTransferRequests: ConsultationMessage[] = [];
   tasks: TaskResponse[];
   conferencesSubscription: Subscription;
+
+  displayFilter = false;
+  filterOptionsCount = 0;
+  private readonly hearingsFilterStorage: SessionStorage<HearingsFilter>;
+  readonly HEARINGS_FITER_KEY = 'vho.hearings.filter';
+
+  @ViewChild('conferenceList', { static: false })
+  $conferenceList: VhoHearingListComponent;
 
   @HostListener('window:resize', ['$event'])
   onResize(event) {
@@ -48,7 +58,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
   constructor(
     private videoWebService: VideoWebService,
     public sanitizer: DomSanitizer,
-    private notificationService: NotificationService,
     private errorService: ErrorService,
     private ngZone: NgZone,
     private eventService: EventsService,
@@ -57,6 +66,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     this.loadingData = true;
     this.adminFrameWidth = 0;
     this.adminFrameHeight = this.getHeightForFrame();
+    this.hearingsFilterStorage = new SessionStorage(this.HEARINGS_FITER_KEY);
   }
 
   ngOnInit() {
@@ -98,8 +108,10 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     this.conferencesSubscription = this.videoWebService.getConferencesForVHOfficer().subscribe((data: ConferenceForUserResponse[]) => {
       this.loadingData = false;
       this.conferences = data;
+      this.conferencesAll = data;
       if (data && data.length > 0) {
         this.logger.debug('VH Officer has conferences');
+        this.applyActiveFilter();
         this.enableFullScreen(true);
       } else {
         this.logger.debug('VH Officer has no conferences');
@@ -119,8 +131,15 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
       });
   }
 
+  applyActiveFilter() {
+    const filter = this.hearingsFilterStorage.get();
+    if (filter) {
+      this.activateFilterOptions(filter);
+    }
+  }
+
   hasHearings(): boolean {
-    return !this.loadingData && this.conferences && this.conferences.length > 0;
+    return !this.loadingData && this.conferencesAll && this.conferencesAll.length > 0;
   }
 
   hasTasks(): boolean {
@@ -128,11 +147,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
   }
 
   isHearingSelected(): boolean {
-    if (this.selectedHearing && this.selectedHearing.getConference()) {
-      return true;
-    } else {
-      return false;
-    }
+    return !!(this.selectedHearing && this.selectedHearing.getConference());
   }
 
   clearSelectedConference() {
@@ -151,6 +166,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
           this.participants = data.participants;
           this.sanitiseAndLoadIframe();
           this.getTasksForConference(conference.id);
+          this.getJudgeStatusDetails();
         },
           (error) => {
             this.logger.error(`There was an error when selecting conference ${conference.id}`, error);
@@ -172,8 +188,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
       listWidth = listColumnElement.offsetWidth;
     }
     const windowWidth = window.innerWidth;
-    const frameWidth = windowWidth - listWidth - 350;
-    this.adminFrameWidth = frameWidth;
+    this.adminFrameWidth = windowWidth - listWidth - 350;
   }
 
   getHeightForFrame(): number {
@@ -219,36 +234,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  handleConsultationMessage(message: ConsultationMessage): void {
-    this.ngZone.run(() => {
-      if (message.result === ConsultationAnswer.Accepted) {
-        this.addTransferTask(message);
-      }
-    });
-  }
-
-  handleHelpMessage(message: HelpMessage): void {
-    this.ngZone.run(() => {
-      const toastMessage = message.participantName + ' requires assistance in hearing ' + message.conferenceId;
-      this.notificationService.info(toastMessage, 0, true);
-    });
-  }
-
-  addTransferTask(message: ConsultationMessage) {
-    this.pendingTransferRequests.push(message);
-    const conference = this.conferences.find(x => x.id === message.conferenceId);
-    const requester = conference.participants.find(x => x.username === message.requestedBy);
-    const requestee = conference.participants.find(x => x.username === message.requestedFor);
-
-    const toastMessage = `Hearing ${conference.case_name}: Please move ${requester.display_name} and
-    ${requestee.display_name} into a private room`;
-    this.notificationService.info(toastMessage, 0, true);
-  }
-
-  dismissTransferTask(message: ConsultationMessage) {
-    this.pendingTransferRequests.splice(this.pendingTransferRequests.indexOf(message), 1);
-  }
-
   getTasksForConference(conferenceId: string) {
     this.videoWebService.getTasksForConference(conferenceId)
       .subscribe((data: TaskResponse[]) => {
@@ -276,5 +261,118 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     } else {
       masterContainer.classList.remove('fullscreen');
     }
+  }
+
+  showFilter() {
+    this.displayFilter = !this.displayFilter;
+  }
+
+  applyFilters(filterOptions: HearingsFilter) {
+    console.log('VHO hearings applyed filters');
+    const selectedConferenceId = this.$conferenceList.currentConference ? this.$conferenceList.currentConference.id : '';
+    this.clearSelectedConference();
+    this.$conferenceList.currentConference = null;
+
+    this.hearingsFilterStorage.set(filterOptions);
+    this.displayFilter = false;
+
+    this.activateFilterOptions(filterOptions);
+
+    this.selectFilteredConference(selectedConferenceId);
+  }
+
+  selectFilteredConference(selectedConferenceId: string) {
+    if (selectedConferenceId) {
+      const selectedConferenceFound = this.conferences.filter(x => x.id === selectedConferenceId);
+      if (selectedConferenceFound) {
+        this.$conferenceList.selectConference(selectedConferenceFound[0]);
+      }
+    }
+  }
+
+  activateFilterOptions(filterOptions: HearingsFilter) {
+    this.filterOptionsCount = filterOptions.numberFilterOptions;
+
+    const selectedStatuses = filterOptions.statuses.filter(x => x.Selected).map(x => x.Status);
+    const selectedLocations = filterOptions.locations.filter(x => x.Selected).map(x => x.Description);
+    const selectedAlerts = filterOptions.alerts.filter(x => x.Selected).map(x => x.BodyText);
+
+    if (selectedStatuses.length > 0 || selectedLocations.length > 0 || selectedAlerts.length > 0) {
+
+      this.conferences = Object.assign(this.conferencesAll);
+      if (selectedStatuses.length > 0) {
+        const conferencesAllExtended = this.setStatusDelayed(this.conferencesAll);
+        this.conferences = conferencesAllExtended.filter(x => selectedStatuses.includes(x.StatusExtended));
+      }
+      if (selectedLocations.length > 0) {
+        this.conferences = this.conferences.filter(x => selectedLocations.includes(x.hearing_venue_name));
+      }
+      if (selectedAlerts.length > 0) {
+        this.conferences = this.conferences.filter(x => this.findSelectedAlert(x.tasks, selectedAlerts));
+      }
+    } else {
+      this.conferences = this.conferencesAll;
+    }
+
+  }
+
+  private findSelectedAlert(tasks: TaskResponse[], selectedAlerts: string[]): boolean {
+    let tasksFiltered = [];
+    if (tasks) {
+      tasksFiltered = tasks.filter(x => this.filterTaskByBody(selectedAlerts, x.body));
+    }
+    return tasksFiltered.length > 0;
+  }
+
+  private filterTaskByBody(selectedAlerts: string[], body: string): boolean {
+    let result = false;
+    selectedAlerts.forEach(x => {
+      if (body.includes(x)) {
+        result = true;
+      }
+    });
+    return result;
+  }
+
+  setStatusDelayed(data: ConferenceForUserResponse[]) {
+    const conferences = data.map(x => {
+      const hearing = new Hearing(x);
+      const item = new ConferenceForUser(x);
+      if (hearing.isDelayed()) {
+        item.StatusExtended = ExtendedConferenceStatus.Delayed;
+      }
+      return item;
+    });
+
+    return conferences;
+  }
+
+  getJudgeStatusDetails() {
+    const judgeStatuses = this.getJudgeDetailsForStatus(this.selectedHearing.id);
+    this.participantStatusModel = new ParticipantStatusModel();
+    this.participantStatusModel.Participants = this.participants.map(p => new Participant(p));
+    this.participantStatusModel.JudgeStatuses = judgeStatuses;
+  }
+
+  getJudgeDetailsForStatus(selectedConferenceId: string) {
+    const judgeStatuses: ParticipantStatus[] = [];
+    const selectedJudges = this.participants.filter(x => x.role === UserRole.Judge);
+    if (selectedJudges.length > 0) {
+      const selectedJudgeUserName = selectedJudges[0].username;
+      const anotherConferences = this.conferencesAll.filter(x => x.id !== selectedConferenceId);
+      anotherConferences.forEach(x => {
+        const judgeStatus = this.findJudgeInAnotherHearing(x.participants, selectedJudgeUserName);
+        if (judgeStatus !== null) {
+          judgeStatuses.push(judgeStatus);
+        }
+      });
+    }
+
+    return judgeStatuses;
+  }
+
+  private findJudgeInAnotherHearing(participantsIn: ParticipantResponse[], selectedJudgeUserName: string): ParticipantStatus {
+    const judgeStatusInAnotherHearings = participantsIn.filter(x => x.username === selectedJudgeUserName).map(x => x.status);
+    return judgeStatusInAnotherHearings.length > 0 ? judgeStatusInAnotherHearings[0] : null;
   }
 }

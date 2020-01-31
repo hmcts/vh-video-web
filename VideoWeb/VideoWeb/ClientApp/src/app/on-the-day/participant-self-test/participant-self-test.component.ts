@@ -15,9 +15,8 @@ import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component'
   styleUrls: ['./participant-self-test.component.scss']
 })
 export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
-
   videoCompleted: boolean;
-  @ViewChild(SelfTestComponent) selfTestComponent: SelfTestComponent;
+  @ViewChild(SelfTestComponent, { static: false }) selfTestComponent: SelfTestComponent;
 
   constructor(private router: Router,
     protected route: ActivatedRoute,

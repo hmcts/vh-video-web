@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Security.Principal;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.ApplicationInsights.Extensibility;
 using Newtonsoft.Json;
 
 namespace VideoWeb.Common
@@ -12,33 +13,39 @@ namespace VideoWeb.Common
     /// </summary>
     public static class ApplicationLogger
     {
-        private static readonly TelemetryClient TelemetryClient = new TelemetryClient();
+        private static readonly TelemetryClient TelemetryClient = InitTelemetryClient();
+        
+        private static TelemetryClient InitTelemetryClient() {
+            var config = TelemetryConfiguration.CreateDefault();
+            var client = new TelemetryClient(config);
+            return client;
+        }
 
         public static void Trace(string traceCategory, string eventTitle, string information)
         {
-            var telematryTrace = new TraceTelemetry(traceCategory, severityLevel: SeverityLevel.Information);
-            telematryTrace.Properties.Add("Information", information);
-            telematryTrace.Properties.Add("Event", eventTitle);
-            TelemetryClient.TrackTrace(telematryTrace);
+            var telemetryTrace = new TraceTelemetry(traceCategory, severityLevel: SeverityLevel.Information);
+            telemetryTrace.Properties.Add("Information", information);
+            telemetryTrace.Properties.Add("Event", eventTitle);
+            TelemetryClient.TrackTrace(telemetryTrace);
         }
 
         public static void TraceWithProperties(string traceCategory, string eventTitle, string user, IDictionary<string, string> properties)
         {
-            var telematryTrace = new TraceTelemetry(traceCategory.ToString(), severityLevel: SeverityLevel.Information);
+            var telemetryTrace = new TraceTelemetry(traceCategory.ToString(), severityLevel: SeverityLevel.Information);
 
-            telematryTrace.Properties.Add("Event", eventTitle);
+            telemetryTrace.Properties.Add("Event", eventTitle);
 
-            telematryTrace.Properties.Add("User", user);
+            telemetryTrace.Properties.Add("User", user);
 
             if (properties != null)
             {
                 foreach (KeyValuePair<string, string> entry in properties)
                 {
-                    telematryTrace.Properties.Add(entry.Key, entry.Value);
+                    telemetryTrace.Properties.Add(entry.Key, entry.Value);
                 }
             }
 
-            TelemetryClient.TrackTrace(telematryTrace);
+            TelemetryClient.TrackTrace(telemetryTrace);
           
         }
    
@@ -49,18 +56,18 @@ namespace VideoWeb.Common
 
         public static void TraceWithObject(string traceCategory, string eventTitle, string user, object valueToSerialized)
         {
-            var telematryTrace = new TraceTelemetry(traceCategory.ToString(), severityLevel: SeverityLevel.Information);
+            var telemetryTrace = new TraceTelemetry(traceCategory.ToString(), severityLevel: SeverityLevel.Information);
 
-            telematryTrace.Properties.Add("Event", eventTitle);
+            telemetryTrace.Properties.Add("Event", eventTitle);
 
-            telematryTrace.Properties.Add("User", user);
+            telemetryTrace.Properties.Add("User", user);
 
             if (valueToSerialized != null)
             {
-                telematryTrace.Properties.Add(valueToSerialized.GetType().Name, JsonConvert.SerializeObject(valueToSerialized, Formatting.None));
+                telemetryTrace.Properties.Add(valueToSerialized.GetType().Name, JsonConvert.SerializeObject(valueToSerialized, Formatting.None));
             }
 
-            TelemetryClient.TrackTrace(telematryTrace);
+            TelemetryClient.TrackTrace(telemetryTrace);
         }
 
         public static void TraceWithObject(string traceCategory, string eventTitle, string user)
@@ -75,24 +82,24 @@ namespace VideoWeb.Common
                 throw new ArgumentNullException(nameof(exception));
             }
 
-            var telematryException = new ExceptionTelemetry(exception);
+            var telemetryException = new ExceptionTelemetry(exception);
 
-            telematryException.Properties.Add("Event", traceCategory + " " + eventTitle);
+            telemetryException.Properties.Add("Event", traceCategory + " " + eventTitle);
 
             if (user != null && user.Identity != null)
             {
-                telematryException.Properties.Add("User", user.Identity.Name);
+                telemetryException.Properties.Add("User", user.Identity.Name);
             }
 
             if (properties != null)
             {
                 foreach (KeyValuePair<string, string> entry in properties)
                 {
-                    telematryException.Properties.Add(entry.Key, entry.Value);
+                    telemetryException.Properties.Add(entry.Key, entry.Value);
                 }
             }
 
-            TelemetryClient.TrackException(telematryException);
+            TelemetryClient.TrackException(telemetryException);
         }
 
         public static void TraceException(string traceCategory, string eventTitle, Exception exception, IPrincipal user)

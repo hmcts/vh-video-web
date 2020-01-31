@@ -2,20 +2,14 @@
 
 namespace VideoWeb.AcceptanceTests.Pages
 {
-    public class VhoHearingListPage : HearingListPage
+    public static class VhoHearingListPage
     {
-        public By VideoHearingsCaseNumbers =>
-            By.XPath($"//div[@class='govuk-summary-list__row']//p[contains(text(),'/')]");
-        public By VideoHearingsOfficerTime(string caseNumber) =>
-            By.XPath($"//p[contains(text(),'{caseNumber}')]/../../..//p[contains(text(),':')]");
-        public By VideoHearingsOfficerListedFor(string caseNumber) =>
-            By.XPath($"//p[contains(text(),'{caseNumber}')]/../../..//span[contains(text(),'hour') or contains(text(),'minute')]");
-        public By VideoHearingsOfficerNumberofAlerts(string caseNumber) =>
-            By.XPath($"//p[contains(text(),'{caseNumber}')]/../../..//p[contains(text(),'Alert')]");
-        public By VideoHearingsOfficerAlertType(string caseNumber) =>
-            By.XPath($"//p[contains(text(),'{caseNumber}')]/../..//span");
-        public By VideoHearingsOfficerSelectHearingButton(string caseNumber) =>
-            By.XPath($"//p[contains(text(),'{caseNumber}')]/../..//span");
-        public By VhoHearingRows => By.XPath("//div[contains(@class,'govuk-summary-list__row')]");
+        public static By VideoHearingsCaseNumbers => By.XPath($"//div[@class='govuk-summary-list__row']//p[contains(text(),'/')]");
+        public static By VideoHearingsOfficerTime(string caseNumber) => By.XPath($"//p[contains(text(),'{caseNumber}')]/../../..//p[contains(text(),':')]");
+        public static By VideoHearingsOfficerListedFor(string caseNumber) => By.XPath($"//p[contains(text(),'{caseNumber}')]/../../..//span[contains(text(),'hour') or contains(text(),'minute')]");
+        public static By VideoHearingsOfficerNumberOfAlerts(string caseNumber) => By.XPath($"//p[contains(text(),'{caseNumber}')]/../../..//p[contains(text(),'Alert')]");
+        public static By VideoHearingsOfficerAlertType(string caseNumber) => By.XPath($"//p[contains(text(),'{caseNumber}')]/../..//span");
+        public static By VideoHearingsOfficerSelectHearingButton(string caseNumber) => By.XPath($"//p[contains(text(),'{caseNumber}')]/../..//span");
+        public static By VhoHearingRows => By.XPath("//div[contains(@class,'govuk-summary-list__row')]");
     }
 }

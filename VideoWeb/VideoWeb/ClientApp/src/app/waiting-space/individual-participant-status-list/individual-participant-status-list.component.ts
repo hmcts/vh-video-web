@@ -2,7 +2,11 @@ import { Component, Input, NgZone, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import {
-  ConferenceResponse, ConsultationAnswer, ParticipantResponse, ParticipantStatus, UserRole
+  ConferenceResponse,
+  ConsultationAnswer,
+  ParticipantResponse,
+  ParticipantStatus,
+  UserRole,
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -17,10 +21,9 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 @Component({
   selector: 'app-individual-participant-status-list',
   templateUrl: './individual-participant-status-list.component.html',
-  styleUrls: ['./individual-participant-status-list.component.scss']
+  styleUrls: ['./individual-participant-status-list.component.scss'],
 })
 export class IndividualParticipantStatusListComponent implements OnInit {
-
   @Input() conference: ConferenceResponse;
 
   nonJugdeParticipants: ParticipantResponse[];
@@ -29,7 +32,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   consultationRequestee: Participant;
   consultationRequester: Participant;
 
-  callRiningSound: HTMLAudioElement;
+  callRingingSound: HTMLAudioElement;
   outgoingCallTimeout: NodeJS.Timer;
   waitingForConsultationResponse: boolean;
   private readonly CALL_TIMEOUT = 120000;
@@ -49,7 +52,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     private modalService: ModalService,
     private logger: Logger,
     private videoWebService: VideoWebService
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.waitingForConsultationResponse = false;
@@ -60,18 +63,22 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   }
 
   initCallRingingSound(): void {
-    this.callRiningSound = new Audio();
-    this.callRiningSound.src = '/assets/audio/consultation_request.mp3';
-    this.callRiningSound.load();
-    this.callRiningSound.addEventListener('ended', function () {
-      this.play();
-    }, false);
+    this.callRingingSound = new Audio();
+    this.callRingingSound.src = '/assets/audio/consultation_request.mp3';
+    this.callRingingSound.load();
+    this.callRingingSound.addEventListener(
+      'ended',
+      function() {
+        this.play();
+      },
+      false
+    );
   }
 
   stopCallRinging() {
     clearTimeout(this.outgoingCallTimeout);
-    this.callRiningSound.pause();
-    this.callRiningSound.currentTime = 0;
+    this.callRingingSound.pause();
+    this.callRingingSound.currentTime = 0;
   }
 
   async cancelOutgoingCall() {
@@ -117,12 +124,18 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   }
 
   handleAdminConsultationMessage(message: AdminConsultationMessage) {
-    const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
+    const requestee = this.conference.participants.find(
+      x => x.username === message.requestedFor
+    );
     if (!this.isParticipantAvailable(requestee)) {
-      this.logger.info(`Ignoring request for private consultation from Video Hearings Team since participant is not available`);
+      this.logger.info(
+        `Ignoring request for private consultation from Video Hearings Team since participant is not available`
+      );
       return;
     }
-    this.logger.info(`Incoming request for private consultation from Video Hearings Team`);
+    this.logger.info(
+      `Incoming request for private consultation from Video Hearings Team`
+    );
     this.consultationRequestee = new Participant(requestee);
     this.displayModal(this.VHO_REQUEST_PC_MODAL);
     this.startCallRinging(false);
@@ -130,7 +143,9 @@ export class IndividualParticipantStatusListComponent implements OnInit {
 
   handleParticipantStatusChange(message: ParticipantStatusMessage): void {
     // const isCurrentUser = this.adalService.userInfo.userName.toLocaleLowerCase() === message.email.toLowerCase();
-    const isCurrentUser = this.conference.participants.find(p => p.id === message.participantId);
+    const isCurrentUser = this.conference.participants.find(
+      p => p.id === message.participantId
+    );
     if (isCurrentUser && message.status === ParticipantStatus.InConsultation) {
       this.closeAllPCModals();
     }
@@ -142,7 +157,9 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   }
 
   getParticipantStatusText(participant: ParticipantResponse): string {
-    return participant.status === ParticipantStatus.Available ? 'Available' : 'Unavailable';
+    return participant.status === ParticipantStatus.Available
+      ? 'Available'
+      : 'Unavailable';
   }
 
   canCallParticipant(participant: ParticipantResponse): boolean {
@@ -151,7 +168,10 @@ export class IndividualParticipantStatusListComponent implements OnInit {
       return false;
     }
 
-    if (participant.username.toLocaleLowerCase().trim() === this.adalService.userInfo.userName.toLocaleLowerCase().trim()) {
+    if (
+      participant.username.toLocaleLowerCase().trim() ===
+      this.adalService.userInfo.userName.toLocaleLowerCase().trim()
+    ) {
       return false;
     }
     return this.isParticipantAvailable(participant);
@@ -160,23 +180,40 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   begingCallWith(participant: ParticipantResponse): void {
     if (this.canCallParticipant(participant)) {
       this.displayModal(this.REQUEST_PC_MODAL);
-      const requestee = this.conference.participants.find(x => x.id === participant.id);
-      const requester = this.conference.participants.find
-        (x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
+      const requestee = this.conference.participants.find(
+        x => x.id === participant.id
+      );
+      const requester = this.conference.participants.find(
+        x =>
+          x.username.toLowerCase() ===
+          this.adalService.userInfo.userName.toLocaleLowerCase()
+      );
 
       this.consultationRequester = new Participant(requester);
       this.consultationRequestee = new Participant(requestee);
-      this.logger.event(`${this.videoWebService.getObfuscatedName(requester.username)} requesting private consultation with
+      this.logger.event(`${this.videoWebService.getObfuscatedName(
+        requester.username
+      )} requesting private consultation with
         ${this.videoWebService.getObfuscatedName(requestee.username)}`);
-      this.logger.info(`Individual participant status list: Conference Id: ${this.conference.id}
-        Participant ${requester.id}, ${this.videoWebService.getObfuscatedName(requester.first_name + ' ' + requester.last_name)}
-        calling Participant ${requestee.id}, ${this.videoWebService.getObfuscatedName(requestee.first_name + ' ' + requestee.last_name)}}`);
+      this.logger.info(`Individual participant status list: Conference Id: ${
+        this.conference.id
+      }
+        Participant ${requester.id}, ${this.videoWebService.getObfuscatedName(
+        requester.first_name + ' ' + requester.last_name
+      )}
+        calling Participant ${
+          requestee.id
+        }, ${this.videoWebService.getObfuscatedName(
+        requestee.first_name + ' ' + requestee.last_name
+      )}}`);
 
-      this.consultationService.raiseConsultationRequest(this.conference, requester, requestee)
-        .subscribe(() => {
-          this.logger.info('Raised consultation request event');
-          this.startCallRinging(true);
-        },
+      this.consultationService
+        .raiseConsultationRequest(this.conference, requester, requestee)
+        .subscribe(
+          () => {
+            this.logger.info('Raised consultation request event');
+            this.startCallRinging(true);
+          },
           error => {
             this.logger.error('Failed to raise consultation request', error);
           }
@@ -197,7 +234,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         this.closeAllPCModals();
       }, this.CALL_TIMEOUT);
     }
-    await this.callRiningSound.play();
+    await this.callRingingSound.play();
   }
 
   async cancelConsultationRequest() {
@@ -207,9 +244,15 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   }
 
   private displayConsultationRequestPopup(message: ConsultationMessage) {
-    const requester = this.conference.participants.find(x => x.username === message.requestedBy);
-    const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
-    this.logger.info(`Incoming request for private consultation from ${requester.display_name}`);
+    const requester = this.conference.participants.find(
+      x => x.username === message.requestedBy
+    );
+    const requestee = this.conference.participants.find(
+      x => x.username === message.requestedFor
+    );
+    this.logger.info(
+      `Incoming request for private consultation from ${requester.display_name}`
+    );
     this.consultationRequester = new Participant(requester);
     this.consultationRequestee = new Participant(requestee);
     this.displayModal(this.RECIEVE_PC_MODAL);
@@ -220,12 +263,18 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     this.waitingForConsultationResponse = false;
     this.closeAllPCModals();
     this.stopCallRinging();
-    this.logger.event(`${this.consultationRequestee.displayName} responded to consultation: ${answer}`);
+    this.logger.event(
+      `${this.consultationRequestee.displayName} responded to consultation: ${answer}`
+    );
     try {
-      await this.consultationService.respondToConsultationRequest(
-        this.conference, this.consultationRequester.base,
-        this.consultationRequestee.base,
-        answer).toPromise();
+      await this.consultationService
+        .respondToConsultationRequest(
+          this.conference,
+          this.consultationRequester.base,
+          this.consultationRequestee.base,
+          answer
+        )
+        .toPromise();
     } catch (error) {
       this.logger.error('Failed to respond to consultation request', error);
     }
@@ -235,12 +284,23 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     this.waitingForConsultationResponse = false;
     this.closeAllPCModals();
     this.stopCallRinging();
-    this.logger.event(`${this.consultationRequestee.displayName} responded to vho consultation: ${ConsultationAnswer.Accepted}`);
+    this.logger.event(
+      `${this.consultationRequestee.displayName} responded to vho consultation: ${ConsultationAnswer.Accepted}`
+    );
     try {
-      await this.consultationService.respondToAdminConsultationRequest(
-        this.conference, this.consultationRequestee.base, ConsultationAnswer.Accepted, this.adminConsultationMessage.roomType).toPromise();
+      await this.consultationService
+        .respondToAdminConsultationRequest(
+          this.conference,
+          this.consultationRequestee.base,
+          ConsultationAnswer.Accepted,
+          this.adminConsultationMessage.roomType
+        )
+        .toPromise();
     } catch (error) {
-      this.logger.error('Failed to respond to admin consultation request', error);
+      this.logger.error(
+        'Failed to respond to admin consultation request',
+        error
+      );
     }
   }
 
@@ -280,17 +340,25 @@ export class IndividualParticipantStatusListComponent implements OnInit {
   }
 
   private initConsultationParticipants(message: ConsultationMessage): void {
-    const requester = this.conference.participants.find(x => x.username === message.requestedBy);
-    const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
+    const requester = this.conference.participants.find(
+      x => x.username === message.requestedBy
+    );
+    const requestee = this.conference.participants.find(
+      x => x.username === message.requestedFor
+    );
     this.consultationRequester = new Participant(requester);
     this.consultationRequestee = new Participant(requestee);
   }
 
   private filterNonJudgeParticipants(): void {
-    this.nonJugdeParticipants = this.conference.participants.filter(x => x.role !== UserRole.Judge);
+    this.nonJugdeParticipants = this.conference.participants.filter(
+      x => x.role !== UserRole.Judge
+    );
   }
 
   private filterJudge(): void {
-    this.judge = this.conference.participants.find(x => x.role === UserRole.Judge);
+    this.judge = this.conference.participants.find(
+      x => x.role === UserRole.Judge
+    );
   }
 }

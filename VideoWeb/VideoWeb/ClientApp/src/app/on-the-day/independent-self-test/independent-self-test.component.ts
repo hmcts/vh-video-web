@@ -17,7 +17,7 @@ import { SelfTestComponent } from '../../shared/self-test/self-test.component';
 })
 export class IndependentSelfTestComponent extends BaseSelfTestComponent {
 
-  @ViewChild(SelfTestComponent)
+  @ViewChild(SelfTestComponent, { static: false })
   selfTestComponent: SelfTestComponent;
 
   showEquipmentFaultMessage: boolean;

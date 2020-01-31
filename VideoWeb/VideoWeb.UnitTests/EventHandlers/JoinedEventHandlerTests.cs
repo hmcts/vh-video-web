@@ -14,7 +14,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         private JoinedEventHandler _eventHandler;
 
         [Test]
-        public async Task should_send_available_message_to_participants_and_service_bus_when_participant_joins()
+        public async Task Should_send_available_message_to_participants_and_service_bus_when_participant_joins()
         {
             _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
 
@@ -40,7 +40,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
         [Test]
         public async Task
-            should_send_in_hearing_message_to_participants_and_live_message_to_service_bus_when_judge_joins()
+            Should_send_in_hearing_message_to_participants_and_live_message_to_service_bus_when_judge_joins()
         {
             _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
 

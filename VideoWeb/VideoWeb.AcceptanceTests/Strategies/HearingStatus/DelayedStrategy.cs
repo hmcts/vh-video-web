@@ -1,5 +1,5 @@
 ﻿using System;
-using VideoWeb.AcceptanceTests.Contexts;
+using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Steps;
 
 namespace VideoWeb.AcceptanceTests.Strategies.HearingStatus

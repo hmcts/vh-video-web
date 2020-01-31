@@ -64,16 +64,15 @@ describe('HomeComponent', () => {
     expect(router.navigate).toHaveBeenCalledWith([PageUrls.SignonAComputer]);
   });
 
-  it('should navigate to hearing list when device is a desktop', async () => {
+  it('should navigate to hearing list when device is a desktop', async (done) => {
     const profile = new UserProfileResponse({ role: UserRole.Representative });
     profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
     deviceTypeServiceSpy.isDesktop.and.returnValue(true);
     spyOn(component, 'navigateToHearingList');
 
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      expect(component.navigateToHearingList).toHaveBeenCalledWith([profile]);
-    });
-
+    await fixture.whenStable();
+    expect(component.navigateToHearingList).toHaveBeenCalledWith(profile);
+    done();
   });
 });

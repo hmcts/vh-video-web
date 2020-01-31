@@ -23,7 +23,7 @@ namespace VideoWeb.UnitTests.Hub
         }
 
         [Test]
-        public async Task should_return_true_if_user_is_admin()
+        public async Task Should_return_true_if_user_is_admin()
         {
             var userProfile = new UserProfile { User_role = "VhOfficer", User_name = "vhOfficer.User@email.com" };
             _userApiClientMock.Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>())).ReturnsAsync(userProfile);
@@ -33,7 +33,7 @@ namespace VideoWeb.UnitTests.Hub
         }
 
         [Test]
-        public async Task should_return_false_if_user_profile_incorrect()
+        public async Task Should_return_false_if_user_profile_incorrect()
         {
             var apiException = new UserApiException("User does not exist", (int)HttpStatusCode.NotFound,
                 "Invalid User Id", null, null);
@@ -46,7 +46,7 @@ namespace VideoWeb.UnitTests.Hub
         }
 
         [Test]
-        public async Task should_return_obfuscated_username()
+        public async Task Should_return_obfuscated_username()
         {
             var userProfile = new UserProfile { User_role = "VhOfficer", User_name = "vhOfficer.User@email.com", First_name = "Manual", Last_name = "User"};
             _userApiClientMock.Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>())).ReturnsAsync(userProfile);
@@ -57,7 +57,7 @@ namespace VideoWeb.UnitTests.Hub
         }
 
         [Test]
-        public async Task should_return_empty_string_if_user_profile_incorrect()
+        public async Task Should_return_empty_string_if_user_profile_incorrect()
         {
             var userProfile = new UserProfile { User_role = "VhOfficer", User_name = "vhOfficer.User@email.com", First_name = "Manual", Last_name = "User" };
             var apiException = new UserApiException("User does not exist", (int)HttpStatusCode.NotFound,

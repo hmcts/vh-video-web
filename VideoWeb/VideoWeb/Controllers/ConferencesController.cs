@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Polly.CircuitBreaker;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Responses;
-using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
@@ -212,8 +211,7 @@ namespace VideoWeb.Controllers
             try
             {
                 _logger.LogTrace($"Retrieving booking participants for hearing ${conference.Hearing_id}");
-                bookingParticipants = await _bookingsApiClient.GetAllParticipantsInHearingAsync(conference.Hearing_id
-                    .GetValueOrDefault());
+                bookingParticipants = await _bookingsApiClient.GetAllParticipantsInHearingAsync(conference.Hearing_id);
             }
             catch (BookingsApiException e)
             {
@@ -244,7 +242,7 @@ namespace VideoWeb.Controllers
                 UserRole.Representative
             };
             conference.Participants = conference.Participants
-                .Where(x => displayRoles.Contains((UserRole) x.User_role.GetValueOrDefault())).ToList();
+                .Where(x => displayRoles.Contains((UserRole) x.User_role)).ToList();
 
             var mapper = new ConferenceResponseMapper();
             var response = mapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
