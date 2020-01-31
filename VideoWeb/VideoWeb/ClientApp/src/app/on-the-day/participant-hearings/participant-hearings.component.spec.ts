@@ -16,6 +16,7 @@ import { ParticipantHearingsComponent } from './participant-hearings.component';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ProfileService } from '../../services/api/profile.service';
+import {PluraliseTextPipe} from '../../shared/pipes/pluraliseText.pipe';
 
 const profile = new UserProfileResponse({
   role: UserRole.Individual,
@@ -54,7 +55,8 @@ describe('ParticipantHearingsComponent with no conferences for user', () => {
       imports: [RouterTestingModule, SharedModule],
       declarations: [
         ParticipantHearingsComponent,
-        HearingListTableStubComponent
+        HearingListTableStubComponent,
+        PluraliseTextPipe
       ],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy },
@@ -99,7 +101,8 @@ describe('ParticipantHearingsComponent with conferences for user', () => {
       imports: [RouterTestingModule, SharedModule],
       declarations: [
         ParticipantHearingsComponent,
-        HearingListTableStubComponent
+        HearingListTableStubComponent,
+        PluraliseTextPipe
       ],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy },
@@ -147,7 +150,8 @@ describe('ParticipantHearingsComponent with service error', () => {
       imports: [RouterTestingModule, SharedModule],
       declarations: [
         ParticipantHearingsComponent,
-        HearingListTableStubComponent
+        HearingListTableStubComponent,
+        PluraliseTextPipe
       ],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy },
