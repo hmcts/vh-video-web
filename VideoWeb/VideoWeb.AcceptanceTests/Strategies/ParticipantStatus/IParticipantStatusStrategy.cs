@@ -1,5 +1,5 @@
 ﻿using System;
-using VideoWeb.AcceptanceTests.Contexts;
+using VideoWeb.AcceptanceTests.Helpers;
 
 namespace VideoWeb.AcceptanceTests.Strategies.ParticipantStatus
 {

@@ -29,7 +29,7 @@
     <div *ngIf="!loadingData && isHearingSelected()" id="conference-frame" class="govuk-grid-column-one-half">
 
       <div id="participant-status" class="govuk-grid-column-two-thirds govuk-!-padding-0">
-        <app-participant-status [participants]="participants"></app-participant-status>
+        <app-participant-status [participants]="participantStatusModel"></app-participant-status>
       </div>
 
       <div id="vho-admin-view" class="govuk-grid-column-one-third govuk-!-padding-0">

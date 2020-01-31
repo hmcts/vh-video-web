@@ -23,7 +23,7 @@ namespace VideoWeb.UnitTests.Hub
         }
 
         [Test]
-        public async Task should_log_a_message_on_connected()
+        public async Task Should_log_a_message_on_connected()
         {
             var _clients = new Mock<IHubCallerClients<IEventHubClient>>();
             var _principal = new Mock<System.Security.Claims.ClaimsPrincipal>();
@@ -44,7 +44,7 @@ namespace VideoWeb.UnitTests.Hub
         }
 
         [Test]
-        public async Task should_log_a_message_on_disconnected()
+        public async Task Should_log_a_message_on_disconnected()
         {
             var _clients = new Mock<IHubCallerClients<IEventHubClient>>();
             var _principal = new Mock<System.Security.Claims.ClaimsPrincipal>();

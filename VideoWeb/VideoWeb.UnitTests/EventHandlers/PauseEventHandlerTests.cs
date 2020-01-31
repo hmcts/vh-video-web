@@ -13,7 +13,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         private PauseEventHandler _eventHandler;
 
         [Test]
-        public async Task should_send_messages_to_participants_on_pause()
+        public async Task Should_send_messages_to_participants_on_pause()
         {
             _eventHandler = new PauseEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
 

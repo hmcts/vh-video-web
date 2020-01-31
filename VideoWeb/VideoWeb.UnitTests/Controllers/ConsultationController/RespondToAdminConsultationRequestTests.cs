@@ -9,11 +9,11 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using NUnit.Framework;
-using Testing.Common.Helpers;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
+using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 using RoomType = VideoWeb.EventHub.Enums.RoomType;
 
@@ -64,7 +64,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_return_conference_not_found_when_request_is_sent()
+        public async Task Should_return_conference_not_found_when_request_is_sent()
         {
             _videoApiClientMock
                 .Setup(x => x.RespondToAdminConsultationRequestAsync(It.IsAny<AdminConsultationRequest>()))
@@ -78,7 +78,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_return_participant_not_found_when_request_is_sent()
+        public async Task Should_return_participant_not_found_when_request_is_sent()
         {
             _videoApiClientMock
                 .Setup(x => x.RespondToAdminConsultationRequestAsync(It.IsAny<AdminConsultationRequest>()))
@@ -94,7 +94,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_return_no_content_when_request_is_sent()
+        public async Task Should_return_no_content_when_request_is_sent()
         {
             _videoApiClientMock
                 .Setup(x => x.RespondToAdminConsultationRequestAsync(It.IsAny<AdminConsultationRequest>()))
@@ -106,11 +106,11 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
         
         [Test]
-        public async Task should_return_status_code_with_message_when_not_successful()
+        public async Task Should_return_status_code_with_message_when_not_successful()
         {
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
                 (int) HttpStatusCode.InternalServerError,
-                "Stacktrace goes here", null, default(ProblemDetails), null);
+                "Stacktrace goes here", null, default, null);
             
             _videoApiClientMock
                 .Setup(x => x.RespondToAdminConsultationRequestAsync(It.IsAny<AdminConsultationRequest>()))
@@ -122,7 +122,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_send_message_to_clients_when_answer_accepted()
+        public async Task Should_send_message_to_clients_when_answer_accepted()
         {
             _videoApiClientMock
                 .Setup(x => x.RespondToAdminConsultationRequestAsync(It.IsAny<AdminConsultationRequest>())).Returns(Task.FromResult(HttpStatusCode.NoContent));

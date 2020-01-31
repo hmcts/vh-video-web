@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using AcceptanceTests.Common.Configuration.Users;
 using FluentAssertions;
-using Testing.Common.Configuration;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.AcceptanceTests.Assertions
@@ -20,7 +20,7 @@ namespace VideoWeb.AcceptanceTests.Assertions
         {
             var participant = participants.First(x => x.Username.ToLower().Equals(_user.Username.ToLower()));
             participant.Case_type_group.Should().Be(_user.CaseRoleName);
-            participant.Display_name.Should().Be(_user.Displayname);
+            participant.Display_name.Should().Be(_user.DisplayName);
             participant.Name.Should().Be($"Mrs {_user.Firstname} {_user.Lastname}");
             participant.User_role.ToString().Should().Be(_user.Role);
             participant.Username.ToLower().Should().Be(_user.Username.ToLower());
