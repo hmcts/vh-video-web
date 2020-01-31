@@ -55,6 +55,10 @@
       <ProjectReference Include="..\VideoWeb.Services\VideoWeb.Services.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include="..\VideoWeb.AcceptanceTests\Features" />
+    </ItemGroup>
+
     <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
         <!-- Ensure Node.js is installed -->
         <Exec Command="node --version" ContinueOnError="true">
