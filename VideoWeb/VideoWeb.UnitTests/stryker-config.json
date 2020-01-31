@@ -17,19 +17,20 @@
         ],
 		"excluded-mutations": [
         ],
-		"ignore-methods": [
-			"*LogDebug",
-			"*LogTrace",
-			"*LogError",
-			"*LogInformation",
-			"*AddModelError"
-        ],
+      "ignore-methods": [
+        "*LogDebug",
+        "*LogTrace",
+        "*LogError",
+        "*LogInformation",
+        "*AddModelError"
+      ],
 		"mutate": [
 			"!Startup.cs",
 			"!Program.cs",
 			"!ConfigureServicesExtensions.cs",
-			"!Swagger/AuthResponsesOperationFilter.cs",		
-			"!Pages/Error.cshtml.cs"
+			"!Swagger/AuthResponsesOperationFilter.cs",
+      "!Pages/Error.cshtml.cs",
+      "!Extensions/ExceptionMiddleware.cs"
 		]
     }
 }
