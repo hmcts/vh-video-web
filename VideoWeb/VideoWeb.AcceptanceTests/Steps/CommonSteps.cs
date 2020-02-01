@@ -21,13 +21,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers = browsers;
         }
 
-
         [When(@"the user clicks the (.*) button")]
         public void WhenTheUserClicksTheButton(string label)
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonLocators.ButtonWithInnertext(label))
-                .Displayed.Should().BeTrue();
-
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonLocators.ButtonWithInnertext(label)).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonLocators.ButtonWithInnertext(label)).Click();
         }
 
@@ -35,17 +32,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenTheUserSelectsTheRadiobutton(string label)
         {            
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(CommonLocators.RadioButtonWithLabel(label)).Click();
-
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(CommonLocators.RadioButtonWithLabel(label)).Selected
-                .Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(CommonLocators.RadioButtonWithLabel(label)).Selected.Should().BeTrue();
         }
 
         [When(@"the user clicks the (.*) link")]
         public void WhenTheUserClicksTheChangeCameraOrMicrophoneLink(string linkText)
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonLocators.LinkWithText(linkText)).Displayed
-                .Should().BeTrue();
-
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonLocators.LinkWithText(linkText)).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonLocators.LinkWithText(linkText)).Click();
         }
 
@@ -55,21 +48,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonPages.ContactUsLink).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonPages.ContactUsLink).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonPages.ContactUsPhone(_c.Test.CommonData.CommonOnScreenData.VhoPhone)).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonPages.ContactUsEmail).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonPages.ContactUsEmail).GetAttribute("href").Should().Contain(_c.Test.CommonData.CommonOnScreenData.VhoEmail);
-
-            if (!_browsers[_c.CurrentUser.Key].Driver.Url.Contains(Page.HearingList.Url)) return;
-
-            if (_c.Test.Hearing != null)
-                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonPages.QuoteYourCaseNumberText).Text
-                    .Contains($"and quote your case number {_c.Test.Case.Number}").Should().BeFalse();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonPages.ContactUsEmail(_c.Test.CommonData.CommonOnScreenData.VhoEmail)).Displayed.Should().BeTrue();
         }
 
         [Then(@"a phone number for help is provided")]
         public void ThenAPhoneNumberForHelpIsProvided()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonPages.ContactUsPhone(_c.Test.CommonData.CommonOnScreenData.VhoPhone))
-                .Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonPages.ContactUsPhone(_c.Test.CommonData.CommonOnScreenData.VhoPhone)).Displayed.Should().BeTrue();
         }
 
         [Then(@"the banner should (.*) displayed")]
@@ -77,28 +62,24 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             if (expected.ToLower().Equals("not be"))
             { 
-                _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(CommonPages.BetaBanner)
-                    .Should().BeTrue();
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(CommonPages.BetaBanner).Should().BeTrue();
             }
             else
             {
-                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonPages.BetaBanner)
-                    .Displayed.Should().BeTrue();
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonPages.BetaBanner).Displayed.Should().BeTrue();
             }
         }
 
         [Then(@"the (.*) error message appears")]
         public void ThenTheErrorMessageAppears(string errorText)
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonLocators.ErrorMessage).Text.Replace("Error:", "")
-                .Should().Contain(errorText);
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonLocators.ErrorMessage).Text.Replace("Error:", "").Should().Contain(errorText);
         }
 
         [Then(@"the (.*) button is disabled")]
         public void ThenTheButtonIsDisabled(string label)
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonLocators.ButtonWithInnertext(label)).GetAttribute("class")
-                .Should().Contain("disabled");
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonLocators.ButtonWithInnertext(label)).GetAttribute("class").Should().Contain("disabled");
         }
 
         [Then(@"the page should be accessible")]

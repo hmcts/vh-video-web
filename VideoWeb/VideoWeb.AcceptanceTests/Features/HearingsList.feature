@@ -28,7 +28,7 @@ Scenario: Participant has no hearings
 	Given a new browser is open for a Participant
 	When the user attempts to login with valid credentials
 	Then the user is on the Hearing List page
-	And a warning message appears indicating the user has no hearings scheduled
+	And a warning message appears indicating the participant has no hearings scheduled
 	And contact us details are available
 
 @VIH-4607
@@ -36,7 +36,7 @@ Scenario: Clerk has no hearings
 	Given a new browser is open for a Clerk
 	When the user attempts to login with valid credentials
 	Then the user is on the Hearing List page
-	And a warning message appears indicating the user has no hearings scheduled
+	And a warning message appears indicating the clerk has no hearings scheduled
 	And contact us details for the clerk are available
 
 @VIH-4607
