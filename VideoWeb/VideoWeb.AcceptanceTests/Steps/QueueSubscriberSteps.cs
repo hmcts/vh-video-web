@@ -6,7 +6,6 @@ using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Requests;
 using AcceptanceTests.Common.Configuration.Users;
 using FluentAssertions;
-using RestSharp;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Api;
 using VideoWeb.AcceptanceTests.Assertions;
@@ -155,9 +154,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the participant has been removed")]
         public void ThenTheParticipantHasBeenRemoved()
         {
-            new PollForParticipant(_c.Apis.VideoApi).WithConferenceId(_c.Test.NewConferenceId).WithParticipant(_addedUser.Username)
-                .IsAdded().Poll()
-                .Should().BeTrue("Participant deleted");
+            new PollForParticipant(_c.Apis.VideoApi).WithConferenceId(_c.Test.NewConferenceId).WithParticipant(_deletedUser.Username)
+                .IsRemoved().Poll().Should().BeTrue("Participant deleted");
 
             var response = _c.Apis.VideoApi.GetConferenceByConferenceId(_c.Test.NewConferenceId);
             var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);

@@ -51,10 +51,16 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementClickable(ClerkHearingListPage.CheckEquipmentButton).Click();
         }
 
-        [Then(@"a warning message appears indicating the user has no hearings scheduled")]
-        public void ThenAWarningMessageAppearsIndicatingTheUserHasNoHearingsScheduled()
+        [Then(@"a warning message appears indicating the clerk has no hearings scheduled")]
+        public void ThenAWarningMessageAppearsIndicatingTheClerkHasNoHearingsScheduled()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.NoHearingsWarningMessage).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ClerkNoHearingsWarningMessage).Displayed.Should().BeTrue();
+        }
+
+        [Then(@"a warning message appears indicating the participant has no hearings scheduled")]
+        public void ThenAWarningMessageAppearsIndicatingTheParticipantHasNoHearingsScheduled()
+        {
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantNoHearingsWarningMessage).Displayed.Should().BeTrue();
         }
 
         [Then(@"the participant can see a list of hearings including the new hearing")]
