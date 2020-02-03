@@ -27,6 +27,12 @@ namespace VideoWeb.UnitTests.Mappings
                 new ParticipantSummaryResponseBuilder(ConferenceUserRole.Representative)
                     .WithStatus(ParticipantState.Disconnected).Build(),
                 new ParticipantSummaryResponseBuilder(ConferenceUserRole.Individual)
+                    .WithStatus(ParticipantState.Disconnected).Build(),
+                new ParticipantSummaryResponseBuilder(ConferenceUserRole.Individual)
+                    .WithStatus(ParticipantState.InConsultation).Build(),
+                new ParticipantSummaryResponseBuilder(ConferenceUserRole.Individual)
+                    .WithStatus(ParticipantState.InConsultation).Build(),
+                new ParticipantSummaryResponseBuilder(ConferenceUserRole.Representative)
                     .WithStatus(ParticipantState.InConsultation).Build(),
                 new ParticipantSummaryResponseBuilder(ConferenceUserRole.Representative)
                     .WithStatus(ParticipantState.InConsultation).Build(),
@@ -47,8 +53,8 @@ namespace VideoWeb.UnitTests.Mappings
             response.ScheduledDuration.Should().Be(conference.Scheduled_duration);
             response.Status.ToString().Should().Be(conference.Status.ToString());
             response.NoOfParticipantsAvailable.Should().Be(1);
-            response.NoOfParticipantsInConsultation.Should().Be(2);
-            response.NoOfParticipantsUnavailable.Should().Be(1);
+            response.NoOfParticipantsInConsultation.Should().Be(4);
+            response.NoOfParticipantsUnavailable.Should().Be(2);
             response.NoOfPendingTasks.Should().Be(conference.Pending_tasks);
             response.HearingVenueName.Should().Be(conference.Hearing_venue_name);
             response.Tasks.Count.Should().Be(1);

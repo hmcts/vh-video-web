@@ -19,6 +19,7 @@ import { IntroductionComponent } from './introduction/introduction.component';
 import { ParticipantSelfTestComponent } from './participant-self-test/participant-self-test.component';
 import { JudgeSelfTestComponent } from './judge-self-test/judge-self-test.component';
 import { IndependentSelfTestComponent } from './independent-self-test/independent-self-test.component';
+import {PluraliseTextPipe} from '../shared/pipes/pluraliseText.pipe';
 
 @NgModule({
   imports: [
@@ -43,7 +44,8 @@ import { IndependentSelfTestComponent } from './independent-self-test/independen
     IntroductionComponent,
     ParticipantSelfTestComponent,
     JudgeSelfTestComponent,
-    IndependentSelfTestComponent
+    IndependentSelfTestComponent,
+    PluraliseTextPipe
   ],
   exports: [
     DeclarationComponent

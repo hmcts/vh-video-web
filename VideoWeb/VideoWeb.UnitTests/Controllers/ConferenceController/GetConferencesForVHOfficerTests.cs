@@ -66,6 +66,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             
             var typedResult = (UnauthorizedObjectResult) result.Result;
             typedResult.Should().NotBeNull();
+            typedResult.Value.Should().Be("User must be a VH Officer");
         }
         
         [Test]
@@ -117,13 +118,14 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .With(x => x.Scheduled_duration = 20)
                 .With(x => x.Status = ConferenceState.NotStarted)
                 .With(x => x.Closed_date_time = null)
-                .Random(4).Do((response, i) =>
-                {
-                    response.Status = ConferenceState.Closed;
-                    response.Closed_date_time =
-                        i % 2 == 0 ? DateTime.UtcNow.AddMinutes(40) : DateTime.UtcNow.AddMinutes(10);
-                })
                 .Build().ToList();
+
+            var minutes = -60;
+            foreach (var conference in conferences)
+            {
+                conference.Closed_date_time = DateTime.UtcNow.AddMinutes(minutes);
+                minutes += 30;
+            }
 
             var closedConferenceTimeLimit = DateTime.UtcNow.AddMinutes(30);
             var expectedConferenceIds = conferences.Where(x =>
@@ -145,6 +147,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             conferencesForUser.Should().NotBeNullOrEmpty();
             var returnedIds = conferencesForUser.Select(x => x.Id).ToList();
             returnedIds.Should().Contain(expectedConferenceIds);
+            var i = 1;
+            foreach (var conference in conferencesForUser)
+            {
+                conference.CaseName.Should().Be($"Case_name{i++}");
+            }
         }
 
     }

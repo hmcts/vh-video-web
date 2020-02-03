@@ -103,6 +103,9 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var result = await _controller.RespondToAdminConsultationRequest(ConsultationHelper.GetAdminConsultationRequest(_testConference, ConsultationAnswer.None));
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
+            _eventHubClientMock.Verify(
+                x => x.AdminConsultationMessage
+                (It.IsAny<Guid>(), It.IsAny<RoomType>(), It.IsAny<string>(), It.IsAny<EventHub.Enums.ConsultationAnswer>()), Times.Never);
         }
         
         [Test]
@@ -135,7 +138,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _eventHubClientMock.Verify(
                 x => x.AdminConsultationMessage
                     (_testConference.Id, RoomType.ConsultationRoom1, _testConference.Participants[0].Username.ToLowerInvariant(), 
-                    EventHub.Enums.ConsultationAnswer.Accepted));
+                    EventHub.Enums.ConsultationAnswer.Accepted), Times.Once);
 
         }
 
