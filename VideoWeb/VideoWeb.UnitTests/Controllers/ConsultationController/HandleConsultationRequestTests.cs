@@ -101,6 +101,9 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var result = await _controller.HandleConsultationRequest(ConsultationHelper.GetConsultationRequest(_testConference));
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
+            _eventHubClientMock.Verify(
+                x => x.AdminConsultationMessage
+                (It.IsAny<Guid>(), It.IsAny<EventHub.Enums.RoomType>(), It.IsAny<string>(), It.IsAny<EventHub.Enums.ConsultationAnswer>()), Times.Never);
         }
 
         [Test]

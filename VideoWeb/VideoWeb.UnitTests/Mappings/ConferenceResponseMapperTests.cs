@@ -68,6 +68,11 @@ namespace VideoWeb.UnitTests.Mappings
                 }
             }
 
+            var caseTypeGroups = participantsResponse.Select(p => p.CaseTypeGroup).Distinct().ToList();
+            caseTypeGroups[0].Should().Be("Claimant");
+            caseTypeGroups[1].Should().Be("Defendant");
+            caseTypeGroups[2].Should().Be("None");
+
             response.AdminIFrameUri.Should().Be(meetingRoom.Admin_uri);
             response.JudgeIFrameUri.Should().Be(meetingRoom.Judge_uri);
             response.ParticipantUri.Should().Be(meetingRoom.Participant_uri);

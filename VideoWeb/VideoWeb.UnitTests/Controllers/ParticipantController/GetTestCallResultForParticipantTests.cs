@@ -95,6 +95,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 Builder<UpdateParticipantStatusEventRequest>.CreateNew().With(x => x.ParticipantId = _testConference.Participants.First().Id).Build());
             var typedResult = (NoContentResult)result;
             typedResult.Should().NotBeNull();
+            _videoApiClientMock.Verify(v => 
+                v.RaiseVideoEventAsync(It.Is<ConferenceEventRequest>(c => c.Reason== "participant joining")), Times.Once);
         }
 
         [Test]
