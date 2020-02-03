@@ -73,4 +73,8 @@
     <ProjectReference Include="..\VideoWeb.EventHub\VideoWeb.EventHub.csproj" />
     <ProjectReference Include="..\VideoWeb.Services\VideoWeb.Services.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Features\*.feature" />
+  </ItemGroup>
 </Project>

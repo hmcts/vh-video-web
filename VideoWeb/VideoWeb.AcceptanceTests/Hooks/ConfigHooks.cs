@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using AcceptanceTests.Common.Configuration;
 using AcceptanceTests.Common.Configuration.Users;
 using AcceptanceTests.Common.Data.TestData;
@@ -31,7 +32,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         }
 
         [BeforeScenario(Order = (int)HooksSequence.ConfigHooks)]
-        public void RegisterSecrets(TestContext context)
+        public async Task RegisterSecrets(TestContext context)
         {
             RegisterAzureSecrets(context);
             RegisterCustomTokenSecrets(context);
@@ -41,7 +42,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             RegisterHearingServices(context);
             RegisterSauceLabsSettings(context);
             RunningAppsLocally(context);
-            GenerateBearerTokens(context);
+            await GenerateBearerTokens(context);
         }
 
         private void RegisterAzureSecrets(TestContext context)
@@ -106,7 +107,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             context.VideoWebConfig.VhServices.RunningVideoWebLocally = context.VideoWebConfig.VhServices.VideoWebUrl.Contains("localhost");
         }
 
-        private static async void GenerateBearerTokens(TestContext context)
+        private static async Task GenerateBearerTokens(TestContext context)
         {
             context.Tokens.BookingsApiBearerToken = await ConfigurationManager.GetBearerToken(
                 context.VideoWebConfig.AzureAdConfiguration, context.VideoWebConfig.VhServices.BookingsApiResourceId);

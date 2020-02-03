@@ -11,7 +11,7 @@ Scenario: Individual video hearing practice
 	And contact us details are available
 	When the video has ended
 	Then the test score should be produced
-	When the user clicks the Re-play the video message button
+	When the user clicks the Watch the video again button
 	Then the incoming and self video should be playing video
 	When the user clicks the Change camera or microphone link
 	Then the choose your camera and microphone popup should appear
