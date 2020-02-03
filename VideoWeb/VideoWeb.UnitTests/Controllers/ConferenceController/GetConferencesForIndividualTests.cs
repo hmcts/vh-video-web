@@ -11,12 +11,12 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using Testing.Common.Helpers;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
+using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
@@ -54,7 +54,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         }
         
         [Test]
-        public async Task should_return_ok_with_list_of_conferences()
+        public async Task Should_return_ok_with_list_of_conferences()
         {
             var conferences = Builder<ConferenceSummaryResponse>.CreateListOfSize(10).All()
                 .With(x => x.Scheduled_date_time = DateTime.UtcNow.AddMinutes(-60))
@@ -90,7 +90,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         }
         
         [Test]
-        public async Task should_return_ok_with_no_conferences()
+        public async Task Should_return_ok_with_no_conferences()
         {
             var conferences = new List<ConferenceSummaryResponse>();
             _videoApiClientMock
@@ -107,10 +107,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         }
         
         [Test]
-        public async Task should_return_bad_request()
+        public async Task Should_return_bad_request()
         {
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
-                "Please provide a valid email", null, default(ProblemDetails), null);
+                "Please provide a valid email", null, default, null);
             _videoApiClientMock
                 .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
@@ -122,10 +122,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         } 
         
         [Test]
-        public async Task should_return_forbidden_request()
+        public async Task Should_return_forbidden_request()
         {
             var apiException = new VideoApiException<ProblemDetails>("Unauthorised Token", (int) HttpStatusCode.Unauthorized,
-                "Invalid Client ID", null, default(ProblemDetails), null);
+                "Invalid Client ID", null, default, null);
             _videoApiClientMock
                 .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
@@ -137,10 +137,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         } 
         
         [Test]
-        public async Task should_return_exception()
+        public async Task Should_return_exception()
         {
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
-                "Stacktrace goes here", null, default(ProblemDetails), null);
+                "Stacktrace goes here", null, default, null);
             _videoApiClientMock
                 .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);

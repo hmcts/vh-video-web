@@ -14,7 +14,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         private JudgeAvailableEventHandler _eventHandler;
 
         [Test]
-        public async Task should_send_available_participant_messages_when_judge_available()
+        public async Task Should_send_available_participant_messages_when_judge_available()
         {
             _eventHandler = new JudgeAvailableEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
 

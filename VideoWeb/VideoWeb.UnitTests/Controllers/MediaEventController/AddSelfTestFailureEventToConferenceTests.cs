@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using Testing.Common.Helpers;
 using VideoWeb.Contract.Request;
 using VideoWeb.Services.Video;
+using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.MediaEventController
@@ -38,7 +38,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
         }
 
         [Test]
-        public async Task should_return_no_content_when_event_is_sent()
+        public async Task Should_return_no_content_when_event_is_sent()
         {
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
@@ -56,11 +56,11 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
         }
 
         [Test]
-        public async Task should_return_status_code_with_message_when_not_successful()
+        public async Task Should_return_status_code_with_message_when_not_successful()
         {
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
                 (int) HttpStatusCode.InternalServerError,
-                "Stacktrace goes here", null, default(ProblemDetails), null);
+                "Stacktrace goes here", null, default, null);
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);

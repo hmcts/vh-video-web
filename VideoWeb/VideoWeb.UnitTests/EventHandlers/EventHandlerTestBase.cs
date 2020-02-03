@@ -6,11 +6,11 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using Testing.Common.Helpers;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
+using EventComponentHelper = VideoWeb.UnitTests.Builders.EventComponentHelper;
 
 namespace VideoWeb.UnitTests.EventHandlers
 {

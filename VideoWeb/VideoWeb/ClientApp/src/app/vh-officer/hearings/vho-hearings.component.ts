@@ -1,7 +1,7 @@
 import { Component, HostListener, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceForUserResponse, ConferenceResponse, ParticipantResponse, TaskResponse } from 'src/app/services/clients/api-client';
+import { ConferenceForUserResponse, ConferenceResponse, ParticipantResponse, TaskResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
@@ -15,6 +15,9 @@ import { Subscription } from 'rxjs';
 import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
 import { ConferenceForUser, ExtendedConferenceStatus, HearingsFilter } from '../../shared/models/hearings-filter';
 import { SessionStorage } from '../../services/session-storage';
+import { UserRole } from 'src/app/services/clients/api-client';
+import { ParticipantStatusModel } from 'src/app/shared/models/participants-status-model';
+import { Participant } from 'src/app/shared/models/participant';
 
 @Component({
   selector: 'app-vho-hearings',
@@ -33,6 +36,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
   conferencesAll: ConferenceForUserResponse[];
   selectedHearing: Hearing;
   participants: ParticipantResponse[];
+  participantStatusModel: ParticipantStatusModel;
   selectedConferenceUrl: SafeResourceUrl;
 
   tasks: TaskResponse[];
@@ -162,6 +166,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
           this.participants = data.participants;
           this.sanitiseAndLoadIframe();
           this.getTasksForConference(conference.id);
+          this.getJudgeStatusDetails();
         },
           (error) => {
             this.logger.error(`There was an error when selecting conference ${conference.id}`, error);
@@ -320,14 +325,14 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
   }
 
   private filterTaskByBody(selectedAlerts: string[], body: string): boolean {
-        let result = false;
-        selectedAlerts.forEach(x => {
-            if (body.includes(x)) {
-                result = true;
-              }
-          });
-        return result;
+    let result = false;
+    selectedAlerts.forEach(x => {
+      if (body.includes(x)) {
+        result = true;
       }
+    });
+    return result;
+  }
 
   setStatusDelayed(data: ConferenceForUserResponse[]) {
     const conferences = data.map(x => {
@@ -340,5 +345,34 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     });
 
     return conferences;
+  }
+
+  getJudgeStatusDetails() {
+    const judgeStatuses = this.getJudgeDetailsForStatus(this.selectedHearing.id);
+    this.participantStatusModel = new ParticipantStatusModel();
+    this.participantStatusModel.Participants = this.participants.map(p => new Participant(p));
+    this.participantStatusModel.JudgeStatuses = judgeStatuses;
+  }
+
+  getJudgeDetailsForStatus(selectedConferenceId: string) {
+    const judgeStatuses: ParticipantStatus[] = [];
+    const selectedJudges = this.participants.filter(x => x.role === UserRole.Judge);
+    if (selectedJudges.length > 0) {
+      const selectedJudgeUserName = selectedJudges[0].username;
+      const anotherConferences = this.conferencesAll.filter(x => x.id !== selectedConferenceId);
+      anotherConferences.forEach(x => {
+        const judgeStatus = this.findJudgeInAnotherHearing(x.participants, selectedJudgeUserName);
+        if (judgeStatus !== null) {
+          judgeStatuses.push(judgeStatus);
+        }
+      });
+    }
+
+    return judgeStatuses;
+  }
+
+  private findJudgeInAnotherHearing(participantsIn: ParticipantResponse[], selectedJudgeUserName: string): ParticipantStatus {
+    const judgeStatusInAnotherHearings = participantsIn.filter(x => x.username === selectedJudgeUserName).map(x => x.status);
+    return judgeStatusInAnotherHearings.length > 0 ? judgeStatusInAnotherHearings[0] : null;
   }
 }

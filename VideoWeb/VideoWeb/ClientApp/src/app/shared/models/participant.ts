@@ -38,7 +38,7 @@ export class Participant {
   get initialedName(): string {
     return `${this.participant.first_name.substr(0, 1)} ${
       this.participant.last_name
-    }`;
+      }`;
   }
 
   get status(): ParticipantStatus {
@@ -47,6 +47,10 @@ export class Participant {
 
   get role(): UserRole {
     return this.participant.role;
+  }
+
+  get isJudge(): boolean {
+    return this.participant.role === UserRole.Judge;
   }
 
   get displayName(): string {
@@ -68,6 +72,23 @@ export class Participant {
         return 'In Hearing';
       case ParticipantStatus.UnableToJoin:
         return 'Unable to Join';
+      default:
+        return this.participant.status;
+    }
+  }
+
+  getStatusAsTextForJudge(statuses: ParticipantStatus[]): string {
+    switch (this.participant.status) {
+      case ParticipantStatus.None:
+      case ParticipantStatus.NotSignedIn:
+        const inHearing = statuses.filter(x => x === ParticipantStatus.InHearing);
+        return inHearing.length > 0 ? 'In another hearing' : 'Unavailable';
+      case ParticipantStatus.InConsultation:
+      case ParticipantStatus.UnableToJoin:
+        return 'Unavailable';
+      case ParticipantStatus.InHearing:
+        return 'In Hearing';
+
       default:
         return this.participant.status;
     }

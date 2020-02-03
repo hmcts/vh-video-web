@@ -2,7 +2,6 @@
 
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <ApplicationManifest>Helpers\GenerateRandom.cs</ApplicationManifest>
     </PropertyGroup>
 
     <ItemGroup>

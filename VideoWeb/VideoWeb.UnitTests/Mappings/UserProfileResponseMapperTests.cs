@@ -22,7 +22,7 @@ namespace VideoWeb.UnitTests.Mappings
         [TestCase("Individual", UserRole.Individual)]
         [TestCase("Judge", UserRole.Judge)]
         [TestCase("CaseAdmin", UserRole.CaseAdmin)]
-        public void should_map_to_user_role(string role, UserRole expectedRole)
+        public void Should_map_to_user_role(string role, UserRole expectedRole)
         {
             var profile = new UserProfile
             {
@@ -40,7 +40,7 @@ namespace VideoWeb.UnitTests.Mappings
         }
         
         [Test]
-        public void should_throw_exception_when_role_is_unsupported()
+        public void Should_throw_exception_when_role_is_unsupported()
         {
             Action action = () => _mapper.MapToResponseModel(new UserProfile
             {
