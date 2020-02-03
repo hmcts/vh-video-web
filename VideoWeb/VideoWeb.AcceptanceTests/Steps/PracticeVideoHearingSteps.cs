@@ -88,8 +88,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ProgressToNextPage()
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(PracticeVideoHearingPage.IncomingVideo, ExtraTimeoutToLoadVideoFromKinly).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browsers[_c.CurrentUser.Key].Driver.FindElement(CommonLocators.ButtonWithInnertext("Continue")));
-            _commonSteps.WhenTheUserClicksTheButton("Continue");
+            _browsers[_c.CurrentUser.Key].ScrollTo(PracticeVideoHearingPage.SkipLink);
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(PracticeVideoHearingPage.SkipLink).Click();
         }
     }
 }
