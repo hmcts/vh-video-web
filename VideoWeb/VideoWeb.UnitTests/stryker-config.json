@@ -12,7 +12,7 @@
         "max-concurrent-test-runners":4,
         "threshold-high":80,
         "threshold-low":70,
-        "threshold-break":50,
+        "threshold-break":60,
         "files-to-exclude": [       
         ],
 		"excluded-mutations": [
