@@ -15,6 +15,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By ProblemsTitle = CommonLocators.ElementContainingText("Problems with your equipment?");
         public static By PleaseCallTheVhoText = CommonLocators.ElementContainingText("Please call the video hearings team");
         public static By PreferredCameraVideo = By.Id("preferredCameraStream");
-        public static By ContinueButton = CommonLocators.ButtonWithInnertext("Continue");
+        public static By SkipLink = By.Id("continue-link");
     }
 }
