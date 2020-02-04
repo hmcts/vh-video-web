@@ -13,9 +13,7 @@ Scenario: Individual video hearing practice
 	Then the test score should be produced
 	When the user clicks the Watch the video again button
 	Then the incoming and self video should be playing video
-	When the user clicks the Change camera or microphone link
-	Then the choose your camera and microphone popup should appear
-	When the user selects a new microphone
+	When the user changes the camera and microphone
 	Then the choose your camera and microphone popup should disappear
 
 @VIH-5386 @Video
@@ -26,9 +24,7 @@ Scenario: Individual self test video hearing practice
 	When the video has ended
 	And the user clicks the Check equipment again button
 	Then the incoming and self video should be playing video
-	When the user clicks the Change camera or microphone link
-	Then the choose your camera and microphone popup should appear
-	When the user selects a new microphone
+	When the user changes the camera and microphone
 	Then the choose your camera and microphone popup should disappear
 
 @VIH-4997 @Video
@@ -39,9 +35,7 @@ Scenario: Representative self test video hearing practice
 	When the video has ended
 	And the user clicks the Check equipment again button
 	Then the incoming and self video should be playing video
-	When the user clicks the Change camera or microphone link
-	Then the choose your camera and microphone popup should appear
-	When the user selects a new microphone
+	When the user changes the camera and microphone
 	Then the choose your camera and microphone popup should disappear
 
 @VIH-4671 @Video
@@ -52,9 +46,7 @@ Scenario: Clerk video hearing practice
 	When the video has ended
 	And the user clicks the Check equipment again button
 	Then the incoming and self video should be playing video
-	When the user clicks the Change camera or microphone link
-	Then the choose your camera and microphone popup should appear
-	When the user selects a new microphone
+	When the user changes the camera and microphone
 	Then the choose your camera and microphone popup should disappear
 
 @VIH-4671 @Video

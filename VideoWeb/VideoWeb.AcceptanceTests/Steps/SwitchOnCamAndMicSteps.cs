@@ -13,13 +13,11 @@ namespace VideoWeb.AcceptanceTests.Steps
     {
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _c;
-        private readonly CommonSteps _commonSteps;
 
-        public SwitchOnCamAndMicSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, CommonSteps commonSteps)
+        public SwitchOnCamAndMicSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext)
         {
             _browsers = browsers;
             _c = testContext;
-            _commonSteps = commonSteps;
         }
 
         [Then(@"the camera and microphone turned on success message appears")]
@@ -31,8 +29,8 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         public void ProgressToNextPage()
         {
-            _commonSteps.WhenTheUserClicksTheButton("Switch on");
-            _commonSteps.WhenTheUserClicksTheButton("Watch the video");
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(SwitchOnCamAndMicPage.SwitchOnButton).Click();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(SwitchOnCamAndMicPage.WatchTheVideoButton).Click();
         }
     }
 }

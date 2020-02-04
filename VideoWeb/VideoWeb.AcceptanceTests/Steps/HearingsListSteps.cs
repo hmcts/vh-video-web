@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
-using OpenQA.Selenium.Support.Extensions;
 using TechTalk.SpecFlow;
 using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -40,7 +39,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 var element = _c.CurrentUser.Role.Equals("Clerk") ? ClerkHearingListPage.StartHearingButton(_c.Test.Case.Number) : HearingListPage.SignInButton(_c.Test.Case.Number);
                 var tolerance = _c.CurrentUser.Role.Equals("Clerk") ? 30 : ToleranceInMinutes * 60;
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.HearingListPageTitle).Displayed.Should().BeTrue();
-                _browsers[_c.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browsers[_c.CurrentUser.Key].Driver.FindElement(element));
+                _browsers[_c.CurrentUser.Key].ScrollTo(element);
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(element, tolerance).Click();
             }           
         }
