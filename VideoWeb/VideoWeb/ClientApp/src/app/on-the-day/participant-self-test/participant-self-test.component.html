@@ -14,6 +14,7 @@
 
 <div class="govuk-!-margin-top-6">
   <button id="continue-btn" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button"
+    [disabled]="!videoCompleted" [ngClass]="testCompleted() ? 'govuk-button' : 'govuk-button--disabled'"
     (click)="continueParticipantJourney()" alt="Continue">Continue</button>
 
   <button id="check-equipment-btn" class="govuk-button govuk-button--secondary" data-module="govuk-button"
@@ -21,4 +22,8 @@
     Watch the video again</button>
 </div>
 
+<div class="govuk-!-margin-top-6">
+  <a href="javascript:void(0)" class="govuk-link govuk-body" id="continue-link" (click)="continueParticipantJourney()">Verify equipment</a>
+  <p class="govuk-body">Only to be used on the advice of a video hearing officer.</p>
+</div>
 <app-contact-us-folding></app-contact-us-folding>
