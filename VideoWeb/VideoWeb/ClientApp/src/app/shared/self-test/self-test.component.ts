@@ -209,7 +209,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
   async retrieveSelfTestScore() {
     this.logger.debug('retrieving self test score');
-    this.didTestComplete = true;
     try {
       if (this.conference) {
         this.logger.info(`Self test : ConferenceId : ${this.conference.id} | retrieveSelfTestScore for Participant Id : ${this.participant.id}
@@ -228,6 +227,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     } catch (err) {
       this.logger.error('there was a problem retrieving the self test score', err);
     }
+    this.didTestComplete = true;
   }
 
   publishTestResult(): void {
