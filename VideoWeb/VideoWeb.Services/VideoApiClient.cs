@@ -3362,9 +3362,6 @@ namespace VideoWeb.Services.Video
         [System.Runtime.Serialization.EnumMember(Value = @"VhoCall")]
         VhoCall = 14,
     
-        [System.Runtime.Serialization.EnumMember(Value = @"JudgeUnavailable")]
-        JudgeUnavailable = 15,
-    
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
