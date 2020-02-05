@@ -222,7 +222,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
       participantToUpdate.status = message.status;
       if (participantToUpdate.role === UserRole.Judge) {
         this.getJudgeStatusDetails();
-      } 
+      }
     }
   }
 

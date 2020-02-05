@@ -33,8 +33,9 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
   configureTestSuite(() => {
     conference = new ConferenceTestData().getConferenceDetail();
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
+    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'raiseParticipantEvent']);
     videoWebServiceSpy.getConferenceById.and.returnValue(of(conference));
+    videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],

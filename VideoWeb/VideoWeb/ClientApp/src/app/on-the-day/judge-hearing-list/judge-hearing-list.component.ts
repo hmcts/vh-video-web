@@ -6,8 +6,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
   ConferenceForUserResponse, UserProfileResponse,
   UpdateParticipantStatusEventRequest, EventType
-}
-  from 'src/app/services/clients/api-client';
+} from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { VhContactDetails } from 'src/app/shared/contact-information';
 import { PageUrls } from 'src/app/shared/page-url.constants';
@@ -91,12 +90,12 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
       this.videoWebService.raiseParticipantEvent(eventStatusDetails.ConferenceId,
         new UpdateParticipantStatusEventRequest({
           participant_id: eventStatusDetails.ParticipantId, event_type: EventType.JudgeUnavailable
-        })).subscribe(x => { this.eventStatusCache.clear();  },
+        })).subscribe(x => { this.eventStatusCache.clear(); },
           (error) => {
             console.error(error);
           });
     }
-  } 
+  }
 
   get courtName(): string {
     return (this.profile) ? `${this.profile.first_name}, ${this.profile.last_name}` : '';
