@@ -79,6 +79,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     component.handleHearingStatusChange(conferenceStatus);
     expect(component.conference.status).toBe(conferenceStatus);
   });
+  it('should post event for judge status', () => {
+    component.ngOnInit();
+    expect(videoWebServiceSpy.raiseParticipantEvent).toHaveBeenCalled();
+  });
 
   it('should update participant status', () => {
     const message = eventService.nextParticipantStatusMessage;
