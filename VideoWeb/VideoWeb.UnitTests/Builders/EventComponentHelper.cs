@@ -46,6 +46,7 @@ namespace VideoWeb.UnitTests.Builders
                 new HelpEventHandler(eventHubContextMock.Object, memoryCache, logger.Object),
                 new JoinedEventHandler(eventHubContextMock.Object, memoryCache, logger.Object),
                 new JudgeAvailableEventHandler(eventHubContextMock.Object, memoryCache, logger.Object),
+                new JudgeUnavailableEventHandler(eventHubContextMock.Object, memoryCache, logger.Object),
                 new LeaveEventHandler(eventHubContextMock.Object, memoryCache, logger.Object),
                 new PauseEventHandler(eventHubContextMock.Object, memoryCache, logger.Object),
                 new SuspendEventHandler(eventHubContextMock.Object, memoryCache, logger.Object),
