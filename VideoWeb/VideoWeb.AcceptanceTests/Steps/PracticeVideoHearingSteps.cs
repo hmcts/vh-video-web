@@ -4,9 +4,9 @@ using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Requests;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
+using AcceptanceTests.Common.Driver.Support;
 using AcceptanceTests.Common.Test.Helpers;
 using FluentAssertions;
-using OpenQA.Selenium.Support.Extensions;
 using OpenQA.Selenium.Support.UI;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -22,13 +22,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         private const int VideoFinishedPlayingTimeout = 120;
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _c;
-        private readonly CommonSteps _commonSteps;
 
-        public PracticeVideoHearingSteps(Dictionary<string, UserBrowser> browsers, TestContext c, CommonSteps commonSteps)
+        public PracticeVideoHearingSteps(Dictionary<string, UserBrowser> browsers, TestContext c)
         {
             _browsers = browsers;
             _c = c;
-            _commonSteps = commonSteps;
         }
 
         [When(@"the video has ended")]
@@ -37,13 +35,15 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(PracticeVideoHearingPage.IncomingVideo, VideoFinishedPlayingTimeout);
         }
 
-        [Then(@"the choose your camera and microphone popup should appear")]
-        public void ThenTheChooseYourCameraAndMicrophonePopupShouldAppear()
+        [When(@"the user changes the camera and microphone")]
+        public void WhenTheUserChangesTheCameraAndMicrophone()
         {
+            if (_c.VideoWebConfig.TestConfig.TargetBrowser != TargetBrowser.Firefox) return;
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(PracticeVideoHearingPage.ChangeCameraAndMicrophoneLink).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(PracticeVideoHearingPage.ChangeMicPopup).Displayed.Should().BeTrue();
+            WhenTheUserSelectsANewMicrophone();
         }
 
-        [When(@"the user selects a new microphone")]
         public void WhenTheUserSelectsANewMicrophone()
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(PracticeVideoHearingPage.MicsList).Displayed.Should().BeTrue();
@@ -57,6 +57,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the choose your camera and microphone popup should disappear")]
         public void ThenTheChooseYourCameraAndMicrophonePopupShouldDisappear()
         {
+            if (_c.VideoWebConfig.TestConfig.TargetBrowser != TargetBrowser.Firefox) return;
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(PracticeVideoHearingPage.ChangeMicPopup).Should().BeTrue();
         }
 

@@ -18,7 +18,6 @@ Scenario: Participant does not confirm the equipment is working
 	And the user clicks the Check my equipment again button
 	Then the user is on the Equipment Check page
 	When the Participant user navigates from the Equipment Check page back to the See and Hear Video page
-	And the user selects the No radiobutton
-	And the user clicks the Continue button
+	And the user says the video is not working
 	Then the user is on the Help page
 	And contact us details are available
