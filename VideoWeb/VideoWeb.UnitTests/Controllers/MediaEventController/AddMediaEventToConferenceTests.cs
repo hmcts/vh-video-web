@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using Testing.Common.Helpers;
 using VideoWeb.Contract.Request;
 using VideoWeb.Services.Video;
+using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.MediaEventController
@@ -39,22 +39,35 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
         }
 
         [Test]
-        public async Task should_return_no_content_when_event_is_sent()
+        public async Task Should_return_no_content_when_event_is_sent()
         {
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .Returns(Task.FromResult(default(object)));
 
-            var result = await _controller.AddMediaEventToConference(Guid.NewGuid(), Builder<AddMediaEventRequest>.CreateNew().Build());
-            var typedResult = (NoContentResult)result;
+            var conferenceId = Guid.NewGuid();
+            var addMediaEventRequest = Builder<AddMediaEventRequest>.CreateNew().Build();
+            var result = await _controller.AddMediaEventToConference(conferenceId, addMediaEventRequest);
+
+            var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
+            _videoApiClientMock.Verify(v =>
+                v.RaiseVideoEventAsync( It.Is<ConferenceEventRequest>(
+                    c =>
+                    c.Conference_id == conferenceId.ToString() &&
+                    c.Participant_id == addMediaEventRequest.ParticipantId.ToString() &&
+                    c.Event_id  != string.Empty &&
+                    c.Event_type == addMediaEventRequest.EventType &&
+                    c.Time_stamp_utc != null &&
+                    c.Reason == "media permission denied"
+                )),Times.Once);
         }
 
         [Test]
-        public async Task should_return_bad_request()
+        public async Task Should_return_bad_request()
         {
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
-                "Please provide a valid conference Id", null, default(ProblemDetails), null);
+                "Please provide a valid conference Id", null, default, null);
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
@@ -65,10 +78,10 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
         }
 
         [Test]
-        public async Task should_return_exception()
+        public async Task Should_return_exception()
         {
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int)HttpStatusCode.InternalServerError,
-                "Stacktrace goes here", null, default(ProblemDetails), null);
+                "Stacktrace goes here", null, default, null);
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
@@ -79,7 +92,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
         }
 
         [Test]
-        public async Task should_return_no_content_when_self_test_failure_event_is_sent()
+        public async Task Should_return_no_content_when_self_test_failure_event_is_sent()
         {
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
@@ -89,13 +102,16 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 Builder<AddSelfTestFailureEventRequest>.CreateNew().Build());
             var typedResult = (NoContentResult)result;
             typedResult.Should().NotBeNull();
+            _videoApiClientMock.Verify(v => 
+                                        v.RaiseVideoEventAsync(It.Is<ConferenceEventRequest>(c => c.Reason.Contains("Failed self-test (Camera)"))),
+                                        Times.Once);
         }
 
         [Test]
-        public async Task should_return_bad_request_when_self_test_failure_event_is_sent()
+        public async Task Should_return_bad_request_when_self_test_failure_event_is_sent()
         {
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
-                "Please provide a valid conference Id", null, default(ProblemDetails), null);
+                "Please provide a valid conference Id", null, default, null);
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
@@ -107,10 +123,10 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
         }
 
         [Test]
-        public async Task should_return_exception_when_self_test_failure_event_is_sent()
+        public async Task Should_return_exception_when_self_test_failure_event_is_sent()
         {
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int)HttpStatusCode.InternalServerError,
-                "Stacktrace goes here", null, default(ProblemDetails), null);
+                "Stacktrace goes here", null, default, null);
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);

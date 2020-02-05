@@ -16,7 +16,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Testing.Common\Testing.Common.csproj" />
       <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />
       <ProjectReference Include="..\VideoWeb.Contract\VideoWeb.Contract.csproj" />
       <ProjectReference Include="..\VideoWeb\VideoWeb.csproj" />

@@ -3,10 +3,10 @@ using System.Linq;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
-using Testing.Common.Builders;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
+using VideoWeb.UnitTests.Builders;
 using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
 using UserRole = VideoWeb.Services.Video.UserRole;
 
@@ -17,7 +17,7 @@ namespace VideoWeb.UnitTests.Mappings
         private readonly ConferenceResponseMapper _mapper = new ConferenceResponseMapper();
 
         [Test]
-        public void should_map_all_properties()
+        public void Should_map_all_properties()
         {
             var participants = new List<ParticipantDetailsResponse>
             {
@@ -67,6 +67,11 @@ namespace VideoWeb.UnitTests.Mappings
                     participantResponse.TiledDisplayName.Should().NotBeNullOrEmpty();
                 }
             }
+
+            var caseTypeGroups = participantsResponse.Select(p => p.CaseTypeGroup).Distinct().ToList();
+            caseTypeGroups[0].Should().Be("Claimant");
+            caseTypeGroups[1].Should().Be("Defendant");
+            caseTypeGroups[2].Should().Be("None");
 
             response.AdminIFrameUri.Should().Be(meetingRoom.Admin_uri);
             response.JudgeIFrameUri.Should().Be(meetingRoom.Judge_uri);

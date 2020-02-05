@@ -13,7 +13,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         private CloseEventHandler _eventHandler;
 
         [Test]
-        public async Task should_send_messages_to_participants_and_service_bus_on_close()
+        public async Task Should_send_messages_to_participants_and_service_bus_on_close()
         {
             _eventHandler = new CloseEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
 

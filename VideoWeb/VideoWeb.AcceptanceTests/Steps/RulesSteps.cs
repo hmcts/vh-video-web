@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
+using AcceptanceTests.Common.Driver.Browser;
+using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
 using TechTalk.SpecFlow;
-using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.AcceptanceTests.Users;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -12,22 +12,20 @@ namespace VideoWeb.AcceptanceTests.Steps
     public sealed class RulesSteps : ISteps
     {
         private readonly Dictionary<string, UserBrowser> _browsers;
-        private readonly TestContext _tc;
-        private readonly RulesPage _rulesPage;
+        private readonly TestContext _c;
         private readonly CommonSteps _commonSteps;
 
-        public RulesSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, RulesPage rulesPage, CommonSteps commonSteps)
+        public RulesSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, CommonSteps commonSteps)
         {
             _browsers = browsers;
-            _tc = testContext;
-            _rulesPage = rulesPage;
+            _c = testContext;
             _commonSteps = commonSteps;
         }
 
         [Then(@"the HMCTS Crest is visible")]
         public void ThenTheHmctsCrestIsVisible()
         {
-            _browsers[_tc.CurrentUser.Key].Driver.WaitUntilVisible(_rulesPage.HmctsLogo).Displayed
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(RulesPage.HmctsLogo).Displayed
                 .Should().BeTrue();
         }
 
