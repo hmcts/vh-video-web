@@ -51,14 +51,14 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.IncomingCallMessage)
                 .Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.AcceptPrivateCall()).Click();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.AcceptPrivateCall).Click();
         }
 
         [When(@"(.*) rejects the private consultation")]
         public void WhenTheUserRejectsThePrivateConsultation(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.RejectPrivateCall()).Click();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.RejectPrivateCall).Click();
         }
 
         [When(@"a participant closes the private consultation")]

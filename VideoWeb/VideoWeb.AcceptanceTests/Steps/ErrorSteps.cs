@@ -59,8 +59,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user attempts to access the page on their unsupported browser")]
         public void WhenTheUserAttemptsToAccessThePageOnTheirUnsupportedBrowser()
         {
-            if (_c.VideoWebConfig.TestConfig.TargetBrowser == TargetBrowser.Edge)
-                _loginSteps.ProgressToNextPage();
+            _loginSteps.ProgressToNextPage();
         }
 
         [Then(@"the Not Found error page displays text of how to rectify the problem")]
@@ -83,14 +82,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the user is on the Unsupported Browser error page with text of how to rectify the problem")]
         public void ThenTheUnsupportedBrowserErrorPageDisplaysTextOfHowToRectifyTheProblem()
         {
-            if (_c.VideoWebConfig.TestConfig.TargetBrowser == TargetBrowser.Edge)
-            {
-                _browsers[_c.CurrentUser.Key].PageUrl(Page.UnsupportedBrowser.Url);
-            }
-            else
-            {
-                _browsers[_c.CurrentUser.Key].Driver.Url.Should().NotContain(Page.HearingList.Url);
-            }
+            _browsers[_c.CurrentUser.Key].PageUrl(Page.UnsupportedBrowser.Url);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ErrorPage.UnsupportedBrowserTitle).Displayed.Should().BeTrue();
         }
     }

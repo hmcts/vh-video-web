@@ -38,7 +38,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user changes the camera and microphone")]
         public void WhenTheUserChangesTheCameraAndMicrophone()
         {
-            if (_c.VideoWebConfig.TestConfig.TargetBrowser != TargetBrowser.Firefox) return;
+            if (_c.VideoWebConfig.TestConfig.TargetBrowser == TargetBrowser.Firefox) return;
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(PracticeVideoHearingPage.ChangeCameraAndMicrophoneLink).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(PracticeVideoHearingPage.ChangeMicPopup).Displayed.Should().BeTrue();
             WhenTheUserSelectsANewMicrophone();
@@ -57,8 +57,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the choose your camera and microphone popup should disappear")]
         public void ThenTheChooseYourCameraAndMicrophonePopupShouldDisappear()
         {
-            if (_c.VideoWebConfig.TestConfig.TargetBrowser != TargetBrowser.Firefox) return;
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(PracticeVideoHearingPage.ChangeMicPopup).Should().BeTrue();
+            if (_c.VideoWebConfig.TestConfig.TargetBrowser != TargetBrowser.Firefox)
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(PracticeVideoHearingPage.ChangeMicPopup).Should().BeTrue();
         }
 
         [Then(@"the incoming and self video should be playing video")]
