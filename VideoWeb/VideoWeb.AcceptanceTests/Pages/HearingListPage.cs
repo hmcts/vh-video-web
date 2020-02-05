@@ -1,12 +1,13 @@
-﻿using OpenQA.Selenium;
+﻿using AcceptanceTests.Common.PageObject.Helpers;
+using OpenQA.Selenium;
 
 namespace VideoWeb.AcceptanceTests.Pages
 {
     public static class HearingListPage
     {
-        public static By HearingListPageTitle => By.XPath("//*[contains(text(), 'Video hearings for') or contains(text(),'Your video hearing') or contains(text(),'Your video hearings')]");
-        public static By ClerkNoHearingsWarningMessage => CommonLocators.ElementContainingText("You have no video hearings");
-        public static By ParticipantNoHearingsWarningMessage => CommonLocators.ElementContainingText("You do not have a video hearing today");
+        public static By HearingListPageTitle = By.XPath("//*[contains(text(), 'Video hearings for') or contains(text(),'Your video hearing') or contains(text(),'Your video hearings')]");
+        public static By ClerkNoHearingsWarningMessage = CommonLocators.ElementContainingText("You have no video hearings");
+        public static By ParticipantNoHearingsWarningMessage = CommonLocators.ElementContainingText("You do not have a video hearing today");
         public static By HearingWithCaseNumber(string caseNumber) => CommonLocators.ElementContainingText(caseNumber);
         public static By WaitToSignInText(string caseNumber) => By.XPath($"//tr//*[contains(text(),'{caseNumber}')]/../../..//td//p[contains(text(),'Sign in Today')]/../p[contains(text(),':')]");
         public static By SignInButton(string caseNumber) => By.XPath($"//*[contains(text(),'{caseNumber}')]/ancestor::tr//button[contains(text(),'Sign into hearing')]");
