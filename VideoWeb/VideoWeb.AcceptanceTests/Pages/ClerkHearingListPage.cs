@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using AcceptanceTests.Common.PageObject.Helpers;
+using OpenQA.Selenium;
 
 namespace VideoWeb.AcceptanceTests.Pages
 {
@@ -16,6 +17,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By StartHearingButton(string caseNumber) => By.XPath($"{ClerkHearingRow(caseNumber)}//button");
         public static By ClerkContactUs = CommonLocators.ElementContainingText("Do you need help?");
         public static By ClerkPhoneNumber = CommonLocators.ElementContainingText("0300 303 0655");
-        public static By CheckEquipmentButton = CommonLocators.ButtonWithInnertext("Check equipment");
+        public static By CheckEquipmentButton = CommonLocators.ButtonWithInnerText("Check equipment");
     }
 }

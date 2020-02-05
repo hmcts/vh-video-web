@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using AcceptanceTests.Common.PageObject.Helpers;
+using OpenQA.Selenium;
 
 namespace VideoWeb.AcceptanceTests.Pages
 {
@@ -11,7 +12,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By ChangeMicPopup = CommonLocators.ElementContainingText(PopupHeaderText);
         public static By ChangeCameraAndMicrophoneLink = CommonLocators.LinkWithText("Change camera or microphone");
         public static By MicsList = By.Id("available-mics-list");
-        public static By ChangeButton = CommonLocators.ButtonWithInnertext("Change");
+        public static By ChangeButton = CommonLocators.ButtonWithInnerText("Change");
         public static By ProblemsTitle = CommonLocators.ElementContainingText("Problems with your equipment?");
         public static By PleaseCallTheVhoText = CommonLocators.ElementContainingText("Please call the video hearings team");
         public static By PreferredCameraVideo = By.Id("preferredCameraStream");

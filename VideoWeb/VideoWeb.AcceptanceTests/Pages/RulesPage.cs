@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using AcceptanceTests.Common.PageObject.Helpers;
+using OpenQA.Selenium;
 
 namespace VideoWeb.AcceptanceTests.Pages
 {
