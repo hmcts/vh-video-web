@@ -3,6 +3,6 @@
   <TestRunParameters>
     <Parameter name="TargetBrowser" value="Chrome"  />
     <Parameter name="TargetDevice" value="Desktop"  />
-    <Parameter name="TargetEnvironment" value="" />
+    <Parameter name="TargetEnvironment" value=""  />
   </TestRunParameters>
 </RunSettings>
