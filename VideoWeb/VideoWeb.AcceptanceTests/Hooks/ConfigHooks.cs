@@ -25,7 +25,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         public ConfigHooks(TestContext context)
         {
-            _configRoot = new ConfigurationManager("CA353381-2F0D-47D7-A97B-79A30AFF8B86").BuildConfig();
+            _configRoot = new ConfigurationManager("CA353381-2F0D-47D7-A97B-79A30AFF8B86").BuildConfig(NUnit.Framework.TestContext.Parameters["Environment"]);
             context.VideoWebConfig = new VideoWebConfig();
             context.UserAccounts = new List<UserAccount>();
             context.Tokens = new VideoWebTokens();
