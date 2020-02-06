@@ -1,6 +1,8 @@
 <div>
   <div #skipLink tabindex="0"></div>
-  <a href="javascript:void(0)" class="govuk-skip-link" (click)="skipToContent()">Skip to main content</a>
+  <div role="navigation">
+    <a href="javascript:void(0)" class="govuk-skip-link" (click)="skipToContent()">Skip to main content</a>
+  </div>
   <app-header [loggedIn]="loggedIn"></app-header>
 
   <div class="govuk-width-container" id="master-container">
