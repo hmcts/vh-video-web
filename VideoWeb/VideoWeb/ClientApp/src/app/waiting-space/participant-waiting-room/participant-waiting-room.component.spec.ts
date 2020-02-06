@@ -6,7 +6,11 @@ import { configureTestSuite } from 'ng-bullet';
 import { of, throwError } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
+import {
+  ConferenceResponse,
+  ConferenceStatus,
+  ParticipantStatus
+} from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { SharedModule } from 'src/app/shared/shared.module';
@@ -25,7 +29,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { IndividualConsultationControlsStubComponent } from 'src/app/testing/stubs/individual-consultation-controls-stub';
 
-
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
   let component: ParticipantWaitingRoomComponent;
   let fixture: ComponentFixture<ParticipantWaitingRoomComponent>;
@@ -36,13 +39,22 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
   configureTestSuite(() => {
     const conference = new ConferenceTestData().getConferenceDetail();
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
+    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>(
+      'VideoWebService',
+      ['getConferenceById', 'getObfuscatedName']
+    );
     videoWebServiceSpy.getConferenceById.and.returnValue(of(conference));
+    videoWebServiceSpy.getObfuscatedName.and.returnValue('test-obfs');
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [ParticipantWaitingRoomComponent, IndividualParticipantStatusListStubComponent,
-        AnalogueClockStubComponent, JudgeParticipantStatusListStubComponent, IndividualConsultationControlsStubComponent],
+      declarations: [
+        ParticipantWaitingRoomComponent,
+        IndividualParticipantStatusListStubComponent,
+        AnalogueClockStubComponent,
+        JudgeParticipantStatusListStubComponent,
+        IndividualConsultationControlsStubComponent
+      ],
       providers: [
         {
           provide: ActivatedRoute,
@@ -50,7 +62,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             snapshot: {
               paramMap: convertToParamMap({ conferenceId: conference.id })
             }
-          },
+          }
         },
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },
@@ -67,7 +79,9 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     route = TestBed.get(ActivatedRoute);
     fixture = TestBed.createComponent(ParticipantWaitingRoomComponent);
     component = fixture.componentInstance;
-    spyOn(component, 'call').and.callFake(() => { Promise.resolve(true); });
+    spyOn(component, 'call').and.callFake(() => {
+      Promise.resolve(true);
+    });
     fixture.detectChanges();
   });
 
@@ -86,7 +100,9 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
   it('should update participant status', () => {
     const message = eventService.nextParticipantStatusMessage;
     component.handleParticipantStatusChange(message);
-    const participant = component.hearing.getConference().participants.find(x => x.id === message.participantId);
+    const participant = component.hearing
+      .getConference()
+      .participants.find(x => x.id === message.participantId);
     expect(participant.status).toBe(message.status);
   });
 
@@ -161,10 +177,22 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
   });
 
   it('should not announce hearing is starting when already announced', () => {
-    spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => { });
+    spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => {});
     component.hearingStartingAnnounced = true;
     component.checkIfHearingIsStarting();
     expect(component.announceHearingIsAboutToStart).toHaveBeenCalledTimes(0);
+  });
+
+  it('should not attempt to connect to pexip when getting conference and skip set to true', () => {
+    spyOn(component, 'getJwtokenAndConnectToPexip').and.callFake(() => {});
+    component.getConference(true);
+    expect(component.getJwtokenAndConnectToPexip).toHaveBeenCalledTimes(0);
+  });
+
+  it('should attempt to connect to pexip when getting conference and skip set to false', () => {
+    spyOn(component, 'getJwtokenAndConnectToPexip').and.callFake(() => {});
+    component.getConference(false);
+    expect(component.getJwtokenAndConnectToPexip).toHaveBeenCalled();
   });
 });
 
@@ -180,13 +208,23 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
 
   configureTestSuite(() => {
     conference = new ConferenceTestData().getConferenceFuture();
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
-    videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 404, isApiException: true }));
+    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>(
+      'VideoWebService',
+      ['getConferenceById']
+    );
+    videoWebServiceSpy.getConferenceById.and.returnValue(
+      throwError({ status: 404, isApiException: true })
+    );
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
-      declarations: [ParticipantWaitingRoomComponent, IndividualParticipantStatusListStubComponent,
-        AnalogueClockStubComponent, JudgeParticipantStatusListStubComponent, IndividualConsultationControlsStubComponent],
+      declarations: [
+        ParticipantWaitingRoomComponent,
+        IndividualParticipantStatusListStubComponent,
+        AnalogueClockStubComponent,
+        JudgeParticipantStatusListStubComponent,
+        IndividualConsultationControlsStubComponent
+      ],
       providers: [
         {
           provide: ActivatedRoute,
@@ -215,7 +253,9 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
   });
 
   it('should handle api error with error service', () => {
-    spyOn(errorService, 'handleApiError').and.callFake(() => { Promise.resolve(true); });
+    spyOn(errorService, 'handleApiError').and.callFake(() => {
+      Promise.resolve(true);
+    });
     fixture.detectChanges();
     expect(component).toBeTruthy();
     expect(component.loadingData).toBeFalsy();
