@@ -9,18 +9,22 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="appsettings.aat.json" Condition="Exists('appsettings.aat.json')">
+    <ContentWithTargetPath Include="Configuration\Environments\appsettings.aat.json" Condition="Exists('Configuration\Environments\appsettings.aat.json')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="appsettings.dev.json" Condition="Exists('appsettings.dev.json')">
+      <TargetPath>appsettings.aat.json</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Configuration\Environments\appsettings.dev.json" Condition="Exists('Configuration\Environments\appsettings.aat.json')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="appsettings.local.json" Condition="Exists('appsettings.local.json')">
+      <TargetPath>appsettings.dev.json</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Configuration\Environments\appsettings.local.json" Condition="Exists('Configuration\Environments\appsettings.aat.json')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="appsettings.preview.json" Condition="Exists('appsettings.preview.json')">
+      <TargetPath>appsettings.local.json</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Configuration\Environments\appsettings.preview.json" Condition="Exists('Configuration\Environments\appsettings.aat.json')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+      <TargetPath>appsettings.preview.json</TargetPath>
+    </ContentWithTargetPath>
     <None Update="Data\TestData\CommonData.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
