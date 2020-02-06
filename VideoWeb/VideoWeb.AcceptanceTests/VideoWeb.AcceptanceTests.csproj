@@ -50,7 +50,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="nunit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="Polly" Version="7.2.0" />
     <PackageReference Include="Protractor" Version="0.13.0" />
     <PackageReference Include="RestSharp" Version="106.10.1" />
@@ -61,16 +61,20 @@
     <PackageReference Include="Selenium.WebDriver.GeckoDriver" Version="0.26.0" />
     <PackageReference Include="Selenium.WebDriver.IEDriver" Version="3.150.1" />
     <PackageReference Include="Selenium.WebDriver.MicrosoftDriver" Version="17.17134.0" />
-    <PackageReference Include="SpecFlow" Version="3.1.80" />
-    <PackageReference Include="SpecFlow.NUnit" Version="3.1.80" />
-    <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.1.80" />
+    <PackageReference Include="SpecFlow" Version="3.1.82" />
+    <PackageReference Include="SpecFlow.NUnit" Version="3.1.82" />
+    <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.1.82" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
-    <PackageReference Include="VH.AcceptanceTests.Common" Version="1.0.40" />
+    <PackageReference Include="VH.AcceptanceTests.Common" Version="1.0.49" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\VideoWeb.Contract\VideoWeb.Contract.csproj" />
     <ProjectReference Include="..\VideoWeb.EventHub\VideoWeb.EventHub.csproj" />
     <ProjectReference Include="..\VideoWeb.Services\VideoWeb.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Features\*.feature" />
   </ItemGroup>
 </Project>
