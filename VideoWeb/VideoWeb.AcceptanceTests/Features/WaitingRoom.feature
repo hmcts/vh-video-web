@@ -1,4 +1,4 @@
-﻿@VIH-4127 @VIH-4131 @VIH-4233
+@VIH-4127 @VIH-4131 @VIH-4233
 Feature: Waiting Room
 	As a registered video hearings user
 	I need to access a waiting room prior to my hearing
@@ -24,7 +24,7 @@ Scenario: Clerk waiting room
 	And the user can see other participants status
 	When the user navigates back to the hearing list
 	Then the user is on the Hearing List page
-	And the participant status will be updated to Joining
+	And the participant status will be updated to Unavailable
 
 @VIH-4233
 Scenario: Participant hearing is delayed
