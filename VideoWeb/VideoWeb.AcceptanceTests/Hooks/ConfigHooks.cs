@@ -130,8 +130,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 context.VideoWebConfig.AzureAdConfiguration, context.VideoWebConfig.AzureAdConfiguration.ClientId);
             context.Tokens.VideoWebBearerToken.Should().NotBeNullOrEmpty();
 
-            context.Tokens.CallbackBearerToken =
-                GenerateTemporaryTokens.SetCustomJwTokenForCallback(context.VideoWebConfig.VideoWebCustomTokenSettings);
+            context.Tokens.CallbackBearerToken = GenerateTemporaryTokens.SetCustomJwTokenForCallback(context.VideoWebConfig.VideoWebCustomTokenSettings);
             context.Tokens.CallbackBearerToken.Should().NotBeNullOrEmpty();
         }
     }
