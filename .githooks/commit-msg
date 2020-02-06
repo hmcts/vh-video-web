@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+INPUT_FILE=$1
+START_LINE=`head -n1 $INPUT_FILE`
+PATTERN="^(\[VIH-[[:digit:]]+\])"
+if ! [[ "$START_LINE" =~ $PATTERN ]]; then
+  echo "Bad commit message, see example: [VIH-123] <issue description>"
+  exit 1
+fi
