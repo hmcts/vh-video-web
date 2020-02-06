@@ -1,32 +1,34 @@
 import {
   Component,
+  HostListener,
   NgZone,
-  OnInit,
   OnDestroy,
-  HostListener
+  OnInit
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
+import { Subscription } from 'rxjs';
+import { ConsultationService } from 'src/app/services/api/consultation.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
   ConferenceResponse,
   ConferenceStatus,
+  ConsultationAnswer,
   ParticipantResponse,
   ParticipantStatus,
-  TokenResponse,
-  ConsultationAnswer
+  TokenResponse
 } from 'src/app/services/clients/api-client';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { EventsService } from 'src/app/services/events.service';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
-import { ErrorService } from 'src/app/services/error.service';
 import { ClockService } from 'src/app/services/clock.service';
-import { Hearing } from '../../shared/models/hearing';
-import { UserMediaService } from 'src/app/services/user-media.service';
+import { ErrorService } from 'src/app/services/error.service';
+import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ConsultationService } from 'src/app/services/api/consultation.service';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { UserMediaService } from 'src/app/services/user-media.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
-import { Subscription } from 'rxjs';
+
+import { Hearing } from '../../shared/models/hearing';
+
 declare var PexRTC: any;
 declare var HeartbeatFactory: any;
 
@@ -39,7 +41,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   private maxBandwidth = 768;
 
   loadingData: boolean;
-  conferencesSubscription: Subscription;
   hearing: Hearing;
   participant: ParticipantResponse;
   conference: ConferenceResponse;
@@ -60,7 +61,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   selfViewOpen: boolean;
   isAdminConsultation: boolean;
 
-  subscription: Subscription;
+  clockSubscription: Subscription;
   errorCount: number;
 
   CALL_TIMEOUT = 31000; // 31 seconds
@@ -93,13 +94,16 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     this.logger.debug('Loading participant waiting room');
     this.connected = false;
     this.initHearingAlert();
-    this.getConference(false);
+    this.getConference().then(() => {
+      this.subscribeToClock();
+      this.startEventHubSubscribers();
+      this.getJwtokenAndConnectToPexip();
+    });
   }
 
   @HostListener('window:beforeunload')
   ngOnDestroy(): void {
     clearTimeout(this.callbackTimeout);
-    this.conferencesSubscription.unsubscribe();
     if (this.heartbeat) {
       this.heartbeat.kill();
     }
@@ -139,7 +143,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   }
 
   subscribeToClock(): void {
-    this.subscription = this.clockService.getClock().subscribe(time => {
+    this.clockSubscription = this.clockService.getClock().subscribe(time => {
       this.currentTime = time;
       this.checkIfHearingIsClosed();
       this.checkIfHearingIsStarting();
@@ -154,7 +158,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
   checkIfHearingIsClosed(): void {
     if (this.hearing.isPastClosedTime()) {
-      this.subscription.unsubscribe();
+      this.clockSubscription.unsubscribe();
       this.router.navigate([PageUrls.ParticipantHearingList]);
     }
   }
@@ -167,44 +171,39 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     this.hearingStartingAnnounced = true;
   }
 
-  getConference(skipPexipConnection: boolean): void {
+  async getConference() {
     const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-    this.conferencesSubscription = this.videoWebService
+    return this.videoWebService
       .getConferenceById(conferenceId)
-      .subscribe(
-        async (data: ConferenceResponse) => {
-          this.errorCount = 0;
-          this.loadingData = false;
-          this.hearing = new Hearing(data);
-          this.conference = this.hearing.getConference();
-          this.participant = data.participants.find(
-            x =>
-              x.username.toLowerCase() ===
-              this.adalService.userInfo.userName.toLowerCase()
-          );
-          this.logger
-            .info(`Participant waiting room : Conference Id: ${conferenceId} and participantId: ${
-            this.participant.id
-          },
+      .toPromise()
+      .then((data: ConferenceResponse) => {
+        this.errorCount = 0;
+        this.loadingData = false;
+        this.hearing = new Hearing(data);
+        this.conference = this.hearing.getConference();
+        this.participant = data.participants.find(
+          x =>
+            x.username.toLowerCase() ===
+            this.adalService.userInfo.userName.toLowerCase()
+        );
+        this.logger
+          .info(`Participant waiting room : Conference Id: ${conferenceId} and participantId: ${
+          this.participant.id
+        },
           participant name : ${this.videoWebService.getObfuscatedName(
             this.participant.first_name + ' ' + this.participant.last_name
           )}`);
-          if (skipPexipConnection) {
-            return;
-          }
-          this.getJwtokenAndConnectToPexip();
-        },
-        error => {
-          this.logger.error(
-            `There was an error getting a conference ${conferenceId}`,
-            error
-          );
-          this.loadingData = false;
-          if (!this.errorService.returnHomeIfUnauthorised(error)) {
-            this.errorService.handleApiError(error);
-          }
+      })
+      .catch(error => {
+        this.logger.error(
+          `There was an error getting a conference ${conferenceId}`,
+          error
+        );
+        this.loadingData = false;
+        if (!this.errorService.returnHomeIfUnauthorised(error)) {
+          this.errorService.handleApiError(error);
         }
-      );
+      });
   }
 
   getJwtokenAndConnectToPexip(): void {
@@ -213,8 +212,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       async (token: TokenResponse) => {
         this.logger.debug('retrieved jwtoken for heartbeat');
         this.token = token;
-        this.subscribeToClock();
-        this.startEventHubSubscribers();
+
         await this.setupPexipClient();
         this.call();
       },
@@ -247,7 +245,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     return 'is in session';
   }
 
-  private startEventHubSubscribers() {
+  startEventHubSubscribers() {
     this.eventService.start();
 
     this.logger.debug('Subscribing to conference status changes...');
@@ -281,7 +279,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.logger.info(
           `event hub disconnection for ${this.participant.id} in conference ${this.hearing.id}`
         );
-        this.getConference(true);
+        this.getConference();
       });
     });
 
@@ -291,7 +289,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.logger.info(
           `event hub re-connected for ${this.participant.id} in conference ${this.hearing.id}`
         );
-        this.getConference(true);
+        this.getConference();
       });
     });
   }
@@ -330,7 +328,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       self.logger.info(
         `Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}, Using preferred camera: ${preferredCam.label}`
       );
-      // self.logger.info(`Using preferred camera: ${preferredCam.label}`);
     }
 
     const preferredMic = await this.userMediaService.getPreferredMicrophone();
@@ -339,7 +336,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
       self.logger.info(
         `Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}, Using preferred microphone: ${preferredMic.label}`
       );
-      // self.logger.info(`Using preferred microphone: ${preferredMic.label}`);
     }
 
     this.pexipAPI.onSetup = function(stream, pin_status, conference_extension) {
@@ -410,6 +406,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
   }
 
   call() {
+    console.warn('calling pexip');
     const pexipNode = this.hearing.getConference().pexip_node_uri;
     const conferenceAlias = this.hearing.getConference().participant_uri;
     const displayName = this.participant.tiled_display_name;

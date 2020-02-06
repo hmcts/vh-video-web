@@ -43,7 +43,7 @@ export class EventsService {
     this.eventServiceBaseUri = this.configService.clientSettings.video_api_url;
     this.connection = new signalR.HubConnectionBuilder()
       .configureLogging(signalR.LogLevel.Debug)
-      .withAutomaticReconnect([0, 2, 5, 10, 15, 20])
+      .withAutomaticReconnect([0, 2000, 5000, 10000, 15000, 20000])
       .withUrl('/eventhub', {
         accessTokenFactory: () => this.adalService.userInfo.token
       })

@@ -1,7 +1,20 @@
-import { Component, HostListener, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceForUserResponse, ConferenceResponse, ParticipantResponse, TaskResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
+import {
+  ConferenceForUserResponse,
+  ConferenceResponse,
+  ParticipantResponse,
+  TaskResponse,
+  ParticipantStatus
+} from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
@@ -13,7 +26,11 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import * as $ from 'jquery';
 import { Subscription } from 'rxjs';
 import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
-import { ConferenceForUser, ExtendedConferenceStatus, HearingsFilter } from '../../shared/models/hearings-filter';
+import {
+  ConferenceForUser,
+  ExtendedConferenceStatus,
+  HearingsFilter
+} from '../../shared/models/hearings-filter';
 import { SessionStorage } from '../../services/session-storage';
 import { UserRole } from 'src/app/services/clients/api-client';
 import { ParticipantStatusModel } from 'src/app/shared/models/participants-status-model';
@@ -25,7 +42,6 @@ import { Participant } from 'src/app/shared/models/participant';
   styleUrls: ['./vho-hearings.component.scss']
 })
 export class VhoHearingsComponent implements OnInit, OnDestroy {
-
   adminFrameWidth: number;
   adminFrameHeight: number;
 
@@ -75,7 +91,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     this.interval = setInterval(() => {
       this.retrieveHearingsForVhOfficer();
     }, 30000);
-    this.setupSubscribers();
+    this.setupEventHubSubscribers();
   }
 
   @HostListener('window:beforeunload')
@@ -85,7 +101,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     this.conferencesSubscription.unsubscribe();
   }
 
-  private setupSubscribers() {
+  private setupEventHubSubscribers() {
     this.logger.debug('Setting up VH Officer event subscribers');
     this.eventService.start();
 
@@ -102,33 +118,65 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.handleParticipantStatusChange(message);
       });
     });
+
+    this.logger.debug('Subscribing to event hub disconnects');
+    this.eventService.getServiceDisconnected().subscribe(() => {
+      this.ngZone.run(() => {
+        this.logger.info(`event hub disconnection for vh officer`);
+        this.refreshConferenceDataDuringDisconnect();
+      });
+    });
+
+    this.logger.debug('Subscribing to event hub reconnects');
+    this.eventService.getServiceReconnected().subscribe(() => {
+      this.ngZone.run(() => {
+        this.logger.info(`event hub re-connected for vh officer`);
+        this.refreshConferenceDataDuringDisconnect();
+      });
+    });
+  }
+
+  refreshConferenceDataDuringDisconnect() {
+    this.retrieveHearingsForVhOfficer();
+    if (this.selectedHearing) {
+      this.retrieveConferenceDetails(this.selectedHearing.id);
+    }
   }
 
   retrieveHearingsForVhOfficer() {
-    this.conferencesSubscription = this.videoWebService.getConferencesForVHOfficer().subscribe((data: ConferenceForUserResponse[]) => {
-      this.loadingData = false;
-      this.conferences = data;
-      this.conferencesAll = data;
-      if (data && data.length > 0) {
-        this.logger.debug('VH Officer has conferences');
-        this.applyActiveFilter();
-        this.enableFullScreen(true);
-      } else {
-        this.logger.debug('VH Officer has no conferences');
-        this.enableFullScreen(false);
-      }
+    this.conferencesSubscription = this.videoWebService
+      .getConferencesForVHOfficer()
+      .subscribe(
+        (data: ConferenceForUserResponse[]) => {
+          this.loadingData = false;
+          this.conferences = data;
+          this.conferencesAll = data;
+          if (data && data.length > 0) {
+            this.logger.debug('VH Officer has conferences');
+            this.applyActiveFilter();
+            this.enableFullScreen(true);
+          } else {
+            this.logger.debug('VH Officer has no conferences');
+            this.enableFullScreen(false);
+          }
 
-      if (this.selectedHearing) {
-        this.logger.debug(`Retrieving tasks for conference ${this.selectedHearing.id}`);
-        this.getTasksForConference(this.selectedHearing.getConference().id);
-      }
-    },
-      (error) => {
-        this.logger.error('There was an error setting up VH Officer dashboard', error);
-        this.loadingData = false;
-        this.enableFullScreen(false);
-        this.errorService.handleApiError(error);
-      });
+          if (this.selectedHearing) {
+            this.logger.debug(
+              `Retrieving tasks for conference ${this.selectedHearing.id}`
+            );
+            this.getTasksForConference(this.selectedHearing.getConference().id);
+          }
+        },
+        error => {
+          this.logger.error(
+            'There was an error setting up VH Officer dashboard',
+            error
+          );
+          this.loadingData = false;
+          this.enableFullScreen(false);
+          this.errorService.handleApiError(error);
+        }
+      );
   }
 
   applyActiveFilter() {
@@ -139,11 +187,17 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
   }
 
   hasHearings(): boolean {
-    return !this.loadingData && this.conferencesAll && this.conferencesAll.length > 0;
+    return (
+      !this.loadingData && this.conferencesAll && this.conferencesAll.length > 0
+    );
   }
 
   hasTasks(): boolean {
-    return this.selectedHearing !== undefined && this.tasks !== undefined && this.tasks.length > 0;
+    return (
+      this.selectedHearing !== undefined &&
+      this.tasks !== undefined &&
+      this.tasks.length > 0
+    );
   }
 
   isHearingSelected(): boolean {
@@ -160,29 +214,42 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     this.logger.info(`Conference ${conference.id} selected`);
     if (!this.isCurrentConference(conference)) {
       this.clearSelectedConference();
-      this.videoWebService.getConferenceById(conference.id)
-        .subscribe((data: ConferenceResponse) => {
-          this.selectedHearing = new Hearing(data);
-          this.participants = data.participants;
-          this.sanitiseAndLoadIframe();
-          this.getTasksForConference(conference.id);
-          this.getJudgeStatusDetails();
-        },
-          (error) => {
-            this.logger.error(`There was an error when selecting conference ${conference.id}`, error);
-            if (!this.errorService.returnHomeIfUnauthorised(error)) {
-              this.errorService.handleApiError(error);
-            }
-          });
+      this.retrieveConferenceDetails(conference.id);
     }
   }
 
+  retrieveConferenceDetails(conferenceId: string) {
+    this.videoWebService.getConferenceById(conferenceId).subscribe(
+      (data: ConferenceResponse) => {
+        this.selectedHearing = new Hearing(data);
+        this.participants = data.participants;
+        this.sanitiseAndLoadIframe();
+        this.getTasksForConference(conferenceId);
+        this.getJudgeStatusDetails();
+      },
+      error => {
+        this.logger.error(
+          `There was an error when selecting conference ${conferenceId}`,
+          error
+        );
+        if (!this.errorService.returnHomeIfUnauthorised(error)) {
+          this.errorService.handleApiError(error);
+        }
+      }
+    );
+  }
+
   isCurrentConference(conference: ConferenceForUserResponse): boolean {
-    return this.selectedHearing != null && this.selectedHearing.getConference().id === conference.id;
+    return (
+      this.selectedHearing != null &&
+      this.selectedHearing.getConference().id === conference.id
+    );
   }
 
   updateWidthForAdminFrame(): void {
-    const listColumnElement: HTMLElement = document.getElementById('list-column');
+    const listColumnElement: HTMLElement = document.getElementById(
+      'list-column'
+    );
     let listWidth = 0;
     if (listColumnElement) {
       listWidth = listColumnElement.offsetWidth;
@@ -200,8 +267,12 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
   }
 
   onTaskCompleted(taskCompleted: TaskCompleted) {
-    this.logger.info(`task completed for conference ${taskCompleted.conferenceId}`);
-    const conference = this.conferences.find(x => x.id === taskCompleted.conferenceId);
+    this.logger.info(
+      `task completed for conference ${taskCompleted.conferenceId}`
+    );
+    const conference = this.conferences.find(
+      x => x.id === taskCompleted.conferenceId
+    );
     conference.no_of_pending_tasks = taskCompleted.pendingTasks;
   }
 
@@ -217,36 +288,45 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     if (!this.participants) {
       return;
     }
-    const participantToUpdate = this.participants.find(x => x.id === message.participantId);
+    const participantToUpdate = this.participants.find(
+      x => x.id === message.participantId
+    );
     if (participantToUpdate) {
       participantToUpdate.status = message.status;
     }
   }
 
   handleConferenceStatusChange(message: ConferenceStatusMessage) {
-    const conference = this.conferences.find(c => c.id === message.conferenceId);
+    const conference = this.conferences.find(
+      c => c.id === message.conferenceId
+    );
     if (!conference) {
       return;
     }
     conference.status = message.status;
-    if (this.isCurrentConference(new ConferenceForUserResponse({ id: message.conferenceId }))) {
+    if (
+      this.isCurrentConference(
+        new ConferenceForUserResponse({ id: message.conferenceId })
+      )
+    ) {
       this.selectedHearing.getConference().status = message.status;
     }
   }
 
   getTasksForConference(conferenceId: string) {
-    this.videoWebService.getTasksForConference(conferenceId)
-      .subscribe((data: TaskResponse[]) => {
+    this.videoWebService.getTasksForConference(conferenceId).subscribe(
+      (data: TaskResponse[]) => {
         this.tasks = data;
         this.adminFrameHeight = this.getHeightForFrame();
       },
-        (error) => {
-          this.errorService.handleApiError(error);
-        });
+      error => {
+        this.errorService.handleApiError(error);
+      }
+    );
   }
 
   enableFullScreen(fullScreen: boolean) {
-    const masterContainerCount = $('div[id*=\'master-container\']').length;
+    const masterContainerCount = $("div[id*='master-container']").length;
     if (masterContainerCount > 1) {
       throw new Error('Multiple master containers in DOM');
     }
@@ -269,7 +349,9 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
   applyFilters(filterOptions: HearingsFilter) {
     console.log('VHO hearings applyed filters');
-    const selectedConferenceId = this.$conferenceList.currentConference ? this.$conferenceList.currentConference.id : '';
+    const selectedConferenceId = this.$conferenceList.currentConference
+      ? this.$conferenceList.currentConference.id
+      : '';
     this.clearSelectedConference();
     this.$conferenceList.currentConference = null;
 
@@ -283,7 +365,9 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
   selectFilteredConference(selectedConferenceId: string) {
     if (selectedConferenceId) {
-      const selectedConferenceFound = this.conferences.filter(x => x.id === selectedConferenceId);
+      const selectedConferenceFound = this.conferences.filter(
+        x => x.id === selectedConferenceId
+      );
       if (selectedConferenceFound) {
         this.$conferenceList.selectConference(selectedConferenceFound[0]);
       }
@@ -293,33 +377,54 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
   activateFilterOptions(filterOptions: HearingsFilter) {
     this.filterOptionsCount = filterOptions.numberFilterOptions;
 
-    const selectedStatuses = filterOptions.statuses.filter(x => x.Selected).map(x => x.Status);
-    const selectedLocations = filterOptions.locations.filter(x => x.Selected).map(x => x.Description);
-    const selectedAlerts = filterOptions.alerts.filter(x => x.Selected).map(x => x.BodyText);
+    const selectedStatuses = filterOptions.statuses
+      .filter(x => x.Selected)
+      .map(x => x.Status);
+    const selectedLocations = filterOptions.locations
+      .filter(x => x.Selected)
+      .map(x => x.Description);
+    const selectedAlerts = filterOptions.alerts
+      .filter(x => x.Selected)
+      .map(x => x.BodyText);
 
-    if (selectedStatuses.length > 0 || selectedLocations.length > 0 || selectedAlerts.length > 0) {
-
+    if (
+      selectedStatuses.length > 0 ||
+      selectedLocations.length > 0 ||
+      selectedAlerts.length > 0
+    ) {
       this.conferences = Object.assign(this.conferencesAll);
       if (selectedStatuses.length > 0) {
-        const conferencesAllExtended = this.setStatusDelayed(this.conferencesAll);
-        this.conferences = conferencesAllExtended.filter(x => selectedStatuses.includes(x.StatusExtended));
+        const conferencesAllExtended = this.setStatusDelayed(
+          this.conferencesAll
+        );
+        this.conferences = conferencesAllExtended.filter(x =>
+          selectedStatuses.includes(x.StatusExtended)
+        );
       }
       if (selectedLocations.length > 0) {
-        this.conferences = this.conferences.filter(x => selectedLocations.includes(x.hearing_venue_name));
+        this.conferences = this.conferences.filter(x =>
+          selectedLocations.includes(x.hearing_venue_name)
+        );
       }
       if (selectedAlerts.length > 0) {
-        this.conferences = this.conferences.filter(x => this.findSelectedAlert(x.tasks, selectedAlerts));
+        this.conferences = this.conferences.filter(x =>
+          this.findSelectedAlert(x.tasks, selectedAlerts)
+        );
       }
     } else {
       this.conferences = this.conferencesAll;
     }
-
   }
 
-  private findSelectedAlert(tasks: TaskResponse[], selectedAlerts: string[]): boolean {
+  private findSelectedAlert(
+    tasks: TaskResponse[],
+    selectedAlerts: string[]
+  ): boolean {
     let tasksFiltered = [];
     if (tasks) {
-      tasksFiltered = tasks.filter(x => this.filterTaskByBody(selectedAlerts, x.body));
+      tasksFiltered = tasks.filter(x =>
+        this.filterTaskByBody(selectedAlerts, x.body)
+      );
     }
     return tasksFiltered.length > 0;
   }
@@ -348,20 +453,31 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
   }
 
   getJudgeStatusDetails() {
-    const judgeStatuses = this.getJudgeDetailsForStatus(this.selectedHearing.id);
+    const judgeStatuses = this.getJudgeDetailsForStatus(
+      this.selectedHearing.id
+    );
     this.participantStatusModel = new ParticipantStatusModel();
-    this.participantStatusModel.Participants = this.participants.map(p => new Participant(p));
+    this.participantStatusModel.Participants = this.participants.map(
+      p => new Participant(p)
+    );
     this.participantStatusModel.JudgeStatuses = judgeStatuses;
   }
 
   getJudgeDetailsForStatus(selectedConferenceId: string) {
     const judgeStatuses: ParticipantStatus[] = [];
-    const selectedJudges = this.participants.filter(x => x.role === UserRole.Judge);
+    const selectedJudges = this.participants.filter(
+      x => x.role === UserRole.Judge
+    );
     if (selectedJudges.length > 0) {
       const selectedJudgeUserName = selectedJudges[0].username;
-      const anotherConferences = this.conferencesAll.filter(x => x.id !== selectedConferenceId);
+      const anotherConferences = this.conferencesAll.filter(
+        x => x.id !== selectedConferenceId
+      );
       anotherConferences.forEach(x => {
-        const judgeStatus = this.findJudgeInAnotherHearing(x.participants, selectedJudgeUserName);
+        const judgeStatus = this.findJudgeInAnotherHearing(
+          x.participants,
+          selectedJudgeUserName
+        );
         if (judgeStatus !== null) {
           judgeStatuses.push(judgeStatus);
         }
@@ -371,8 +487,15 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     return judgeStatuses;
   }
 
-  private findJudgeInAnotherHearing(participantsIn: ParticipantResponse[], selectedJudgeUserName: string): ParticipantStatus {
-    const judgeStatusInAnotherHearings = participantsIn.filter(x => x.username === selectedJudgeUserName).map(x => x.status);
-    return judgeStatusInAnotherHearings.length > 0 ? judgeStatusInAnotherHearings[0] : null;
+  private findJudgeInAnotherHearing(
+    participantsIn: ParticipantResponse[],
+    selectedJudgeUserName: string
+  ): ParticipantStatus {
+    const judgeStatusInAnotherHearings = participantsIn
+      .filter(x => x.username === selectedJudgeUserName)
+      .map(x => x.status);
+    return judgeStatusInAnotherHearings.length > 0
+      ? judgeStatusInAnotherHearings[0]
+      : null;
   }
 }
