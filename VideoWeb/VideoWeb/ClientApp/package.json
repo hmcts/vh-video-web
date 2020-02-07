@@ -30,7 +30,7 @@
     "@nguniversal/module-map-ngfactory-loader": "8.2.6",
     "@types/jquery": "^3.3.31",
     "@types/webrtc": "^0.0.25",
-    "adal-angular4": "^4.0.12",
+    "adal-angular4": "^3.0.16",
     "applicationinsights-js": "^1.0.20",
     "aspnet-prerendering": "^3.0.1",
     "bootstrap": "^4.4.1",
