@@ -24,7 +24,7 @@ Scenario: Clerk waiting room
 	And the user can see other participants status
 	When the user navigates back to the hearing list
 	Then the user is on the Hearing List page
-	And the participant status will be updated to Unavailable
+	And the participant status will be updated to NotSignedIn
 
 @VIH-4233
 Scenario: Participant hearing is delayed
