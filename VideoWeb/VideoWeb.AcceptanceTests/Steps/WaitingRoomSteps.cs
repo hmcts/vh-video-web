@@ -32,7 +32,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"all the participants refresh their browsers")]
         public void GivenAllTheParticipantsRefreshTheirBrowsers()
         {
-            var participants = _c.Test.Hearing.Participants.Where(x => !x.Display_name.ToLower().Contains("clerk"));
+            var participants = _c.Test.HearingParticipants.Where(x => !x.Display_name.ToLower().Contains("clerk"));
             foreach (var participant in participants)
             {
                 _browserSteps.GivenInTheUsersBrowser(participant.Last_name);
@@ -58,7 +58,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the participant status for (.*) is displayed as (.*)")]
         public void ThenTheFirstParticipantStatusIsDisplayedAsNotSignedIn(string name, string status)
         {
-            var participant = _c.Test.Conference.Participants.First(x => x.Name.Contains(name));
+            var participant = _c.Test.ConferenceParticipants.First(x => x.Name.Contains(name));
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ParticipantStatus(participant.Id)).Text.ToUpper().Trim().Should().Be(status.ToUpper());
         }
 
@@ -97,7 +97,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var participantRowIds = (from row in allRows where row.GetAttribute("id") != "" select row.GetAttribute("id")).ToList();
             var participantsInformation = (from id in participantRowIds select _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(WaitingRoomPage.RowInformation(id)) into infoRows where infoRows.Count > 0 select new ParticipantInformation {CaseTypeGroup = infoRows[0].Text, Name = infoRows[1].Text, Representee = infoRows.Count.Equals(3) ? infoRows[2].Text : null}).ToList();
 
-            foreach (var participant in _c.Test.Conference.Participants)
+            foreach (var participant in _c.Test.ConferenceParticipants)
             {
                 if (!participant.User_role.Equals(UserRole.Individual) &&
                     !participant.User_role.Equals(UserRole.Representative)) continue;
@@ -115,7 +115,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the user can see other participants status")]
         public void ThenTheUserCanSeeOtherParticipantsStatus()
         {
-            foreach (var participant in _c.Test.Hearing.Participants.Where(participant => participant.Hearing_role_name.Equals("Individual") ||
+            foreach (var participant in _c.Test.HearingParticipants.Where(participant => participant.Hearing_role_name.Equals("Individual") ||
                                                                                      participant.Hearing_role_name.Equals("Representative")))
             {
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.OtherParticipantsStatus(participant.Display_name)).Text.Should().Be("Unavailable");
@@ -189,7 +189,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private void CheckParticipantsAreStillConnected()
         {
-            foreach (var user in _browsers.Keys.Select(lastname => _c.Test.Conference.Participants.First(x => x.Name.ToLower().Contains(lastname.ToLower()))).Where(user => !user.User_role.Equals(UserRole.Judge)))
+            foreach (var user in _browsers.Keys.Select(lastname => _c.Test.ConferenceParticipants.First(x => x.Name.ToLower().Contains(lastname.ToLower()))).Where(user => !user.User_role.Equals(UserRole.Judge)))
             {
                 _browsers[_c.CurrentUser.Key].ScrollTo(ClerkWaitingRoomPage.ParticipantStatus(user.Id));
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ParticipantStatus(user.Id)).Text.ToUpper().Trim()

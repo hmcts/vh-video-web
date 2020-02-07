@@ -71,7 +71,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the test score should be produced")]
         public void ThenTheTestScoreShouldBeProduced()
         {
-            var participantId = _c.Test.Conference.Participants.Find(x => x.Display_name.ToLower().Equals(_c.CurrentUser.DisplayName.ToLower())).Id;
+            var participantId = _c.Test.ConferenceParticipants.Find(x => x.Display_name.ToLower().Equals(_c.CurrentUser.DisplayName.ToLower())).Id;
             var videoApiManager = new VideoApiManager(_c.VideoWebConfig.VhServices.VideoApiUrl, _c.Tokens.VideoApiBearerToken);
             var response = videoApiManager.PollForSelfTestScoreResponse(_c.Test.NewConferenceId, participantId);
             response.StatusCode.Should().Be(HttpStatusCode.OK);

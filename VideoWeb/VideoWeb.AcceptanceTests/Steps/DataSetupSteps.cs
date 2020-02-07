@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Net;
 using AcceptanceTests.Common.Api.Hearings;
@@ -71,6 +71,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _c.Test.Hearing = hearing;
             _c.Test.NewHearingId = hearing.Id;
             _c.Test.Case = hearing.Cases.First();
+            _c.Test.HearingParticipants = hearing.Participants;
         }
 
         [Given(@"Get the new conference details")]
@@ -92,6 +93,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             AssertConferenceDetailsResponse.ForConference(conference);
             _c.Test.Conference = conference;
             _c.Test.NewConferenceId = conference.Id;
+            _c.Test.ConferenceParticipants = conference.Participants;
         }
     }
 }

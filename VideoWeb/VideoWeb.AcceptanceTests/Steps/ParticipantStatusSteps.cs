@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Api;
+using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.AcceptanceTests.Strategies.ParticipantStatus;
 using VideoWeb.Services.Video;
-using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -17,22 +17,19 @@ namespace VideoWeb.AcceptanceTests.Steps
     {
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _c;
-        private readonly ScenarioContext _scenario;
-        private const string ParticipantsKey = "participants";
         private const int MaxRetries = 30;
 
-        public ParticipantStatusSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext,
-            ScenarioContext scenario)
+        public ParticipantStatusSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext)
         {
             _c = testContext;
             _browsers = browsers;
-            _scenario = scenario;
         }
 
-        [When(@"the participants are (.*)")]
-        public void WhenTheParticipantsStatusesChange(string action)
+        [When(@"the (.*) are (.*)")]
+        [When(@"the (.*) is (.*)")]
+        public void WhenTheParticipantsStatusesChange(string userType, string action)
         {
-            var participantStatuses = new Dictionary<string, IParticipantStatusStrategy>
+            var statuses = new Dictionary<string, IParticipantStatusStrategy>
             {
                 {"Available", new AvailableStrategy()},
                 {"Disconnected", new DisconnectedStrategy()},
@@ -40,26 +37,23 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {"In Hearing", new InHearingStrategy()},
                 {"Joining", new JoiningStrategy()}
             };
-
-            var participants = _scenario.Get<List<ParticipantDetailsResponse>>(ParticipantsKey);
-
+            var participants = ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, userType);
             foreach (var participant in participants)
             {
-                participantStatuses[action].Execute(_c, participant.Id);
+                statuses[action].Execute(_c, participant.Id);
             }
         }
 
-        [Then(@"the participants statuses should be (.*)")]
-        public void ThenTheParticipantsStatusesShouldBeNotJoined(string participantStatus)
+        [Then(@"the (.*) status should be (.*)")]
+        [Then(@"the (.*) statuses should be (.*)")]
+        public void ThenTheParticipantsStatusesShouldBeNotJoined(string userType, string participantStatus)
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
-            var participants = _c.Test.Conference.Participants.FindAll(x => x.User_role == UserRole.Individual || x.User_role == UserRole.Representative);
-            CheckParticipantStatus(participantStatus, participants);
-            _scenario.Add(ParticipantsKey, participants);
+            CheckParticipantStatus(participantStatus, ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, userType));
         }
 
-        [Then(@"the participant status will be updated to (.*)")]
+        [Then(@"the participants status will be updated to (.*)")]
         public void ThenTheParticipantStatusWillBeUpdatedToJoining(ParticipantState expectedState)
         {
             var participantState = new PollForParticipantStatus(_c.Apis.VideoApi)
@@ -72,13 +66,14 @@ namespace VideoWeb.AcceptanceTests.Steps
                 participantState.Should().Be(expectedState);
         }
 
-        [Then(@"the participants statuses should update to (.*)")]
-        public void ThenTheParticipantsStatusesShouldUpdateToDisconnected(string participantStatus)
+        [Then(@"the (.*) status should update to (.*)")]
+        [Then(@"the (.*) statuses should update to (.*)")]
+        public void ThenTheParticipantsStatusesShouldUpdateToDisconnected(string userType, string participantStatus)
         {
             _browsers[_c.CurrentUser.Key].Driver.Navigate().Refresh();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
-            var participants = _scenario.Get<List<ParticipantDetailsResponse>>(ParticipantsKey);
+            var participants = ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, userType);
             CheckParticipantStatus(participantStatus, participants);
         }
 
