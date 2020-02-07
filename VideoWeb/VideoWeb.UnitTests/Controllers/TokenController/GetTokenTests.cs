@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -17,7 +17,7 @@ namespace VideoWeb.UnitTests.Controllers.TokenController
             typedResult.Should().NotBeNull();
             var tokenResponse = (TokenResponse)typedResult.Value;
             tokenResponse.Token.Should().Be(token);
-            tokenResponse.ExpiresOn.Length.Should().Be(17);
+            tokenResponse.ExpiresOn.Length.Should().BeGreaterThan(15);
             hashGenerator.Verify(h => h.GenerateHash(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
     }
