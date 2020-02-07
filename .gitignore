@@ -341,3 +341,6 @@ TESTS.xml
 /VideoWeb/VideoWeb.AcceptanceTests/Configuration/Environments/appsettings.local.json
 /VideoWeb/VideoWeb.AcceptanceTests/Configuration/Environments/appsettings.dev.json
 /VideoWeb/VideoWeb.AcceptanceTests/Configuration/Environments/appsettings.aat.json
+
+# Config for NuGet
+nuget.config
