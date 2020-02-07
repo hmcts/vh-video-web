@@ -17,9 +17,31 @@ Scenario Outline: Participants status updates
 	| Available       |
 	| Disconnected    |
 
-  @VIH-5431
- Scenario: Clerk status updates
+@VIH-5431
+Scenario Outline: Clerk status updates
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	Then the clerk status should be Unavailable
-	When the clerk is Available
-	Then the clerk status should update to Available
+	When the clerk is <Status>
+	Then the clerk status should update to <Status>
+  Examples: 
+  | Status       |
+	| Available    |
+  | In Hearing   |
+  | Disconnected |
+  
+@VIH-5431
+Scenario: Clerk in another hearing
+  Given I have a hearing and a conference
+  And the clerk is In Hearing
+	And I have another hearing and a conference 
+  And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
+  Then the clerk status should be In another hearing
+
+@VIH-5431
+Scenario: Clerk in another waiting room after disconnection
+  Given I have a hearing and a conference
+  And the clerk is Disconnected
+  And the clerk is Available
+	And I have another hearing and a conference 
+  And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
+  Then the clerk status should be Unavailable

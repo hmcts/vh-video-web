@@ -25,6 +25,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers = browsers;
         }
 
+        [Given(@"the (.*) is (.*)")]
         [When(@"the (.*) are (.*)")]
         [When(@"the (.*) is (.*)")]
         public void WhenTheParticipantsStatusesChange(string userType, string action)
