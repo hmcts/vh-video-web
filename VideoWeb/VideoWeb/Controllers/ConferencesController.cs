@@ -254,18 +254,10 @@ namespace VideoWeb.Controllers
             return Ok(response);
         }
 
-        private static void ValidateConferenceAndBookingParticipantsMatch(List<ParticipantDetailsResponse> participants,
-            List<BookingParticipant> bookingParticipants)
+        private static void ValidateConferenceAndBookingParticipantsMatch(IEnumerable<ParticipantDetailsResponse> participants,
+            IReadOnlyCollection<BookingParticipant> bookingParticipants)
         {
-            List<Exception> missingBookingParticipantIds = new List<Exception>();
-            foreach (var participant in participants)
-            {
-                if (bookingParticipants.SingleOrDefault(p => p.Id == participant.Ref_id) == null)
-                {
-                    missingBookingParticipantIds.Add(new ArgumentNullException(
-                        $"Unable to find a participant in bookings api with id ${participant.Ref_id}"));
-                }
-            }
+            var missingBookingParticipantIds = (from participant in participants where bookingParticipants.SingleOrDefault(p => p.Id == participant.Ref_id) == null select new ArgumentNullException($"Unable to find a participant in bookings api with id ${participant.Ref_id}")).Cast<Exception>().ToList();
 
             if (missingBookingParticipantIds.Any())
             {

@@ -25,9 +25,9 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers = browsers;
         }
 
-        [Given(@"the (.*) is (.*)")]
-        [When(@"the (.*) are (.*)")]
-        [When(@"the (.*) is (.*)")]
+        [Given(@"the (.*) status is (.*)")]
+        [When(@"the (.*) statuses are (.*)")]
+        [When(@"the (.*) status is (.*)")]
         public void WhenTheParticipantsStatusesChange(string userType, string action)
         {
             var statuses = new Dictionary<string, IParticipantStatusStrategy>
