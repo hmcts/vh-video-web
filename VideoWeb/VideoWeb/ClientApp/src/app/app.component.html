@@ -1,14 +1,15 @@
 <div>
   <div #skipLink tabindex="0"></div>
-  <a href="javascript:void(0)" class="govuk-skip-link" (click)="skipToContent()">Skip to main content</a>
+  <div role="navigation">
+    <a href="javascript:void(0)" class="govuk-skip-link" (click)="skipToContent()">Skip to main content</a>
+  </div>
   <app-header [loggedIn]="loggedIn"></app-header>
 
   <div class="govuk-width-container" id="master-container">
-    <app-beta-banner *ngIf="loggedIn" [isRepresentativeOrIndividual]="isRepresentativeOrIndividual"></app-beta-banner>
 
     <main #maincontent class="govuk-main-wrapper" id="main-content" role="main" tabindex="-1"
       [ngClass]="!loggedIn ? 'pad-unactivated-router' : ''">
-
+      <app-beta-banner *ngIf="loggedIn" [isRepresentativeOrIndividual]="isRepresentativeOrIndividual"></app-beta-banner>
       <router-outlet></router-outlet>
     </main>
   </div>
