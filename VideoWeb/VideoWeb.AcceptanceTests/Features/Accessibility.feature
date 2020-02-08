@@ -12,12 +12,12 @@ Scenario Outline: Hearing List page accessibility
 	| Clerk       |
 	| Participant |
 
-@Accessibility
-Scenario: VHO Hearing List page accessibility
-	Given the Video Hearings Officer user has progressed to the VHO Hearing List page	
-	Then the page should be accessible 
-	When the VHO selects the hearing
-	Then the page should be accessible 
+#@Accessibility
+# Scenario: VHO Hearing List page accessibility
+#	Given the Video Hearings Officer user has progressed to the VHO Hearing List page	
+#	Then the page should be accessible 
+#	When the VHO selects the hearing
+#	Then the page should be accessible 
 
 @Accessibility
 Scenario: Introduction page accessibility
@@ -71,12 +71,13 @@ Scenario: Declaration page accessibility
 
 @Accessibility
 Scenario Outline: Waiting Room page accessibility
-	Given the Participant user has progressed to the Waiting Room page
-	Then the page should be accessible 
-	Examples: 
-	| Role        |
-	| Clerk       |
-	| Participant |
+    Given the Participant user has progressed to the Waiting Room page
+    When the waiting room page has loaded for the <Role>
+    Then the page should be accessible 
+    Examples: 
+    | Role        |
+    | Clerk       |
+    | Participant |
 
 @Accessibility
 Scenario: Help page accessibility
