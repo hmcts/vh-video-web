@@ -284,7 +284,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
     enableFullScreen(fullScreen: boolean) {
         // tslint:disable-next-line:quotemark
-    const masterContainerCount = $('div[id*=\'master-container\']').length;
         const masterContainerCount = $("div[id*='master-container']").length;
         if (masterContainerCount > 1) {
             throw new Error('Multiple master containers in DOM');
@@ -386,7 +385,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
     getJudgeStatusDetails() {
         if (this.selectedHearing) {
-
             this.participantStatusModel = new ParticipantStatusModel();
             this.participantStatusModel.Participants = this.participants.map(p => new Participant(p));
             this.participantStatusModel.JudgeStatuses = this.getJudgeDetailsForStatus(this.selectedHearing.id);
