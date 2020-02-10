@@ -76,7 +76,7 @@ export class MicrophoneCheckComponent implements OnInit {
             (error) => {
               console.error(error);
             });
-        this.logger.info(`Microphone check | ConferenceId : ${this.conferenceId}, CaseName : ${this.conference.case_name} | Participant : ${this.participantName} responded microphone not working.`);
+        this.logger.info(`Microphone check | ConferenceId : ${this.conferenceId} | Participant : ${this.participantName} responded microphone not working.`);
         this.router.navigate([PageUrls.GetHelp]);
       }
       return;
@@ -85,7 +85,7 @@ export class MicrophoneCheckComponent implements OnInit {
   }
 
   checkEquipmentAgain() {
-    this.logger.info(`Microphone check | ConferenceId : ${this.conferenceId}, CaseName : ${this.conference.case_name} | Participant : ${this.participantName} requested check equipment again.`);
+    this.logger.info(`Microphone check | ConferenceId : ${this.conferenceId} | Participant : ${this.participantName} requested check equipment again.`);
     this.router.navigate([PageUrls.EquipmentCheck, this.conferenceId]);
   }
 }

@@ -76,7 +76,7 @@ export class VideoCheckComponent implements OnInit {
             (error) => {
               console.error(error);
             });
-        this.logger.info(`Video check | ConferenceId : ${this.conferenceId}, CaseName : ${this.conference.case_name} | Participant : ${this.participantName} responded could not see and hear video.`);
+        this.logger.info(`Video check | ConferenceId : ${this.conferenceId} | Participant : ${this.participantName} responded could not see and hear video.`);
         this.router.navigate([PageUrls.GetHelp]);
       }
       return;
@@ -85,7 +85,7 @@ export class VideoCheckComponent implements OnInit {
   }
 
   checkEquipmentAgain() {
-    this.logger.info(`Video check | ConferenceId : ${this.conferenceId}, CaseName : ${this.conference.case_name} | Participant : ${this.participantName} requested check equipment again.`);
+    this.logger.info(`Video check | ConferenceId : ${this.conferenceId} | Participant : ${this.participantName} requested check equipment again.`);
     this.router.navigate([PageUrls.EquipmentCheck, this.conferenceId]);
   }
 }
