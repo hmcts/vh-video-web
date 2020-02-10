@@ -36,7 +36,7 @@ export class JudgeWaitingRoomComponent implements OnInit {
     private eventService: EventsService,
     private ngZone: NgZone,
     private errorService: ErrorService,
-    private logger: Logger
+    private logger: Logger,
     private adalService: AdalService,
   ) {
     this.loadingData = true;
@@ -65,6 +65,7 @@ export class JudgeWaitingRoomComponent implements OnInit {
             this.errorService.handleApiError(error);
           }
         });
+      });
   }
 
   postEventJudgeAvailableStatus() {
@@ -81,7 +82,6 @@ export class JudgeWaitingRoomComponent implements OnInit {
         (error) => {
           console.error(error);
         });
-      });
   }
 
   getConferenceStatusText() {
