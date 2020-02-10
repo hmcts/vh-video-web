@@ -3,7 +3,6 @@ using System.Net;
 using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
-using AcceptanceTests.Common.Driver.Support;
 using FluentAssertions;
 using RestSharp;
 using TechTalk.SpecFlow;
