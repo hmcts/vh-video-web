@@ -187,6 +187,18 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.StartVideoHearingButton).Click();
         }
 
+        [When(@"the waiting room page has loaded for the (.*)")]
+        public void WhenTheWaitingRoomPageHasLoadedForTheUser(string user)
+        {
+            if (user.ToLower().Equals("clerk"))
+            {
+                ThenTheClerkCanSeeInformationAboutTheirCase();
+            }
+            else
+            {
+                ThenTheUserCanSeeInformationAboutTheirCase();
+            }
+        }
         private void CheckParticipantsAreStillConnected()
         {
             foreach (var user in _browsers.Keys.Select(lastname => _c.Test.Conference.Participants.First(x => x.Name.ToLower().Contains(lastname.ToLower()))).Where(user => !user.User_role.Equals(UserRole.Judge)))
