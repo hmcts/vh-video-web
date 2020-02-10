@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
-using OpenQA.Selenium.Support.Extensions;
 using TechTalk.SpecFlow;
 using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -40,7 +39,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 var element = _c.CurrentUser.Role.Equals("Clerk") ? ClerkHearingListPage.StartHearingButton(_c.Test.Case.Number) : HearingListPage.SignInButton(_c.Test.Case.Number);
                 var tolerance = _c.CurrentUser.Role.Equals("Clerk") ? 30 : ToleranceInMinutes * 60;
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.HearingListPageTitle).Displayed.Should().BeTrue();
-                _browsers[_c.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browsers[_c.CurrentUser.Key].Driver.FindElement(element));
+                _browsers[_c.CurrentUser.Key].ScrollTo(element);
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(element, tolerance).Click();
             }           
         }
@@ -51,10 +50,16 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementClickable(ClerkHearingListPage.CheckEquipmentButton).Click();
         }
 
-        [Then(@"a warning message appears indicating the user has no hearings scheduled")]
-        public void ThenAWarningMessageAppearsIndicatingTheUserHasNoHearingsScheduled()
+        [Then(@"a warning message appears indicating the clerk has no hearings scheduled")]
+        public void ThenAWarningMessageAppearsIndicatingTheClerkHasNoHearingsScheduled()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.NoHearingsWarningMessage).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ClerkNoHearingsWarningMessage).Displayed.Should().BeTrue();
+        }
+
+        [Then(@"a warning message appears indicating the participant has no hearings scheduled")]
+        public void ThenAWarningMessageAppearsIndicatingTheParticipantHasNoHearingsScheduled()
+        {
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantNoHearingsWarningMessage).Displayed.Should().BeTrue();
         }
 
         [Then(@"the participant can see a list of hearings including the new hearing")]
@@ -93,7 +98,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             rowData.CaseName.Should().Be(_c.Test.Case.Name);
             rowData.CaseType.Should().Be(_c.Test.Hearing.Case_type_name);
             rowData.CaseNumber.Should().Be(_c.Test.Case.Number);
-            ParticipantsDisplayed(_c.Test.Hearing.Participants, rowData);
+            ParticipantsDisplayed(_c.Test.HearingParticipants, rowData);
         }
 
         [Then(@"contact us details for the clerk are available")]

@@ -36,7 +36,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitToCallAndAnswer));
 
-            var participantId = _c.Test.Conference.Participants.First(x => x.Name.ToLower().Contains(user.ToLower())).Id;
+            var participantId = _c.Test.ConferenceParticipants.First(x => x.Name.ToLower().Contains(user.ToLower())).Id;
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.PrivateConsultationLink(participantId.ToString())).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.OutgoingCallMessage)
                 .Displayed.Should().BeTrue();
@@ -51,14 +51,14 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.IncomingCallMessage)
                 .Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.AcceptPrivateCall()).Click();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.AcceptPrivateCall).Click();
         }
 
         [When(@"(.*) rejects the private consultation")]
         public void WhenTheUserRejectsThePrivateConsultation(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.RejectPrivateCall()).Click();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.RejectPrivateCall).Click();
         }
 
         [When(@"a participant closes the private consultation")]
@@ -105,7 +105,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenThePrivateConsultationLinkIsNotVisible(string user)
         {
             _browsers[_c.CurrentUser.Key].Driver.Navigate().Refresh();
-            var participantId = _c.Test.Conference.Participants.First(x => x.Name.ToLower().Contains(user.ToLower())).Id;
+            var participantId = _c.Test.ConferenceParticipants.First(x => x.Name.ToLower().Contains(user.ToLower())).Id;
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(WaitingRoomPage.PrivateConsultationLink(participantId.ToString())).Should().BeTrue();
         }
 

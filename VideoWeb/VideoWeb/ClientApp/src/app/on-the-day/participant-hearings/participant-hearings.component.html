@@ -3,7 +3,9 @@
 </div>
 
 <div *ngIf="!loadingData && hasHearings()">
-  <h1 class="govuk-heading-xl">{{this.conferences.length | pluraliseTextPipe:'Your video hearing':'Your video hearings'}}</h1>
+  <div class="govuk-!-margin-top-5">
+    <h1 class="govuk-heading-xl govuk-!-padding-top-5">{{this.conferences.length | pluraliseTextPipe:'Your video hearing':'Your video hearings'}}</h1>
+  </div>
   <div class="govuk-!-margin-top-1">
     <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button"
             (click)="goToEquipmentCheck()" alt="Check equipment">

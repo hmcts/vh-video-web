@@ -12,9 +12,6 @@ variables:
     "AzureAd/TenantId":"$(tenantid)",
     "AzureAd/ClientId":"$(vh-video-web-appid)",
     "AzureAd/ClientSecret":"$(vh-video-web-key)",
-    "AzureAd/VhVideoWebResourceId":"$(vh-video-web-identifieruris)",
-    "Testing/TestClientId":"$(vh-admin-web-appid)",
-    "Testing/TestClientSecret":"$(vh-admin-web-key)",
     "CustomToken/Secret":"$(hmac-secret-key)",
     "CustomToken/ThirdPartySecret":"$(ThirdPartySecret)"
     '

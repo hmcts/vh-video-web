@@ -6,7 +6,6 @@ using AcceptanceTests.Common.Data.Helpers;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
-using OpenQA.Selenium.Support.Extensions;
 using TechTalk.SpecFlow;
 using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -18,10 +17,10 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public sealed class WaitingRoomSteps : ISteps
     {
+        private const int ExtraTimeInWaitingRoomAfterThePause = 10;
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly BrowserSteps _browserSteps;
-        private const int ExtraTimeInWaitingRoomAfterThePause = 10;
 
         public WaitingRoomSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, BrowserSteps browserSteps)
         {
@@ -33,13 +32,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"all the participants refresh their browsers")]
         public void GivenAllTheParticipantsRefreshTheirBrowsers()
         {
-            var participants = _c.Test.Hearing.Participants.Where(x => !x.Display_name.ToLower().Contains("clerk"));
+            var participants = _c.Test.HearingParticipants.Where(x => !x.Display_name.ToLower().Contains("clerk"));
             foreach (var participant in participants)
             {
                 _browserSteps.GivenInTheUsersBrowser(participant.Last_name);
                 _browsers[_c.CurrentUser.Key].Driver.Navigate().Refresh();
-                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails, 60).Text
-                    .Should().Contain(_c.Test.Case.Name);
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails, 60).Text.Should().Contain(_c.Test.Case.Name);
             }
             _browserSteps.GivenInTheUsersBrowser("Clerk");
         }
@@ -60,7 +58,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the participant status for (.*) is displayed as (.*)")]
         public void ThenTheFirstParticipantStatusIsDisplayedAsNotSignedIn(string name, string status)
         {
-            var participant = _c.Test.Conference.Participants.First(x => x.Name.Contains(name));
+            var participant = _c.Test.ConferenceParticipants.First(x => x.Name.Contains(name));
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ParticipantStatus(participant.Id)).Text.ToUpper().Trim().Should().Be(status.ToUpper());
         }
 
@@ -99,7 +97,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var participantRowIds = (from row in allRows where row.GetAttribute("id") != "" select row.GetAttribute("id")).ToList();
             var participantsInformation = (from id in participantRowIds select _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(WaitingRoomPage.RowInformation(id)) into infoRows where infoRows.Count > 0 select new ParticipantInformation {CaseTypeGroup = infoRows[0].Text, Name = infoRows[1].Text, Representee = infoRows.Count.Equals(3) ? infoRows[2].Text : null}).ToList();
 
-            foreach (var participant in _c.Test.Conference.Participants)
+            foreach (var participant in _c.Test.ConferenceParticipants)
             {
                 if (!participant.User_role.Equals(UserRole.Individual) &&
                     !participant.User_role.Equals(UserRole.Representative)) continue;
@@ -117,7 +115,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the user can see other participants status")]
         public void ThenTheUserCanSeeOtherParticipantsStatus()
         {
-            foreach (var participant in _c.Test.Hearing.Participants.Where(participant => participant.Hearing_role_name.Equals("Individual") ||
+            foreach (var participant in _c.Test.HearingParticipants.Where(participant => participant.Hearing_role_name.Equals("Individual") ||
                                                                                      participant.Hearing_role_name.Equals("Representative")))
             {
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.OtherParticipantsStatus(participant.Display_name)).Text.Should().Be("Unavailable");
@@ -131,47 +129,42 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(headerElement).Displayed.Should().BeTrue();
         }
 
-        [Then(@"the user can see a (.*) box and a delayed message")]
-        [Then(@"the user can see a (.*) box and a scheduled message")]
-        [Then(@"the user can see a (.*) box and an about to begin message")]
-        public void ThenTheUserCanSeeABlackBoxAndAAboutToBeginMessage(string colour)
+        private string GetTheTimePanelColour()
         {
-            _browsers[_c.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browsers[_c.CurrentUser.Key].Driver.FindElement(WaitingRoomPage.TimePanel));
+            _browsers[_c.CurrentUser.Key].ScrollTo(WaitingRoomPage.TimePanel);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.TimePanel).Displayed.Should().BeTrue();
-            var backgroundColourInHex = CustomConverters.ConvertRgbToHex(_browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(WaitingRoomPage.TimePanel).GetCssValue("background-color"));
+            var rgba = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(WaitingRoomPage.TimePanel).GetCssValue("background-color");
+            return CustomConverters.ConvertRgbToHex(rgba);
+        }
 
-            switch (colour)
-            {
-                case "black":
-                {
-                    backgroundColourInHex.Should().Be(WaitingRoomPage.AboutToBeginBgColour);
-                    _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(WaitingRoomPage.AboutToBeginText)
-                        .Displayed.Should().BeTrue();
-                    break;
-                }
-                case "yellow":
-                {
-                    backgroundColourInHex.Should().Be(WaitingRoomPage.DelayedBgColour);
-                    _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(WaitingRoomPage.DelayedText)
-                        .Displayed.Should().BeTrue();
-                    break;
-                }
-                case "blue":
-                {
-                    backgroundColourInHex.Should().Be(WaitingRoomPage.ScheduledBgColour);
-                    _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(WaitingRoomPage.ScheduledText)
-                        .Displayed.Should().BeTrue();
-                    break;
-                }
-                default: throw new ArgumentOutOfRangeException($"No defined colour: '{colour}'");
-            }
+        [Then(@"the user can see a yellow box and a delayed message")]
+        public void ThenTheUserCanSeeAYellowBox()
+        {
+            var actualColour = GetTheTimePanelColour();
+            actualColour.Should().Be(WaitingRoomPage.DelayedBgColour);
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(WaitingRoomPage.DelayedText).Displayed.Should().BeTrue();
+        }
+
+        [Then(@"the user can see a blue box and a scheduled message")]
+        public void ThenTheUserCanSeeABlueBox()
+        {
+            var actualColour = GetTheTimePanelColour();
+            actualColour.Should().Be(WaitingRoomPage.ScheduledBgColour);
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(WaitingRoomPage.ScheduledText).Displayed.Should().BeTrue();
+        }
+
+        [Then(@"the user can see a black box and an about to begin message")]
+        public void ThenTheUserCanSeeABlackBox()
+        {
+            var actualColour = GetTheTimePanelColour();
+            actualColour.Should().Be(WaitingRoomPage.AboutToBeginBgColour);
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(WaitingRoomPage.AboutToBeginText).Displayed.Should().BeTrue();
         }
 
         [Then(@"the Clerk waiting room displays the paused status")]
         public void ThenTheClerkWaitingRoomDisplaysThePausedStatus()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.PausedText)
-                .Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.PausedText).Displayed.Should().BeTrue();
         }
 
         [Then(@"the participants waiting room displays the paused status")]
@@ -194,21 +187,26 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.StartVideoHearingButton).Click();
         }
 
+        [When(@"the waiting room page has loaded for the (.*)")]
+        public void WhenTheWaitingRoomPageHasLoadedForTheUser(string user)
+        {
+            if (user.ToLower().Equals("clerk"))
+            {
+                ThenTheClerkCanSeeInformationAboutTheirCase();
+            }
+            else
+            {
+                ThenTheUserCanSeeInformationAboutTheirCase();
+            }
+        }
         private void CheckParticipantsAreStillConnected()
         {
-            foreach (var user in _browsers.Keys.Select(lastname => _c.Test.Conference.Participants.First(x => x.Name.ToLower().Contains(lastname.ToLower()))).Where(user => !user.User_role.Equals(UserRole.Judge)))
+            foreach (var user in _browsers.Keys.Select(lastname => _c.Test.ConferenceParticipants.First(x => x.Name.ToLower().Contains(lastname.ToLower()))).Where(user => !user.User_role.Equals(UserRole.Judge)))
             {
-                _browsers[_c.CurrentUser.Key].Driver.ExecuteJavaScript("arguments[0].scrollIntoView(true);", _browsers[_c.CurrentUser.Key].Driver.FindElement(ClerkWaitingRoomPage.ParticipantStatus(user.Id)));
+                _browsers[_c.CurrentUser.Key].ScrollTo(ClerkWaitingRoomPage.ParticipantStatus(user.Id));
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ParticipantStatus(user.Id)).Text.ToUpper().Trim()
                     .Should().Be("CONNECTED");
             }
         }
-    }
-
-    internal class ParticipantInformation
-    {
-        internal string CaseTypeGroup { get; set; }
-        internal string Name { get; set; }
-        internal string Representee { get; set; }
     }
 }

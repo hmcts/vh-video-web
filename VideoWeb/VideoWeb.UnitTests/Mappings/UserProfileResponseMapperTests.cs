@@ -47,7 +47,7 @@ namespace VideoWeb.UnitTests.Mappings
                 User_role = "Random"
             });
 
-            action.Should().Throw<NotSupportedException>();
+            action.Should().Throw<NotSupportedException>().WithMessage("Role Random is not supported for this application");
         }
     }
 }

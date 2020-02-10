@@ -2339,6 +2339,7 @@ export enum EventType {
     SelfTestFailed = "SelfTestFailed",
     Suspend = "Suspend",
     VhoCall = "VhoCall",
+    JudgeUnavailable = "JudgeUnavailable",
 }
 
 export class AddMediaEventRequest implements IAddMediaEventRequest {
@@ -2481,7 +2482,7 @@ export interface ITestCallScoreResponse {
 
 export class UpdateParticipantStatusEventRequest implements IUpdateParticipantStatusEventRequest {
     participant_id?: string;
-    readonly event_type?: EventType;
+    event_type?: EventType;
 
     constructor(data?: IUpdateParticipantStatusEventRequest) {
         if (data) {
@@ -2495,7 +2496,7 @@ export class UpdateParticipantStatusEventRequest implements IUpdateParticipantSt
     init(_data?: any) {
         if (_data) {
             this.participant_id = _data["participant_id"];
-            (<any>this).event_type = _data["event_type"];
+            this.event_type = _data["event_type"];
         }
     }
 

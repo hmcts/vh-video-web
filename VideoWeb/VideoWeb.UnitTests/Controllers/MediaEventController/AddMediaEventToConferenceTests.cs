@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
@@ -45,9 +45,22 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .Returns(Task.FromResult(default(object)));
 
-            var result = await _controller.AddMediaEventToConference(Guid.NewGuid(), Builder<AddMediaEventRequest>.CreateNew().Build());
-            var typedResult = (NoContentResult)result;
+            var conferenceId = Guid.NewGuid();
+            var addMediaEventRequest = Builder<AddMediaEventRequest>.CreateNew().Build();
+            var result = await _controller.AddMediaEventToConference(conferenceId, addMediaEventRequest);
+
+            var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
+            _videoApiClientMock.Verify(v =>
+                v.RaiseVideoEventAsync( It.Is<ConferenceEventRequest>(
+                    c =>
+                    c.Conference_id == conferenceId.ToString() &&
+                    c.Participant_id == addMediaEventRequest.ParticipantId.ToString() &&
+                    c.Event_id  != string.Empty &&
+                    c.Event_type == addMediaEventRequest.EventType &&
+                    c.Time_stamp_utc != DateTime.MinValue &&
+                    c.Reason == "media permission denied"
+                )),Times.Once);
         }
 
         [Test]
@@ -89,6 +102,9 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 Builder<AddSelfTestFailureEventRequest>.CreateNew().Build());
             var typedResult = (NoContentResult)result;
             typedResult.Should().NotBeNull();
+            _videoApiClientMock.Verify(v => 
+                                        v.RaiseVideoEventAsync(It.Is<ConferenceEventRequest>(c => c.Reason.Contains("Failed self-test (Camera)"))),
+                                        Times.Once);
         }
 
         [Test]

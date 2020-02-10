@@ -3,7 +3,7 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
 import { Router, ActivatedRoute } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
-  UpdateParticipantStatusEventRequest, ConferenceResponse
+  UpdateParticipantStatusEventRequest, ConferenceResponse, EventType
 } from 'src/app/services/clients/api-client';
 import { AdalService } from 'adal-angular4';
 import { ErrorService } from 'src/app/services/error.service';
@@ -53,7 +53,7 @@ export class IntroductionComponent implements OnInit {
       find(x => x.username.toLocaleLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
     this.videoWebService.raiseParticipantEvent(this.conference.id,
       new UpdateParticipantStatusEventRequest({
-        participant_id: participant.id.toString()
+        participant_id: participant.id.toString(), event_type: EventType.ParticipantJoining
       })).subscribe(x => { },
         (error) => {
           console.error(error);
