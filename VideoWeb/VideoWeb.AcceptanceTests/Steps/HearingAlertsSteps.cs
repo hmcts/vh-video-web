@@ -101,8 +101,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         private ParticipantDetailsResponse GetUserFromConferenceDetails(string userRole)
         {
             var participantUser = userRole.ToLower().Equals("judge") || userRole.ToLower().Equals("clerk")
-                ? _c.Test.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Judge.ToString()))
-                : _c.Test.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Individual.ToString()));
+                ? _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(UserRole.Judge.ToString()))
+                : _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(UserRole.Individual.ToString()));
 
             if (participantUser.Id == Guid.Empty)
                 throw new DataMisalignedException("Participant Id is not set");
@@ -202,7 +202,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private Guid? GetClerkParticipantId()
         {
-            return _c.Test.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Judge.ToString())).Id;
+            return _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(UserRole.Judge.ToString())).Id;
         }
 
         private List<Alert> GetAlerts()

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
@@ -58,7 +58,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                     c.Participant_id == addMediaEventRequest.ParticipantId.ToString() &&
                     c.Event_id  != string.Empty &&
                     c.Event_type == addMediaEventRequest.EventType &&
-                    c.Time_stamp_utc != null &&
+                    c.Time_stamp_utc != DateTime.MinValue &&
                     c.Reason == "media permission denied"
                 )),Times.Once);
         }

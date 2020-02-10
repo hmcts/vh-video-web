@@ -293,6 +293,9 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     );
     if (participantToUpdate) {
       participantToUpdate.status = message.status;
+      if (participantToUpdate.role === UserRole.Judge) {
+        this.getJudgeStatusDetails();
+      }
     }
   }
 
@@ -453,14 +456,12 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
   }
 
   getJudgeStatusDetails() {
-    const judgeStatuses = this.getJudgeDetailsForStatus(
-      this.selectedHearing.id
-    );
-    this.participantStatusModel = new ParticipantStatusModel();
-    this.participantStatusModel.Participants = this.participants.map(
-      p => new Participant(p)
-    );
-    this.participantStatusModel.JudgeStatuses = judgeStatuses;
+    if (this.selectedHearing) {
+
+      this.participantStatusModel = new ParticipantStatusModel();
+      this.participantStatusModel.Participants = this.participants.map(p => new Participant(p));
+      this.participantStatusModel.JudgeStatuses = this.getJudgeDetailsForStatus(this.selectedHearing.id);
+    }
   }
 
   getJudgeDetailsForStatus(selectedConferenceId: string) {

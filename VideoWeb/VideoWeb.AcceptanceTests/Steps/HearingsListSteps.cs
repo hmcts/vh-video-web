@@ -98,7 +98,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             rowData.CaseName.Should().Be(_c.Test.Case.Name);
             rowData.CaseType.Should().Be(_c.Test.Hearing.Case_type_name);
             rowData.CaseNumber.Should().Be(_c.Test.Case.Number);
-            ParticipantsDisplayed(_c.Test.Hearing.Participants, rowData);
+            ParticipantsDisplayed(_c.Test.HearingParticipants, rowData);
         }
 
         [Then(@"contact us details for the clerk are available")]
