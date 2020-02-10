@@ -35,11 +35,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
   configureTestSuite(() => {
     conference = new ConferenceTestData().getConferenceDetail();
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>(
-    	'VideoWebService',
-    	['getConferenceById', 'raiseParticipantEvent']);
       'VideoWebService',
-      ['getConferenceById']
-    );
+      ['getConferenceById', 'raiseParticipantEvent']);
     videoWebServiceSpy.getConferenceById.and.returnValue(of(conference));
     videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
 
@@ -90,6 +87,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     const conferenceStatus = ConferenceStatus.InSession;
     component.handleHearingStatusChange(conferenceStatus);
     expect(component.conference.status).toBe(conferenceStatus);
+    done();
   });
   it('should post event for judge status', () => {
     component.ngOnInit();

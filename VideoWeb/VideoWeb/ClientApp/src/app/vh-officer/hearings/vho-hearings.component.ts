@@ -329,7 +329,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
   }
 
   enableFullScreen(fullScreen: boolean) {
-    const masterContainerCount = $("div[id*='master-container']").length;
+    const masterContainerCount = $('div[id*=\'master-container\']').length;
     if (masterContainerCount > 1) {
       throw new Error('Multiple master containers in DOM');
     }
