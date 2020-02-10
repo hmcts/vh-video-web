@@ -38,6 +38,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
   profile: UserProfileResponse;
   private readonly eventStatusCache: SessionStorage<EventStatusModel>;
   readonly JUDGE_STATUS_KEY = 'vh.judge.status';
+  $pushEventSubcription: Subscription;
 
   constructor(
     private videoWebService: VideoWebService,
@@ -66,6 +67,9 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
     this.logger.debug('Clearing intervals and subscriptions for Judge/Clerk');
     clearInterval(this.interval);
     this.conferencesSubscription.unsubscribe();
+    if (this.$pushEventSubcription) {
+      this.$pushEventSubcription.unsubscribe();
+    }
     this.enableFullScreen(false);
   }
 
@@ -87,7 +91,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
   postJudgeEvent() {
     const eventStatusDetails = this.eventStatusCache.get();
     if (eventStatusDetails) {
-      this.videoWebService.raiseParticipantEvent(eventStatusDetails.ConferenceId,
+      this.$pushEventSubcription = this.videoWebService.raiseParticipantEvent(eventStatusDetails.ConferenceId,
         new UpdateParticipantStatusEventRequest({
           participant_id: eventStatusDetails.ParticipantId, event_type: EventType.JudgeUnavailable
         })).subscribe(x => { this.eventStatusCache.clear(); },
