@@ -220,5 +220,23 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var typedResult = (NotFoundResult)result;
             typedResult.Should().NotBeNull();
         }
+
+        [Test]
+        public async Task Should_throw_InvalidOperationException_no_participants_requested_for_found()
+        {
+            _videoApiClientMock
+                .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
+                .Returns(Task.FromResult(default(object)));
+
+            var consultationRequest = ConsultationHelper.GetConsultationRequest(_testConference);
+            _testConference.Participants[0].Id = Guid.NewGuid();
+            _testConference.Participants[1].Id = Guid.NewGuid();
+            _testConference.Participants[2].Id = consultationRequest.Requested_by;
+            _memoryCache.Set(_testConference.Id, _testConference);
+
+            var result = await _controller.HandleConsultationRequest(consultationRequest);
+            var typedResult = (NotFoundResult)result;
+            typedResult.Should().NotBeNull();
+        }
     }
 }
