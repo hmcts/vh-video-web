@@ -37,7 +37,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>(
       'VideoWebService',
       ['getConferenceById', 'raiseParticipantEvent']
-    );
     videoWebServiceSpy.getConferenceById.and.returnValue(of(conference));
     videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
 
