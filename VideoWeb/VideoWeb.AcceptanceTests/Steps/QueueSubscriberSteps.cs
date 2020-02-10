@@ -72,7 +72,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"I add a participant to the hearing")]
         public void WhenIAttemptToAddAParticipantToTheHearing()
         {
-            var participants = (from participant in _c.Test.Hearing.Participants where participant.User_role_name.ToLower().Equals("individual") select participant.Last_name).ToList();
+            var participants = (from participant in _c.Test.HearingParticipants where participant.User_role_name.ToLower().Equals("individual") select participant.Last_name).ToList();
             _addedUser = UserManager.GetIndividualNotInHearing(_c.UserAccounts, participants);
             var request = new ParticipantsRequestBuilder().AddIndividual().WithUser(_addedUser).Build();
             var list = new AddParticipantsToHearingRequest() {Participants = new List<ParticipantRequest>() {request}};
@@ -83,7 +83,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"I update a participant from the hearing")]
         public void WhenIUpdateAParticipantFromTheHearing()
         {
-            _updatedUser = _c.Test.Hearing.Participants.First();
+            _updatedUser = _c.Test.HearingParticipants.First();
             _updatedRequest = new UpdateParticipantBuilder()
                 .ForParticipant(_updatedUser)
                 .AddWordToStrings(_c.Test.TestData.UpdatedWord)
@@ -96,7 +96,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"I remove a participant from the hearing")]
         public void WhenIRemoveAParticipantFromTheHearing()
         {
-            _deletedUser = _c.Test.Hearing.Participants.Find(x => x.User_role_name.Equals(UserRole.Individual.ToString()));
+            _deletedUser = _c.Test.HearingParticipants.Find(x => x.User_role_name.Equals(UserRole.Individual.ToString()));
             var response =  _c.Apis.BookingsApi.RemoveParticipant(_c.Test.NewHearingId, _deletedUser.Id);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
@@ -139,7 +139,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             var response = _c.Apis.VideoApi.GetConferenceByConferenceId(_c.Test.NewConferenceId);
             var conference =  RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
-            conference.Participants.Count.Should().Be(_c.Test.Hearing.Participants.Count + 1);
+            conference.Participants.Count.Should().Be(_c.Test.HearingParticipants.Count + 1);
             new AssertParticipantFromAccount().User(_addedUser).Matches(conference.Participants);
         }
 
@@ -160,7 +160,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var response = _c.Apis.VideoApi.GetConferenceByConferenceId(_c.Test.NewConferenceId);
             var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
             conference.Participants.Any(x => x.Ref_id.Equals(_deletedUser.Id)).Should().BeFalse();
-            conference.Participants.Count.Should().Be(_c.Test.Hearing.Participants.Count - 1);
+            conference.Participants.Count.Should().Be(_c.Test.HearingParticipants.Count - 1);
         }
 
         [AfterScenario("UpdateParticipant")]
