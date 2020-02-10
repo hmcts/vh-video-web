@@ -78,7 +78,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private Guid GetJudgeParticipantId()
         {
-            var id = _c.Test.Conference.Participants.Find(x => x.User_role.Equals(UserRole.Judge)).Id;
+            var id = _c.Test.ConferenceParticipants.Find(x => x.User_role.Equals(UserRole.Judge)).Id;
             if (id == Guid.Empty)
                 throw new DataMisalignedException("Participant Id cannot be null");
             return id;

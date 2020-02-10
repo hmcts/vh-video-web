@@ -82,7 +82,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             
             var conferencesForUser = (List<ConferenceForUserResponse>)typedResult.Value;
             conferencesForUser.Should().NotBeNullOrEmpty();
-            conferencesForUser.Count().Should().Be(10);
+            conferencesForUser.Count.Should().Be(10);
             var i = 1;
             foreach (var conference in conferencesForUser)
             {

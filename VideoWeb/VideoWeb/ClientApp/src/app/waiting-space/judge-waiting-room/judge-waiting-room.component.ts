@@ -12,6 +12,13 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
 import { ErrorService } from 'src/app/services/error.service';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { AdalService } from 'adal-angular4';
+import {
+  UpdateParticipantStatusEventRequest,
+  EventType
+} from 'src/app/services/clients/api-client';
+import { SessionStorage } from 'src/app/services/session-storage';
+import { EventStatusModel } from 'src/app/services/models/event-status.model';
 
 @Component({
   selector: 'app-judge-waiting-room',
@@ -22,6 +29,8 @@ export class JudgeWaitingRoomComponent implements OnInit {
   loadingData: boolean;
   conference: ConferenceResponse;
   hearing: Hearing;
+  private readonly eventStatusCache: SessionStorage<EventStatusModel>;
+  readonly JUDGE_STATUS_KEY = 'vh.judge.status';
 
   constructor(
     private route: ActivatedRoute,
@@ -30,9 +39,11 @@ export class JudgeWaitingRoomComponent implements OnInit {
     private eventService: EventsService,
     private ngZone: NgZone,
     private errorService: ErrorService,
-    private logger: Logger
+    private logger: Logger,
+    private adalService: AdalService
   ) {
     this.loadingData = true;
+    this.eventStatusCache = new SessionStorage(this.JUDGE_STATUS_KEY);
   }
 
   ngOnInit() {
@@ -47,6 +58,7 @@ export class JudgeWaitingRoomComponent implements OnInit {
       .then((data: ConferenceResponse) => {
         this.loadingData = false;
         this.conference = data;
+        this.postEventJudgeAvailableStatus();
         this.hearing = new Hearing(data);
       })
       .catch(error => {
@@ -57,6 +69,34 @@ export class JudgeWaitingRoomComponent implements OnInit {
           }
         });
       });
+  }
+
+  postEventJudgeAvailableStatus() {
+    const participant = this.conference.participants.find(
+      x =>
+        x.username.toLocaleLowerCase() ===
+        this.adalService.userInfo.userName.toLocaleLowerCase()
+    );
+
+    // to reset status on the navigation back to judge hearing list we need to know conference and participant Ids.
+    this.eventStatusCache.set(
+      new EventStatusModel(this.conference.id, participant.id.toString())
+    );
+
+    this.videoWebService
+      .raiseParticipantEvent(
+        this.conference.id,
+        new UpdateParticipantStatusEventRequest({
+          participant_id: participant.id.toString(),
+          event_type: EventType.JudgeAvailable
+        })
+      )
+      .subscribe(
+        x => {},
+        error => {
+          console.error(error);
+        }
+      );
   }
 
   getConferenceStatusText() {

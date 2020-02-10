@@ -36,9 +36,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     conference = new ConferenceTestData().getConferenceDetail();
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>(
       'VideoWebService',
-      ['getConferenceById']
+      ['getConferenceById', 'raiseParticipantEvent']
     );
     videoWebServiceSpy.getConferenceById.and.returnValue(of(conference));
+    videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
@@ -88,6 +89,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     component.handleHearingStatusChange(conferenceStatus);
     expect(component.conference.status).toBe(conferenceStatus);
     done();
+  });
+  it('should post event for judge status', () => {
+    component.ngOnInit();
+    expect(videoWebServiceSpy.raiseParticipantEvent).toHaveBeenCalled();
   });
 
   it('should update participant status', async done => {
