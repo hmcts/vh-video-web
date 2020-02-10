@@ -58,7 +58,7 @@ namespace VideoWeb.Controllers
                 Event_id = Guid.NewGuid().ToString(),
                 Event_type = updateParticipantStatusEventRequest.EventType,
                 Time_stamp_utc = DateTime.UtcNow,
-                Reason = "participant joining"
+                Reason = EventTypeReasonMapper.Map(updateParticipantStatusEventRequest.EventType)
             };
 
             var callbackEvent = new CallbackEventMapper().MapConferenceEventToCallbackEventModel(conferenceEventRequest);

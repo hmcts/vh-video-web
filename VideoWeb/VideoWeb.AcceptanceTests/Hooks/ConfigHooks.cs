@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AcceptanceTests.Common.Configuration;
@@ -86,7 +86,9 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 Case = new CaseResponse(),
                 CommonData = new LoadXmlFile().SerialiseCommonData(),
                 Conference = new ConferenceDetailsResponse(),
+                ConferenceParticipants = new List<ParticipantDetailsResponse>(),
                 Hearing = new HearingDetailsResponse(),
+                HearingParticipants = new List<ParticipantResponse>(),
                 NewConferenceId = Guid.Empty,
                 NewHearingId = Guid.Empty,
                 TestData = new DefaultDataManager().SerialiseTestData()
