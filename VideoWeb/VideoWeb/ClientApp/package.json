@@ -48,7 +48,7 @@
     "rxjs": "^6.5.4",
     "snyk": "^1.279.1",
     "webrtc-adapter": "^7.4.0",
-    "zone.js": "~0.9.1"
+    "zone.js": "~0.10.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.803.23",
