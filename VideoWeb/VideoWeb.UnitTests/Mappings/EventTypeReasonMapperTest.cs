@@ -10,7 +10,7 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_set_reason_for_event_type_joined()
         {
-            var eventType = EventType.Joined;
+            var eventType = EventType.ParticipantJoining;
             EventTypeReasonMapper.Map(eventType).Should().Be("participant joining");
         }
         [Test]
