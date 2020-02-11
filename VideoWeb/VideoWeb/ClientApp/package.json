@@ -71,7 +71,7 @@
     "karma-junit-reporter": "^2.0.1",
     "node-sass": "^4.13.1",
     "puppeteer": "^2.0.0",
-    "typescript": "~3.5.3"
+    "typescript": "~3.7.5"
   },
   "optionalDependencies": {
     "protractor": "~5.4.0",
