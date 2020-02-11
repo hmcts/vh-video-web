@@ -2,7 +2,13 @@
 INPUT_FILE=$1
 START_LINE=`head -n1 $INPUT_FILE`
 PATTERN="^(\[VIH-[[:digit:]]+\])"
-if ! [[ "$START_LINE" =~ $PATTERN ]]; then
+MERGE_PATTERN="^(?:Merge\ remote.+)"
+
+shopt -s nocasematch
+
+if ! [[ "$START_LINE" =~ $PATTERN || "$START_LINE" =~ $MERGE_PATTERN ]]; then
   echo "Bad commit message, see example: [VIH-123] <issue description>"
   exit 1
 fi
+
+shopt -u nocasematch
