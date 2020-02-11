@@ -5,24 +5,26 @@ import { configureTestSuite } from 'ng-bullet';
 import { of, throwError } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse } from 'src/app/services/clients/api-client';
+import {
+  ConferenceResponse,
+  UserRole
+} from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { TasksTableStubComponent } from 'src/app/testing/stubs/task-table-stub';
 import { VhoHearingListStubComponent } from 'src/app/testing/stubs/vho-hearing-list-stub';
 import { VhoParticipantStatusStubComponent } from 'src/app/testing/stubs/vho-participant-status-stub';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
-import { VhoHearingsComponent } from './vho-hearings.component';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { Logger } from 'src/app/services/logging/logger-base';
 import { VhoHearingsFilterStubComponent } from '../../testing/stubs/vho-hearings-filter-stub';
-import { UserRole } from 'src/app/services/clients/api-client';
+import { VhoHearingsComponent } from './vho-hearings.component';
 
 describe('VhoHearingsComponent', () => {
   let component: VhoHearingsComponent;
@@ -38,7 +40,7 @@ describe('VhoHearingsComponent', () => {
       [
         'getConferencesForVHOfficer',
         'getConferenceById',
-        'getTasksForConference',
+        'getTasksForConference'
       ]
     );
     videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(
@@ -58,15 +60,15 @@ describe('VhoHearingsComponent', () => {
         TasksTableStubComponent,
         VhoHearingListStubComponent,
         VhoParticipantStatusStubComponent,
-        VhoHearingsFilterStubComponent,
+        VhoHearingsFilterStubComponent
       ],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },
         { provide: EventsService, useClass: MockEventsService },
         { provide: ConfigService, useClass: MockConfigService },
-        { provide: Logger, useClass: MockLogger },
-      ],
+        { provide: Logger, useClass: MockLogger }
+      ]
     });
   });
 
@@ -137,12 +139,16 @@ describe('VhoHearingsComponent', () => {
       initPendingTasks
     );
   });
+
   it('should get the selected judge statuses from another hearings', () => {
     component.selectedHearing = new Hearing(component.conferencesAll[0]);
     component.participants = component.conferencesAll[0].participants;
     component.getJudgeStatusDetails();
-    expect(component.participantStatusModel.JudgeStatuses.length).toBeGreaterThan(0);
+    expect(
+      component.participantStatusModel.JudgeStatuses.length
+    ).toBeGreaterThan(0);
   });
+
   it('should not return selected judge statuses from another hearings', () => {
     component.clearSelectedConference();
     const selectedConferenceId = component.conferencesAll[0].id;
@@ -158,6 +164,7 @@ describe('VhoHearingsComponent', () => {
     expect(component.participantStatusModel.JudgeStatuses.length).toBe(0);
   });
 });
+
 describe('VhoHearingsComponent Filter', () => {
   let component: VhoHearingsComponent;
   let fixture: ComponentFixture<VhoHearingsComponent>;
@@ -173,7 +180,7 @@ describe('VhoHearingsComponent Filter', () => {
       [
         'getConferencesForVHOfficer',
         'getConferenceById',
-        'getTasksForConference',
+        'getTasksForConference'
       ]
     );
     videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(
@@ -193,15 +200,15 @@ describe('VhoHearingsComponent Filter', () => {
         TasksTableStubComponent,
         VhoHearingListStubComponent,
         VhoParticipantStatusStubComponent,
-        VhoHearingsFilterStubComponent,
+        VhoHearingsFilterStubComponent
       ],
       providers: [
         { provide: VideoWebService, useValue: videoWebServiceSpy },
         { provide: AdalService, useClass: MockAdalService },
         { provide: EventsService, useClass: MockEventsService },
         { provide: ConfigService, useClass: MockConfigService },
-        { provide: Logger, useClass: MockLogger },
-      ],
+        { provide: Logger, useClass: MockLogger }
+      ]
     });
   });
 
@@ -212,11 +219,13 @@ describe('VhoHearingsComponent Filter', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
+
   it('should apply filter with selected all to conferences records', () => {
     expect(component.conferences.length).toBe(3);
     component.activateFilterOptions(filter);
     expect(component.conferences.length).toBe(3);
   });
+
   it('should apply filter with selected status and location to conferences records', () => {
     expect(component.conferences.length).toBe(3);
     filter.locations[1].Selected = true;
@@ -232,18 +241,25 @@ describe('VhoHearingsComponent Filter', () => {
     expect(component.conferences[0].status).toBe(filter.statuses[0].Status);
     expect(component.conferences[1].status).toBe(filter.statuses[0].Status);
   });
+
   it('should apply filter with selected alerts records', () => {
     expect(component.conferences.length).toBe(3);
-    filter.locations.forEach(x => x.Selected = false);
-    filter.statuses.forEach(x => x.Selected = false);
+    filter.locations.forEach(x => (x.Selected = false));
+    filter.statuses.forEach(x => (x.Selected = false));
     filter.alerts[1].Selected = true;
     const expectedAlerts1 = filter.alerts[1].BodyText;
     component.activateFilterOptions(filter);
 
     expect(component.conferences.length).toBe(2);
-    const filtered1 = component.conferences[0].tasks.filter(x => x.body.includes(expectedAlerts1)).length > 0;
+    const filtered1 =
+      component.conferences[0].tasks.filter(x =>
+        x.body.includes(expectedAlerts1)
+      ).length > 0;
     expect(filtered1).toBe(true);
-    const filtered2 = component.conferences[1].tasks.filter(x => x.body.includes(expectedAlerts1)).length > 0;
+    const filtered2 =
+      component.conferences[1].tasks.filter(x =>
+        x.body.includes(expectedAlerts1)
+      ).length > 0;
     expect(filtered2).toBe(true);
   });
 });
