@@ -20,9 +20,9 @@ using VideoWeb.Common;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
+using VideoWeb.Common.SignalR;
 using VideoWeb.Contract.Request;
 using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.EventHub.Hub;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
@@ -122,7 +122,9 @@ namespace VideoWeb
                     options.PayloadSerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
                     options.PayloadSerializerSettings.Converters.Add(
                         new StringEnumConverter());
-                }).AddHubOptions<EventHub.Hub.EventHub>(options => { options.EnableDetailedErrors = true; });
+                })
+                .AddHubOptions<EventHub.Hub.EventHub>(options => { options.EnableDetailedErrors = true; })
+                .AddHubOptions<ChatHub.Hub.ChatHub>(options => { options.EnableDetailedErrors = true;});
             
             return services;
         }

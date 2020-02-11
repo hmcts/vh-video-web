@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using VideoWeb.Common.SignalR;
 using VideoWeb.EventHub.Enums;
 
 namespace VideoWeb.EventHub.Hub
@@ -27,7 +28,7 @@ namespace VideoWeb.EventHub.Hub
         private readonly ILogger<EventHub> _logger;
 
         public EventHub(IUserProfileService userProfileService, ILogger<EventHub> logger)
-        {
+        {        
             _userProfileService = userProfileService;
             _logger = logger;
         }
@@ -73,7 +74,7 @@ namespace VideoWeb.EventHub.Hub
 
         private async Task<string> GetUsername(string username)
         {
-            return await _userProfileService.GetUsername(username);
+            return await _userProfileService.GetObfuscatedUsername(username);
         }
     }
 }

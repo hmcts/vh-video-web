@@ -10,7 +10,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VideoWeb.Services\VideoWeb.Services.csproj" />
+      <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />
+      <ProjectReference Include="..\VideoWeb.Services\VideoWeb.Services.csproj" />
   </ItemGroup>
 
 </Project>

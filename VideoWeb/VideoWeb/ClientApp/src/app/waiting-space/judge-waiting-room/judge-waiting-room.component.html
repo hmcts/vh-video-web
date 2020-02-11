@@ -8,9 +8,16 @@
   </a>
 
   <div class="govuk-!-margin-top-5" *ngIf="isNotStarted() || isPaused()">
-    <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button"
-            (click)="checkEquipment()" alt="Camera Check">
+    <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button" (click)="checkEquipment()"
+      alt="Camera Check">
       Check equipment
+    </button>
+  </div>
+
+  <div class="govuk-!-margin-top-5">
+    <button id="send-message-btn" class="govuk-button" data-module="govuk-button" (click)="sendMessage()"
+      alt="Send Message">
+      Send Message
     </button>
   </div>
 

@@ -3,7 +3,7 @@ using Moq;
 using NUnit.Framework;
 using System.Net;
 using System.Threading.Tasks;
-using VideoWeb.EventHub.Hub;
+using VideoWeb.Common.SignalR;
 using VideoWeb.Services.User;
 
 namespace VideoWeb.UnitTests.Hub
@@ -52,7 +52,7 @@ namespace VideoWeb.UnitTests.Hub
             _userApiClientMock.Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>())).ReturnsAsync(userProfile);
 
             var obfuscatedUsername = "M***** U***";
-            var result = await _adUserProfileService.GetUsername(userProfile.User_name);
+            var result = await _adUserProfileService.GetObfuscatedUsername(userProfile.User_name);
             result.Should().Be(obfuscatedUsername);
         }
 
@@ -65,7 +65,7 @@ namespace VideoWeb.UnitTests.Hub
             _userApiClientMock.Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>())).ThrowsAsync(apiException);
 
             var obfuscatedUsername = string.Empty;
-            var result = await _adUserProfileService.GetUsername(userProfile.User_name);
+            var result = await _adUserProfileService.GetObfuscatedUsername(userProfile.User_name);
             result.Should().Be(obfuscatedUsername);
         }
     }
