@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.PageObject.Helpers;
@@ -87,6 +87,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenThePageShouldBeAccessible()
         {
             var axeResult = new AxeBuilder(_browsers[_c.CurrentUser.Key].Driver).Analyze();
+            axeResult.Violations.Should().BeEmpty();
+        }
+
+        [Then(@"the page should be accessible apart from a missing header")]
+        public void ThenThePageShouldBeAccessibleApartFromAMissingHeader()
+        {
+            var axeResult = new AxeBuilder(_browsers[_c.CurrentUser.Key].Driver)
+                .DisableRules("page-has-heading-one").Analyze();
             axeResult.Violations.Should().BeEmpty();
         }
     }
