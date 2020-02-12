@@ -1,4 +1,4 @@
-﻿Feature: Accessibility
+Feature: Accessibility
 	In order to ensure video web is accessible to all users
 	As a service
 	I want to check each page for potential accessibility issues
@@ -6,18 +6,11 @@
 @Accessibility
 Scenario Outline: Hearing List page accessibility
 	Given the <Role> user has progressed to the Hearing List page
-	Then the page should be accessible 
+	Then the page should be accessible
 	Examples: 
 	| Role        |
 	| Clerk       |
 	| Participant |
-
-#@Accessibility
-# Scenario: VHO Hearing List page accessibility
-#	Given the Video Hearings Officer user has progressed to the VHO Hearing List page	
-#	Then the page should be accessible 
-#	When the VHO selects the hearing
-#	Then the page should be accessible 
 
 @Accessibility
 Scenario: Introduction page accessibility
@@ -71,7 +64,7 @@ Scenario: Declaration page accessibility
 
 @Accessibility
 Scenario Outline: Waiting Room page accessibility
-    Given the Participant user has progressed to the Waiting Room page
+    Given the <Role> user has progressed to the Waiting Room page
     When the waiting room page has loaded for the <Role>
     Then the page should be accessible 
     Examples: 
@@ -93,6 +86,6 @@ Scenario: Hearing Room page accessibility
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
 	Then the participant status for Individual01 is displayed as Connected
 	When the Clerk starts the hearing
-	Then the page should be accessible
+	Then the page should be accessible apart from a missing header
 	When in Individual01's browser
-	Then the page should be accessible
+	Then the page should be accessible apart from a missing header
