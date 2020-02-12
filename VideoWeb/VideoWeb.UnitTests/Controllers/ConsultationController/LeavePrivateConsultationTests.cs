@@ -123,5 +123,23 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             typedResult.Should().NotBeNull();
         }
 
+        [Test]
+        public void Should_throw_InvalidOperationException_two_participants_requested_found()
+        {
+            _videoApiClientMock
+                .Setup(x => x.LeavePrivateConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
+                .Returns(Task.FromResult(default(object)));
+            var conference = _testConference;
+
+            var leaveConsultationRequest = Builder<LeaveConsultationRequest>.CreateNew().With(x => x.Conference_id = conference.Id).Build();
+            var findId = leaveConsultationRequest.Participant_id;
+            conference.Participants[0].Id = findId;
+            conference.Participants[1].Id = findId;
+
+
+            Assert.ThrowsAsync<InvalidOperationException>(() => _controller.LeavePrivateConsultation(leaveConsultationRequest));
+
+        }
+
     }
 }

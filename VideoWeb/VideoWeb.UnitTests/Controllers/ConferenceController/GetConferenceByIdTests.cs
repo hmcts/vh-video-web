@@ -28,6 +28,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         private Mock<IUserApiClient> _userApiClientMock;
         private Mock<IBookingsApiClient> _bookingsApiClientMock;
         private Mock<ILogger<ConferencesController>> _mockLogger;
+        private Mock<IConferenceCache> _mockConferenceCache;
 
         [SetUp]
         public void Setup()
@@ -36,7 +37,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             _userApiClientMock = new Mock<IUserApiClient>();
             _bookingsApiClientMock = new Mock<IBookingsApiClient>();
             _mockLogger = new Mock<ILogger<ConferencesController>>(MockBehavior.Loose);
-
+            _mockConferenceCache = new Mock<IConferenceCache>();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
             {
@@ -47,7 +48,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             };
 
             _controller = new ConferencesController(_videoApiClientMock.Object, _userApiClientMock.Object,
-                _bookingsApiClientMock.Object, _mockLogger.Object, new MemoryCache(new MemoryCacheOptions()))
+                _bookingsApiClientMock.Object, _mockLogger.Object, _mockConferenceCache.Object)
             {
                 ControllerContext = context
             };
@@ -56,6 +57,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             _userApiClientMock
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(userProfile);
+            _mockConferenceCache.Setup(x => x.AddConferenceToCache(It.IsAny<ConferenceDetailsResponse>()));
         }
 
         [Test]
@@ -144,7 +146,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         [Test]
         public async Task Should_return_ok_when_user_is_an_admin()
         {
-            var userProfile = new UserProfile {User_role = "VhOfficer"};
+            var userProfile = new UserProfile { User_role = "VhOfficer" };
             _userApiClientMock
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(userProfile);
@@ -153,15 +155,41 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             _videoApiClientMock
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
-            
+
             var bookingParticipants = CreateBookingParticipantResponses(conference.Participants);
             _bookingsApiClientMock
                 .Setup(x => x.GetAllParticipantsInHearingAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(bookingParticipants);
 
             var result = await _controller.GetConferenceById(conference.Id);
-            var typedResult = (OkObjectResult) result.Result;
+            var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
+            _mockConferenceCache.Verify(x => x.AddConferenceToCache(new ConferenceDetailsResponse()), Times.Never);
+        }
+
+        [Test]
+        public async Task Should_return_ok_when_user_is_not_admin()
+        {
+            var userProfile = new UserProfile { User_role = "Individual", User_name= "john@doe.com" };
+            _userApiClientMock
+                .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(userProfile);
+         
+            var conference = CreateValidConferenceResponse(null);
+            conference.Participants[0].Username = "john@doe.com";
+            _videoApiClientMock
+                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(conference);
+
+            var bookingParticipants = CreateBookingParticipantResponses(conference.Participants);
+            _bookingsApiClientMock
+                .Setup(x => x.GetAllParticipantsInHearingAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(bookingParticipants);
+
+            var result = await _controller.GetConferenceById(conference.Id);
+            var typedResult = (OkObjectResult)result.Result;
+            typedResult.Should().NotBeNull();
+            _mockConferenceCache.Verify(x => x.AddConferenceToCache(It.IsAny<ConferenceDetailsResponse>()), Times.Once());
         }
 
         [Test]
