@@ -17,6 +17,8 @@ namespace VideoWeb.EventHub.Hub
         Task AdminConsultationMessage(Guid conferenceId, RoomType room, string requestedFor,
             ConsultationAnswer? answer = null);
         Task HelpMessage(Guid conferenceId, string participantName);
+        
+        Task ReceiveMessage(Guid conferenceId, string from, string message, DateTime timestamp);
     }
 
     [Authorize(Policy = "EventHubUser")]

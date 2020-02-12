@@ -10,13 +10,13 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.ChatHub.Hub
 {
-    public interface IChatHub
+    public interface IChatHubClient
     {
         Task ReceiveMessage(Guid conferenceId, string from, string message, DateTime timestamp);
     }
 
     [Authorize(Policy = "EventHubUser")]
-    public class ChatHub : Hub<IChatHub>
+    public class ChatHub : Hub<IChatHubClient>
     {
         private readonly IUserProfileService _userProfileService;
         private readonly IVideoApiClient _videoApiClient;
@@ -43,7 +43,7 @@ namespace VideoWeb.ChatHub.Hub
         {
             var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name);
             _logger.LogCritical(exception, $"Disconnected from chat hub server-side: { userName } ");
-            var conferences = await GetConferencesForUser(userName);
+            var conferences = await GetConferencesForUser(Context.User.Identity.Name);
             RemoveFromConferences(conferences);
 
             await base.OnDisconnectedAsync(exception);
@@ -51,7 +51,6 @@ namespace VideoWeb.ChatHub.Hub
 
         private async Task<List<ConferenceSummaryResponse>> GetConferencesForUser(string userName)
         {
-
             var conferences = await _videoApiClient.GetConferencesTodayAsync();
 
             var isAdmin = await IsVhOfficerAsync(Context.User.Identity.Name);
@@ -62,9 +61,9 @@ namespace VideoWeb.ChatHub.Hub
 
             return conferences.Where(c =>
                     c.Participants.Any(
-                        p => p.Username.Equals(userName, StringComparison.InvariantCultureIgnoreCase)))
+                        p => p.User_role == UserRole.Judge
+                            && p.Username.Equals(userName, StringComparison.InvariantCultureIgnoreCase)))
                 .ToList();
-
         }
 
         private void AddToConferences(List<ConferenceSummaryResponse> conferences)
@@ -85,8 +84,6 @@ namespace VideoWeb.ChatHub.Hub
             await Clients.Group(conferenceId.ToString()).ReceiveMessage(conferenceId, from, message, timestamp);
             // TODO: call video api and save message
         }
-
-
 
         private async Task<bool> IsVhOfficerAsync(string username)
         {
