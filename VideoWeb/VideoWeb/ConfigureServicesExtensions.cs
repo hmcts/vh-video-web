@@ -87,6 +87,7 @@ namespace VideoWeb
             services.AddScoped<ICustomJwtTokenProvider, CustomJwtTokenProvider>();
             services.AddScoped<IHashGenerator, HashGenerator>();
             services.AddScoped<IUserProfileService, AdUserProfileService>();
+            services.AddScoped<IConferenceCache, ConferenceCache>();
             
             var container = services.BuildServiceProvider();
             var servicesConfiguration = container.GetService<IOptions<HearingServicesConfiguration>>().Value;
