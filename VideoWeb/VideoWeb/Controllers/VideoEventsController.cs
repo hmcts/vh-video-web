@@ -21,16 +21,18 @@ namespace VideoWeb.Controllers
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IEventHandlerFactory _eventHandlerFactory;
+        private readonly IConferenceCache _conferenceCache;
         private readonly IMemoryCache _memoryCache;
         private readonly ILogger<VideoEventsController> _logger;
 
         public VideoEventsController(IVideoApiClient videoApiClient, 
-            IEventHandlerFactory eventHandlerFactory, 
-            IMemoryCache memoryCache, ILogger<VideoEventsController> logger)
+            IEventHandlerFactory eventHandlerFactory, IMemoryCache memoryCache,
+            IConferenceCache conferenceCache, ILogger<VideoEventsController> logger)
         {
             _videoApiClient = videoApiClient;
             _eventHandlerFactory = eventHandlerFactory;
             _memoryCache = memoryCache;
+            _conferenceCache = conferenceCache;
             _logger = logger;
         }
 
@@ -51,7 +53,7 @@ namespace VideoWeb.Controllers
                     {
                         _logger.LogTrace($"Retrieving conference details for conference: {callbackEvent.ConferenceId}");
                         var conference = await _videoApiClient.GetConferenceDetailsByIdAsync(callbackEvent.ConferenceId);
-                        await ConferenceCache.AddConferenceToCache(conference, _memoryCache);
+                        await _conferenceCache.AddConferenceToCache(conference);
                     }
                     catch (VideoApiException e)
                     {

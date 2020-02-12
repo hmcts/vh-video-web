@@ -16,13 +16,13 @@
         ],
         "excluded-mutations": [
         ],
-        "ignore-methods": [
-            "*LogDebug",
-            "*LogTrace",
-            "*LogError",
-            "*LogInformation",
-            "*AddModelError"
-        ],
+      "ignore-methods": [
+        "*LogDebug",
+        "*LogTrace",
+        "*LogError",
+        "*LogInformation",
+        "*AddModelError"
+      ],
         "mutate": [
             "!Startup.cs",
             "!Program.cs",
@@ -30,7 +30,8 @@
             "!Swagger/AuthResponsesOperationFilter.cs",
             "!Pages/Error.cshtml.cs",
             "!Extensions/ExceptionMiddleware.cs",
-            "!Extensions/EnumExtensions.cs"
+          "!Extensions/EnumExtensions.cs",
+          "!Helpers/ConferenceHelper.cs"
         ]
     }
 }

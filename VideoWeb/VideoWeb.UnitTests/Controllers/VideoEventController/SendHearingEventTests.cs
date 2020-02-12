@@ -29,6 +29,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         private Mock<IVideoApiClient> _videoApiClientMock;
         private Conference _testConference;
         private Mock<ILogger<VideoEventsController>> _mockLogger;
+        private Mock<IConferenceCache> _mockConferenceCache;
 
         [SetUp]
         public void Setup()
@@ -37,6 +38,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             _testConference = BuildConferenceForTest();
             var helper = new EventComponentHelper();
             _mockLogger = new Mock<ILogger<VideoEventsController>>();
+            _mockConferenceCache = new Mock<IConferenceCache>();
 
             var handlerList = helper.GetHandlers();
             helper.Cache.Set(_testConference.Id, _testConference);
@@ -54,7 +56,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             };
             
             _controller = new VideoEventsController(_videoApiClientMock.Object, eventHandlerFactory, 
-                new MemoryCache(new MemoryCacheOptions()), _mockLogger.Object)
+                new MemoryCache(new MemoryCacheOptions()), _mockConferenceCache.Object, _mockLogger.Object)
             {
                 ControllerContext = context
             };
