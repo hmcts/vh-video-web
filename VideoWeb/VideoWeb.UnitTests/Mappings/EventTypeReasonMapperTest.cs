@@ -25,5 +25,11 @@ namespace VideoWeb.UnitTests.Mappings
             var eventType = EventType.JudgeUnavailable;
             EventTypeReasonMapper.Map(eventType).Should().Be("judge unavailable");
         }
+        [Test]
+        public void Should_set_reason_to_empty()
+        {
+            var eventType = EventType.None;
+            EventTypeReasonMapper.Map(eventType).Should().Be(string.Empty);
+        }
     }
 }
