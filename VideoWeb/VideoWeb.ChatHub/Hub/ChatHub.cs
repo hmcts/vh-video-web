@@ -42,14 +42,22 @@ namespace VideoWeb.ChatHub.Hub
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name);
-            _logger.LogCritical(exception, $"Disconnected from chat hub server-side: { userName } ");
+            if (exception == null)
+            {
+                _logger.LogInformation($"Disconnected from chat hub server-side: { userName } ");
+            }
+            else
+            {
+                _logger.LogCritical(exception, $"Disconnected from chat hub server-side: {userName} ");
+            }
+
             var conferences = await GetConferencesForUser(Context.User.Identity.Name);
             RemoveFromConferences(conferences);
 
             await base.OnDisconnectedAsync(exception);
         }
 
-        private async Task<List<ConferenceSummaryResponse>> GetConferencesForUser(string userName)
+        private async Task<IEnumerable<ConferenceSummaryResponse>> GetConferencesForUser(string userName)
         {
             var conferences = await _videoApiClient.GetConferencesTodayAsync();
 
@@ -62,17 +70,16 @@ namespace VideoWeb.ChatHub.Hub
             return conferences.Where(c =>
                     c.Participants.Any(
                         p => p.User_role == UserRole.Judge
-                            && p.Username.Equals(userName, StringComparison.InvariantCultureIgnoreCase)))
-                .ToList();
+                            && p.Username.Equals(userName, StringComparison.InvariantCultureIgnoreCase)));
         }
 
-        private void AddToConferences(List<ConferenceSummaryResponse> conferences)
+        private void AddToConferences(IEnumerable<ConferenceSummaryResponse> conferences)
         {
             var tasks = conferences.Select(c => Groups.AddToGroupAsync(Context.ConnectionId, c.Id.ToString())).ToArray();
             Task.WaitAll(tasks);
         }
 
-        private void RemoveFromConferences(List<ConferenceSummaryResponse> conferences)
+        private void RemoveFromConferences(IEnumerable<ConferenceSummaryResponse> conferences)
         {
             var tasks = conferences.Select(c => Groups.RemoveFromGroupAsync(Context.ConnectionId, c.Id.ToString())).ToArray();
             Task.WaitAll(tasks);
