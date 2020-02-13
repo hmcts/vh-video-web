@@ -1,4 +1,4 @@
-export class ChatHubMessage {
+export class ChatMessage {
     conferenceId: string;
     from: string;
     message: string;

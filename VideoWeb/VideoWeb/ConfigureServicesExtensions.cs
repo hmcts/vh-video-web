@@ -114,7 +114,7 @@ namespace VideoWeb
             {
                 NamingStrategy = new SnakeCaseNamingStrategy()
             };
-            
+
             services.AddSignalR()
                 .AddNewtonsoftJsonProtocol(options =>
                 {
@@ -124,8 +124,7 @@ namespace VideoWeb
                     options.PayloadSerializerSettings.Converters.Add(
                         new StringEnumConverter());
                 })
-                .AddHubOptions<EventHub.Hub.EventHub>(options => { options.EnableDetailedErrors = true; })
-                .AddHubOptions<ChatHub.Hub.ChatHub>(options => { options.EnableDetailedErrors = true;});
+                .AddHubOptions<EventHub.Hub.EventHub>(options => { options.EnableDetailedErrors = true; });
             
             return services;
         }

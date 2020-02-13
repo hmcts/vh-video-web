@@ -24,7 +24,6 @@ import { SessionStorage } from '../../services/session-storage';
 import { UserRole } from 'src/app/services/clients/api-client';
 import { ParticipantStatusModel } from 'src/app/shared/models/participants-status-model';
 import { Participant } from 'src/app/shared/models/participant';
-import { ChatHubService } from 'src/app/services/chat-hub.service';
 
 @Component({
     selector: 'app-vho-hearings',
@@ -69,7 +68,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         private errorService: ErrorService,
         private ngZone: NgZone,
         private eventService: EventsService,
-        private chatHubService: ChatHubService,
         private logger: Logger
     ) {
         this.loadingData = true;
@@ -137,21 +135,16 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
                 });
             })
         );
-    }
 
-    private setupConferenceChatSubscription() {
-        this.logger.debug('Setting up VH Officer chat hub subscribers');
-        this.chatHubService.start();
-
-        const newMessageSubscription = this.chatHubService.getChatMessage().subscribe(message => {
-            this.ngZone.run(() => {
-                this.logger.debug('message received');
-                this.logger.debug(JSON.stringify(message));
-            });
-        });
-
-        this.chatHubSubscription.unsubscribe();
-        this.chatHubSubscription = newMessageSubscription;
+        this.logger.debug('Subscribing to chats');
+        this.eventHubSubscriptions.add(
+            this.eventService.getChatMessage().subscribe(message => {
+                this.ngZone.run(() => {
+                    this.logger.debug('message received');
+                    this.logger.debug(JSON.stringify(message));
+                });
+            })
+        );
     }
 
     refreshConferenceDataDuringDisconnect() {
@@ -168,7 +161,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
                 this.conferences = data;
                 this.conferencesAll = data;
                 if (data && data.length > 0) {
-                    this.setupConferenceChatSubscription();
                     this.logger.debug('VH Officer has conferences');
                     this.applyActiveFilter();
                     this.enableFullScreen(true);

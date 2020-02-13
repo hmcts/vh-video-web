@@ -12,7 +12,6 @@ import { AdalService } from 'adal-angular4';
 import { UpdateParticipantStatusEventRequest, EventType } from 'src/app/services/clients/api-client';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { EventStatusModel } from 'src/app/services/models/event-status.model';
-import { ChatHubService } from 'src/app/services/chat-hub.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -27,7 +26,6 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
 
     apiSubscriptions: Subscription = new Subscription();
     eventHubSubscriptions: Subscription = new Subscription();
-    chatHubSubscription: Subscription = new Subscription();
 
     private readonly eventStatusCache: SessionStorage<EventStatusModel>;
     readonly JUDGE_STATUS_KEY = 'vh.judge.status';
@@ -40,8 +38,7 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
         private ngZone: NgZone,
         private errorService: ErrorService,
         private logger: Logger,
-        private adalService: AdalService,
-        private chatHubService: ChatHubService
+        private adalService: AdalService
     ) {
         this.loadingData = true;
         this.eventStatusCache = new SessionStorage(this.JUDGE_STATUS_KEY);
@@ -57,25 +54,16 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
         this.logger.debug('Clearing intervals and subscriptions for judge waiting room');
-        this.chatHubSubscription.unsubscribe();
         this.eventHubSubscriptions.unsubscribe();
         this.apiSubscriptions.unsubscribe();
     }
 
     private setupConferenceChatSubscription() {
         this.logger.debug('Setting up VH Officer chat hub subscribers');
-        this.chatHubService.start();
-
-        this.chatHubSubscription.add(
-            this.chatHubService.getChatMessage().subscribe(message => {
-                this.logger.debug('message received');
-                this.logger.debug(JSON.stringify(message));
-            })
-        );
     }
 
     sendMessage() {
-        this.chatHubService.sendMessage(this.conference.id, `message from judge ${this.adalService.userInfo.userName}`);
+        this.eventService.sendMessage(this.conference.id, `message from judge ${this.adalService.userInfo.userName}`);
     }
 
     async getConference() {
@@ -189,6 +177,14 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
                     this.logger.info(`event hub re-connected for vh officer`);
                     this.getConference();
                 });
+            })
+        );
+
+        this.logger.debug('Subscribing to chat messages');
+        this.eventHubSubscriptions.add(
+            this.eventService.getChatMessage().subscribe(message => {
+                this.logger.debug('message received');
+                this.logger.debug(JSON.stringify(message));
             })
         );
     }

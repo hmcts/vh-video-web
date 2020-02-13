@@ -22,13 +22,11 @@ import { VhoParticipantStatusStubComponent } from 'src/app/testing/stubs/vho-par
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { VhoHearingsFilterStubComponent } from '../../testing/stubs/vho-hearings-filter-stub';
 import { VhoHearingsComponent } from './vho-hearings.component';
-import { ChatHubService } from 'src/app/services/chat-hub.service';
 
 describe('VhoHearingsComponent', () => {
     let component: VhoHearingsComponent;
     let fixture: ComponentFixture<VhoHearingsComponent>;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    let chathubServiceSpy: jasmine.SpyObj<ChatHubService>;
     let adalService: MockAdalService;
     const conferences = new ConferenceTestData().getTestData();
     let errorService: ErrorService;
@@ -43,7 +41,6 @@ describe('VhoHearingsComponent', () => {
         videoWebServiceSpy.getConferenceById.and.returnValue(of(new ConferenceTestData().getConferenceDetail()));
         videoWebServiceSpy.getTasksForConference.and.returnValue(of(new ConferenceTestData().getTasksForConference()));
 
-        chathubServiceSpy = jasmine.createSpyObj<ChatHubService>('ChatHubService', ['start', 'stop', 'getChatMessage']);
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],
             declarations: [
@@ -58,8 +55,7 @@ describe('VhoHearingsComponent', () => {
                 { provide: AdalService, useClass: MockAdalService },
                 { provide: EventsService, useClass: MockEventsService },
                 { provide: ConfigService, useClass: MockConfigService },
-                { provide: Logger, useClass: MockLogger },
-                { provide: ChatHubService, useValue: chathubServiceSpy }
+                { provide: Logger, useClass: MockLogger }
             ]
         });
     });
