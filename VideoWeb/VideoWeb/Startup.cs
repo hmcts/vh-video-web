@@ -21,6 +21,8 @@ namespace VideoWeb
 {
     public class Startup
     {
+        private const string EventHubPath = "/eventhub";
+        private const string ChatHubPath = "/chathub";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -87,7 +89,7 @@ namespace VideoWeb
                             if (string.IsNullOrEmpty(accessToken)) return Task.CompletedTask;
 
                             var path = context.HttpContext.Request.Path;
-                            if (path.StartsWithSegments("/eventhub"))
+                            if (path.StartsWithSegments(EventHubPath) || path.StartsWithSegments(ChatHubPath))
                             {
                                 context.Token = accessToken;
                             }
@@ -150,9 +152,15 @@ namespace VideoWeb
 
             app.UseEndpoints(endpoints =>
             {
-                const string path = "/eventhub";
                 endpoints.MapDefaultControllerRoute();
-                endpoints.MapHub<EventHub.Hub.EventHub>(path, options =>
+
+                endpoints.MapHub<ChatHub.Hub.ChatHub>(ChatHubPath, options =>
+                {
+                    options.Transports = HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling |
+                                         HttpTransportType.WebSockets;
+                });
+
+                endpoints.MapHub<EventHub.Hub.EventHub>(EventHubPath, options =>
                 {
                     options.Transports = HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling |
                                          HttpTransportType.WebSockets;

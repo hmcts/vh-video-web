@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using VideoWeb.Common.SignalR;
 using VideoWeb.EventHub.Enums;
 
 namespace VideoWeb.EventHub.Hub
@@ -16,6 +17,8 @@ namespace VideoWeb.EventHub.Hub
         Task AdminConsultationMessage(Guid conferenceId, RoomType room, string requestedFor,
             ConsultationAnswer? answer = null);
         Task HelpMessage(Guid conferenceId, string participantName);
+        
+        Task ReceiveMessage(Guid conferenceId, string from, string message, DateTime timestamp);
     }
 
     [Authorize(Policy = "EventHubUser")]
@@ -27,7 +30,7 @@ namespace VideoWeb.EventHub.Hub
         private readonly ILogger<EventHub> _logger;
 
         public EventHub(IUserProfileService userProfileService, ILogger<EventHub> logger)
-        {
+        {        
             _userProfileService = userProfileService;
             _logger = logger;
         }
@@ -68,12 +71,12 @@ namespace VideoWeb.EventHub.Hub
 
         private async Task<bool> IsVhOfficerAsync(string username)
         {
-            return await _userProfileService.IsAdmin(username);
+            return await _userProfileService.IsVhOfficerAsync(username);
         }
 
         private async Task<string> GetUsername(string username)
         {
-            return await _userProfileService.GetUsername(username);
+            return await _userProfileService.GetObfuscatedUsernameAsync(username);
         }
     }
 }
