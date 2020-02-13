@@ -28,7 +28,7 @@ namespace VideoWeb.UnitTests.Hub
             var userProfile = new UserProfile { User_role = "VhOfficer", User_name = "vhOfficer.User@email.com" };
             _userApiClientMock.Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>())).ReturnsAsync(userProfile);
 
-            var result = await _adUserProfileService.IsAdmin(userProfile.User_name);
+            var result = await _adUserProfileService.IsVhOfficerAsync(userProfile.User_name);
             result.Should().Be(true);
         }
 
@@ -41,7 +41,7 @@ namespace VideoWeb.UnitTests.Hub
 
             var userProfile = new UserProfile { User_role = "VhOfficer", User_name = "vhOfficer.User@email.com" };
 
-            var result = await _adUserProfileService.IsAdmin(userProfile.User_name);
+            var result = await _adUserProfileService.IsVhOfficerAsync(userProfile.User_name);
             result.Should().Be(false);
         }
 
@@ -52,7 +52,7 @@ namespace VideoWeb.UnitTests.Hub
             _userApiClientMock.Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>())).ReturnsAsync(userProfile);
 
             var obfuscatedUsername = "M***** U***";
-            var result = await _adUserProfileService.GetObfuscatedUsername(userProfile.User_name);
+            var result = await _adUserProfileService.GetObfuscatedUsernameAsync(userProfile.User_name);
             result.Should().Be(obfuscatedUsername);
         }
 
@@ -65,7 +65,7 @@ namespace VideoWeb.UnitTests.Hub
             _userApiClientMock.Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>())).ThrowsAsync(apiException);
 
             var obfuscatedUsername = string.Empty;
-            var result = await _adUserProfileService.GetObfuscatedUsername(userProfile.User_name);
+            var result = await _adUserProfileService.GetObfuscatedUsernameAsync(userProfile.User_name);
             result.Should().Be(obfuscatedUsername);
         }
     }

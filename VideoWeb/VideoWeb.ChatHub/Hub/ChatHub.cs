@@ -29,10 +29,11 @@ namespace VideoWeb.ChatHub.Hub
             _videoApiClient = videoApiClient;
             _logger = logger;
         }
+
         public override async Task OnConnectedAsync()
         {
             var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name);
-            _logger.LogTrace($"Connected to chat hub server-side: { userName } ");
+            _logger.LogTrace($"Connected to chat hub server-side: {userName} ");
             var conferences = await GetConferencesForUser(Context.User.Identity.Name);
             AddToConferences(conferences);
 
@@ -44,7 +45,7 @@ namespace VideoWeb.ChatHub.Hub
             var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name);
             if (exception == null)
             {
-                _logger.LogInformation($"Disconnected from chat hub server-side: { userName } ");
+                _logger.LogInformation($"Disconnected from chat hub server-side: {userName} ");
             }
             else
             {
@@ -61,27 +62,29 @@ namespace VideoWeb.ChatHub.Hub
         {
             var conferences = await _videoApiClient.GetConferencesTodayAsync();
 
-            var isAdmin = await IsVhOfficerAsync(Context.User.Identity.Name);
+            var isAdmin = await _userProfileService.IsVhOfficerAsync(Context.User.Identity.Name);
             if (isAdmin)
             {
                 return conferences;
             }
 
             return conferences.Where(c =>
-                    c.Participants.Any(
-                        p => p.User_role == UserRole.Judge
-                            && p.Username.Equals(userName, StringComparison.InvariantCultureIgnoreCase)));
+                c.Participants.Any(
+                    p => p.User_role == UserRole.Judge
+                         && p.Username.Equals(userName, StringComparison.InvariantCultureIgnoreCase)));
         }
 
         private void AddToConferences(IEnumerable<ConferenceSummaryResponse> conferences)
         {
-            var tasks = conferences.Select(c => Groups.AddToGroupAsync(Context.ConnectionId, c.Id.ToString())).ToArray();
+            var tasks = conferences.Select(c => Groups.AddToGroupAsync(Context.ConnectionId, c.Id.ToString()))
+                .ToArray();
             Task.WaitAll(tasks);
         }
 
         private void RemoveFromConferences(IEnumerable<ConferenceSummaryResponse> conferences)
         {
-            var tasks = conferences.Select(c => Groups.RemoveFromGroupAsync(Context.ConnectionId, c.Id.ToString())).ToArray();
+            var tasks = conferences.Select(c => Groups.RemoveFromGroupAsync(Context.ConnectionId, c.Id.ToString()))
+                .ToArray();
             Task.WaitAll(tasks);
         }
 
@@ -92,14 +95,9 @@ namespace VideoWeb.ChatHub.Hub
             // TODO: call video api and save message
         }
 
-        private async Task<bool> IsVhOfficerAsync(string username)
-        {
-            return await _userProfileService.IsAdmin(username);
-        }
-
         private async Task<string> GetObfuscatedUsernameAsync(string username)
         {
-            return await _userProfileService.GetObfuscatedUsername(username);
+            return await _userProfileService.GetObfuscatedUsernameAsync(username);
         }
     }
 }

@@ -71,12 +71,12 @@ namespace VideoWeb.EventHub.Hub
 
         private async Task<bool> IsVhOfficerAsync(string username)
         {
-            return await _userProfileService.IsAdmin(username);
+            return await _userProfileService.IsVhOfficerAsync(username);
         }
 
         private async Task<string> GetUsername(string username)
         {
-            return await _userProfileService.GetObfuscatedUsername(username);
+            return await _userProfileService.GetObfuscatedUsernameAsync(username);
         }
     }
 }

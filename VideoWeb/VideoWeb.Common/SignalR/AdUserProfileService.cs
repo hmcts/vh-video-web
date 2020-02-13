@@ -5,8 +5,8 @@ namespace VideoWeb.Common.SignalR
 {
     public interface IUserProfileService
     {
-        Task<bool> IsAdmin(string username);
-        Task<string> GetObfuscatedUsername(string username);
+        Task<bool> IsVhOfficerAsync(string username);
+        Task<string> GetObfuscatedUsernameAsync(string username);
     }
 
     public class AdUserProfileService : IUserProfileService
@@ -18,7 +18,7 @@ namespace VideoWeb.Common.SignalR
             _userApiClient = userApiClient;
         }
 
-        public async Task<bool> IsAdmin(string username)
+        public async Task<bool> IsVhOfficerAsync(string username)
         {
             try
             {
@@ -31,7 +31,7 @@ namespace VideoWeb.Common.SignalR
             }
         }
 
-        public async Task<string> GetObfuscatedUsername(string username)
+        public async Task<string> GetObfuscatedUsernameAsync(string username)
         {
             try
             {

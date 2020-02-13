@@ -37,7 +37,7 @@ namespace VideoWeb.UnitTests.Hub
             HubCallerContextMock.Setup(x => x.ConnectionId).Returns(Guid.NewGuid().ToString());
             HubCallerContextMock.Setup(x => x.UserIdentifier).Returns(Claims.Identity.Name);
             
-            UserProfileServiceMock.Setup(x => x.GetObfuscatedUsername(It.IsAny<string>()))
+            UserProfileServiceMock.Setup(x => x.GetObfuscatedUsernameAsync(It.IsAny<string>()))
                 .ReturnsAsync("o**** f*****");
 
 

@@ -21,7 +21,7 @@ namespace VideoWeb.UnitTests.Hub
 
             var conferenceIds = conferences.Select(c => c.Id.ToString()).ToArray();
 
-            UserProfileServiceMock.Setup(x => x.IsAdmin(It.IsAny<string>()))
+            UserProfileServiceMock.Setup(x => x.IsVhOfficerAsync(It.IsAny<string>()))
                 .ReturnsAsync(true);
 
             VideoApiClientMock.Setup(x => x.GetConferencesTodayAsync()).ReturnsAsync(conferences);
@@ -43,7 +43,7 @@ namespace VideoWeb.UnitTests.Hub
 
             var conferenceIds = conferences.Select(c => c.Id.ToString()).ToArray();
 
-            UserProfileServiceMock.Setup(x => x.IsAdmin(It.IsAny<string>()))
+            UserProfileServiceMock.Setup(x => x.IsVhOfficerAsync(It.IsAny<string>()))
                 .ReturnsAsync(true);
 
             VideoApiClientMock.Setup(x => x.GetConferencesTodayAsync()).ReturnsAsync(conferences);
@@ -73,7 +73,7 @@ namespace VideoWeb.UnitTests.Hub
                 .TheRest().With(x => x.Participants = participantsWithoutUser)
                 .Build().ToList();
             
-            UserProfileServiceMock.Setup(x => x.IsAdmin(It.IsAny<string>()))
+            UserProfileServiceMock.Setup(x => x.IsVhOfficerAsync(It.IsAny<string>()))
                 .ReturnsAsync(false);
 
             VideoApiClientMock.Setup(x => x.GetConferencesTodayAsync()).ReturnsAsync(conferences);
@@ -107,7 +107,7 @@ namespace VideoWeb.UnitTests.Hub
                 .TheRest().With(x => x.Participants = participantsWithoutUser)
                 .Build().ToList();
             
-            UserProfileServiceMock.Setup(x => x.IsAdmin(It.IsAny<string>()))
+            UserProfileServiceMock.Setup(x => x.IsVhOfficerAsync(It.IsAny<string>()))
                 .ReturnsAsync(false);
 
             VideoApiClientMock.Setup(x => x.GetConferencesTodayAsync()).ReturnsAsync(conferences);
