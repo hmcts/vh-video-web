@@ -1,0 +1,32 @@
+import { inject } from '@angular/core/testing';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { of, Subscription } from 'rxjs';
+import { JudgeEventService } from './judge-event.service';
+import { SessionStorage } from './session-storage';
+import { EventStatusModel } from './models/event-status.model';
+
+
+describe('JudgeEventService', () => {
+  let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+  videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['raiseParticipantEvent']);
+  videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
+  const service = new JudgeEventService(videoWebServiceSpy);
+
+  it('should raise judge available event', () => {
+    service.raiseJudgeAvailableEvent('123', '345');
+    expect(videoWebServiceSpy.raiseParticipantEvent).toHaveBeenCalled();
+  });
+  it('should raise judge unavailable event', () => {
+    const JUDGE_STATUS_KEY = 'vh.judge.status';
+    const sessionStorage = new SessionStorage<EventStatusModel>(JUDGE_STATUS_KEY);
+    sessionStorage.set(new EventStatusModel('1234', '4567'));
+    service.raiseJudgeUnavailableEvent();
+    expect(videoWebServiceSpy.raiseParticipantEvent).toHaveBeenCalled();
+  });
+  it('should clean subcription', () => {
+    service.$eventSubscription = new Subscription();
+    spyOn(service.$eventSubscription, 'unsubscribe').and.callThrough();
+    service.clearSubcriptions();
+    expect(service.$eventSubscription.unsubscribe).toHaveBeenCalled();
+  });
+});

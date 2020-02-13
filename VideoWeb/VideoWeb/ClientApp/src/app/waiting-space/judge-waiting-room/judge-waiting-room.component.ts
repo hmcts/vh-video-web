@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone, HostListener, OnDestroy } from '@angular/core';
 import {
   ConferenceResponse,
   ParticipantStatus,
@@ -13,24 +13,17 @@ import { ErrorService } from 'src/app/services/error.service';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { AdalService } from 'adal-angular4';
-import {
-  UpdateParticipantStatusEventRequest,
-  EventType
-} from 'src/app/services/clients/api-client';
-import { SessionStorage } from 'src/app/services/session-storage';
-import { EventStatusModel } from 'src/app/services/models/event-status.model';
+import { JudgeEventService } from 'src/app/services/judge-event.service';
 
 @Component({
   selector: 'app-judge-waiting-room',
   templateUrl: './judge-waiting-room.component.html',
-  styleUrls: ['./judge-waiting-room.component.scss']
+  styleUrls: ['./judge-waiting-room.component.scss'],
 })
-export class JudgeWaitingRoomComponent implements OnInit {
+export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
   loadingData: boolean;
   conference: ConferenceResponse;
   hearing: Hearing;
-  private readonly eventStatusCache: SessionStorage<EventStatusModel>;
-  readonly JUDGE_STATUS_KEY = 'vh.judge.status';
 
   constructor(
     private route: ActivatedRoute,
@@ -40,10 +33,10 @@ export class JudgeWaitingRoomComponent implements OnInit {
     private ngZone: NgZone,
     private errorService: ErrorService,
     private logger: Logger,
-    private adalService: AdalService
+    private adalService: AdalService,
+    private judgeEventService: JudgeEventService
   ) {
     this.loadingData = true;
-    this.eventStatusCache = new SessionStorage(this.JUDGE_STATUS_KEY);
   }
 
   ngOnInit() {
@@ -77,26 +70,7 @@ export class JudgeWaitingRoomComponent implements OnInit {
         x.username.toLocaleLowerCase() ===
         this.adalService.userInfo.userName.toLocaleLowerCase()
     );
-
-    // to reset status on the navigation back to judge hearing list we need to know conference and participant Ids.
-    this.eventStatusCache.set(
-      new EventStatusModel(this.conference.id, participant.id.toString())
-    );
-
-    this.videoWebService
-      .raiseParticipantEvent(
-        this.conference.id,
-        new UpdateParticipantStatusEventRequest({
-          participant_id: participant.id.toString(),
-          event_type: EventType.JudgeAvailable
-        })
-      )
-      .subscribe(
-        x => {},
-        error => {
-          console.error(error);
-        }
-      );
+    this.judgeEventService.raiseJudgeAvailableEvent(this.conference.id, participant.id.toString());
   }
 
   getConferenceStatusText() {
@@ -187,5 +161,17 @@ export class JudgeWaitingRoomComponent implements OnInit {
 
   hearingPaused(): boolean {
     return this.conference.status === ConferenceStatus.Paused;
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  public beforeunloadHandler($event: any) {
+
+    this.judgeEventService.raiseJudgeUnavailableEvent();
+    $event.preventDefault();
+    $event.returnValue = '';
+  }
+
+  ngOnDestroy() {
+    this.judgeEventService.clearSubcriptions();
   }
 }
