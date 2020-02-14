@@ -9,6 +9,7 @@ import { HelpMessage } from './models/help-message';
 import { ParticipantStatusMessage } from './models/participant-status-message';
 import { Logger } from './logging/logger-base';
 import { AdminConsultationMessage } from './models/admin-consultation-message';
+import { ChatMessage } from './models/chat-message';
 
 @Injectable({
     providedIn: 'root'
@@ -22,6 +23,7 @@ export class EventsService {
     private helpMessageSubject = new Subject<HelpMessage>();
     private consultationMessageSubject = new Subject<ConsultationMessage>();
     private adminConsultationMessageSubject = new Subject<AdminConsultationMessage>();
+    private messageSubject = new Subject<ChatMessage>();
     private eventHubDisconnectSubject = new Subject();
     private eventHubReconnectSubject = new Subject();
 
@@ -131,5 +133,20 @@ export class EventsService {
         );
 
         return this.adminConsultationMessageSubject.asObservable();
+    }
+
+    getChatMessage(): Observable<ChatMessage> {
+        this.connection.on('ReceiveMessage', (conferenceId: string, from: string, message: string, timestamp: Date) => {
+            const chat = new ChatMessage(conferenceId, from, message, timestamp);
+            this.logger.event('ReceiveMessage received', chat);
+            this.messageSubject.next(chat);
+        });
+
+        return this.messageSubject.asObservable();
+    }
+
+    async sendMessage(conferenceId: string, message: string) {
+        const from = this.adalService.userInfo.userName.toLocaleLowerCase().trim();
+        await this.connection.send('SendMessage', conferenceId, from, message);
     }
 }

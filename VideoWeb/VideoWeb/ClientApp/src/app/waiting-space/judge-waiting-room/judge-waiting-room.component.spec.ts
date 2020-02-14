@@ -18,14 +18,12 @@ import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { JudgeParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
 import { JudgeWaitingRoomComponent } from './judge-waiting-room.component';
-import { ChatHubService } from 'src/app/services/chat-hub.service';
-import { ChatHubMessage } from 'src/app/services/models/chat-hub-message';
+import { ChatMessage } from 'src/app/services/models/chat-message';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
     let fixture: ComponentFixture<JudgeWaitingRoomComponent>;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    let chathubServiceSpy: jasmine.SpyObj<ChatHubService>;
     let route: ActivatedRoute;
     let router: Router;
     let conference: ConferenceResponse;
@@ -37,11 +35,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'raiseParticipantEvent']);
         videoWebServiceSpy.getConferenceById.and.returnValue(of(conference));
         videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
-
-        chathubServiceSpy = jasmine.createSpyObj<ChatHubService>('ChatHubService', ['start', 'stop', 'getChatMessage']);
-        chathubServiceSpy.getChatMessage.and.returnValue(
-            of(new ChatHubMessage(conference.id, conference.participants[0].username, 'test messafe', new Date()))
-        );
 
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],
@@ -59,8 +52,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 { provide: AdalService, useClass: MockAdalService },
                 { provide: ConfigService, useClass: MockConfigService },
                 { provide: EventsService, useClass: MockEventsService },
-                { provide: Logger, useClass: MockLogger },
-                { provide: ChatHubService, useValue: chathubServiceSpy }
+                { provide: Logger, useClass: MockLogger }
             ]
         });
     });

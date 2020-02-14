@@ -6,6 +6,7 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 
 import { ConferenceStatus, ParticipantStatus, RoomType, ConsultationAnswer } from '../../services/clients/api-client';
 import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
+import { ChatMessage } from 'src/app/services/models/chat-message';
 
 export class MockEventsService {
     nextParticipantStatusMessage: ParticipantStatusMessage;
@@ -56,6 +57,10 @@ export class MockEventsService {
 
     getAdminConsultationMessage(): Observable<AdminConsultationMessage> {
         return of(this.nextAdminConsultationMessage);
+    }
+
+    getChatMessage(): Observable<ChatMessage> {
+        return of(new ChatMessage('612AB52C-BDA5-4F4D-95B8-3F49065219A6', 'chris.green@hearings.net', 'test messafe', new Date()));
     }
 
     getServiceDisconnected(): Observable<any> {
