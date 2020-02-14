@@ -51,6 +51,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
       this.profile = profile;
     });
     this.judgeEventService.raiseJudgeUnavailableEvent();
+    this.judgeEventService.clearJudgeUnload();
     this.retrieveHearingsForUser();
     this.interval = setInterval(() => {
       this.retrieveHearingsForUser();

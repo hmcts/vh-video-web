@@ -29,7 +29,7 @@ describe('JudgeHearingListComponent with no conferences for user', () => {
     videoWebServiceSpy.getConferencesForJudge.and.returnValue(of(noConferences));
     videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
     judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService',
-      ['raiseJudgeUnavailableEvent', 'clearSubcriptions']);
+      ['raiseJudgeUnavailableEvent', 'clearSubcriptions', 'clearJudgeUnload']);
 
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, SharedModule],
@@ -52,9 +52,10 @@ describe('JudgeHearingListComponent with no conferences for user', () => {
   it('should show no hearings message', () => {
     expect(component.hasHearings()).toBeFalsy();
   });
-  it('should raise judge unavaliable event', () => {
+  it('should raise judge unavaliable event and clear cache for unload flag', () => {
     component.ngOnInit();
     expect(judgeEventServiceSpy.raiseJudgeUnavailableEvent).toHaveBeenCalled();
+    expect(judgeEventServiceSpy.clearJudgeUnload).toHaveBeenCalled();
   });
 
 });
@@ -73,7 +74,7 @@ describe('JudgeHearingListComponent with conferences for user', () => {
     videoWebServiceSpy.getConferencesForJudge.and.returnValue(of(conferences));
     videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
     judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService',
-      ['raiseJudgeUnavailableEvent', 'clearSubcriptions']);
+      ['raiseJudgeUnavailableEvent', 'clearSubcriptions', 'clearJudgeUnload']);
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
@@ -129,7 +130,7 @@ describe('JudgeHearingListComponent with service error', () => {
     videoWebServiceSpy.getConferencesForJudge.and.returnValue(throwError({ status: 401, isApiException: true }));
     videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
     judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService',
-      ['raiseJudgeUnavailableEvent', 'clearSubcriptions']);
+      ['raiseJudgeUnavailableEvent', 'clearSubcriptions', 'clearJudgeUnload']);
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],

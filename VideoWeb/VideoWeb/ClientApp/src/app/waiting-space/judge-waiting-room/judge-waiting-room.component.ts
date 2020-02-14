@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, HostListener, OnDestroy } from '@angular/core';
+import { Component, OnInit, NgZone, HostListener, OnDestroy, AfterViewInit } from '@angular/core';
 import {
   ConferenceResponse,
   ParticipantStatus,
@@ -14,6 +14,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { AdalService } from 'adal-angular4';
 import { JudgeEventService } from 'src/app/services/judge-event.service';
+import { interval, Subscription, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-judge-waiting-room',
@@ -24,6 +25,8 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
   loadingData: boolean;
   conference: ConferenceResponse;
   hearing: Hearing;
+  $afterStayOnSubcription: Subscription;
+  intervalSource: Observable<number>;
 
   constructor(
     private route: ActivatedRoute,
@@ -40,7 +43,30 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
     this.getConference().then(() => this.setupEventHubSubscribers());
+    this.subcribeForStayOn();
+  }
+
+  subcribeForStayOn() {
+  
+   if (this.judgeEventService.isUnload()) {
+     this.intervalSource = interval(5000);
+      console.log('Stay on is unload true');
+      this.$afterStayOnSubcription = this.intervalSource.subscribe(() => {
+        this.afterStayOn();
+      });
+    }
+  }
+
+  afterStayOn() {
+    console.log('Stay on');
+    this.judgeEventService.clearJudgeUnload();
+    this.postEventJudgeAvailableStatus();
+
+    if (this.$afterStayOnSubcription) {
+      this.$afterStayOnSubcription.unsubscribe();
+    }
   }
 
   async getConference() {
@@ -51,7 +77,9 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
       .then((data: ConferenceResponse) => {
         this.loadingData = false;
         this.conference = data;
-        this.postEventJudgeAvailableStatus();
+        if (!this.judgeEventService.isUnload()) {
+          this.postEventJudgeAvailableStatus();
+        }
         this.hearing = new Hearing(data);
       })
       .catch(error => {
@@ -65,12 +93,16 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
   }
 
   postEventJudgeAvailableStatus() {
-    const participant = this.conference.participants.find(
-      x =>
-        x.username.toLocaleLowerCase() ===
-        this.adalService.userInfo.userName.toLocaleLowerCase()
-    );
-    this.judgeEventService.raiseJudgeAvailableEvent(this.conference.id, participant.id.toString());
+    if (this.conference) {
+      const participant = this.conference.participants.find(
+        x =>
+          x.username.toLocaleLowerCase() ===
+          this.adalService.userInfo.userName.toLocaleLowerCase()
+      );
+      if (participant) {
+        this.judgeEventService.raiseJudgeAvailableEvent(this.conference.id, participant.id.toString());
+      }
+    }
   }
 
   getConferenceStatusText() {
@@ -167,11 +199,16 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
   public beforeunloadHandler($event: any) {
 
     this.judgeEventService.raiseJudgeUnavailableEvent();
+    this.judgeEventService.setJudgeUnload();
     $event.preventDefault();
-    $event.returnValue = '';
+    $event.returnValue = null;
   }
 
+  
   ngOnDestroy() {
     this.judgeEventService.clearSubcriptions();
+    if (this.$afterStayOnSubcription) {
+      this.$afterStayOnSubcription.unsubscribe();
+    }
   }
 }

@@ -8,11 +8,14 @@ import { Subscription } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class JudgeEventService {
   private readonly eventStatusCache: SessionStorage<EventStatusModel>;
+  private readonly eventUnloadCache: SessionStorage<boolean>;
   private readonly JUDGE_STATUS_KEY = 'vh.judge.status';
+  private readonly JUDGE_STATUS_UNLOAD_KEY = 'vh.judge.status.unload';
   $eventSubscription: Subscription;
 
   constructor(private videoWebService: VideoWebService) {
     this.eventStatusCache = new SessionStorage(this.JUDGE_STATUS_KEY);
+    this.eventUnloadCache = new SessionStorage(this.JUDGE_STATUS_UNLOAD_KEY);
   }
 
   private setJudgeEventDetails(conferenceId: string, participantId: string) {
@@ -22,9 +25,24 @@ export class JudgeEventService {
     );
   }
 
+  public setJudgeUnload() {
+    this.eventUnloadCache.set(true);
+  }
+
+  public clearJudgeUnload() {
+    this.eventUnloadCache.clear();
+  }
+
+    public isUnload() {
+      return this.eventUnloadCache.get();
+  }
+
   public raiseJudgeAvailableEvent(conferenceId: string, participantId: string) {
-    this.setJudgeEventDetails(conferenceId, participantId);
-    this.sendEvent(conferenceId, participantId, EventType.JudgeAvailable);
+    //const isUnload = this.eventUnloadCache.get();
+    //if (!isUnload) {
+      this.setJudgeEventDetails(conferenceId, participantId);
+      this.sendEvent(conferenceId, participantId, EventType.JudgeAvailable);
+    //}
   }
 
   public raiseJudgeUnavailableEvent() {

@@ -13,6 +13,7 @@ describe('JudgeEventService', () => {
   const service = new JudgeEventService(videoWebServiceSpy);
 
   it('should raise judge available event', () => {
+    service.clearJudgeUnload();
     service.raiseJudgeAvailableEvent('123', '345');
     expect(videoWebServiceSpy.raiseParticipantEvent).toHaveBeenCalled();
   });
@@ -28,5 +29,15 @@ describe('JudgeEventService', () => {
     spyOn(service.$eventSubscription, 'unsubscribe').and.callThrough();
     service.clearSubcriptions();
     expect(service.$eventSubscription.unsubscribe).toHaveBeenCalled();
+  });
+  it('should set value in cache to true to indicate judge is closing browser ', () => {
+    service.setJudgeUnload();
+    expect(service.isUnload()).toBe(true);
+  });
+  it('should remove value from cache that is indicated judge is closing browser ', () => {
+    service.setJudgeUnload();
+    expect(service.isUnload()).toBe(true);
+    service.clearJudgeUnload();
+    expect(service.isUnload()).toBeNull();
   });
 });

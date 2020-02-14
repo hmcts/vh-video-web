@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
@@ -39,10 +39,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
 
     judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService',
-      ['raiseJudgeAvailableEvent', 'raiseJudgeUnavailableEvent', 'clearSubcriptions']);
+      ['raiseJudgeAvailableEvent', 'raiseJudgeUnavailableEvent', 'clearSubcriptions', 'setJudgeUnload','isUnload']);
     judgeEventServiceSpy.raiseJudgeAvailableEvent.and.callThrough();
     judgeEventServiceSpy.raiseJudgeUnavailableEvent.and.callThrough();
-
+    judgeEventServiceSpy.isUnload.and.returnValue(false);
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
