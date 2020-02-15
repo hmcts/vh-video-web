@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -46,6 +47,8 @@ namespace VideoWeb.Controllers
             {
                 return NotFound();
             }
+
+            conference.Participants ??= new List<Participant>();
 
             var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.Requested_by);
             if (requestedBy == null)
@@ -97,6 +100,8 @@ namespace VideoWeb.Controllers
                 return NotFound();
             }
 
+            conference.Participants ??= new List<Participant>();
+
             var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.Participant_id);
             if (participant == null)
             {
@@ -127,6 +132,7 @@ namespace VideoWeb.Controllers
                 return NotFound();
             }
 
+            conference.Participants ??= new List<Participant>();
             var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.Participant_id);
             if (participant == null)
             {

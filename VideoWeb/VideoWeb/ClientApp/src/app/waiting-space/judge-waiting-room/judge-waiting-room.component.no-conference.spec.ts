@@ -20,60 +20,52 @@ import { JudgeParticipantStatusListStubComponent } from 'src/app/testing/stubs/p
 import { JudgeWaitingRoomComponent } from './judge-waiting-room.component';
 
 describe('JudgeWaitingRoomComponent when conference does not exist', () => {
-  let component: JudgeWaitingRoomComponent;
-  let fixture: ComponentFixture<JudgeWaitingRoomComponent>;
-  let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-  let route: ActivatedRoute;
-  let conference: ConferenceResponse;
-  let errorService: ErrorService;
+    let component: JudgeWaitingRoomComponent;
+    let fixture: ComponentFixture<JudgeWaitingRoomComponent>;
+    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+    let route: ActivatedRoute;
+    let conference: ConferenceResponse;
+    let errorService: ErrorService;
 
-  configureTestSuite(() => {
-    conference = new ConferenceTestData().getConferenceFuture();
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>(
-      'VideoWebService',
-      ['getConferenceById']
-    );
-    videoWebServiceSpy.getConferenceById.and.returnValue(
-      throwError({ status: 404, isApiException: true })
-    );
+    configureTestSuite(() => {
+        conference = new ConferenceTestData().getConferenceFuture();
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
+        videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 404, isApiException: true }));
 
-    TestBed.configureTestingModule({
-      imports: [SharedModule, RouterTestingModule],
-      declarations: [
-        JudgeWaitingRoomComponent,
-        JudgeParticipantStatusListStubComponent
-      ],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              paramMap: convertToParamMap({ conferenceId: conference.id })
-            }
-          }
-        },
-        { provide: VideoWebService, useValue: videoWebServiceSpy },
-        { provide: AdalService, useClass: MockAdalService },
-        { provide: ConfigService, useClass: MockConfigService },
-        { provide: EventsService, useClass: MockEventsService },
-        { provide: Logger, useClass: MockLogger }
-      ]
+        TestBed.configureTestingModule({
+            imports: [SharedModule, RouterTestingModule],
+            declarations: [JudgeWaitingRoomComponent, JudgeParticipantStatusListStubComponent],
+            providers: [
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        snapshot: {
+                            paramMap: convertToParamMap({ conferenceId: conference.id })
+                        }
+                    }
+                },
+                { provide: VideoWebService, useValue: videoWebServiceSpy },
+                { provide: AdalService, useClass: MockAdalService },
+                { provide: ConfigService, useClass: MockConfigService },
+                { provide: EventsService, useClass: MockEventsService },
+                { provide: Logger, useClass: MockLogger }
+            ]
+        });
     });
-  });
 
-  beforeEach(() => {
-    route = TestBed.get(ActivatedRoute);
-    errorService = TestBed.get(ErrorService);
-    fixture = TestBed.createComponent(JudgeWaitingRoomComponent);
-    component = fixture.componentInstance;
-  });
-
-  it('should handle api error with error service', async done => {
-    spyOn(errorService, 'handleApiError').and.callFake(() => {
-      Promise.resolve(true);
+    beforeEach(() => {
+        route = TestBed.get(ActivatedRoute);
+        errorService = TestBed.get(ErrorService);
+        fixture = TestBed.createComponent(JudgeWaitingRoomComponent);
+        component = fixture.componentInstance;
     });
-    await component.getConference();
-    expect(errorService.handleApiError).toHaveBeenCalled();
-    done();
-  });
+
+    it('should handle api error with error service', async done => {
+        spyOn(errorService, 'handleApiError').and.callFake(() => {
+            Promise.resolve(true);
+        });
+        await component.getConference();
+        expect(errorService.handleApiError).toHaveBeenCalled();
+        done();
+    });
 });

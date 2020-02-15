@@ -1,9 +1,5 @@
 import { Component, OnInit, NgZone, HostListener, OnDestroy, AfterViewInit } from '@angular/core';
-import {
-  ConferenceResponse,
-  ParticipantStatus,
-  ConferenceStatus
-} from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ParticipantStatus, ConferenceStatus } from 'src/app/services/clients/api-client';
 import { Router, ActivatedRoute } from '@angular/router';
 import { EventsService } from 'src/app/services/events.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -15,184 +11,213 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { AdalService } from 'adal-angular4';
 import { JudgeEventService } from 'src/app/services/judge-event.service';
 import { interval, Subscription, Observable } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-judge-waiting-room',
-  templateUrl: './judge-waiting-room.component.html',
+    selector: 'app-judge-waiting-room',
+    templateUrl: './judge-waiting-room.component.html',
   styleUrls: ['./judge-waiting-room.component.scss'],
 })
 export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
-  loadingData: boolean;
-  conference: ConferenceResponse;
-  hearing: Hearing;
-  $afterStayOnSubcription: Subscription;
+    loadingData: boolean;
+    conference: ConferenceResponse;
+    hearing: Hearing;
+     $afterStayOnSubcription: Subscription;
   intervalSource: Observable<number>;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private videoWebService: VideoWebService,
-    private eventService: EventsService,
-    private ngZone: NgZone,
-    private errorService: ErrorService,
-    private logger: Logger,
-    private adalService: AdalService,
+
+    apiSubscriptions: Subscription = new Subscription();
+    eventHubSubscriptions: Subscription = new Subscription();
+
+
+    constructor(
+        private route: ActivatedRoute,
+        private router: Router,
+        private videoWebService: VideoWebService,
+        private eventService: EventsService,
+        private ngZone: NgZone,
+        private errorService: ErrorService,
+        private logger: Logger,
+        private adalService: AdalService
     private judgeEventService: JudgeEventService
-  ) {
-    this.loadingData = true;
-  }
-
-  ngOnInit() {
-
-    this.getConference().then(() => this.setupEventHubSubscribers());
-    this.subcribeForStayOn();
-  }
-
-  subcribeForStayOn() {
-  
-   if (this.judgeEventService.isUnload()) {
-     this.intervalSource = interval(5000);
-      console.log('Stay on is unload true');
-      this.$afterStayOnSubcription = this.intervalSource.subscribe(() => {
-        this.afterStayOn();
-      });
+    ) {
+        this.loadingData = true;
     }
-  }
 
-  afterStayOn() {
-    console.log('Stay on');
-    this.judgeEventService.clearJudgeUnload();
+    ngOnInit() {
+        this.getConference().then(() => {
+            this.setupEventHubSubscribers();
+            this.setupConferenceChatSubscription();
+        });
+         this.subcribeForStayOn();
+
+    }
+
+    @HostListener('window:beforeunload')
+    ngOnDestroy(): void {
+        this.logger.debug('Clearing intervals and subscriptions for judge waiting room');
+        this.eventHubSubscriptions.unsubscribe();
+        this.apiSubscriptions.unsubscribe();
+    }
+
+    private setupConferenceChatSubscription() {
+        this.logger.debug('Setting up VH Officer chat hub subscribers');
+    }
+
+    sendMessage() {
+        this.eventService.sendMessage(this.conference.id, `message from judge ${this.adalService.userInfo.userName}`);
     this.postEventJudgeAvailableStatus();
 
     if (this.$afterStayOnSubcription) {
       this.$afterStayOnSubcription.unsubscribe();
     }
-  }
+    }
 
-  async getConference() {
-    const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-    return this.videoWebService
-      .getConferenceById(conferenceId)
-      .toPromise()
-      .then((data: ConferenceResponse) => {
-        this.loadingData = false;
-        this.conference = data;
+    async getConference() {
+        const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+        return this.videoWebService
+            .getConferenceById(conferenceId)
+            .toPromise()
+            .then((data: ConferenceResponse) => {
+                this.loadingData = false;
+                this.conference = data;
         if (!this.judgeEventService.isUnload()) {
           this.postEventJudgeAvailableStatus();
         }
-        this.hearing = new Hearing(data);
-      })
-      .catch(error => {
-        this.loadingData = false;
-        this.ngZone.run(() => {
-          if (!this.errorService.returnHomeIfUnauthorised(error)) {
-            this.errorService.handleApiError(error);
-          }
-        });
-      });
-  }
+                this.hearing = new Hearing(data);
+            })
+            .catch(error => {
+                this.loadingData = false;
+                this.ngZone.run(() => {
+                    if (!this.errorService.returnHomeIfUnauthorised(error)) {
+                        this.errorService.handleApiError(error);
+                    }
+                });
+            });
+    }
 
-  postEventJudgeAvailableStatus() {
+    async postEventJudgeAvailableStatus() {
     if (this.conference) {
-      const participant = this.conference.participants.find(
-        x =>
-          x.username.toLocaleLowerCase() ===
-          this.adalService.userInfo.userName.toLocaleLowerCase()
-      );
+        const participant = this.conference.participants.find(
+            x => x.username.toLocaleLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase()
+        );
       if (participant) {
-        this.judgeEventService.raiseJudgeAvailableEvent(this.conference.id, participant.id.toString());
-      }
+        // to reset status on the navigation back to judge hearing list we need to know conference and participant Ids.
+        this.eventStatusCache.set(new EventStatusModel(this.conference.id, participant.id.toString()));
+        const request = new UpdateParticipantStatusEventRequest({
+            participant_id: participant.id.toString(),
+            event_type: EventType.JudgeAvailable
+        });
+        try {
+            this.videoWebService.raiseParticipantEvent(this.conference.id, request).toPromise();
+        } catch (e) {
+            if (e instanceof Error) {
+                this.logger.error('Failed to raise judge available event', e);
+            } else {
+                throw e;
+            }
     }
-  }
-
-  getConferenceStatusText() {
-    switch (this.conference.status) {
-      case ConferenceStatus.NotStarted:
-        return 'Start this hearing';
-      case ConferenceStatus.Suspended:
-        return 'Hearing suspended';
-      case ConferenceStatus.Paused:
-        return 'Hearing paused';
-      case ConferenceStatus.Closed:
-        return 'Hearing is closed';
-      default:
-        return 'Hearing is in session';
     }
-  }
 
-  isNotStarted(): boolean {
-    return this.conference.status === ConferenceStatus.NotStarted;
-  }
+    getConferenceStatusText() {
+        switch (this.conference.status) {
+            case ConferenceStatus.NotStarted:
+                return 'Start this hearing';
+            case ConferenceStatus.Suspended:
+                return 'Hearing suspended';
+            case ConferenceStatus.Paused:
+                return 'Hearing paused';
+            case ConferenceStatus.Closed:
+                return 'Hearing is closed';
+            default:
+                return 'Hearing is in session';
+        }
+    }
 
-  isPaused(): boolean {
-    return (
-      this.conference.status === ConferenceStatus.Paused ||
-      this.conference.status === ConferenceStatus.Suspended
-    );
-  }
+    isNotStarted(): boolean {
+        return this.conference.status === ConferenceStatus.NotStarted;
+    }
 
-  goToHearingPage(): void {
-    this.router.navigate([PageUrls.JudgeHearingRoom, this.conference.id]);
-  }
+    isPaused(): boolean {
+        return this.conference.status === ConferenceStatus.Paused || this.conference.status === ConferenceStatus.Suspended;
+    }
 
-  goToJudgeHearingList(): void {
-    this.router.navigate([PageUrls.JudgeHearingList]);
-  }
+    goToHearingPage(): void {
+        this.router.navigate([PageUrls.JudgeHearingRoom, this.conference.id]);
+    }
 
-  setupEventHubSubscribers() {
-    this.eventService.start();
+    goToJudgeHearingList(): void {
+        this.router.navigate([PageUrls.JudgeHearingList]);
+    }
 
-    this.eventService.getHearingStatusMessage().subscribe(message => {
-      this.ngZone.run(() => {
-        this.handleHearingStatusChange(<ConferenceStatus>message.status);
-      });
-    });
+    setupEventHubSubscribers() {
+        this.eventService.start();
 
-    this.eventService.getParticipantStatusMessage().subscribe(message => {
-      this.ngZone.run(() => {
-        this.handleParticipantStatusChange(message);
-      });
-    });
+        this.eventHubSubscriptions.add(
+            this.eventService.getHearingStatusMessage().subscribe(message => {
+                this.ngZone.run(() => {
+                    this.handleHearingStatusChange(<ConferenceStatus>message.status);
+                });
+            })
+        );
 
-    this.logger.debug('Subscribing to event hub disconnects');
-    this.eventService.getServiceDisconnected().subscribe(() => {
-      this.ngZone.run(() => {
-        this.logger.info(`event hub disconnection for vh officer`);
-        this.getConference();
-      });
-    });
+        this.eventHubSubscriptions.add(
+            this.eventService.getParticipantStatusMessage().subscribe(message => {
+                this.ngZone.run(() => {
+                    this.handleParticipantStatusChange(message);
+                });
+            })
+        );
 
-    this.logger.debug('Subscribing to event hub reconnects');
-    this.eventService.getServiceReconnected().subscribe(() => {
-      this.ngZone.run(() => {
-        this.logger.info(`event hub re-connected for vh officer`);
-        this.getConference();
-      });
-    });
-  }
+        this.logger.debug('Subscribing to event hub disconnects');
+        this.eventHubSubscriptions.add(
+            this.eventService.getServiceDisconnected().subscribe(() => {
+                this.ngZone.run(() => {
+                    this.logger.info(`event hub disconnection for vh officer`);
+                    this.getConference();
+                });
+            })
+        );
 
-  handleParticipantStatusChange(message: ParticipantStatusMessage): any {
-    const participant = this.conference.participants.find(
-      p => p.id === message.participantId
-    );
-    const status = <ParticipantStatus>message.status;
-    participant.status = status;
-  }
+        this.logger.debug('Subscribing to event hub reconnects');
+        this.eventHubSubscriptions.add(
+            this.eventService.getServiceReconnected().subscribe(() => {
+                this.ngZone.run(() => {
+                    this.logger.info(`event hub re-connected for vh officer`);
+                    this.getConference();
+                });
+            })
+        );
 
-  handleHearingStatusChange(status: ConferenceStatus) {
-    this.conference.status = status;
-  }
+        this.logger.debug('Subscribing to chat messages');
+        this.eventHubSubscriptions.add(
+            this.eventService.getChatMessage().subscribe(message => {
+                this.logger.debug('message received');
+                this.logger.debug(JSON.stringify(message));
+            })
+        );
+    }
 
-  checkEquipment() {
-    this.router.navigate([PageUrls.EquipmentCheck, this.conference.id]);
-  }
+    handleParticipantStatusChange(message: ParticipantStatusMessage): any {
+        const participant = this.conference.participants.find(p => p.id === message.participantId);
+        const status = <ParticipantStatus>message.status;
+        participant.status = status;
+    }
 
-  hearingSuspended(): boolean {
-    return this.conference.status === ConferenceStatus.Suspended;
-  }
+    handleHearingStatusChange(status: ConferenceStatus) {
+        this.conference.status = status;
+    }
 
-  hearingPaused(): boolean {
-    return this.conference.status === ConferenceStatus.Paused;
+    checkEquipment() {
+        this.router.navigate([PageUrls.EquipmentCheck, this.conference.id]);
+    }
+
+    hearingSuspended(): boolean {
+        return this.conference.status === ConferenceStatus.Suspended;
+    }
+
+    hearingPaused(): boolean {
+        return this.conference.status === ConferenceStatus.Paused;
   }
 
   @HostListener('window:beforeunload', ['$event'])
@@ -210,5 +235,5 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
     if (this.$afterStayOnSubcription) {
       this.$afterStayOnSubcription.unsubscribe();
     }
-  }
+    }
 }

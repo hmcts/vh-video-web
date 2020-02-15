@@ -46,6 +46,8 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
     tasks: TaskResponse[];
     conferencesSubscription: Subscription;
+    eventHubSubscriptions: Subscription = new Subscription();
+    chatHubSubscription: Subscription = new Subscription();
 
     displayFilter = false;
     filterOptionsCount = 0;
@@ -88,6 +90,8 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.logger.debug('Clearing intervals and subscriptions for VH Officer');
         clearInterval(this.interval);
         this.conferencesSubscription.unsubscribe();
+        this.eventHubSubscriptions.unsubscribe();
+        this.chatHubSubscription.unsubscribe();
     }
 
     private setupEventHubSubscribers() {
@@ -95,34 +99,52 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.eventService.start();
 
         this.logger.debug('Subscribing to conference status changes...');
-        this.eventService.getHearingStatusMessage().subscribe(message => {
-            this.ngZone.run(() => {
-                this.handleConferenceStatusChange(message);
-            });
-        });
+        this.eventHubSubscriptions.add(
+            this.eventService.getHearingStatusMessage().subscribe(message => {
+                this.ngZone.run(() => {
+                    this.handleConferenceStatusChange(message);
+                });
+            })
+        );
 
         this.logger.debug('Subscribing to participant status changes...');
-        this.eventService.getParticipantStatusMessage().subscribe(message => {
-            this.ngZone.run(() => {
-                this.handleParticipantStatusChange(message);
-            });
-        });
+        this.eventHubSubscriptions.add(
+            this.eventService.getParticipantStatusMessage().subscribe(message => {
+                this.ngZone.run(() => {
+                    this.handleParticipantStatusChange(message);
+                });
+            })
+        );
 
         this.logger.debug('Subscribing to event hub disconnects');
-        this.eventService.getServiceDisconnected().subscribe(() => {
-            this.ngZone.run(() => {
-                this.logger.info(`event hub disconnection for vh officer`);
-                this.refreshConferenceDataDuringDisconnect();
-            });
-        });
+        this.eventHubSubscriptions.add(
+            this.eventService.getServiceDisconnected().subscribe(() => {
+                this.ngZone.run(() => {
+                    this.logger.info(`event hub disconnection for vh officer`);
+                    this.refreshConferenceDataDuringDisconnect();
+                });
+            })
+        );
 
         this.logger.debug('Subscribing to event hub reconnects');
-        this.eventService.getServiceReconnected().subscribe(() => {
-            this.ngZone.run(() => {
-                this.logger.info(`event hub re-connected for vh officer`);
-                this.refreshConferenceDataDuringDisconnect();
-            });
-        });
+        this.eventHubSubscriptions.add(
+            this.eventService.getServiceReconnected().subscribe(() => {
+                this.ngZone.run(() => {
+                    this.logger.info(`event hub re-connected for vh officer`);
+                    this.refreshConferenceDataDuringDisconnect();
+                });
+            })
+        );
+
+        this.logger.debug('Subscribing to chats');
+        this.eventHubSubscriptions.add(
+            this.eventService.getChatMessage().subscribe(message => {
+                this.ngZone.run(() => {
+                    this.logger.debug('message received');
+                    this.logger.debug(JSON.stringify(message));
+                });
+            })
+        );
     }
 
     refreshConferenceDataDuringDisconnect() {
