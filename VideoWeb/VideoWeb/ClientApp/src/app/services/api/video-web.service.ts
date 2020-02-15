@@ -12,7 +12,7 @@ import {
     UpdateParticipantStatusEventRequest,
     SelfTestPexipResponse,
     HearingVenueResponse,
-    MessageResponse
+    ChatResponse
 } from '../clients/api-client';
 import { Observable } from 'rxjs';
 
@@ -93,7 +93,7 @@ export class VideoWebService {
         return this.apiClient.getHearingsVenues();
     }
 
-    getConferenceChatHistory(conferenceId: string): Observable<MessageResponse[]> {
+    getConferenceChatHistory(conferenceId: string): Observable<ChatResponse[]> {
         return this.apiClient.getConferenceChatHistory(conferenceId);
     }
 }

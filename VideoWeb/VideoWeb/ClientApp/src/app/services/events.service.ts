@@ -136,7 +136,8 @@ export class EventsService {
 
     getChatMessage(): Observable<ChatResponse> {
         this.connection.on('ReceiveMessage', (conferenceId: string, from: string, message: string, timestamp: Date) => {
-            const chat = new ChatResponse({ from, message, timestamp });
+            const date = new Date(timestamp);
+            const chat = new ChatResponse({ from, message, timestamp: date });
             this.logger.event('ReceiveMessage received', chat);
             this.messageSubject.next(chat);
         });
@@ -145,7 +146,6 @@ export class EventsService {
     }
 
     async sendMessage(conferenceId: string, message: string) {
-        const from = this.adalService.userInfo.userName.toLocaleLowerCase().trim();
-        await this.connection.send('SendMessage', conferenceId, from, message);
+        await this.connection.send('SendMessage', conferenceId, message);
     }
 }

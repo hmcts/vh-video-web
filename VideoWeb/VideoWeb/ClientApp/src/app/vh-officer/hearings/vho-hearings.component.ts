@@ -133,16 +133,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
                 });
             })
         );
-
-        this.logger.debug('Subscribing to chats');
-        this.eventHubSubscriptions.add(
-            this.eventService.getChatMessage().subscribe(message => {
-                this.ngZone.run(() => {
-                    this.logger.debug('message received');
-                    this.logger.debug(JSON.stringify(message));
-                });
-            })
-        );
     }
 
     refreshConferenceDataDuringDisconnect() {

@@ -77,23 +77,8 @@ export class VhoChatComponent implements OnInit, OnDestroy {
         this.messages.push(message);
     }
 
-    async retrieveChatForConference() {
+    async retrieveChatForConference(): Promise<void> {
         this.messages = await this.videoWebService.getConferenceChatHistory(this._hearing.id).toPromise();
-        this.handleIncomingMessage(
-            new ChatResponse({
-                from: 'Manual01Judge01@hearings.reform.hmcts.net',
-                message: 'test message from judge',
-                timestamp: new Date(new Date().getUTCDate())
-            })
-        );
-
-        this.handleIncomingMessage(
-            new ChatResponse({
-                from: 'Manual01VideoHearingsOfficer01@hearings.reform.hmcts.net',
-                message: 'test message from vho',
-                timestamp: new Date(new Date().getUTCDate())
-            })
-        );
     }
 
     updateDivWidthForSection(): void {
@@ -105,11 +90,9 @@ export class VhoChatComponent implements OnInit, OnDestroy {
     }
 
     async sendMessage() {
-        console.log(this.newMessageBody);
-        console.log(this.newMessageBody.value);
+        const messageBody = this.newMessageBody.value;
         this.newMessageBody.reset();
-        // const message = 'Test Message ' + new Date().toUTCString();
-        // this.eventService.sendMessage(this._hearing.id, message);
+        this.eventService.sendMessage(this._hearing.id, messageBody);
     }
 
     onKeydown(event: KeyboardEvent) {

@@ -15,8 +15,8 @@
 <div [style.width.px]="sectionDivWidth" style="display: inline-block;"
   class="govuk-grid-row govuk-!-padding-2 govuk-!-padding-left-4">
   <div class="govuk-form-group chat-input">
-    <input class="govuk-input" [formControl]="newMessageBody" id="new-message-box" name="new-message-box" type="text"
-      (keydown)="onKeydown($event)">
+    <input class="govuk-input" autocomplete="off" [formControl]="newMessageBody" id="new-message-box"
+      name="new-message-box" type="text" (keydown)="onKeydown($event)">
     <button (click)="sendMessage()" id="send-new-message-btn" class="govuk-button" data-module="govuk-button">
       Send
     </button>
