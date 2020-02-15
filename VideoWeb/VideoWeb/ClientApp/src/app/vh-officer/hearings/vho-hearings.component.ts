@@ -47,7 +47,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     tasks: TaskResponse[];
     conferencesSubscription: Subscription;
     eventHubSubscriptions: Subscription = new Subscription();
-    chatHubSubscription: Subscription = new Subscription();
 
     displayFilter = false;
     filterOptionsCount = 0;
@@ -91,7 +90,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         clearInterval(this.interval);
         this.conferencesSubscription.unsubscribe();
         this.eventHubSubscriptions.unsubscribe();
-        this.chatHubSubscription.unsubscribe();
     }
 
     private setupEventHubSubscribers() {

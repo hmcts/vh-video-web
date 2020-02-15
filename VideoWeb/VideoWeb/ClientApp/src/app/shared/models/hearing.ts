@@ -9,8 +9,7 @@ export class Hearing {
     constructor(conference: ConferenceResponse) {
         this.conference = conference;
         if (conference.participants) {
-            this.participants = this.conference.participants
-                .map(p => new Participant(p));
+            this.participants = this.conference.participants.map(p => new Participant(p));
         }
     }
 
@@ -94,10 +93,7 @@ export class Hearing {
 
     isReadyToStart(): boolean {
         const currentDateTime = new Date(new Date().getTime());
-        const difference = moment(this.conference.scheduled_date_time).diff(
-            moment(currentDateTime),
-            'minutes'
-        );
+        const difference = moment(this.conference.scheduled_date_time).diff(moment(currentDateTime), 'minutes');
         return difference < 30;
     }
 
@@ -155,5 +151,9 @@ export class Hearing {
         let closed = moment(this.conference.closed_date_time);
         closed = closed.add(30, 'minutes');
         return now.isAfter(closed) && this.conference.status === ConferenceStatus.Closed;
+    }
+
+    getParticipantByUsername(username: string) {
+        return this.participants.find(p => p.username.toLocaleLowerCase() === username.toLocaleLowerCase());
     }
 }

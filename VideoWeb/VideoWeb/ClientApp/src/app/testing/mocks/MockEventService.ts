@@ -4,9 +4,8 @@ import { ConsultationMessage } from 'src/app/services/models/consultation-messag
 import { HelpMessage } from 'src/app/services/models/help-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 
-import { ConferenceStatus, ParticipantStatus, RoomType, ConsultationAnswer } from '../../services/clients/api-client';
+import { ConferenceStatus, ParticipantStatus, RoomType, ConsultationAnswer, ChatResponse } from '../../services/clients/api-client';
 import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
-import { ChatMessage } from 'src/app/services/models/chat-message';
 
 export class MockEventsService {
     nextParticipantStatusMessage: ParticipantStatusMessage;
@@ -59,8 +58,8 @@ export class MockEventsService {
         return of(this.nextAdminConsultationMessage);
     }
 
-    getChatMessage(): Observable<ChatMessage> {
-        return of(new ChatMessage('612AB52C-BDA5-4F4D-95B8-3F49065219A6', 'chris.green@hearings.net', 'test messafe', new Date()));
+    getChatMessage(): Observable<ChatResponse> {
+        return of(new ChatResponse({ from: 'chris.green@hearings.net', message: 'test message', timestamp: new Date() }));
     }
 
     getServiceDisconnected(): Observable<any> {

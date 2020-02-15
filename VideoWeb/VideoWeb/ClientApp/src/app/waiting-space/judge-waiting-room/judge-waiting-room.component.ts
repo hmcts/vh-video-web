@@ -179,14 +179,6 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
                 });
             })
         );
-
-        this.logger.debug('Subscribing to chat messages');
-        this.eventHubSubscriptions.add(
-            this.eventService.getChatMessage().subscribe(message => {
-                this.logger.debug('message received');
-                this.logger.debug(JSON.stringify(message));
-            })
-        );
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): any {

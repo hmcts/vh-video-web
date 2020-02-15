@@ -10,6 +10,7 @@ import { VhOfficerRoutingModule } from './vh-officer-routing.module';
 import { ClipboardModule } from 'ngx-clipboard';
 import { VhoHearingsFilterComponent } from '../vh-officer/vho-herings-filter/vho-hearings-filter.component';
 import { HearingsFilterOptionsService } from '../vh-officer/services/hearings-filter-options.service';
+import { VhoChatComponent } from './vho-chat/vho-chat.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { HearingsFilterOptionsService } from '../vh-officer/services/hearings-fi
     VhoHearingListComponent,
     ParticipantStatusComponent,
     ParticipantInfoTooltipComponent,
-    VhoHearingsFilterComponent
+    VhoHearingsFilterComponent,
+    VhoChatComponent
   ],
   imports: [
     CommonModule,

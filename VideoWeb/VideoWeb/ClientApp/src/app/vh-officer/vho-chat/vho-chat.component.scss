@@ -1,0 +1,21 @@
+@import "~govuk-frontend/govuk/all";
+
+.chat-header {
+  background: govuk-colour("light-grey");
+}
+
+.chat-window {
+  min-height: 200px;
+}
+
+.own-message {
+  text-align: right;
+}
+
+.other-message {
+  text-align: left;
+}
+
+.chat-input {
+  display: flex;
+}
