@@ -89,7 +89,7 @@ export class VhoChatComponent implements OnInit, OnDestroy {
         this.sectionDivWidth = frameWidth;
     }
 
-    async sendMessage() {
+    sendMessage() {
         const messageBody = this.newMessageBody.value;
         this.newMessageBody.reset();
         this.eventService.sendMessage(this._hearing.id, messageBody);
