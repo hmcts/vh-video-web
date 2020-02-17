@@ -6,6 +6,7 @@ using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
+using ParticipantStatus = VideoWeb.Contract.Responses.ParticipantStatus;
 using UserRole = VideoWeb.Contract.Responses.UserRole;
 
 namespace VideoWeb.UnitTests.Mappings
