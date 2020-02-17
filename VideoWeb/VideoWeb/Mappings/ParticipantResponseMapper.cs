@@ -11,7 +11,7 @@ namespace VideoWeb.Mappings
     {
         public ParticipantResponse MapParticipantToResponseModel(ParticipantDetailsResponse participant, BookingParticipant bookingParticipant)
         {
-            if (Enum.TryParse(participant.Current_status.ToString(), true, out ParticipantStatus status))
+            if (!Enum.TryParse(participant.Current_status.ToString(), true, out ParticipantStatus status))
                 status = ParticipantStatus.None;
             if (!Enum.TryParse(participant.User_role.ToString(), true, out UserRole role)) 
                 role = UserRole.None;
