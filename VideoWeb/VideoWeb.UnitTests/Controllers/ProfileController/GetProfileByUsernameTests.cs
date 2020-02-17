@@ -1,5 +1,6 @@
 using System.Net;
 using System.Threading.Tasks;
+using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +14,7 @@ using ProblemDetails = VideoWeb.Services.User.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ProfileController
 {
-    public class GetUserProfileTests
+    public class GetProfileByUsernameTests
     {
         private ProfilesController _controller;
         private Mock<IUserApiClient> _userApiClientMock;
@@ -38,16 +39,17 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
                 ControllerContext = context
             };
         }
-        
+
         [Test]
         public async Task Should_return_ok_code_when_user_profile_found()
         {
-            var userProfile = new UserProfile() {User_role = "Judge"};
+            var username = "judge@hmcts.net";
+            var profile = Builder<UserProfile>.CreateNew().With(x => x.User_role = "Judge").With(x => x.User_name = username).Build();
             _userApiClientMock
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(userProfile);
+                .ReturnsAsync(profile);
 
-            var result = await _controller.GetUserProfile();
+            var result = await _controller.GetProfileByUsername(username);
             var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
         }
@@ -55,13 +57,14 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
         [Test]
         public async Task Should_return_not_found_code_when_user_profile_is_not_found()
         {
+            var username = "judge@hmcts.net";
             var apiException = new UserApiException<ProblemDetails>("User not found", (int) HttpStatusCode.NotFound,
                 "User Not Found", null, default, null);
             _userApiClientMock
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetUserProfile();
+            var result = await _controller.GetProfileByUsername(username);
             var typedResult = (ObjectResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
         }
@@ -69,13 +72,14 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
         [Test]
         public async Task Should_return_exception()
         {
+            var username = "judge@hmcts.net";
             var apiException = new UserApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
             _userApiClientMock
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetUserProfile();
+            var result = await _controller.GetProfileByUsername(username);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
         } 

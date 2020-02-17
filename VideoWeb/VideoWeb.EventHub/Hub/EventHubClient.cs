@@ -151,7 +151,7 @@ namespace VideoWeb.EventHub.Hub
             if (conference == null) throw new ConferenceNotFoundException(conferenceId);
 
             return conference.GetJudge().Username
-                .Equals(Context.User.Identity.Name, StringComparison.InvariantCultureIgnoreCase);
+                .Equals(Context.UserIdentifier, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

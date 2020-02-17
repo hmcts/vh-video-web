@@ -1,8 +1,13 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using FizzWare.NBuilder;
+using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Hub;
+using VideoWeb.EventHub.Models;
 
 namespace VideoWeb.UnitTests.Hub
 {
@@ -11,7 +16,16 @@ namespace VideoWeb.UnitTests.Hub
         [Test]
         public async Task should_send_message_to_conference_group()
         {
+            var username = "john@doe.com";
             var conferenceId = Guid.NewGuid();
+            var participants = Builder<Participant>.CreateListOfSize(2)
+                .TheFirst(1).With(x => x.Role = UserRole.Judge).With(x => x.Username = username)
+                .Build().ToList();
+            var conference = Builder<Conference>.CreateNew()
+                .With(x => x.Id = conferenceId)
+                .With(x => x.Participants = participants)
+                .Build();
+            MemoryCache.Set(conferenceId, conference);
             var message = "test message";
 
             var mockClient = new Mock<IEventHubClient>();
