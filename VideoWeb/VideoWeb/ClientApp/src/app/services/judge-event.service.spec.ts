@@ -4,13 +4,14 @@ import { of, Subscription } from 'rxjs';
 import { JudgeEventService } from './judge-event.service';
 import { SessionStorage } from './session-storage';
 import { EventStatusModel } from './models/event-status.model';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 
 
 describe('JudgeEventService', () => {
   let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
   videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['raiseParticipantEvent']);
   videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
-  const service = new JudgeEventService(videoWebServiceSpy);
+  const service = new JudgeEventService(videoWebServiceSpy, new MockLogger());
 
   it('should raise judge available event', () => {
     service.clearJudgeUnload();

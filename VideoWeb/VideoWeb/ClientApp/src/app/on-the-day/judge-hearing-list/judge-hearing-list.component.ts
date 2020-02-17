@@ -50,8 +50,8 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
     this.profileService.getUserProfile().then((profile) => {
       this.profile = profile;
     });
-    this.judgeEventService.raiseJudgeUnavailableEvent();
     this.judgeEventService.clearJudgeUnload();
+    this.judgeEventService.raiseJudgeUnavailableEvent();
     this.retrieveHearingsForUser();
     this.interval = setInterval(() => {
       this.retrieveHearingsForUser();
@@ -63,7 +63,6 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
     this.logger.debug('Clearing intervals and subscriptions for Judge/Clerk');
     clearInterval(this.interval);
     this.conferencesSubscription.unsubscribe();
-    this.judgeEventService.clearSubcriptions();
     this.enableFullScreen(false);
   }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { JudgeEventService } from 'src/app/services/judge-event.service';
@@ -8,7 +8,7 @@ import { JudgeEventService } from 'src/app/services/judge-event.service';
   templateUrl: './equipment-check.component.html',
   styleUrls: ['./equipment-check.component.css']
 })
-export class EquipmentCheckComponent implements OnInit, OnDestroy {
+export class EquipmentCheckComponent implements OnInit {
   conferenceId: string;
 
   constructor(
@@ -28,9 +28,5 @@ export class EquipmentCheckComponent implements OnInit, OnDestroy {
     } else {
       this.router.navigate([PageUrls.SwitchOnCameraMicrophone]);
     }
-  }
-
-  ngOnDestroy() {
-    this.judgeEventService.clearSubcriptions();
   }
 }

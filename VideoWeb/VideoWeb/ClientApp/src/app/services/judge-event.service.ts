@@ -3,7 +3,7 @@ import { UpdateParticipantStatusEventRequest, EventType } from './clients/api-cl
 import { SessionStorage } from './session-storage';
 import { EventStatusModel } from './models/event-status.model';
 import { VideoWebService } from './api/video-web.service';
-import { Subscription } from 'rxjs';
+import { Logger } from './logging/logger-base';
 
 @Injectable({ providedIn: 'root' })
 export class JudgeEventService {
@@ -11,9 +11,8 @@ export class JudgeEventService {
   private readonly eventUnloadCache: SessionStorage<boolean>;
   private readonly JUDGE_STATUS_KEY = 'vh.judge.status';
   private readonly JUDGE_STATUS_UNLOAD_KEY = 'vh.judge.status.unload';
-  $eventSubscription: Subscription;
 
-  constructor(private videoWebService: VideoWebService) {
+  constructor(private videoWebService: VideoWebService, private logger: Logger){
     this.eventStatusCache = new SessionStorage(this.JUDGE_STATUS_KEY);
     this.eventUnloadCache = new SessionStorage(this.JUDGE_STATUS_UNLOAD_KEY);
   }
@@ -37,41 +36,28 @@ export class JudgeEventService {
       return this.eventUnloadCache.get();
   }
 
-  public raiseJudgeAvailableEvent(conferenceId: string, participantId: string) {
-    //const isUnload = this.eventUnloadCache.get();
-    //if (!isUnload) {
-      this.setJudgeEventDetails(conferenceId, participantId);
-      this.sendEvent(conferenceId, participantId, EventType.JudgeAvailable);
-    //}
+    public async raiseJudgeAvailableEvent(conferenceId: string, participantId: string) {
+    this.setJudgeEventDetails(conferenceId, participantId);
+    await this.sendEventAsync(conferenceId, participantId, EventType.JudgeAvailable);
   }
-
-  public raiseJudgeUnavailableEvent() {
+  
+  public async raiseJudgeUnavailableEvent() {
     const eventStatusDetails = this.eventStatusCache.get();
     if (eventStatusDetails) {
-      this.sendEvent(eventStatusDetails.ConferenceId, eventStatusDetails.ParticipantId, EventType.JudgeUnavailable);
+      await this.sendEventAsync(eventStatusDetails.ConferenceId, eventStatusDetails.ParticipantId, EventType.JudgeUnavailable);
     }
   }
 
-  private sendEvent(conferenceId: string, participantId: string, eventType: EventType) {
-    this.$eventSubscription = this.videoWebService
+  private  async sendEventAsync(conferenceId: string, participantId: string, eventType: EventType) {
+    const request = new UpdateParticipantStatusEventRequest({
+      participant_id: participantId,
+      event_type: eventType
+    });
+    await this.videoWebService
       .raiseParticipantEvent(
         conferenceId,
-        new UpdateParticipantStatusEventRequest({
-          participant_id: participantId,
-          event_type: eventType
-        })
-      )
-      .subscribe(
-        x => { },
-        error => {
-          console.error(error);
-        }
-      );
+        request
+      ).toPromise().then(x => { }).catch(error => { console.error(error) });
   }
-
-  clearSubcriptions() {
-    if (this.$eventSubscription) {
-      this.$eventSubscription.unsubscribe();
-    }
-  }
+  
 }

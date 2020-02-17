@@ -23,7 +23,7 @@ describe('EquipmentCheckComponent', () => {
   configureTestSuite(() => {
 
     judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService',
-      ['raiseJudgeUnavailableEvent', 'clearSubcriptions']);
+      ['raiseJudgeUnavailableEvent']);
 
     TestBed.configureTestingModule({
       declarations: [EquipmentCheckComponent],
