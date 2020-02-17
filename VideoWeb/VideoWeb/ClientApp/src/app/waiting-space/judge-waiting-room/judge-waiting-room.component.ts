@@ -99,11 +99,6 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
 
   sendMessage() {
     this.eventService.sendMessage(this.conference.id, `message from judge ${this.adalService.userInfo.userName}`);
-    this.postEventJudgeAvailableStatus();
-
-    if (this.$afterStayOnSubcription) {
-      this.$afterStayOnSubcription.unsubscribe();
-    }
   }
 
   async getConference() {
