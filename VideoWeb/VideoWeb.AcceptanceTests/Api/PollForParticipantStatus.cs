@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Requests;
@@ -52,8 +52,8 @@ namespace VideoWeb.AcceptanceTests.Api
                 var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
                 conference.Should().NotBeNull();
                 var participant = conference.Participants.Find(x => x.Username.ToLower().Equals(_username.ToLower()));
-                var participantState = participant.Current_status?.Participant_state;
-                if (participantState != null && participantState.Equals(_expectedState))
+                var participantState = participant.Current_status;
+                if (participantState.Equals(_expectedState))
                 {
                     return participantState;
                 }

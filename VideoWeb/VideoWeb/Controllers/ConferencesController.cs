@@ -199,6 +199,17 @@ namespace VideoWeb.Controllers
             {
                 _logger.LogTrace($"Retrieving booking participants for hearing ${conference.Hearing_id}");
                 bookingParticipants = await _bookingsApiClient.GetAllParticipantsInHearingAsync(conference.Hearing_id);
+                if (bookingParticipants.Any())
+                {
+                    try
+                    {
+                        ValidateConferenceAndBookingParticipantsMatch(conference.Participants, bookingParticipants);
+                    }
+                    catch (AggregateException e)
+                    {
+                        return StatusCode((int)HttpStatusCode.ExpectationFailed, e);
+                    }
+                }
             }
             catch (BookingsApiException e)
             {
@@ -209,17 +220,7 @@ namespace VideoWeb.Controllers
                 _logger.LogError(e, $"Unable to retrieve booking participants for hearing ${conference.Hearing_id}");
             }
 
-            if (bookingParticipants.Any())
-            {
-                try
-                {
-                    ValidateConferenceAndBookingParticipantsMatch(conference.Participants, bookingParticipants);
-                }
-                catch (AggregateException e)
-                {
-                    return StatusCode((int) HttpStatusCode.ExpectationFailed, e);
-                }
-            }
+            
 
             // these are roles that are filtered against when lists participants on the UI
             var displayRoles = new List<UserRole>
