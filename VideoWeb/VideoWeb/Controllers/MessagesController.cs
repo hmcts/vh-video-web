@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Controllers
@@ -40,13 +41,9 @@ namespace VideoWeb.Controllers
             try
             {
                 var messages = await _videoApiClient.GetMessagesAsync(conferenceId);
-                var response = messages.Select(x => new ChatResponse
-                {
-                    From = x.From.ToLower(),
-                    Message = x.Message_text,
-                    Timestamp = x.Time_stamp,
-                    IsUser = x.From.Equals(User.Identity.Name, StringComparison.InvariantCultureIgnoreCase)
-                });
+                var mapper = new ChatResponseMapper();
+                var username = User.Identity.Name;
+                var response = messages.Select(x => mapper.MapToResponseModel(x, username));
                 return Ok(response);
             }
             catch (VideoApiException e)

@@ -134,13 +134,13 @@ namespace VideoWeb.EventHub.Hub
             if (!isAllowed) return;
             var from = Context.User.Identity.Name;
             var timestamp = DateTime.UtcNow;
+            
             await Clients.Group(conferenceId.ToString()).ReceiveMessage(conferenceId, from, message, timestamp);
-            // TODO: enable once messaging works
-            // await _videoApiClient.SaveMessageAsync(conferenceId, new AddMessageRequest
-            // {
-            //     From = from,
-            //     Message_text = message
-            // });
+            await _videoApiClient.SaveMessageAsync(conferenceId, new AddMessageRequest
+            {
+                From = from,
+                Message_text = message
+            });
         }
 
         private async Task<bool> IsAllowedToSendMessage(Guid conferenceId)
