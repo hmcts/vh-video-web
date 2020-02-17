@@ -12,7 +12,7 @@ export class JudgeEventService {
   private readonly JUDGE_STATUS_KEY = 'vh.judge.status';
   private readonly JUDGE_STATUS_UNLOAD_KEY = 'vh.judge.status.unload';
 
-  constructor(private videoWebService: VideoWebService, private logger: Logger){
+  constructor(private videoWebService: VideoWebService, private logger: Logger) {
     this.eventStatusCache = new SessionStorage(this.JUDGE_STATUS_KEY);
     this.eventUnloadCache = new SessionStorage(this.JUDGE_STATUS_UNLOAD_KEY);
   }
@@ -32,15 +32,15 @@ export class JudgeEventService {
     this.eventUnloadCache.clear();
   }
 
-    public isUnload() {
-      return this.eventUnloadCache.get();
+  public isUnload() {
+    return this.eventUnloadCache.get();
   }
 
-    public async raiseJudgeAvailableEvent(conferenceId: string, participantId: string) {
+  public async raiseJudgeAvailableEvent(conferenceId: string, participantId: string) {
     this.setJudgeEventDetails(conferenceId, participantId);
     await this.sendEventAsync(conferenceId, participantId, EventType.JudgeAvailable);
   }
-  
+
   public async raiseJudgeUnavailableEvent() {
     const eventStatusDetails = this.eventStatusCache.get();
     if (eventStatusDetails) {
@@ -48,7 +48,7 @@ export class JudgeEventService {
     }
   }
 
-  private  async sendEventAsync(conferenceId: string, participantId: string, eventType: EventType) {
+  private async sendEventAsync(conferenceId: string, participantId: string, eventType: EventType) {
     const request = new UpdateParticipantStatusEventRequest({
       participant_id: participantId,
       event_type: eventType
@@ -57,7 +57,7 @@ export class JudgeEventService {
       .raiseParticipantEvent(
         conferenceId,
         request
-      ).toPromise().then(x => { }).catch(error => { console.error(error) });
+    ).toPromise().then(x => { }).catch(error => { console.error(error); });
   }
-  
+
 }

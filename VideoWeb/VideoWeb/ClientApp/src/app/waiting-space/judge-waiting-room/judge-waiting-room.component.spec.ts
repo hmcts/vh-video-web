@@ -33,7 +33,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
   let eventService: MockEventsService;
   let judgeEventServiceSpy: jasmine.SpyObj<JudgeEventService>;
 
-
   configureTestSuite(() => {
     conference = new ConferenceTestData().getConferenceDetail();
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'raiseParticipantEvent']);
@@ -41,7 +40,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
 
     judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService',
-      ['raiseJudgeAvailableEvent', 'raiseJudgeUnavailableEvent', 'setJudgeUnload','isUnload']);
+      ['raiseJudgeAvailableEvent', 'raiseJudgeUnavailableEvent', 'setJudgeUnload', 'isUnload']);
     judgeEventServiceSpy.raiseJudgeAvailableEvent.and.callThrough();
     judgeEventServiceSpy.raiseJudgeUnavailableEvent.and.callThrough();
     judgeEventServiceSpy.isUnload.and.returnValue(true);
@@ -76,11 +75,11 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     fixture = TestBed.createComponent(JudgeWaitingRoomComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+
   });
 
   it('should create and display conference details', async done => {
     await fixture.whenStable();
-    component.isUnload = true;
     expect(component).toBeTruthy();
     expect(component.loadingData).toBeFalsy();
     expect(component.conference).toBeDefined();
@@ -89,7 +88,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
   it('should update conference status', async done => {
     await fixture.whenStable();
-    component.isUnload = true;
     const conferenceStatus = ConferenceStatus.InSession;
     component.handleHearingStatusChange(conferenceStatus);
     expect(component.conference.status).toBe(conferenceStatus);
@@ -98,7 +96,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
   it('should update participant status', async done => {
     await fixture.whenStable();
-    component.isUnload = true;
     const message = eventService.nextParticipantStatusMessage;
     component.handleParticipantStatusChange(message);
     const participant = component.conference.participants.find(x => x.id === message.participantId);
@@ -108,7 +105,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
   it('should return correct conference status text when suspended', async done => {
     await fixture.whenStable();
-    component.isUnload = true;
     component.conference.status = ConferenceStatus.Suspended;
     expect(component.getConferenceStatusText()).toBe('Hearing suspended');
     done();
@@ -116,7 +112,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
   it('should return correct conference status text when paused', async done => {
     await fixture.whenStable();
-    component.isUnload = true;
     component.conference.status = ConferenceStatus.Paused;
     expect(component.getConferenceStatusText()).toBe('Hearing paused');
     done();
@@ -124,7 +119,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
   it('should return correct conference status text when closed', async done => {
     await fixture.whenStable();
-    component.isUnload = true;
     component.conference.status = ConferenceStatus.Closed;
     expect(component.getConferenceStatusText()).toBe('Hearing is closed');
     done();
@@ -132,7 +126,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
   it('should return correct conference status text when in session', async done => {
     await fixture.whenStable();
-    component.isUnload = true;
     component.conference.status = ConferenceStatus.InSession;
     expect(component.getConferenceStatusText()).toBe('Hearing is in session');
     done();
@@ -140,7 +133,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
   it('should return correct conference status text when not started', async done => {
     await fixture.whenStable();
-    component.isUnload = true;
     component.conference.status = ConferenceStatus.NotStarted;
     expect(component.getConferenceStatusText()).toBe('Start this hearing');
     done();
@@ -148,7 +140,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
   it('should return true when conference is paused', async done => {
     await fixture.whenStable();
-    component.isUnload = true;
     component.conference.status = ConferenceStatus.Paused;
     expect(component.isPaused()).toBeTruthy();
     done();
@@ -156,7 +147,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
   it('should return false when conference is not paused', async done => {
     await fixture.whenStable();
-    component.isUnload = true;
     component.conference.status = ConferenceStatus.InSession;
     expect(component.isPaused()).toBeFalsy();
     done();
@@ -164,7 +154,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
   it('should return true when conference is not started', async done => {
     await fixture.whenStable();
-    component.isUnload = true;
     component.conference.status = ConferenceStatus.NotStarted;
     expect(component.isNotStarted()).toBeTruthy();
     done();
@@ -172,7 +161,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
   it('should return false when conference is has started', async done => {
     await fixture.whenStable();
-    component.isUnload = true;
     component.conference.status = ConferenceStatus.InSession;
     expect(component.isNotStarted()).toBeFalsy();
     done();
@@ -201,7 +189,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     component.ngOnInit();
     expect(judgeEventServiceSpy.raiseJudgeAvailableEvent).toHaveBeenCalled();
   });
-  
+
   it('should raise judge unavaliable event', () => {
     component.beforeunloadHandler(new Event('unload'));
     expect(judgeEventServiceSpy.raiseJudgeUnavailableEvent).toHaveBeenCalled();

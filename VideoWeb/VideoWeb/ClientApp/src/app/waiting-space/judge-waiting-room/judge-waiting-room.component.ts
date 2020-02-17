@@ -25,7 +25,6 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
   hearing: Hearing;
   $afterStayOnSubcription: Subscription;
   intervalSource: Observable<number>;
-  isUnload = false;
 
   apiSubscriptions: Subscription = new Subscription();
   eventHubSubscriptions: Subscription = new Subscription();
@@ -58,7 +57,6 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
 
   async firefoxUnload() {
     if (this.judgeEventService.isUnload() && this.deviceTypeService.getBrowserName() === 'Firefox') {
-      this.isUnload = true;
       this.judgeEventService.clearJudgeUnload();
       await this.judgeEventService.raiseJudgeUnavailableEvent();
     }
@@ -69,7 +67,7 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
   // detect browser leave/stay on button click event(security reason).
   // The interval is used to detect stay on.
   subcribeForStayOn() {
-    if (!this.isUnload) {
+    if (!this.judgeEventService.isUnload()) {
       this.intervalSource = interval(10000);
       this.$afterStayOnSubcription = this.intervalSource.subscribe(() => {
         this.afterStayOn();
@@ -109,9 +107,9 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
       .then((data: ConferenceResponse) => {
         this.loadingData = false;
         this.conference = data;
-        if (!this.judgeEventService.isUnload()) {
-          this.postEventJudgeAvailableStatus();
-        }
+
+        this.postEventJudgeAvailableStatus();
+
         this.hearing = new Hearing(data);
       })
       .catch(error => {

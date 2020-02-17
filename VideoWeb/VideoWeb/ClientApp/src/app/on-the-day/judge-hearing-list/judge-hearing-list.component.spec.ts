@@ -29,7 +29,7 @@ describe('JudgeHearingListComponent with no conferences for user', () => {
     videoWebServiceSpy.getConferencesForJudge.and.returnValue(of(noConferences));
     videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
     judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService',
-      ['raiseJudgeUnavailableEvent', 'clearSubcriptions', 'clearJudgeUnload']);
+      ['raiseJudgeUnavailableEvent', 'clearJudgeUnload']);
 
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, SharedModule],
@@ -74,7 +74,7 @@ describe('JudgeHearingListComponent with conferences for user', () => {
     videoWebServiceSpy.getConferencesForJudge.and.returnValue(of(conferences));
     videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
     judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService',
-      ['raiseJudgeUnavailableEvent', 'clearSubcriptions', 'clearJudgeUnload']);
+      ['raiseJudgeUnavailableEvent', 'clearJudgeUnload']);
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],
@@ -130,7 +130,7 @@ describe('JudgeHearingListComponent with service error', () => {
     videoWebServiceSpy.getConferencesForJudge.and.returnValue(throwError({ status: 401, isApiException: true }));
     videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
     judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService',
-      ['raiseJudgeUnavailableEvent', 'clearSubcriptions', 'clearJudgeUnload']);
+      ['raiseJudgeUnavailableEvent', 'clearJudgeUnload']);
 
     TestBed.configureTestingModule({
       imports: [SharedModule, RouterTestingModule],

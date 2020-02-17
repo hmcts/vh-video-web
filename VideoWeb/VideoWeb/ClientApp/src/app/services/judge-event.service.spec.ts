@@ -25,12 +25,7 @@ describe('JudgeEventService', () => {
     service.raiseJudgeUnavailableEvent();
     expect(videoWebServiceSpy.raiseParticipantEvent).toHaveBeenCalled();
   });
-  it('should clean subcription', () => {
-    service.$eventSubscription = new Subscription();
-    spyOn(service.$eventSubscription, 'unsubscribe').and.callThrough();
-    service.clearSubcriptions();
-    expect(service.$eventSubscription.unsubscribe).toHaveBeenCalled();
-  });
+
   it('should set value in cache to true to indicate judge is closing browser ', () => {
     service.setJudgeUnload();
     expect(service.isUnload()).toBe(true);
