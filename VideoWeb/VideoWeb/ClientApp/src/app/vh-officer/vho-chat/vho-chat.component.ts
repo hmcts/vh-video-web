@@ -5,6 +5,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
+import { ProfileService } from 'src/app/services/api/profile.service';
 
 @Component({
     selector: 'app-vho-chat',
@@ -23,12 +24,13 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
 
     constructor(
         protected videoWebService: VideoWebService,
+        protected profileService: ProfileService,
         protected ngZone: NgZone,
         protected eventService: EventsService,
         protected logger: Logger,
         protected adalService: AdalService
     ) {
-        super(videoWebService, ngZone, eventService, logger, adalService);
+        super(videoWebService, profileService, ngZone, eventService, logger, adalService);
     }
 
     ngOnInit() {

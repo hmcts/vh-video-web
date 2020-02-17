@@ -2,22 +2,25 @@ import { Injectable } from '@angular/core';
 import { ApiClient, UserProfileResponse } from '../clients/api-client';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class ProfileService {
+    profile: UserProfileResponse;
 
-  profile: UserProfileResponse;
+    constructor(private apiClient: ApiClient) {}
 
-  constructor(private apiClient: ApiClient) { }
-
-  async getUserProfile(): Promise<UserProfileResponse> {
-    if (!this.profile) {
-      this.profile = await this.apiClient.getUserProfile().toPromise();
+    async getUserProfile(): Promise<UserProfileResponse> {
+        if (!this.profile) {
+            this.profile = await this.apiClient.getUserProfile().toPromise();
+        }
+        return this.profile;
     }
-    return this.profile;
-  }
 
-  clearUserProfile(): void {
-    this.profile = null;
-  }
+    async getProfileByUsername(username: string): Promise<UserProfileResponse> {
+        return await this.apiClient.getProfileByUsername(username).toPromise();
+    }
+
+    clearUserProfile(): void {
+        this.profile = null;
+    }
 }

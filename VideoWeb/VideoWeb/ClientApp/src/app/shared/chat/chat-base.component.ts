@@ -6,6 +6,7 @@ import { ChatResponse, ConferenceResponse } from 'src/app/services/clients/api-c
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { ProfileService } from 'src/app/services/api/profile.service';
 
 @Component({
     template: ''
@@ -22,6 +23,7 @@ export abstract class ChatBaseComponent {
 
     constructor(
         protected videoWebService: VideoWebService,
+        protected profileService: ProfileService,
         protected ngZone: NgZone,
         protected eventService: EventsService,
         protected logger: Logger,
@@ -37,30 +39,35 @@ export abstract class ChatBaseComponent {
         this.logger.debug('Subscribing to chat messages');
         this.chatHubSubscription.add(
             this.eventService.getChatMessage().subscribe(message => {
-                this.ngZone.run(() => {
-                    this.handleIncomingMessage(message);
+                this.ngZone.run(async () => {
+                    await this.handleIncomingMessage(message);
                 });
             })
         );
     }
 
-    handleIncomingMessage(message: ChatResponse) {
+    async handleIncomingMessage(message: ChatResponse) {
         const from = message.from.toUpperCase();
         const username = this.adalService.userInfo.userName.toUpperCase();
         if (from === username) {
             message.from = 'You';
             message.is_user = true;
         } else {
-            const participant = this._hearing.getParticipantByUsername(from);
-            if (participant) {
-                message.from = participant.displayName;
-            } else {
-                message.from = 'VH Officer';
-            }
+            message.from = await this.assignMessageFrom(from);
             message.is_user = false;
             this.handleIncomingOtherMessage();
         }
         this.messages.push(message);
+    }
+
+    async assignMessageFrom(username: string): Promise<string> {
+        const participant = this._hearing.getParticipantByUsername(username);
+        if (participant) {
+            return participant.displayName;
+        } else {
+            const profile = await this.profileService.getProfileByUsername(username);
+            return profile.first_name;
+        }
     }
 
     handleIncomingOtherMessage() {}

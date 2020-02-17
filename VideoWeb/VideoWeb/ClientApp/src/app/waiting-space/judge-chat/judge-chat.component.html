@@ -26,7 +26,7 @@
     </div>
 
     <div class="govuk-form-group chat-input-group">
-      <textarea class="govuk-textarea chat-input" required maxlength="256" rows=5 autocomplete="off"
+      <textarea class="govuk-textarea chat-input" required maxlength="256" rows=2 autocomplete="off"
         [formControl]="newMessageBody" id="new-message-box" name="new-message-box" #newMessageBox type="text"
         (keydown)="onKeydown($event)"></textarea>
       <button (click)="sendMessage()" id="send-new-message-btn" class="govuk-button chat-btn"
