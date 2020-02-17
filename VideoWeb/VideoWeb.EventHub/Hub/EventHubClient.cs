@@ -135,6 +135,7 @@ namespace VideoWeb.EventHub.Hub
             var from = Context.User.Identity.Name;
             var timestamp = DateTime.UtcNow;
             await Clients.Group(conferenceId.ToString()).ReceiveMessage(conferenceId, from, message, timestamp);
+            // TODO: enable once messaging works
             // await _videoApiClient.SaveMessageAsync(conferenceId, new AddMessageRequest
             // {
             //     From = from,
@@ -149,7 +150,8 @@ namespace VideoWeb.EventHub.Hub
             var conference = _memoryCache.Get<Conference>(conferenceId);
             if (conference == null) throw new ConferenceNotFoundException(conferenceId);
 
-            return conference.GetJudge().Username == Context.User.Identity.Name;
+            return conference.GetJudge().Username
+                .Equals(Context.User.Identity.Name, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

@@ -5,7 +5,7 @@
 }
 
 .chat-window {
-  min-height: 200px;
+  height: 200px;
 }
 
 .own-message {
@@ -16,6 +16,19 @@
   text-align: left;
 }
 
-.chat-input {
+.other-message>p {
+  color: govuk-colour("blue");
+}
+
+.chat-message {
+  white-space: pre-wrap;
+}
+
+.chat-input-group {
   display: flex;
+}
+
+.chat-input {
+  margin-bottom: 0px;
+  resize: none;
 }

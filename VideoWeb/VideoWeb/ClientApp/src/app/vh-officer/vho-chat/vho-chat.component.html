@@ -1,24 +1,25 @@
 <div class="chat-header" [style.width.px]="sectionDivWidth">
   <span class="govuk-!-padding-2 govuk-!-padding-left-4 govuk-heading-s">Instant messages for this hearing</span>
 </div>
-<div id="chat-list" class="govuk-!-padding-2 govuk-!-padding-left-4" [style.width.px]="sectionDivWidth"
-  class="chat-window">
+<div id="chat-list" style="overflow: scroll; height: xyz;" #scrollMe [scrollTop]="scrollMe.scrollHeight"
+  class="govuk-!-padding-2 govuk-!-padding-left-4" [style.width.px]="sectionDivWidth" class="chat-window">
   <span *ngFor="let message of messages" class="govuk-grid-row">
 
     <div class="govuk-grid-column-full" [ngClass]="(message.is_user)?'own-message':'other-message'">
-      <p class="govuk-body govuk-!-margin-bottom-2">{{message.from}} ({{message.timestamp | date:'shortTime' }})</p>
-      <p class="govuk-body">{{message.message}}</p>
+      <p class="govuk-body govuk-!-margin-bottom-2">
+        <span
+          class="govuk-!-font-weight-bold govuk-!-margin-right-2">{{message.from}}</span>({{message.timestamp | date:'shortTime' }})
+      </p>
+      <p class="govuk-body chat-message">{{message.message}}</p>
     </div>
 
   </span>
 </div>
-<div [style.width.px]="sectionDivWidth" style="display: inline-block;"
-  class="govuk-grid-row govuk-!-padding-2 govuk-!-padding-left-4">
-  <div class="govuk-form-group chat-input">
-    <input class="govuk-input" autocomplete="off" [formControl]="newMessageBody" id="new-message-box"
-      name="new-message-box" type="text" (keydown)="onKeydown($event)">
-    <button (click)="sendMessage()" id="send-new-message-btn" class="govuk-button" data-module="govuk-button">
-      Send
-    </button>
-  </div>
+
+<div [style.width.px]="sectionDivWidth" class="govuk-form-group chat-input-group">
+  <input class="govuk-input" autocomplete="off" [formControl]="newMessageBody" id="new-message-box"
+    name="new-message-box" type="text" (keydown)="onKeydown($event)">
+  <button (click)="sendMessage()" id="send-new-message-btn" class="govuk-button" data-module="govuk-button">
+    Send
+  </button>
 </div>

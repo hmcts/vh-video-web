@@ -1,18 +1,23 @@
-import { Component, OnInit, NgZone, OnDestroy, HostListener } from '@angular/core';
-import { ConferenceResponse, ParticipantStatus, ConferenceStatus } from 'src/app/services/clients/api-client';
-import { Router, ActivatedRoute } from '@angular/router';
-import { EventsService } from 'src/app/services/events.service';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { PageUrls } from 'src/app/shared/page-url.constants';
-import { ErrorService } from 'src/app/services/error.service';
-import { Hearing } from 'src/app/shared/models/hearing';
-import { Logger } from 'src/app/services/logging/logger-base';
+import { Component, HostListener, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
-import { UpdateParticipantStatusEventRequest, EventType } from 'src/app/services/clients/api-client';
-import { SessionStorage } from 'src/app/services/session-storage';
-import { EventStatusModel } from 'src/app/services/models/event-status.model';
 import { Subscription } from 'rxjs';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import {
+    ConferenceResponse,
+    ConferenceStatus,
+    EventType,
+    ParticipantStatus,
+    UpdateParticipantStatusEventRequest
+} from 'src/app/services/clients/api-client';
+import { ErrorService } from 'src/app/services/error.service';
+import { EventsService } from 'src/app/services/events.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { EventStatusModel } from 'src/app/services/models/event-status.model';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { SessionStorage } from 'src/app/services/session-storage';
+import { Hearing } from 'src/app/shared/models/hearing';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
     selector: 'app-judge-waiting-room',

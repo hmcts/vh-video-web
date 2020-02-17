@@ -1,28 +1,18 @@
-import { Component, HostListener, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { AdalService } from 'adal-angular4';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ChatResponse, ConferenceResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { AdalService } from 'adal-angular4';
-import { Hearing } from 'src/app/shared/models/hearing';
+import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
 
 @Component({
     selector: 'app-vho-chat',
     templateUrl: './vho-chat.component.html',
     styleUrls: ['./vho-chat.component.scss']
 })
-export class VhoChatComponent implements OnInit, OnDestroy {
-    private _hearing: Hearing;
-    @Input() set conference(conference: ConferenceResponse) {
-        this._hearing = new Hearing(conference);
-    }
-
+export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDestroy {
     sectionDivWidth: number;
-    chatHubSubscription: Subscription = new Subscription();
-
-    messages: ChatResponse[];
 
     newMessageBody: FormControl;
 
@@ -32,12 +22,14 @@ export class VhoChatComponent implements OnInit, OnDestroy {
     }
 
     constructor(
-        private videoWebService: VideoWebService,
-        private ngZone: NgZone,
-        private eventService: EventsService,
-        private logger: Logger,
-        private adalService: AdalService
-    ) {}
+        protected videoWebService: VideoWebService,
+        protected ngZone: NgZone,
+        protected eventService: EventsService,
+        protected logger: Logger,
+        protected adalService: AdalService
+    ) {
+        super(videoWebService, ngZone, eventService, logger, adalService);
+    }
 
     ngOnInit() {
         this.updateDivWidthForSection();
@@ -47,38 +39,6 @@ export class VhoChatComponent implements OnInit, OnDestroy {
 
     initForm() {
         this.newMessageBody = new FormControl(null, Validators.required);
-    }
-
-    setupChatSubscription(): any {
-        this.logger.debug('Setting up VH Officer event subscribers');
-        this.eventService.start();
-
-        this.logger.debug('Subscribing to chat messages');
-        this.chatHubSubscription.add(
-            this.eventService.getChatMessage().subscribe(message => {
-                this.ngZone.run(() => {
-                    this.handleIncomingMessage(message);
-                });
-            })
-        );
-    }
-
-    handleIncomingMessage(message: ChatResponse) {
-        const from = message.from.toUpperCase();
-        const username = this.adalService.userInfo.userName.toUpperCase();
-        if (from === username) {
-            message.from = 'You';
-            message.is_user = true;
-        } else {
-            const participant = this._hearing.getParticipantByUsername(from);
-            message.from = participant.displayName;
-            message.is_user = false;
-        }
-        this.messages.push(message);
-    }
-
-    async retrieveChatForConference(): Promise<void> {
-        this.messages = await this.videoWebService.getConferenceChatHistory(this._hearing.id).toPromise();
     }
 
     updateDivWidthForSection(): void {
@@ -95,15 +55,12 @@ export class VhoChatComponent implements OnInit, OnDestroy {
         this.eventService.sendMessage(this._hearing.id, messageBody);
     }
 
-    onKeydown(event: KeyboardEvent) {
-        if (event.key === 'Enter' && event.shiftKey) {
-            this.sendMessage();
-        }
+    getMessageWindow(): HTMLElement {
+        return document.getElementById('chat-list');
     }
 
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
-        this.logger.debug('Clearing intervals and subscriptions for VH Officer');
         this.chatHubSubscription.unsubscribe();
     }
 }
