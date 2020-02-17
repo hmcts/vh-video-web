@@ -17,122 +17,124 @@ import { ConferenceForUserResponse } from '../../services/clients/api-client';
 import { JudgeHearingListComponent } from './judge-hearing-list.component';
 
 describe('JudgeHearingListComponent with no conferences for user', () => {
-  let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-  let component: JudgeHearingListComponent;
-  let fixture: ComponentFixture<JudgeHearingListComponent>;
-  const noConferences: ConferenceForUserResponse[] = [];
+    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+    let component: JudgeHearingListComponent;
+    let fixture: ComponentFixture<JudgeHearingListComponent>;
+    const noConferences: ConferenceForUserResponse[] = [];
 
-  configureTestSuite(() => {
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForJudge']);
-    videoWebServiceSpy.getConferencesForJudge.and.returnValue(of(noConferences));
+    configureTestSuite(() => {
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForJudge']);
+        videoWebServiceSpy.getConferencesForJudge.and.returnValue(of(noConferences));
 
-    TestBed.configureTestingModule({
-      imports: [RouterTestingModule, SharedModule],
-      declarations: [JudgeHearingListComponent, JudgeHearingTableStubComponent],
-      providers: [
-        { provide: VideoWebService, useValue: videoWebServiceSpy },
-        { provide: ProfileService, useClass: MockProfileService },
-        { provide: Logger, useClass: MockLogger }
-      ]
+        TestBed.configureTestingModule({
+            imports: [RouterTestingModule, SharedModule],
+            declarations: [JudgeHearingListComponent, JudgeHearingTableStubComponent],
+            providers: [
+                { provide: VideoWebService, useValue: videoWebServiceSpy },
+                { provide: ProfileService, useClass: MockProfileService },
+                { provide: Logger, useClass: MockLogger }
+            ]
+        });
     });
-  });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(JudgeHearingListComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(JudgeHearingListComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should show no hearings message', () => {
-    expect(component.hasHearings()).toBeFalsy();
-  });
+    it('should show no hearings message', () => {
+        expect(component.hasHearings()).toBeFalsy();
+    });
 });
 
 describe('JudgeHearingListComponent with conferences for user', () => {
-  let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-  let component: JudgeHearingListComponent;
-  let fixture: ComponentFixture<JudgeHearingListComponent>;
-  const conferences = new ConferenceTestData().getTestData();
-  let router: Router;
-  let profileService: ProfileService;
+    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+    let component: JudgeHearingListComponent;
+    let fixture: ComponentFixture<JudgeHearingListComponent>;
+    const conferences = new ConferenceTestData().getTestData();
+    let router: Router;
+    let profileService: MockProfileService;
 
-  configureTestSuite(() => {
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForJudge']);
-    videoWebServiceSpy.getConferencesForJudge.and.returnValue(of(conferences));
+    configureTestSuite(() => {
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForJudge']);
+        videoWebServiceSpy.getConferencesForJudge.and.returnValue(of(conferences));
 
-    TestBed.configureTestingModule({
-      imports: [SharedModule, RouterTestingModule],
-      declarations: [JudgeHearingListComponent, JudgeHearingTableStubComponent],
-      providers: [
-        { provide: VideoWebService, useValue: videoWebServiceSpy },
-        { provide: ProfileService, useClass: MockProfileService },
-        { provide: Logger, useClass: MockLogger }
-      ]
+        TestBed.configureTestingModule({
+            imports: [SharedModule, RouterTestingModule],
+            declarations: [JudgeHearingListComponent, JudgeHearingTableStubComponent],
+            providers: [
+                { provide: VideoWebService, useValue: videoWebServiceSpy },
+                { provide: ProfileService, useClass: MockProfileService },
+                { provide: Logger, useClass: MockLogger }
+            ]
+        });
     });
-  });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(JudgeHearingListComponent);
-    component = fixture.componentInstance;
-    router = TestBed.get(Router);
-    profileService = TestBed.get(ProfileService);
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(JudgeHearingListComponent);
+        component = fixture.componentInstance;
+        router = TestBed.get(Router);
+        profileService = TestBed.get(ProfileService);
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should list hearings', () => {
-    expect(component.hasHearings()).toBeTruthy();
-  });
+    it('should list hearings', () => {
+        expect(component.hasHearings()).toBeTruthy();
+    });
 
-  it('should have profile name as the court name', async () => {
-    const profile = (<MockProfileService>profileService).mockProfile;
-    component.profile = profile;
-    expect(component.courtName).toBe(`${profile.first_name}, ${profile.last_name}`);
-  });
+    it('should have profile name as the court name', async () => {
+        const profile = profileService.mockProfile;
+        component.profile = profile;
+        expect(component.courtName).toBe(`${profile.first_name}, ${profile.last_name}`);
+    });
 
-  it('should navigate to judge waiting room when conference is selected', () => {
-    spyOn(router, 'navigate').and.callFake(() =>  {});
-    const conference = conferences[0];
-    component.onConferenceSelected(conference);
-    expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeWaitingRoom, conference.id]);
-  });
+    it('should navigate to judge waiting room when conference is selected', () => {
+        spyOn(router, 'navigate').and.callFake(() => {});
+        const conference = conferences[0];
+        component.onConferenceSelected(conference);
+        expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeWaitingRoom, conference.id]);
+    });
 });
 
 describe('JudgeHearingListComponent with service error', () => {
-  let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-  let component: JudgeHearingListComponent;
-  let fixture: ComponentFixture<JudgeHearingListComponent>;
-  let errorService: ErrorService;
+    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+    let component: JudgeHearingListComponent;
+    let fixture: ComponentFixture<JudgeHearingListComponent>;
+    let errorService: ErrorService;
 
-  configureTestSuite(() => {
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForJudge']);
-    videoWebServiceSpy.getConferencesForJudge.and.returnValue(throwError({ status: 401, isApiException: true }));
+    configureTestSuite(() => {
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForJudge']);
+        videoWebServiceSpy.getConferencesForJudge.and.returnValue(throwError({ status: 401, isApiException: true }));
 
-    TestBed.configureTestingModule({
-      imports: [SharedModule, RouterTestingModule],
-      declarations: [JudgeHearingListComponent, JudgeHearingTableStubComponent],
-      providers: [
-        { provide: VideoWebService, useValue: videoWebServiceSpy },
-        { provide: ProfileService, useClass: MockProfileService },
-        { provide: Logger, useClass: MockLogger }
-      ]
+        TestBed.configureTestingModule({
+            imports: [SharedModule, RouterTestingModule],
+            declarations: [JudgeHearingListComponent, JudgeHearingTableStubComponent],
+            providers: [
+                { provide: VideoWebService, useValue: videoWebServiceSpy },
+                { provide: ProfileService, useClass: MockProfileService },
+                { provide: Logger, useClass: MockLogger }
+            ]
+        });
     });
-  });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(JudgeHearingListComponent);
-    component = fixture.componentInstance;
-    errorService = TestBed.get(ErrorService);
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(JudgeHearingListComponent);
+        component = fixture.componentInstance;
+        errorService = TestBed.get(ErrorService);
+    });
 
-  it('should handle api error with error service', () => {
-    spyOn(errorService, 'handleApiError').and.callFake(() => { Promise.resolve(true); });
-    fixture.detectChanges();
-    expect(component).toBeTruthy();
-    expect(component.loadingData).toBeFalsy();
-    expect(errorService.handleApiError).toHaveBeenCalled();
-  });
+    it('should handle api error with error service', () => {
+        spyOn(errorService, 'handleApiError').and.callFake(() => {
+            Promise.resolve(true);
+        });
+        fixture.detectChanges();
+        expect(component).toBeTruthy();
+        expect(component.loadingData).toBeFalsy();
+        expect(errorService.handleApiError).toHaveBeenCalled();
+    });
 });

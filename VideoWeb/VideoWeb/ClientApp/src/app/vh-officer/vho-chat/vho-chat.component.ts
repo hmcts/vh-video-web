@@ -1,11 +1,11 @@
 import { Component, HostListener, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { AdalService } from 'adal-angular4';
+import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
-import { ProfileService } from 'src/app/services/api/profile.service';
 
 @Component({
     selector: 'app-vho-chat',

@@ -18,6 +18,7 @@ import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { JudgeParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
 import { JudgeWaitingRoomComponent } from './judge-waiting-room.component';
+import { JudgeChatStubComponent } from 'src/app/testing/stubs/judge-chat-stub.component';
 
 describe('JudgeWaitingRoomComponent when conference does not exist', () => {
     let component: JudgeWaitingRoomComponent;
@@ -34,7 +35,7 @@ describe('JudgeWaitingRoomComponent when conference does not exist', () => {
 
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],
-            declarations: [JudgeWaitingRoomComponent, JudgeParticipantStatusListStubComponent],
+            declarations: [JudgeWaitingRoomComponent, JudgeParticipantStatusListStubComponent, JudgeChatStubComponent],
             providers: [
                 {
                     provide: ActivatedRoute,

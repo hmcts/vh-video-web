@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AdalService } from 'adal-angular4';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -13,12 +13,15 @@ import { EventsService } from 'src/app/services/events.service';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { ChatResponse } from 'src/app/services/clients/api-client';
 import { configureTestSuite } from 'ng-bullet';
+import { ProfileService } from 'src/app/services/api/profile.service';
+import { MockProfileService } from 'src/app/testing/mocks/MockProfileService';
 
 describe('VhoChatComponent', () => {
     let component: VhoChatComponent;
     let fixture: ComponentFixture<VhoChatComponent>;
     let eventService: MockEventsService;
     let adalService: MockAdalService;
+    let profileService: MockProfileService;
     const conference = new ConferenceTestData().getConferenceDetail();
 
     configureTestSuite(() => {
@@ -28,6 +31,7 @@ describe('VhoChatComponent', () => {
             providers: [
                 { provide: AdalService, useClass: MockAdalService },
                 { provide: VideoWebService, useClass: MockVideoWebService },
+                { provide: ProfileService, useClass: MockProfileService },
                 { provide: Logger, useClass: MockLogger },
                 { provide: EventsService, useClass: MockEventsService }
             ]
@@ -37,6 +41,7 @@ describe('VhoChatComponent', () => {
     beforeEach(() => {
         eventService = TestBed.get(EventsService);
         adalService = TestBed.get(AdalService);
+        profileService = TestBed.get(ProfileService);
         fixture = TestBed.createComponent(VhoChatComponent);
         component = fixture.componentInstance;
         component.conference = conference;
@@ -101,7 +106,7 @@ describe('VhoChatComponent', () => {
         expect(component.messages.length).toBeGreaterThan(messageCount);
     });
 
-    it('should set from to display name whem message is from other user', () => {
+    it('should set from to display name whem message is from other user', async () => {
         const username = conference.participants[0].username;
         const otherUsername = conference.participants[1].username;
         adalService.userInfo.userName = username;
@@ -111,8 +116,16 @@ describe('VhoChatComponent', () => {
             timestamp: new Date()
         });
         const messageCount = component.messages.length;
-        component.handleIncomingMessage(chatResponse);
+        await component.handleIncomingMessage(chatResponse);
         expect(chatResponse.is_user).toBeFalsy();
         expect(component.messages.length).toBeGreaterThan(messageCount);
+    });
+
+    it('should get first name when message from user not in conference', async () => {
+        await fixture.whenStable();
+        const username = 'vhofficer.hearings.net';
+        const expectedFirstName = profileService.mockProfile.first_name;
+        const from = await component.assignMessageFrom(username);
+        expect(from).toBe(expectedFirstName);
     });
 });

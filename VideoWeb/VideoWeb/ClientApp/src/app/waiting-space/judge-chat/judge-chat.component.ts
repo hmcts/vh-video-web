@@ -17,7 +17,6 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
     showChat: boolean;
     unreadMessageCount: number;
 
-    @ViewChild('newMessageBox', { static: false }) messageTextBox: ElementRef<HTMLInputElement>;
     constructor(
         protected videoWebService: VideoWebService,
         protected profileService: ProfileService,
@@ -38,9 +37,8 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
 
     ngAfterViewChecked(): void {
         if (this.showChat) {
-            // focus on textbox
             this.resetUnreadMessageCount();
-            this.messageTextBox.nativeElement.focus();
+            this.getMessageWindow().focus();
         }
     }
 

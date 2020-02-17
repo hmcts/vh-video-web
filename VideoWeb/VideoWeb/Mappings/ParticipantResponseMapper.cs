@@ -12,12 +12,12 @@ namespace VideoWeb.Mappings
             BookingParticipant bookingParticipant)
         {
             var status = Enum.Parse<ParticipantStatus>(participant.Current_status.ToString());
-            
+
             if (!Enum.TryParse(participant.User_role.ToString(), true, out UserRole role))
             {
                 role = UserRole.None;
             }
-            
+
             var response = new ParticipantResponse
             {
                 Id = participant.Id,
