@@ -44,7 +44,7 @@ namespace VideoWeb.AcceptanceTests.Api
             return this;
         }
 
-        public ParticipantState? Poll()
+        public ParticipantState Poll()
         {
             for (var i = 0; i < _maxRetries; i++)
             {
