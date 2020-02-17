@@ -10,9 +10,9 @@ namespace VideoWeb.Mappings
     {
         public ParticipantResponse MapParticipantToResponseModel(ParticipantDetailsResponse participant, BookingParticipant bookingParticipant)
         {
-            var status = Enum.Parse<ParticipantStatus>(participant.Current_status.ToString());
-
-            if (!Enum.TryParse(participant.User_role.ToString(), true, out UserRole role))
+            if (!Enum.TryParse(participant.Current_status.ToString(), true, out ParticipantStatus status))
+                status = ParticipantStatus.None;
+            if (!Enum.TryParse(participant.User_role.ToString(), true, out UserRole role)) 
                 role = UserRole.None;
 
             var response = new ParticipantResponse
@@ -35,6 +35,7 @@ namespace VideoWeb.Mappings
             {
                 response.TiledDisplayName = $"T{0};{participant.Display_name};{participant.Id}";
             }
+
             return response;
         }
     }
