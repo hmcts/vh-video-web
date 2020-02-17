@@ -1,13 +1,13 @@
 <div class="judge-chat-window govuk-!-margin-right-9">
   <div class="chat-header" (click)="toggleChatDisplay()">
     <span class="govuk-heading-s govuk-!-padding-3 chat-header-text">Message video hearings officer
+      <span *ngIf="!showChat && unreadMessageCount" id="unread-messages" class="notification-badge"
+        [attr.data-badge]="unreadMessageCount"></span>
       <span class="chevron">
         <img *ngIf="!showChat" src="/assets/images/glyphicons-601-chevron-up.png" />
         <img *ngIf="showChat" src="/assets/images/glyphicons-602-chevron-down.png" />
       </span>
     </span>
-
-
   </div>
   <span *ngIf="showChat">
     <div id="chat-list" style="overflow: scroll; height: xyz;" #scrollMe [scrollTop]="scrollMe.scrollHeight"

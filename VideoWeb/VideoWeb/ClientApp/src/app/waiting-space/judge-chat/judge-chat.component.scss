@@ -12,7 +12,7 @@
 }
 
 .chevron {
-  margin-left: 10%;
+  margin-left: 55px;
 }
 
 .chevron-up {
@@ -39,12 +39,12 @@
 
 .own-message {
   padding-top: 10px;
-  text-align: right;
+  text-align: left;
 }
 
 .other-message {
   padding-top: 10px;
-  text-align: left;
+  text-align: right;
 }
 
 .other-message>p {
@@ -72,4 +72,24 @@
 
 .chat-btn {
   margin-bottom: 0px;
+}
+
+.notification-badge {
+  position: relative;
+}
+
+.notification-badge[data-badge]:after {
+  content: attr(data-badge);
+  position: absolute;
+  right: -35px;
+  background: govuk-colour("black");
+  color: govuk-colour("white");
+  width: 18px;
+  height: 18px;
+  font-size: 0.7em;
+  padding: 5px;
+  text-align: center;
+  line-height: 18px;
+  border-radius: 50%;
+  box-shadow: 0 0 1px #333;
 }

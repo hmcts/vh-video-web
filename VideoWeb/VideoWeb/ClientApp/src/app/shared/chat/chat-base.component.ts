@@ -58,9 +58,12 @@ export abstract class ChatBaseComponent {
                 message.from = 'VH Officer';
             }
             message.is_user = false;
+            this.handleIncomingOtherMessage();
         }
         this.messages.push(message);
     }
+
+    handleIncomingOtherMessage() {}
 
     async retrieveChatForConference(): Promise<void> {
         this.messages = await this.videoWebService.getConferenceChatHistory(this._hearing.id).toPromise();

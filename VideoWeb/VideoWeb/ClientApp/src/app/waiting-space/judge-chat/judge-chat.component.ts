@@ -14,6 +14,7 @@ import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
 export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnDestroy, AfterViewChecked {
     newMessageBody: FormControl;
     showChat: boolean;
+    unreadMessageCount: number;
 
     @ViewChild('newMessageBox', { static: false }) messageTextBox: ElementRef<HTMLInputElement>;
     constructor(
@@ -28,6 +29,7 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
 
     ngOnInit() {
         this.showChat = false;
+        this.unreadMessageCount = 0;
         this.initForm();
         this.retrieveChatForConference().then(() => this.setupChatSubscription());
     }
@@ -35,6 +37,7 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
     ngAfterViewChecked(): void {
         if (this.showChat) {
             // focus on textbox
+            this.resetUnreadMessageCount();
             this.messageTextBox.nativeElement.focus();
         }
     }
@@ -59,5 +62,15 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
 
     toggleChatDisplay() {
         this.showChat = !this.showChat;
+    }
+
+    handleIncomingOtherMessage() {
+        if (!this.showChat) {
+            this.unreadMessageCount++;
+        }
+    }
+
+    resetUnreadMessageCount() {
+        this.unreadMessageCount = 0;
     }
 }
