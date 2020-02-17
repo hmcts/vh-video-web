@@ -26,6 +26,7 @@ import { BackNavigationStubComponent } from './stubs/back-navigation-stub';
 import { UnsupportedBrowserStubComponent } from './stubs/unsupported-browser-stub';
 import { VhoHearingsFilterStubComponent } from './stubs/vho-hearings-filter-stub';
 import { VhoChatStubComponent } from './stubs/vho-chat-stub';
+import { JudgeChatStubComponent } from './stubs/judge-chat-stub.component';
 
 @NgModule({
     imports: [CommonModule],
@@ -54,7 +55,8 @@ import { VhoChatStubComponent } from './stubs/vho-chat-stub';
         BackNavigationStubComponent,
         UnsupportedBrowserStubComponent,
         VhoHearingsFilterStubComponent,
-        VhoChatStubComponent
+        VhoChatStubComponent,
+        JudgeChatStubComponent
     ]
 })
 export class TestingModule {}

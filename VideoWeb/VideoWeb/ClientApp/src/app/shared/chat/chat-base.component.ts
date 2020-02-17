@@ -8,9 +8,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ProfileService } from 'src/app/services/api/profile.service';
 
-@Component({
-    template: ''
-})
 export abstract class ChatBaseComponent {
     protected _hearing: Hearing;
     protected chatHubSubscription: Subscription = new Subscription();
