@@ -217,7 +217,7 @@ namespace VideoWeb.Controllers
                 }
                 catch (AggregateException e)
                 {
-                    return StatusCode((int) HttpStatusCode.ExpectationFailed, e);
+                    return StatusCode((int)HttpStatusCode.ExpectationFailed, e);
                 }
             }
 
