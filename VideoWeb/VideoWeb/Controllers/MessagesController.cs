@@ -43,7 +43,7 @@ namespace VideoWeb.Controllers
                 var messages = await _videoApiClient.GetMessagesAsync(conferenceId);
                 var mapper = new ChatResponseMapper();
                 var username = User.Identity.Name;
-                var response = messages.Select(x => mapper.MapToResponseModel(x, username));
+                var response = messages.Select(x => mapper.MapToResponseModel(x, username)).ToList();
                 return Ok(response);
             }
             catch (VideoApiException e)

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
@@ -54,6 +56,9 @@ namespace VideoWeb.UnitTests.Controllers.MessageController
             var result = await _controller.GetConferenceChatHistory(conferenceId);
             var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
+            var responseModel = typedResult.Value as List<ChatResponse>;
+            responseModel.Should().NotBeNullOrEmpty();
+            responseModel?.Count.Should().Be(messages.Count);
         }
 
         [Test]

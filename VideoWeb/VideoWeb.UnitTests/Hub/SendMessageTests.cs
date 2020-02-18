@@ -6,6 +6,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.EventHub.Enums;
+using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
 
@@ -14,7 +15,7 @@ namespace VideoWeb.UnitTests.Hub
     public class SendMessageTests : EventHubBaseTests
     {
         [Test]
-        public async Task should_send_message_to_conference_group()
+        public async Task should_send_message_to_conference_group_if_user_is_judge()
         {
             var username = "john@doe.com";
             var conferenceId = Guid.NewGuid();
@@ -27,6 +28,48 @@ namespace VideoWeb.UnitTests.Hub
                 .Build();
             MemoryCache.Set(conferenceId, conference);
             var message = "test message";
+
+            var mockClient = new Mock<IEventHubClient>();
+            EventHubClientMock.Setup(x => x.Group(conferenceId.ToString())).Returns(mockClient.Object);
+
+            await Hub.SendMessage(conferenceId, message);
+
+            mockClient.Verify(
+                x => 
+                    x.ReceiveMessage(conferenceId, It.IsAny<string>(), message, It.IsAny<DateTime>()), 
+                Times.Once);
+        }
+        
+        [Test]
+        public void should_throw_exception_when_conference_is_not_in_cache()
+        {
+            var conferenceId = Guid.NewGuid();
+
+            var message = "test message";
+
+            var mockClient = new Mock<IEventHubClient>();
+            EventHubClientMock.Setup(x => x.Group(conferenceId.ToString())).Returns(mockClient.Object);
+
+            Assert.ThrowsAsync<ConferenceNotFoundException>(() => Hub.SendMessage(conferenceId, message));
+        }
+        
+        [Test]
+        public async Task should_send_message_to_conference_group_if_user_is_vho()
+        {
+            var username = "john@doe.com";
+            var conferenceId = Guid.NewGuid();
+            var participants = Builder<Participant>.CreateListOfSize(2)
+                .TheFirst(1).With(x => x.Role = UserRole.Individual).With(x => x.Username = username)
+                .Build().ToList();
+            var conference = Builder<Conference>.CreateNew()
+                .With(x => x.Id = conferenceId)
+                .With(x => x.Participants = participants)
+                .Build();
+            MemoryCache.Set(conferenceId, conference);
+            var message = "test message";
+            
+            UserProfileServiceMock.Setup(x => x.IsVhOfficerAsync(It.IsAny<string>()))
+                .ReturnsAsync(true);
 
             var mockClient = new Mock<IEventHubClient>();
             EventHubClientMock.Setup(x => x.Group(conferenceId.ToString())).Returns(mockClient.Object);
