@@ -1,4 +1,4 @@
-import { Component, NgZone, OnDestroy, OnInit, AfterViewChecked, ViewChild, ElementRef } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit, AfterViewChecked, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { AdalService } from 'adal-angular4';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -60,8 +60,11 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
         return document.getElementById('chat-list');
     }
 
+    @HostListener('window:beforeunload')
     ngOnDestroy(): void {
-        this.chatHubSubscription.unsubscribe();
+        if (this.chatHubSubscription) {
+            this.chatHubSubscription.unsubscribe();
+        }
     }
 
     toggleChatDisplay() {

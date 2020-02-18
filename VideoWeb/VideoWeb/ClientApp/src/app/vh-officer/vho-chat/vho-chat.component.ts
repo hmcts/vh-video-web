@@ -63,6 +63,8 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
 
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
-        this.chatHubSubscription.unsubscribe();
+        if (this.chatHubSubscription) {
+            this.chatHubSubscription.unsubscribe();
+        }
     }
 }

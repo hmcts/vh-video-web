@@ -10,7 +10,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 
 export abstract class ChatBaseComponent {
     protected _hearing: Hearing;
-    protected chatHubSubscription: Subscription = new Subscription();
+    protected chatHubSubscription: Subscription;
 
     messages: ChatResponse[];
 
