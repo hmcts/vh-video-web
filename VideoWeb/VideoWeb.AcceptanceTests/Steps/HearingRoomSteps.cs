@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
@@ -124,21 +124,18 @@ namespace VideoWeb.AcceptanceTests.Steps
             new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser.Key]).Feed(HearingRoomPage.ParticipantIncomingVideo);
         }
 
+        [Then(@"the Clerk can see the participants")]
+        public void ThenTheClerkCanSeeTheOtherParticipants()
+        {
+            new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser.Key]).Feed(HearingRoomPage.ClerkIncomingVideo);
+        }
+
         [Then(@"(.*) can see the other participants")]
         public void ThenParticipantsCanSeeTheOtherParticipants(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-
-            if (user.ToLower().Equals("clerk"))
-            {
-                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.JudgeIframe).Displayed.Should().BeTrue();
-                _browsers[_c.CurrentUser.Key].Driver.SwitchTo().Frame(HearingRoomPage.JudgeIframeId);
-                new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser.Key]).Feed(HearingRoomPage.ClerkIncomingVideo);
-            }
-            else
-            {
-                new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser.Key]).Feed(HearingRoomPage.ParticipantIncomingVideo);
-            }
+            _browsers[_c.CurrentUser.Key].Driver.SwitchTo().DefaultContent();
+            new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser.Key]).Feed(HearingRoomPage.ParticipantIncomingVideo);
         }
 
         public void ProgressToNextPage()
