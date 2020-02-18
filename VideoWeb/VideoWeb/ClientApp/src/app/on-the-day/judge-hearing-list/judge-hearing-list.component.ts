@@ -96,6 +96,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
     }
 
     enableFullScreen(fullScreen: boolean) {
+        // tslint:disable-next-line:quotemark
         const masterContainerCount = $("div[id*='master-container']").length;
         if (masterContainerCount > 1) {
             throw new Error('Multiple master containers in DOM');
