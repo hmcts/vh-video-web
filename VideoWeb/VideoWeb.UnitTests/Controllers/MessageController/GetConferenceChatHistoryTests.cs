@@ -12,6 +12,7 @@ using Moq;
 using NUnit.Framework;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
+using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
@@ -22,12 +23,14 @@ namespace VideoWeb.UnitTests.Controllers.MessageController
     {
         private MessagesController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
+        private Mock<IUserApiClient> _userApiClientMock;
         private Mock<ILogger<MessagesController>> _mockLogger;
         
         [SetUp]
         public void Setup()
         {
             _videoApiClientMock = new Mock<IVideoApiClient>();
+            _userApiClientMock = new Mock<IUserApiClient>();
             _mockLogger = new Mock<ILogger<MessagesController>>();
             
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
@@ -38,11 +41,12 @@ namespace VideoWeb.UnitTests.Controllers.MessageController
                     User = claimsPrincipal
                 }
             };
-            
-            _controller = new MessagesController(_videoApiClientMock.Object, _mockLogger.Object)
-            {
-                ControllerContext = context
-            };
+
+            _controller =
+                new MessagesController(_videoApiClientMock.Object, _mockLogger.Object, _userApiClientMock.Object)
+                {
+                    ControllerContext = context
+                };
         }
 
         [Test]

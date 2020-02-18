@@ -59,7 +59,6 @@ describe('VhoChatComponent', () => {
             return Promise.resolve();
         });
         const event = new KeyboardEvent('keydown', {
-            shiftKey: true,
             key: 'Enter'
         });
 
@@ -72,7 +71,7 @@ describe('VhoChatComponent', () => {
             return Promise.resolve();
         });
         const event = new KeyboardEvent('keydown', {
-            shiftKey: false,
+            shiftKey: true,
             key: 'Enter'
         });
 

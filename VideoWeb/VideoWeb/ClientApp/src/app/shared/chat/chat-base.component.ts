@@ -74,7 +74,7 @@ export abstract class ChatBaseComponent {
     }
 
     onKeydown(event: KeyboardEvent) {
-        if (event.key === 'Enter' && event.shiftKey) {
+        if (event.key === 'Enter' && !event.altKey && !event.shiftKey && !event.ctrlKey) {
             this.sendMessage();
         }
     }

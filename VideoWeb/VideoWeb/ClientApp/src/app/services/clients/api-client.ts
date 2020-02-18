@@ -1047,6 +1047,7 @@ export class ApiClient {
     }
 
     /**
+     * Get profile for logged in user
      * @return Success
      */
     getUserProfile(): Observable<UserProfileResponse> {
@@ -1102,6 +1103,7 @@ export class ApiClient {
     }
 
     /**
+     * Get profile for username
      * @param username (optional) 
      * @return Success
      */
