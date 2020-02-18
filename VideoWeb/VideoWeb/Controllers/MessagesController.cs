@@ -21,14 +21,14 @@ namespace VideoWeb.Controllers
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<MessagesController> _logger;
-        private readonly IUserApiClient _userApiClient;
+        private readonly IMessageDecoder _messageDecoder;
 
         public MessagesController(IVideoApiClient videoApiClient, ILogger<MessagesController> logger,
-            IUserApiClient userApiClient)
+            IMessageDecoder messageDecoder)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
-            _userApiClient = userApiClient;
+            _messageDecoder = messageDecoder;
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace VideoWeb.Controllers
             try
             {
                 var messages = await _videoApiClient.GetMessagesAsync(conferenceId);
-                var mapper = new ChatResponseMapper(_userApiClient);
+                var mapper = new ChatResponseMapper();
 
                 var response = await MapMessages(mapper, messages, conferenceId);
                 response = response.OrderBy(r => r.Timestamp).ToList();
@@ -62,12 +62,28 @@ namespace VideoWeb.Controllers
         private async Task<List<ChatResponse>> MapMessages(ChatResponseMapper mapper,
             IEnumerable<MessageResponse> messages, Guid conferenceId)
         {
+            var response = new List<ChatResponse>();
+            if (!messages.Any())
+            {
+                return response;
+            }
             var conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
             var username = User.Identity.Name;
-            var response = new List<ChatResponse>();
+
             foreach (var message in messages)
             {
-                await mapper.MapToResponseModel(message, conference, username);
+                var isUser = _messageDecoder.IsMessageFromUser(message, username);
+                string from;
+                if (isUser)
+                {
+                    from = "You";
+                }
+                else
+                {
+                    from = await _messageDecoder.GetMessageOriginatorAsync(conference, message);
+                }
+                var mapped = mapper.MapToResponseModel(message, from, isUser);
+                response.Add(mapped);
             }
 
             return response;

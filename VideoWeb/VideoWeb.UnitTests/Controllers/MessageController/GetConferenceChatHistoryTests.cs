@@ -12,7 +12,7 @@ using Moq;
 using NUnit.Framework;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
-using VideoWeb.Services.User;
+using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
@@ -23,14 +23,14 @@ namespace VideoWeb.UnitTests.Controllers.MessageController
     {
         private MessagesController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
-        private Mock<IUserApiClient> _userApiClientMock;
+        private Mock<IMessageDecoder> _messageDecoder;
         private Mock<ILogger<MessagesController>> _mockLogger;
         
         [SetUp]
         public void Setup()
         {
             _videoApiClientMock = new Mock<IVideoApiClient>();
-            _userApiClientMock = new Mock<IUserApiClient>();
+            _messageDecoder = new Mock<IMessageDecoder>();
             _mockLogger = new Mock<ILogger<MessagesController>>();
             
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
@@ -43,10 +43,16 @@ namespace VideoWeb.UnitTests.Controllers.MessageController
             };
 
             _controller =
-                new MessagesController(_videoApiClientMock.Object, _mockLogger.Object, _userApiClientMock.Object)
+                new MessagesController(_videoApiClientMock.Object, _mockLogger.Object, _messageDecoder.Object)
                 {
                     ControllerContext = context
                 };
+
+            _messageDecoder.Setup(x => x.GetMessageOriginatorAsync(It.IsAny<ConferenceDetailsResponse>(), It.IsAny<MessageResponse>()))
+                .ReturnsAsync("Johnny");
+            
+            _messageDecoder.Setup(x => x.IsMessageFromUser(It.IsAny<MessageResponse>(), It.IsAny<string>()))
+                .Returns(true);
         }
 
         [Test]

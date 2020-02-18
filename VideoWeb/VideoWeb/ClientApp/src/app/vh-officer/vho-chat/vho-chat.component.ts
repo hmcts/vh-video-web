@@ -40,7 +40,7 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
     }
 
     initForm() {
-        this.newMessageBody = new FormControl(null, Validators.required);
+        this.newMessageBody = new FormControl(null, [Validators.required, Validators.minLength(1)]);
     }
 
     updateDivWidthForSection(): void {

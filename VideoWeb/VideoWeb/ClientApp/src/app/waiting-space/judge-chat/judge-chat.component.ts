@@ -43,11 +43,15 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
     }
 
     initForm() {
-        this.newMessageBody = new FormControl(null, Validators.required);
+        this.newMessageBody = new FormControl(null, [Validators.required, Validators.minLength(1)]);
     }
 
     sendMessage() {
+        if (this.newMessageBody.invalid) {
+            return;
+        }
         const messageBody = this.newMessageBody.value;
+        console.log(messageBody);
         this.newMessageBody.reset();
         this.eventService.sendMessage(this._hearing.id, messageBody);
     }

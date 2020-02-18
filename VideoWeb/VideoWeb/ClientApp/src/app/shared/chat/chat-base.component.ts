@@ -1,12 +1,12 @@
-import { Component, Input, NgZone } from '@angular/core';
+import { Input, NgZone } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
+import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ChatResponse, ConferenceResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from 'src/app/shared/models/hearing';
-import { ProfileService } from 'src/app/services/api/profile.service';
 
 export abstract class ChatBaseComponent {
     protected _hearing: Hearing;
@@ -75,6 +75,8 @@ export abstract class ChatBaseComponent {
 
     onKeydown(event: KeyboardEvent) {
         if (event.key === 'Enter' && !event.altKey && !event.shiftKey && !event.ctrlKey) {
+            event.stopPropagation();
+            event.preventDefault();
             this.sendMessage();
         }
     }
