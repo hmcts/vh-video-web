@@ -164,6 +164,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Clerk waiting room displays the paused status")]
         public void ThenTheClerkWaitingRoomDisplaysThePausedStatus()
         {
+            _browsers[_c.CurrentUser.Key].Driver.SwitchTo().DefaultContent();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.PausedText).Displayed.Should().BeTrue();
         }
 
