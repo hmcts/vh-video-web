@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
@@ -19,6 +19,7 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { JudgeParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
 import { JudgeWaitingRoomComponent } from './judge-waiting-room.component';
 import { JudgeChatStubComponent } from 'src/app/testing/stubs/judge-chat-stub.component';
+import { JudgeEventService } from 'src/app/services/judge-event.service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
@@ -29,12 +30,23 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     let conference: ConferenceResponse;
     let adalService: MockAdalService;
     let eventService: MockEventsService;
+    let judgeEventServiceSpy: jasmine.SpyObj<JudgeEventService>;
 
     configureTestSuite(() => {
         conference = new ConferenceTestData().getConferenceDetail();
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'raiseParticipantEvent']);
         videoWebServiceSpy.getConferenceById.and.returnValue(of(conference));
         videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
+
+        judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService', [
+            'raiseJudgeAvailableEvent',
+            'raiseJudgeUnavailableEvent',
+            'setJudgeUnload',
+            'isUnload'
+        ]);
+        judgeEventServiceSpy.raiseJudgeAvailableEvent.and.callThrough();
+        judgeEventServiceSpy.raiseJudgeUnavailableEvent.and.callThrough();
+        judgeEventServiceSpy.isUnload.and.returnValue(true);
 
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],
@@ -52,7 +64,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 { provide: AdalService, useClass: MockAdalService },
                 { provide: ConfigService, useClass: MockConfigService },
                 { provide: EventsService, useClass: MockEventsService },
-                { provide: Logger, useClass: MockLogger }
+                { provide: Logger, useClass: MockLogger },
+                { provide: JudgeEventService, useValue: judgeEventServiceSpy }
             ]
         });
     });
@@ -81,10 +94,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.handleHearingStatusChange(conferenceStatus);
         expect(component.conference.status).toBe(conferenceStatus);
         done();
-    });
-    it('should post event for judge status', () => {
-        component.ngOnInit();
-        expect(videoWebServiceSpy.raiseParticipantEvent).toHaveBeenCalled();
     });
 
     it('should update participant status', async done => {
@@ -177,5 +186,14 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.checkEquipment();
         expect(router.navigate).toHaveBeenCalledWith([PageUrls.EquipmentCheck, component.conference.id]);
         done();
+    });
+    it('should raise judge avaliable event', () => {
+        component.ngOnInit();
+        expect(judgeEventServiceSpy.raiseJudgeAvailableEvent).toHaveBeenCalled();
+    });
+
+    it('should raise judge unavaliable event', () => {
+        component.beforeunloadHandler(new Event('unload'));
+        expect(judgeEventServiceSpy.raiseJudgeUnavailableEvent).toHaveBeenCalled();
     });
 });
