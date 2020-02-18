@@ -125,9 +125,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Then(@"the Clerk can see the participants")]
-        public void ThenTheClerkCanSeeTheOtherParticipants(string user)
+        public void ThenTheClerkCanSeeTheOtherParticipants()
         {
-            _browserSteps.GivenInTheUsersBrowser(user);
             new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser.Key]).Feed(HearingRoomPage.ClerkIncomingVideo);
         }
 
