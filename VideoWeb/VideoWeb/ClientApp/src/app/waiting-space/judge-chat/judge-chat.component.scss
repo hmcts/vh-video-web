@@ -12,7 +12,7 @@
 }
 
 .chevron {
-  margin-left: 55px;
+  float: right;
 }
 
 .chat-header {
@@ -72,6 +72,7 @@
 
 .notification-badge {
   position: relative;
+  margin-left: 20px;
 }
 
 .notification-badge[data-badge]:after {
@@ -88,4 +89,19 @@
   line-height: 18px;
   border-radius: 50%;
   box-shadow: 0 0 1px #333;
+}
+
+.chat-list {
+  overflow-y: scroll;
+}
+
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background-color: rgba(0, 0, 0, .5);
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
 }

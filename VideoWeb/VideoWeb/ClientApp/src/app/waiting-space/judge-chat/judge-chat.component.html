@@ -10,14 +10,14 @@
     </span>
   </div>
   <span *ngIf="showChat">
-    <div id="chat-list" style="overflow: scroll; height: xyz;" #scrollMe [scrollTop]="scrollMe.scrollHeight"
+    <div id="chat-list" style="overflow: auto; height: xyz;" #scrollMe [scrollTop]="scrollMe.scrollHeight"
       class="govuk-!-padding-2 govuk-!-padding-left-4" [style.width.px]="sectionDivWidth" class="chat-window">
       <span *ngFor="let message of messages" class="govuk-grid-row">
 
         <div class="govuk-grid-column-full" [ngClass]="(message.is_user)?'own-message':'other-message'">
           <p class="govuk-body govuk-!-margin-bottom-2">
             <span
-              class="govuk-!-font-weight-bold govuk-!-margin-right-2">{{message.from}}</span>({{message.timestamp | date:'shortTime' }})
+              class="govuk-!-font-weight-bold govuk-!-margin-right-2">{{message.from}}</span>({{message.timestamp | date:'HH:mm' }})
           </p>
           <p class="govuk-body chat-message">{{message.message}}</p>
         </div>
