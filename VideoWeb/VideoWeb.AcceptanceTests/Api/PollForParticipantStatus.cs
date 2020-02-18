@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Requests;
@@ -44,7 +44,7 @@ namespace VideoWeb.AcceptanceTests.Api
             return this;
         }
 
-        public ParticipantState? Poll()
+        public ParticipantState Poll()
         {
             for (var i = 0; i < _maxRetries; i++)
             {
@@ -53,7 +53,7 @@ namespace VideoWeb.AcceptanceTests.Api
                 conference.Should().NotBeNull();
                 var participant = conference.Participants.Find(x => x.Username.ToLower().Equals(_username.ToLower()));
                 var participantState = participant.Current_status;
-                if (participantState != ParticipantState.None && participantState.Equals(_expectedState))
+                if (participantState.Equals(_expectedState))
                 {
                     return participantState;
                 }

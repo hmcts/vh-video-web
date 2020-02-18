@@ -1,4 +1,4 @@
-﻿namespace Testing.Common.Helpers
+namespace VideoWeb.AcceptanceTests.Data
 {
     public static class DateFormats
     {
