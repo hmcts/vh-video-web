@@ -1,4 +1,4 @@
-﻿@VIH-4252
+@VIH-4252
 Feature: HearingRoom
 	In order to conduct a video hearing
 	As a registered user
@@ -64,7 +64,7 @@ Scenario: Two participants join hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
 	Then the Clerk is on the Hearing Room page for 1 minute
-	And Clerk can see the other participants
+	And the Clerk can see the participants
 	And Individual01 can see the other participants
 	And Representative01 can see the other participants
 
@@ -83,7 +83,7 @@ Scenario: Four participants join hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
 	Then the Clerk is on the Hearing Room page for 2 minutes
-	And Clerk can see the other participants
+	And the Clerk can see the participants
 	And Individual01 can see the other participants
 	And Representative01 can see the other participants
 	And Individual02 can see the other participants
