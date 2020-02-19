@@ -52,7 +52,8 @@ namespace VideoWeb.UnitTests.Controllers.MessageController
                 .ReturnsAsync("Johnny");
             
             _messageDecoder.Setup(x => x.IsMessageFromUser(It.IsAny<MessageResponse>(), It.IsAny<string>()))
-                .Returns(true);
+                .Returns<MessageResponse, string>((message, loggedInUsername) =>
+                    message.From.Equals(loggedInUsername, StringComparison.InvariantCultureIgnoreCase));
         }
 
         [Test]
@@ -86,6 +87,36 @@ namespace VideoWeb.UnitTests.Controllers.MessageController
             responseModel.Should().BeEmpty();
         }
 
+        [Test]
+        public async Task should_map_originators_when_message_is_not_from_user(){
+            
+            var conferenceId = Guid.NewGuid();
+            var loggedInUser = "john@doe.com";
+            var otherUsername = "some@other.com";
+            var messages = Builder<MessageResponse>.CreateListOfSize(5)
+                .TheFirst(2)
+                .With(x=> x.From = loggedInUser).TheNext(3)
+                .With(x => x.From = otherUsername)
+                .Build().ToList();
+            _videoApiClientMock.Setup(x => x.GetMessagesAsync(conferenceId))
+                .ReturnsAsync(messages);
+            
+            var result = await _controller.GetConferenceChatHistory(conferenceId);
+            
+            _messageDecoder.Verify(x => x.IsMessageFromUser(
+                    It.Is<MessageResponse>(m => m.From == loggedInUser), loggedInUser),
+                Times.Exactly(2));
+            
+            _messageDecoder.Verify(x => x.IsMessageFromUser(
+                    It.Is<MessageResponse>(m => m.From == otherUsername), loggedInUser),
+                Times.Exactly(3));
+            
+            var typedResult = (OkObjectResult) result;
+            typedResult.Should().NotBeNull();
+            var responseModel = typedResult.Value as List<ChatResponse>;
+            responseModel?.Count(x => x.From == "You").Should().Be(2);
+        }
+        
         [Test]
         public async Task should_return_exception()
         {
