@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using AcceptanceTests.Common.Driver.Browser;
@@ -15,6 +15,7 @@ namespace VideoWeb.AcceptanceTests.Steps
     public sealed class VideoHearingsOfficerCallSteps
     {
         private const int SecondsWaitToCallAndAnswer = 3;
+        private const int Retries = 60;
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly BrowserSteps _browserSteps;
@@ -32,7 +33,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.SwitchTo().Frame(AdminPanelPage.AdminIframeId);
-            var participant = _c.Test.Conference.Participants.Find(x => x.Name.ToLower().Contains(user.ToLower()));
+            var participant = _c.Test.ConferenceParticipants.Find(x => x.Name.ToLower().Contains(user.ToLower()));
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantInIframe(participant.Display_name)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.VhoPrivateConsultationLink(participant.Id)).Click();
             _browsers[_c.CurrentUser.Key].LastWindowName = _browsers[_c.CurrentUser.Key].SwitchTab("Private Consultation");
@@ -60,7 +61,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheVideoHearingsOfficerCanSeeAndHearTheParticipant(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser.Key]).Feed(user.ToLower().Equals("video hearings officer")
+            new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser.Key])
+                .Retries(Retries).Feed(user.ToLower().Equals("video hearings officer")
                 ? AdminPanelPage.IncomingVideo
                 : AdminPanelPage.IncomingFeed);
         }

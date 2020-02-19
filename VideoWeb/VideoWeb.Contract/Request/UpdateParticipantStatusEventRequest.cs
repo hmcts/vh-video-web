@@ -6,6 +6,6 @@ namespace VideoWeb.Contract.Request
     public class UpdateParticipantStatusEventRequest
     {
         public Guid ParticipantId { get; set; }
-        public EventType EventType => EventType.ParticipantJoining;
+        public EventType EventType { get; set; }
     }
 }

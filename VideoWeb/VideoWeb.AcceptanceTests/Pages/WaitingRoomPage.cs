@@ -1,4 +1,4 @@
-﻿using AcceptanceTests.Common.PageObject.Helpers;
+using AcceptanceTests.Common.PageObject.Helpers;
 using OpenQA.Selenium;
 
 namespace VideoWeb.AcceptanceTests.Pages
@@ -27,7 +27,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By OutgoingCallMessage = CommonLocators.ElementContainingText("Your contact request has been sent to");
         public static By IncomingCallMessage = CommonLocators.ElementContainingText("Incoming call");       
         public static By Frame = By.XPath("//app-participant-waiting-room");
-        public static By IncomingFeed = By.XPath("//video[@id='incomingFeed']");
+        public static By IncomingPrivateConsultationFeed = By.Id("incomingFeedPrivate");
         public static By SelfViewButton = By.Id("outgoingFeedButton");
         public static By SelfViewVideo = By.Id("outgoingFeedVideo");
         public static By ClosePrivateConsultationButton = By.Id("close-pc-btn");

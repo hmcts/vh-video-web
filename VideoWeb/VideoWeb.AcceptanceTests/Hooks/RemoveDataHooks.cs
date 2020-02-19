@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using AcceptanceTests.Common.Api.Clients;
+using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Requests;
-using AcceptanceTests.Common.Api.Uris;
 using AcceptanceTests.Common.Configuration.Users;
 using FluentAssertions;
 using TechTalk.SpecFlow;
@@ -18,52 +17,35 @@ namespace VideoWeb.AcceptanceTests.Hooks
     public sealed class RemoveDataHooks
     {
         private string _clerkUsername;
-        private string _bookingApiUrl;
-        private string _bookingsApiBearerToken;
-        private string _videoApiUrl;
-        private string _videoApiBearerToken;
 
         [BeforeScenario(Order = (int)HooksSequence.RemoveDataHooks)]
         [AfterScenario]
         public void RemovePreviousHearings(TestContext context)
         {
             _clerkUsername = UserManager.GetClerkUser(context.UserAccounts).Username;
-            _bookingApiUrl = context.VideoWebConfig.VhServices.BookingsApiUrl;
-            _bookingsApiBearerToken = context.Tokens.BookingsApiBearerToken;
-            _videoApiUrl = context.VideoWebConfig.VhServices.VideoApiUrl;
-            _videoApiBearerToken = context.Tokens.VideoApiBearerToken;
-            ClearHearingsForClerk();
-            ClearClosedConferencesForClerk();
+            ClearHearingsForClerk(context.Apis.BookingsApi);
+            ClearClosedConferencesForClerk(context.Apis.BookingsApi, context.Apis.VideoApi);
         }
 
-        private void ClearHearingsForClerk()
+        private void ClearHearingsForClerk(BookingsApiManager bookingsApi)
         {
-            var endpoint = new HearingsEndpoints().GetHearingsByUsername(_clerkUsername);
-            var request = new RequestBuilder().Get(endpoint);
-            var client = new ApiClient(_bookingApiUrl, _bookingsApiBearerToken).GetClient();
-            var response = new RequestExecutor(request).SendToApi(client);
+            var response = bookingsApi.GetHearingsForUsername(_clerkUsername);
             var hearings = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingDetailsResponse>>(response.Content);
             if (hearings == null) return;
             foreach (var hearing in hearings)
             {
-                DeleteTheHearing(hearing.Id);
+                DeleteTheHearing(bookingsApi, hearing.Id);
             }
         }
-        private void DeleteTheHearing(Guid? hearingId)
+        private static void DeleteTheHearing(BookingsApiManager bookingsApi, Guid hearingId)
         {
-            var endpoint = new BookingsApiUriFactory().HearingsEndpoints.RemoveHearing(hearingId);
-            var request = new RequestBuilder().Delete(endpoint);
-            var client = new ApiClient(_bookingApiUrl, _bookingsApiBearerToken).GetClient();
-            var response = new RequestExecutor(request).SendToApi(client);
+            var response = bookingsApi.DeleteHearing(hearingId);
             response.IsSuccessful.Should().BeTrue($"HearingDetails {hearingId} has been deleted. Status {response.StatusCode}. {response.Content}");
         }
 
-        private void ClearClosedConferencesForClerk()
+        private void ClearClosedConferencesForClerk(BookingsApiManager bookingsApi, VideoApiManager videoApi)
         {
-            var endpoint = new VideoApiUriFactory().ConferenceEndpoints.GetTodaysConferences;
-            var request = new RequestBuilder().Get(endpoint);
-            var client = new ApiClient(_videoApiUrl, _videoApiBearerToken).GetClient();
-            var response = new RequestExecutor(request).SendToApi(client);
+            var response = videoApi.GetConferencesForToday();
             var todaysConferences = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ConferenceSummaryResponse>>(response.Content);
             if (todaysConferences == null) return;
 
@@ -71,13 +53,13 @@ namespace VideoWeb.AcceptanceTests.Hooks
             {
                 if (!ClerkUserIsAParticipantInTheConference(conference.Participants, _clerkUsername)) continue;
 
-                var hearingId = GetTheHearingIdFromTheConference(conference.Id);
+                var hearingId = GetTheHearingIdFromTheConference(videoApi, conference.Id);
 
-                if (HearingHasNotBeenDeletedAlready(hearingId) && !hearingId.Equals(Guid.Empty))
-                    DeleteTheHearing(hearingId);
+                if (HearingHasNotBeenDeletedAlready(bookingsApi, hearingId) && !hearingId.Equals(Guid.Empty))
+                    DeleteTheHearing(bookingsApi, hearingId);
 
-                if (ConferenceHasNotBeenDeletedAlready(conference.Id))
-                    DeleteTheConference(conference.Id);
+                if (ConferenceHasNotBeenDeletedAlready(videoApi, conference.Id))
+                    DeleteTheConference(videoApi, conference.Id);
             }
         }
         private static bool ClerkUserIsAParticipantInTheConference(IEnumerable<ParticipantSummaryResponse> participants, string username)
@@ -85,43 +67,28 @@ namespace VideoWeb.AcceptanceTests.Hooks
             return participants.Any(x => x.Username.ToLower().Equals(username.ToLower()));
         }
 
-        private Guid GetTheHearingIdFromTheConference(Guid conferenceId)
+        private static Guid GetTheHearingIdFromTheConference(VideoApiManager videoApi, Guid conferenceId)
         {
-            var endpoint = new VideoApiUriFactory().ConferenceEndpoints.GetConferenceDetailsById(conferenceId);
-            var request = new RequestBuilder().Get(endpoint);
-            var client = new ApiClient(_videoApiUrl, _videoApiBearerToken).GetClient();
-            var response = new RequestExecutor(request).SendToApi(client);
+            var response = videoApi.GetConferenceByConferenceId(conferenceId);
             var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
             return conference.Hearing_id;
         }
 
-        private bool HearingHasNotBeenDeletedAlready(Guid hearingId)
+        private static bool HearingHasNotBeenDeletedAlready(BookingsApiManager bookingsApi, Guid hearingId)
         {
-            var endpoint = new BookingsApiUriFactory().HearingsEndpoints.GetHearingDetailsById(hearingId);
-            var request = new RequestBuilder().Get(endpoint);
-            var client = new ApiClient(_bookingApiUrl, _bookingsApiBearerToken).GetClient();
-            var response = new RequestExecutor(request).SendToApi(client);
+            var response = bookingsApi.GetHearing(hearingId);
             return !response.StatusCode.Equals(HttpStatusCode.NotFound);
         }
 
-        private bool ConferenceHasNotBeenDeletedAlready(Guid? conferenceId)
+        private static bool ConferenceHasNotBeenDeletedAlready(VideoApiManager videoApi, Guid conferenceId)
         {
-            if (conferenceId == null)
-                throw new DataMisalignedException("Conference Id must be set");
-
-            var endpoint = new VideoApiUriFactory().ConferenceEndpoints.GetConferenceDetailsById((Guid)conferenceId);
-            var request = new RequestBuilder().Get(endpoint);
-            var client = new ApiClient(_videoApiUrl, _videoApiBearerToken).GetClient();
-            var response = new RequestExecutor(request).SendToApi(client);
+            var response = videoApi.GetConferenceByConferenceId(conferenceId);
             return !response.StatusCode.Equals(HttpStatusCode.NotFound);
         }
 
-        private void DeleteTheConference(Guid? conferenceId)
+        private static void DeleteTheConference(VideoApiManager videoApi, Guid conferenceId)
         {
-            var endpoint = new VideoApiUriFactory().ConferenceEndpoints.RemoveConference(conferenceId);
-            var request = new RequestBuilder().Get(endpoint);
-            var client = new ApiClient(_videoApiUrl, _videoApiBearerToken).GetClient();
-            new RequestExecutor(request).SendToApi(client);
+            videoApi.DeleteConference(conferenceId);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -8,9 +8,9 @@ using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
 using RestSharp;
 using TechTalk.SpecFlow;
-using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Configuration;
+using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.EventHub.Models;
@@ -101,8 +101,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         private ParticipantDetailsResponse GetUserFromConferenceDetails(string userRole)
         {
             var participantUser = userRole.ToLower().Equals("judge") || userRole.ToLower().Equals("clerk")
-                ? _c.Test.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Judge.ToString()))
-                : _c.Test.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Individual.ToString()));
+                ? _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(UserRole.Judge.ToString()))
+                : _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(UserRole.Individual.ToString()));
 
             if (participantUser.Id == Guid.Empty)
                 throw new DataMisalignedException("Participant Id is not set");
@@ -202,7 +202,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private Guid? GetClerkParticipantId()
         {
-            return _c.Test.Conference.Participants.Find(x => x.User_role.ToString().Equals(UserRole.Judge.ToString())).Id;
+            return _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(UserRole.Judge.ToString())).Id;
         }
 
         private List<Alert> GetAlerts()

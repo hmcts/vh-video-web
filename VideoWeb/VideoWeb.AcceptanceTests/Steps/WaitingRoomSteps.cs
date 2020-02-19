@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -7,7 +7,7 @@ using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
 using TechTalk.SpecFlow;
-using Testing.Common.Helpers;
+using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.Services.Video;
@@ -32,7 +32,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"all the participants refresh their browsers")]
         public void GivenAllTheParticipantsRefreshTheirBrowsers()
         {
-            var participants = _c.Test.Hearing.Participants.Where(x => !x.Display_name.ToLower().Contains("clerk"));
+            var participants = _c.Test.HearingParticipants.Where(x => !x.Display_name.ToLower().Contains("clerk"));
             foreach (var participant in participants)
             {
                 _browserSteps.GivenInTheUsersBrowser(participant.Last_name);
@@ -58,7 +58,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the participant status for (.*) is displayed as (.*)")]
         public void ThenTheFirstParticipantStatusIsDisplayedAsNotSignedIn(string name, string status)
         {
-            var participant = _c.Test.Conference.Participants.First(x => x.Name.Contains(name));
+            var participant = _c.Test.ConferenceParticipants.First(x => x.Name.Contains(name));
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ParticipantStatus(participant.Id)).Text.ToUpper().Trim().Should().Be(status.ToUpper());
         }
 
@@ -97,7 +97,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var participantRowIds = (from row in allRows where row.GetAttribute("id") != "" select row.GetAttribute("id")).ToList();
             var participantsInformation = (from id in participantRowIds select _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(WaitingRoomPage.RowInformation(id)) into infoRows where infoRows.Count > 0 select new ParticipantInformation {CaseTypeGroup = infoRows[0].Text, Name = infoRows[1].Text, Representee = infoRows.Count.Equals(3) ? infoRows[2].Text : null}).ToList();
 
-            foreach (var participant in _c.Test.Conference.Participants)
+            foreach (var participant in _c.Test.ConferenceParticipants)
             {
                 if (!participant.User_role.Equals(UserRole.Individual) &&
                     !participant.User_role.Equals(UserRole.Representative)) continue;
@@ -115,7 +115,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the user can see other participants status")]
         public void ThenTheUserCanSeeOtherParticipantsStatus()
         {
-            foreach (var participant in _c.Test.Hearing.Participants.Where(participant => participant.Hearing_role_name.Equals("Individual") ||
+            foreach (var participant in _c.Test.HearingParticipants.Where(participant => participant.Hearing_role_name.Equals("Individual") ||
                                                                                      participant.Hearing_role_name.Equals("Representative")))
             {
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.OtherParticipantsStatus(participant.Display_name)).Text.Should().Be("Unavailable");
@@ -164,6 +164,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Clerk waiting room displays the paused status")]
         public void ThenTheClerkWaitingRoomDisplaysThePausedStatus()
         {
+            _browsers[_c.CurrentUser.Key].Driver.SwitchTo().DefaultContent();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.PausedText).Displayed.Should().BeTrue();
         }
 
@@ -187,9 +188,21 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.StartVideoHearingButton).Click();
         }
 
+        [When(@"the waiting room page has loaded for the (.*)")]
+        public void WhenTheWaitingRoomPageHasLoadedForTheUser(string user)
+        {
+            if (user.ToLower().Equals("clerk"))
+            {
+                ThenTheClerkCanSeeInformationAboutTheirCase();
+            }
+            else
+            {
+                ThenTheUserCanSeeInformationAboutTheirCase();
+            }
+        }
         private void CheckParticipantsAreStillConnected()
         {
-            foreach (var user in _browsers.Keys.Select(lastname => _c.Test.Conference.Participants.First(x => x.Name.ToLower().Contains(lastname.ToLower()))).Where(user => !user.User_role.Equals(UserRole.Judge)))
+            foreach (var user in _browsers.Keys.Select(lastname => _c.Test.ConferenceParticipants.First(x => x.Name.ToLower().Contains(lastname.ToLower()))).Where(user => !user.User_role.Equals(UserRole.Judge)))
             {
                 _browsers[_c.CurrentUser.Key].ScrollTo(ClerkWaitingRoomPage.ParticipantStatus(user.Id));
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ParticipantStatus(user.Id)).Text.ToUpper().Trim()

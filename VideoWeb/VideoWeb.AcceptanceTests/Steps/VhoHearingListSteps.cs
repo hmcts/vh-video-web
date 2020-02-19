@@ -50,14 +50,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the VHO should see the participant contact details")]
         public void ThenTheVhoShouldSeeTheParticipantContactDetails()
         {
-            var hearingParticipants = _c.Test.Hearing.Participants.FindAll(x => x.User_role_name.Equals("Individual") || x.User_role_name.Equals("Representative"));
+            var hearingParticipants = _c.Test.HearingParticipants.FindAll(x => x.User_role_name.Equals("Individual") || x.User_role_name.Equals("Representative"));
             var user = hearingParticipants.First().Last_name;
             var hearingParticipant = hearingParticipants.First();
             var firstParticipantLink = _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantName(hearingParticipant.Last_name));
             firstParticipantLink.Displayed.Should().BeTrue();
             var action = new OpenQA.Selenium.Interactions.Actions(_browsers[_c.CurrentUser.Key].Driver.WrappedDriver);
             action.MoveToElement(firstParticipantLink).Perform();
-            var conferenceParticipant = _c.Test.Conference.Participants.Find(x => x.Name.Contains(user));
+            var conferenceParticipant = _c.Test.ConferenceParticipants.Find(x => x.Name.Contains(user));
             var participantEmailAndRole = $"{conferenceParticipant.Name} ({conferenceParticipant.Case_type_group})";
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantContactDetails(user, participantEmailAndRole)).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantContactDetails(user, hearingParticipant.Contact_email)).Displayed.Should().BeTrue();

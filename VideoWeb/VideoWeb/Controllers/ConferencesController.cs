@@ -4,17 +4,17 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Polly.CircuitBreaker;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Helpers;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
-using UserRole = VideoWeb.Contract.Responses.UserRole;
 using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
+using UserRole = VideoWeb.Contract.Responses.UserRole;
 
 namespace VideoWeb.Controllers
 {
@@ -27,16 +27,16 @@ namespace VideoWeb.Controllers
         private readonly IUserApiClient _userApiClient;
         private readonly IBookingsApiClient _bookingsApiClient;
         private readonly ILogger<ConferencesController> _logger;
-        private readonly IMemoryCache _memoryCache;
+       private readonly IConferenceCache _conferenceCache;
 
         public ConferencesController(IVideoApiClient videoApiClient, IUserApiClient userApiClient,
-            IBookingsApiClient bookingsApiClient, ILogger<ConferencesController> logger, IMemoryCache memoryCache)
+            IBookingsApiClient bookingsApiClient, ILogger<ConferencesController> logger, IConferenceCache conferenceCache)
         {
             _videoApiClient = videoApiClient;
             _userApiClient = userApiClient;
             _bookingsApiClient = bookingsApiClient;
             _logger = logger;
-            _memoryCache = memoryCache;
+            _conferenceCache = conferenceCache;
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace VideoWeb.Controllers
                 if (excludeStaleConferences)
                 {
                     _logger.LogTrace("Filtering conference that have been closed for more than 30 minutes");
-                    conferences = conferences.Where(HasNotPassed).ToList();
+                    conferences = conferences.Where(ConferenceHelper.HasNotPassed).ToList();
                 }
 
                 conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();
@@ -124,7 +124,7 @@ namespace VideoWeb.Controllers
             try
             {
                 var conferences = await _videoApiClient.GetConferencesTodayAsync();
-                conferences = conferences.Where(HasNotPassed).ToList();
+                conferences = conferences.Where(ConferenceHelper.HasNotPassed).ToList();
                 conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();
                 var mapper = new ConferenceForUserResponseMapper();
                 var response = conferences.Select(x => mapper.MapConferenceSummaryToResponseModel(x)).ToList();
@@ -134,19 +134,6 @@ namespace VideoWeb.Controllers
             {
                 return StatusCode(e.StatusCode, e.Response);
             }
-        }
-
-        private static bool HasNotPassed(ConferenceSummaryResponse conference)
-        {
-            if (conference.Status != ConferenceState.Closed)
-            {
-                return true;
-            }
-
-            // After a conference is closed, VH Officers can still administer conferences until this period of time
-            const int postClosedVisibilityTime = 30;
-            var endTime = conference.Closed_date_time.Value.AddMinutes(postClosedVisibilityTime);
-            return DateTime.UtcNow < endTime;
         }
 
         /// <summary>
@@ -196,7 +183,7 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
 
-            var exceededTimeLimit = !HasNotPassed(new ConferenceSummaryResponse
+            var exceededTimeLimit = !ConferenceHelper.HasNotPassed(new ConferenceSummaryResponse
                 {Status = conference.Current_status, Closed_date_time = conference.Closed_date_time});
             if (!isVhOfficer && (conference.Participants.All(x => x.Username.ToLower().Trim() != username) ||
                                  exceededTimeLimit))
@@ -230,7 +217,7 @@ namespace VideoWeb.Controllers
                 }
                 catch (AggregateException e)
                 {
-                    return StatusCode((int) HttpStatusCode.ExpectationFailed, e);
+                    return StatusCode((int)HttpStatusCode.ExpectationFailed, e);
                 }
             }
 
@@ -248,16 +235,16 @@ namespace VideoWeb.Controllers
             var response = mapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
             if (!isVhOfficer)
             {
-                await ConferenceCache.AddConferenceToCache(conference, _memoryCache);
+                await _conferenceCache.AddConferenceToCache(conference);
             }
 
             return Ok(response);
         }
 
-        private static void ValidateConferenceAndBookingParticipantsMatch(List<ParticipantDetailsResponse> participants,
-            List<BookingParticipant> bookingParticipants)
+        private static void ValidateConferenceAndBookingParticipantsMatch(IEnumerable<ParticipantDetailsResponse> participants,
+            IReadOnlyCollection<BookingParticipant> bookingParticipants)
         {
-            List<Exception> missingBookingParticipantIds = new List<Exception>();
+            var missingBookingParticipantIds = new List<Exception>();
             foreach (var participant in participants)
             {
                 if (bookingParticipants.SingleOrDefault(p => p.Id == participant.Ref_id) == null)
@@ -266,7 +253,6 @@ namespace VideoWeb.Controllers
                         $"Unable to find a participant in bookings api with id ${participant.Ref_id}"));
                 }
             }
-
             if (missingBookingParticipantIds.Any())
             {
                 throw new AggregateException(missingBookingParticipantIds);

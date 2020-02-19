@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
 using TechTalk.SpecFlow;
-using Testing.Common.Helpers;
+using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using ParticipantResponse = VideoWeb.Services.Bookings.ParticipantResponse;
@@ -98,7 +98,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             rowData.CaseName.Should().Be(_c.Test.Case.Name);
             rowData.CaseType.Should().Be(_c.Test.Hearing.Case_type_name);
             rowData.CaseNumber.Should().Be(_c.Test.Case.Number);
-            ParticipantsDisplayed(_c.Test.Hearing.Participants, rowData);
+            ParticipantsDisplayed(_c.Test.HearingParticipants, rowData);
         }
 
         [Then(@"contact us details for the clerk are available")]

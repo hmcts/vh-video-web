@@ -76,7 +76,7 @@ export class CameraCheckComponent implements OnInit {
             (error) => {
               console.error(error);
             });
-        this.logger.info(`Camera check | ConferenceId : ${this.conferenceId}, CaseName : ${this.conference.case_name} | Participant : ${this.participantName} responded camera not working.`);
+        this.logger.info(`Camera check | ConferenceId : ${this.conferenceId} | Participant : ${this.participantName} responded camera not working.`);
         this.router.navigate([PageUrls.GetHelp]);
       }
       return;
@@ -85,7 +85,7 @@ export class CameraCheckComponent implements OnInit {
   }
 
   checkEquipmentAgain() {
-    this.logger.info(`Camera check | ConferenceId : ${this.conferenceId}, CaseName : ${this.conference.case_name} | Participant : ${this.participantName} requested check equipment again.`);
+    this.logger.info(`Camera check | ConferenceId : ${this.conferenceId} | Participant : ${this.participantName} requested check equipment again.`);
     this.router.navigate([PageUrls.EquipmentCheck, this.conferenceId]);
   }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AcceptanceTests.Common.Configuration;
@@ -25,10 +25,15 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         public ConfigHooks(TestContext context)
         {
-            _configRoot = new ConfigurationManager("CA353381-2F0D-47D7-A97B-79A30AFF8B86").BuildConfig();
+            _configRoot = new ConfigurationManager("CA353381-2F0D-47D7-A97B-79A30AFF8B86").BuildConfig(GetTargetEnvironment());
             context.VideoWebConfig = new VideoWebConfig();
             context.UserAccounts = new List<UserAccount>();
             context.Tokens = new VideoWebTokens();
+        }
+
+        private static string GetTargetEnvironment()
+        {
+            return NUnit.Framework.TestContext.Parameters["TargetEnvironment"] ?? "";
         }
 
         [BeforeScenario(Order = (int)HooksSequence.ConfigHooks)]
@@ -81,7 +86,9 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 Case = new CaseResponse(),
                 CommonData = new LoadXmlFile().SerialiseCommonData(),
                 Conference = new ConferenceDetailsResponse(),
+                ConferenceParticipants = new List<ParticipantDetailsResponse>(),
                 Hearing = new HearingDetailsResponse(),
+                HearingParticipants = new List<ParticipantResponse>(),
                 NewConferenceId = Guid.Empty,
                 NewHearingId = Guid.Empty,
                 TestData = new DefaultDataManager().SerialiseTestData()
@@ -125,8 +132,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 context.VideoWebConfig.AzureAdConfiguration, context.VideoWebConfig.AzureAdConfiguration.ClientId);
             context.Tokens.VideoWebBearerToken.Should().NotBeNullOrEmpty();
 
-            context.Tokens.CallbackBearerToken =
-                GenerateTemporaryTokens.SetCustomJwTokenForCallback(context.VideoWebConfig.VideoWebCustomTokenSettings);
+            context.Tokens.CallbackBearerToken = GenerateTemporaryTokens.SetCustomJwTokenForCallback(context.VideoWebConfig.VideoWebCustomTokenSettings);
             context.Tokens.CallbackBearerToken.Should().NotBeNullOrEmpty();
         }
     }

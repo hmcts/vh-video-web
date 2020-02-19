@@ -25,12 +25,12 @@
     "@angular/platform-browser-dynamic": "^8.2.14",
     "@angular/platform-server": "^8.2.14",
     "@angular/router": "^8.2.14",
-    "@aspnet/signalr": "^1.1.4",
+    "@aspnet/signalr": "^3.0.0-preview6.19307.2",
     "@hmcts/frontend": "^0.0.41-alpha",
     "@nguniversal/module-map-ngfactory-loader": "8.2.6",
     "@types/jquery": "^3.3.31",
     "@types/webrtc": "^0.0.25",
-    "adal-angular4": "^4.0.12",
+    "adal-angular4": "^3.0.16",
     "applicationinsights-js": "^1.0.20",
     "aspnet-prerendering": "^3.0.1",
     "bootstrap": "^4.4.1",
@@ -48,7 +48,7 @@
     "rxjs": "^6.5.4",
     "snyk": "^1.279.1",
     "webrtc-adapter": "^7.4.0",
-    "zone.js": "~0.9.1"
+    "zone.js": "~0.10.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.803.23",
