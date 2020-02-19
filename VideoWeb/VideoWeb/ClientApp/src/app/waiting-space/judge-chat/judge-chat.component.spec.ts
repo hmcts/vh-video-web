@@ -116,4 +116,12 @@ describe('JudgeChatComponent', () => {
         const count = component.getCountSinceUsersLastMessage(messages);
         expect(count).toBe(1);
     });
+
+    it('should reset unread counter to number of messages since user never replied', () => {
+        const othername = 'never@sent.com';
+        adalService.userInfo.userName = judgeUsername;
+        const messages = new ConferenceTestData().getChatHistory(othername);
+        const count = component.getCountSinceUsersLastMessage(messages);
+        expect(count).toBe(messages.length);
+    });
 });
