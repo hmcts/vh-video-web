@@ -19,6 +19,7 @@ import { VhoHearingListStubComponent } from 'src/app/testing/stubs/vho-hearing-l
 import { VhoParticipantStatusStubComponent } from 'src/app/testing/stubs/vho-participant-status-stub';
 import { VhoHearingsFilterStubComponent } from '../../testing/stubs/vho-hearings-filter-stub';
 import { VhoHearingsComponent } from './vho-hearings.component';
+import { VhoChatStubComponent } from 'src/app/testing/stubs/vho-chat-stub';
 
 describe('VhoHearingsComponent Filter', () => {
     let component: VhoHearingsComponent;
@@ -46,7 +47,8 @@ describe('VhoHearingsComponent Filter', () => {
                 TasksTableStubComponent,
                 VhoHearingListStubComponent,
                 VhoParticipantStatusStubComponent,
-                VhoHearingsFilterStubComponent
+                VhoHearingsFilterStubComponent,
+                VhoChatStubComponent
             ],
             providers: [
                 { provide: VideoWebService, useValue: videoWebServiceSpy },

@@ -2,14 +2,13 @@ import { Injectable } from '@angular/core';
 import * as signalR from '@aspnet/signalr';
 import { AdalService } from 'adal-angular4';
 import { Observable, Subject } from 'rxjs';
-import { ConferenceStatus, ParticipantStatus, RoomType, ConsultationAnswer } from './clients/api-client';
+import { ConferenceStatus, ParticipantStatus, RoomType, ConsultationAnswer, ChatResponse } from './clients/api-client';
 import { ConsultationMessage } from './models/consultation-message';
 import { ConferenceStatusMessage } from './models/conference-status-message';
 import { HelpMessage } from './models/help-message';
 import { ParticipantStatusMessage } from './models/participant-status-message';
 import { Logger } from './logging/logger-base';
 import { AdminConsultationMessage } from './models/admin-consultation-message';
-import { ChatMessage } from './models/chat-message';
 
 @Injectable({
     providedIn: 'root'
@@ -23,7 +22,7 @@ export class EventsService {
     private helpMessageSubject = new Subject<HelpMessage>();
     private consultationMessageSubject = new Subject<ConsultationMessage>();
     private adminConsultationMessageSubject = new Subject<AdminConsultationMessage>();
-    private messageSubject = new Subject<ChatMessage>();
+    private messageSubject = new Subject<ChatResponse>();
     private eventHubDisconnectSubject = new Subject();
     private eventHubReconnectSubject = new Subject();
 
@@ -135,9 +134,10 @@ export class EventsService {
         return this.adminConsultationMessageSubject.asObservable();
     }
 
-    getChatMessage(): Observable<ChatMessage> {
+    getChatMessage(): Observable<ChatResponse> {
         this.connection.on('ReceiveMessage', (conferenceId: string, from: string, message: string, timestamp: Date) => {
-            const chat = new ChatMessage(conferenceId, from, message, timestamp);
+            const date = new Date(timestamp);
+            const chat = new ChatResponse({ from, message, timestamp: date });
             this.logger.event('ReceiveMessage received', chat);
             this.messageSubject.next(chat);
         });
@@ -146,7 +146,6 @@ export class EventsService {
     }
 
     async sendMessage(conferenceId: string, message: string) {
-        const from = this.adalService.userInfo.userName.toLocaleLowerCase().trim();
-        await this.connection.send('SendMessage', conferenceId, from, message);
+        await this.connection.send('SendMessage', conferenceId, message);
     }
 }

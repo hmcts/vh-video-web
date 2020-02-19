@@ -47,7 +47,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     tasks: TaskResponse[];
     conferencesSubscription: Subscription;
     eventHubSubscriptions: Subscription = new Subscription();
-    chatHubSubscription: Subscription = new Subscription();
 
     displayFilter = false;
     filterOptionsCount = 0;
@@ -91,7 +90,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         clearInterval(this.interval);
         this.conferencesSubscription.unsubscribe();
         this.eventHubSubscriptions.unsubscribe();
-        this.chatHubSubscription.unsubscribe();
     }
 
     private setupEventHubSubscribers() {
@@ -132,16 +130,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
                 this.ngZone.run(() => {
                     this.logger.info(`event hub re-connected for vh officer`);
                     this.refreshConferenceDataDuringDisconnect();
-                });
-            })
-        );
-
-        this.logger.debug('Subscribing to chats');
-        this.eventHubSubscriptions.add(
-            this.eventService.getChatMessage().subscribe(message => {
-                this.ngZone.run(() => {
-                    this.logger.debug('message received');
-                    this.logger.debug(JSON.stringify(message));
                 });
             })
         );
