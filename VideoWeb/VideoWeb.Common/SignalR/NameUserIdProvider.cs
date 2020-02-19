@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
 
-namespace VideoWeb.EventHub.Hub
+namespace VideoWeb.Common.SignalR
 {
     public class NameUserIdProvider : IUserIdProvider
     {

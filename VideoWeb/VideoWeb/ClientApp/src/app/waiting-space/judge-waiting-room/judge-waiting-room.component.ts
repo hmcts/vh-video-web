@@ -1,142 +1,230 @@
-import { Component, OnInit, NgZone } from '@angular/core';
-import { ConferenceResponse, ParticipantStatus, ConferenceStatus } from 'src/app/services/clients/api-client';
-import { Router, ActivatedRoute } from '@angular/router';
-import { EventsService } from 'src/app/services/events.service';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { PageUrls } from 'src/app/shared/page-url.constants';
-import { ErrorService } from 'src/app/services/error.service';
-import { Hearing } from 'src/app/shared/models/hearing';
+import { Component, HostListener, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
-import { UpdateParticipantStatusEventRequest, EventType } from 'src/app/services/clients/api-client';
-import { SessionStorage } from 'src/app/services/session-storage';
-import { EventStatusModel } from 'src/app/services/models/event-status.model';
+import { interval, Observable, Subscription } from 'rxjs';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { ConferenceResponse, ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { DeviceTypeService } from 'src/app/services/device-type.service';
+import { ErrorService } from 'src/app/services/error.service';
+import { EventsService } from 'src/app/services/events.service';
+import { JudgeEventService } from 'src/app/services/judge-event.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { Hearing } from 'src/app/shared/models/hearing';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
-  selector: 'app-judge-waiting-room',
-  templateUrl: './judge-waiting-room.component.html',
-  styleUrls: ['./judge-waiting-room.component.scss']
+    selector: 'app-judge-waiting-room',
+    templateUrl: './judge-waiting-room.component.html',
+    styleUrls: ['./judge-waiting-room.component.scss']
 })
-export class JudgeWaitingRoomComponent implements OnInit {
+export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
+    loadingData: boolean;
+    conference: ConferenceResponse;
+    hearing: Hearing;
+    $afterStayOnSubcription: Subscription;
+    intervalSource: Observable<number>;
 
-  loadingData: boolean;
-  conference: ConferenceResponse;
-  hearing: Hearing;
-  private readonly eventStatusCache: SessionStorage<EventStatusModel>;
-  readonly JUDGE_STATUS_KEY = 'vh.judge.status';
+    apiSubscriptions: Subscription = new Subscription();
+    eventHubSubscriptions: Subscription = new Subscription();
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private videoWebService: VideoWebService,
-    private eventService: EventsService,
-    private ngZone: NgZone,
-    private errorService: ErrorService,
-    private adalService: AdalService,
-  ) {
-    this.loadingData = true;
-    this.eventStatusCache = new SessionStorage(this.JUDGE_STATUS_KEY);
-  }
-
-  ngOnInit() {
-    this.getConference();
-  }
-
-  getConference(): void {
-    const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-    this.videoWebService.getConferenceById(conferenceId)
-      .subscribe((data: ConferenceResponse) => {
-        this.loadingData = false;
-        this.conference = data;
-        this.postEventJudgeAvailableStatus();
-        this.setupSubscribers();
-        this.hearing = new Hearing(data);
-      },
-        (error) => {
-          this.loadingData = false;
-          if (!this.errorService.returnHomeIfUnauthorised(error)) {
-            this.errorService.handleApiError(error);
-          }
-        });
-  }
-
-  postEventJudgeAvailableStatus() {
-    const participant = this.conference.participants.
-      find(x => x.username.toLocaleLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
-
-    // to reset status on the navigation back to judge hearing list we need to know conference and participant Ids.
-    this.eventStatusCache.set(new EventStatusModel(this.conference.id, participant.id.toString()));
-
-    this.videoWebService.raiseParticipantEvent(this.conference.id,
-      new UpdateParticipantStatusEventRequest({
-        participant_id: participant.id.toString(), event_type: EventType.JudgeAvailable
-      })).subscribe(x => { },
-        (error) => {
-          console.error(error);
-        });
-  }
-
-  getConferenceStatusText() {
-    switch (this.conference.status) {
-      case ConferenceStatus.NotStarted: return 'Start this hearing';
-      case ConferenceStatus.Suspended: return 'Hearing suspended';
-      case ConferenceStatus.Paused: return 'Hearing paused';
-      case ConferenceStatus.Closed: return 'Hearing is closed';
-      default: return 'Hearing is in session';
+    constructor(
+        private route: ActivatedRoute,
+        private router: Router,
+        private videoWebService: VideoWebService,
+        private eventService: EventsService,
+        private ngZone: NgZone,
+        private errorService: ErrorService,
+        private logger: Logger,
+        private adalService: AdalService,
+        private judgeEventService: JudgeEventService,
+        private deviceTypeService: DeviceTypeService
+    ) {
+        this.loadingData = true;
     }
-  }
 
-  isNotStarted(): boolean {
-    return this.conference.status === ConferenceStatus.NotStarted;
-  }
+    ngOnInit() {
+        this.getConference().then(() => {
+            this.setupEventHubSubscribers();
+        });
 
-  isPaused(): boolean {
-    return this.conference.status === ConferenceStatus.Paused || this.conference.status === ConferenceStatus.Suspended;
-  }
+        this.firefoxUnload();
+        this.subcribeForStayOn();
+    }
 
-  goToHearingPage(): void {
-    this.router.navigate([PageUrls.JudgeHearingRoom, this.conference.id]);
-  }
+    async firefoxUnload() {
+        if (this.judgeEventService.isUnload() && this.deviceTypeService.getBrowserName() === 'Firefox') {
+            this.judgeEventService.clearJudgeUnload();
+            await this.judgeEventService.raiseJudgeUnavailableEvent();
+        }
+    }
 
-  goToJudgeHearingList(): void {
-    this.router.navigate([PageUrls.JudgeHearingList]);
-  }
+    // if the user after logged out in the browser dialog selected stay on,
+    // then the satatus should be updated back to available. It's not possible to
+    // detect browser leave/stay on button click event(security reason).
+    // The interval is used to detect stay on.
+    subcribeForStayOn() {
+        if (!this.judgeEventService.isUnload()) {
+            this.intervalSource = interval(10000);
+            this.$afterStayOnSubcription = this.intervalSource.subscribe(() => {
+                this.afterStayOn();
+            });
+        }
+    }
 
-  private setupSubscribers() {
-    this.eventService.start();
+    afterStayOn() {
+        this.judgeEventService.setJudgeUnload();
+        this.postEventJudgeAvailableStatus();
+    }
 
-    this.eventService.getHearingStatusMessage().subscribe(message => {
-      this.ngZone.run(() => {
-        this.handleHearingStatusChange(<ConferenceStatus>message.status);
-      });
-    });
+    @HostListener('window:beforeunload')
+    ngOnDestroy(): void {
+        this.logger.debug('Clearing intervals and subscriptions for judge waiting room');
+        this.eventHubSubscriptions.unsubscribe();
+        this.apiSubscriptions.unsubscribe();
 
-    this.eventService.getParticipantStatusMessage().subscribe(message => {
-      this.ngZone.run(() => {
-        this.handleParticipantStatusChange(message);
-      });
-    });
-  }
+        if (this.$afterStayOnSubcription) {
+            this.$afterStayOnSubcription.unsubscribe();
+        }
+    }
 
-  handleParticipantStatusChange(message: ParticipantStatusMessage): any {
-    const participant = this.conference.participants.find(p => p.id === message.participantId);
-    const status = <ParticipantStatus>message.status;
-    participant.status = status;
-  }
+    sendMessage() {
+        this.eventService.sendMessage(this.conference.id, `message from judge ${this.adalService.userInfo.userName}`);
+    }
 
-  handleHearingStatusChange(status: ConferenceStatus) {
-    this.conference.status = status;
-  }
+    async getConference() {
+        const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+        return this.videoWebService
+            .getConferenceById(conferenceId)
+            .toPromise()
+            .then((data: ConferenceResponse) => {
+                this.loadingData = false;
+                this.conference = data;
 
-  checkEquipment() {
-    this.router.navigate([PageUrls.EquipmentCheck, this.conference.id]);
-  }
+                this.postEventJudgeAvailableStatus();
 
-  hearingSuspended(): boolean {
-    return this.conference.status === ConferenceStatus.Suspended;
-  }
+                this.hearing = new Hearing(data);
+            })
+            .catch(error => {
+                this.loadingData = false;
+                this.ngZone.run(() => {
+                    if (!this.errorService.returnHomeIfUnauthorised(error)) {
+                        this.errorService.handleApiError(error);
+                    }
+                });
+            });
+    }
 
-  hearingPaused(): boolean {
-    return this.conference.status === ConferenceStatus.Paused;
-  }
+    async postEventJudgeAvailableStatus() {
+        if (this.conference) {
+            const participant = this.conference.participants.find(
+                x => x.username.toLocaleLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase()
+            );
+            if (participant) {
+                await this.judgeEventService.raiseJudgeAvailableEvent(this.conference.id, participant.id.toString());
+            }
+        }
+    }
+
+    getConferenceStatusText() {
+        switch (this.conference.status) {
+            case ConferenceStatus.NotStarted:
+                return 'Start this hearing';
+            case ConferenceStatus.Suspended:
+                return 'Hearing suspended';
+            case ConferenceStatus.Paused:
+                return 'Hearing paused';
+            case ConferenceStatus.Closed:
+                return 'Hearing is closed';
+            default:
+                return 'Hearing is in session';
+        }
+    }
+
+    isNotStarted(): boolean {
+        return this.conference.status === ConferenceStatus.NotStarted;
+    }
+
+    isPaused(): boolean {
+        return this.conference.status === ConferenceStatus.Paused || this.conference.status === ConferenceStatus.Suspended;
+    }
+
+    goToHearingPage(): void {
+        this.router.navigate([PageUrls.JudgeHearingRoom, this.conference.id]);
+    }
+
+    goToJudgeHearingList(): void {
+        this.router.navigate([PageUrls.JudgeHearingList]);
+    }
+
+    setupEventHubSubscribers() {
+        this.eventService.start();
+
+        this.eventHubSubscriptions.add(
+            this.eventService.getHearingStatusMessage().subscribe(message => {
+                this.ngZone.run(() => {
+                    this.handleHearingStatusChange(<ConferenceStatus>message.status);
+                });
+            })
+        );
+
+        this.eventHubSubscriptions.add(
+            this.eventService.getParticipantStatusMessage().subscribe(message => {
+                this.ngZone.run(() => {
+                    this.handleParticipantStatusChange(message);
+                });
+            })
+        );
+
+        this.logger.debug('Subscribing to event hub disconnects');
+        this.eventHubSubscriptions.add(
+            this.eventService.getServiceDisconnected().subscribe(() => {
+                this.ngZone.run(() => {
+                    this.logger.info(`event hub disconnection for vh officer`);
+                    this.getConference();
+                });
+            })
+        );
+
+        this.logger.debug('Subscribing to event hub reconnects');
+        this.eventHubSubscriptions.add(
+            this.eventService.getServiceReconnected().subscribe(() => {
+                this.ngZone.run(() => {
+                    this.logger.info(`event hub re-connected for vh officer`);
+                    this.getConference();
+                });
+            })
+        );
+    }
+
+    handleParticipantStatusChange(message: ParticipantStatusMessage): any {
+        const participant = this.conference.participants.find(p => p.id === message.participantId);
+        const status = <ParticipantStatus>message.status;
+        participant.status = status;
+    }
+
+    handleHearingStatusChange(status: ConferenceStatus) {
+        this.conference.status = status;
+    }
+
+    checkEquipment() {
+        this.router.navigate([PageUrls.EquipmentCheck, this.conference.id]);
+    }
+
+    hearingSuspended(): boolean {
+        return this.conference.status === ConferenceStatus.Suspended;
+    }
+
+    hearingPaused(): boolean {
+        return this.conference.status === ConferenceStatus.Paused;
+    }
+
+    @HostListener('window:beforeunload', ['$event'])
+    public async beforeunloadHandler($event: any) {
+        $event.preventDefault();
+        $event.returnValue = 'save';
+
+        this.judgeEventService.setJudgeUnload();
+        await this.judgeEventService.raiseJudgeUnavailableEvent();
+    }
 }

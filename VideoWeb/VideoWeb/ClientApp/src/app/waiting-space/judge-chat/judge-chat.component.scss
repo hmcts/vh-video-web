@@ -1,0 +1,107 @@
+@import "~govuk-frontend/govuk/all";
+
+.judge-chat-window {
+  width: 30%;
+  z-index: 100;
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
+  -webkit-box-shadow: 0px 0px 8px 3px govuk-colour("dark-grey");
+  -moz-box-shadow: 0px 0px 8px 3px govuk-colour("dark-grey");
+  box-shadow: 0px 0px 8px 3px govuk-colour("dark-grey");
+}
+
+.chevron {
+  float: right;
+}
+
+.chat-header {
+  background: govuk-colour("blue");
+}
+
+.chat-header:active {
+  background: govuk-colour("dark-blue")
+}
+
+.chat-header-text {
+  color: govuk-colour("white");
+  margin-bottom: 0;
+}
+
+.chat-window {
+  height: 400px;
+  background: govuk-colour("white");
+}
+
+.own-message {
+  padding-top: 10px;
+  text-align: left;
+}
+
+.other-message {
+  padding-top: 10px;
+  text-align: right;
+}
+
+.other-message>p {
+  color: govuk-colour("blue");
+}
+
+.chat-input-group {
+  display: flex;
+  margin-bottom: 0px;
+  background: govuk-colour("white");
+}
+
+.chat-text-box {
+  border: none;
+}
+
+.chat-input {
+  margin-bottom: 0px;
+  resize: none;
+}
+
+.chat-message {
+  white-space: pre-wrap;
+}
+
+.chat-btn {
+  margin-bottom: 0px;
+}
+
+.notification-badge {
+  position: relative;
+  margin-left: 20px;
+}
+
+.notification-badge[data-badge]:after {
+  content: attr(data-badge);
+  position: absolute;
+  right: -35px;
+  background: govuk-colour("black");
+  color: govuk-colour("white");
+  width: 18px;
+  height: 18px;
+  font-size: 0.7em;
+  padding: 5px;
+  text-align: center;
+  line-height: 18px;
+  border-radius: 50%;
+  box-shadow: 0 0 1px #333;
+}
+
+.chat-list {
+  overflow-y: scroll;
+}
+
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background-color: rgba(0, 0, 0, .5);
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+}

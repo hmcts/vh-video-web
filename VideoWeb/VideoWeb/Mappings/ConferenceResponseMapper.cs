@@ -19,13 +19,15 @@ namespace VideoWeb.Mappings
             }
 
             var participantMapper = new ParticipantResponseMapper();
-            var participants = conference.Participants
-                .OrderBy(x => x.Case_type_group)
-                .Select(x =>
-                    participantMapper.MapParticipantToResponseModel(x,
-                        bookingParticipants.SingleOrDefault(p => x.Ref_id == p.Id)))
-                .ToList();
-
+            conference.Participants ??= new List<ParticipantDetailsResponse>();
+            
+                var participants = conference.Participants
+                    .OrderBy(x => x.Case_type_group)
+                    .Select(x =>
+                        participantMapper.MapParticipantToResponseModel(x,
+                            bookingParticipants.SingleOrDefault(p => x.Ref_id == p.Id)))
+                    .ToList();
+            
             var response = new ConferenceResponse
             {
                 Id = conference.Id,
@@ -62,7 +64,7 @@ namespace VideoWeb.Mappings
                     position += 2;
                 }
             }
-            
+
             return response;
         }
     }

@@ -1,21 +1,20 @@
 {
-    "stryker-config":
-    {      
-        "reporters":[
+    "stryker-config": {
+        "reporters": [
             "Progress",
             "ClearText"
-        ],  
-        "log-level":"info",
-        "timeout-ms":10000,
-        "log-file":true,
-        "project-file":"VideoWeb.csproj",
-        "max-concurrent-test-runners":4,
-        "threshold-high":80,
-        "threshold-low":70,
-        "threshold-break":60,
-        "files-to-exclude": [       
         ],
-		"excluded-mutations": [
+        "log-level": "info",
+        "timeout-ms": 10000,
+        "log-file": true,
+        "project-file": "VideoWeb.csproj",
+        "max-concurrent-test-runners": 4,
+        "threshold-high": 80,
+        "threshold-low": 70,
+        "threshold-break": 60,
+        "files-to-exclude": [
+        ],
+        "excluded-mutations": [
         ],
       "ignore-methods": [
         "*LogDebug",
@@ -24,13 +23,15 @@
         "*LogInformation",
         "*AddModelError"
       ],
-		"mutate": [
-			"!Startup.cs",
-			"!Program.cs",
-			"!ConfigureServicesExtensions.cs",
-			"!Swagger/AuthResponsesOperationFilter.cs",
-      "!Pages/Error.cshtml.cs",
-      "!Extensions/ExceptionMiddleware.cs"
-		]
+        "mutate": [
+            "!Startup.cs",
+            "!Program.cs",
+            "!ConfigureServicesExtensions.cs",
+            "!Swagger/AuthResponsesOperationFilter.cs",
+            "!Pages/Error.cshtml.cs",
+            "!Extensions/ExceptionMiddleware.cs",
+          "!Extensions/EnumExtensions.cs",
+          "!Helpers/ConferenceHelper.cs"
+        ]
     }
 }

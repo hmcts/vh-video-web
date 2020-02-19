@@ -1,6 +1,7 @@
 using System;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Services.Video;
+using ParticipantStatus = VideoWeb.Contract.Responses.ParticipantStatus;
 using UserRole = VideoWeb.Contract.Responses.UserRole;
 using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
 
@@ -8,22 +9,13 @@ namespace VideoWeb.Mappings
 {
     public class ParticipantResponseMapper
     {
-        public ParticipantResponse MapParticipantToResponseModel(ParticipantDetailsResponse participant,
-            BookingParticipant bookingParticipant)
+        public ParticipantResponse MapParticipantToResponseModel(ParticipantDetailsResponse participant, BookingParticipant bookingParticipant)
         {
-            var status = ParticipantStatus.None;
-            if (participant.Current_status?.Participant_state != null)
-            {
-                status =
-                    Enum.Parse<ParticipantStatus>(participant.Current_status.Participant_state
-                        .ToString());
-            }
-            
-            if (!Enum.TryParse(participant.User_role.ToString(), true, out UserRole role))
-            {
+            var status = Enum.Parse<ParticipantStatus>(participant.Current_status.ToString());
+
+            if (!Enum.TryParse(participant.User_role.ToString(), true, out UserRole role)) 
                 role = UserRole.None;
-            }
-            
+
             var response = new ParticipantResponse
             {
                 Id = participant.Id,
@@ -44,6 +36,7 @@ namespace VideoWeb.Mappings
             {
                 response.TiledDisplayName = $"T{0};{participant.Display_name};{participant.Id}";
             }
+
             return response;
         }
     }

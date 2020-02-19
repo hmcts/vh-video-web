@@ -17,7 +17,8 @@ namespace VideoWeb.UnitTests.Controllers.TokenController
             typedResult.Should().NotBeNull();
             var tokenResponse = (TokenResponse)typedResult.Value;
             tokenResponse.Token.Should().Be(token);
-            tokenResponse.ExpiresOn.Length.Should().BeGreaterThan(15);
+            tokenResponse.ExpiresOn.Length.Should().BeGreaterOrEqualTo(15);
+            tokenResponse.ExpiresOn.Length.Should().BeLessOrEqualTo(17);
             hashGenerator.Verify(h => h.GenerateHash(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
     }
