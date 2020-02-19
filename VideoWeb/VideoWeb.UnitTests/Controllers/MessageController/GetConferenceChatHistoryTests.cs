@@ -70,6 +70,22 @@ namespace VideoWeb.UnitTests.Controllers.MessageController
             responseModel.Should().NotBeNullOrEmpty();
             responseModel?.Count.Should().Be(messages.Count);
         }
+        
+        [Test]
+        public async Task should_return_okay_code_when_chat_history_is_empty()
+        {
+            var conferenceId = Guid.NewGuid();
+            var messages = new List<MessageResponse>();
+            _videoApiClientMock.Setup(x => x.GetMessagesAsync(conferenceId))
+                .ReturnsAsync(messages);
+            
+            var result = await _controller.GetConferenceChatHistory(conferenceId);
+            var typedResult = (OkObjectResult) result;
+            typedResult.Should().NotBeNull();
+            var responseModel = typedResult.Value as List<ChatResponse>;
+            responseModel.Should().NotBeNullOrEmpty();
+            responseModel?.Should().BeEmpty();
+        }
 
         [Test]
         public async Task should_return_exception()

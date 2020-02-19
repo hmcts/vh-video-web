@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
-using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Controllers
@@ -60,7 +59,7 @@ namespace VideoWeb.Controllers
         }
 
         private async Task<List<ChatResponse>> MapMessages(ChatResponseMapper mapper,
-            IEnumerable<MessageResponse> messages, Guid conferenceId)
+            IList<MessageResponse> messages, Guid conferenceId)
         {
             var response = new List<ChatResponse>();
             if (!messages.Any())
