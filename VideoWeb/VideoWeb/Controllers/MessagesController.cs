@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Responses;
@@ -19,15 +20,17 @@ namespace VideoWeb.Controllers
     public class MessagesController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
+        private readonly IMemoryCache _memoryCache;
         private readonly ILogger<MessagesController> _logger;
         private readonly IMessageDecoder _messageDecoder;
 
         public MessagesController(IVideoApiClient videoApiClient, ILogger<MessagesController> logger,
-            IMessageDecoder messageDecoder)
+            IMessageDecoder messageDecoder, IMemoryCache memoryCache)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _messageDecoder = messageDecoder;
+            _memoryCache = memoryCache;
         }
 
         /// <summary>
@@ -66,7 +69,7 @@ namespace VideoWeb.Controllers
             {
                 return response;
             }
-            var conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+            var conference = _memoryCache.Get<ConferenceDetailsResponse>($"{conferenceId}_details");
             var username = User.Identity.Name;
 
             foreach (var message in messages)

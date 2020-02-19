@@ -7,6 +7,7 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -25,10 +26,12 @@ namespace VideoWeb.UnitTests.Controllers.MessageController
         private Mock<IVideoApiClient> _videoApiClientMock;
         private Mock<IMessageDecoder> _messageDecoder;
         private Mock<ILogger<MessagesController>> _mockLogger;
+        private IMemoryCache _memoryCache;
         
         [SetUp]
         public void Setup()
         {
+            _memoryCache = new MemoryCache(new MemoryCacheOptions());
             _videoApiClientMock = new Mock<IVideoApiClient>();
             _messageDecoder = new Mock<IMessageDecoder>();
             _mockLogger = new Mock<ILogger<MessagesController>>();
@@ -43,7 +46,7 @@ namespace VideoWeb.UnitTests.Controllers.MessageController
             };
 
             _controller =
-                new MessagesController(_videoApiClientMock.Object, _mockLogger.Object, _messageDecoder.Object)
+                new MessagesController(_videoApiClientMock.Object, _mockLogger.Object, _messageDecoder.Object, _memoryCache)
                 {
                     ControllerContext = context
                 };

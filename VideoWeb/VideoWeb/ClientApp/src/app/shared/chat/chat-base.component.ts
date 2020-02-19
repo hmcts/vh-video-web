@@ -67,8 +67,9 @@ export abstract class ChatBaseComponent {
 
     handleIncomingOtherMessage() {}
 
-    async retrieveChatForConference(): Promise<void> {
+    async retrieveChatForConference(): Promise<ChatResponse[]> {
         this.messages = await this.videoWebService.getConferenceChatHistory(this._hearing.id).toPromise();
+        return this.messages;
     }
 
     onKeydown(event: KeyboardEvent) {

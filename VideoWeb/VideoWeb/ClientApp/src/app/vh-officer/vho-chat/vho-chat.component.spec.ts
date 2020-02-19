@@ -45,7 +45,7 @@ describe('VhoChatComponent', () => {
         fixture = TestBed.createComponent(VhoChatComponent);
         component = fixture.componentInstance;
         component.conference = conference;
-        component.messages = new ConferenceTestData().getChatHistory();
+        component.messages = new ConferenceTestData().getChatHistory('vho.user@hearings.net');
         spyOn(component, 'updateDivWidthForSection').and.callFake(() => {});
         fixture.detectChanges();
     });

@@ -13,6 +13,7 @@ import {
     ChatResponse
 } from 'src/app/services/clients/api-client';
 import { HearingsFilter, StatusFilter, ListFilter, AlertsStatus, AlertFilter } from '../../../shared/models/hearings-filter';
+import * as moment from 'moment';
 
 export class ConferenceTestData {
     getConferenceNow(): ConferenceForUserResponse {
@@ -270,22 +271,48 @@ export class ConferenceTestData {
         return filter;
     }
 
-    getChatHistory(): ChatResponse[] {
+    getChatHistory(loggedInUser: string): ChatResponse[] {
+        const now = new Date();
         const messages: ChatResponse[] = [];
         const message1 = new ChatResponse({
             from: 'vho.user@hearings.net',
             message: 'test message from vho',
-            timestamp: new Date(new Date().getUTCDate())
+            timestamp: moment(now)
+                .subtract(3, 'minutes')
+                .toDate()
         });
 
         const message2 = new ChatResponse({
             from: 'judge.fudge@hearings.net',
             message: 'test message from judge',
-            timestamp: new Date(new Date().getUTCDate())
+            timestamp: moment(now)
+                .subtract(5, 'minutes')
+                .toDate()
+        });
+
+        const message3 = new ChatResponse({
+            from: 'vho.user@hearings.net',
+            message: 'test message from vho 2',
+            timestamp: moment(now)
+                .subtract(8, 'minutes')
+                .toDate()
+        });
+
+        const message4 = new ChatResponse({
+            from: 'vho.user@hearings.net',
+            message: 'test message from vho 3',
+            timestamp: moment(now)
+                .subtract(10, 'minutes')
+                .toDate()
         });
 
         messages.push(message1);
         messages.push(message2);
+        messages.push(message3);
+        messages.push(message4);
+        messages.forEach(m => {
+            m.is_user = m.from.toLocaleLowerCase() === loggedInUser.toLocaleLowerCase();
+        });
         return messages;
     }
 }
