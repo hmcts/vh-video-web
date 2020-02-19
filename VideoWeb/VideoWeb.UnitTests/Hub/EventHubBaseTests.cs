@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
@@ -24,6 +25,7 @@ namespace VideoWeb.UnitTests.Hub
         protected Mock<IHubCallerClients<IEventHubClient>> EventHubClientMock;
         protected EventHub.Hub.EventHub Hub;
         protected ClaimsPrincipal Claims;
+        protected IMemoryCache MemoryCache;
 
         [SetUp]
         public void Setup()
@@ -43,8 +45,9 @@ namespace VideoWeb.UnitTests.Hub
             UserProfileServiceMock.Setup(x => x.GetObfuscatedUsernameAsync(It.IsAny<string>()))
                 .ReturnsAsync("o**** f*****");
 
+            MemoryCache = new MemoryCache(new MemoryCacheOptions());
             Hub = new EventHub.Hub.EventHub(UserProfileServiceMock.Object, VideoApiClientMock.Object,
-                LoggerMock.Object)
+                LoggerMock.Object, MemoryCache)
             {
                 Context = HubCallerContextMock.Object,
                 Groups = GroupManagerMock.Object,

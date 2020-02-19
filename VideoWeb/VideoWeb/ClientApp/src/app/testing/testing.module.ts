@@ -25,11 +25,11 @@ import { BetaBannerStubComponent } from './stubs/beta-banner-stub';
 import { BackNavigationStubComponent } from './stubs/back-navigation-stub';
 import { UnsupportedBrowserStubComponent } from './stubs/unsupported-browser-stub';
 import { VhoHearingsFilterStubComponent } from './stubs/vho-hearings-filter-stub';
+import { VhoChatStubComponent } from './stubs/vho-chat-stub';
+import { JudgeChatStubComponent } from './stubs/judge-chat-stub.component';
 
 @NgModule({
-    imports: [
-        CommonModule
-    ],
+    imports: [CommonModule],
     declarations: [
         BreadcrumbStubComponent,
         CancelPopupStubComponent,
@@ -54,7 +54,9 @@ import { VhoHearingsFilterStubComponent } from './stubs/vho-hearings-filter-stub
         BetaBannerStubComponent,
         BackNavigationStubComponent,
         UnsupportedBrowserStubComponent,
-        VhoHearingsFilterStubComponent
+        VhoHearingsFilterStubComponent,
+        VhoChatStubComponent,
+        JudgeChatStubComponent
     ]
 })
-export class TestingModule { }
+export class TestingModule {}

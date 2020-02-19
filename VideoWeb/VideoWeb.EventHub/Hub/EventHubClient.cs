@@ -5,7 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using VideoWeb.Common.SignalR;
+using VideoWeb.EventHub.Exceptions;
+using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.EventHub.Hub
@@ -19,11 +22,14 @@ namespace VideoWeb.EventHub.Hub
         private readonly ILogger<EventHub> _logger;
         private readonly IVideoApiClient _videoApiClient;
 
-        public EventHub(IUserProfileService userProfileService, 
-            IVideoApiClient videoApiClient, ILogger<EventHub> logger)
+        private readonly IMemoryCache _memoryCache;
+
+        public EventHub(IUserProfileService userProfileService,
+            IVideoApiClient videoApiClient, ILogger<EventHub> logger, IMemoryCache memoryCache)
         {
             _userProfileService = userProfileService;
             _logger = logger;
+            _memoryCache = memoryCache;
             _videoApiClient = videoApiClient;
         }
 
@@ -121,17 +127,31 @@ namespace VideoWeb.EventHub.Hub
         {
             return await _userProfileService.GetObfuscatedUsernameAsync(username);
         }
-        
+
         public async Task SendMessage(Guid conferenceId, string message)
         {
+            var isAllowed = await IsAllowedToSendMessage(conferenceId);
+            if (!isAllowed) return;
             var from = Context.User.Identity.Name;
             var timestamp = DateTime.UtcNow;
+            
             await Clients.Group(conferenceId.ToString()).ReceiveMessage(conferenceId, from, message, timestamp);
             await _videoApiClient.SaveMessageAsync(conferenceId, new AddMessageRequest
             {
                 From = from,
                 Message_text = message
             });
+        }
+
+        private async Task<bool> IsAllowedToSendMessage(Guid conferenceId)
+        {
+            var isAdmin = await IsVhOfficerAsync(Context.User.Identity.Name);
+            if (isAdmin) return true;
+            var conference = _memoryCache.Get<Conference>(conferenceId);
+            if (conference == null) throw new ConferenceNotFoundException(conferenceId);
+
+            return conference.GetJudge().Username
+                .Equals(Context.UserIdentifier, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

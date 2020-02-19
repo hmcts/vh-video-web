@@ -66,3 +66,5 @@
     </app-judge-participant-status-list>
   </div>
 </div>
+
+<app-judge-chat *ngIf="!loadingData && conference" [conference]="conference"></app-judge-chat>

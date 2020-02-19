@@ -23,6 +23,7 @@ using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Common.SignalR;
 using VideoWeb.Contract.Request;
 using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.Mappings;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
@@ -42,20 +43,21 @@ namespace VideoWeb
 
             serviceCollection.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo {Title = "Video Web App API", Version = "v1"});
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Video Web App API", Version = "v1" });
                 c.AddFluentValidationRules();
                 c.IncludeXmlComments(xmlPath);
                 c.IncludeXmlComments(contractsXmlPath);
                 c.EnableAnnotations();
 
                 c.AddSecurityDefinition("Bearer", //Name the security scheme
-                    new OpenApiSecurityScheme{
+                    new OpenApiSecurityScheme
+                    {
                         Description = "JWT Authorization header using the Bearer scheme.",
                         Type = SecuritySchemeType.Http, //We set the scheme type to http since we're using bearer authentication
                         Scheme = "bearer" //The name of the HTTP Authorization scheme to be used in the Authorization header. In this case "bearer".
                     });
 
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement{ 
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement{
                     {
                         new OpenApiSecurityScheme{
                             Reference = new OpenApiReference{
@@ -75,24 +77,25 @@ namespace VideoWeb
         public static IServiceCollection AddCustomTypes(this IServiceCollection services)
         {
             services.AddMemoryCache();
-            
+
             services.AddSingleton<ITelemetryInitializer, RequestTelemetry>();
 
             services.AddTransient<BookingsApiTokenHandler>();
             services.AddTransient<VideoApiTokenHandler>();
             services.AddTransient<UserApiTokenHandler>();
-            
+
             services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
             services.AddScoped<ITokenProvider, TokenProvider>();
             services.AddScoped<ICustomJwtTokenProvider, CustomJwtTokenProvider>();
             services.AddScoped<IHashGenerator, HashGenerator>();
             services.AddScoped<IUserProfileService, AdUserProfileService>();
             services.AddScoped<IConferenceCache, ConferenceCache>();
-            
+            services.AddScoped<IMessageDecoder, MessageFromDecoder>();
+
             var container = services.BuildServiceProvider();
             var servicesConfiguration = container.GetService<IOptions<HearingServicesConfiguration>>().Value;
 
-            
+
             services.AddHttpClient<IBookingsApiClient, BookingsApiClient>()
                 .AddHttpMessageHandler<BookingsApiTokenHandler>()
                 .AddTypedClient(httpClient => BuildBookingsApiClient(httpClient, servicesConfiguration))
@@ -102,14 +105,14 @@ namespace VideoWeb
             services.AddHttpClient<IVideoApiClient, VideoApiClient>()
                 .AddHttpMessageHandler<VideoApiTokenHandler>()
                 .AddTypedClient(httpClient => BuildVideoApiClient(httpClient, servicesConfiguration));
-            
+
             services.AddHttpClient<IUserApiClient, UserApiClient>()
                 .AddHttpMessageHandler<UserApiTokenHandler>()
                 .AddTypedClient(httpClient => BuildUserApiClient(httpClient, servicesConfiguration));
 
             services.AddScoped<IEventHandlerFactory, EventHandlerFactory>();
             RegisterEventHandlers(services);
-                
+
             var contractResolver = new DefaultContractResolver
             {
                 NamingStrategy = new SnakeCaseNamingStrategy()
@@ -125,7 +128,7 @@ namespace VideoWeb
                         new StringEnumConverter());
                 })
                 .AddHubOptions<EventHub.Hub.EventHub>(options => { options.EnableDetailedErrors = true; });
-            
+
             return services;
         }
 
@@ -166,7 +169,7 @@ namespace VideoWeb
         private static void RegisterEventHandlers(IServiceCollection serviceCollection)
         {
             var eventHandlers = GetAllTypesOf<IEventHandler>();
-            
+
             foreach (var eventHandler in eventHandlers)
             {
                 if (eventHandler.IsInterface || eventHandler.IsAbstract) continue;
@@ -174,7 +177,7 @@ namespace VideoWeb
                 serviceCollection.AddScoped(serviceType, eventHandler);
             }
         }
-        
+
         private static IEnumerable<Type> GetAllTypesOf<T>()
         {
             var platform = Environment.OSVersion.Platform.ToString();
@@ -221,19 +224,19 @@ namespace VideoWeb
         private static IBookingsApiClient BuildBookingsApiClient(HttpClient httpClient,
             HearingServicesConfiguration servicesConfiguration)
         {
-            return new BookingsApiClient(httpClient) {BaseUrl = servicesConfiguration.BookingsApiUrl};
+            return new BookingsApiClient(httpClient) { BaseUrl = servicesConfiguration.BookingsApiUrl };
         }
 
         private static IVideoApiClient BuildVideoApiClient(HttpClient httpClient,
             HearingServicesConfiguration serviceSettings)
         {
-            return new VideoApiClient(httpClient) {BaseUrl = serviceSettings.VideoApiUrl};
+            return new VideoApiClient(httpClient) { BaseUrl = serviceSettings.VideoApiUrl };
         }
 
         private static IUserApiClient BuildUserApiClient(HttpClient httpClient,
             HearingServicesConfiguration serviceSettings)
         {
-            return new UserApiClient(httpClient) {BaseUrl = serviceSettings.UserApiUrl};
+            return new UserApiClient(httpClient) { BaseUrl = serviceSettings.UserApiUrl };
         }
     }
 }
