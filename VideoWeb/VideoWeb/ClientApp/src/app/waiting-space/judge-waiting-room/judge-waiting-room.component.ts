@@ -205,6 +205,9 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
 
     handleHearingStatusChange(status: ConferenceStatus) {
         this.conference.status = status;
+        if (this.conference.status === ConferenceStatus.Suspended || this.conference.status === ConferenceStatus.Paused) {
+            this.postEventJudgeAvailableStatus();
+        }
     }
 
     checkEquipment() {
