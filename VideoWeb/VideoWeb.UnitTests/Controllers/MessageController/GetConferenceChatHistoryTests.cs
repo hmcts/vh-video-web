@@ -83,8 +83,7 @@ namespace VideoWeb.UnitTests.Controllers.MessageController
             var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
             var responseModel = typedResult.Value as List<ChatResponse>;
-            responseModel.Should().NotBeNullOrEmpty();
-            responseModel?.Should().BeEmpty();
+            responseModel.Should().BeEmpty();
         }
 
         [Test]
