@@ -31,17 +31,17 @@ Scenario Outline: Clerk status updates
   
 @VIH-5431
 Scenario: Clerk in another hearing
-  Given I have a hearing and a conference
+  Given I have a hearing
   And the clerk status is In Hearing
-	And I have another hearing and a conference 
+	And I have another hearing
   And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
   Then the VHO can see the clerk status is In another hearing
 
 @VIH-5431
 Scenario: Clerk in another waiting room after disconnection
-  Given I have a hearing and a conference
+  Given I have a hearing
   And the clerk status is Disconnected
   And the clerk status is Available
-	And I have another hearing and a conference 
+	And I have another hearing
   And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
   Then the VHO can see the clerk status is Unavailable
