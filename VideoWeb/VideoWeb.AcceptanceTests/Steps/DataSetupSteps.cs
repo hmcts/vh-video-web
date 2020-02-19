@@ -25,30 +25,31 @@ namespace VideoWeb.AcceptanceTests.Steps
             _c = c;
         }
 
-        [Given(@"I have a hearing")]
+        [Given(@"I have a hearing only without a conference")]
         public void GivenIHaveAHearingOnly()
         {
             GivenIHaveAHearing();
         }
 
-        [Given(@"I have a hearing and a conference")]
-        [Given(@"I have another hearing and a conference")]
+        [Given(@"I have a hearing")]
+        [Given(@"I have another hearing")]
         public void GivenIHaveAHearingAndAConference()
         {
             GivenIHaveAHearing();
             GetTheNewConferenceDetails();
         }
 
-        [Given(@"I have a hearing and a conference in (.*) minutes time")]
+        [Given(@"I have a hearing in (.*) minutes time")]
         public void GivenIHaveAHearingAndAConferenceInMinutesTime(int minutes)
         {
+            CheckThatTheHearingWillBeCreatedForToday(DateTime.Now.ToUniversalTime().AddMinutes(minutes));
             GivenIHaveAHearing(minutes);
             GetTheNewConferenceDetails();
             _c.Test.DelayedStartTime = minutes;
         }
 
-        [Given(@"I have a hearing and a conference in (.*) days time")]
-        [Given(@"I have another hearing and a conference in (.*) days time")]
+        [Given(@"I have a hearing in (.*) days time")]
+        [Given(@"I have another hearing in (.*) days time")]
         public void GivenIHaveAHearingAndAConferenceInDaysTime(int days)
         {
             var minutesFromDays = Convert.ToInt32(TimeSpan.FromDays(days).TotalMinutes);
@@ -72,6 +73,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             _c.Test.NewHearingId = hearing.Id;
             _c.Test.Case = hearing.Cases.First();
             _c.Test.HearingParticipants = hearing.Participants;
+        }
+
+        private static void CheckThatTheHearingWillBeCreatedForToday(DateTime dateTime)
+        {
+            if (!DateTime.Today.Day.Equals(dateTime.Day))
+                throw new DataMisalignedException("Hearing will be created for tomorrow, and won't be visible in the UI.");
         }
 
         [Given(@"Get the new conference details")]
