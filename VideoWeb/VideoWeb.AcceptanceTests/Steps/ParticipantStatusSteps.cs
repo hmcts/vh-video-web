@@ -45,17 +45,17 @@ namespace VideoWeb.AcceptanceTests.Steps
             }
         }
 
-        [Then(@"the (.*) status should be (.*)")]
-        [Then(@"the (.*) statuses should be (.*)")]
-        public void ThenTheParticipantsStatusesShouldBeNotJoined(string userType, string participantStatus)
+        [Then(@"the VHO can see the (.*) status is (.*)")]
+        [Then(@"the VHO can see the (.*) statuses are (.*)")]
+        public void ThenTheParticipantsStatusesAre(string userType, string participantStatus)
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
             CheckParticipantStatus(participantStatus, ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, userType));
         }
 
-        [Then(@"the participants status will be updated to (.*)")]
-        public void ThenTheParticipantStatusWillBeUpdatedToJoining(ParticipantState expectedState)
+        [Then(@"the users status has updated to (.*)")]
+        public void ThenTheParticipantStatusWillBeUpdatedTo(ParticipantState expectedState)
         {
             var participantState = new PollForParticipantStatus(_c.Apis.VideoApi)
                     .WithConferenceId(_c.Test.NewConferenceId)
@@ -67,9 +67,9 @@ namespace VideoWeb.AcceptanceTests.Steps
                 participantState.Should().Be(expectedState);
         }
 
-        [Then(@"the (.*) status should update to (.*)")]
-        [Then(@"the (.*) statuses should update to (.*)")]
-        public void ThenTheParticipantsStatusesShouldUpdateToDisconnected(string userType, string participantStatus)
+        [Then(@"the VHO can see the (.*) status has updated to (.*)")]
+        [Then(@"the VHO can see the (.*) statuses have updated to (.*)")]
+        public void ThenTheParticipantsStatusesShouldUpdateTo(string userType, string participantStatus)
         {
             _browsers[_c.CurrentUser.Key].Driver.Navigate().Refresh();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number)).Click();

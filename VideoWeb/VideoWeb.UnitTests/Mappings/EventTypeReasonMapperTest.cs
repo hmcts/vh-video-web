@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
@@ -10,7 +10,7 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_set_reason_for_event_type_joined()
         {
-            var eventType = EventType.Joined;
+            var eventType = EventType.ParticipantJoining;
             EventTypeReasonMapper.Map(eventType).Should().Be("participant joining");
         }
         [Test]
@@ -24,6 +24,12 @@ namespace VideoWeb.UnitTests.Mappings
         {
             var eventType = EventType.JudgeUnavailable;
             EventTypeReasonMapper.Map(eventType).Should().Be("judge unavailable");
+        }
+        [Test]
+        public void Should_set_reason_to_empty()
+        {
+            var eventType = EventType.None;
+            EventTypeReasonMapper.Map(eventType).Should().Be(string.Empty);
         }
     }
 }

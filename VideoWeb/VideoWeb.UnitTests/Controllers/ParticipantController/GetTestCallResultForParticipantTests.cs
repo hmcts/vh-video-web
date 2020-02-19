@@ -92,7 +92,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .Returns(Task.FromResult(default(object)));
 
             var eventRequest = Builder<UpdateParticipantStatusEventRequest>.CreateNew().With(x => x.ParticipantId = _testConference.Participants.First().Id).Build();
-            eventRequest.EventType = EventType.Joined;
+            eventRequest.EventType = EventType.ParticipantJoining;
 
             var result = await _controller.UpdateParticipantStatus(_testConference.Id, eventRequest);
             var typedResult = (NoContentResult)result;

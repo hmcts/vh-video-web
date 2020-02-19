@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -7,11 +7,20 @@ using VideoWeb.Services.Video;
 using UserRole = VideoWeb.Contract.Responses.UserRole;
 
 namespace VideoWeb
-{
-    public class ConferenceCache
+{   public interface IConferenceCache
     {
-        protected ConferenceCache() { }
-        public static async Task AddConferenceToCache(ConferenceDetailsResponse conferenceResponse, IMemoryCache memoryCache)
+        Task AddConferenceToCache(ConferenceDetailsResponse conferenceResponse);
+    }
+
+    public class ConferenceCache :IConferenceCache
+    {
+        private readonly IMemoryCache _memoryCache;
+
+        public ConferenceCache(IMemoryCache memoryCache) {
+            _memoryCache = memoryCache;
+        }
+
+        public  async Task AddConferenceToCache(ConferenceDetailsResponse conferenceResponse)
         {
             var participants = new List<Participant>();
             foreach (var participant in conferenceResponse.Participants)
@@ -32,7 +41,7 @@ namespace VideoWeb
                 Participants = participants
             };
 
-            await memoryCache.GetOrCreateAsync(conference.Id, entry =>
+            await _memoryCache.GetOrCreateAsync(conference.Id, entry =>
             {
                 entry.SlidingExpiration = TimeSpan.FromHours(4);
                 return Task.FromResult(conference);
