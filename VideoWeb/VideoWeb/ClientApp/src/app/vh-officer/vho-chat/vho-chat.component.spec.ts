@@ -54,16 +54,30 @@ describe('VhoChatComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should send message when send keyboard shortcut is pressed ', () => {
+    it('should send message when send keyboard shortcut is pressed', () => {
         spyOn(eventService, 'sendMessage').and.callFake(() => {
             return Promise.resolve();
         });
+        component.newMessageBody.setValue('test');
         const event = new KeyboardEvent('keydown', {
             key: 'Enter'
         });
 
         component.onKeydown(event);
         expect(eventService.sendMessage).toHaveBeenCalled();
+    });
+
+    it('should not send message when validation fails', () => {
+        spyOn(eventService, 'sendMessage').and.callFake(() => {
+            return Promise.resolve();
+        });
+        component.newMessageBody.setValue('');
+        const event = new KeyboardEvent('keydown', {
+            key: 'Enter'
+        });
+
+        component.onKeydown(event);
+        expect(eventService.sendMessage).toHaveBeenCalledTimes(0);
     });
 
     it('should not send message when send keyboard shortcut is not pressed ', () => {

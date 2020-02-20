@@ -103,6 +103,19 @@ describe('JudgeChatComponent', () => {
         done();
     });
 
+    it('should not send message when validation fails', () => {
+        spyOn(eventService, 'sendMessage').and.callFake(() => {
+            return Promise.resolve();
+        });
+        component.newMessageBody.setValue('');
+        const event = new KeyboardEvent('keydown', {
+            key: 'Enter'
+        });
+
+        component.onKeydown(event);
+        expect(eventService.sendMessage).toHaveBeenCalledTimes(0);
+    });
+
     it('should get first name when message from user not in conference', async () => {
         await fixture.whenStable();
         const username = 'vhofficer.hearings.net';
