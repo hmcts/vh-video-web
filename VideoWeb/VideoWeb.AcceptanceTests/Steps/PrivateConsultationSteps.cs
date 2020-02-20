@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -31,26 +31,19 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user starts a private consultation with (.*)")]
         public void WhenTheUserStartsAPrivateConsultationWithIndividual(string user)
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.TimePanel)
-                .Displayed.Should().BeTrue();
-
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.TimePanel).Displayed.Should().BeTrue();
             Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitToCallAndAnswer));
-
             var participantId = _c.Test.ConferenceParticipants.First(x => x.Name.ToLower().Contains(user.ToLower())).Id;
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.PrivateConsultationLink(participantId.ToString())).Click();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.OutgoingCallMessage)
-                .Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.OutgoingCallMessage).Displayed.Should().BeTrue();
         }
 
         [When(@"(.*) accepts the private consultation")]
         public void WhenTheUserAcceptsThePrivateConsultation(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-
             Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitToCallAndAnswer));
-
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.IncomingCallMessage)
-                .Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.IncomingCallMessage).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.AcceptPrivateCall).Click();
         }
 
@@ -79,7 +72,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserSteps.GivenInTheUsersBrowser(user);
             new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser.Key])
                 .DelayForVideoElementToAppear(ExtraTimeToConnectTheParticipantsInSaucelabs)
-                .Feed(WaitingRoomPage.IncomingFeed);
+                .Feed(WaitingRoomPage.IncomingPrivateConsultationFeed);
         }
 
         [Then(@"the self view can be open and closed")]
@@ -96,8 +89,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheRepresentativeUserSeesAMessageThatTheRequestHasBeenRejected(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.CallRejectedMessage)
-                .Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.CallRejectedMessage).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.CallRejectedCloseButton).Click();
         }
 
@@ -113,8 +105,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheRepresentativeUserSeesAMessageThatTheRequestHasNotBeenAnswered(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.CallRejectedMessage)
-                .Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.CallRejectedMessage).Displayed.Should().BeTrue();
         }
     }
 }

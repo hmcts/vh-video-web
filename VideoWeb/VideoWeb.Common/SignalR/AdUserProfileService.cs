@@ -1,12 +1,12 @@
 using System.Threading.Tasks;
 using VideoWeb.Services.User;
 
-namespace VideoWeb.EventHub.Hub
+namespace VideoWeb.Common.SignalR
 {
     public interface IUserProfileService
     {
-        Task<bool> IsAdmin(string username);
-        Task<string> GetUsername(string username);
+        Task<bool> IsVhOfficerAsync(string username);
+        Task<string> GetObfuscatedUsernameAsync(string username);
     }
 
     public class AdUserProfileService : IUserProfileService
@@ -18,7 +18,7 @@ namespace VideoWeb.EventHub.Hub
             _userApiClient = userApiClient;
         }
 
-        public async Task<bool> IsAdmin(string username)
+        public async Task<bool> IsVhOfficerAsync(string username)
         {
             try
             {
@@ -31,7 +31,7 @@ namespace VideoWeb.EventHub.Hub
             }
         }
 
-        public async Task<string> GetUsername(string username)
+        public async Task<string> GetObfuscatedUsernameAsync(string username)
         {
             try
             {

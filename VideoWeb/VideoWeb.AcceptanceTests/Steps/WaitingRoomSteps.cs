@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -7,7 +7,7 @@ using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
 using TechTalk.SpecFlow;
-using Testing.Common.Helpers;
+using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.Services.Video;
@@ -164,6 +164,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Clerk waiting room displays the paused status")]
         public void ThenTheClerkWaitingRoomDisplaysThePausedStatus()
         {
+            _browsers[_c.CurrentUser.Key].Driver.SwitchTo().DefaultContent();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.PausedText).Displayed.Should().BeTrue();
         }
 

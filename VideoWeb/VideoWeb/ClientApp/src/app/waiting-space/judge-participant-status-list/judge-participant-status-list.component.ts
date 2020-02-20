@@ -31,7 +31,7 @@ export class JudgeParticipantStatusListComponent implements OnInit {
     private consultationService: ConsultationService,
     private eventService: EventsService,
     private ngZone: NgZone
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.filterNonJudgeParticipants();

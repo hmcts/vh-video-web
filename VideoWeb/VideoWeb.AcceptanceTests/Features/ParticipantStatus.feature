@@ -6,9 +6,9 @@ Feature: Participant Status
 @VIH-4500
 Scenario Outline: Participants status updates
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
-	Then the participants statuses should be Not Signed In
+	Then the VHO can see the participants statuses are Not Signed In
 	When the participants statuses are <Status>
-	Then the participants statuses should update to <Status>
+	Then the VHO can see the participants statuses have updated to <Status>
 	Examples: 
 	| Status		      |
 	| Joining         |
@@ -20,9 +20,9 @@ Scenario Outline: Participants status updates
 @VIH-5431
 Scenario Outline: Clerk status updates
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
-	Then the clerk status should be Unavailable
+	Then the VHO can see the clerk status is Unavailable
 	When the clerk status is <Status>
-	Then the clerk status should update to <Status>
+	Then the VHO can see the clerk status has updated to <Status>
   Examples: 
   | Status       |
 	| Available    |
@@ -31,17 +31,17 @@ Scenario Outline: Clerk status updates
   
 @VIH-5431
 Scenario: Clerk in another hearing
-  Given I have a hearing and a conference
+  Given I have a hearing
   And the clerk status is In Hearing
-	And I have another hearing and a conference 
+	And I have another hearing
   And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
-  Then the clerk status should be In another hearing
+  Then the VHO can see the clerk status is In another hearing
 
 @VIH-5431
 Scenario: Clerk in another waiting room after disconnection
-  Given I have a hearing and a conference
+  Given I have a hearing
   And the clerk status is Disconnected
   And the clerk status is Available
-	And I have another hearing and a conference 
+	And I have another hearing
   And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
-  Then the clerk status should be Unavailable
+  Then the VHO can see the clerk status is Unavailable

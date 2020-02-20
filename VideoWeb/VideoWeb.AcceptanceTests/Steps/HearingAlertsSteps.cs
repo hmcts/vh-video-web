@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -8,9 +8,9 @@ using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
 using RestSharp;
 using TechTalk.SpecFlow;
-using Testing.Common.Helpers;
 using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Configuration;
+using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.EventHub.Models;

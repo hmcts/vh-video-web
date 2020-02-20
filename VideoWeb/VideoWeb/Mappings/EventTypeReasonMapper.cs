@@ -1,4 +1,4 @@
-﻿using VideoWeb.Services.Video;
+using VideoWeb.Services.Video;
 
 
 namespace VideoWeb.Mappings
@@ -11,7 +11,7 @@ namespace VideoWeb.Mappings
             var reason = string.Empty;
             switch (eventType)
             {
-                case EventType.Joined:
+                case EventType.ParticipantJoining:
                     reason = "participant joining";
                     break;
                 case EventType.JudgeAvailable:
