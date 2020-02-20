@@ -27,7 +27,7 @@ namespace VideoWeb.Controllers
         private readonly IUserApiClient _userApiClient;
         private readonly IBookingsApiClient _bookingsApiClient;
         private readonly ILogger<ConferencesController> _logger;
-       private readonly IConferenceCache _conferenceCache;
+        private readonly IConferenceCache _conferenceCache;
 
         public ConferencesController(IVideoApiClient videoApiClient, IUserApiClient userApiClient,
             IBookingsApiClient bookingsApiClient, ILogger<ConferencesController> logger, IConferenceCache conferenceCache)
@@ -99,10 +99,10 @@ namespace VideoWeb.Controllers
         /// </summary>
         /// <returns>List of conferences, if any</returns>
         [HttpGet("vhofficer")]
-        [ProducesResponseType(typeof(List<ConferenceForUserResponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<ConferenceForVhOfficerResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.Unauthorized)]
         [SwaggerOperation(OperationId = "GetConferencesForVHOfficer")]
-        public async Task<ActionResult<List<ConferenceForUserResponse>>> GetConferencesForVHOfficer()
+        public async Task<ActionResult<List<ConferenceForVhOfficerResponse>>> GetConferencesForVHOfficer()
         {
             _logger.LogDebug("GetConferencesForVHOfficer");
             try
@@ -126,14 +126,27 @@ namespace VideoWeb.Controllers
                 var conferences = await _videoApiClient.GetConferencesTodayAsync();
                 conferences = conferences.Where(ConferenceHelper.HasNotPassed).ToList();
                 conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();
-                var mapper = new ConferenceForUserResponseMapper();
-                var response = conferences.Select(x => mapper.MapConferenceSummaryToResponseModel(x)).ToList();
+                var mapper = new ConferenceForVhOfficerResponseMapper();
+                var response = new List<ConferenceForVhOfficerResponse>();
+                foreach (var conferenceSummaryResponse in conferences.Where(IsInStateToChat))
+                {
+                    var messages = await _videoApiClient.GetMessagesAsync(conferenceSummaryResponse.Id);
+                    response.Add(mapper.MapConferenceSummaryToResponseModel(conferenceSummaryResponse, messages));
+                }
+                
                 return Ok(response);
             }
             catch (VideoApiException e)
             {
                 return StatusCode(e.StatusCode, e.Response);
             }
+        }
+
+        private bool IsInStateToChat(ConferenceSummaryResponse conference)
+        {
+            return conference.Status == ConferenceState.NotStarted ||
+                   conference.Status == ConferenceState.Paused ||
+                   conference.Status == ConferenceState.Suspended;
         }
 
         /// <summary>

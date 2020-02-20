@@ -1,29 +1,28 @@
 import { Component, HostListener, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import * as $ from 'jquery';
+import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
-    ConferenceForUserResponse,
+    ConferenceForVhOfficerResponse,
     ConferenceResponse,
     ParticipantResponse,
+    ParticipantStatus,
     TaskResponse,
-    ParticipantStatus
+    UserRole
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
-import { TaskCompleted } from '../../on-the-day/models/task-completed';
-import { Logger } from 'src/app/services/logging/logger-base';
-
-import * as $ from 'jquery';
-import { Subscription } from 'rxjs';
-import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
-import { ConferenceForUser, ExtendedConferenceStatus, HearingsFilter } from '../../shared/models/hearings-filter';
-import { SessionStorage } from '../../services/session-storage';
-import { UserRole } from 'src/app/services/clients/api-client';
-import { ParticipantStatusModel } from 'src/app/shared/models/participants-status-model';
 import { Participant } from 'src/app/shared/models/participant';
+import { ParticipantStatusModel } from 'src/app/shared/models/participants-status-model';
+import { TaskCompleted } from '../../on-the-day/models/task-completed';
+import { SessionStorage } from '../../services/session-storage';
+import { ConferenceForUser, ExtendedConferenceStatus, HearingsFilter } from '../../shared/models/hearings-filter';
+import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
 
 @Component({
     selector: 'app-vho-hearings',
@@ -37,8 +36,8 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     interval: NodeJS.Timer;
     loadingData: boolean;
 
-    conferences: ConferenceForUserResponse[];
-    conferencesAll: ConferenceForUserResponse[];
+    conferences: ConferenceForVhOfficerResponse[];
+    conferencesAll: ConferenceForVhOfficerResponse[];
     selectedHearing: Hearing;
     participants: ParticipantResponse[];
     participantStatusModel: ParticipantStatusModel;
@@ -133,6 +132,23 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
                 });
             })
         );
+
+        this.eventHubSubscriptions.add(
+            this.eventService.getAdminAnsweredChat().subscribe(message => {
+                this.ngZone.run(() => {
+                    this.logger.info(`an admin has answered`);
+                    this.resetConferenceUnreadCounter(message);
+                });
+            })
+        );
+    }
+
+    resetConferenceUnreadCounter(conferenceId: string) {
+        const conference = this.conferences.find(x => x.id === conferenceId);
+        if (conference) {
+            const index = this.conferences.indexOf(conference);
+            this.conferences[index].number_of_unread_messages = 0;
+        }
     }
 
     refreshConferenceDataDuringDisconnect() {
@@ -144,7 +160,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
     retrieveHearingsForVhOfficer() {
         this.conferencesSubscription = this.videoWebService.getConferencesForVHOfficer().subscribe(
-            (data: ConferenceForUserResponse[]) => {
+            (data: ConferenceForVhOfficerResponse[]) => {
                 this.loadingData = false;
                 this.conferences = data;
                 this.conferencesAll = data;
@@ -196,7 +212,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.tasks = [];
     }
 
-    onConferenceSelected(conference: ConferenceForUserResponse) {
+    onConferenceSelected(conference: ConferenceForVhOfficerResponse) {
         this.logger.info(`Conference ${conference.id} selected`);
         if (!this.isCurrentConference(conference)) {
             this.clearSelectedConference();
@@ -222,7 +238,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         );
     }
 
-    isCurrentConference(conference: ConferenceForUserResponse): boolean {
+    isCurrentConference(conference: ConferenceForVhOfficerResponse): boolean {
         return this.selectedHearing != null && this.selectedHearing.getConference().id === conference.id;
     }
 
@@ -275,7 +291,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
             return;
         }
         conference.status = message.status;
-        if (this.isCurrentConference(new ConferenceForUserResponse({ id: message.conferenceId }))) {
+        if (this.isCurrentConference(new ConferenceForVhOfficerResponse({ id: message.conferenceId }))) {
             this.selectedHearing.getConference().status = message.status;
         }
     }
@@ -380,7 +396,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         return result;
     }
 
-    setStatusDelayed(data: ConferenceForUserResponse[]) {
+    setStatusDelayed(data: ConferenceForVhOfficerResponse[]) {
         const conferences = data.map(x => {
             const hearing = new Hearing(x);
             const item = new ConferenceForUser(x);

@@ -10,7 +10,8 @@ import {
     TaskType,
     SelfTestPexipResponse,
     TaskUserResponse,
-    ChatResponse
+    ChatResponse,
+    ConferenceForVhOfficerResponse
 } from 'src/app/services/clients/api-client';
 import { HearingsFilter, StatusFilter, ListFilter, AlertsStatus, AlertFilter } from '../../../shared/models/hearings-filter';
 import * as moment from 'moment';
@@ -76,6 +77,17 @@ export class ConferenceTestData {
 
     getTestData(): Array<ConferenceForUserResponse> {
         const testData: Array<ConferenceForUserResponse> = [];
+        const conference1 = this.getConferenceNow();
+        const conference2 = this.getConferencePast();
+        const conference3 = this.getConferenceFuture();
+        testData.push(conference1);
+        testData.push(conference2);
+        testData.push(conference3);
+        return testData;
+    }
+
+    getVhoTestData(): Array<ConferenceForVhOfficerResponse> {
+        const testData: Array<ConferenceForVhOfficerResponse> = [];
         const conference1 = this.getConferenceNow();
         const conference2 = this.getConferencePast();
         const conference3 = this.getConferenceFuture();

@@ -30,7 +30,14 @@
 
 .chat-input {
   margin-bottom: 0px;
+  margin-right: 25px;
   resize: none;
+}
+
+.chat-btn {
+  margin: 9px 0px 9px -10px;
+  top: 0;
+  bottom: 0;
 }
 
 .chat-list {

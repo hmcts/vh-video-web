@@ -86,7 +86,10 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
     }
 
     getCountSinceUsersLastMessage(messages: ChatResponse[]) {
-        const reversedMessages = messages;
+        const reversedMessages = Object.assign([], messages);
+        reversedMessages.sort((a: ChatResponse, b: ChatResponse) => {
+            return b.timestamp.getTime() - a.timestamp.getTime();
+        });
         const index = reversedMessages.findIndex(x => x.is_user);
         if (index < 0) {
             return reversedMessages.length;

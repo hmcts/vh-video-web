@@ -130,7 +130,8 @@ namespace VideoWeb.EventHub.Hub
 
         public async Task SendMessage(Guid conferenceId, string message)
         {
-            var isAllowed = await IsAllowedToSendMessage(conferenceId);
+            var isAdmin = await IsVhOfficerAsync(Context.User.Identity.Name);
+            var isAllowed = IsAllowedToSendMessage(conferenceId, isAdmin);
             if (!isAllowed) return;
             var from = Context.User.Identity.Name;
             var timestamp = DateTime.UtcNow;
@@ -141,11 +142,15 @@ namespace VideoWeb.EventHub.Hub
                 From = from,
                 Message_text = message
             });
+            
+            if (isAdmin)
+            {
+                await Clients.Group(VhOfficersGroupName).AdminAnsweredChat(conferenceId);
+            }
         }
 
-        private async Task<bool> IsAllowedToSendMessage(Guid conferenceId)
+        private bool IsAllowedToSendMessage(Guid conferenceId, bool isAdmin)
         {
-            var isAdmin = await IsVhOfficerAsync(Context.User.Identity.Name);
             if (isAdmin) return true;
             var conference = _memoryCache.Get<Conference>(conferenceId);
             if (conference == null) throw new ConferenceNotFoundException(conferenceId);

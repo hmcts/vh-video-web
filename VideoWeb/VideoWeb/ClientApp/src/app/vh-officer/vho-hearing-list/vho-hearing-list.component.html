@@ -7,10 +7,18 @@
         <span class="govuk-hint">
           {{ getDuration(conference) }}
         </span>
-        <p *ngIf="conference.no_of_pending_tasks === 1" class="pending-alerts">{{ conference.no_of_pending_tasks }}
-          Alert</p>
-        <p *ngIf="conference.no_of_pending_tasks > 1" class="pending-alerts">{{ conference.no_of_pending_tasks }}
-          Alerts</p>
+        <div class="govuk-grid-row">
+          <span *ngIf="conference.no_of_pending_tasks === 1"
+            class="govuk-grid-column-one-half pending-alerts">{{ conference.no_of_pending_tasks }}
+            Alert</span>
+          <span *ngIf="conference.no_of_pending_tasks > 1"
+            class="govuk-grid-column-one-half pending-alerts">{{ conference.no_of_pending_tasks }}
+            Alerts</span>
+          <div *ngIf="conference.number_of_unread_messages > 0" class="govuk-grid-column-one-half notification-badge">
+            <span class="notification-badge-counter">{{ conference.number_of_unread_messages }}</span>
+          </div>
+        </div>
+
       </dd>
       <dd class="govuk-summary-list__value">
         <strong>

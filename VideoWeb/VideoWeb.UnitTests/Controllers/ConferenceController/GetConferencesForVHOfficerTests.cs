@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Faker;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -17,6 +18,7 @@ using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
+using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
@@ -116,7 +118,15 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(userProfile);  
             
+            var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(4)
+                .All()
+                .With(x => x.Username = Internet.Email())
+                .TheFirst(1).With(x => x.User_role = UserRole.Judge)
+                .TheRest().With(x => x.User_role = UserRole.Individual).Build().ToList();
+
+            
             var conferences = Builder<ConferenceSummaryResponse>.CreateListOfSize(10).All()
+                .With(x => x.Participants = participants)
                 .With(x => x.Scheduled_date_time = DateTime.UtcNow.AddMinutes(-60))
                 .With(x => x.Scheduled_duration = 20)
                 .With(x => x.Status = ConferenceState.NotStarted)
@@ -141,12 +151,30 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferencesTodayAsync())
                 .ReturnsAsync(conferences);
 
+            var conferenceWithMessages = conferences.First();
+            var judge = conferenceWithMessages.Participants.Single(x => x.User_role == UserRole.Judge);
+            var messages = new List<MessageResponse>
+            {
+                new MessageResponse{ From = judge.Username, Message_text = "judge - 5", Time_stamp = DateTime.UtcNow.AddMinutes(-1)},
+                new MessageResponse{ From = judge.Username, Message_text = "judge - 4", Time_stamp = DateTime.UtcNow.AddMinutes(-2)},
+                new MessageResponse{ From = judge.Username, Message_text = "judge - 3", Time_stamp = DateTime.UtcNow.AddMinutes(-4)},
+                new MessageResponse{ From = judge.Username, Message_text = "judge - 2", Time_stamp = DateTime.UtcNow.AddMinutes(-6)},
+                new MessageResponse{ From = judge.Username, Message_text = "judge - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-7)},
+            };
+
+            foreach (var conference in conferences)
+            {
+                _videoApiClientMock.Setup(x => x.GetMessagesAsync(conference.Id))
+                    .ReturnsAsync(new List<MessageResponse>());
+            }
+            _videoApiClientMock.Setup(x => x.GetMessagesAsync(conferenceWithMessages.Id)).ReturnsAsync(messages);
+
             var result = await _controller.GetConferencesForVHOfficer();
             
             var typedResult = (OkObjectResult) result.Result;
             typedResult.Should().NotBeNull();
             
-            var conferencesForUser = (List<ConferenceForUserResponse>)typedResult.Value;
+            var conferencesForUser = (List<ConferenceForVhOfficerResponse>)typedResult.Value;
             conferencesForUser.Should().NotBeNullOrEmpty();
             var returnedIds = conferencesForUser.Select(x => x.Id).ToList();
             returnedIds.Should().Contain(expectedConferenceIds);
