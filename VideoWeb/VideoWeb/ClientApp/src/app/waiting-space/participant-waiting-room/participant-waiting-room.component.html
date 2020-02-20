@@ -2,7 +2,7 @@
   <p class="govuk-body">Loading please wait...</p>
 </div>
 
-<div *ngIf="showVideo && !showConsultationControls" class="govuk-grid-row">
+<div *ngIf="showVideo && !isPrivateConsultation" class="govuk-grid-row">
   <div class="video-background"></div>
   <div class="govuk-grid-column-one-half">
     <video id="incomingFeed"  autoplay height="auto">
@@ -11,7 +11,7 @@
   </div>
 </div>
 
-<div *ngIf="showVideo && showConsultationControls" class="govuk-grid-row">
+<div *ngIf="showVideo && isPrivateConsultation" class="govuk-grid-row">
     <div class="video-background"></div>
     <div class="govuk-grid-column-one-half">
       <video id="incomingFeedPrivate" autoplay [srcObject]="this.stream" height="auto">
