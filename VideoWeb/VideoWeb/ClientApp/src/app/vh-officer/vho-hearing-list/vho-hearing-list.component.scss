@@ -158,12 +158,20 @@
 .notification-badge {
   width: 45px;
   height: 28px;
-  background-color: govuk-colour("blue");
   border-radius: 4px;
   position: relative;
   float: right;
   text-align: center;
   margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.notification-badge.has-messages {
+  background-color: govuk-colour("blue");
+}
+
+.notification-badge.no-messages {
+  background-color: govuk-colour("mid-grey");
 }
 
 .notification-badge:after {
@@ -176,11 +184,58 @@
   bottom: -10px;
   border-left: 2px solid transparent;
   border-right: 10px solid transparent;
+}
+
+.notification-badge.has-messages:after {
   border-top: 10px solid govuk-colour("blue");
 }
 
-.notification-badge-counter {
+.notification-badge.no-messages:after {
+  border-top: 10px solid govuk-colour("mid-grey");
+}
+
+.notification-badge-counter.has-messages {
   font-size: 0.8em;
   text-align: center;
   color: govuk-colour("white");
+}
+
+.notification-badge-counter.no-messages {
+  font-size: 0.8em;
+  text-align: center;
+  color: govuk-colour("mid-grey");
+}
+
+.alert-badge {
+  position: relative;
+  margin-left: 20px;
+  font-weight: bold;
+}
+
+.alert-badge[data-badge]:after {
+  position: absolute;
+  right: -35px;
+  color: govuk-colour("white");
+  width: 25px;
+  height: 25px;
+  font-size: 0.7em;
+  padding: 5px;
+  text-align: center;
+  line-height: 25px;
+  border-radius: 50%;
+  box-shadow: 0 0 1px #333;
+}
+
+.right-side {
+  float: right;
+}
+
+.has-alerts:after {
+  background: govuk-colour("red");
+  content: attr(data-badge);
+}
+
+.no-alerts:after {
+  background: govuk-colour("mid-grey");
+  content: "";
 }
