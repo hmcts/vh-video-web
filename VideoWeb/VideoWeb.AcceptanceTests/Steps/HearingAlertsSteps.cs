@@ -161,7 +161,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 alert.Checkbox.Selected.Should().BeFalse();
                 alert.Checkbox.Enabled.Should().BeTrue();                
-                //alert.Timestamp.Should().Match<string>(t=> t.Equals(timeOfAlert) || t.Equals(timeOfAlertMinusAMinute) || t.Equals(timeOfAlertPlusAMinute));
+                alert.Timestamp.Should().Match<string>(t=> t.Equals(timeOfAlert) || t.Equals(timeOfAlertMinusAMinute) || t.Equals(timeOfAlertPlusAMinute));
             }
 
             var alertTypeExists = alerts.Any(alert => alert.AlertType.ToLower().Contains(alertType.ToLower()));
