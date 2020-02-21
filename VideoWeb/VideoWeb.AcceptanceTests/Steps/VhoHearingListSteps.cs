@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AcceptanceTests.Common.Driver.Browser;
@@ -37,7 +37,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var listedFor = GetListedForTimeAsString(timespan);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerTime(_c.Test.Case.Number)).Text
                 .Should().Be($"{_c.Test.Hearing.Scheduled_date_time.ToLocalTime():HH:mm}");
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerListedFor(_c.Test.Case.Number)).Text
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerListedFor(_c.Test.Case.Number)).Text.Trim()
                 .Should().Be($"{listedFor}");
         }
 

@@ -5,6 +5,7 @@ using System.Threading;
 using AcceptanceTests.Common.Data.Helpers;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
+using AcceptanceTests.Common.Test.Helpers;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Data;
@@ -72,7 +73,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             var startDate = _c.Test.Hearing.Scheduled_date_time;
             var dateAndStartTime = startDate.ToLocalTime().ToString(DateFormats.ClerkWaitingRoomPageTime);
             var endTime = startDate.ToLocalTime().AddMinutes( _c.Test.Hearing.Scheduled_duration).ToString(DateFormats.ClerkWaitingRoomPageTimeEnd);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.HearingDateTime).Text.Should().Be($"{dateAndStartTime} to {endTime}");
+            var displayedTime = TextHelpers.RemoveSpacesOnSafari(_browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.HearingDateTime).Text);
+            displayedTime.Should().Be($"{dateAndStartTime} to {endTime}");
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.StartHearingText).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.IsEveryoneConnectedText).Displayed.Should().BeTrue();
         }
