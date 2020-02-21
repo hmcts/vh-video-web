@@ -369,7 +369,8 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         url,
         self.conference.id,
         self.participant.id,
-        bearerToken
+        bearerToken,
+        self.handleHeartbeat(self)
       );
     };
 
@@ -500,5 +501,11 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     } else {
       videoElement.src = stream;
     }
+  }
+
+  handleHeartbeat(self: this) {
+    return function (heartbeat) {
+      self.logger.info(`**** heartbeat callback fired: ${heartbeat}`);
+    };
   }
 }
