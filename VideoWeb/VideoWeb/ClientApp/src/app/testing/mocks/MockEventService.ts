@@ -38,7 +38,7 @@ export class MockEventsService {
         this.nextJudgeStatusMessage = new ParticipantStatusMessage(
             '9F681318-4955-49AF-A887-DED64554429T',
             ParticipantStatus.Disconnected
-        );          
+        );
     }
 
     start() {}
