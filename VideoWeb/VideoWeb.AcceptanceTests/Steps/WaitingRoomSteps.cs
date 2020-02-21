@@ -84,10 +84,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails).Text.Should().Contain(_c.Test.Case.Name);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails).Text.Should().Contain($"case number: {_c.Test.Hearing.Cases.First().Number}");
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingDate).Text.Should().Contain(_c.Test.Hearing.Scheduled_date_time.ToString(DateFormats.WaitingRoomPageDate));
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingDate).Text.Should().Contain(_c.Test.Hearing.Scheduled_date_time.ToLocalTime().ToString(DateFormats.WaitingRoomPageTime));
+            var displayedDateTime = TextHelpers.RemoveSpacesOnSafari(_browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingDate).Text);
+            displayedDateTime.Should().Contain(_c.Test.Hearing.Scheduled_date_time.ToString(DateFormats.WaitingRoomPageDate));
+            displayedDateTime.Should().Contain(_c.Test.Hearing.Scheduled_date_time.ToLocalTime().ToString(DateFormats.WaitingRoomPageTime));
             var endTime = _c.Test.Hearing.Scheduled_date_time.AddMinutes(_c.Test.Hearing.Scheduled_duration).ToLocalTime().ToString(DateFormats.WaitingRoomPageTime);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingDate).Text.Should().Contain(endTime);
+            displayedDateTime.Should().Contain(endTime);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.ContactVhTeam).Displayed.Should().BeTrue();
         }
 

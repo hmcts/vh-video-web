@@ -92,8 +92,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .Fetch();
 
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkHearingListPage.ClerkHearingDate(scheduledDateTime.ToString(DateFormats.ClerkHearingListDate))).Displayed.Should().BeTrue();
-            //rowData.StartTime.Should().Be(scheduledDateTime.ToString(DateFormats.ClerkHearingListTime));
-            //rowData.EndTime.Should().Be(scheduledDateTime.AddMinutes(scheduledDuration).ToString(DateFormats.ClerkHearingListTime));
+            rowData.StartTime.Should().Be(scheduledDateTime.ToString(DateFormats.ClerkHearingListTime));
+            rowData.EndTime.Should().Be(scheduledDateTime.AddMinutes(scheduledDuration).ToString(DateFormats.ClerkHearingListTime));
             rowData.Judge.Should().Be(_c.CurrentUser.DisplayName);
             rowData.CaseName.Trim().Should().Be(_c.Test.Case.Name);
             rowData.CaseType.Trim().Should().Be(_c.Test.Hearing.Case_type_name);
