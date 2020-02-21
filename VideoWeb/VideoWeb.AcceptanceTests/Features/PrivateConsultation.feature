@@ -1,11 +1,11 @@
-﻿Feature: Private Consultation
+Feature: Private Consultation
 	In order for participants in different locations to talk to each other before a hearing
 	As a video hearings service
 	I want to be able to connect those participants into a private call
 
 @VIH-4134 @Video
 Scenario: Start a private consultation
-	Given the Individual01 user has progressed to the Waiting Room page with a hearing in 30 minutes time
+	Given the Individual01 user has progressed to the Waiting Room page with a hearing in 10 minutes time
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
 	When the user starts a private consultation with Individual01
 	And Individual01 accepts the private consultation
@@ -18,7 +18,7 @@ Scenario: Start a private consultation
 
 @VIH-4134
 Scenario: Reject a private consultation
-	Given the Individual01 user has progressed to the Waiting Room page with a hearing in 30 minutes time
+	Given the Individual01 user has progressed to the Waiting Room page with a hearing in 10 minutes time
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
 	When the user starts a private consultation with Individual01
 	And Individual01 rejects the private consultation
@@ -29,7 +29,7 @@ Scenario: Reject a private consultation
 
 @VIH-4134
 Scenario: No answer on a private consultation
-	Given the Individual01 user has progressed to the Waiting Room page with a hearing in 30 minutes time
+	Given the Individual01 user has progressed to the Waiting Room page with a hearing in 10 minutes time
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
 	When the user starts a private consultation with Individual01
 	And the user does not answer after 2 minutes
@@ -49,7 +49,7 @@ Scenario: Participants cannot request Private consultation in delayed seating ar
 
 @VIH-4134
 Scenario: Participants cannot request Private consultation in suspended seating area
-	Given the Individual01 user has progressed to the Waiting Room page with a hearing in 30 minutes time
+	Given the Individual01 user has progressed to the Waiting Room page with a hearing in 10 minutes time
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
 	And the hearing status changes to Suspended
 	Then the private consultation link with Individual01 is not visible
