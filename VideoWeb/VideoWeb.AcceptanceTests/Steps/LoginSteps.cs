@@ -33,9 +33,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user attempts to logout and log back in")]
         public void WhenTheUserAttemptsToLogout()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementClickable(CommonPages.SignOutLink).Click();
+            _browsers[_c.CurrentUser.Key].ClickLink(CommonPages.SignOutLink);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonPages.SignOutMessage).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementClickable(CommonPages.SignInLink).Click();
+            _browsers[_c.CurrentUser.Key].ClickLink(CommonPages.SignInLink);
         }
 
         [Then(@"the user should be navigated to sign in screen")]

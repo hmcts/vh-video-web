@@ -116,7 +116,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var alerts = GetAlerts();
             var alert = alerts.First(x => x.AlertType.ToLower().Contains(alertType.ToLower()));
-            _browsers[_c.CurrentUser.Key].Driver.ClickAndWaitForPageToLoad(AdminPanelPage.AlertCheckbox(alert.Row + 1));
+            _browsers[_c.CurrentUser.Key].Click(AdminPanelPage.AlertCheckbox(alert.Row + 1));
         }
 
         [When(@"the hearing has been closed")]
@@ -138,18 +138,18 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Video Hearings Officer user should not see an alert")]
         public void ThenTheVideoHearingsOfficerUserShouldNotSeeAnAlert()
         {
-            _browsers[_c.CurrentUser.Key].Driver.Navigate().Refresh();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number)).Click();
+            _browsers[_c.CurrentUser.Key].Refresh();
+            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number));
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(AdminPanelPage.AlertsHeader).Should().BeTrue("Alerts box should not be visible.");
         }
 
         [Then(@"the Video Hearings Officer user should see a (.*) notification and a (.*) alert")]
         public void ThenTheVideoHearingsOfficerUserShouldSeeAnAlert(string notification, string alertType)
         {
-            _browsers[_c.CurrentUser.Key].Driver.Navigate().Refresh();
+            _browsers[_c.CurrentUser.Key].Refresh();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerNumberOfAlerts(_c.Test.Case.Number)).Text.Should().Contain("Alert");
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerAlertType(_c.Test.Case.Number)).Text.Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number)).Click();
+            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number));
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
 
             var alerts = GetAlerts();

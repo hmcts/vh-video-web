@@ -37,7 +37,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             foreach (var participant in participants)
             {
                 _browserSteps.GivenInTheUsersBrowser(participant.Last_name);
-                _browsers[_c.CurrentUser.Key].Driver.Navigate().Refresh();
+                _browsers[_c.CurrentUser.Key].Refresh();
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails, 60).Text.Should().Contain(_c.Test.Case.Name);
             }
             _browserSteps.GivenInTheUsersBrowser("Clerk");
@@ -46,14 +46,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user navigates back to the hearing list")]
         public void WhenTheUserNavigatesBackToTheHearingList()
         {
-            _browsers[_c.CurrentUser.Key].Driver.ClickAndWaitForPageToLoad(ClerkWaitingRoomPage.ReturnToHearingRoomLink);
+            _browsers[_c.CurrentUser.Key].Click(ClerkWaitingRoomPage.ReturnToHearingRoomLink);
         }
 
         [When(@"the Clerk resumes the hearing")]
         public void ThenTheUserResumesTheHearing()
         {
             Thread.Sleep(TimeSpan.FromSeconds(ExtraTimeInWaitingRoomAfterThePause));
-            _browsers[_c.CurrentUser.Key].Driver.ClickAndWaitForPageToLoad(ClerkWaitingRoomPage.ResumeVideoCallButton);
+            _browsers[_c.CurrentUser.Key].Click(ClerkWaitingRoomPage.ResumeVideoCallButton);
         }
 
         [Then(@"the participant status for (.*) is displayed as (.*)")]
@@ -188,7 +188,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.StartHearingText).Displayed.Should().BeTrue();
             CheckParticipantsAreStillConnected();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.StartVideoHearingButton).Click();
+            _browsers[_c.CurrentUser.Key].Click(ClerkWaitingRoomPage.StartVideoHearingButton);
         }
 
         [When(@"the waiting room page has loaded for the (.*)")]

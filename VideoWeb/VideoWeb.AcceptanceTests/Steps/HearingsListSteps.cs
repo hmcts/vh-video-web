@@ -40,14 +40,14 @@ namespace VideoWeb.AcceptanceTests.Steps
                 var tolerance = _c.CurrentUser.Role.Equals("Clerk") ? 30 : ToleranceInMinutes * 60;
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.HearingListPageTitle).Displayed.Should().BeTrue();
                 _browsers[_c.CurrentUser.Key].ScrollTo(element);
-                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(element, tolerance).Click();
+                _browsers[_c.CurrentUser.Key].Click(element, tolerance);
             }           
         }
 
         [When(@"the user clicks on the Check Equipment button")]
         public void WhenTheUserClicksTheCheckEquipmentButton()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementClickable(ClerkHearingListPage.CheckEquipmentButton).Click();
+            _browsers[_c.CurrentUser.Key].Click(ClerkHearingListPage.CheckEquipmentButton);
         }
 
         [Then(@"a warning message appears indicating the clerk has no hearings scheduled")]
