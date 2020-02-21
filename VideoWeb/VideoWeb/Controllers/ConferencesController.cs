@@ -127,19 +127,24 @@ namespace VideoWeb.Controllers
                 conferences = conferences.Where(ConferenceHelper.HasNotPassed).ToList();
                 conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();
                 var mapper = new ConferenceForVhOfficerResponseMapper();
-                var response = new List<ConferenceForVhOfficerResponse>();
-                foreach (var conferenceSummaryResponse in conferences.Where(IsInStateToChat))
-                {
-                    var messages = await _videoApiClient.GetMessagesAsync(conferenceSummaryResponse.Id);
-                    response.Add(mapper.MapConferenceSummaryToResponseModel(conferenceSummaryResponse, messages));
-                }
-                
+                var tasks = conferences.Select(c => MapConferenceForVho(mapper, c)).ToArray();
+                var response = Task.WhenAll(tasks).Result.ToList();
+
                 return Ok(response);
             }
             catch (VideoApiException e)
             {
                 return StatusCode(e.StatusCode, e.Response);
             }
+        }
+
+        private async Task<ConferenceForVhOfficerResponse> MapConferenceForVho(
+            ConferenceForVhOfficerResponseMapper mapper, ConferenceSummaryResponse conference)
+        {
+            if (!IsInStateToChat(conference)) return mapper.MapConferenceSummaryToResponseModel(conference, null);
+
+            var messages = await _videoApiClient.GetMessagesAsync(conference.Id);
+            return mapper.MapConferenceSummaryToResponseModel(conference, messages);
         }
 
         private bool IsInStateToChat(ConferenceSummaryResponse conference)
@@ -246,10 +251,7 @@ namespace VideoWeb.Controllers
 
             var mapper = new ConferenceResponseMapper();
             var response = mapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
-            if (!isVhOfficer)
-            {
-                await _conferenceCache.AddConferenceToCache(conference);
-            }
+            await _conferenceCache.AddConferenceToCache(conference);
 
             return Ok(response);
         }

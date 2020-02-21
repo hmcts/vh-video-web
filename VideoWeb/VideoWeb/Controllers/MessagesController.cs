@@ -48,8 +48,12 @@ namespace VideoWeb.Controllers
             try
             {
                 var messages = await _videoApiClient.GetMessagesAsync(conferenceId);
-                var mapper = new ChatResponseMapper();
+                if (!messages.Any())
+                {
+                    return Ok(new List<ChatResponse>());
+                }
 
+                var mapper = new ChatResponseMapper();
                 var response = await MapMessages(mapper, messages, conferenceId);
                 response = response.OrderBy(r => r.Timestamp).ToList();
                 return Ok(response);
