@@ -49,7 +49,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the VHO can see the (.*) statuses are (.*)")]
         public void ThenTheParticipantsStatusesAre(string userType, string participantStatus)
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number)).Click();
+            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number));
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
             CheckParticipantStatus(participantStatus, ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, userType));
         }
@@ -71,8 +71,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the VHO can see the (.*) statuses have updated to (.*)")]
         public void ThenTheParticipantsStatusesShouldUpdateTo(string userType, string participantStatus)
         {
-            _browsers[_c.CurrentUser.Key].Driver.Navigate().Refresh();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number)).Click();
+            _browsers[_c.CurrentUser.Key].Refresh();
+            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number));
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
             var participants = ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, userType);
             CheckParticipantStatus(participantStatus, participants);

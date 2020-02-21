@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AcceptanceTests.Common.Configuration.Users;
@@ -99,7 +99,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user refreshes the page")]
         public void WhenTheUserRefreshesThePage()
         {
-            _browsers[_c.CurrentUser.Key].Driver.Navigate().Refresh();
+            _browsers[_c.CurrentUser.Key].Refresh();
         }
     }
 }

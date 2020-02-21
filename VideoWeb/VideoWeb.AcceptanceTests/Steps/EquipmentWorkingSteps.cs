@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
@@ -26,7 +26,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _commonSteps.WhenTheUserSelectsTheRadiobutton("Yes");
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(EquipmentWorkingPage.ContinueButton).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(EquipmentWorkingPage.ContinueButton).Click();
+            _browsers[_c.CurrentUser.Key].Click(EquipmentWorkingPage.ContinueButton);
         }
 
         [When(@"the user says the camera is not working")]
@@ -36,7 +36,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _commonSteps.WhenTheUserSelectsTheRadiobutton("No");
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(EquipmentWorkingPage.ContinueButton).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementClickable(EquipmentWorkingPage.ContinueButton).Click();
+            _browsers[_c.CurrentUser.Key].Click(EquipmentWorkingPage.ContinueButton);
         }
     }
 }

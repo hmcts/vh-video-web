@@ -6,9 +6,9 @@ Feature: HearingRoom
 
 @Video @VIH-4610 @HearingTest
 Scenario: Clerk starts hearing
-	Given the Clerk user has progressed to the Waiting Room page
-	Then the hearing status changed to NotStarted
-	And the participant status for Individual01 is displayed as Not signed in
+	Given the Individual01 user has progressed to the Waiting Room page
+	And the Clerk user has progressed to the Waiting Room page for the existing hearing
+	Then the participant status for Individual01 is displayed as Connected
 	When the Clerk starts the hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
@@ -25,7 +25,8 @@ Scenario: Clerk pauses hearing
 	When the Clerk starts the hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
-	Then the Clerk is on the Hearing Room page for 20 seconds
+  Then the hearing status changed to InSession
+	And the Clerk is on the Hearing Room page for 20 seconds
 	When the Clerk clicks pause
 	Then the user is on the Waiting Room page
 	And the Clerk waiting room displays the paused status
