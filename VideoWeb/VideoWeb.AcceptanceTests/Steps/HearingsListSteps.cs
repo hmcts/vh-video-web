@@ -40,14 +40,14 @@ namespace VideoWeb.AcceptanceTests.Steps
                 var tolerance = _c.CurrentUser.Role.Equals("Clerk") ? 30 : ToleranceInMinutes * 60;
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.HearingListPageTitle).Displayed.Should().BeTrue();
                 _browsers[_c.CurrentUser.Key].ScrollTo(element);
-                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(element, tolerance).Click();
+                _browsers[_c.CurrentUser.Key].Click(element, tolerance);
             }           
         }
 
         [When(@"the user clicks on the Check Equipment button")]
         public void WhenTheUserClicksTheCheckEquipmentButton()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementClickable(ClerkHearingListPage.CheckEquipmentButton).Click();
+            _browsers[_c.CurrentUser.Key].Click(ClerkHearingListPage.CheckEquipmentButton);
         }
 
         [Then(@"a warning message appears indicating the clerk has no hearings scheduled")]
@@ -95,9 +95,9 @@ namespace VideoWeb.AcceptanceTests.Steps
             rowData.StartTime.Should().Be(scheduledDateTime.ToString(DateFormats.ClerkHearingListTime));
             rowData.EndTime.Should().Be(scheduledDateTime.AddMinutes(scheduledDuration).ToString(DateFormats.ClerkHearingListTime));
             rowData.Judge.Should().Be(_c.CurrentUser.DisplayName);
-            rowData.CaseName.Should().Be(_c.Test.Case.Name);
-            rowData.CaseType.Should().Be(_c.Test.Hearing.Case_type_name);
-            rowData.CaseNumber.Should().Be(_c.Test.Case.Number);
+            rowData.CaseName.Trim().Should().Be(_c.Test.Case.Name);
+            rowData.CaseType.Trim().Should().Be(_c.Test.Hearing.Case_type_name);
+            rowData.CaseNumber.Trim().Should().Be(_c.Test.Case.Number);
             ParticipantsDisplayed(_c.Test.HearingParticipants, rowData);
         }
 
@@ -111,7 +111,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the new hearing isn't available to join yet")]
         public void ThenTheNewHearingIsnTAvailableToJoinYet()
         {
-           var actualTime = _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.WaitToSignInText(_c.Test.Case.Number)).Text;
+           var actualTime = _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.WaitToSignInText(_c.Test.Case.Number)).Text.Trim();
            actualTime = actualTime.Substring(actualTime.Length - 5);
 
             var isWithinTimeFrame = false;
@@ -145,7 +145,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 foreach (var party in rowData.Parties)
                 {                   
                     if (participant.User_role_name.Equals(UserRole.Individual.ToString()) &&
-                        party.IndividualName.Equals(participant.Display_name))
+                        party.IndividualName.Trim().Equals(participant.Display_name))
                     {
                         individualIsDisplayed = true;
                         break;
