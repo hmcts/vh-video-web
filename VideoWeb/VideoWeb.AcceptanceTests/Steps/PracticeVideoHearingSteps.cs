@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Net;
 using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Requests;
@@ -39,7 +39,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenTheUserChangesTheCameraAndMicrophone()
         {
             if (_c.VideoWebConfig.TestConfig.TargetBrowser == TargetBrowser.Firefox) return;
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(PracticeVideoHearingPage.ChangeCameraAndMicrophoneLink).Click();
+            _browsers[_c.CurrentUser.Key].ClickLink(PracticeVideoHearingPage.ChangeCameraAndMicrophoneLink);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(PracticeVideoHearingPage.ChangeMicPopup).Displayed.Should().BeTrue();
             WhenTheUserSelectsANewMicrophone();
         }
@@ -51,7 +51,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var micOptions = new SelectElement(_browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(PracticeVideoHearingPage.MicsList));
             micOptions.Options.Count.Should().BeGreaterThan(1);
             micOptions.SelectByIndex(micOptions.Options.Count - 1);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementClickable(PracticeVideoHearingPage.ChangeButton).Click();
+            _browsers[_c.CurrentUser.Key].Click(PracticeVideoHearingPage.ChangeButton);
         }
 
         [Then(@"the choose your camera and microphone popup should disappear")]
@@ -90,7 +90,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(PracticeVideoHearingPage.IncomingVideo, ExtraTimeoutToLoadVideoFromKinly).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].ScrollTo(PracticeVideoHearingPage.SkipLink);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(PracticeVideoHearingPage.SkipLink).Click();
+            _browsers[_c.CurrentUser.Key].ClickLink(PracticeVideoHearingPage.SkipLink);
         }
     }
 }

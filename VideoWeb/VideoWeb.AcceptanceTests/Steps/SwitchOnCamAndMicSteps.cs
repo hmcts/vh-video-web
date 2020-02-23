@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
@@ -29,8 +29,8 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         public void ProgressToNextPage()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(SwitchOnCamAndMicPage.SwitchOnButton).Click();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(SwitchOnCamAndMicPage.WatchTheVideoButton).Click();
+            _browsers[_c.CurrentUser.Key].Click(SwitchOnCamAndMicPage.SwitchOnButton);
+            _browsers[_c.CurrentUser.Key].Click(SwitchOnCamAndMicPage.WatchTheVideoButton);
         }
     }
 }

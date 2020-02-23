@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
@@ -25,14 +25,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user gives their consent")]
         public void WhenTheUserGivesTheirConsent()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(DeclarationPage.ConsentCheckbox).Click();           
+            _browsers[_c.CurrentUser.Key].ClickCheckbox(DeclarationPage.ConsentCheckbox);        
         }
 
         [Then(@"an error appears stating that they must confirm")]
         public void ThenAnErrorAppearsStatingThatTheyMustConfirm()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(DeclarationPage.NoConsentWarningMessage).Displayed
-                .Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(DeclarationPage.NoConsentWarningMessage).Displayed.Should().BeTrue();
         }
 
         public void ProgressToNextPage()

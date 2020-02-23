@@ -43,16 +43,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the Clerk clicks pause")]
         public void WhenTheUserClicksPause()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementClickable(HearingRoomPage.PauseButton).Click();
-
+            _browsers[_c.CurrentUser.Key].Click(HearingRoomPage.PauseButton);
             Thread.Sleep(TimeSpan.FromSeconds(PauseCloseTransferDuration));
         }
 
         [When(@"the Clerk clicks close")]
         public void WhenTheUserClicksClose()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementClickable(HearingRoomPage.CloseButton).Click();
-
+            _browsers[_c.CurrentUser.Key].Click(HearingRoomPage.CloseButton);
             Thread.Sleep(TimeSpan.FromSeconds(PauseCloseTransferDuration));
         }
 
@@ -60,9 +58,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenIndividualSRefreshesTheWaitingRoomPage(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            _browsers[_c.CurrentUser.Key].Driver.Navigate().Refresh();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails, ExtraTimeForPageToRefresh).Text
-                .Should().Contain(_c.Test.Case.Name);
+            _browsers[_c.CurrentUser.Key].Refresh();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails, ExtraTimeForPageToRefresh).Text.Should().Contain(_c.Test.Case.Name);
         }
 
         [Then(@"the Clerk is on the Hearing Room page for (.*) seconds")]
@@ -93,7 +90,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             while (timer.Elapsed.Minutes <= TimeSpan.FromMinutes(timeoutInMinutes).Minutes)
             {
                 Thread.Sleep(TimeSpan.FromSeconds(20));
-                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.ClerkIncomingVideo).Click();
+                _browsers[_c.CurrentUser.Key].Click(HearingRoomPage.ClerkIncomingVideo);
             }
 
             timer.Stop();
@@ -112,9 +109,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheUserCanSeeThemselvesAndToggleTheViewOffAndOn()
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.SelfView).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.ToggleSelfview).Click();
+            _browsers[_c.CurrentUser.Key].Click(HearingRoomPage.ToggleSelfview);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(HearingRoomPage.SelfView).Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.ToggleSelfview).Click();
+            _browsers[_c.CurrentUser.Key].Click(HearingRoomPage.ToggleSelfview);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.SelfView).Displayed.Should().BeTrue();
         }
 

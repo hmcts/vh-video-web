@@ -5,6 +5,7 @@ using System.Threading;
 using AcceptanceTests.Common.Data.Helpers;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
+using AcceptanceTests.Common.Test.Helpers;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Data;
@@ -36,7 +37,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             foreach (var participant in participants)
             {
                 _browserSteps.GivenInTheUsersBrowser(participant.Last_name);
-                _browsers[_c.CurrentUser.Key].Driver.Navigate().Refresh();
+                _browsers[_c.CurrentUser.Key].Refresh();
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails, 60).Text.Should().Contain(_c.Test.Case.Name);
             }
             _browserSteps.GivenInTheUsersBrowser("Clerk");
@@ -45,14 +46,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user navigates back to the hearing list")]
         public void WhenTheUserNavigatesBackToTheHearingList()
         {
-            _browsers[_c.CurrentUser.Key].Driver.ClickAndWaitForPageToLoad(ClerkWaitingRoomPage.ReturnToHearingRoomLink);
+            _browsers[_c.CurrentUser.Key].Click(ClerkWaitingRoomPage.ReturnToHearingRoomLink);
         }
 
         [When(@"the Clerk resumes the hearing")]
         public void ThenTheUserResumesTheHearing()
         {
             Thread.Sleep(TimeSpan.FromSeconds(ExtraTimeInWaitingRoomAfterThePause));
-            _browsers[_c.CurrentUser.Key].Driver.ClickAndWaitForPageToLoad(ClerkWaitingRoomPage.ResumeVideoCallButton);
+            _browsers[_c.CurrentUser.Key].Click(ClerkWaitingRoomPage.ResumeVideoCallButton);
         }
 
         [Then(@"the participant status for (.*) is displayed as (.*)")]
@@ -72,7 +73,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             var startDate = _c.Test.Hearing.Scheduled_date_time;
             var dateAndStartTime = startDate.ToLocalTime().ToString(DateFormats.ClerkWaitingRoomPageTime);
             var endTime = startDate.ToLocalTime().AddMinutes( _c.Test.Hearing.Scheduled_duration).ToString(DateFormats.ClerkWaitingRoomPageTimeEnd);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.HearingDateTime).Text.Should().Be($"{dateAndStartTime} to {endTime}");
+            var displayedTime = TextHelpers.RemoveSpacesOnSafari(_browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.HearingDateTime).Text);
+            displayedTime.Should().Be($"{dateAndStartTime} to {endTime}");
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.StartHearingText).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.IsEveryoneConnectedText).Displayed.Should().BeTrue();
         }
@@ -82,10 +84,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails).Text.Should().Contain(_c.Test.Case.Name);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails).Text.Should().Contain($"case number: {_c.Test.Hearing.Cases.First().Number}");
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingDate).Text.Should().Contain(_c.Test.Hearing.Scheduled_date_time.ToString(DateFormats.WaitingRoomPageDate));
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingDate).Text.Should().Contain(_c.Test.Hearing.Scheduled_date_time.ToLocalTime().ToString(DateFormats.WaitingRoomPageTime));
+            var displayedDateTime = TextHelpers.RemoveSpacesOnSafari(_browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingDate).Text);
+            displayedDateTime.Should().Contain(_c.Test.Hearing.Scheduled_date_time.ToString(DateFormats.WaitingRoomPageDate));
+            displayedDateTime.Should().Contain(_c.Test.Hearing.Scheduled_date_time.ToLocalTime().ToString(DateFormats.WaitingRoomPageTime));
             var endTime = _c.Test.Hearing.Scheduled_date_time.AddMinutes(_c.Test.Hearing.Scheduled_duration).ToLocalTime().ToString(DateFormats.WaitingRoomPageTime);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingDate).Text.Should().Contain(endTime);
+            displayedDateTime.Should().Contain(endTime);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.ContactVhTeam).Displayed.Should().BeTrue();
         }
 
@@ -185,7 +188,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.StartHearingText).Displayed.Should().BeTrue();
             CheckParticipantsAreStillConnected();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.StartVideoHearingButton).Click();
+            _browsers[_c.CurrentUser.Key].Click(ClerkWaitingRoomPage.StartVideoHearingButton);
         }
 
         [When(@"the waiting room page has loaded for the (.*)")]
