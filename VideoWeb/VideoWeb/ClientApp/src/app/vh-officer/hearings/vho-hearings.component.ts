@@ -332,7 +332,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     }
 
     applyFilters(filterOptions: HearingsFilter) {
-        console.log('VHO hearings applyed filters');
+        this.logger.debug('VHO hearings applyed filters : ' + JSON.stringify(filterOptions));
         const selectedConferenceId = this.$conferenceList.currentConference ? this.$conferenceList.currentConference.id : '';
         this.clearSelectedConference();
         this.$conferenceList.currentConference = null;

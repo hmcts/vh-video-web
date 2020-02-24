@@ -55,7 +55,6 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
             return;
         }
         const messageBody = this.newMessageBody.value;
-        console.log(messageBody);
         this.newMessageBody.reset();
         this.eventService.sendMessage(this._hearing.id, messageBody);
     }
