@@ -6,7 +6,7 @@ import { configureTestSuite } from 'ng-bullet';
 import { of } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { PageUrls } from 'src/app/shared/page-url.constants';
@@ -195,5 +195,20 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     it('should raise judge unavaliable event', () => {
         component.beforeunloadHandler(new Event('unload'));
         expect(judgeEventServiceSpy.raiseJudgeUnavailableEvent).toHaveBeenCalled();
+    });
+
+    it('should call the raiseJudgeAvailable event when judge is disconnected and conference is paused', async done => {
+        await fixture.whenStable();
+        const conferenceStatus = ConferenceStatus.Paused;
+        component.handleHearingStatusChange(conferenceStatus);
+
+        const message = eventService.nextJudgeStatusMessage;
+        console.log(message.status);
+        component.handleParticipantStatusChange(message);
+        const participant = component.conference.participants.find(x => x.id === message.participantId);
+        console.log(participant.status);
+        expect(participant.status === message.status);
+        expect(judgeEventServiceSpy.raiseJudgeAvailableEvent).toHaveBeenCalled();
+        done();
     });
 });
