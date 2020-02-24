@@ -34,7 +34,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.TimePanel).Displayed.Should().BeTrue();
             Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitToCallAndAnswer));
             var participantId = _c.Test.ConferenceParticipants.First(x => x.Name.ToLower().Contains(user.ToLower())).Id;
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.PrivateConsultationLink(participantId.ToString())).Click();
+            _browsers[_c.CurrentUser.Key].ClickLink(WaitingRoomPage.PrivateConsultationLink(participantId.ToString()));
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.OutgoingCallMessage).Displayed.Should().BeTrue();
         }
 
@@ -44,20 +44,20 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserSteps.GivenInTheUsersBrowser(user);
             Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitToCallAndAnswer));
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.IncomingCallMessage).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.AcceptPrivateCall).Click();
+            _browsers[_c.CurrentUser.Key].Click(WaitingRoomPage.AcceptPrivateCall);
         }
 
         [When(@"(.*) rejects the private consultation")]
         public void WhenTheUserRejectsThePrivateConsultation(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.RejectPrivateCall).Click();
+            _browsers[_c.CurrentUser.Key].Click(WaitingRoomPage.RejectPrivateCall);
         }
 
         [When(@"a participant closes the private consultation")]
         public void WhenAParticipantClosesThePrivateConsultation()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.ClosePrivateConsultationButton).Click();
+            _browsers[_c.CurrentUser.Key].Click(WaitingRoomPage.ClosePrivateConsultationButton);
         }
 
         [When(@"the user does not answer after (.*) minutes")]
@@ -79,9 +79,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheSelfViewCanBeOpenAndClosed()
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(WaitingRoomPage.SelfViewVideo).Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.SelfViewButton).Click();
+            _browsers[_c.CurrentUser.Key].Click(WaitingRoomPage.SelfViewButton);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.SelfViewVideo).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.SelfViewButton).Click();
+            _browsers[_c.CurrentUser.Key].Click(WaitingRoomPage.SelfViewButton);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(WaitingRoomPage.SelfViewVideo).Should().BeTrue();
         }
 
@@ -90,13 +90,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browserSteps.GivenInTheUsersBrowser(user);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.CallRejectedMessage).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.CallRejectedCloseButton).Click();
+            _browsers[_c.CurrentUser.Key].Click(WaitingRoomPage.CallRejectedCloseButton);
         }
 
         [Then(@"the private consultation link with (.*) is not visible")]
         public void ThenThePrivateConsultationLinkIsNotVisible(string user)
         {
-            _browsers[_c.CurrentUser.Key].Driver.Navigate().Refresh();
+            _browsers[_c.CurrentUser.Key].Refresh();
             var participantId = _c.Test.ConferenceParticipants.First(x => x.Name.ToLower().Contains(user.ToLower())).Id;
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(WaitingRoomPage.PrivateConsultationLink(participantId.ToString())).Should().BeTrue();
         }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.PageObject.Pages;
@@ -26,16 +26,16 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user attempts to login with valid credentials")]
         public void ProgressToNextPage()
         {
-            _loginSharedSteps = new LoginSharedSteps(_browsers[_c.CurrentUser.Key].Driver, _c.CurrentUser.Username, _c.VideoWebConfig.TestConfig.TestUserPassword);
+            _loginSharedSteps = new LoginSharedSteps(_browsers[_c.CurrentUser.Key], _c.CurrentUser.Username, _c.VideoWebConfig.TestConfig.TestUserPassword);
             _loginSharedSteps.ProgressToNextPage();
         }
 
         [When(@"the user attempts to logout and log back in")]
         public void WhenTheUserAttemptsToLogout()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementClickable(CommonPages.SignOutLink).Click();
+            _browsers[_c.CurrentUser.Key].ClickLink(CommonPages.SignOutLink);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonPages.SignOutMessage).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementClickable(CommonPages.SignInLink).Click();
+            _browsers[_c.CurrentUser.Key].ClickLink(CommonPages.SignInLink);
         }
 
         [Then(@"the user should be navigated to sign in screen")]
