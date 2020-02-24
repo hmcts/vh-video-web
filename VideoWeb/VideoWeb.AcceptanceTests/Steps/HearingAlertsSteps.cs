@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
+using OpenQA.Selenium;
 using RestSharp;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Builders;
@@ -24,6 +26,7 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public sealed class HearingAlertsSteps
     {
+        private const int Timeout = 10;
         private const string ParticipantKey = "participant";
         private const string AlertTimeKey = "alert time";
         private readonly Dictionary<string, UserBrowser> _browsers;
@@ -116,7 +119,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var alerts = GetAlerts();
             var alert = alerts.First(x => x.AlertType.ToLower().Contains(alertType.ToLower()));
-            _browsers[_c.CurrentUser.Key].Click(AdminPanelPage.AlertCheckbox(alert.Row + 1));
+            _browsers[_c.CurrentUser.Key].ClickCheckbox(AdminPanelPage.AlertCheckbox(alert.Row + 1));
         }
 
         [When(@"the hearing has been closed")]
@@ -180,9 +183,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the (.*) checkbox is no longer enabled")]
         public void ThenTheCheckboxIsNoLongerEnabled(string alertType)
         {
-            var alerts = GetAlerts();
-            var alert = alerts.First(x => x.AlertType.ToLower().Contains(alertType.ToLower()));
-            alert.Checkbox.Enabled.Should().BeFalse();
+            CheckboxShouldBeDisabled(alertType);
         }
 
         [Then(@"the Video Hearings Officer should only see (.*) hearing")]
@@ -248,6 +249,22 @@ namespace VideoWeb.AcceptanceTests.Steps
             _scenarioContext.Add(AlertTimeKey, DateTime.Now);
             _c.Tokens.CallbackBearerToken = GenerateTemporaryTokens.SetCustomJwTokenForCallback(_c.VideoWebConfig.VideoWebCustomTokenSettings);
             return new VideoWebApiManager(_c.VideoWebConfig.VhServices.VideoWebUrl, _c.Tokens.CallbackBearerToken).SendCallBackEvent(request);
+        }
+
+        private void CheckboxShouldBeDisabled(string alertType)
+        {
+            for (var i = 0; i < Timeout; i++)
+            {
+                var alerts = GetAlerts();
+                var alert = alerts.First(x => x.AlertType.ToLower().Contains(alertType.ToLower()));
+                if (alert.Checkbox.Enabled.Equals(false))
+                {
+                    return;
+                }
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+            }
+
+            throw new InvalidElementStateException($"Alert is still enabled after {Timeout} seconds.");
         }
     }
 }
