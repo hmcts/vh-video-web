@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
@@ -25,8 +25,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the HMCTS Crest is visible")]
         public void ThenTheHmctsCrestIsVisible()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(RulesPage.HmctsLogo).Displayed
-                .Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(RulesPage.HmctsLogo).Displayed.Should().BeTrue();
         }
 
         public void ProgressToNextPage()

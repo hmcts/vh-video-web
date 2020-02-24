@@ -1,11 +1,11 @@
 <div class="judge-chat-window govuk-!-margin-right-9">
-  <div class="chat-header" (click)="toggleChatDisplay()">
+  <div class="chat-header" (click)="toggleChatDisplay()" >
     <span class="govuk-heading-s govuk-!-padding-3 chat-header-text">Message video hearings officer
       <span *ngIf="!showChat && unreadMessageCount" id="unread-messages" class="notification-badge"
         [attr.data-badge]="unreadMessageCount"></span>
       <span class="chevron">
-        <img *ngIf="!showChat" src="/assets/images/IM-open-arrow.png" />
-        <img *ngIf="showChat" src="/assets/images/IM-close-arrow.png" />
+        <img *ngIf="!showChat" src="/assets/images/IM-open-arrow.png" alt="Open instant messaging chat window arrow" />
+        <img *ngIf="showChat" src="/assets/images/IM-close-arrow.png" alt="Close instant messaging chat window arrow" />
       </span>
     </span>
   </div>

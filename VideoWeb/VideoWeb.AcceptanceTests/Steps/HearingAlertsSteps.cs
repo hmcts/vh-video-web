@@ -116,7 +116,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var alerts = GetAlerts();
             var alert = alerts.First(x => x.AlertType.ToLower().Contains(alertType.ToLower()));
-            _browsers[_c.CurrentUser.Key].Driver.ClickAndWaitForPageToLoad(AdminPanelPage.AlertCheckbox(alert.Row + 1));
+            _browsers[_c.CurrentUser.Key].Click(AdminPanelPage.AlertCheckbox(alert.Row + 1));
         }
 
         [When(@"the hearing has been closed")]
@@ -138,7 +138,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Video Hearings Officer user should not see an alert")]
         public void ThenTheVideoHearingsOfficerUserShouldNotSeeAnAlert()
         {
-            _browsers[_c.CurrentUser.Key].Driver.Navigate().Refresh();
+            _browsers[_c.CurrentUser.Key].Refresh();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Conference.Id)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(AdminPanelPage.AlertsHeader).Should().BeTrue("Alerts box should not be visible.");
         }
@@ -146,7 +146,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Video Hearings Officer user should see a (.*) notification and a (.*) alert")]
         public void ThenTheVideoHearingsOfficerUserShouldSeeAnAlert(string notification, string alertType)
         {
-            _browsers[_c.CurrentUser.Key].Driver.Navigate().Refresh();
+            _browsers[_c.CurrentUser.Key].Refresh();
             _browsers[_c.CurrentUser.Key].Driver.WaitForAngular();
             var alertCount =_browsers[_c.CurrentUser.Key].Driver
                 .WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerNumberOfAlerts(_c.Test.Conference.Id))
@@ -222,8 +222,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                     Row = i,
                     Checkbox = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertCheckboxes)[i],
                     Timestamp = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertTimestamp)[i].Text,
-                    AlertType = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertMessage)[i].Text,
-                    Username = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertByUser)[i].Text
+                    AlertType = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertMessage)[i].Text.Trim(),
+                    Username = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertByUser)[i].Text.Trim()
                 };
                 if (!_browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertCheckboxes)[i].Enabled)
                 {

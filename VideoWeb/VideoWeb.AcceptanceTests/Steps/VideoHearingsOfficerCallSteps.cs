@@ -30,12 +30,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the Video Hearings Officer starts a call with (.*)")]
         public void WhenTheVideoHearingsOfficerStartsACallWithIndividual(string user)
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Conference.Id)).Click();
+            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Conference.Id));
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.SwitchTo().Frame(AdminPanelPage.AdminIframeId);
             var participant = _c.Test.ConferenceParticipants.Find(x => x.Name.ToLower().Contains(user.ToLower()));
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantInIframe(participant.Display_name)).Click();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.VhoPrivateConsultationLink(participant.Id)).Click();
+            _browsers[_c.CurrentUser.Key].Click(AdminPanelPage.ParticipantInIframe(participant.Display_name));
+            _browsers[_c.CurrentUser.Key].Click(AdminPanelPage.VhoPrivateConsultationLink(participant.Id));
             _browsers[_c.CurrentUser.Key].LastWindowName = _browsers[_c.CurrentUser.Key].SwitchTab("Private Consultation");
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.CloseButton).Displayed.Should().BeTrue();
         }
@@ -46,14 +46,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserSteps.GivenInTheUsersBrowser(user);
             Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitToCallAndAnswer));
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.IncomingCallMessage).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.AcceptPrivateCall).Click();
+            _browsers[_c.CurrentUser.Key].Click(AdminPanelPage.AcceptPrivateCall);
         }
 
         [When(@"the (.*) ends the call")]
         public void WhenTheVideoHearingsOfficerEndsTheCall(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.CloseButton).Click();
+            _browsers[_c.CurrentUser.Key].Click(AdminPanelPage.CloseButton);
             _browsers[_c.CurrentUser.Key].LastWindowName = _browsers[_c.CurrentUser.Key].SwitchTab("Video Hearings");
         }
 
@@ -79,9 +79,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheAdminSelfViewCanBeOpenAndClosed()
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(AdminPanelPage.SelfViewVideo).Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.SelfViewButton).Click();
+            _browsers[_c.CurrentUser.Key].Click(AdminPanelPage.SelfViewButton);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.SelfViewVideo).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.SelfViewButton).Click();
+            _browsers[_c.CurrentUser.Key].Click(AdminPanelPage.SelfViewButton);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(AdminPanelPage.SelfViewVideo).Should().BeTrue();
         }
     }

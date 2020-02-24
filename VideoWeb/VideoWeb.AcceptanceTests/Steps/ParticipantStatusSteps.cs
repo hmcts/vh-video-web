@@ -71,7 +71,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the VHO can see the (.*) statuses have updated to (.*)")]
         public void ThenTheParticipantsStatusesShouldUpdateTo(string userType, string participantStatus)
         {
-            _browsers[_c.CurrentUser.Key].Driver.Navigate().Refresh();
+            _browsers[_c.CurrentUser.Key].Refresh();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Conference.Id)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
             var participants = ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, userType);
