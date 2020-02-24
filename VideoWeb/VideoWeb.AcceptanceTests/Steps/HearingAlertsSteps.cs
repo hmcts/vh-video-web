@@ -139,7 +139,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheVideoHearingsOfficerUserShouldNotSeeAnAlert()
         {
             _browsers[_c.CurrentUser.Key].Driver.Navigate().Refresh();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number)).Click();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Conference.Id)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(AdminPanelPage.AlertsHeader).Should().BeTrue("Alerts box should not be visible.");
         }
 
@@ -147,9 +147,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheVideoHearingsOfficerUserShouldSeeAnAlert(string notification, string alertType)
         {
             _browsers[_c.CurrentUser.Key].Driver.Navigate().Refresh();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerNumberOfAlerts(_c.Test.Case.Number)).Text.Should().Contain("Alert");
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerAlertType(_c.Test.Case.Number)).Text.Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number)).Click();
+            _browsers[_c.CurrentUser.Key].Driver.WaitForAngular();
+            var alertCount =_browsers[_c.CurrentUser.Key].Driver
+                .WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerNumberOfAlerts(_c.Test.Conference.Id))
+                .GetAttribute("data-badge");
+            int.Parse(alertCount).Should().BePositive();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerAlertType(_c.Test.Conference.Id)).Text.Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Conference.Id)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
 
             var alerts = GetAlerts();
