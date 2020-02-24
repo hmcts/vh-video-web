@@ -128,7 +128,16 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.eventHubSubscriptions.add(
             this.eventService.getServiceReconnected().subscribe(() => {
                 this.ngZone.run(() => {
-                    this.logger.info(`event hub re-connected for vh officer`);
+                    this.logger.info(`event hub reconnected for vh officer`);
+                    this.refreshConferenceDataDuringDisconnect();
+                });
+            })
+        );
+
+        this.eventHubSubscriptions.add(
+            this.eventService.getServiceReconnectionFailed().subscribe(() => {
+                this.ngZone.run(() => {
+                    this.logger.info(`event hub reconnection failed for VH Officer`);
                     this.refreshConferenceDataDuringDisconnect();
                 });
             })
@@ -204,22 +213,35 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         }
     }
 
-    retrieveConferenceDetails(conferenceId: string) {
-        this.videoWebService.getConferenceById(conferenceId).subscribe(
-            (data: ConferenceResponse) => {
-                this.selectedHearing = new Hearing(data);
-                this.participants = data.participants;
-                this.sanitiseAndLoadIframe();
-                this.getTasksForConference(conferenceId);
-                this.getJudgeStatusDetails();
-            },
-            error => {
-                this.logger.error(`There was an error when selecting conference ${conferenceId}`, error);
-                if (!this.errorService.returnHomeIfUnauthorised(error)) {
-                    this.errorService.handleApiError(error);
-                }
+    async retrieveConferenceDetails(conferenceId: string) {
+        try {
+            const data = await this.videoWebService.getConferenceById(conferenceId).toPromise();
+            this.selectedHearing = new Hearing(data);
+            this.participants = data.participants;
+            this.sanitiseAndLoadIframe();
+            this.getTasksForConference(conferenceId);
+            this.getJudgeStatusDetails();
+        } catch (error) {
+            this.logger.error(`There was an error when selecting conference ${conferenceId}`, error);
+            if (!this.errorService.returnHomeIfUnauthorised(error)) {
+                this.errorService.handleApiError(error);
             }
-        );
+        }
+        // .subscribe(
+        //     (data: ConferenceResponse) => {
+        //         this.selectedHearing = new Hearing(data);
+        //         this.participants = data.participants;
+        //         this.sanitiseAndLoadIframe();
+        //         this.getTasksForConference(conferenceId);
+        //         this.getJudgeStatusDetails();
+        //     },
+        //     error => {
+        //         this.logger.error(`There was an error when selecting conference ${conferenceId}`, error);
+        //         if (!this.errorService.returnHomeIfUnauthorised(error)) {
+        //             this.errorService.handleApiError(error);
+        //         }
+        //     }
+        // );
     }
 
     isCurrentConference(conference: ConferenceForUserResponse): boolean {
