@@ -89,7 +89,25 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
             response.VideoApiHealth.Successful.Should().BeFalse();
             response.VideoApiHealth.ErrorMessage.Should().NotBeNullOrWhiteSpace();
         }
-        
+
+        [Test]
+        public async Task Should_return_forbidden_error_result_when_video_api_not_reachable()
+        {
+            var exception = new VideoApiException<ProblemDetails>("Unauthorised Token", (int)HttpStatusCode.Unauthorized,
+                "Invalid Client ID", null, default, null);
+
+            _videoApiClientMock
+                .Setup(x => x.GetConferencesTodayAsync())
+                .ThrowsAsync(exception);
+
+            var result = await _controller.Health();
+            var typedResult = (ObjectResult)result;
+            typedResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
+            var response = (HealthCheckResponse)typedResult.Value;
+            response.VideoApiHealth.Successful.Should().BeTrue();
+            response.VideoApiHealth.ErrorMessage.Should().BeNullOrWhiteSpace();
+        }
+
         [Test]
         public async Task Should_return_internal_server_error_result_when_non_video_api_exception_thrown()
         {
@@ -108,7 +126,7 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
         }
 
         [Test]
-        public async Task should_return_ok_when_exception_is_not_internal_server_error()
+        public async Task Should_return_ok_when_exception_is_not_internal_server_error()
         {
             var exception = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id", null, default(ProblemDetails), null);
@@ -125,7 +143,7 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
         }
 
         [Test]
-        public async Task should_return_ok_when_all_services_are_running()
+        public async Task Should_return_ok_when_all_services_are_running()
         {
             var result = await _controller.Health();
             var typedResult = (ObjectResult) result;

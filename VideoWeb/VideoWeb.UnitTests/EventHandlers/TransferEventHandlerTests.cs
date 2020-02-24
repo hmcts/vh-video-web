@@ -22,7 +22,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [TestCase(RoomType.ConsultationRoom2, RoomType.WaitingRoom, ParticipantState.Available)]
         [TestCase(RoomType.ConsultationRoom1, RoomType.HearingRoom, ParticipantState.InHearing)]
         [TestCase(RoomType.ConsultationRoom2, RoomType.HearingRoom, ParticipantState.InHearing)]
-        public async Task should_send_participant__status_messages_to_clients_and_asb_when_transfer_occurs(
+        public async Task Should_send_participant__status_messages_to_clients_and_asb_when_transfer_occurs(
             RoomType from, RoomType to, ParticipantState status)
         {
             _eventHandler = new TransferEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
@@ -50,7 +50,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         }
 
         [Test]
-        public void should_throw_exception_when_transfer_cannot_be_mapped_to_participant_status()
+        public void Should_throw_exception_when_transfer_cannot_be_mapped_to_participant_status()
         {
             _eventHandler = new TransferEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
 

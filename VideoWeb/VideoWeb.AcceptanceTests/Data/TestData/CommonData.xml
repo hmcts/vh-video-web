@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CommonData>
+  <CommonConfig>
+    <SauceLabsServerUrl>@ondemand.eu-central-1.saucelabs.com:80/wd/hub</SauceLabsServerUrl>
+  </CommonConfig>
+  <CommonOnScreenData>
+    <VhoEmail>video-hearings@justice.gov.uk</VhoEmail>
+    <VhoPhone>0300 303 0655</VhoPhone>
+  </CommonOnScreenData>
+  <CommonUris>
+    <LoginUri>login.microsoftonline.com</LoginUri>
+  </CommonUris>
+</CommonData>

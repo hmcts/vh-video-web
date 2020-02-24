@@ -1,4 +1,4 @@
-﻿Feature: Hearing Alerts
+Feature: Hearing Alerts
 	As a video hearings officer user
 	I would like to login and access the hearing details
 	So that I can have an administrate the hearings I am involved in
@@ -61,10 +61,10 @@ Scenario: Video Hearings Officer does not receive disconnected alert when hearin
 
 @VIH-4559
 Scenario: Video Hearings Officer can see all hearings for today only
-	Given I have a hearing and a conference
-	And I have another hearing and a conference
-	And I have a hearing and a conference in 1 days time
-	And I have another hearing and a conference in 2 days time
+	Given I have a hearing
+	And I have another hearing
+	And I have a hearing in 1 days time
+	And I have another hearing in 2 days time
 	And a new browser is open for a Video Hearings Officer
 	When the user attempts to login with valid credentials
 	Then the Video Hearings Officer should only see 2 hearings

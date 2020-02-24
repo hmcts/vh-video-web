@@ -19,7 +19,7 @@ namespace VideoWeb.UnitTests
         }
 
         [Test]
-        public void should_encrypt()
+        public void Should_encrypt()
         {
             var hashGenerator = new HashGenerator(_customTokenSettings);
             var id = Guid.NewGuid().ToString();
@@ -28,7 +28,7 @@ namespace VideoWeb.UnitTests
         }
 
         [Test]
-        public void should_fail_authentication()
+        public void Should_fail_authentication()
         {
             var hashGenerator = new HashGenerator(_customTokenSettings);
             var id = Guid.NewGuid().ToString();

@@ -4,7 +4,8 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
   selector: 'app-hearing-rules',
-  templateUrl: './hearing-rules.component.html'
+  templateUrl: './hearing-rules.component.html',
+  styleUrls: ['./hearing-rules.component.scss']
 })
 export class HearingRulesComponent implements OnInit {
   conferenceId: string;

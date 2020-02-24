@@ -30,12 +30,12 @@ namespace VideoWeb.Common.Security
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            var token = GetServiceToServiceToeken();
+            var token = GetServiceToServiceToken();
             request.Headers.Add("Authorization", $"Bearer {token}");
             return await base.SendAsync(request, cancellationToken);
         }
         
-        protected string GetServiceToServiceToeken()
+        protected string GetServiceToServiceToken()
         {
             var token = _memoryCache.Get<string>(TokenCacheKey);
             if (!string.IsNullOrEmpty(token)) return token;

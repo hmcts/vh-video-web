@@ -1,11 +1,12 @@
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
-using Testing.Common.Builders;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
+using VideoWeb.UnitTests.Builders;
 using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
+using ParticipantStatus = VideoWeb.Contract.Responses.ParticipantStatus;
 using UserRole = VideoWeb.Contract.Responses.UserRole;
 
 namespace VideoWeb.UnitTests.Mappings
@@ -15,7 +16,7 @@ namespace VideoWeb.UnitTests.Mappings
         private readonly ParticipantResponseMapper _mapper = new ParticipantResponseMapper();
 
         [Test]
-        public void should_map_all_properties()
+        public void Should_map_all_properties()
         {
             const ParticipantStatus expectedStatus = ParticipantStatus.Available;
             const UserRole expectedRole = UserRole.Individual;

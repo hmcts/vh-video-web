@@ -11,11 +11,12 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using Testing.Common.Helpers;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
+using VideoWeb.UnitTests.Builders;
+using EventComponentHelper = VideoWeb.UnitTests.Builders.EventComponentHelper;
 using MemoryCache = Microsoft.Extensions.Caching.Memory.MemoryCache;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 using Role = VideoWeb.EventHub.Enums.UserRole;
@@ -28,6 +29,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         private Mock<IVideoApiClient> _videoApiClientMock;
         private Conference _testConference;
         private Mock<ILogger<VideoEventsController>> _mockLogger;
+        private Mock<IConferenceCache> _mockConferenceCache;
 
         [SetUp]
         public void Setup()
@@ -36,6 +38,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             _testConference = BuildConferenceForTest();
             var helper = new EventComponentHelper();
             _mockLogger = new Mock<ILogger<VideoEventsController>>();
+            _mockConferenceCache = new Mock<IConferenceCache>();
 
             var handlerList = helper.GetHandlers();
             helper.Cache.Set(_testConference.Id, _testConference);
@@ -53,7 +56,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             };
             
             _controller = new VideoEventsController(_videoApiClientMock.Object, eventHandlerFactory, 
-                new MemoryCache(new MemoryCacheOptions()), _mockLogger.Object)
+                new MemoryCache(new MemoryCacheOptions()), _mockConferenceCache.Object, _mockLogger.Object)
             {
                 ControllerContext = context
             };
@@ -66,7 +69,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         }
 
         [Test]
-        public async Task should_return_no_content_when_event_is_sent()
+        public async Task Should_return_no_content_when_event_is_sent()
         {
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
@@ -75,13 +78,14 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             var result = await _controller.SendHearingEvent(CreateRequest());
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
+            _videoApiClientMock.Verify(v => v.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()), Times.Once);
         }
         
         [Test]
-        public async Task should_return_bad_request()
+        public async Task Should_return_bad_request()
         {
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
-                "Please provide a valid conference Id", null, default(ProblemDetails), null);
+                "Please provide a valid conference Id", null, default, null);
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
@@ -92,10 +96,10 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         }
         
         [Test]
-        public async Task should_return_exception()
+        public async Task Should_return_exception()
         {
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
-                "Stacktrace goes here", null, default(ProblemDetails), null);
+                "Stacktrace goes here", null, default, null);
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);

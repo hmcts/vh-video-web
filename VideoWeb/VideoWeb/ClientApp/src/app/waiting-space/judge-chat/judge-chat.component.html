@@ -1,0 +1,38 @@
+<div class="judge-chat-window govuk-!-margin-right-9">
+  <div class="chat-header" (click)="toggleChatDisplay()" >
+    <span class="govuk-heading-s govuk-!-padding-3 chat-header-text">Message video hearings officer
+      <span *ngIf="!showChat && unreadMessageCount" id="unread-messages" class="notification-badge"
+        [attr.data-badge]="unreadMessageCount"></span>
+      <span class="chevron">
+        <img *ngIf="!showChat" src="/assets/images/IM-open-arrow.png" alt="Open instant messaging chat window arrow" />
+        <img *ngIf="showChat" src="/assets/images/IM-close-arrow.png" alt="Close instant messaging chat window arrow" />
+      </span>
+    </span>
+  </div>
+  <span *ngIf="showChat">
+    <div id="chat-list" style="overflow: auto; height: xyz;" #scrollMe [scrollTop]="scrollMe.scrollHeight"
+      class="govuk-!-padding-2 govuk-!-padding-left-4" [style.width.px]="sectionDivWidth" class="chat-window">
+      <span *ngFor="let message of messages" class="govuk-grid-row">
+
+        <div class="govuk-grid-column-full" [ngClass]="(message.is_user)?'own-message':'other-message'">
+          <p class="govuk-body govuk-!-margin-bottom-2">
+            <span
+              class="govuk-!-font-weight-bold govuk-!-margin-right-2">{{message.from}}</span>({{message.timestamp | date:'shortTime' }})
+          </p>
+          <p class="govuk-body chat-message">{{message.message}}</p>
+        </div>
+
+      </span>
+    </div>
+
+    <div class="govuk-form-group chat-input-group">
+      <textarea class="govuk-textarea chat-input" required maxlength="256" rows=2 autocomplete="off"
+        [formControl]="newMessageBody" id="new-message-box" name="new-message-box" #newMessageBox type="text"
+        (keydown.enter)="$event.preventDefault()" (keydown)="onKeydown($event)"></textarea>
+      <button (click)="sendMessage()" id="send-new-message-btn" class="govuk-button chat-btn"
+        data-module="govuk-button">
+        Send
+      </button>
+    </div>
+  </span>
+</div>

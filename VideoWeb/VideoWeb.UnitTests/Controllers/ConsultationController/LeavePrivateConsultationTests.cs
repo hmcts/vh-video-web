@@ -9,11 +9,11 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using NUnit.Framework;
-using Testing.Common.Helpers;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
+using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
@@ -51,7 +51,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
         
         [Test]
-        public async Task should_return_conference_not_found_when_request_is_sent()
+        public async Task Should_return_conference_not_found_when_request_is_sent()
         {
             _videoApiClientMock
                 .Setup(x => x.LeavePrivateConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
@@ -65,7 +65,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_return_participant_not_found_when_request_is_sent()
+        public async Task Should_return_participant_not_found_when_request_is_sent()
         {
             _videoApiClientMock
                 .Setup(x => x.LeavePrivateConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
@@ -81,7 +81,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_return_no_content_when_request_is_sent()
+        public async Task Should_return_no_content_when_request_is_sent()
         {
             _videoApiClientMock
                 .Setup(x => x.LeavePrivateConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
@@ -95,10 +95,10 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_return_bad_request()
+        public async Task Should_return_bad_request()
         {
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
-                "Please provide a valid conference Id", null, default(ProblemDetails), null);
+                "Please provide a valid conference Id", null, default, null);
             _videoApiClientMock
                 .Setup(x => x.LeavePrivateConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
                 .ThrowsAsync(apiException);
@@ -109,11 +109,11 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_return_exception()
+        public async Task Should_return_exception()
         {
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
                 (int) HttpStatusCode.InternalServerError,
-                "Stacktrace goes here", null, default(ProblemDetails), null);
+                "Stacktrace goes here", null, default, null);
             _videoApiClientMock
                 .Setup(x => x.LeavePrivateConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
                 .ThrowsAsync(apiException);
@@ -121,6 +121,24 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var result = await _controller.LeavePrivateConsultation(ConsultationHelper.GetLeaveConsultationRequest(_testConference));
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
+        }
+
+        [Test]
+        public void Should_throw_InvalidOperationException_two_participants_requested_found()
+        {
+            _videoApiClientMock
+                .Setup(x => x.LeavePrivateConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
+                .Returns(Task.FromResult(default(object)));
+            var conference = _testConference;
+
+            var leaveConsultationRequest = Builder<LeaveConsultationRequest>.CreateNew().With(x => x.Conference_id = conference.Id).Build();
+            var findId = leaveConsultationRequest.Participant_id;
+            conference.Participants[0].Id = findId;
+            conference.Participants[1].Id = findId;
+
+
+            Assert.ThrowsAsync<InvalidOperationException>(() => _controller.LeavePrivateConsultation(leaveConsultationRequest));
+
         }
 
     }

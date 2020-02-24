@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AcceptanceTests.Common.Configuration.Users;
+using AcceptanceTests.Common.Data.Helpers;
 using FizzWare.NBuilder;
-using Testing.Common.Configuration;
-using Testing.Common.Helpers;
-using VideoWeb.AcceptanceTests.Contexts;
 using VideoWeb.Services.Bookings;
 
 namespace VideoWeb.AcceptanceTests.Builders
 {
     internal class HearingRequestBuilder
     {
-        private TestContext _context;
         private BookNewHearingRequest _request;
         private DateTime _scheduledTime = DateTime.Today.ToUniversalTime().AddDays(1).AddMinutes(-1);
         private int _scheduledDuration = 5;
@@ -19,18 +17,20 @@ namespace VideoWeb.AcceptanceTests.Builders
         private readonly List<UserAccount> _individuals;
         private readonly List<UserAccount> _representatives;
         private readonly List<ParticipantRequest> _participants;
+        private List<UserAccount> _userAccounts;
 
         public HearingRequestBuilder()
         {
             _fromRandomNumber = new Random();
             _individuals = new List<UserAccount>();
             _representatives = new List<UserAccount>();
-            _participants = new List<ParticipantRequest>();           
+            _participants = new List<ParticipantRequest>();
+            _userAccounts = new List<UserAccount>();
         }
 
-        public HearingRequestBuilder WithContext(TestContext context)
+        public HearingRequestBuilder WithUserAccounts(List<UserAccount> userAccounts)
         {
-            _context = context;
+            _userAccounts = userAccounts;
             return this;
         }
 
@@ -48,8 +48,8 @@ namespace VideoWeb.AcceptanceTests.Builders
 
         public BookNewHearingRequest Build()
         {
-            _individuals.AddRange(_context.GetIndividualUsers());
-            _representatives.AddRange(_context.GetRepresentativeUsers());
+            _individuals.AddRange(UserManager.GetIndividualUsers(_userAccounts));
+            _representatives.AddRange(UserManager.GetRepresentativeUsers(_userAccounts));
 
             _participants.Add(new ParticipantsRequestBuilder()
                 .AddIndividual().WithUser(_individuals[0])
@@ -68,7 +68,7 @@ namespace VideoWeb.AcceptanceTests.Builders
                 .Build());
 
             _participants.Add(new ParticipantsRequestBuilder()
-                .AddClerkOrJudge().WithUser(_context.GetClerkUser())
+                .AddClerkOrJudge().WithUser(UserManager.GetClerkUser(_userAccounts))
                 .Build());           
 
             var cases = Builder<CaseRequest>.CreateListOfSize(1).Build().ToList();
@@ -86,10 +86,9 @@ namespace VideoWeb.AcceptanceTests.Builders
                 .With(x => x.Scheduled_duration = _scheduledDuration)
                 .With(x => x.Participants = _participants)
                 .With(x => x.Cases = cases)
-                .With(x => x.Created_by = _context.GetCaseAdminUser().Username)
+                .With(x => x.Created_by = UserManager.GetCaseAdminUser(_userAccounts).Username)
+                .With(x => x.Questionnaire_not_required = true)
                 .Build();
-
-            _context.HearingRequest = _request;
 
             return _request;
         }

@@ -3,7 +3,9 @@
 </div>
 
 <div *ngIf="!loadingData && hasHearings()">
-  <h1 class="govuk-heading-xl">Your hearings</h1>
+  <div class="govuk-!-margin-top-5">
+    <h1 class="govuk-heading-xl govuk-!-padding-top-5">{{this.conferences.length | pluraliseTextPipe:'Your video hearing':'Your video hearings'}}</h1>
+  </div>
   <div class="govuk-!-margin-top-1">
     <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button"
             (click)="goToEquipmentCheck()" alt="Check equipment">
@@ -13,15 +15,13 @@
   <app-hearing-list-table [conferences]="conferences"></app-hearing-list-table>
 </div>
 <div *ngIf="!loadingData && !hasHearings()">
-  <h1 class="govuk-heading-xl">Video hearings</h1>
+  <h1 class="govuk-heading-xl">You do not have a video hearing today</h1>
   <div class="govuk-!-margin-top-1">
     <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button"
            (click)="goToEquipmentCheck()" alt="Check equipment">Check equipment</button>
   </div>
-  <h3 class="govuk-heading-m"> You have no video hearings</h3>
   <p class="govuk-body">
-    If you are expecting to see details of your hearing listed here, please contact us using the
-    options below.
+    If you were expecting to see the details of a hearing here, please contact the video hearings team.
   </p>
 </div>
 

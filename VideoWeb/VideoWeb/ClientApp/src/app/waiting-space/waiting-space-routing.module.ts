@@ -4,11 +4,12 @@ import { ParticipantWaitingRoomComponent } from './participant-waiting-room/part
 import { JudgeWaitingRoomComponent } from './judge-waiting-room/judge-waiting-room.component';
 import { JudgeHearingPageComponent } from './judge-hearing-page/judge-hearing-page.component';
 import { PageUrls } from '../shared/page-url.constants';
+import {ConferenceGuard} from '../security/conference.guard';
 
 const routes: Routes = [
   { path: `${PageUrls.ParticipantWaitingRoom}/:conferenceId`, component: ParticipantWaitingRoomComponent, data: { title: 'Waiting room'} },
   { path: `${PageUrls.JudgeWaitingRoom}/:conferenceId`, component: JudgeWaitingRoomComponent, data: { title: 'Waiting room'} },
-  { path: `${PageUrls.JudgeHearingRoom}/:conferenceId`, component: JudgeHearingPageComponent, data: { title: 'Hearing room'} },
+  { path: `${PageUrls.JudgeHearingRoom}/:conferenceId`, component: JudgeHearingPageComponent, canActivate: [ConferenceGuard], data: { title: 'Hearing room'} },
 ];
 
 @NgModule({

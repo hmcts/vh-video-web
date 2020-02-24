@@ -9,11 +9,11 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using NUnit.Framework;
-using Testing.Common.Helpers;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
+using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
@@ -62,7 +62,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_return_conference_not_found_when_request_is_sent()
+        public async Task Should_return_conference_not_found_when_request_is_sent()
         {
             _videoApiClientMock
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
@@ -76,7 +76,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_return_participant_not_found_when_request_is_sent()
+        public async Task Should_return_participant_not_found_when_request_is_sent()
         {
             _videoApiClientMock
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
@@ -92,7 +92,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_return_no_content_when_request_is_sent()
+        public async Task Should_return_no_content_when_request_is_sent()
         {
             _videoApiClientMock
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
@@ -101,13 +101,16 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var result = await _controller.HandleConsultationRequest(ConsultationHelper.GetConsultationRequest(_testConference));
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
+            _eventHubClientMock.Verify(
+                x => x.AdminConsultationMessage
+                (It.IsAny<Guid>(), It.IsAny<EventHub.Enums.RoomType>(), It.IsAny<string>(), It.IsAny<EventHub.Enums.ConsultationAnswer>()), Times.Never);
         }
 
         [Test]
-        public async Task should_return_bad_request()
+        public async Task Should_return_bad_request()
         {
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
-                "Please provide a valid conference Id", null, default(ProblemDetails), null);
+                "Please provide a valid conference Id", null, default, null);
             _videoApiClientMock
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .ThrowsAsync(apiException);
@@ -118,11 +121,11 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_return_exception()
+        public async Task Should_return_exception()
         {
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
                 (int) HttpStatusCode.InternalServerError,
-                "Stacktrace goes here", null, default(ProblemDetails), null);
+                "Stacktrace goes here", null, default, null);
             _videoApiClientMock
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .ThrowsAsync(apiException);
@@ -133,7 +136,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_send_message_to_other_party_when_requested()
+        public async Task Should_send_message_to_other_party_when_requested()
         {
             _videoApiClientMock
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>())).Returns(Task.FromResult(HttpStatusCode.NoContent));
@@ -150,7 +153,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [TestCase(ConsultationAnswer.Cancelled)]
         [TestCase(ConsultationAnswer.Accepted)]
         [TestCase(ConsultationAnswer.Rejected)]
-        public async Task should_send_message_to_other_party_when_answered(ConsultationAnswer answer)
+        public async Task Should_send_message_to_other_party_when_answered(ConsultationAnswer answer)
         {
             _videoApiClientMock
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>())).Returns(Task.FromResult(HttpStatusCode.NoContent));
@@ -163,6 +166,77 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             _eventHubClientMock.Verify(x => x.ConsultationMessage(_testConference.Id, _testConference.Participants[1].Username, 
                 _testConference.Participants[2].Username, answer.ToString()));
+        }
+
+        [Test]
+        public void Should_throw_InvalidOperationException_two_participants_with_the_same_requeste_by_found()
+        {
+            _videoApiClientMock
+                .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
+                .Returns(Task.FromResult(default(object)));
+           
+            var consultationRequest = ConsultationHelper.GetConsultationRequest(_testConference);
+            var findId = consultationRequest.Requested_by;
+            _testConference.Participants[0].Id = findId;
+            _testConference.Participants[1].Id = findId;
+            _memoryCache.Set(_testConference.Id, _testConference);
+
+            Assert.ThrowsAsync<InvalidOperationException>(()=> _controller.HandleConsultationRequest(consultationRequest));
+        }
+
+        [Test]
+        public void Should_throw_InvalidOperationException_two_participants_with_the_same_requeste_for_found()
+        {
+            _videoApiClientMock
+                .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
+                .Returns(Task.FromResult(default(object)));
+
+            var consultationRequest = ConsultationHelper.GetConsultationRequest(_testConference);
+            var findId = consultationRequest.Requested_for;
+            _testConference.Participants[0].Id = findId;
+            _testConference.Participants[1].Id = findId;
+            _testConference.Participants[2].Id = consultationRequest.Requested_by;
+            _memoryCache.Set(_testConference.Id, _testConference);
+
+            Assert.ThrowsAsync<InvalidOperationException>(() => _controller.HandleConsultationRequest(consultationRequest));
+        }
+
+        [Test]
+        public async Task Should_throw_InvalidOperationException_no_participants_requested_by_found()
+        {
+            _videoApiClientMock
+                .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
+                .Returns(Task.FromResult(default(object)));
+
+            var consultationRequest = ConsultationHelper.GetConsultationRequest(_testConference);
+            foreach (var item in _testConference.Participants)
+            {
+                item.Id = Guid.NewGuid();
+            }
+           
+            _memoryCache.Set(_testConference.Id, _testConference);
+
+            var result = await _controller.HandleConsultationRequest(consultationRequest);
+            var typedResult = (NotFoundResult)result;
+            typedResult.Should().NotBeNull();
+        }
+
+        [Test]
+        public async Task Should_throw_InvalidOperationException_no_participants_requested_for_found()
+        {
+            _videoApiClientMock
+                .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
+                .Returns(Task.FromResult(default(object)));
+
+            var consultationRequest = ConsultationHelper.GetConsultationRequest(_testConference);
+            _testConference.Participants[0].Id = Guid.NewGuid();
+            _testConference.Participants[1].Id = Guid.NewGuid();
+            _testConference.Participants[2].Id = consultationRequest.Requested_by;
+            _memoryCache.Set(_testConference.Id, _testConference);
+
+            var result = await _controller.HandleConsultationRequest(consultationRequest);
+            var typedResult = (NotFoundResult)result;
+            typedResult.Should().NotBeNull();
         }
     }
 }

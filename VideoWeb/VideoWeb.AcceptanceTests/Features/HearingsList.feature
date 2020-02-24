@@ -1,11 +1,11 @@
-﻿@VIH-4035
+@VIH-4035
 Feature: Hearing List
 	As a registered video hearings user
 	I would like to login and access the hearing details
 	So that I can have an overview of all the scheduled hearings I am involved in
 
 Scenario: Participant has 1 or more hearings
-	Given I have a hearing and a conference
+	Given I have a hearing
 	And a new browser is open for a Participant
 	When the user attempts to login with valid credentials
 	Then the user is on the Hearing List page
@@ -15,7 +15,7 @@ Scenario: Participant has 1 or more hearings
 	Then the user is on the Introduction page
 
 Scenario: Participant has a hearing more than 30 minutes in the future
-	Given I have a hearing and a conference in 31 minutes time
+	Given I have a hearing in 31 minutes time
 	And a new browser is open for a Participant
 	When the user attempts to login with valid credentials
 	Then the user is on the Hearing List page
@@ -28,7 +28,7 @@ Scenario: Participant has no hearings
 	Given a new browser is open for a Participant
 	When the user attempts to login with valid credentials
 	Then the user is on the Hearing List page
-	And a warning message appears indicating the user has no hearings scheduled
+	And a warning message appears indicating the participant has no hearings scheduled
 	And contact us details are available
 
 @VIH-4607
@@ -36,12 +36,12 @@ Scenario: Clerk has no hearings
 	Given a new browser is open for a Clerk
 	When the user attempts to login with valid credentials
 	Then the user is on the Hearing List page
-	And a warning message appears indicating the user has no hearings scheduled
+	And a warning message appears indicating the clerk has no hearings scheduled
 	And contact us details for the clerk are available
 
 @VIH-4607
 Scenario: Clerk has 1 or more hearings
-	Given I have a hearing and a conference
+	Given I have a hearing
 	And a new browser is open for a Clerk
 	When the user attempts to login with valid credentials
 	Then the user is on the Hearing List page
@@ -54,7 +54,7 @@ Scenario: Clerk has 1 or more hearings
 
 @VIH-4156 @VIH-4507 @Smoketest
 Scenario: Video Hearings Officer has 1 or more hearings
-	Given I have a hearing and a conference
+	Given I have a hearing
 	And a new browser is open for a Video Hearings Officer
 	When the user attempts to login with valid credentials
 	Then the user is on the VHO Hearing List page

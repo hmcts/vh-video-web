@@ -53,8 +53,8 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.checkBrowser();
     this.checkAuth();
+    this.checkBrowser();
     this.setPageTitle();
     this.scrollToTop();
   }

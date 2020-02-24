@@ -3,7 +3,7 @@
 </div>
 
 <div id="participant-status-list">
-  <div *ngFor="let participant of nonJugdeParticipants" class="govuk-grid-row">
+  <div *ngFor="let participant of _participants" class="govuk-grid-row">
     <div id="p-row-{{participant.id}}" class="govuk-grid-column-one-half">
       <div class="govuk-body-s tooltip-wrapper">
         {{participant.initialedName}}
@@ -15,7 +15,8 @@
 
     <div class="govuk-grid-column-one-half">
       <p class="govuk-body-s govuk-!-font-weight-bold" [ngClass]="getParticipantStatusClass(participant)">
-        {{participant.getStatusAsText()}}</p>
+        {{participant.isJudge ? participant.getStatusAsTextForJudge(_judgeStatuses) : participant.getStatusAsText()}}
+      </p>
     </div>
   </div>
 </div>
