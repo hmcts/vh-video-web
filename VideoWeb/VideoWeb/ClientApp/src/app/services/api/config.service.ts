@@ -19,7 +19,6 @@ export class ConfigService {
     async loadConfig() {
         try {
             const result_1 = await this.retrieveConfigFromApi();
-            result_1.redirect_uri = 'https://localhost.charlesproxy.com:5800/home';
             this.clientSettings = result_1;
             this.clientSettingCache.set(result_1);
             return Promise.resolve(result_1);

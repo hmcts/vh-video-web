@@ -114,30 +114,21 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
             })
         );
 
-        this.logger.debug('Subscribing to event hub disconnects');
+        this.logger.debug('Subscribing to EventHub disconnects');
         this.eventHubSubscriptions.add(
             this.eventService.getServiceDisconnected().subscribe(() => {
                 this.ngZone.run(() => {
-                    this.logger.info(`event hub disconnection for vh officer`);
+                    this.logger.info(`EventHub disconnection for vh officer`);
                     this.refreshConferenceDataDuringDisconnect();
                 });
             })
         );
 
-        this.logger.debug('Subscribing to event hub reconnects');
+        this.logger.debug('Subscribing to EventHub reconnects');
         this.eventHubSubscriptions.add(
             this.eventService.getServiceReconnected().subscribe(() => {
                 this.ngZone.run(() => {
-                    this.logger.info(`event hub reconnected for vh officer`);
-                    this.refreshConferenceDataDuringDisconnect();
-                });
-            })
-        );
-
-        this.eventHubSubscriptions.add(
-            this.eventService.getServiceReconnectionFailed().subscribe(() => {
-                this.ngZone.run(() => {
-                    this.logger.info(`event hub reconnection failed for VH Officer`);
+                    this.logger.info(`EventHub reconnected for vh officer`);
                     this.refreshConferenceDataDuringDisconnect();
                 });
             })
@@ -145,6 +136,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     }
 
     refreshConferenceDataDuringDisconnect() {
+        this.logger.warn('EventHub refresh pending...');
         this.retrieveHearingsForVhOfficer();
         if (this.selectedHearing) {
             this.retrieveConferenceDetails(this.selectedHearing.id);

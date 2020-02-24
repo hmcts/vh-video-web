@@ -25,7 +25,6 @@ export class EventsService {
     private messageSubject = new Subject<ChatResponse>();
     private eventHubDisconnectSubject = new Subject();
     private eventHubReconnectSubject = new Subject();
-    private eventHubReconnectFailedSubject = new Subject();
 
     constructor(private adalService: AdalService, private logger: Logger) {
         this.connectionStarted = false;
@@ -46,20 +45,14 @@ export class EventsService {
                 .then(() => {
                     this.connectionStarted = true;
                     this.attemptingConnection = false;
-                    this.logger.info('Successfully connected to event hub');
-                    this.connection.onreconnecting(error => this.onEventHubReconnecting(error));
+                    this.logger.info('Successfully connected to EventHub');
                     this.connection.onreconnected(() => this.onEventHubReconnected());
                     this.connection.onclose(error => this.onEventHubErrorOrClose(error));
                 })
                 .catch(err => {
-                    this.logger.error('Failed to connect to event hub', err);
+                    this.logger.error('Failed to connect to EventHub', err);
                     this.onEventHubErrorOrClose(err);
                 });
-        }
-    }
-    onEventHubReconnecting(error: Error): void {
-        if (error) {
-            this.eventHubReconnectFailedSubject.next;
         }
     }
 
@@ -68,20 +61,14 @@ export class EventsService {
     }
 
     private onEventHubErrorOrClose(error: Error) {
+        this.logger.error('EventHub connection closed', error);
         this.connectionStarted = false;
         this.attemptingConnection = false;
-        if (error) {
-            this.logger.error('EventHub connection closed', error);
-            this.eventHubDisconnectSubject.next();
-        }
+        this.eventHubDisconnectSubject.next();
     }
 
     getServiceReconnected(): Observable<any> {
         return this.eventHubReconnectSubject.asObservable();
-    }
-
-    getServiceReconnectionFailed(): Observable<any> {
-        return this.eventHubReconnectFailedSubject.asObservable();
     }
 
     getServiceDisconnected(): Observable<any> {
@@ -89,7 +76,7 @@ export class EventsService {
     }
 
     stop() {
-        this.connection.stop().catch(err => this.logger.error('Failed to stop connection to event hub', err));
+        this.connection.stop().catch(err => this.logger.error('Failed to stop connection to EventHub', err));
     }
 
     getParticipantStatusMessage(): Observable<ParticipantStatusMessage> {
