@@ -152,10 +152,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Refresh();
             _browsers[_c.CurrentUser.Key].Driver.WaitForAngular();
             var alertCount =_browsers[_c.CurrentUser.Key].Driver
-                .WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerNumberOfAlerts(_c.Test.Conference.Id))
+                .WaitUntilElementExists(VhoHearingListPage.VideoHearingsOfficerNumberOfAlerts(_c.Test.Conference.Id))
                 .GetAttribute("data-badge");
             int.Parse(alertCount).Should().BePositive();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerAlertType(_c.Test.Conference.Id)).Text.Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.HearingStatusBadge(_c.Test.Conference.Id)).Text.Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Conference.Id)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
 
@@ -167,7 +167,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             foreach (var alert in alerts)
             {
                 alert.Checkbox.Selected.Should().BeFalse();
-                alert.Checkbox.Enabled.Should().BeTrue();                
+                alert.Checkbox.Enabled.Should().BeTrue();
                 alert.Timestamp.Should().Match<string>(t=> t.Equals(timeOfAlert) || t.Equals(timeOfAlertMinusAMinute) || t.Equals(timeOfAlertPlusAMinute));
             }
 
