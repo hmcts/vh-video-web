@@ -14,6 +14,7 @@ export class MockEventsService {
     nextConsultationMessage: ConsultationMessage;
     nextAdminConsultationMessage: AdminConsultationMessage;
     nextChatMessageMessage: ChatResponse;
+    nextJudgeStatusMessage: ParticipantStatusMessage;
 
     constructor() {
         this.nextParticipantStatusMessage = new ParticipantStatusMessage(
@@ -33,6 +34,10 @@ export class MockEventsService {
             RoomType.ConsultationRoom1,
             'james.green@hearings.net',
             ConsultationAnswer.None
+        );
+        this.nextJudgeStatusMessage = new ParticipantStatusMessage(
+            '9F681318-4955-49AF-A887-DED64554429T',
+            ParticipantStatus.Disconnected
         );
     }
 
