@@ -132,6 +132,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .With(x => x.Status = ConferenceState.NotStarted)
                 .With(x => x.Closed_date_time = null)
                 .Build().ToList();
+            conferences.Last().Status = ConferenceState.InSession;
 
             var minutes = -60;
             foreach (var conference in conferences)
@@ -183,6 +184,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             {
                 conference.CaseName.Should().Be($"Case_name{i++}");
             }
+
+            // paused hearings in sessions cannot chat, no need to get history
+            _videoApiClientMock.Verify(x => x.GetMessagesAsync(conferences.Last().Id), Times.Never);
         }
 
     }

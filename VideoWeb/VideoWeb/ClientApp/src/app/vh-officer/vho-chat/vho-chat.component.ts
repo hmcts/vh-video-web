@@ -55,7 +55,6 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
     }
 
     sendMessage() {
-        console.log(this.newMessageBody);
         if (this.newMessageBody.invalid) {
             return;
         }
