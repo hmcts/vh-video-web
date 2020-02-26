@@ -30,20 +30,31 @@
 
 .chat-input {
   margin-bottom: 0px;
+  margin-right: 25px;
   resize: none;
 }
 
-.chat-list {
+.chat-btn {
+  margin: 9px 0px 9px -10px;
+  top: 0;
+  bottom: 0;
+}
+
+#chat-list {
   overflow-y: scroll;
+}
+
+.message-container {
+  width: inherit;
 }
 
 ::-webkit-scrollbar {
   -webkit-appearance: none;
-  width: 10px;
+  width: 7px;
 }
 
 ::-webkit-scrollbar-thumb {
-  border-radius: 5px;
+  border-radius: 4px;
   background-color: rgba(0, 0, 0, .5);
   -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
 }

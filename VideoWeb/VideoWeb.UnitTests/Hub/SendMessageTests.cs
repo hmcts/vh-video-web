@@ -74,6 +74,7 @@ namespace VideoWeb.UnitTests.Hub
             var mockClient = new Mock<IEventHubClient>();
             EventHubClientMock.Setup(x => x.Group(conferenceId.ToString())).Returns(mockClient.Object);
 
+            EventHubClientMock.Setup(x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName)).Returns(mockClient.Object);
             await Hub.SendMessage(conferenceId, message);
 
             mockClient.Verify(

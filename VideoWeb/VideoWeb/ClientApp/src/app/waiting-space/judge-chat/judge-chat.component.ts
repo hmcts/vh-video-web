@@ -6,6 +6,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
 import { ProfileService } from 'src/app/services/api/profile.service';
+import { ChatResponse } from 'src/app/services/clients/api-client';
 
 @Component({
     selector: 'app-judge-chat',
@@ -32,7 +33,10 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
         this.showChat = false;
         this.unreadMessageCount = 0;
         this.initForm();
-        this.retrieveChatForConference().then(() => this.setupChatSubscription());
+        this.retrieveChatForConference().then(messages => {
+            this.unreadMessageCount = this.getCountSinceUsersLastMessage(messages);
+            this.setupChatSubscription();
+        });
     }
 
     ngAfterViewChecked(): void {
@@ -51,7 +55,6 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
             return;
         }
         const messageBody = this.newMessageBody.value;
-        console.log(messageBody);
         this.newMessageBody.reset();
         this.eventService.sendMessage(this._hearing.id, messageBody);
     }
@@ -79,5 +82,18 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
 
     resetUnreadMessageCount() {
         this.unreadMessageCount = 0;
+    }
+
+    getCountSinceUsersLastMessage(messages: ChatResponse[]) {
+        const reversedMessages = Object.assign([], messages);
+        reversedMessages.sort((a: ChatResponse, b: ChatResponse) => {
+            return b.timestamp.getTime() - a.timestamp.getTime();
+        });
+        const index = reversedMessages.findIndex(x => x.is_user);
+        if (index < 0) {
+            return reversedMessages.length;
+        } else {
+            return index;
+        }
     }
 }

@@ -29,7 +29,7 @@ describe('VhoHearingsComponent', () => {
     let fixture: ComponentFixture<VhoHearingsComponent>;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     let adalService: MockAdalService;
-    const conferences = new ConferenceTestData().getTestData();
+    const conferences = new ConferenceTestData().getVhoTestData();
     let errorService: ErrorService;
 
     configureTestSuite(() => {
@@ -140,5 +140,12 @@ describe('VhoHearingsComponent', () => {
         });
         component.getJudgeStatusDetails();
         expect(component.participantStatusModel.JudgeStatuses.length).toBe(0);
+    });
+
+    it('should reset conference unread counter when vho sends a message', () => {
+        const conference = component.conferences[0];
+        component.conferences[0].number_of_unread_messages = 5;
+        component.resetConferenceUnreadCounter(conference.id);
+        expect(component.conferences[0].number_of_unread_messages).toBe(0);
     });
 });
