@@ -6,6 +6,7 @@ using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
 using TechTalk.SpecFlow;
+using VideoWeb.AcceptanceTests.Assertions;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 
@@ -69,7 +70,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserSteps.GivenInTheUsersBrowser(user);
             var chatMessages = new GetChatMessages(_browsers[_c.CurrentUser.Key]).WaitFor(_messages.Count).Fetch();
             chatMessages.Count.Should().BePositive();
-            chatMessages.Last().Should().BeEquivalentTo(_messages.Last());
+            AssertChatMessage.Assert(_messages.Last(), chatMessages.Last());
         }
 
         [Then(@"the Clerk can see the notification for the message")]
