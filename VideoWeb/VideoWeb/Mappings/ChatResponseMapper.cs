@@ -5,7 +5,7 @@ namespace VideoWeb.Mappings
 {
     public class ChatResponseMapper
     {
-        public ChatResponse MapToResponseModel(MessageResponse message, string fromDisplayName, bool isUser)
+        public ChatResponse MapToResponseModel(InstantMessageResponse message, string fromDisplayName, bool isUser)
         {
             var response = new ChatResponse
             {

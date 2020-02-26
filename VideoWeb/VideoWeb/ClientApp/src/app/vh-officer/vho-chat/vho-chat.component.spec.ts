@@ -45,7 +45,7 @@ describe('VhoChatComponent', () => {
         fixture = TestBed.createComponent(VhoChatComponent);
         component = fixture.componentInstance;
         component.conference = conference;
-        component.messages = new ConferenceTestData().getChatHistory();
+        component.messages = new ConferenceTestData().getChatHistory('vho.user@hearings.net');
         spyOn(component, 'updateDivWidthForSection').and.callFake(() => {});
         fixture.detectChanges();
     });
@@ -54,16 +54,30 @@ describe('VhoChatComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should send message when send keyboard shortcut is pressed ', () => {
+    it('should send message when send keyboard shortcut is pressed', () => {
         spyOn(eventService, 'sendMessage').and.callFake(() => {
             return Promise.resolve();
         });
+        component.newMessageBody.setValue('test');
         const event = new KeyboardEvent('keydown', {
             key: 'Enter'
         });
 
         component.onKeydown(event);
         expect(eventService.sendMessage).toHaveBeenCalled();
+    });
+
+    it('should not send message when validation fails', () => {
+        spyOn(eventService, 'sendMessage').and.callFake(() => {
+            return Promise.resolve();
+        });
+        component.newMessageBody.setValue('');
+        const event = new KeyboardEvent('keydown', {
+            key: 'Enter'
+        });
+
+        component.onKeydown(event);
+        expect(eventService.sendMessage).toHaveBeenCalledTimes(0);
     });
 
     it('should not send message when send keyboard shortcut is not pressed ', () => {

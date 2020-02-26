@@ -41,6 +41,12 @@ namespace VideoWeb
                 Participants = participants
             };
 
+            await _memoryCache.GetOrCreateAsync($"{conference.Id}_details", entry =>
+            {
+                entry.SlidingExpiration = TimeSpan.FromHours(4);
+                return Task.FromResult(conferenceResponse);
+            });
+            
             await _memoryCache.GetOrCreateAsync(conference.Id, entry =>
             {
                 entry.SlidingExpiration = TimeSpan.FromHours(4);

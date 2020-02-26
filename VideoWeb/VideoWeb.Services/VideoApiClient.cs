@@ -247,34 +247,34 @@ namespace VideoWeb.Services.Video
         /// <param name="conferenceId">Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<MessageResponse>> GetMessagesAsync(System.Guid conferenceId);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<InstantMessageResponse>> GetInstantMessageHistoryAsync(System.Guid conferenceId);
     
         /// <summary>Get all the chat messages for a conference</summary>
         /// <param name="conferenceId">Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Collections.Generic.List<MessageResponse> GetMessages(System.Guid conferenceId);
+        System.Collections.Generic.List<InstantMessageResponse> GetInstantMessageHistory(System.Guid conferenceId);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get all the chat messages for a conference</summary>
         /// <param name="conferenceId">Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<MessageResponse>> GetMessagesAsync(System.Guid conferenceId, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<InstantMessageResponse>> GetInstantMessageHistoryAsync(System.Guid conferenceId, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Saves chat message exchanged between participants</summary>
         /// <param name="conferenceId">Id of the conference</param>
         /// <param name="body">Details of the chat message</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task SaveMessageAsync(System.Guid conferenceId, AddMessageRequest body);
+        System.Threading.Tasks.Task AddInstantMessageToConferenceAsync(System.Guid conferenceId, AddInstantMessageRequest body);
     
         /// <summary>Saves chat message exchanged between participants</summary>
         /// <param name="conferenceId">Id of the conference</param>
         /// <param name="body">Details of the chat message</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        void SaveMessage(System.Guid conferenceId, AddMessageRequest body);
+        void AddInstantMessageToConference(System.Guid conferenceId, AddInstantMessageRequest body);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Saves chat message exchanged between participants</summary>
@@ -282,7 +282,7 @@ namespace VideoWeb.Services.Video
         /// <param name="body">Details of the chat message</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task SaveMessageAsync(System.Guid conferenceId, AddMessageRequest body, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task AddInstantMessageToConferenceAsync(System.Guid conferenceId, AddInstantMessageRequest body, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Add participants to a conference</summary>
         /// <param name="conferenceId">The id of the conference to add participants to</param>
@@ -393,6 +393,47 @@ namespace VideoWeb.Services.Video
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<TestCallScoreResponse> GetIndependentTestCallResultAsync(System.Guid? participantId, System.Threading.CancellationToken cancellationToken);
+    
+        /// <summary>Get the Heartbeat Data For Participant</summary>
+        /// <param name="conferenceId">The id of the conference</param>
+        /// <param name="participantId">The id of the participant</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<ParticipantHeartbeatResponse> GetHeartbeatDataForParticipantAsync(System.Guid conferenceId, System.Guid participantId);
+    
+        /// <summary>Get the Heartbeat Data For Participant</summary>
+        /// <param name="conferenceId">The id of the conference</param>
+        /// <param name="participantId">The id of the participant</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        ParticipantHeartbeatResponse GetHeartbeatDataForParticipant(System.Guid conferenceId, System.Guid participantId);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Get the Heartbeat Data For Participant</summary>
+        /// <param name="conferenceId">The id of the conference</param>
+        /// <param name="participantId">The id of the participant</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<ParticipantHeartbeatResponse> GetHeartbeatDataForParticipantAsync(System.Guid conferenceId, System.Guid participantId, System.Threading.CancellationToken cancellationToken);
+    
+        /// <summary>Post the Heartbeat Data For Participant</summary>
+        /// <param name="body">The AddHeartbeatRequest</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task SaveHeartbeatDataForParticipantAsync(System.Guid conferenceId, System.Guid participantId, AddHeartbeatRequest body);
+    
+        /// <summary>Post the Heartbeat Data For Participant</summary>
+        /// <param name="body">The AddHeartbeatRequest</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        void SaveHeartbeatDataForParticipant(System.Guid conferenceId, System.Guid participantId, AddHeartbeatRequest body);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Post the Heartbeat Data For Participant</summary>
+        /// <param name="body">The AddHeartbeatRequest</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task SaveHeartbeatDataForParticipantAsync(System.Guid conferenceId, System.Guid participantId, AddHeartbeatRequest body, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get the pexip service configuration.</summary>
         /// <returns>Success</returns>
@@ -1713,18 +1754,18 @@ namespace VideoWeb.Services.Video
         /// <param name="conferenceId">Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.List<MessageResponse>> GetMessagesAsync(System.Guid conferenceId)
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<InstantMessageResponse>> GetInstantMessageHistoryAsync(System.Guid conferenceId)
         {
-            return GetMessagesAsync(conferenceId, System.Threading.CancellationToken.None);
+            return GetInstantMessageHistoryAsync(conferenceId, System.Threading.CancellationToken.None);
         }
     
         /// <summary>Get all the chat messages for a conference</summary>
         /// <param name="conferenceId">Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public System.Collections.Generic.List<MessageResponse> GetMessages(System.Guid conferenceId)
+        public System.Collections.Generic.List<InstantMessageResponse> GetInstantMessageHistory(System.Guid conferenceId)
         {
-            return System.Threading.Tasks.Task.Run(async () => await GetMessagesAsync(conferenceId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+            return System.Threading.Tasks.Task.Run(async () => await GetInstantMessageHistoryAsync(conferenceId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -1732,13 +1773,13 @@ namespace VideoWeb.Services.Video
         /// <param name="conferenceId">Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.List<MessageResponse>> GetMessagesAsync(System.Guid conferenceId, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<InstantMessageResponse>> GetInstantMessageHistoryAsync(System.Guid conferenceId, System.Threading.CancellationToken cancellationToken)
         {
             if (conferenceId == null)
                 throw new System.ArgumentNullException("conferenceId");
     
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/{conferenceId}/messages");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/{conferenceId}/instantmessages");
             urlBuilder_.Replace("{conferenceId}", System.Uri.EscapeDataString(ConvertToString(conferenceId, System.Globalization.CultureInfo.InvariantCulture)));
     
             var client_ = _httpClient;
@@ -1769,7 +1810,7 @@ namespace VideoWeb.Services.Video
                         var status_ = ((int)response_.StatusCode).ToString();
                         if (status_ == "200") 
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<MessageResponse>>(response_, headers_).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<InstantMessageResponse>>(response_, headers_).ConfigureAwait(false);
                             return objectResponse_.Object;
                         }
                         else
@@ -1791,7 +1832,7 @@ namespace VideoWeb.Services.Video
                             throw new VideoApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
-                        return default(System.Collections.Generic.List<MessageResponse>);
+                        return default(System.Collections.Generic.List<InstantMessageResponse>);
                     }
                     finally
                     {
@@ -1810,9 +1851,9 @@ namespace VideoWeb.Services.Video
         /// <param name="body">Details of the chat message</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task SaveMessageAsync(System.Guid conferenceId, AddMessageRequest body)
+        public System.Threading.Tasks.Task AddInstantMessageToConferenceAsync(System.Guid conferenceId, AddInstantMessageRequest body)
         {
-            return SaveMessageAsync(conferenceId, body, System.Threading.CancellationToken.None);
+            return AddInstantMessageToConferenceAsync(conferenceId, body, System.Threading.CancellationToken.None);
         }
     
         /// <summary>Saves chat message exchanged between participants</summary>
@@ -1820,9 +1861,9 @@ namespace VideoWeb.Services.Video
         /// <param name="body">Details of the chat message</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public void SaveMessage(System.Guid conferenceId, AddMessageRequest body)
+        public void AddInstantMessageToConference(System.Guid conferenceId, AddInstantMessageRequest body)
         {
-            System.Threading.Tasks.Task.Run(async () => await SaveMessageAsync(conferenceId, body, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+            System.Threading.Tasks.Task.Run(async () => await AddInstantMessageToConferenceAsync(conferenceId, body, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -1831,13 +1872,13 @@ namespace VideoWeb.Services.Video
         /// <param name="body">Details of the chat message</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task SaveMessageAsync(System.Guid conferenceId, AddMessageRequest body, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task AddInstantMessageToConferenceAsync(System.Guid conferenceId, AddInstantMessageRequest body, System.Threading.CancellationToken cancellationToken)
         {
             if (conferenceId == null)
                 throw new System.ArgumentNullException("conferenceId");
     
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/{conferenceId}/messages");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/{conferenceId}/instantmessages");
             urlBuilder_.Replace("{conferenceId}", System.Uri.EscapeDataString(ConvertToString(conferenceId, System.Globalization.CultureInfo.InvariantCulture)));
     
             var client_ = _httpClient;
@@ -2410,6 +2451,214 @@ namespace VideoWeb.Services.Video
                         }
             
                         return default(TestCallScoreResponse);
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Get the Heartbeat Data For Participant</summary>
+        /// <param name="conferenceId">The id of the conference</param>
+        /// <param name="participantId">The id of the participant</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task<ParticipantHeartbeatResponse> GetHeartbeatDataForParticipantAsync(System.Guid conferenceId, System.Guid participantId)
+        {
+            return GetHeartbeatDataForParticipantAsync(conferenceId, participantId, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Get the Heartbeat Data For Participant</summary>
+        /// <param name="conferenceId">The id of the conference</param>
+        /// <param name="participantId">The id of the participant</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public ParticipantHeartbeatResponse GetHeartbeatDataForParticipant(System.Guid conferenceId, System.Guid participantId)
+        {
+            return System.Threading.Tasks.Task.Run(async () => await GetHeartbeatDataForParticipantAsync(conferenceId, participantId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Get the Heartbeat Data For Participant</summary>
+        /// <param name="conferenceId">The id of the conference</param>
+        /// <param name="participantId">The id of the participant</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task<ParticipantHeartbeatResponse> GetHeartbeatDataForParticipantAsync(System.Guid conferenceId, System.Guid participantId, System.Threading.CancellationToken cancellationToken)
+        {
+            if (conferenceId == null)
+                throw new System.ArgumentNullException("conferenceId");
+    
+            if (participantId == null)
+                throw new System.ArgumentNullException("participantId");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/{conferenceId}/participant/{participantId}/heartbeatrecent");
+            urlBuilder_.Replace("{conferenceId}", System.Uri.EscapeDataString(ConvertToString(conferenceId, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{participantId}", System.Uri.EscapeDataString(ConvertToString(participantId, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ParticipantHeartbeatResponse>(response_, headers_).ConfigureAwait(false);
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == "404") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Not Found", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new VideoApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new VideoApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+            
+                        return default(ParticipantHeartbeatResponse);
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Post the Heartbeat Data For Participant</summary>
+        /// <param name="body">The AddHeartbeatRequest</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task SaveHeartbeatDataForParticipantAsync(System.Guid conferenceId, System.Guid participantId, AddHeartbeatRequest body)
+        {
+            return SaveHeartbeatDataForParticipantAsync(conferenceId, participantId, body, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Post the Heartbeat Data For Participant</summary>
+        /// <param name="body">The AddHeartbeatRequest</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public void SaveHeartbeatDataForParticipant(System.Guid conferenceId, System.Guid participantId, AddHeartbeatRequest body)
+        {
+            System.Threading.Tasks.Task.Run(async () => await SaveHeartbeatDataForParticipantAsync(conferenceId, participantId, body, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Post the Heartbeat Data For Participant</summary>
+        /// <param name="body">The AddHeartbeatRequest</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task SaveHeartbeatDataForParticipantAsync(System.Guid conferenceId, System.Guid participantId, AddHeartbeatRequest body, System.Threading.CancellationToken cancellationToken)
+        {
+            if (conferenceId == null)
+                throw new System.ArgumentNullException("conferenceId");
+    
+            if (participantId == null)
+                throw new System.ArgumentNullException("participantId");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/{conferenceId}/participant/{participantId}/heartbeat");
+            urlBuilder_.Replace("{conferenceId}", System.Uri.EscapeDataString(ConvertToString(conferenceId, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{participantId}", System.Uri.EscapeDataString(ConvertToString(participantId, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body, _settings.Value));
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("POST");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "204") 
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == "404") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Not Found", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "400") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Bad Request", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new VideoApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new VideoApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
                     }
                     finally
                     {
@@ -3128,24 +3377,6 @@ namespace VideoWeb.Services.Video
     
     }
     
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
-    public partial class MessageResponse 
-    {
-        [Newtonsoft.Json.JsonProperty("from", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string From { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("to", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string To { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("message_text", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Message_text { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("time_stamp", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTime Time_stamp { get; set; }
-    
-    
-    }
-    
     /// <summary>Detailed information for a conference</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
     public partial class ConferenceDetailsResponse 
@@ -3188,10 +3419,6 @@ namespace VideoWeb.Services.Video
     
         [Newtonsoft.Json.JsonProperty("hearing_venue_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Hearing_venue_name { get; set; }
-    
-        /// <summary>List of chat messages</summary>
-        [Newtonsoft.Json.JsonProperty("messages", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.List<MessageResponse> Messages { get; set; }
     
     
     }
@@ -3516,7 +3743,22 @@ namespace VideoWeb.Services.Video
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
-    public partial class AddMessageRequest 
+    public partial class InstantMessageResponse 
+    {
+        [Newtonsoft.Json.JsonProperty("from", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string From { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("message_text", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Message_text { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("time_stamp", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime Time_stamp { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class AddInstantMessageRequest 
     {
         /// <summary>Username of the sender</summary>
         [Newtonsoft.Json.JsonProperty("from", Required = Newtonsoft.Json.Required.AllowNull)]
@@ -3550,6 +3792,60 @@ namespace VideoWeb.Services.Video
         /// <summary>Representee</summary>
         [Newtonsoft.Json.JsonProperty("representee", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Representee { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class ParticipantHeartbeatResponse 
+    {
+        [Newtonsoft.Json.JsonProperty("recent_packet_loss", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double Recent_packet_loss { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("browser_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Browser_name { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("browser_version", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Browser_version { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("timestamp", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime Timestamp { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class AddHeartbeatRequest 
+    {
+        [Newtonsoft.Json.JsonProperty("outgoing_audio_percentage_lost", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double Outgoing_audio_percentage_lost { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("outgoing_audio_percentage_lost_recent", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double Outgoing_audio_percentage_lost_recent { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("incoming_audio_percentage_lost", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double Incoming_audio_percentage_lost { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("incoming_audio_percentage_lost_recent", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double Incoming_audio_percentage_lost_recent { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("outgoing_video_percentage_lost", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double Outgoing_video_percentage_lost { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("outgoing_video_percentage_lost_recent", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double Outgoing_video_percentage_lost_recent { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("incoming_video_percentage_lost", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double Incoming_video_percentage_lost { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("incoming_video_percentage_lost_recent", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double Incoming_video_percentage_lost_recent { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("browser_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Browser_name { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("browser_version", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Browser_version { get; set; }
     
     
     }

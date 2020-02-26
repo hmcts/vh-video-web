@@ -1,8 +1,8 @@
 <div class="task-header" [style.width.px]="taskDivWidth">
   <span class="govuk-!-padding-2 govuk-!-padding-left-4 govuk-heading-s">Alerts for this hearing</span>
 </div>
-<div id="tasks-list" [style.width.px]="taskDivWidth">
-  <div *ngFor="let task of tasks" class="govuk-grid-row">
+<div id="tasks-list" style="overflow: auto; height: xyz;" class="task-list" [style.width.px]="taskDivWidth">
+  <div *ngFor="let task of tasks" class="govuk-grid-row govuk-!-margin-0">
     <div class="govuk-grid-column-one-quarter task-checkbox-and-time">
       <div class="govuk-checkboxes__item">
         <input class="govuk-checkboxes__input" type="checkbox" [checked]="task.status === 'Done'"
@@ -13,7 +13,8 @@
       </div>
     </div>
     <div class="govuk-grid-column-one-quarter task-body">
-      <p class="govuk-body govuk-body-s pending-alert-text" [ngClass]="{'task-completed': task.status === 'Done'}">{{task.body}}
+      <p class="govuk-body govuk-body-s pending-alert-text" [ngClass]="{'task-completed': task.status === 'Done'}">
+        {{task.body}}
       </p>
     </div>
     <div class="govuk-grid-column-one-quarter task-origin">
@@ -21,8 +22,9 @@
       </p>
     </div>
     <div class="govuk-grid-column-one-quarter task-updated">
-      <p class="govuk-body-s" [ngClass]="{'task-completed': task.status === 'Done'}">{{task.updated_by}} {{task.updated | date:'HH:mm'}}
-        </p>
+      <p class="govuk-body-s" [ngClass]="{'task-completed': task.status === 'Done'}">{{task.updated_by}}
+        {{task.updated | date:'HH:mm'}}
+      </p>
     </div>
   </div>
 </div>

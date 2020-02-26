@@ -47,13 +47,16 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheHearingsShouldBeInChronologicalOrder()
         {
             var displayedCaseOrder = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(VhoHearingListPage.VideoHearingsCaseNumbers);
-            displayedCaseOrder.First().Text.Should().Be(_c.Test.Case.Number);
+            var automationCaseNumberLength = _c.Test.Case.Number.Length;
+            var automationOnlyCases = displayedCaseOrder.Select(caseNumber => caseNumber.Text).Where(caseNumberText => caseNumberText.Length.Equals(automationCaseNumberLength) && caseNumberText.Contains("/")).ToList();
+            automationOnlyCases.Should().NotBeNullOrEmpty();
+            automationOnlyCases.First().Should().Be(_c.Test.Case.Number);
         }
 
         [Then(@"the Video Hearings Officer user should see a (.*) notification")]
         public void ThenTheVideoHearingsOfficerUserShouldSeeANotification(string notification)
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerAlertType(_c.Test.Case.Number)).Text.Should().Be(notification);
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.HearingStatusBadge(_c.Test.Conference.Id)).Text.Should().Be(notification);
         }
 
         [Then(@"the closedDate attribute should be populated")]
