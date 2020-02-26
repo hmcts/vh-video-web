@@ -1,5 +1,5 @@
 <div class="judge-chat-window govuk-!-margin-right-9">
-  <div class="chat-header" (click)="toggleChatDisplay()" >
+  <div class="chat-header" (click)="toggleChatDisplay()">
     <span class="govuk-heading-s govuk-!-padding-3 chat-header-text">Message video hearings officer
       <span *ngIf="!showChat && unreadMessageCount" id="unread-messages" class="notification-badge"
         [attr.data-badge]="unreadMessageCount"></span>
@@ -10,9 +10,9 @@
     </span>
   </div>
   <span *ngIf="showChat">
-    <div id="chat-list" style="overflow: auto; height: xyz;" #scrollMe [scrollTop]="scrollMe.scrollHeight"
-      class="govuk-!-padding-2 govuk-!-padding-left-4" [style.width.px]="sectionDivWidth" class="chat-window">
-      <span *ngFor="let message of messages" class="govuk-grid-row">
+    <div id="chat-list" #scrollMe [scrollTop]="scrollMe.scrollHeight" class="govuk-!-padding-2 govuk-!-padding-left-4"
+      class="chat-window">
+      <div *ngFor="let message of messages" class="govuk-grid-row message-container">
 
         <div class="govuk-grid-column-full" [ngClass]="(message.is_user)?'own-message':'other-message'">
           <p class="govuk-body govuk-!-margin-bottom-2">
@@ -22,7 +22,7 @@
           <p class="govuk-body chat-message">{{message.message}}</p>
         </div>
 
-      </span>
+      </div>
     </div>
 
     <div class="govuk-form-group chat-input-group">
