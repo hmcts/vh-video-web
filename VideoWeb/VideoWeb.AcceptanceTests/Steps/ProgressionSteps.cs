@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using TechTalk.SpecFlow;
@@ -81,6 +81,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Given(@"the (.*) user has progressed to the (.*) page for the existing hearing")]
+        [When(@"the (.*) user has progressed to the (.*) page for the existing hearing")]
         public void GivenHearingExistsAndIAmOnThePage(string user, string page)
         {
             _browserSteps.GivenANewBrowserIsOpenFor(user.ToLower().Equals("clerk self test") ? "clerk" : user);

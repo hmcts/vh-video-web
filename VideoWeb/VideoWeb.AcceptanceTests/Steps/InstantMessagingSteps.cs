@@ -32,7 +32,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenTheVhoInstantMessagesTheClerk()
         {
             _browserSteps.GivenInTheUsersBrowser("Video Hearings Officer");
-            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Conference.Id));
+            SelectTheHearing();
             SendNewMessage();
         }
 
@@ -46,18 +46,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the Clerk opens the chat window")]
         public void OpenChatWindow()
         {
+            _browserSteps.GivenInTheUsersBrowser("Clerk");
             _browsers[_c.CurrentUser.Key].Click(InstantMessagePage.OpenChat);
         }
 
-        [When(@"the Video Hearings Officer attempts to send an instant messages to the clerk who is not in the waiting room")]
-        public void WhenTheVhoInstantMessagesTheClerkWhoIsNotInTheWaitingRoom()
-        {
-            ScenarioContext.Current.Pending();
-        }
-
         [When(@"the Clerk closes the chat window")]
-        public void WhenTheClerkCloseTheChatWindow()
+        public void WhenTheClerkClosesTheChatWindow()
         {
+            _browserSteps.GivenInTheUsersBrowser("Clerk");
             _browsers[_c.CurrentUser.Key].Click(InstantMessagePage.CloseChat);
         }
 
@@ -71,7 +67,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheUserCanSeeTheMessage(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            var chatMessages = new GetChatMessages(_browsers[_c.CurrentUser.Key]).Fetch();
+            var chatMessages = new GetChatMessages(_browsers[_c.CurrentUser.Key]).WaitFor(_messages.Count).Fetch();
             chatMessages.Count.Should().BePositive();
             chatMessages.Last().Should().BeEquivalentTo(_messages.Last());
         }
@@ -88,7 +84,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheVideoHearingsOfficerCanSeeTheNotificationForTheMessage()
         {
             _browserSteps.GivenInTheUsersBrowser("Video Hearings Officer");
+            SelectTheHearing();
             NotificationAppears(1).Should().BeTrue();
+        }
+
+        private void SelectTheHearing()
+        {
+            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Conference.Id));
         }
 
         private void SendNewMessage()
@@ -96,7 +98,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var sender = _c.CurrentUser.Role.ToLower().Equals("clerk")? _c.CurrentUser.DisplayName : _c.CurrentUser.Firstname;
             _messages.Add(new ChatMessage()
             {
-                Message = $"{_c.CurrentUser.Lastname} is sending a message {Guid.NewGuid()}",
+                Message = Faker.Company.BS(),
                 Sender = sender,
                 Time = DateTime.Now.ToLocalTime().ToShortTimeString()
             });
