@@ -222,6 +222,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {
                     Row = i,
                     Checkbox = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertCheckboxes)[i],
+                    CheckboxEnabled = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertCheckboxes)[i].Enabled,
                     Timestamp = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertTimestamp)[i].Text,
                     AlertType = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertMessage)[i].Text.Trim(),
                     Username = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertByUser)[i].Text.Trim()
@@ -257,7 +258,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 var alerts = GetAlerts();
                 var alert = alerts.First(x => x.AlertType.ToLower().Contains(alertType.ToLower()));
-                if (alert.Checkbox.Enabled.Equals(false))
+                if (alert.CheckboxEnabled.Equals(false))
                 {
                     return;
                 }

@@ -1,4 +1,4 @@
-﻿using OpenQA.Selenium;
+using OpenQA.Selenium;
 
 namespace VideoWeb.AcceptanceTests.Helpers
 {
@@ -6,6 +6,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
     {
         public int Row { get; set; }
         public IWebElement Checkbox { get; set; }
+        public bool CheckboxEnabled { get; set; }
         public string Timestamp { get; set; }
         public string AlertType { get; set; }
         public string Username { get; set; }
