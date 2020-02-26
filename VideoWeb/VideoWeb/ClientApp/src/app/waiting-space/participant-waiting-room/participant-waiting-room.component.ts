@@ -300,11 +300,12 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     const participant = this.hearing
       .getConference()
       .participants.find(p => p.id === message.participantId);
+    const isMe = participant.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase();
     participant.status = message.status;
     this.logger.info(
       `Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}, Participant status : ${participant.status}`
     );
-    if (message.status !== ParticipantStatus.InConsultation) {
+    if (message.status !== ParticipantStatus.InConsultation && isMe) {
       this.isAdminConsultation = false;
     }
   }
