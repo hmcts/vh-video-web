@@ -93,10 +93,11 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private void SendNewMessage()
         {
+            var sender = _c.CurrentUser.Role.ToLower().Equals("clerk")? _c.CurrentUser.DisplayName : _c.CurrentUser.Firstname;
             _messages.Add(new ChatMessage()
             {
                 Message = $"{_c.CurrentUser.Lastname} is sending a message {Guid.NewGuid()}",
-                Sender = _c.CurrentUser.Firstname,
+                Sender = sender,
                 Time = DateTime.Now.ToLocalTime().ToShortTimeString()
             });
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(InstantMessagePage.SendNewMessageTextBox).SendKeys(_messages.Last().Message);
