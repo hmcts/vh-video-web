@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
@@ -13,6 +14,7 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public class InstantMessagingSteps
     {
+        private const int Timeout = 30;
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly BrowserSteps _browserSteps;
@@ -82,6 +84,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             int.Parse(newMessagesCount).Should().BePositive();
         }
 
+        [Then(@"the Video Hearings Officer can see the notification for the message")]
+        public void ThenTheVideoHearingsOfficerCanSeeTheNotificationForTheMessage()
+        {
+            _browserSteps.GivenInTheUsersBrowser("Video Hearings Officer");
+            NotificationAppears(1).Should().BeTrue();
+        }
+
         private void SendNewMessage()
         {
             _messages.Add(new ChatMessage()
@@ -90,9 +99,22 @@ namespace VideoWeb.AcceptanceTests.Steps
                 Sender = _c.CurrentUser.Firstname,
                 Time = DateTime.Now.ToLocalTime().ToShortTimeString()
             });
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(InstantMessagePage.SendNewMessageTextBox)
-                .SendKeys(_messages.Last().Message);
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(InstantMessagePage.SendNewMessageTextBox).SendKeys(_messages.Last().Message);
             _browsers[_c.CurrentUser.Key].Click(InstantMessagePage.SendNewMessageButton);
+        }
+
+        private bool NotificationAppears(int expected)
+        {
+            for (var i = 0; i < Timeout; i++)
+            {
+                var newMessagesCount = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(VhoHearingListPage.UnreadMessagesBadge(_c.Test.NewConferenceId)).Text.Trim();
+                if (int.Parse(newMessagesCount).Equals(expected))
+                {
+                    return true;
+                }
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+            }
+            return false;
         }
     }
 }

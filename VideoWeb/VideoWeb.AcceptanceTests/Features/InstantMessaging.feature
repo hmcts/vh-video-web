@@ -12,7 +12,8 @@ Scenario: Instant Messaging
   When the Clerk opens the chat window
 	Then the Clerk can see the message
 	When the Clerk instant messages the Video Hearings Officer
-  Then the Video Hearings Officer can see the message
+  Then the Video Hearings Officer can see the notification for the message
+  And the Video Hearings Officer can see the message
   When the Clerk closes the chat window
   Then the Clerk can no longer see the messages
 
