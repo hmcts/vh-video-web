@@ -47,7 +47,7 @@ namespace VideoWeb.Controllers
             _logger.LogDebug($"GetMessages for {conferenceId}");
             try
             {
-                var messages = await _videoApiClient.GetMessagesAsync(conferenceId);
+                var messages = await _videoApiClient.GetInstantMessageHistoryAsync(conferenceId);
                 if (!messages.Any())
                 {
                     return Ok(new List<ChatResponse>());
@@ -66,7 +66,7 @@ namespace VideoWeb.Controllers
         }
 
         private async Task<List<ChatResponse>> MapMessages(ChatResponseMapper mapper,
-            IList<MessageResponse> messages, Guid conferenceId)
+            IList<InstantMessageResponse> messages, Guid conferenceId)
         {
             var response = new List<ChatResponse>();
             if (!messages.Any())

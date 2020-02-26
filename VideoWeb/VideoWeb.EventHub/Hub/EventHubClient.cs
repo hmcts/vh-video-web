@@ -137,7 +137,7 @@ namespace VideoWeb.EventHub.Hub
             var timestamp = DateTime.UtcNow;
             
             await Clients.Group(conferenceId.ToString()).ReceiveMessage(conferenceId, from, message, timestamp);
-            await _videoApiClient.SaveMessageAsync(conferenceId, new AddMessageRequest
+            await _videoApiClient.AddInstantMessageToConferenceAsync(conferenceId, new AddInstantMessageRequest
             {
                 From = from,
                 Message_text = message

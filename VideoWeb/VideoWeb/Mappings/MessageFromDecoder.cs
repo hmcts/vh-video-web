@@ -17,9 +17,9 @@ namespace VideoWeb.Mappings
         /// <param name="conference">Conference with participants</param>
         /// <param name="message">Message to decode</param>
         /// <returns>name to display</returns>
-        Task<string> GetMessageOriginatorAsync(ConferenceDetailsResponse conference, MessageResponse message);
+        Task<string> GetMessageOriginatorAsync(ConferenceDetailsResponse conference, InstantMessageResponse message);
 
-        bool IsMessageFromUser(MessageResponse message, string loggedInUsername);
+        bool IsMessageFromUser(InstantMessageResponse message, string loggedInUsername);
     }
 
     public class MessageFromDecoder : IMessageDecoder
@@ -31,7 +31,8 @@ namespace VideoWeb.Mappings
             _userApiClient = userApiClient;
         }
 
-        public async Task<string> GetMessageOriginatorAsync(ConferenceDetailsResponse conference, MessageResponse message)
+        public async Task<string> GetMessageOriginatorAsync(ConferenceDetailsResponse conference,
+            InstantMessageResponse message)
         {
             var participant = conference.Participants.SingleOrDefault(x =>
                 x.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase));
@@ -39,11 +40,12 @@ namespace VideoWeb.Mappings
             {
                 return participant.Display_name;
             }
+
             var profile = await _userApiClient.GetUserByAdUserNameAsync(message.From);
             return profile.First_name;
         }
 
-        public bool IsMessageFromUser(MessageResponse message, string loggedInUsername)
+        public bool IsMessageFromUser(InstantMessageResponse message, string loggedInUsername)
         {
             return message.From.Equals(loggedInUsername, StringComparison.InvariantCultureIgnoreCase);
         }

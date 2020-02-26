@@ -101,10 +101,10 @@ namespace VideoWeb.Controllers
         [HttpGet("vhofficer")]
         [ProducesResponseType(typeof(List<ConferenceForVhOfficerResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-        [SwaggerOperation(OperationId = "GetConferencesForVHOfficer")]
-        public async Task<ActionResult<List<ConferenceForVhOfficerResponse>>> GetConferencesForVHOfficer()
+        [SwaggerOperation(OperationId = "GetConferencesForVhOfficer")]
+        public async Task<ActionResult<List<ConferenceForVhOfficerResponse>>> GetConferencesForVhOfficer()
         {
-            _logger.LogDebug("GetConferencesForVHOfficer");
+            _logger.LogDebug("GetConferencesForVhOfficer");
             try
             {
                 var username = User.Identity.Name.ToLower().Trim();
@@ -143,7 +143,7 @@ namespace VideoWeb.Controllers
         {
             if (!IsInStateToChat(conference)) return mapper.MapConferenceSummaryToResponseModel(conference, null);
 
-            var messages = await _videoApiClient.GetMessagesAsync(conference.Id);
+            var messages = await _videoApiClient.GetInstantMessageHistoryAsync(conference.Id);
             return mapper.MapConferenceSummaryToResponseModel(conference, messages);
         }
 

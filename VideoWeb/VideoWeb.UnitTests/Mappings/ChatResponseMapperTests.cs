@@ -23,7 +23,7 @@ namespace VideoWeb.UnitTests.Mappings
         {
             var username = "john@doe.com";
             var fromDisplayName = "Johnny";
-            var message = new MessageResponse
+            var message = new InstantMessageResponse
             {
                 From = username,
                 Message_text = "test message from john",

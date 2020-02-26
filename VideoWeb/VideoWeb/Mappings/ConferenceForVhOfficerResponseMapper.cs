@@ -8,7 +8,8 @@ namespace VideoWeb.Mappings
 {
     public class ConferenceForVhOfficerResponseMapper
     {
-        public ConferenceForVhOfficerResponse MapConferenceSummaryToResponseModel(ConferenceSummaryResponse conference, IList<MessageResponse> messageResponses)
+        public ConferenceForVhOfficerResponse MapConferenceSummaryToResponseModel(ConferenceSummaryResponse conference,
+            IList<InstantMessageResponse> messageResponses)
         {
             var response = new ConferenceForUserResponseMapper()
                 .MapConferenceSummaryToResponseModel<ConferenceForVhOfficerResponse>(conference);
@@ -28,7 +29,8 @@ namespace VideoWeb.Mappings
             return response;
         }
 
-        private static bool IsNonParticipantMessage(ConferenceSummaryResponse conference , MessageResponse message)
+        private static bool IsNonParticipantMessage(ConferenceSummaryResponse conference,
+            InstantMessageResponse message)
         {
             return !conference.Participants.Any(p =>
                 p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase));
