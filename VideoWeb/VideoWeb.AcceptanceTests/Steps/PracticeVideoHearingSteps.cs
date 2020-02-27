@@ -29,6 +29,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             _c = c;
         }
 
+        [Given(@"the practice video hearing video has started")]
+        public void ThePracticeVideoHearingVideoHasStarted()
+        {
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(PracticeVideoHearingPage.IncomingVideo, ExtraTimeoutToLoadVideoFromKinly).Displayed.Should().BeTrue();
+        }
+
         [When(@"the video has ended")]
         public void WhenTheVideoHasEnded()
         {
@@ -88,7 +94,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         public void ProgressToNextPage()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(PracticeVideoHearingPage.IncomingVideo, ExtraTimeoutToLoadVideoFromKinly).Displayed.Should().BeTrue();
+            ThePracticeVideoHearingVideoHasStarted();
             _browsers[_c.CurrentUser.Key].ScrollTo(PracticeVideoHearingPage.SkipLink);
             _browsers[_c.CurrentUser.Key].ClickLink(PracticeVideoHearingPage.SkipLink);
         }
