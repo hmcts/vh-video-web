@@ -5,7 +5,8 @@ namespace VideoWeb.AcceptanceTests.Pages
 {
     public static class VhoHearingListPage
     {
-        public static By VideoHearingsCaseNumbers => By.XPath("//*[contains(@id, 'case-number')]");
+        public static By VideoHearingsCaseName(Guid conferenceId) => By.Id($"{conferenceId:D}-case-name");
+        public static By VideoHearingsCaseNumbers = By.XPath("//*[contains(@id, 'case-number')]");
         public static By VideoHearingsOfficerTime(Guid conferenceId) => By.Id($"{conferenceId}-time");
         public static By VideoHearingsOfficerListedFor(Guid conferenceId) => By.Id($"{conferenceId}-duration");
 

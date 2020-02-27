@@ -11,10 +11,10 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Configuration;
 using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Data.TestData;
-using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
+using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
 
 namespace VideoWeb.AcceptanceTests.Hooks
 {
@@ -87,6 +87,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 CommonData = new LoadXmlFile().SerialiseCommonData(),
                 Conference = new ConferenceDetailsResponse(),
                 ConferenceParticipants = new List<ParticipantDetailsResponse>(),
+                Conferences = new List<ConferenceDetailsResponse>(),
                 Hearing = new HearingDetailsResponse(),
                 HearingParticipants = new List<ParticipantResponse>(),
                 NewConferenceId = Guid.Empty,
