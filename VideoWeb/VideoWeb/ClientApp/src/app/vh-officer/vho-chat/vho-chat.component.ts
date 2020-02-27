@@ -1,4 +1,4 @@
-import { Component, HostListener, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, NgZone, OnDestroy, OnInit, EventEmitter, Output } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { AdalService } from 'adal-angular4';
 import { ProfileService } from 'src/app/services/api/profile.service';
@@ -6,6 +6,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
+import { ConferenceUnreadMessageCount } from './vho-conference-unread_message-count.model';
 
 @Component({
     selector: 'app-vho-chat',
@@ -16,6 +17,8 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
     sectionDivWidth: number;
 
     newMessageBody: FormControl;
+
+    @Output() unreadMessageCount = new EventEmitter<ConferenceUnreadMessageCount>();
 
     @HostListener('window:resize', ['$event'])
     onResize(event) {
@@ -40,7 +43,7 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
     }
 
     initForm() {
-        this.newMessageBody = new FormControl(null, [Validators.required, Validators.minLength(1)]);
+        this.newMessageBody = new FormControl(null, [Validators.required, Validators.minLength(1), Validators.maxLength(256)]);
     }
 
     updateDivWidthForSection(): void {
@@ -52,6 +55,9 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
     }
 
     sendMessage() {
+        if (this.newMessageBody.invalid) {
+            return;
+        }
         const messageBody = this.newMessageBody.value;
         this.newMessageBody.reset();
         this.eventService.sendMessage(this._hearing.id, messageBody);

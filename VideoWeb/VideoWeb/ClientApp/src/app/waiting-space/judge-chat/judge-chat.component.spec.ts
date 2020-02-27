@@ -22,6 +22,7 @@ describe('JudgeChatComponent', () => {
     let adalService: MockAdalService;
     let profileService: MockProfileService;
     const conference = new ConferenceTestData().getConferenceDetail();
+    const judgeUsername = 'judge.fudge@hearings.net';
 
     configureTestSuite(() => {
         TestBed.configureTestingModule({
@@ -41,10 +42,13 @@ describe('JudgeChatComponent', () => {
         eventService = TestBed.get(EventsService);
         adalService = TestBed.get(AdalService);
         profileService = TestBed.get(ProfileService);
+
+        adalService.userInfo.userName = judgeUsername;
+
         fixture = TestBed.createComponent(JudgeChatComponent);
         component = fixture.componentInstance;
         component.conference = conference;
-        component.messages = new ConferenceTestData().getChatHistory();
+        component.messages = new ConferenceTestData().getChatHistory(judgeUsername);
         fixture.detectChanges();
     });
 
@@ -99,11 +103,38 @@ describe('JudgeChatComponent', () => {
         done();
     });
 
+    it('should not send message when validation fails', () => {
+        spyOn(eventService, 'sendMessage').and.callFake(() => {
+            return Promise.resolve();
+        });
+        component.newMessageBody.setValue('');
+        const event = new KeyboardEvent('keydown', {
+            key: 'Enter'
+        });
+
+        component.onKeydown(event);
+        expect(eventService.sendMessage).toHaveBeenCalledTimes(0);
+    });
+
     it('should get first name when message from user not in conference', async () => {
         await fixture.whenStable();
         const username = 'vhofficer.hearings.net';
         const expectedFirstName = profileService.mockProfile.first_name;
         const from = await component.assignMessageFrom(username);
         expect(from).toBe(expectedFirstName);
+    });
+
+    it('should reset unread counter to number of messages since judge replied', () => {
+        const messages = new ConferenceTestData().getChatHistory(judgeUsername);
+        const count = component.getCountSinceUsersLastMessage(messages);
+        expect(count).toBe(1);
+    });
+
+    it('should reset unread counter to number of messages since user never replied', () => {
+        const othername = 'never@sent.com';
+        adalService.userInfo.userName = judgeUsername;
+        const messages = new ConferenceTestData().getChatHistory(othername);
+        const count = component.getCountSinceUsersLastMessage(messages);
+        expect(count).toBe(messages.length);
     });
 });

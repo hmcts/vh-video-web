@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
+using OpenQA.Selenium;
 using RestSharp;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Builders;
@@ -24,6 +26,7 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public sealed class HearingAlertsSteps
     {
+        private const int Timeout = 10;
         private const string ParticipantKey = "participant";
         private const string AlertTimeKey = "alert time";
         private readonly Dictionary<string, UserBrowser> _browsers;
@@ -116,7 +119,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var alerts = GetAlerts();
             var alert = alerts.First(x => x.AlertType.ToLower().Contains(alertType.ToLower()));
-            _browsers[_c.CurrentUser.Key].Click(AdminPanelPage.AlertCheckbox(alert.Row + 1));
+            _browsers[_c.CurrentUser.Key].ClickCheckbox(AdminPanelPage.AlertCheckbox(alert.Row + 1));
         }
 
         [When(@"the hearing has been closed")]
@@ -139,7 +142,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheVideoHearingsOfficerUserShouldNotSeeAnAlert()
         {
             _browsers[_c.CurrentUser.Key].Refresh();
-            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number));
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Conference.Id)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(AdminPanelPage.AlertsHeader).Should().BeTrue("Alerts box should not be visible.");
         }
 
@@ -147,9 +150,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheVideoHearingsOfficerUserShouldSeeAnAlert(string notification, string alertType)
         {
             _browsers[_c.CurrentUser.Key].Refresh();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerNumberOfAlerts(_c.Test.Case.Number)).Text.Should().Contain("Alert");
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerAlertType(_c.Test.Case.Number)).Text.Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
-            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number));
+            _browsers[_c.CurrentUser.Key].Driver.WaitForAngular();
+            var alertCount =_browsers[_c.CurrentUser.Key].Driver
+                .WaitUntilElementExists(VhoHearingListPage.VideoHearingsOfficerNumberOfAlerts(_c.Test.Conference.Id))
+                .GetAttribute("data-badge");
+            int.Parse(alertCount).Should().BePositive();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.HearingStatusBadge(_c.Test.Conference.Id)).Text.Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Conference.Id)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
 
             var alerts = GetAlerts();
@@ -160,7 +167,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             foreach (var alert in alerts)
             {
                 alert.Checkbox.Selected.Should().BeFalse();
-                alert.Checkbox.Enabled.Should().BeTrue();                
+                alert.Checkbox.Enabled.Should().BeTrue();
                 alert.Timestamp.Should().Match<string>(t=> t.Equals(timeOfAlert) || t.Equals(timeOfAlertMinusAMinute) || t.Equals(timeOfAlertPlusAMinute));
             }
 
@@ -176,9 +183,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the (.*) checkbox is no longer enabled")]
         public void ThenTheCheckboxIsNoLongerEnabled(string alertType)
         {
-            var alerts = GetAlerts();
-            var alert = alerts.First(x => x.AlertType.ToLower().Contains(alertType.ToLower()));
-            alert.Checkbox.Enabled.Should().BeFalse();
+            CheckboxShouldBeDisabled(alertType);
         }
 
         [Then(@"the Video Hearings Officer should only see (.*) hearing")]
@@ -217,6 +222,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {
                     Row = i,
                     Checkbox = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertCheckboxes)[i],
+                    CheckboxEnabled = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertCheckboxes)[i].Enabled,
                     Timestamp = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertTimestamp)[i].Text,
                     AlertType = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertMessage)[i].Text.Trim(),
                     Username = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertByUser)[i].Text.Trim()
@@ -244,6 +250,22 @@ namespace VideoWeb.AcceptanceTests.Steps
             _scenarioContext.Add(AlertTimeKey, DateTime.Now);
             _c.Tokens.CallbackBearerToken = GenerateTemporaryTokens.SetCustomJwTokenForCallback(_c.VideoWebConfig.VideoWebCustomTokenSettings);
             return new VideoWebApiManager(_c.VideoWebConfig.VhServices.VideoWebUrl, _c.Tokens.CallbackBearerToken).SendCallBackEvent(request);
+        }
+
+        private void CheckboxShouldBeDisabled(string alertType)
+        {
+            for (var i = 0; i < Timeout; i++)
+            {
+                var alerts = GetAlerts();
+                var alert = alerts.First(x => x.AlertType.ToLower().Contains(alertType.ToLower()));
+                if (alert.CheckboxEnabled.Equals(false))
+                {
+                    return;
+                }
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+            }
+
+            throw new InvalidElementStateException($"Alert is still enabled after {Timeout} seconds.");
         }
     }
 }

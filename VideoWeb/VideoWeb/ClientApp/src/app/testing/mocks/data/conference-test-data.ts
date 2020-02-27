@@ -10,9 +10,11 @@ import {
     TaskType,
     SelfTestPexipResponse,
     TaskUserResponse,
-    ChatResponse
+    ChatResponse,
+    ConferenceForVhOfficerResponse
 } from 'src/app/services/clients/api-client';
 import { HearingsFilter, StatusFilter, ListFilter, AlertsStatus, AlertFilter } from '../../../shared/models/hearings-filter';
+import * as moment from 'moment';
 
 export class ConferenceTestData {
     getConferenceNow(): ConferenceForUserResponse {
@@ -75,6 +77,17 @@ export class ConferenceTestData {
 
     getTestData(): Array<ConferenceForUserResponse> {
         const testData: Array<ConferenceForUserResponse> = [];
+        const conference1 = this.getConferenceNow();
+        const conference2 = this.getConferencePast();
+        const conference3 = this.getConferenceFuture();
+        testData.push(conference1);
+        testData.push(conference2);
+        testData.push(conference3);
+        return testData;
+    }
+
+    getVhoTestData(): Array<ConferenceForVhOfficerResponse> {
+        const testData: Array<ConferenceForVhOfficerResponse> = [];
         const conference1 = this.getConferenceNow();
         const conference2 = this.getConferencePast();
         const conference3 = this.getConferenceFuture();
@@ -270,22 +283,48 @@ export class ConferenceTestData {
         return filter;
     }
 
-    getChatHistory(): ChatResponse[] {
+    getChatHistory(loggedInUser: string): ChatResponse[] {
+        const now = new Date();
         const messages: ChatResponse[] = [];
         const message1 = new ChatResponse({
             from: 'vho.user@hearings.net',
             message: 'test message from vho',
-            timestamp: new Date(new Date().getUTCDate())
+            timestamp: moment(now)
+                .subtract(3, 'minutes')
+                .toDate()
         });
 
         const message2 = new ChatResponse({
             from: 'judge.fudge@hearings.net',
             message: 'test message from judge',
-            timestamp: new Date(new Date().getUTCDate())
+            timestamp: moment(now)
+                .subtract(5, 'minutes')
+                .toDate()
+        });
+
+        const message3 = new ChatResponse({
+            from: 'vho.user@hearings.net',
+            message: 'test message from vho 2',
+            timestamp: moment(now)
+                .subtract(8, 'minutes')
+                .toDate()
+        });
+
+        const message4 = new ChatResponse({
+            from: 'vho.user@hearings.net',
+            message: 'test message from vho 3',
+            timestamp: moment(now)
+                .subtract(10, 'minutes')
+                .toDate()
         });
 
         messages.push(message1);
         messages.push(message2);
+        messages.push(message3);
+        messages.push(message4);
+        messages.forEach(m => {
+            m.is_user = m.from.toLocaleLowerCase() === loggedInUser.toLocaleLowerCase();
+        });
         return messages;
     }
 }

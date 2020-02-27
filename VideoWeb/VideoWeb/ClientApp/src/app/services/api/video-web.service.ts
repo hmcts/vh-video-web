@@ -12,7 +12,8 @@ import {
     UpdateParticipantStatusEventRequest,
     SelfTestPexipResponse,
     HearingVenueResponse,
-    ChatResponse
+    ChatResponse,
+    ConferenceForVhOfficerResponse
 } from '../clients/api-client';
 import { Observable } from 'rxjs';
 
@@ -30,7 +31,7 @@ export class VideoWebService {
         return this.apiClient.getConferencesForIndividual();
     }
 
-    getConferencesForVHOfficer(): Observable<ConferenceForUserResponse[]> {
+    getConferencesForVHOfficer(): Observable<ConferenceForVhOfficerResponse[]> {
         return this.apiClient.getConferencesForVHOfficer();
     }
 

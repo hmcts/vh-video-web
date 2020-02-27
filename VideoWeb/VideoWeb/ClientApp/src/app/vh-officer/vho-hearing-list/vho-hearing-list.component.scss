@@ -76,14 +76,14 @@
 .tooltip-wrapper {
   /*position: relative;*/
   color: $govuk-link-colour;
-  white-space:nowrap;
+  white-space: nowrap;
 }
 
 .tooltip-wrapper:active {
   color: $govuk-link-hover-colour;
 }
 
- .tooltip {
+.tooltip {
   visibility: hidden;
   width: 215px;
   height: 20px;
@@ -119,7 +119,7 @@
   visibility: visible;
 }
 
- .tooltip::after {
+.tooltip::after {
   // content: " ";
   position: absolute;
   bottom: 100%;
@@ -142,7 +142,100 @@
 #tooltip-1 {
   animation: css 35s 36s forwards;
 }
-@keyframes css  { to { visibility: hidden; } }
-@-webkit-keyframes css  { to { overflow: hidden; } }
 
+@keyframes css {
+  to {
+    visibility: hidden;
+  }
+}
 
+@-webkit-keyframes css {
+  to {
+    overflow: hidden;
+  }
+}
+
+.notification-badge {
+  width: 45px;
+  height: 28px;
+  border-radius: 4px;
+  position: relative;
+  float: right;
+  text-align: center;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.notification-badge.has-messages {
+  background-color: govuk-colour("blue");
+}
+
+.notification-badge.no-messages {
+  background-color: govuk-colour("mid-grey");
+}
+
+.notification-badge:after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: 10px;
+  bottom: -10px;
+  border-left: 2px solid transparent;
+  border-right: 10px solid transparent;
+}
+
+.notification-badge.has-messages:after {
+  border-top: 10px solid govuk-colour("blue");
+}
+
+.notification-badge.no-messages:after {
+  border-top: 10px solid govuk-colour("mid-grey");
+}
+
+.notification-badge-counter.has-messages {
+  font-size: 0.8em;
+  text-align: center;
+  color: govuk-colour("white");
+}
+
+.notification-badge-counter.no-messages {
+  font-size: 0.8em;
+  text-align: center;
+  color: govuk-colour("mid-grey");
+}
+
+.alert-badge {
+  position: relative;
+  margin-left: 20px;
+  font-weight: bold;
+}
+
+.alert-badge[data-badge]:after {
+  position: absolute;
+  right: -35px;
+  color: govuk-colour("white");
+  width: 25px;
+  height: 25px;
+  font-size: 0.7em;
+  padding: 5px;
+  text-align: center;
+  line-height: 25px;
+  border-radius: 50%;
+  box-shadow: 0 0 1px #333;
+}
+
+.right-side {
+  float: right;
+}
+
+.has-alerts:after {
+  background: govuk-colour("red");
+  content: attr(data-badge);
+}
+
+.no-alerts:after {
+  background: govuk-colour("mid-grey");
+  content: "";
+}

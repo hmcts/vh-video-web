@@ -23,6 +23,7 @@ export class EventsService {
     private consultationMessageSubject = new Subject<ConsultationMessage>();
     private adminConsultationMessageSubject = new Subject<AdminConsultationMessage>();
     private messageSubject = new Subject<ChatResponse>();
+    private adminAnsweredChatSubject = new Subject<string>();
     private eventHubDisconnectSubject = new Subject();
     private eventHubReconnectSubject = new Subject();
 
@@ -141,6 +142,15 @@ export class EventsService {
         });
 
         return this.messageSubject.asObservable();
+    }
+
+    getAdminAnsweredChat(): Observable<string> {
+        this.connection.on('AdminAnsweredChat', (conferenceId: string) => {
+            this.logger.event('AdminAnsweredChat received', conferenceId);
+            this.adminAnsweredChatSubject.next(conferenceId);
+        });
+
+        return this.adminAnsweredChatSubject.asObservable();
     }
 
     async sendMessage(conferenceId: string, message: string) {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using AcceptanceTests.Common.PageObject.Helpers;
 using OpenQA.Selenium;
 
@@ -8,7 +8,7 @@ namespace VideoWeb.AcceptanceTests.Pages
     {
         public const string AdminIframeId = "admin-frame";
         public static By AlertsHeader = CommonLocators.ElementContainingText("Alerts for this hearing");
-        public static By AlertRows = By.XPath("//app-tasks-table//div[@class='govuk-grid-row']");
+        public static By AlertRows = By.XPath("//app-tasks-table//div[contains(@class,'govuk-grid-row')]");
         public static By AlertCheckboxes = By.XPath("//div[@id='tasks-list']//input");
         public static By AlertCheckbox(int row) => By.XPath($"(//div[@id='tasks-list']//input)[{row}]");
         public static By AlertTimestamp = CommonLocators.AlertCellText(":");

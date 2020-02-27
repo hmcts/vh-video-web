@@ -25,7 +25,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the VHO selects the hearing")]
         public void ProgressToNextPage()
         {
-            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Case.Number));
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Conference.Id)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
         }
 
@@ -35,9 +35,9 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.HearingWithCaseNumber(_c.Test.Case.Number)).Displayed.Should().BeTrue();
             var timespan = TimeSpan.FromMinutes(_c.Test.Hearing.Scheduled_duration);
             var listedFor = GetListedForTimeAsString(timespan);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerTime(_c.Test.Case.Number)).Text.Trim()
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerTime(_c.Test.Conference.Id)).Text.Trim()
                 .Should().Be($"{_c.Test.Hearing.Scheduled_date_time.ToLocalTime():HH:mm}");
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerListedFor(_c.Test.Case.Number)).Text.Trim()
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerListedFor(_c.Test.Conference.Id)).Text.Trim()
                 .Should().Be($"{listedFor}");
         }
 

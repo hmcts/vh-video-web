@@ -1,9 +1,8 @@
+using System;
 using System.Collections.Generic;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
-using System.Linq;
-using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using ConferenceUserRole = VideoWeb.Services.Video.UserRole;
@@ -18,7 +17,10 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_map_all_properties()
         {
-            var conference = Builder<ConferenceSummaryResponse>.CreateNew().Build();
+            var conference = Builder<ConferenceSummaryResponse>.CreateNew()
+                .With(x => x.Id = Guid.NewGuid())
+                .With(x => x.Hearing_ref_id = Guid.NewGuid())
+                .Build();
 
             var participants = new List<ParticipantSummaryResponse>
             {
@@ -60,37 +62,6 @@ namespace VideoWeb.UnitTests.Mappings
             response.Tasks.Count.Should().Be(1);
             response.Tasks[0].Id.Should().Be(1);
             response.Tasks[0].Body.Should().Be("self-test");
-        }
-
-        [Test]
-        public void Should_map_all_participants()
-        {
-            var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(2).Build().ToList();
-
-            var response = _mapper.MapParticipants(participants);
-
-            for (var index = 0; index < participants.Count; index++)
-            {
-                var participant = participants[index];
-                response[index].Username.Should().BeEquivalentTo(participant.Username);
-                response[index].DisplayName.Should().BeEquivalentTo(participant.Display_name);
-                response[index].Role.Should().BeEquivalentTo(participant.User_role);
-                response[index].Status.ToString().Should().BeEquivalentTo(participant.Status.ToString());
-                response[index].Representee.Should().BeEquivalentTo(participant.Representee);
-                response[index].CaseTypeGroup.Should().BeEquivalentTo(participant.Case_group);
-            }
-        }
-
-        [Test]
-        public void Should_map_all_participant_statuses()
-        {
-            var participantStatuses = Builder<ParticipantState>.CreateListOfSize(8).Build().ToList();
-
-            foreach (var participantStatus in participantStatuses)
-            {
-                var response = _mapper.MapParticipantStatus(participantStatus);
-                response.Should().BeOfType(typeof(ParticipantStatus));
-            }
         }
     }
 }

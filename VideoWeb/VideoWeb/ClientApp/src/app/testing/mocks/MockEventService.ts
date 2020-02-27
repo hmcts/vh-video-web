@@ -14,6 +14,7 @@ export class MockEventsService {
     nextConsultationMessage: ConsultationMessage;
     nextAdminConsultationMessage: AdminConsultationMessage;
     nextChatMessageMessage: ChatResponse;
+    nextAdminAnsweredChatMessage: string;
     nextJudgeStatusMessage: ParticipantStatusMessage;
 
     constructor() {
@@ -77,6 +78,10 @@ export class MockEventsService {
     }
 
     sendMessage(conferenceId: string, message: string) {}
+
+    getAdminAnsweredChat(): Observable<string> {
+        return of(this.nextAdminAnsweredChatMessage);
+    }
 }
 
 export class MockEventsNonHttpService {
