@@ -5,7 +5,6 @@ import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceForVhOfficerResponse,
-    ConferenceResponse,
     ParticipantResponse,
     ParticipantStatus,
     TaskResponse,

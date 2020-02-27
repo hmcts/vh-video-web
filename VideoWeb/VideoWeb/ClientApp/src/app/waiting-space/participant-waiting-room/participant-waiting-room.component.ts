@@ -258,7 +258,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.eventService.getServiceDisconnected().subscribe(() => {
             this.ngZone.run(() => {
                 this.logger.info(`EventHub disconnection for ${this.participant.id} in conference ${this.hearing.id}`);
-                this.getConference();
+                this.getConference().then(() => this.updateShowVideo());
             });
         });
 
@@ -266,7 +266,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.eventService.getServiceReconnected().subscribe(() => {
             this.ngZone.run(() => {
                 this.logger.info(`EventHub re-connected for ${this.participant.id} in conference ${this.hearing.id}`);
-                this.getConference();
+                this.getConference().then(() => this.updateShowVideo());
             });
         });
     }
