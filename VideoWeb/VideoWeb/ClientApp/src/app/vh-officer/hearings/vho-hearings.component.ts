@@ -234,21 +234,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
                 this.errorService.handleApiError(error);
             }
         }
-        // .subscribe(
-        //     (data: ConferenceResponse) => {
-        //         this.selectedHearing = new Hearing(data);
-        //         this.participants = data.participants;
-        //         this.sanitiseAndLoadIframe();
-        //         this.getTasksForConference(conferenceId);
-        //         this.getJudgeStatusDetails();
-        //     },
-        //     error => {
-        //         this.logger.error(`There was an error when selecting conference ${conferenceId}`, error);
-        //         if (!this.errorService.returnHomeIfUnauthorised(error)) {
-        //             this.errorService.handleApiError(error);
-        //         }
-        //     }
-        // );
     }
 
     isCurrentConference(conference: ConferenceForVhOfficerResponse): boolean {
