@@ -132,6 +132,22 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.SignInButton(_c.Test.Case.Number), ToleranceInMinutes * 60).Displayed.Should().BeTrue();
         }
 
+        [Then(@"the Video Hearings Officer should only see hearings for today")]
+        public void ThenTheVideoHearingsOfficerShouldOnlySeeHearingsForToday()
+        {
+            foreach (var conference in _c.Test.Conferences)
+            {
+                if (conference.Scheduled_date_time.ToLocalTime().Day.Equals(DateTime.Now.ToLocalTime().Day))
+                {
+                    _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsCaseName(conference.Id)).Displayed.Should().BeTrue();
+                }
+                else
+                {
+                    _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(VhoHearingListPage.VideoHearingsCaseName(conference.Id)).Should().BeTrue();
+                }
+            }
+        }
+
         private static void ParticipantsDisplayed(IEnumerable<ParticipantResponse> participants, HearingRow rowData)
         {
            foreach (var participant in participants)

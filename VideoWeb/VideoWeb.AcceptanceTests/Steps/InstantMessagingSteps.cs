@@ -30,7 +30,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [When(@"the Video Hearings Officer instant messages the Clerk")]
-        public void WhenTheVhoInstantMessagesTheClerk()
+        public void TheVhoInstantMessagesTheClerk()
         {
             _browserSteps.GivenInTheUsersBrowser("Video Hearings Officer");
             SelectTheHearing();
@@ -38,7 +38,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [When(@"the Clerk instant messages the Video Hearings Officer")]
-        public void WhenTheClerkInstantMessagesTheVideoHearingsOfficer()
+        public void TheClerkInstantMessagesTheVideoHearingsOfficer()
         {
             _browserSteps.GivenInTheUsersBrowser("Clerk");
             SendNewMessage();
@@ -89,6 +89,23 @@ namespace VideoWeb.AcceptanceTests.Steps
             NotificationAppears(1).Should().BeTrue();
         }
 
+        [When(@"the participants send (.*) messages to each other")]
+        public void WhenTheParticipantsSendMultipleMessagesToEachOther(int numberOfMessagesAndReplies)
+        {
+            for (var i = 0; i < numberOfMessagesAndReplies; i++)
+            {
+                TheVhoInstantMessagesTheClerk();
+                TheClerkInstantMessagesTheVideoHearingsOfficer();
+            }
+        }
+
+        [Then(@"they can see all the messages")]
+        public void ThenTheyCanSeeAllTheMessages()
+        {
+            CheckMessagesAreAllDisplayed("Clerk");
+            CheckMessagesAreAllDisplayed("Video Hearings Officer");
+        }
+
         private void SelectTheHearing()
         {
             _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Conference.Id));
@@ -105,6 +122,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             });
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(InstantMessagePage.SendNewMessageTextBox).SendKeys(_messages.Last().Message);
             _browsers[_c.CurrentUser.Key].Click(InstantMessagePage.SendNewMessageButton);
+        }
+
+        private void CheckMessagesAreAllDisplayed(string user)
+        {
+            _browserSteps.GivenInTheUsersBrowser(user);
+            var chatMessages = new GetChatMessages(_browsers[_c.CurrentUser.Key]).WaitFor(_messages.Count).Fetch();
+            chatMessages.Count.Should().Equals(_messages.Count);
+            AssertChatMessage.AssertAll(_messages, chatMessages);
         }
 
         private bool NotificationAppears(int expected)

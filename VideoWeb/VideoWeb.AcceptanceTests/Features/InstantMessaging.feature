@@ -39,3 +39,11 @@ Scenario: Instant Messaging Clerk logged in first
   And the Video Hearings Officer can see the message
   When the Video Hearings Officer instant messages the Clerk
   Then the Clerk can see the message
+
+@VIH-5517
+Scenario: Instant Messaging multiple messages
+	Given the Clerk user has progressed to the Waiting Room page
+  When the Clerk opens the chat window
+	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
+	And the participants send 5 messages to each other
+  Then they can see all the messages

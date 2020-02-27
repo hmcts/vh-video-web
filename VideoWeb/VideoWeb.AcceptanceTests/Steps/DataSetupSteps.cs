@@ -99,6 +99,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
             AssertConferenceDetailsResponse.ForConference(conference);
             _c.Test.Conference = conference;
+            _c.Test.Conferences.Add(conference);
             _c.Test.NewConferenceId = conference.Id;
             _c.Test.ConferenceParticipants = conference.Participants;
         }
