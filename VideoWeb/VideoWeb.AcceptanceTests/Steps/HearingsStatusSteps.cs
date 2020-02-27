@@ -48,7 +48,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var displayedCaseOrder = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(VhoHearingListPage.VideoHearingsCaseNumbers);
             var automationCaseNumberLength = _c.Test.Case.Number.Length;
-            var automationOnlyCases = displayedCaseOrder.Select(caseNumber => caseNumber.Text).Where(caseNumberText => caseNumberText.Length.Equals(automationCaseNumberLength) && caseNumberText.Contains("/")).ToList();
+            var automationOnlyCases = displayedCaseOrder.Select(caseNumber => caseNumber.Text.Trim()).Where(caseNumberText => caseNumberText.Trim().Length.Equals(automationCaseNumberLength) && caseNumberText.Contains("/")).ToList();
             automationOnlyCases.Should().NotBeNullOrEmpty();
             automationOnlyCases.First().Should().Be(_c.Test.Case.Number);
         }

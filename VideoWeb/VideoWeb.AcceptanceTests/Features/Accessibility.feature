@@ -30,6 +30,7 @@ Scenario: Switch on your camera and microphone page accessibility
 @Accessibility
 Scenario Outline: Practice video hearing page accessibility
 	Given the <Role> user has progressed to the Practice video hearing page
+  And the practice video hearing video has started
 	Then the page should be accessible 
 	Examples: 
 	| Role                     |
