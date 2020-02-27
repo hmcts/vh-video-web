@@ -28,7 +28,7 @@
     "@aspnet/signalr": "^3.0.0-preview6.19307.2",
     "@hmcts/frontend": "^0.0.41-alpha",
     "@nguniversal/module-map-ngfactory-loader": "8.2.6",
-    "@types/jquery": "^3.3.31",
+    "@types/jquery": "^3.3.32",
     "@types/webrtc": "^0.0.25",
     "adal-angular4": "^3.0.16",
     "applicationinsights-js": "^1.0.21",
