@@ -13,6 +13,7 @@ namespace VideoWeb.AcceptanceTests.Data
         public CommonData CommonData { get; set; }
         public ConferenceDetailsResponse Conference { get; set; }
         public List<ParticipantDetailsResponse> ConferenceParticipants { get; set; }
+        public List<ConferenceDetailsResponse> Conferences { get; set; }
         public int DelayedStartTime { get; set; } = 0;
         public HearingDetailsResponse Hearing { get; set; }
         public List<ParticipantResponse> HearingParticipants { get; set; }

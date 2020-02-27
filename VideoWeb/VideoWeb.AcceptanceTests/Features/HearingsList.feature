@@ -62,3 +62,13 @@ Scenario: Video Hearings Officer has 1 or more hearings
 	When the VHO selects the hearing
 	Then the VHO can see the hearing view
 	And the VHO should see the participant contact details
+
+@VIH-4559
+Scenario: Video Hearings Officer can see all hearings for today only
+	Given I have a hearing
+	And I have another hearing
+	And I have a hearing in 1 days time
+	And I have another hearing in 2 days time
+	And a new browser is open for a Video Hearings Officer
+	When the user attempts to login with valid credentials
+	Then the Video Hearings Officer should only see hearings for today
