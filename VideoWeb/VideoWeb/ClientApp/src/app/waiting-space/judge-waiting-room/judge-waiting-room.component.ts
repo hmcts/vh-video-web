@@ -158,8 +158,6 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     setupEventHubSubscribers() {
-        this.eventService.start();
-
         this.eventHubSubscriptions.add(
             this.eventService.getHearingStatusMessage().subscribe(message => {
                 this.ngZone.run(() => {
@@ -195,6 +193,8 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
                 });
             })
         );
+
+        this.eventService.start();
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): any {

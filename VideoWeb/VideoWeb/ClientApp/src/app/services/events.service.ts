@@ -24,10 +24,13 @@ export class EventsService {
     private adminConsultationMessageSubject = new Subject<AdminConsultationMessage>();
     private messageSubject = new Subject<ChatResponse>();
     private adminAnsweredChatSubject = new Subject<string>();
-    private eventHubDisconnectSubject = new Subject();
+    private eventHubDisconnectSubject = new Subject<number>();
     private eventHubReconnectSubject = new Subject();
 
+    private reconnectionAttempt: number;
+
     constructor(private adalService: AdalService, private logger: Logger) {
+        this.reconnectionAttempt = 0;
         this.connectionStarted = false;
         this.connection = new signalR.HubConnectionBuilder()
             .configureLogging(signalR.LogLevel.Debug)
@@ -40,16 +43,34 @@ export class EventsService {
 
     start() {
         if (!this.connectionStarted && !this.attemptingConnection) {
+            this.reconnectionAttempt++;
             this.attemptingConnection = true;
             this.connection
                 .start()
-                .then(() => {
-                    this.connectionStarted = true;
-                    this.attemptingConnection = false;
-                    this.logger.info('Successfully connected to EventHub');
-                    this.connection.onreconnected(() => this.onEventHubReconnected());
-                    this.connection.onclose(error => this.onEventHubErrorOrClose(error));
-                })
+                .then(
+                    () => {
+                        this.reconnectionAttempt = 0;
+                        this.connectionStarted = true;
+                        this.attemptingConnection = false;
+                        this.logger.info('Successfully connected to EventHub');
+                        this.connection.onreconnecting(error => this.onEventHubReconnecting(error));
+                        this.connection.onreconnected(() => this.onEventHubReconnected());
+                        this.connection.onclose(error => this.onEventHubErrorOrClose(error));
+                    },
+                    async rejectReason => {
+                        this.attemptingConnection = false;
+                        this.onEventHubErrorOrClose(rejectReason);
+                        if (this.reconnectionAttempt < 6) {
+                            const waitTime = this.reconnectionAttempt * 10000;
+                            this.logger.info(`Waiting ${waitTime / 1000} seconds before attempting to reconnect to EventHub`);
+                            await this.delay(waitTime);
+                            this.logger.info(`Attempting to reconnect to EventHub: attempt #${this.reconnectionAttempt}`);
+                            this.start();
+                        } else {
+                            this.logger.info(`Exceeded reconnection attempts to EventHub - attempt #${this.reconnectionAttempt}`);
+                        }
+                    }
+                )
                 .catch(err => {
                     this.logger.error('Failed to connect to EventHub', err);
                     this.onEventHubErrorOrClose(err);
@@ -57,22 +78,40 @@ export class EventsService {
         }
     }
 
+    async delay(ms: number) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    private onEventHubReconnecting(error: Error) {
+        this.reconnectionAttempt++;
+        this.logger.info('Attempting to reconnect to EventHub: attempt #' + this.reconnectionAttempt);
+        if (error) {
+            this.logger.error('Error during reconnect to EventHub', error);
+            this.connectionStarted = false;
+            this.attemptingConnection = false;
+            this.eventHubDisconnectSubject.next(this.reconnectionAttempt);
+        }
+    }
+
     private onEventHubReconnected() {
+        this.logger.info('Successfully reconnected to EventHub');
+        this.reconnectionAttempt = 0;
         this.eventHubReconnectSubject.next();
     }
 
     private onEventHubErrorOrClose(error: Error) {
-        this.logger.error('EventHub connection closed', error);
+        const message = error ? 'EventHub connection closed' : 'EventHub connection error';
+        this.logger.error(message, error);
         this.connectionStarted = false;
         this.attemptingConnection = false;
-        this.eventHubDisconnectSubject.next();
+        this.eventHubDisconnectSubject.next(this.reconnectionAttempt);
     }
 
     getServiceReconnected(): Observable<any> {
         return this.eventHubReconnectSubject.asObservable();
     }
 
-    getServiceDisconnected(): Observable<any> {
+    getServiceDisconnected(): Observable<number> {
         return this.eventHubDisconnectSubject.asObservable();
     }
 

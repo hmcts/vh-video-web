@@ -52,7 +52,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     showVideo: boolean;
     showSelfView: boolean;
     showConsultationControls: boolean;
-  isPrivateConsultation: boolean;
+    isPrivateConsultation: boolean;
     selfViewOpen: boolean;
     isAdminConsultation: boolean;
 
@@ -82,7 +82,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.showConsultationControls = false;
         this.selfViewOpen = false;
         this.showSelfView = false;
-    this.isPrivateConsultation = false;
+        this.isPrivateConsultation = false;
     }
 
     ngOnInit() {
@@ -229,8 +229,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     startEventHubSubscribers() {
-        this.eventService.start();
-
         this.logger.debug('Subscribing to conference status changes...');
         this.eventService.getHearingStatusMessage().subscribe(message => {
             this.ngZone.run(() => {
@@ -257,10 +255,10 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         });
 
         this.logger.debug('Subscribing to EventHub disconnects');
-        this.eventService.getServiceDisconnected().subscribe(() => {
+        this.eventService.getServiceDisconnected().subscribe(attemptNumber => {
             this.ngZone.run(() => {
-                this.logger.info(`EventHub disconnection for ${this.participant.id} in conference ${this.hearing.id}`);
-                this.getConference().then(() => this.updateShowVideo());
+                console.log('Eventhub participant waiting room boop');
+                this.handleEventHubDisconnection(attemptNumber);
             });
         });
 
@@ -271,16 +269,29 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
                 this.getConference().then(() => this.updateShowVideo());
             });
         });
+
+        this.eventService.start();
+    }
+
+    handleEventHubDisconnection(reconnectionAttempt: number) {
+        if (reconnectionAttempt < 7) {
+            this.logger.info(`EventHub disconnection for ${this.participant.id} in conference ${this.hearing.id}`);
+            this.logger.info(`EventHub disconnection #${reconnectionAttempt}`);
+            this.getConference().then(() => this.updateShowVideo());
+        } else {
+            this.logger.info(`EventHub disconnection too many times (#${reconnectionAttempt}), going to service error`);
+            this.errorService.goToServiceError();
+        }
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): any {
         const participant = this.hearing.getConference().participants.find(p => p.id === message.participantId);
-    const isMe = participant.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase();
+        const isMe = participant.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase();
         participant.status = message.status;
         this.logger.info(
             `Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}, Participant status : ${participant.status}`
         );
-    if (message.status !== ParticipantStatus.InConsultation && isMe) {
+        if (message.status !== ParticipantStatus.InConsultation && isMe) {
             this.isAdminConsultation = false;
         }
     }
@@ -397,7 +408,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             this.showSelfView = false;
             this.showVideo = false;
             this.showConsultationControls = false;
-      this.isPrivateConsultation = false;
+            this.isPrivateConsultation = false;
             return;
         }
 
@@ -406,7 +417,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             this.showSelfView = true;
             this.showVideo = true;
             this.showConsultationControls = false;
-      this.isPrivateConsultation = false;
+            this.isPrivateConsultation = false;
             return;
         }
 
@@ -414,7 +425,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             this.logger.debug('Showing video because hearing is in session');
             this.showSelfView = true;
             this.showVideo = true;
-      this.isPrivateConsultation = true;
+            this.isPrivateConsultation = true;
             this.showConsultationControls = !this.isAdminConsultation;
             return;
         }
@@ -423,7 +434,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.showSelfView = false;
         this.showVideo = false;
         this.showConsultationControls = false;
-    this.isPrivateConsultation = false;
+        this.isPrivateConsultation = false;
     }
 
     async onConsultationCancelled() {

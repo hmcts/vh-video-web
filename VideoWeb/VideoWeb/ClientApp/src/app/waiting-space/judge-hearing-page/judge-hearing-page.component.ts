@@ -91,8 +91,6 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
     }
 
     private setupSubscribers() {
-        this.eventService.start();
-
         this.eventHubSubscriptions.add(
             this.eventService.getHearingStatusMessage().subscribe(message => {
                 this.ngZone.run(() => {
@@ -120,6 +118,8 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
                 });
             })
         );
+
+        this.eventService.start();
     }
 
     async refreshConferenceDataDuringDisconnect() {

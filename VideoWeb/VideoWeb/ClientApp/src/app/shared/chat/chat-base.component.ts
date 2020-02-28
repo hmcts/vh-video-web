@@ -31,14 +31,14 @@ export abstract class ChatBaseComponent {
     abstract getMessageWindow(): HTMLElement;
 
     setupChatSubscription(): any {
-        this.eventService.start();
-
         this.logger.debug('Subscribing to chat messages');
         this.chatHubSubscription = this.eventService.getChatMessage().subscribe(message => {
             this.ngZone.run(async () => {
                 await this.handleIncomingMessage(message);
             });
         });
+
+        this.eventService.start();
     }
 
     async handleIncomingMessage(message: ChatResponse) {
