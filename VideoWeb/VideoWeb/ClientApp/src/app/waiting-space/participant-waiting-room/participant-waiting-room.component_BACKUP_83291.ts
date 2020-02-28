@@ -32,6 +32,7 @@ declare var HeartbeatFactory: any;
     styleUrls: ['./participant-waiting-room.component.scss']
 })
 export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
+<<<<<<< HEAD
     private maxBandwidth = 768;
 
     loadingData: boolean;
@@ -52,7 +53,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     showVideo: boolean;
     showSelfView: boolean;
     showConsultationControls: boolean;
-    isPrivateConsultation: boolean;
     selfViewOpen: boolean;
     isAdminConsultation: boolean;
 
@@ -82,7 +82,78 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.showConsultationControls = false;
         this.selfViewOpen = false;
         this.showSelfView = false;
-        this.isPrivateConsultation = false;
+=======
+  private maxBandwidth = 768;
+
+  loadingData: boolean;
+  hearing: Hearing;
+  participant: ParticipantResponse;
+  conference: ConferenceResponse;
+  token: TokenResponse;
+  pexipAPI: any;
+  stream: MediaStream;
+  connected: boolean;
+  outgoingStream: MediaStream;
+
+  currentTime: Date;
+  hearingStartingAnnounced: boolean;
+  currentPlayCount: number;
+  hearingAlertSound: HTMLAudioElement;
+
+  showVideo: boolean;
+  showSelfView: boolean;
+  showConsultationControls: boolean;
+  isPrivateConsultation: boolean;
+  selfViewOpen: boolean;
+  isAdminConsultation: boolean;
+
+  clockSubscription: Subscription;
+  errorCount: number;
+
+  CALL_TIMEOUT = 31000; // 31 seconds
+  callbackTimeout: NodeJS.Timer;
+  heartbeat: any;
+
+  constructor(
+    private route: ActivatedRoute,
+    private videoWebService: VideoWebService,
+    private eventService: EventsService,
+    private ngZone: NgZone,
+    private adalService: AdalService,
+    private errorService: ErrorService,
+    private clockService: ClockService,
+    private userMediaService: UserMediaService,
+    private logger: Logger,
+    private consultationService: ConsultationService,
+    private router: Router
+  ) {
+    this.isAdminConsultation = false;
+    this.loadingData = true;
+    this.showVideo = false;
+    this.showConsultationControls = false;
+    this.selfViewOpen = false;
+    this.showSelfView = false;
+    this.isPrivateConsultation = false;
+  }
+
+  ngOnInit() {
+    this.errorCount = 0;
+    this.logger.debug('Loading participant waiting room');
+    this.connected = false;
+    this.initHearingAlert();
+    this.getConference().then(() => {
+      this.subscribeToClock();
+      this.startEventHubSubscribers();
+      this.getJwtokenAndConnectToPexip();
+    });
+  }
+
+  @HostListener('window:beforeunload')
+  ngOnDestroy(): void {
+    clearTimeout(this.callbackTimeout);
+    if (this.heartbeat) {
+      this.heartbeat.kill();
+>>>>>>> origin/master
     }
 
     ngOnInit() {
@@ -207,6 +278,25 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
                 this.errorService.handleApiError(error);
             }
         );
+<<<<<<< HEAD
+=======
+        this.getConference();
+      });
+    });
+  }
+
+  handleParticipantStatusChange(message: ParticipantStatusMessage): any {
+    const participant = this.hearing
+      .getConference()
+      .participants.find(p => p.id === message.participantId);
+    const isMe = participant.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase();
+    participant.status = message.status;
+    this.logger.info(
+      `Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}, Participant status : ${participant.status}`
+    );
+    if (message.status !== ParticipantStatus.InConsultation && isMe) {
+      this.isAdminConsultation = false;
+>>>>>>> origin/master
     }
 
     getConferenceStatusText(): string {
@@ -275,12 +365,11 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): any {
         const participant = this.hearing.getConference().participants.find(p => p.id === message.participantId);
-        const isMe = participant.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase();
         participant.status = message.status;
         this.logger.info(
             `Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}, Participant status : ${participant.status}`
         );
-        if (message.status !== ParticipantStatus.InConsultation && isMe) {
+        if (message.status !== ParticipantStatus.InConsultation) {
             this.isAdminConsultation = false;
         }
     }
@@ -293,6 +382,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         if (message.status === ConferenceStatus.Closed) {
             this.getConferenceClosedTime(this.hearing.id);
         }
+<<<<<<< HEAD
     }
 
     async setupPexipClient() {
@@ -397,7 +487,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             this.showSelfView = false;
             this.showVideo = false;
             this.showConsultationControls = false;
-            this.isPrivateConsultation = false;
             return;
         }
 
@@ -406,7 +495,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             this.showSelfView = true;
             this.showVideo = true;
             this.showConsultationControls = false;
-            this.isPrivateConsultation = false;
             return;
         }
 
@@ -414,7 +502,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             this.logger.debug('Showing video because hearing is in session');
             this.showSelfView = true;
             this.showVideo = true;
-            this.isPrivateConsultation = true;
             this.showConsultationControls = !this.isAdminConsultation;
             return;
         }
@@ -423,7 +510,119 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.showSelfView = false;
         this.showVideo = false;
         this.showConsultationControls = false;
-        this.isPrivateConsultation = false;
+=======
+      }
+
+      const baseUrl = self.conference.pexip_node_uri.replace('sip.', '');
+      const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${self.conference.id}`;
+      self.logger.debug(`heartbeat uri: ${url}`);
+      const bearerToken = `Bearer ${self.token.token}`;
+      self.heartbeat = new HeartbeatFactory(
+        self.pexipAPI,
+        url,
+        self.conference.id,
+        self.participant.id,
+        bearerToken,
+        self.handleHeartbeat(self)
+      );
+    };
+
+    this.pexipAPI.onError = function(reason) {
+      self.errorCount++;
+      self.connected = false;
+      self.heartbeat.kill();
+      self.updateShowVideo();
+      self.logger.error(`Error from pexip. Reason : ${reason}`, reason);
+      if (self.errorCount > 3) {
+        self.errorService.goToServiceError();
+      }
+    };
+
+    this.pexipAPI.onDisconnect = function(reason) {
+      self.connected = false;
+      self.heartbeat.kill();
+      self.updateShowVideo();
+      self.logger.warn(`Disconnected from pexip. Reason : ${reason}`);
+      if (!self.hearing.isPastClosedTime()) {
+        self.callbackTimeout = setTimeout(() => {
+          self.call();
+        }, self.CALL_TIMEOUT);
+      }
+    };
+
+    this.pexipAPI.onParticipantCreate = function(participant) {
+      self.logger.debug(`Participant added : ${participant}`);
+    };
+
+    this.pexipAPI.onParticipantDelete = function(participant) {
+      self.logger.debug(`Participant removed : ${participant}`);
+    };
+  }
+
+  call() {
+    console.warn('calling pexip');
+    const pexipNode = this.hearing.getConference().pexip_node_uri;
+    const conferenceAlias = this.hearing.getConference().participant_uri;
+    const displayName = this.participant.tiled_display_name;
+    this.logger.debug(
+      `Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`
+    );
+    this.pexipAPI.makeCall(
+      pexipNode,
+      conferenceAlias,
+      displayName,
+      this.maxBandwidth
+    );
+  }
+
+  updateShowVideo(): void {
+    if (!this.connected) {
+      this.logger.debug('Not showing video because not connecting to node');
+      this.showSelfView = false;
+      this.showVideo = false;
+      this.showConsultationControls = false;
+      this.isPrivateConsultation = false;
+      return;
+    }
+
+    if (this.hearing.isInSession()) {
+      this.logger.debug('Showing video because hearing is in session');
+      this.showSelfView = true;
+      this.showVideo = true;
+      this.showConsultationControls = false;
+      this.isPrivateConsultation = false;
+      return;
+    }
+
+    if (this.participant.status === ParticipantStatus.InConsultation) {
+      this.logger.debug('Showing video because hearing is in session');
+      this.showSelfView = true;
+      this.showVideo = true;
+      this.isPrivateConsultation = true;
+      this.showConsultationControls = !this.isAdminConsultation;
+      return;
+    }
+
+    this.logger.debug(
+      'Not showing video because hearing is not in session and user is not in consultation'
+    );
+    this.showSelfView = false;
+    this.showVideo = false;
+    this.showConsultationControls = false;
+    this.isPrivateConsultation = false;
+  }
+
+  async onConsultationCancelled() {
+    this.logger.info(
+      `Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}. Participant ${this.participant.id} attempting to leave conference: ${this.conference.id}`
+    );
+    try {
+      await this.consultationService
+        .leaveConsultation(this.conference, this.participant)
+        .toPromise();
+    } catch (error) {
+      this.logger.error('Failed to leave private consultation', error);
+>>>>>>> origin/master
     }
 
     async onConsultationCancelled() {
