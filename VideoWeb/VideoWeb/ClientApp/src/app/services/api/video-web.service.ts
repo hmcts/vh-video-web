@@ -36,6 +36,7 @@ export class VideoWebService {
     }
 
     getConferenceById(conferenceId: string): Observable<ConferenceResponse> {
+        console.trace('boop de bop');
         return this.apiClient.getConferenceById(conferenceId);
     }
 

@@ -14,6 +14,7 @@ import { AdminConsultationMessage } from './models/admin-consultation-message';
     providedIn: 'root'
 })
 export class EventsService {
+    waitTimeBase = 1000;
     connection: signalR.HubConnection;
     connectionStarted: boolean;
     attemptingConnection: boolean;
@@ -27,7 +28,7 @@ export class EventsService {
     private eventHubDisconnectSubject = new Subject<number>();
     private eventHubReconnectSubject = new Subject();
 
-    private reconnectionAttempt: number;
+    reconnectionAttempt: number;
 
     constructor(private adalService: AdalService, private logger: Logger) {
         this.reconnectionAttempt = 0;
@@ -45,7 +46,7 @@ export class EventsService {
         if (!this.connectionStarted && !this.attemptingConnection) {
             this.reconnectionAttempt++;
             this.attemptingConnection = true;
-            this.connection
+            return this.connection
                 .start()
                 .then(
                     () => {
@@ -61,7 +62,7 @@ export class EventsService {
                         this.attemptingConnection = false;
                         this.onEventHubErrorOrClose(rejectReason);
                         if (this.reconnectionAttempt < 6) {
-                            const waitTime = this.reconnectionAttempt * 10000;
+                            const waitTime = this.reconnectionAttempt * this.waitTimeBase;
                             this.logger.info(`Waiting ${waitTime / 1000} seconds before attempting to reconnect to EventHub`);
                             await this.delay(waitTime);
                             this.logger.info(`Attempting to reconnect to EventHub: attempt #${this.reconnectionAttempt}`);
