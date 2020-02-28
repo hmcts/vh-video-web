@@ -5,7 +5,6 @@ import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceForVhOfficerResponse,
-    ConferenceResponse,
     ParticipantResponse,
     ParticipantStatus,
     TaskResponse,
@@ -92,9 +91,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     }
 
     private setupEventHubSubscribers() {
-        this.logger.debug('Setting up VH Officer event subscribers');
-        this.eventService.start();
-
         this.logger.debug('Subscribing to conference status changes...');
         this.eventHubSubscriptions.add(
             this.eventService.getHearingStatusMessage().subscribe(message => {
@@ -113,21 +109,25 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
             })
         );
 
-        this.logger.debug('Subscribing to event hub disconnects');
+        this.logger.debug('Subscribing to EventHub disconnects');
         this.eventHubSubscriptions.add(
-            this.eventService.getServiceDisconnected().subscribe(() => {
+            this.eventService.getServiceDisconnected().subscribe(reconnectionAttempt => {
                 this.ngZone.run(() => {
-                    this.logger.info(`event hub disconnection for vh officer`);
-                    this.refreshConferenceDataDuringDisconnect();
+                    if (reconnectionAttempt < 6) {
+                        this.logger.info(`EventHub disconnection for vh officer`);
+                        this.refreshConferenceDataDuringDisconnect();
+                    } else {
+                        this.errorService.goToServiceError();
+                    }
                 });
             })
         );
 
-        this.logger.debug('Subscribing to event hub reconnects');
+        this.logger.debug('Subscribing to EventHub reconnects');
         this.eventHubSubscriptions.add(
             this.eventService.getServiceReconnected().subscribe(() => {
                 this.ngZone.run(() => {
-                    this.logger.info(`event hub re-connected for vh officer`);
+                    this.logger.info(`EventHub reconnected for vh officer`);
                     this.refreshConferenceDataDuringDisconnect();
                 });
             })
@@ -141,6 +141,8 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
                 });
             })
         );
+
+        this.eventService.start();
     }
 
     resetConferenceUnreadCounter(conferenceId: string) {
@@ -152,6 +154,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     }
 
     refreshConferenceDataDuringDisconnect() {
+        this.logger.warn('EventHub refresh pending...');
         this.retrieveHearingsForVhOfficer();
         if (this.selectedHearing) {
             this.retrieveConferenceDetails(this.selectedHearing.id);
@@ -161,6 +164,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     retrieveHearingsForVhOfficer() {
         this.conferencesSubscription = this.videoWebService.getConferencesForVHOfficer().subscribe(
             (data: ConferenceForVhOfficerResponse[]) => {
+                this.logger.debug('Successfully retrieved hearings for VHO');
                 this.loadingData = false;
                 this.conferences = data;
                 this.conferencesAll = data;
@@ -220,22 +224,20 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         }
     }
 
-    retrieveConferenceDetails(conferenceId: string) {
-        this.videoWebService.getConferenceById(conferenceId).subscribe(
-            (data: ConferenceResponse) => {
-                this.selectedHearing = new Hearing(data);
-                this.participants = data.participants;
-                this.sanitiseAndLoadIframe();
-                this.getTasksForConference(conferenceId);
-                this.getJudgeStatusDetails();
-            },
-            error => {
-                this.logger.error(`There was an error when selecting conference ${conferenceId}`, error);
-                if (!this.errorService.returnHomeIfUnauthorised(error)) {
-                    this.errorService.handleApiError(error);
-                }
+    async retrieveConferenceDetails(conferenceId: string) {
+        try {
+            const data = await this.videoWebService.getConferenceById(conferenceId).toPromise();
+            this.selectedHearing = new Hearing(data);
+            this.participants = data.participants;
+            this.sanitiseAndLoadIframe();
+            this.getTasksForConference(conferenceId);
+            this.getJudgeStatusDetails();
+        } catch (error) {
+            this.logger.error(`There was an error when selecting conference ${conferenceId}`, error);
+            if (!this.errorService.returnHomeIfUnauthorised(error)) {
+                this.errorService.handleApiError(error);
             }
-        );
+        }
     }
 
     isCurrentConference(conference: ConferenceForVhOfficerResponse): boolean {

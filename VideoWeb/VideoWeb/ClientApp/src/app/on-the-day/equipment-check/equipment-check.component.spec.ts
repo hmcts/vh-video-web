@@ -11,6 +11,8 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { EquipmentCheckComponent } from './equipment-check.component';
+import { ContactUsFoldingStubComponent } from 'src/app/testing/stubs/contact-us-stub';
+import { BackNavigationStubComponent } from 'src/app/testing/stubs/back-navigation-stub';
 
 describe('EquipmentCheckComponent', () => {
     let component: EquipmentCheckComponent;
@@ -24,8 +26,8 @@ describe('EquipmentCheckComponent', () => {
         judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService', ['raiseJudgeUnavailableEvent']);
 
         TestBed.configureTestingModule({
-            declarations: [EquipmentCheckComponent],
-            imports: [ReactiveFormsModule, FormsModule, RouterTestingModule, SharedModule],
+            declarations: [EquipmentCheckComponent, ContactUsFoldingStubComponent, BackNavigationStubComponent],
+            imports: [ReactiveFormsModule, FormsModule, RouterTestingModule],
             providers: [
                 {
                     provide: ActivatedRoute,

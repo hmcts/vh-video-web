@@ -158,8 +158,6 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     setupEventHubSubscribers() {
-        this.eventService.start();
-
         this.eventHubSubscriptions.add(
             this.eventService.getHearingStatusMessage().subscribe(message => {
                 this.ngZone.run(() => {
@@ -176,33 +174,37 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
             })
         );
 
-        this.logger.debug('Subscribing to event hub disconnects');
+        this.logger.debug('Subscribing to EventHub disconnects');
         this.eventHubSubscriptions.add(
             this.eventService.getServiceDisconnected().subscribe(() => {
                 this.ngZone.run(() => {
-                    this.logger.info(`event hub disconnection for vh officer`);
+                    this.logger.info(`EventHub disconnection for vh officer`);
                     this.getConference();
                 });
             })
         );
 
-        this.logger.debug('Subscribing to event hub reconnects');
+        this.logger.debug('Subscribing to EventHub reconnects');
         this.eventHubSubscriptions.add(
             this.eventService.getServiceReconnected().subscribe(() => {
                 this.ngZone.run(() => {
-                    this.logger.info(`event hub re-connected for vh officer`);
+                    this.logger.info(`EventHub re-connected for vh officer`);
                     this.getConference();
                 });
             })
         );
+
+        this.eventService.start();
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): any {
         const participant = this.conference.participants.find(p => p.id === message.participantId);
         const status = <ParticipantStatus>message.status;
         participant.status = status;
-        if ((this.conference.status === ConferenceStatus.Suspended || this.conference.status === ConferenceStatus.Paused)
-            && participant.status === ParticipantStatus.Disconnected) {
+        if (
+            (this.conference.status === ConferenceStatus.Suspended || this.conference.status === ConferenceStatus.Paused) &&
+            participant.status === ParticipantStatus.Disconnected
+        ) {
             this.postEventJudgeAvailableStatus();
         }
     }

@@ -8,7 +8,6 @@ import { TestCallScoreResponse, ConferenceResponse, ParticipantResponse, SelfTes
 
 @Injectable()
 export abstract class BaseSelfTestComponent implements OnInit {
-
     testInProgress: boolean;
     hideSelfTest = false;
 
@@ -23,47 +22,53 @@ export abstract class BaseSelfTestComponent implements OnInit {
         protected videoWebService: VideoWebService,
         protected errorService: ErrorService,
         protected adalService: AdalService,
-        protected logger: Logger) { }
+        protected logger: Logger
+    ) {}
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         if (this.conferenceId) {
-          this.getConference();
+            this.getConference();
         } else {
-          this.getPexipConfig();
+            this.getPexipConfig();
         }
         this.testInProgress = false;
     }
 
     getConference(): void {
         this.logger.debug(`retrieving conference ${this.conferenceId}`);
-        this.videoWebService.getConferenceById(this.conferenceId).
-            subscribe((response) => {
+        this.videoWebService.getConferenceById(this.conferenceId).subscribe(
+            response => {
                 this.logger.debug(`retrieved conference ${this.conferenceId} successfully`);
                 this.loadingData = false;
                 this.conference = response;
-                this.participant = response.participants
-                    .find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase());
-            }, (error) => {
+                this.participant = response.participants.find(
+                    x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
+                );
+            },
+            error => {
                 this.loadingData = false;
                 if (!this.errorService.returnHomeIfUnauthorised(error)) {
                     this.errorService.handleApiError(error);
                 }
-            });
+            }
+        );
     }
 
     getPexipConfig(): void {
-      this.logger.debug(`retrieving pexip configuration`);
-      this.videoWebService.getPexipConfig().
-        subscribe((response) => {
-          this.logger.debug(`retrieved pexip configuration successfully`);
-          this.selfTestPexipConfig = response;
-          console.log('Self test Pexip cofig: ' + this.selfTestPexipConfig);
-        }, (error) => {
-          if (!this.errorService.returnHomeIfUnauthorised(error)) {
-            this.errorService.handleApiError(error);
-          }
-        });
+        this.logger.debug(`retrieving pexip configuration`);
+        this.videoWebService.getPexipConfig().subscribe(
+            response => {
+                this.logger.debug(`retrieved pexip configuration successfully`);
+                this.selfTestPexipConfig = response;
+                this.logger.debug('Self test Pexip cofig: ' + JSON.stringify(this.selfTestPexipConfig));
+            },
+            error => {
+                if (!this.errorService.returnHomeIfUnauthorised(error)) {
+                    this.errorService.handleApiError(error);
+                }
+            }
+        );
     }
 
     onTestStarted() {

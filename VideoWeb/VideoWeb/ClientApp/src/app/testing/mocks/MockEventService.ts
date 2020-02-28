@@ -16,8 +16,12 @@ export class MockEventsService {
     nextChatMessageMessage: ChatResponse;
     nextAdminAnsweredChatMessage: string;
     nextJudgeStatusMessage: ParticipantStatusMessage;
+    nextChatMessage: ChatResponse;
 
-    constructor() {
+    constructor(skip = false) {
+        if (skip) {
+            return;
+        }
         this.nextParticipantStatusMessage = new ParticipantStatusMessage(
             '9F681318-4955-49AF-A887-DED64554429D',
             ParticipantStatus.Available
@@ -36,10 +40,8 @@ export class MockEventsService {
             'james.green@hearings.net',
             ConsultationAnswer.None
         );
-        this.nextJudgeStatusMessage = new ParticipantStatusMessage(
-            '9F681318-4955-49AF-A887-DED64554429T',
-            ParticipantStatus.Disconnected
-        );
+        this.nextJudgeStatusMessage = new ParticipantStatusMessage('9F681318-4955-49AF-A887-DED64554429T', ParticipantStatus.Disconnected);
+        this.nextChatMessage = new ChatResponse({ from: 'chris.green@hearings.net', message: 'test message', timestamp: new Date() });
     }
 
     start() {}
@@ -66,7 +68,7 @@ export class MockEventsService {
     }
 
     getChatMessage(): Observable<ChatResponse> {
-        return of(new ChatResponse({ from: 'chris.green@hearings.net', message: 'test message', timestamp: new Date() }));
+        return of(this.nextChatMessage);
     }
 
     getServiceDisconnected(): Observable<any> {
