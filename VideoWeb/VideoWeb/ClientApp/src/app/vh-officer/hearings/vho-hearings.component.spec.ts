@@ -78,15 +78,6 @@ describe('VhoHearingsComponent', () => {
         expect(component.selectedConferenceUrl).toBeDefined();
     });
 
-    it('should handle api error when retrieving conference fails', () => {
-        spyOn(errorService, 'handleApiError').and.callFake(() => {
-            Promise.resolve(true);
-        });
-        videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 404, isApiException: true }));
-        component.onConferenceSelected(component.conferences[0]);
-        expect(errorService.handleApiError).toHaveBeenCalled();
-    });
-
     it('should return true when current conference is selected', () => {
         const currentConference = conferences[0];
         component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
@@ -147,5 +138,60 @@ describe('VhoHearingsComponent', () => {
         component.conferences[0].number_of_unread_messages = 5;
         component.resetConferenceUnreadCounter(conference.id);
         expect(component.conferences[0].number_of_unread_messages).toBe(0);
+    });
+});
+
+describe('VhoHearingsComponent when conference retrieval fails', () => {
+    let component: VhoHearingsComponent;
+    let fixture: ComponentFixture<VhoHearingsComponent>;
+    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+    const mockEventsService = new MockEventsService(true);
+    let adalService: MockAdalService;
+    let errorService: ErrorService;
+
+    configureTestSuite(() => {
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
+            'getConferencesForVHOfficer',
+            'getConferenceById',
+            'getTasksForConference'
+        ]);
+        videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(throwError({ status: 404, isApiException: true }));
+
+        TestBed.configureTestingModule({
+            imports: [SharedModule, RouterTestingModule],
+            declarations: [
+                VhoHearingsComponent,
+                TasksTableStubComponent,
+                VhoHearingListStubComponent,
+                VhoParticipantStatusStubComponent,
+                VhoHearingsFilterStubComponent,
+                VhoChatStubComponent
+            ],
+            providers: [
+                { provide: VideoWebService, useValue: videoWebServiceSpy },
+                { provide: AdalService, useClass: MockAdalService },
+                { provide: EventsService, useValue: mockEventsService },
+                { provide: ConfigService, useClass: MockConfigService },
+                { provide: Logger, useClass: MockLogger }
+            ]
+        });
+    });
+
+    beforeEach(() => {
+        adalService = TestBed.get(AdalService);
+        errorService = TestBed.get(ErrorService);
+        fixture = TestBed.createComponent(VhoHearingsComponent);
+        component = fixture.componentInstance;
+        component.selectedHearing = null;
+    });
+
+    it('should handle api error when retrieving conference fails', async done => {
+        spyOn(errorService, 'handleApiError').and.callFake(() => {
+            Promise.resolve(true);
+        });
+        component.retrieveHearingsForVhOfficer();
+        await fixture.whenStable();
+        expect(errorService.handleApiError).toHaveBeenCalledTimes(1);
+        done();
     });
 });

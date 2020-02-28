@@ -52,7 +52,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     showVideo: boolean;
     showSelfView: boolean;
     showConsultationControls: boolean;
-    isPrivateConsultation: boolean;
+  isPrivateConsultation: boolean;
     selfViewOpen: boolean;
     isAdminConsultation: boolean;
 
@@ -82,7 +82,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.showConsultationControls = false;
         this.selfViewOpen = false;
         this.showSelfView = false;
-        this.isPrivateConsultation = false;
+    this.isPrivateConsultation = false;
     }
 
     ngOnInit() {
@@ -275,12 +275,12 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): any {
         const participant = this.hearing.getConference().participants.find(p => p.id === message.participantId);
-        const isMe = participant.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase();
+    const isMe = participant.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase();
         participant.status = message.status;
         this.logger.info(
             `Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}, Participant status : ${participant.status}`
         );
-        if (message.status !== ParticipantStatus.InConsultation && isMe) {
+    if (message.status !== ParticipantStatus.InConsultation && isMe) {
             this.isAdminConsultation = false;
         }
     }
@@ -397,7 +397,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             this.showSelfView = false;
             this.showVideo = false;
             this.showConsultationControls = false;
-            this.isPrivateConsultation = false;
+      this.isPrivateConsultation = false;
             return;
         }
 
@@ -406,7 +406,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             this.showSelfView = true;
             this.showVideo = true;
             this.showConsultationControls = false;
-            this.isPrivateConsultation = false;
+      this.isPrivateConsultation = false;
             return;
         }
 
@@ -414,7 +414,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             this.logger.debug('Showing video because hearing is in session');
             this.showSelfView = true;
             this.showVideo = true;
-            this.isPrivateConsultation = true;
+      this.isPrivateConsultation = true;
             this.showConsultationControls = !this.isAdminConsultation;
             return;
         }
@@ -423,7 +423,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.showSelfView = false;
         this.showVideo = false;
         this.showConsultationControls = false;
-        this.isPrivateConsultation = false;
+    this.isPrivateConsultation = false;
     }
 
     async onConsultationCancelled() {
