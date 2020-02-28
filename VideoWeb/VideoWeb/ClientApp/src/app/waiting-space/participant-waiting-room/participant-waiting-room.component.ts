@@ -257,7 +257,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.logger.debug('Subscribing to EventHub disconnects');
         this.eventService.getServiceDisconnected().subscribe(attemptNumber => {
             this.ngZone.run(() => {
-                console.log('Eventhub participant waiting room boop');
                 this.handleEventHubDisconnection(attemptNumber);
             });
         });

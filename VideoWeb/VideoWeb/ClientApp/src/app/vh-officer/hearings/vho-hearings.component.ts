@@ -164,7 +164,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     retrieveHearingsForVhOfficer() {
         this.conferencesSubscription = this.videoWebService.getConferencesForVHOfficer().subscribe(
             (data: ConferenceForVhOfficerResponse[]) => {
-                console.log('vho get conference success');
+                this.logger.debug('Successfully retrieved hearings for VHO');
                 this.loadingData = false;
                 this.conferences = data;
                 this.conferencesAll = data;
@@ -183,7 +183,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
                 }
             },
             error => {
-                console.log('vho get conference error');
                 this.logger.error('There was an error setting up VH Officer dashboard', error);
                 this.loadingData = false;
                 this.enableFullScreen(false);
