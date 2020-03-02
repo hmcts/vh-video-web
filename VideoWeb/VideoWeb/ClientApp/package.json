@@ -46,7 +46,7 @@
     "ngx-moment": "^3.5.0",
     "@popperjs/core": "^2.0.5",
     "rxjs": "^6.5.4",
-    "snyk": "^1.290.1",
+    "snyk": "^1.290.2",
     "webrtc-adapter": "^7.4.0",
     "zone.js": "~0.10.2"
   },
