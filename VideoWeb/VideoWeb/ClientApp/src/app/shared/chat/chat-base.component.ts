@@ -42,6 +42,10 @@ export abstract class ChatBaseComponent {
     }
 
     async handleIncomingMessage(message: ChatResponse) {
+        if (this.messages.findIndex(m => m.id === message.id) > -1) {
+            this.logger.debug(`message already been processed ${JSON.stringify(message)}`);
+            return;
+        }
         const from = message.from.toUpperCase();
         const username = this.adalService.userInfo.userName.toUpperCase();
         if (from === username) {

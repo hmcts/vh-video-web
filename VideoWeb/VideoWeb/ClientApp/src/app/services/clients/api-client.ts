@@ -165,7 +165,7 @@ export class ApiClient {
      * Get conferences for user
      * @return Success
      */
-    getConferencesForVHOfficer(): Observable<ConferenceForVhOfficerResponse[]> {
+    getConferencesForVhOfficer(): Observable<ConferenceForVhOfficerResponse[]> {
         let url_ = this.baseUrl + "/conferences/vhofficer";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -178,11 +178,11 @@ export class ApiClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetConferencesForVHOfficer(response_);
+            return this.processGetConferencesForVhOfficer(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetConferencesForVHOfficer(<any>response_);
+                    return this.processGetConferencesForVhOfficer(<any>response_);
                 } catch (e) {
                     return <Observable<ConferenceForVhOfficerResponse[]>><any>_observableThrow(e);
                 }
@@ -191,7 +191,7 @@ export class ApiClient {
         }));
     }
 
-    protected processGetConferencesForVHOfficer(response: HttpResponseBase): Observable<ConferenceForVhOfficerResponse[]> {
+    protected processGetConferencesForVhOfficer(response: HttpResponseBase): Observable<ConferenceForVhOfficerResponse[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -622,6 +622,77 @@ export class ApiClient {
     }
 
     /**
+     * Get all the instant messages for a conference
+     * @param conferenceId Id of the conference
+     * @return Success
+     */
+    getConferenceInstantMessageHistory(conferenceId: string): Observable<ChatResponse[]> {
+        let url_ = this.baseUrl + "/conferences/{conferenceId}/instantmessages";
+        if (conferenceId === undefined || conferenceId === null)
+            throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace("{conferenceId}", encodeURIComponent("" + conferenceId)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetConferenceInstantMessageHistory(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetConferenceInstantMessageHistory(<any>response_);
+                } catch (e) {
+                    return <Observable<ChatResponse[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ChatResponse[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetConferenceInstantMessageHistory(response: HttpResponseBase): Observable<ChatResponse[]> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(ChatResponse.fromJS(item));
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Not Found", status, _responseText, _headers, result404);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("Unauthorized", status, _responseText, _headers);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ChatResponse[]>(<any>null);
+    }
+
+    /**
      * @param body (optional) 
      * @return Success
      */
@@ -765,77 +836,6 @@ export class ApiClient {
             }));
         }
         return _observableOf<void>(<any>null);
-    }
-
-    /**
-     * Get all the chat messages for a conference
-     * @param conferenceId Id of the conference
-     * @return Success
-     */
-    getConferenceChatHistory(conferenceId: string): Observable<ChatResponse[]> {
-        let url_ = this.baseUrl + "/conferences/{conferenceId}/messages";
-        if (conferenceId === undefined || conferenceId === null)
-            throw new Error("The parameter 'conferenceId' must be defined.");
-        url_ = url_.replace("{conferenceId}", encodeURIComponent("" + conferenceId)); 
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",			
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetConferenceChatHistory(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetConferenceChatHistory(<any>response_);
-                } catch (e) {
-                    return <Observable<ChatResponse[]>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<ChatResponse[]>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processGetConferenceChatHistory(response: HttpResponseBase): Observable<ChatResponse[]> {
-        const status = response.status;
-        const responseBlob = 
-            response instanceof HttpResponse ? response.body : 
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(ChatResponse.fromJS(item));
-            }
-            return _observableOf(result200);
-            }));
-        } else if (status === 404) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result404: any = null;
-            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result404 = ProblemDetails.fromJS(resultData404);
-            return throwException("Not Found", status, _responseText, _headers, result404);
-            }));
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("Unauthorized", status, _responseText, _headers);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<ChatResponse[]>(<any>null);
     }
 
     /**
@@ -2572,6 +2572,58 @@ export interface IHealthCheckResponse {
     video_api_health?: HealthCheck | undefined;
 }
 
+export class ChatResponse implements IChatResponse {
+    readonly id?: string;
+    from?: string | undefined;
+    message?: string | undefined;
+    timestamp?: Date;
+    is_user?: boolean;
+
+    constructor(data?: IChatResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            (<any>this).id = _data["id"];
+            this.from = _data["from"];
+            this.message = _data["message"];
+            this.timestamp = _data["timestamp"] ? new Date(_data["timestamp"].toString()) : <any>undefined;
+            this.is_user = _data["is_user"];
+        }
+    }
+
+    static fromJS(data: any): ChatResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ChatResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["from"] = this.from;
+        data["message"] = this.message;
+        data["timestamp"] = this.timestamp ? this.timestamp.toISOString() : <any>undefined;
+        data["is_user"] = this.is_user;
+        return data; 
+    }
+}
+
+export interface IChatResponse {
+    id?: string;
+    from?: string | undefined;
+    message?: string | undefined;
+    timestamp?: Date;
+    is_user?: boolean;
+}
+
 export enum EventType {
     None = "None",
     Joined = "Joined",
@@ -2681,54 +2733,6 @@ export interface IAddSelfTestFailureEventRequest {
     participant_id?: string;
     event_type?: EventType;
     self_test_failure_reason?: SelfTestFailureReason;
-}
-
-export class ChatResponse implements IChatResponse {
-    from?: string | undefined;
-    message?: string | undefined;
-    timestamp?: Date;
-    is_user?: boolean;
-
-    constructor(data?: IChatResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.from = _data["from"];
-            this.message = _data["message"];
-            this.timestamp = _data["timestamp"] ? new Date(_data["timestamp"].toString()) : <any>undefined;
-            this.is_user = _data["is_user"];
-        }
-    }
-
-    static fromJS(data: any): ChatResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new ChatResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["from"] = this.from;
-        data["message"] = this.message;
-        data["timestamp"] = this.timestamp ? this.timestamp.toISOString() : <any>undefined;
-        data["is_user"] = this.is_user;
-        return data; 
-    }
-}
-
-export interface IChatResponse {
-    from?: string | undefined;
-    message?: string | undefined;
-    timestamp?: Date;
-    is_user?: boolean;
 }
 
 export enum TestScore {

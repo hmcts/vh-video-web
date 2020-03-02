@@ -174,12 +174,15 @@ export class EventsService {
     }
 
     getChatMessage(): Observable<ChatResponse> {
-        this.connection.on('ReceiveMessage', (conferenceId: string, from: string, message: string, timestamp: Date) => {
-            const date = new Date(timestamp);
-            const chat = new ChatResponse({ from, message, timestamp: date });
-            this.logger.event('ReceiveMessage received', chat);
-            this.messageSubject.next(chat);
-        });
+        this.connection.on(
+            'ReceiveMessage',
+            (conferenceId: string, from: string, message: string, timestamp: Date, messageUuid: string) => {
+                const date = new Date(timestamp);
+                const chat = new ChatResponse({ id: messageUuid, from, message, timestamp: date });
+                this.logger.event('ReceiveMessage received', chat);
+                this.messageSubject.next(chat);
+            }
+        );
 
         return this.messageSubject.asObservable();
     }

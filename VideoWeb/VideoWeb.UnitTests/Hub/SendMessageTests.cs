@@ -35,11 +35,11 @@ namespace VideoWeb.UnitTests.Hub
             await Hub.SendMessage(conferenceId, message);
 
             mockClient.Verify(
-                x => 
-                    x.ReceiveMessage(conferenceId, It.IsAny<string>(), message, It.IsAny<DateTime>()), 
+                x =>
+                    x.ReceiveMessage(conferenceId, username, message, It.IsAny<DateTime>(), It.IsAny<Guid>()),
                 Times.Once);
         }
-        
+
         [Test]
         public void should_throw_exception_when_conference_is_not_in_cache()
         {
@@ -52,7 +52,7 @@ namespace VideoWeb.UnitTests.Hub
 
             Assert.ThrowsAsync<ConferenceNotFoundException>(() => Hub.SendMessage(conferenceId, message));
         }
-        
+
         [Test]
         public async Task should_send_message_to_conference_group_if_user_is_vho()
         {
@@ -67,19 +67,20 @@ namespace VideoWeb.UnitTests.Hub
                 .Build();
             MemoryCache.Set(conferenceId, conference);
             var message = "test message";
-            
+
             UserProfileServiceMock.Setup(x => x.IsVhOfficerAsync(It.IsAny<string>()))
                 .ReturnsAsync(true);
 
             var mockClient = new Mock<IEventHubClient>();
             EventHubClientMock.Setup(x => x.Group(conferenceId.ToString())).Returns(mockClient.Object);
 
-            EventHubClientMock.Setup(x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName)).Returns(mockClient.Object);
+            EventHubClientMock.Setup(x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
+                .Returns(mockClient.Object);
             await Hub.SendMessage(conferenceId, message);
 
             mockClient.Verify(
-                x => 
-                    x.ReceiveMessage(conferenceId, It.IsAny<string>(), message, It.IsAny<DateTime>()), 
+                x =>
+                    x.ReceiveMessage(conferenceId, It.IsAny<string>(), message, It.IsAny<DateTime>(), It.IsAny<Guid>()),
                 Times.Once);
         }
 
@@ -106,8 +107,8 @@ namespace VideoWeb.UnitTests.Hub
             await Hub.SendMessage(conferenceId, message);
 
             mockClient.Verify(
-                x => 
-                    x.ReceiveMessage(conferenceId, It.IsAny<string>(), message, It.IsAny<DateTime>()), 
+                x =>
+                    x.ReceiveMessage(conferenceId, It.IsAny<string>(), message, It.IsAny<DateTime>(), It.IsAny<Guid>()),
                 Times.Never);
         }
     }

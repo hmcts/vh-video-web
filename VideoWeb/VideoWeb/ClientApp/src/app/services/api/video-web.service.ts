@@ -32,7 +32,7 @@ export class VideoWebService {
     }
 
     getConferencesForVHOfficer(): Observable<ConferenceForVhOfficerResponse[]> {
-        return this.apiClient.getConferencesForVHOfficer();
+        return this.apiClient.getConferencesForVhOfficer();
     }
 
     getConferenceById(conferenceId: string): Observable<ConferenceResponse> {
@@ -95,6 +95,6 @@ export class VideoWebService {
     }
 
     getConferenceChatHistory(conferenceId: string): Observable<ChatResponse[]> {
-        return this.apiClient.getConferenceChatHistory(conferenceId);
+        return this.apiClient.getConferenceInstantMessageHistory(conferenceId);
     }
 }
