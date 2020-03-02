@@ -32,6 +32,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             var browser = new UserBrowser(_c.CurrentUser)
                 .SetBaseUrl(_c.VideoWebConfig.VhServices.VideoWebUrl)
+                .SetTargetBrowser(_c.VideoWebConfig.TestConfig.TargetBrowser)
                 .SetDriver(_c.Driver);
 
             _browsers.Add(_c.CurrentUser.Key, browser);
