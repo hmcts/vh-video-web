@@ -56,10 +56,13 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.eventHubSubscriptions.unsubscribe();
+        this.selectedHearingUrl = '';
     }
 
     async getConference(): Promise<ConferenceResponse> {
+        this.logger.debug('getting conf for judge hearing');
         const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+        this.logger.debug(`getting conf ${conferenceId}`);
         return this.videoWebService.getConferenceById(conferenceId).toPromise();
     }
 
@@ -133,28 +136,30 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
     }
 
     determineJudgeLocation() {
+        const conferenceStatus = this.conference.status;
         const judge = this.conference.participants.find(x => x.role === UserRole.Judge);
         const properties = {
             conferenceId: this.conference.id,
             user: judge.id
         };
 
-        if (status === ConferenceStatus.Closed) {
-            this.selectedHearingUrl = '';
+        if (conferenceStatus === ConferenceStatus.Closed) {
             this.logger.event(`Conference closed, navigating back to hearing list`, properties);
-            this.router.navigate([PageUrls.JudgeHearingList]);
+            return this.router.navigate([PageUrls.JudgeHearingList]);
         }
 
-        if (status === ConferenceStatus.Paused || status === ConferenceStatus.Suspended) {
-            this.selectedHearingUrl = '';
+        if (conferenceStatus === ConferenceStatus.Paused || conferenceStatus === ConferenceStatus.Suspended) {
             this.logger.event(`Conference closed, navigating back to waiting room`, properties);
-            this.router.navigate([PageUrls.JudgeWaitingRoom, this.conference.id]);
+            return this.router.navigate([PageUrls.JudgeWaitingRoom, this.conference.id]);
         }
     }
 
     judgeURLChanged() {
+        this.logger.debug('judge url changed');
         const iFrameElem = <HTMLIFrameElement>document.getElementById('judgeIframe');
+        console.log(iFrameElem);
         const src = iFrameElem.src;
+        console.log(src);
         if (src && src !== this.judgeUri) {
             this.logger.warn(`Uri ${src} is not recogised`);
             this.router.navigate([PageUrls.JudgeHearingList]);
