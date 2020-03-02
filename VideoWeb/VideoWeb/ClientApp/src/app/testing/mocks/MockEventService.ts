@@ -6,6 +6,7 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 
 import { ConferenceStatus, ParticipantStatus, RoomType, ConsultationAnswer, ChatResponse } from '../../services/clients/api-client';
 import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
+import { Guid } from 'guid-typescript';
 
 export class MockEventsService {
     nextParticipantStatusMessage: ParticipantStatusMessage;
@@ -41,7 +42,12 @@ export class MockEventsService {
             ConsultationAnswer.None
         );
         this.nextJudgeStatusMessage = new ParticipantStatusMessage('9F681318-4955-49AF-A887-DED64554429T', ParticipantStatus.Disconnected);
-        this.nextChatMessage = new ChatResponse({ from: 'chris.green@hearings.net', message: 'test message', timestamp: new Date() });
+        this.nextChatMessage = new ChatResponse({
+            id: Guid.create().toString(),
+            from: 'judge.fudge@hearings.net',
+            message: 'test message',
+            timestamp: new Date()
+        });
     }
 
     start() {}

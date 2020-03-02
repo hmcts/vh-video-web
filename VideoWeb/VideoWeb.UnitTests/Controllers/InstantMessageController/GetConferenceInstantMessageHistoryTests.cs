@@ -18,14 +18,14 @@ using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
-namespace VideoWeb.UnitTests.Controllers.MessageController
+namespace VideoWeb.UnitTests.Controllers.InstantMessageController
 {
-    public class GetConferenceChatHistoryTests
+    public class GetConferenceInstantMessageHistoryTests
     {
-        private MessagesController _controller;
+        private InstantMessagesController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
         private Mock<IMessageDecoder> _messageDecoder;
-        private Mock<ILogger<MessagesController>> _mockLogger;
+        private Mock<ILogger<InstantMessagesController>> _mockLogger;
         private IMemoryCache _memoryCache;
 
         [SetUp]
@@ -34,7 +34,7 @@ namespace VideoWeb.UnitTests.Controllers.MessageController
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
             _videoApiClientMock = new Mock<IVideoApiClient>();
             _messageDecoder = new Mock<IMessageDecoder>();
-            _mockLogger = new Mock<ILogger<MessagesController>>();
+            _mockLogger = new Mock<ILogger<InstantMessagesController>>();
 
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
@@ -46,7 +46,7 @@ namespace VideoWeb.UnitTests.Controllers.MessageController
             };
 
             _controller =
-                new MessagesController(_videoApiClientMock.Object, _mockLogger.Object, _messageDecoder.Object,
+                new InstantMessagesController(_videoApiClientMock.Object, _mockLogger.Object, _messageDecoder.Object,
                     _memoryCache)
                 {
                     ControllerContext = context
@@ -70,7 +70,7 @@ namespace VideoWeb.UnitTests.Controllers.MessageController
             _videoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
                 .ReturnsAsync(messages);
 
-            var result = await _controller.GetConferenceChatHistory(conferenceId);
+            var result = await _controller.GetConferenceInstantMessageHistory(conferenceId);
             var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
             var responseModel = typedResult.Value as List<ChatResponse>;
@@ -86,7 +86,7 @@ namespace VideoWeb.UnitTests.Controllers.MessageController
             _videoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
                 .ReturnsAsync(messages);
 
-            var result = await _controller.GetConferenceChatHistory(conferenceId);
+            var result = await _controller.GetConferenceInstantMessageHistory(conferenceId);
             var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
             var responseModel = typedResult.Value as List<ChatResponse>;
@@ -108,7 +108,7 @@ namespace VideoWeb.UnitTests.Controllers.MessageController
             _videoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
                 .ReturnsAsync(messages);
 
-            var result = await _controller.GetConferenceChatHistory(conferenceId);
+            var result = await _controller.GetConferenceInstantMessageHistory(conferenceId);
 
             _messageDecoder.Verify(x => x.IsMessageFromUser(
                     It.Is<InstantMessageResponse>(m => m.From == loggedInUser), loggedInUser),
@@ -134,7 +134,7 @@ namespace VideoWeb.UnitTests.Controllers.MessageController
             _videoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferenceChatHistory(conferenceId);
+            var result = await _controller.GetConferenceInstantMessageHistory(conferenceId);
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
         }

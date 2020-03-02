@@ -14,6 +14,7 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MockProfileService } from 'src/app/testing/mocks/MockProfileService';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { JudgeChatComponent } from './judge-chat.component';
+import { ChatResponse } from 'src/app/services/clients/api-client';
 
 describe('JudgeChatComponent', () => {
     let component: JudgeChatComponent;
@@ -136,5 +137,14 @@ describe('JudgeChatComponent', () => {
         const messages = new ConferenceTestData().getChatHistory(othername);
         const count = component.getCountSinceUsersLastMessage(messages);
         expect(count).toBe(messages.length);
+    });
+
+    it('should not a messsage to the chat list when unique id is already present', () => {
+        const messages = new ConferenceTestData().getChatHistory(judgeUsername);
+        component.messages = Object.assign([], messages);
+        const duplicateMessage = messages[messages.length - 1];
+        component.handleIncomingMessage(duplicateMessage);
+
+        expect(component.messages.length).toBe(messages.length);
     });
 });
