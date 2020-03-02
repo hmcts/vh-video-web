@@ -203,10 +203,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.handleHearingStatusChange(conferenceStatus);
 
         const message = eventService.nextJudgeStatusMessage;
-        console.log(message.status);
         component.handleParticipantStatusChange(message);
         const participant = component.conference.participants.find(x => x.id === message.participantId);
-        console.log(participant.status);
         expect(participant.status === message.status);
         expect(judgeEventServiceSpy.raiseJudgeAvailableEvent).toHaveBeenCalled();
         done();

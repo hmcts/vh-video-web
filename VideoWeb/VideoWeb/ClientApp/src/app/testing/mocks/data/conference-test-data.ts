@@ -15,6 +15,7 @@ import {
 } from 'src/app/services/clients/api-client';
 import { HearingsFilter, StatusFilter, ListFilter, AlertsStatus, AlertFilter } from '../../../shared/models/hearings-filter';
 import * as moment from 'moment';
+import { Guid } from 'guid-typescript';
 
 export class ConferenceTestData {
     getConferenceNow(): ConferenceForUserResponse {
@@ -287,6 +288,7 @@ export class ConferenceTestData {
         const now = new Date();
         const messages: ChatResponse[] = [];
         const message1 = new ChatResponse({
+            id: Guid.create().toString(),
             from: 'vho.user@hearings.net',
             message: 'test message from vho',
             timestamp: moment(now)
@@ -295,6 +297,7 @@ export class ConferenceTestData {
         });
 
         const message2 = new ChatResponse({
+            id: Guid.create().toString(),
             from: 'judge.fudge@hearings.net',
             message: 'test message from judge',
             timestamp: moment(now)
@@ -303,6 +306,7 @@ export class ConferenceTestData {
         });
 
         const message3 = new ChatResponse({
+            id: Guid.create().toString(),
             from: 'vho.user@hearings.net',
             message: 'test message from vho 2',
             timestamp: moment(now)
@@ -311,6 +315,7 @@ export class ConferenceTestData {
         });
 
         const message4 = new ChatResponse({
+            id: Guid.create().toString(),
             from: 'vho.user@hearings.net',
             message: 'test message from vho 3',
             timestamp: moment(now)

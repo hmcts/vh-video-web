@@ -15,6 +15,7 @@ import { ChatResponse } from 'src/app/services/clients/api-client';
 import { configureTestSuite } from 'ng-bullet';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { MockProfileService } from 'src/app/testing/mocks/MockProfileService';
+import { Guid } from 'guid-typescript';
 
 describe('VhoChatComponent', () => {
     let component: VhoChatComponent;
@@ -33,7 +34,7 @@ describe('VhoChatComponent', () => {
                 { provide: VideoWebService, useClass: MockVideoWebService },
                 { provide: ProfileService, useClass: MockProfileService },
                 { provide: Logger, useClass: MockLogger },
-                { provide: EventsService, useClass: MockEventsService }
+                { provide: EventsService, useValue: new MockEventsService(true) }
             ]
         }).compileComponents();
     });
@@ -109,6 +110,7 @@ describe('VhoChatComponent', () => {
         const username = conference.participants[0].username;
         adalService.userInfo.userName = username;
         const chatResponse = new ChatResponse({
+            id: Guid.create().toString(),
             from: username,
             message: 'test message',
             timestamp: new Date()
@@ -124,6 +126,7 @@ describe('VhoChatComponent', () => {
         const otherUsername = conference.participants[1].username;
         adalService.userInfo.userName = username;
         const chatResponse = new ChatResponse({
+            id: Guid.create().toString(),
             from: otherUsername,
             message: 'test message',
             timestamp: new Date()
