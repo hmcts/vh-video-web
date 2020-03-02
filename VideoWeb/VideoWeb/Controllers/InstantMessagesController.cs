@@ -17,14 +17,14 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [Route("conferences")]
     [ApiController]
-    public class MessagesController : ControllerBase
+    public class InstantMessagesController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IMemoryCache _memoryCache;
-        private readonly ILogger<MessagesController> _logger;
+        private readonly ILogger<InstantMessagesController> _logger;
         private readonly IMessageDecoder _messageDecoder;
 
-        public MessagesController(IVideoApiClient videoApiClient, ILogger<MessagesController> logger,
+        public InstantMessagesController(IVideoApiClient videoApiClient, ILogger<InstantMessagesController> logger,
             IMessageDecoder messageDecoder, IMemoryCache memoryCache)
         {
             _videoApiClient = videoApiClient;
@@ -34,15 +34,15 @@ namespace VideoWeb.Controllers
         }
 
         /// <summary>
-        /// Get all the chat messages for a conference
+        /// Get all the instant messages for a conference
         /// </summary>
         /// <param name="conferenceId">Id of the conference</param>
-        /// <returns>Chat messages</returns>
-        [HttpGet("{conferenceId}/messages")]
-        [SwaggerOperation(OperationId = "GetConferenceChatHistory")]
+        /// <returns>List of instant messages</returns>
+        [HttpGet("{conferenceId}/instantmessages")]
+        [SwaggerOperation(OperationId = "GetConferenceInstantMessageHistory")]
         [ProducesResponseType(typeof(List<ChatResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetConferenceChatHistory(Guid conferenceId)
+        public async Task<IActionResult> GetConferenceInstantMessageHistory(Guid conferenceId)
         {
             _logger.LogDebug($"GetMessages for {conferenceId}");
             try

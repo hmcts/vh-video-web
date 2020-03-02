@@ -1,4 +1,4 @@
-import { Component, HostListener, NgZone, OnDestroy, OnInit, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { AdalService } from 'adal-angular4';
 import { ProfileService } from 'src/app/services/api/profile.service';

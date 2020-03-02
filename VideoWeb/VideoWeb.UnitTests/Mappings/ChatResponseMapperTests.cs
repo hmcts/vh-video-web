@@ -35,6 +35,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.Message.Should().Be(message.Message_text);
             response.Timestamp.Should().Be(message.Time_stamp);
             response.IsUser.Should().BeTrue();
+            response.Id.Should().NotBeEmpty();
         }
     }
 }

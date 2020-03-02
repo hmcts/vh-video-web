@@ -135,8 +135,9 @@ namespace VideoWeb.EventHub.Hub
             if (!isAllowed) return;
             var from = Context.User.Identity.Name;
             var timestamp = DateTime.UtcNow;
-            
-            await Clients.Group(conferenceId.ToString()).ReceiveMessage(conferenceId, from, message, timestamp);
+
+            await Clients.Group(conferenceId.ToString())
+                .ReceiveMessage(conferenceId, from, message, timestamp, Guid.NewGuid());
             await _videoApiClient.AddInstantMessageToConferenceAsync(conferenceId, new AddInstantMessageRequest
             {
                 From = from,

@@ -1,12 +1,12 @@
-import { Component, NgZone, OnDestroy, OnInit, AfterViewChecked, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { AfterViewChecked, Component, HostListener, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { AdalService } from 'adal-angular4';
+import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { ChatResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
-import { ProfileService } from 'src/app/services/api/profile.service';
-import { ChatResponse } from 'src/app/services/clients/api-client';
 
 @Component({
     selector: 'app-judge-chat',
