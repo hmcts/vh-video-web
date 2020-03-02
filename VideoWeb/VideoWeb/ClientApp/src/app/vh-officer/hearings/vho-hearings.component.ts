@@ -75,11 +75,11 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.logger.info('Loading VH Officer Dashboard');
+        this.setupEventHubSubscribers();
         this.retrieveHearingsForVhOfficer();
         this.interval = setInterval(() => {
             this.retrieveHearingsForVhOfficer();
         }, 30000);
-        this.setupEventHubSubscribers();
     }
 
     @HostListener('window:beforeunload')

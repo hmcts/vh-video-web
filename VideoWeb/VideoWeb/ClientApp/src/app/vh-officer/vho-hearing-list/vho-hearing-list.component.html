@@ -4,21 +4,21 @@
       [ngClass]="{ 'selected-conference': isCurrentConference(conference) }" *ngFor="let conference of conferences"
       (click)="selectConference(conference)">
       <dd id="{{conference.id}}-summary" class="govuk-summary-list__value govuk-!-padding-left-4">
-        <div>
+        <div class="govuk-grid-column-full">
           <div id="{{conference.id}}-time" class="govuk-grid-column-one-half">
             {{conference.scheduled_date_time | date:'HH:mm' }}</div>
           <div id="{{conference.id}}-case-number" class="govuk-grid-column-one-half">
             {{conference.case_number}}</div>
         </div>
 
-        <div>
+        <div class="govuk-grid-column-full">
           <div id="{{conference.id}}-duration" class="govuk-grid-column-one-half">
             {{ getDuration(conference) }}</div>
           <div id="{{conference.id}}-case-name" class="govuk-grid-column-one-half">
             {{conference.case_name}}</div>
         </div>
 
-        <div>
+        <div class="govuk-grid-column-full">
           <div class="govuk-grid-column-one-half govuk-!-padding-top-3">
             <span id="{{conference.id}}--pending-tasks" class="alert-badge has-alerts"
               [ngClass]="{ 'has-alerts': conference.no_of_pending_tasks > 0, 'no-alerts': conference.no_of_pending_tasks === 0}"
