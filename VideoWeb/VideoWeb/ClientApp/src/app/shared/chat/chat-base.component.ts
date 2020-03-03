@@ -28,7 +28,8 @@ export abstract class ChatBaseComponent {
         protected adalService: AdalService
     ) {}
 
-    abstract sendMessage(): void;
+    // abstract sendMessage(): void;
+    abstract sendMessage(messageBody?: string): void;
     abstract getMessageWindow(): HTMLElement;
 
     setupChatSubscription(): any {
@@ -85,13 +86,5 @@ export abstract class ChatBaseComponent {
             return im;
         });
         return this.messages;
-    }
-
-    onKeydown(event: KeyboardEvent) {
-        if (event.key === 'Enter' && !event.altKey && !event.shiftKey && !event.ctrlKey) {
-            event.stopPropagation();
-            event.preventDefault();
-            this.sendMessage();
-        }
     }
 }

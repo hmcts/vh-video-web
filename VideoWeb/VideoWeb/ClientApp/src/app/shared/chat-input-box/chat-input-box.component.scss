@@ -1,0 +1,24 @@
+.chat-input-group {
+  margin-right: 15px;
+  margin-bottom: 0px;
+  background: govuk-colour("white");
+}
+
+.chat-input-text-button-group {
+  display: flex;
+  margin-bottom: 0px;
+  background: govuk-colour("white");
+}
+
+.chat-input {
+  margin-bottom: 0px;
+  resize: none;
+}
+
+.chat-btn {
+  margin-bottom: 2px;
+}
+
+.length-hint {
+  font-size: 0.9em;
+}
