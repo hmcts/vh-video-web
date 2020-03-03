@@ -54,12 +54,7 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         this.sectionDivWidth = frameWidth;
     }
 
-    sendMessage() {
-        if (this.newMessageBody.invalid) {
-            return;
-        }
-        const messageBody = this.newMessageBody.value;
-        this.newMessageBody.reset();
+    sendMessage(messageBody: string) {
         this.eventService.sendMessage(this._hearing.id, messageBody);
     }
 
