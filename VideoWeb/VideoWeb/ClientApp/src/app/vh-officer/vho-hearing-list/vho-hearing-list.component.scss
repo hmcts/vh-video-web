@@ -156,7 +156,8 @@
 }
 
 .notification-badge {
-  width: 45px;
+  min-width: 45px;
+  width: auto;
   height: 28px;
   border-radius: 4px;
   position: relative;
@@ -164,6 +165,7 @@
   text-align: center;
   margin-bottom: 15px;
   font-weight: bold;
+  margin-right: 4vw;
 }
 
 .notification-badge.has-messages {
@@ -208,7 +210,6 @@
 
 .alert-badge {
   position: relative;
-  margin-left: 20px;
   font-weight: bold;
 }
 
