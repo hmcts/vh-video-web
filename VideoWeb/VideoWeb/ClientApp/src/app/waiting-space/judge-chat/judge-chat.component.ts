@@ -14,10 +14,8 @@ import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
     styleUrls: ['./judge-chat.component.scss']
 })
 export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnDestroy, AfterViewChecked {
-    newMessageBody: FormControl;
     showChat: boolean;
     unreadMessageCount: number;
-    maxInputLength = 256;
 
     constructor(
         protected videoWebService: VideoWebService,
@@ -33,7 +31,6 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
     ngOnInit() {
         this.showChat = false;
         this.unreadMessageCount = 0;
-        this.initForm();
         this.setupChatSubscription();
         this.retrieveChatForConference().then(messages => {
             this.unreadMessageCount = this.getCountSinceUsersLastMessage(messages);
@@ -47,32 +44,7 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
         }
     }
 
-    initForm() {
-        this.newMessageBody = new FormControl(null, [Validators.minLength(1), Validators.maxLength(this.maxInputLength)]);
-    }
-
-    get currentInputLength(): number {
-        if (this.newMessageBody.value) {
-            return this.newMessageBody.value.length;
-        } else {
-            return 0;
-        }
-    }
-
-    get isSendingBlocked(): boolean {
-        return this.currentInputLength === 0 || this.isInputInvalid;
-    }
-
-    get isInputInvalid(): boolean {
-        return this.newMessageBody.dirty && this.newMessageBody.hasError('maxlength');
-    }
-
-    sendMessage() {
-        if (this.newMessageBody.invalid) {
-            return;
-        }
-        const messageBody = this.newMessageBody.value;
-        this.newMessageBody.reset();
+    sendMessage(messageBody?: string) {
         this.eventService.sendMessage(this._hearing.id, messageBody);
     }
 
@@ -82,9 +54,7 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
 
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
-        if (this.chatHubSubscription) {
-            this.chatHubSubscription.unsubscribe();
-        }
+        this.chatHubSubscription.unsubscribe();
     }
 
     toggleChatDisplay() {

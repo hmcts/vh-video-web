@@ -1,22 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AdalService } from 'adal-angular4';
+import { Guid } from 'guid-typescript';
 import { configureTestSuite } from 'ng-bullet';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MockProfileService } from 'src/app/testing/mocks/MockProfileService';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
+import { ChatInputBoxStubComponent } from 'src/app/testing/stubs/chat-input-box-stub.component';
 import { JudgeChatComponent } from './judge-chat.component';
-import { ChatResponse } from 'src/app/services/clients/api-client';
-import { InstantMessage } from 'src/app/services/models/instant-message';
-import { Guid } from 'guid-typescript';
 
 describe('JudgeChatComponent', () => {
     let component: JudgeChatComponent;
@@ -29,8 +26,7 @@ describe('JudgeChatComponent', () => {
 
     configureTestSuite(() => {
         TestBed.configureTestingModule({
-            imports: [FormsModule, ReactiveFormsModule, SharedModule],
-            declarations: [JudgeChatComponent],
+            declarations: [JudgeChatComponent, ChatInputBoxStubComponent],
             providers: [
                 { provide: AdalService, useClass: MockAdalService },
                 { provide: VideoWebService, useClass: MockVideoWebService },
@@ -92,31 +88,6 @@ describe('JudgeChatComponent', () => {
         component.unreadMessageCount = 0;
         component.handleIncomingOtherMessage();
         expect(component.unreadMessageCount).toBe(0);
-    });
-
-    it('should clear field when message has been sent', async done => {
-        await fixture.whenStable();
-        const messageBody = 'test body';
-        component.newMessageBody.setValue(messageBody);
-        spyOn(eventService, 'sendMessage');
-        component.sendMessage();
-
-        expect(component.newMessageBody.value).toBeNull();
-        expect(eventService.sendMessage).toHaveBeenCalled();
-        done();
-    });
-
-    it('should not send message when validation fails', () => {
-        spyOn(eventService, 'sendMessage').and.callFake(() => {
-            return Promise.resolve();
-        });
-        component.newMessageBody.setValue('');
-        const event = new KeyboardEvent('keydown', {
-            key: 'Enter'
-        });
-
-        component.onKeydown(event);
-        expect(eventService.sendMessage).toHaveBeenCalledTimes(0);
     });
 
     it('should get first name when message from user not in conference', async () => {
