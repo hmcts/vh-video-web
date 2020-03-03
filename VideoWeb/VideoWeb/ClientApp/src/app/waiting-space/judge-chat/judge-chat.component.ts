@@ -17,6 +17,7 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
     newMessageBody: FormControl;
     showChat: boolean;
     unreadMessageCount: number;
+    maxInputLength = 256;
 
     constructor(
         protected videoWebService: VideoWebService,
@@ -33,9 +34,9 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
         this.showChat = false;
         this.unreadMessageCount = 0;
         this.initForm();
+        this.setupChatSubscription();
         this.retrieveChatForConference().then(messages => {
             this.unreadMessageCount = this.getCountSinceUsersLastMessage(messages);
-            this.setupChatSubscription();
         });
     }
 
@@ -47,7 +48,23 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
     }
 
     initForm() {
-        this.newMessageBody = new FormControl(null, [Validators.required, Validators.minLength(1)]);
+        this.newMessageBody = new FormControl(null, [Validators.minLength(1), Validators.maxLength(this.maxInputLength)]);
+    }
+
+    get currentInputLength(): number {
+        if (this.newMessageBody.value) {
+            return this.newMessageBody.value.length;
+        } else {
+            return 0;
+        }
+    }
+
+    get isSendingBlocked(): boolean {
+        return this.currentInputLength === 0 || this.isInputInvalid;
+    }
+
+    get isInputInvalid(): boolean {
+        return this.newMessageBody.dirty && this.newMessageBody.hasError('maxlength');
     }
 
     sendMessage() {

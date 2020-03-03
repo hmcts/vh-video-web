@@ -4,13 +4,16 @@
       <span *ngIf="!showChat && unreadMessageCount" id="unread-messages" class="notification-badge"
         [attr.data-badge]="unreadMessageCount"></span>
       <span class="chevron">
-        <img id="open-chat-arrow" *ngIf="!showChat" src="/assets/images/IM-open-arrow.png" alt="Open instant messaging chat window arrow" />
-        <img id="close-chat-arrow" *ngIf="showChat" src="/assets/images/IM-close-arrow.png" alt="Close instant messaging chat window arrow" />
+        <img id="open-chat-arrow" *ngIf="!showChat" src="/assets/images/IM-open-arrow.png"
+          alt="Open instant messaging chat window arrow" />
+        <img id="close-chat-arrow" *ngIf="showChat" src="/assets/images/IM-close-arrow.png"
+          alt="Close instant messaging chat window arrow" />
       </span>
     </span>
   </div>
-  <span *ngIf="showChat">
-    <div id="chat-list" #scrollMe [scrollTop]="scrollMe.scrollHeight" class="govuk-!-padding-2 govuk-!-padding-left-4 chat-window" >
+  <div *ngIf="showChat">
+    <div id="chat-list" #scrollMe [scrollTop]="scrollMe.scrollHeight"
+      class="govuk-!-padding-2 govuk-!-padding-left-4 chat-window">
       <div *ngFor="let message of messages" class="govuk-grid-row message-container">
 
         <div class="govuk-grid-column-full" [ngClass]="(message.is_user)?'own-message':'other-message'">
@@ -24,14 +27,28 @@
       </div>
     </div>
 
-    <div class="govuk-form-group chat-input-group">
-      <textarea class="govuk-textarea chat-input" required maxlength="256" rows=2 autocomplete="off"
-        [formControl]="newMessageBody" id="new-message-box" name="new-message-box" #newMessageBox type="text"
-        (keydown.enter)="$event.preventDefault()" (keydown)="onKeydown($event)"></textarea>
-      <button (click)="sendMessage()" id="send-new-message-btn" class="govuk-button chat-btn"
-        data-module="govuk-button">
-        Send
-      </button>
+    <div class="chat-input-group">
+      <div
+        [ngClass]="isInputInvalid ? 'govuk-form-group--error' : 'govuk-form-group govuk-!-margin-left-2 govuk-!-margin-bottom-2'"
+        class="chat-input-text-button-group">
+        <textarea class="govuk-textarea chat-input" required rows=2 autocomplete="off" [formControl]="newMessageBody"
+          id="new-message-box" name="new-message-box" #newMessageBox type="text"
+          (keydown.enter)="$event.preventDefault()" (keydown)="onKeydown($event)"></textarea>
+        <button [disabled]="isSendingBlocked" (click)="sendMessage()" id="send-new-message-btn"
+          class="govuk-button chat-btn" data-module="govuk-button">
+          Send
+        </button>
+      </div>
+      <div *ngIf="newMessageBody.pristine || !isInputInvalid"
+        class="govuk-hint govuk-character-count__message govuk-!-margin-left-2 length-hint">
+        Character count {{currentInputLength}} (maximum allowed {{maxInputLength}})
+      </div>
+      <div id="input-errors" *ngIf="isInputInvalid"
+        class="govuk-hint govuk-form-group--error length-hint govuk-!-padding-top-2 govuk-!-margin-bottom-0">
+        <span class="govuk-error-message length-hint govuk-!-margin-bottom-0">Character count
+          {{currentInputLength}} (maximum
+          allowed {{maxInputLength}}) Unable to send message</span>
+      </div>
     </div>
-  </span>
+  </div>
 </div>
