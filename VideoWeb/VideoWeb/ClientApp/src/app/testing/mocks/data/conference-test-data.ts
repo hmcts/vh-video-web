@@ -1,21 +1,21 @@
+import { Guid } from 'guid-typescript';
+import * as moment from 'moment';
 import {
     ConferenceForUserResponse,
+    ConferenceForVhOfficerResponse,
     ConferenceResponse,
     ConferenceStatus,
+    ParticipantForUserResponse,
     ParticipantResponse,
     ParticipantStatus,
-    UserRole,
-    ParticipantForUserResponse,
+    SelfTestPexipResponse,
     TaskResponse,
     TaskType,
-    SelfTestPexipResponse,
     TaskUserResponse,
-    ChatResponse,
-    ConferenceForVhOfficerResponse
+    UserRole
 } from 'src/app/services/clients/api-client';
-import { HearingsFilter, StatusFilter, ListFilter, AlertsStatus, AlertFilter } from '../../../shared/models/hearings-filter';
-import * as moment from 'moment';
-import { Guid } from 'guid-typescript';
+import { InstantMessage } from 'src/app/services/models/instant-message';
+import { AlertFilter, AlertsStatus, HearingsFilter, ListFilter, StatusFilter } from '../../../shared/models/hearings-filter';
 
 export class ConferenceTestData {
     getConferenceNow(): ConferenceForUserResponse {
@@ -284,10 +284,11 @@ export class ConferenceTestData {
         return filter;
     }
 
-    getChatHistory(loggedInUser: string): ChatResponse[] {
+    getChatHistory(loggedInUser: string, conferenceId: string): InstantMessage[] {
         const now = new Date();
-        const messages: ChatResponse[] = [];
-        const message1 = new ChatResponse({
+        const messages: InstantMessage[] = [];
+        const message1 = new InstantMessage({
+            conferenceId,
             id: Guid.create().toString(),
             from: 'vho.user@hearings.net',
             message: 'test message from vho',
@@ -296,7 +297,8 @@ export class ConferenceTestData {
                 .toDate()
         });
 
-        const message2 = new ChatResponse({
+        const message2 = new InstantMessage({
+            conferenceId,
             id: Guid.create().toString(),
             from: 'judge.fudge@hearings.net',
             message: 'test message from judge',
@@ -305,7 +307,8 @@ export class ConferenceTestData {
                 .toDate()
         });
 
-        const message3 = new ChatResponse({
+        const message3 = new InstantMessage({
+            conferenceId,
             id: Guid.create().toString(),
             from: 'vho.user@hearings.net',
             message: 'test message from vho 2',
@@ -314,7 +317,8 @@ export class ConferenceTestData {
                 .toDate()
         });
 
-        const message4 = new ChatResponse({
+        const message4 = new InstantMessage({
+            conferenceId,
             id: Guid.create().toString(),
             from: 'vho.user@hearings.net',
             message: 'test message from vho 3',

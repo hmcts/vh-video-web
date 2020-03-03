@@ -15,6 +15,8 @@ import { MockProfileService } from 'src/app/testing/mocks/MockProfileService';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { JudgeChatComponent } from './judge-chat.component';
 import { ChatResponse } from 'src/app/services/clients/api-client';
+import { InstantMessage } from 'src/app/services/models/instant-message';
+import { Guid } from 'guid-typescript';
 
 describe('JudgeChatComponent', () => {
     let component: JudgeChatComponent;
@@ -49,7 +51,7 @@ describe('JudgeChatComponent', () => {
         fixture = TestBed.createComponent(JudgeChatComponent);
         component = fixture.componentInstance;
         component.conference = conference;
-        component.messages = new ConferenceTestData().getChatHistory(judgeUsername);
+        component.messages = new ConferenceTestData().getChatHistory(judgeUsername, conference.id);
         fixture.detectChanges();
     });
 
@@ -126,7 +128,7 @@ describe('JudgeChatComponent', () => {
     });
 
     it('should reset unread counter to number of messages since judge replied', () => {
-        const messages = new ConferenceTestData().getChatHistory(judgeUsername);
+        const messages = new ConferenceTestData().getChatHistory(judgeUsername, conference.id);
         const count = component.getCountSinceUsersLastMessage(messages);
         expect(count).toBe(1);
     });
@@ -134,16 +136,26 @@ describe('JudgeChatComponent', () => {
     it('should reset unread counter to number of messages since user never replied', () => {
         const othername = 'never@sent.com';
         adalService.userInfo.userName = judgeUsername;
-        const messages = new ConferenceTestData().getChatHistory(othername);
+        const messages = new ConferenceTestData().getChatHistory(othername, conference.id);
         const count = component.getCountSinceUsersLastMessage(messages);
         expect(count).toBe(messages.length);
     });
 
     it('should not a messsage to the chat list when unique id is already present', () => {
-        const messages = new ConferenceTestData().getChatHistory(judgeUsername);
+        const messages = new ConferenceTestData().getChatHistory(judgeUsername, conference.id);
         component.messages = Object.assign([], messages);
         const duplicateMessage = messages[messages.length - 1];
         component.handleIncomingMessage(duplicateMessage);
+
+        expect(component.messages.length).toBe(messages.length);
+    });
+
+    it('should ignore message if for another conference', () => {
+        const messages = new ConferenceTestData().getChatHistory(judgeUsername, conference.id);
+        component.messages = Object.assign([], messages);
+        const newIm = messages[messages.length - 1];
+        newIm.conferenceId = Guid.create().toString();
+        component.handleIncomingMessage(newIm);
 
         expect(component.messages.length).toBe(messages.length);
     });

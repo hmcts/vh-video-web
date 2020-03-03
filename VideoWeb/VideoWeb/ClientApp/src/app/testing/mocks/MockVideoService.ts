@@ -59,6 +59,6 @@ export class MockVideoWebService extends VideoWebService {
     }
 
     getConferenceChatHistory(conferenceId: string): Observable<ChatResponse[]> {
-        return of(new ConferenceTestData().getChatHistory(null));
+        return of(new ConferenceTestData().getChatHistory(null, conferenceId));
     }
 }

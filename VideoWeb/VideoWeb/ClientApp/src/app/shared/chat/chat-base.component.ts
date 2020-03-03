@@ -3,16 +3,17 @@ import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ChatResponse, ConferenceResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { InstantMessage } from 'src/app/services/models/instant-message';
 
 export abstract class ChatBaseComponent {
     protected _hearing: Hearing;
     protected chatHubSubscription: Subscription;
 
-    messages: ChatResponse[];
+    messages: InstantMessage[];
 
     @Input() set conference(conference: ConferenceResponse) {
         this._hearing = new Hearing(conference);
@@ -41,7 +42,13 @@ export abstract class ChatBaseComponent {
         this.eventService.start();
     }
 
-    async handleIncomingMessage(message: ChatResponse) {
+    async handleIncomingMessage(message: InstantMessage) {
+        // ignore if not for current conference
+        if (message.conferenceId !== this._hearing.id) {
+            return;
+        }
+
+        // ignore if already received message
         if (this.messages.findIndex(m => m.id === message.id) > -1) {
             this.logger.debug(`message already been processed ${JSON.stringify(message)}`);
             return;
@@ -71,8 +78,12 @@ export abstract class ChatBaseComponent {
 
     handleIncomingOtherMessage() {}
 
-    async retrieveChatForConference(): Promise<ChatResponse[]> {
-        this.messages = await this.videoWebService.getConferenceChatHistory(this._hearing.id).toPromise();
+    async retrieveChatForConference(): Promise<InstantMessage[]> {
+        this.messages = (await this.videoWebService.getConferenceChatHistory(this._hearing.id).toPromise()).map(m => {
+            const im = new InstantMessage(m);
+            im.conferenceId = this._hearing.id;
+            return im;
+        });
         return this.messages;
     }
 
