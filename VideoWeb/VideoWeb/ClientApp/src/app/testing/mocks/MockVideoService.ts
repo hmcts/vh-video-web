@@ -90,6 +90,6 @@ export class MockVideoWebService implements IVideoWebApiService {
     }
 
     getConferenceChatHistory(conferenceId: string): Observable<ChatResponse[]> {
-        return of(new ConferenceTestData().getChatHistory(null));
+        return of(new ConferenceTestData().getChatHistory(null, conferenceId));
     }
 }

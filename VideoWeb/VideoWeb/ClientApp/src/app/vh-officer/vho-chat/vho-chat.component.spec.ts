@@ -1,21 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AdalService } from 'adal-angular4';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
-import { VhoChatComponent } from './vho-chat.component';
-import { SharedModule } from 'src/app/shared/shared.module';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { EventsService } from 'src/app/services/events.service';
-import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
-import { ChatResponse } from 'src/app/services/clients/api-client';
+import { Guid } from 'guid-typescript';
 import { configureTestSuite } from 'ng-bullet';
 import { ProfileService } from 'src/app/services/api/profile.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { EventsService } from 'src/app/services/events.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { InstantMessage } from 'src/app/services/models/instant-message';
+import { SharedModule } from 'src/app/shared/shared.module';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
+import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MockProfileService } from 'src/app/testing/mocks/MockProfileService';
-import { Guid } from 'guid-typescript';
+import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
+import { VhoChatComponent } from './vho-chat.component';
 
 describe('VhoChatComponent', () => {
     let component: VhoChatComponent;
@@ -46,7 +46,7 @@ describe('VhoChatComponent', () => {
         fixture = TestBed.createComponent(VhoChatComponent);
         component = fixture.componentInstance;
         component.conference = conference;
-        component.messages = new ConferenceTestData().getChatHistory('vho.user@hearings.net');
+        component.messages = new ConferenceTestData().getChatHistory('vho.user@hearings.net', conference.id);
         spyOn(component, 'updateDivWidthForSection').and.callFake(() => {});
         fixture.detectChanges();
     });
@@ -109,15 +109,16 @@ describe('VhoChatComponent', () => {
     it('should set from to "You" whem message is from current user', () => {
         const username = conference.participants[0].username;
         adalService.userInfo.userName = username;
-        const chatResponse = new ChatResponse({
+        const instantMessage = new InstantMessage({
+            conferenceId: conference.id,
             id: Guid.create().toString(),
             from: username,
             message: 'test message',
             timestamp: new Date()
         });
         const messageCount = component.messages.length;
-        component.handleIncomingMessage(chatResponse);
-        expect(chatResponse.is_user).toBeTruthy();
+        component.handleIncomingMessage(instantMessage);
+        expect(instantMessage.is_user).toBeTruthy();
         expect(component.messages.length).toBeGreaterThan(messageCount);
     });
 
@@ -125,7 +126,8 @@ describe('VhoChatComponent', () => {
         const username = conference.participants[0].username;
         const otherUsername = conference.participants[1].username;
         adalService.userInfo.userName = username;
-        const chatResponse = new ChatResponse({
+        const chatResponse = new InstantMessage({
+            conferenceId: conference.id,
             id: Guid.create().toString(),
             from: otherUsername,
             message: 'test message',
