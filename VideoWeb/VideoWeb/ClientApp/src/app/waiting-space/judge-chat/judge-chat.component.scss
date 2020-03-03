@@ -1,6 +1,7 @@
 @import "~govuk-frontend/govuk/all";
 
 .judge-chat-window {
+  background: white;
   width: 30%;
   z-index: 100;
   position: fixed;
@@ -49,6 +50,12 @@
 }
 
 .chat-input-group {
+  margin-right: 15px;
+  margin-bottom: 0px;
+  background: govuk-colour("white");
+}
+
+.chat-input-text-button-group {
   display: flex;
   margin-bottom: 0px;
   background: govuk-colour("white");
@@ -68,7 +75,7 @@
 }
 
 .chat-btn {
-  margin-bottom: 0px;
+  margin-bottom: 2px;
 }
 
 .notification-badge {
@@ -98,6 +105,10 @@
 
 .message-container {
   width: 100%;
+}
+
+.length-hint {
+  font-size: 0.9em;
 }
 
 ::-webkit-scrollbar {
