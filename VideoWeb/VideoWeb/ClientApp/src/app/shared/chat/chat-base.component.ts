@@ -28,8 +28,7 @@ export abstract class ChatBaseComponent {
         protected adalService: AdalService
     ) {}
 
-    // abstract sendMessage(): void;
-    abstract sendMessage(messageBody?: string): void;
+    abstract sendMessage(messageBody: string): void;
     abstract getMessageWindow(): HTMLElement;
 
     setupChatSubscription(): any {

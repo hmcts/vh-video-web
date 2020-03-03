@@ -1,5 +1,4 @@
 import { AfterViewChecked, Component, HostListener, NgZone, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
 import { AdalService } from 'adal-angular4';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -44,7 +43,7 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
         }
     }
 
-    sendMessage(messageBody?: string) {
+    sendMessage(messageBody: string) {
         this.eventService.sendMessage(this._hearing.id, messageBody);
     }
 

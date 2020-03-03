@@ -23,13 +23,15 @@ describe('JudgeChatComponent', () => {
     let profileService: MockProfileService;
     const conference = new ConferenceTestData().getConferenceDetail();
     const judgeUsername = 'judge.fudge@hearings.net';
+    const videoWebService = new MockVideoWebService();
+    videoWebService.username = judgeUsername;
 
     configureTestSuite(() => {
         TestBed.configureTestingModule({
             declarations: [JudgeChatComponent, ChatInputBoxStubComponent],
             providers: [
                 { provide: AdalService, useClass: MockAdalService },
-                { provide: VideoWebService, useClass: MockVideoWebService },
+                { provide: VideoWebService, useValue: videoWebService },
                 { provide: ProfileService, useClass: MockProfileService },
                 { provide: Logger, useClass: MockLogger },
                 { provide: EventsService, useClass: MockEventsService }
@@ -129,5 +131,19 @@ describe('JudgeChatComponent', () => {
         component.handleIncomingMessage(newIm);
 
         expect(component.messages.length).toBe(messages.length);
+    });
+
+    it('should map to InstantMessage', async () => {
+        const messages = await component.retrieveChatForConference();
+        const messagesWithId = messages.filter(x => x.id);
+        console.log(messagesWithId);
+        expect(messagesWithId.length).toBe(messages.length);
+    });
+
+    it('should send message to hub', () => {
+        spyOn(eventService, 'sendMessage');
+        const message = 'test';
+        component.sendMessage(message);
+        expect(eventService.sendMessage).toHaveBeenCalledWith(conference.id, message);
     });
 });
