@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using VideoWeb.Common.SignalR;
@@ -158,6 +160,24 @@ namespace VideoWeb.EventHub.Hub
 
             return conference.GetJudge().Username
                 .Equals(Context.UserIdentifier, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public async Task SendHeartbeat(Guid conferenceId, Guid participantId, string heartbeat, 
+            string browserName, string browserVersion)
+        {
+            try
+            {
+                var model = JsonSerializer.Deserialize<Heartbeat>(heartbeat);
+                
+                //Send to clients
+                //Save to DB
+                
+                await Task.Delay(2);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error occured when sending heartbeat", ex);
+            }
         }
     }
 }
