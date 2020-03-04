@@ -85,6 +85,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         if (!this.waitingForConsultationResponse) {
             return;
         }
+        this.stopCallRinging();
         this.logger.info('Consultation request timed-out. Cancelling call');
         await this.answerConsultationRequest(ConsultationAnswer.Cancelled);
         this.displayModal(this.REJECTED_PC_MODAL);
