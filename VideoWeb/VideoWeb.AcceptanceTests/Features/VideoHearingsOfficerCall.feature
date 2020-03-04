@@ -31,8 +31,7 @@ Scenario: Video Hearings Officer cannot call users in private consultation
 	And Individual01 accepts the private consultation 
 	Then Representative01 can see the other participant
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
-	When the Video Hearings Officer starts a call with Individual01
-	Then the Individual01 user does not see an alert
+	Then the option to call Individual01 is not visible
 
 @VIH-4613 @Video
 Scenario: Video Hearings Officer cannot call users in a hearing
@@ -42,5 +41,4 @@ Scenario: Video Hearings Officer cannot call users in a hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
-	When the Video Hearings Officer starts a call with Individual01
-	Then the Individual01 user does not see an alert
+	Then the option to call Individual01 is not visible

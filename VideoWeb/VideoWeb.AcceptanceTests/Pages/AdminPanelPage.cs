@@ -22,7 +22,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By IncomingCallMessage = CommonLocators.ElementContainingText("Incoming call from Video Hearings Team");
         public static By AcceptPrivateCall = CommonLocators.ButtonWithInnerText("Accept call");
         public static By IncomingVideo = By.Id("incomingVideo");
-        public static By IncomingFeed = By.Id("incomingFeed");
+        public static By IncomingFeed = By.Id("incomingFeedPrivate");
         public static By SelfViewVideo = By.Id("selfviewVideo");
         public static By SelfViewButton = By.Id("selfViewButton");
         public static By MuteButton = By.Id("muteButton");
