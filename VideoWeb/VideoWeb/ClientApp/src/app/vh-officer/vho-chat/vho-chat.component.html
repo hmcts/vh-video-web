@@ -10,7 +10,7 @@
           <span
             class="govuk-!-font-weight-bold govuk-!-margin-right-2">{{message.from}}</span>({{message.timestamp | date:'shortTime' }})
         </p>
-        <p class="govuk-body chat-message">{{message.message}}</p>
+        <p class="govuk-body chat-message" [ngClass]="(message.is_user)?'':'other-message-body'">{{message.message}}</p>
       </div>
     </div>
   </div>
