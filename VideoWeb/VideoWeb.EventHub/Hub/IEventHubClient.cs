@@ -14,6 +14,6 @@ namespace VideoWeb.EventHub.Hub
         Task HelpMessage(Guid conferenceId, string participantName);
         Task ReceiveMessage(Guid conferenceId, string from, string message, DateTime timestamp, Guid messageUuid);
         Task AdminAnsweredChat(Guid conferenceId);
-        Task ReceiveHeartbeat(Guid conferenceId, Guid participantId, HeartbeatHealth heartbeatHealth);
+        Task ReceiveHeartbeat(Guid conferenceId, Guid participantId, HeartbeatHealth heartbeatHealth, string browserName, string browserVersion);
     }
 }
