@@ -479,7 +479,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     handleHeartbeat(self: this) {
         return function(heartbeat) {
-            self.logger.info(`**** heartbeat callback fired: ${heartbeat}`);
+            self.logger.info('**** heartbeat callback fired:');
         };
     }
 }

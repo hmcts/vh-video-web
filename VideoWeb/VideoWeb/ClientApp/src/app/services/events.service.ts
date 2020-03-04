@@ -10,6 +10,7 @@ import { ConsultationMessage } from './models/consultation-message';
 import { HelpMessage } from './models/help-message';
 import { InstantMessage } from './models/instant-message';
 import { ParticipantStatusMessage } from './models/participant-status-message';
+import {HeartbeatHealth, ParticipantHeartbeat} from './models/participant-heartbeat';
 
 @Injectable({
     providedIn: 'root'
@@ -25,6 +26,7 @@ export class EventsService {
     private consultationMessageSubject = new Subject<ConsultationMessage>();
     private adminConsultationMessageSubject = new Subject<AdminConsultationMessage>();
     private messageSubject = new Subject<InstantMessage>();
+    private participantHeartbeat = new Subject<ParticipantHeartbeat>();
     private adminAnsweredChatSubject = new Subject<string>();
     private eventHubDisconnectSubject = new Subject<number>();
     private eventHubReconnectSubject = new Subject();
@@ -199,5 +201,23 @@ export class EventsService {
 
     async sendMessage(conferenceId: string, message: string) {
         await this.connection.send('SendMessage', conferenceId, message);
+    }
+
+    async sendHeartbeat(conferenceId: string, participantId: string, heartbeat: string) {
+      await this.connection.send('SendHeartbeat', conferenceId, participantId, heartbeat);
+    }
+
+    getHeartbeat(): Observable<ParticipantHeartbeat> {
+      this.connection.on(
+        'ReceiveHeartbeat',
+        (conferenceId: string, participantId: string, heartbeatHealth: HeartbeatHealth,
+         browserName: string, browserVersion: string) => {
+          const heartbeat = new ParticipantHeartbeat(conferenceId, participantId, heartbeatHealth, browserName, browserVersion);
+          this.logger.event('ReceiveHeartbeat received', heartbeat);
+          this.participantHeartbeat.next(heartbeat);
+        }
+      );
+
+      return this.participantHeartbeat.asObservable();
     }
 }
