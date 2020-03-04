@@ -45,5 +45,5 @@ Scenario: Instant Messaging multiple messages
 	Given the Clerk user has progressed to the Waiting Room page
   When the Clerk opens the chat window
 	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
-	And the participants send 5 messages to each other
+	And the participants send 2 messages to each other
   Then they can see all the messages
