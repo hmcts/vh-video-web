@@ -1,5 +1,9 @@
 @import "~govuk-frontend/govuk/all";
 
+.status-badge {
+  font-size: 0.7em;
+}
+
 .conference-suspended,
 .conference-delayed,
 .conference-not-ready {
@@ -77,6 +81,7 @@
   /*position: relative;*/
   color: $govuk-link-colour;
   white-space: nowrap;
+  padding: 4px !important;
 }
 
 .tooltip-wrapper:active {
@@ -120,14 +125,11 @@
 }
 
 .tooltip::after {
-  // content: " ";
   position: absolute;
   bottom: 100%;
   /* At the bottom of the tooltip */
   left: 5%;
   margin-left: -5px;
-  // border-width: 5px;
-  // border-style: solid;
   border-left: solid transparent 10px;
   border-right: solid transparent 10px;
   border-bottom: solid gray 10px;
@@ -200,6 +202,7 @@
   font-size: 0.8em;
   text-align: center;
   color: govuk-colour("white");
+  vertical-align: sub;
 }
 
 .notification-badge-counter.no-messages {

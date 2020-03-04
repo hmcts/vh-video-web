@@ -20,6 +20,10 @@
   background: govuk-colour('blue');
 }
 
+.chat-message {
+  white-space: pre-wrap;
+}
+
 .chat-header:active {
   background: govuk-colour('dark-blue');
 }
