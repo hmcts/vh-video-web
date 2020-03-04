@@ -1,5 +1,4 @@
 import { AfterViewChecked, Component, HostListener, NgZone, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
 import { AdalService } from 'adal-angular4';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -14,7 +13,6 @@ import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
     styleUrls: ['./judge-chat.component.scss']
 })
 export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnDestroy, AfterViewChecked {
-    newMessageBody: FormControl;
     showChat: boolean;
     unreadMessageCount: number;
 
@@ -32,10 +30,9 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
     ngOnInit() {
         this.showChat = false;
         this.unreadMessageCount = 0;
-        this.initForm();
+        this.setupChatSubscription();
         this.retrieveChatForConference().then(messages => {
             this.unreadMessageCount = this.getCountSinceUsersLastMessage(messages);
-            this.setupChatSubscription();
         });
     }
 
@@ -46,16 +43,7 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
         }
     }
 
-    initForm() {
-        this.newMessageBody = new FormControl(null, [Validators.required, Validators.minLength(1)]);
-    }
-
-    sendMessage() {
-        if (this.newMessageBody.invalid) {
-            return;
-        }
-        const messageBody = this.newMessageBody.value;
-        this.newMessageBody.reset();
+    sendMessage(messageBody: string) {
         this.eventService.sendMessage(this._hearing.id, messageBody);
     }
 
@@ -65,9 +53,7 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
 
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
-        if (this.chatHubSubscription) {
-            this.chatHubSubscription.unsubscribe();
-        }
+        this.chatHubSubscription.unsubscribe();
     }
 
     toggleChatDisplay() {

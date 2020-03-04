@@ -1,14 +1,15 @@
-@import "~govuk-frontend/govuk/all";
+@import '~govuk-frontend/govuk/all';
 
 .judge-chat-window {
+  background: white;
   width: 30%;
   z-index: 100;
   position: fixed;
   bottom: 0px;
   right: 0px;
-  -webkit-box-shadow: 0px 0px 8px 3px govuk-colour("dark-grey");
-  -moz-box-shadow: 0px 0px 8px 3px govuk-colour("dark-grey");
-  box-shadow: 0px 0px 8px 3px govuk-colour("dark-grey");
+  -webkit-box-shadow: 0px 0px 8px 3px govuk-colour('dark-grey');
+  -moz-box-shadow: 0px 0px 8px 3px govuk-colour('dark-grey');
+  box-shadow: 0px 0px 8px 3px govuk-colour('dark-grey');
 }
 
 .chevron {
@@ -16,21 +17,25 @@
 }
 
 .chat-header {
-  background: govuk-colour("blue");
+  background: govuk-colour('blue');
+}
+
+.chat-message {
+  white-space: pre-wrap;
 }
 
 .chat-header:active {
-  background: govuk-colour("dark-blue")
+  background: govuk-colour('dark-blue');
 }
 
 .chat-header-text {
-  color: govuk-colour("white");
+  color: govuk-colour('white');
   margin-bottom: 0;
 }
 
 .chat-window {
   height: 400px;
-  background: govuk-colour("white");
+  background: govuk-colour('white');
 }
 
 .own-message {
@@ -44,31 +49,13 @@
   text-align: right;
 }
 
+.other-message-body {
+  text-align: justify;
+  float: right;
+}
+
 .other-message>p {
-  color: govuk-colour("blue");
-}
-
-.chat-input-group {
-  display: flex;
-  margin-bottom: 0px;
-  background: govuk-colour("white");
-}
-
-.chat-text-box {
-  border: none;
-}
-
-.chat-input {
-  margin-bottom: 0px;
-  resize: none;
-}
-
-.chat-message {
-  white-space: pre-wrap;
-}
-
-.chat-btn {
-  margin-bottom: 0px;
+  color: govuk-colour('blue');
 }
 
 .notification-badge {
@@ -80,8 +67,8 @@
   content: attr(data-badge);
   position: absolute;
   right: -35px;
-  background: govuk-colour("black");
-  color: govuk-colour("white");
+  background: govuk-colour('black');
+  color: govuk-colour('white');
   width: 18px;
   height: 18px;
   font-size: 0.7em;
@@ -107,6 +94,6 @@
 
 ::-webkit-scrollbar-thumb {
   border-radius: 5px;
-  background-color: rgba(0, 0, 0, .5);
-  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+  background-color: rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
 }
