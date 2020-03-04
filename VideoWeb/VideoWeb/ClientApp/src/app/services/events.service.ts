@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@aspnet/signalr';
 import { AdalService } from 'adal-angular4';
-import { Observable, Subject, of } from 'rxjs';
-import { ConferenceStatus, ParticipantStatus, RoomType, ConsultationAnswer, ChatResponse } from './clients/api-client';
-import { ConsultationMessage } from './models/consultation-message';
-import { ConferenceStatusMessage } from './models/conference-status-message';
-import { HelpMessage } from './models/help-message';
-import { ParticipantStatusMessage } from './models/participant-status-message';
+import { Observable, Subject } from 'rxjs';
+import { ConferenceStatus, ConsultationAnswer, ParticipantStatus, RoomType } from './clients/api-client';
 import { Logger } from './logging/logger-base';
 import { AdminConsultationMessage } from './models/admin-consultation-message';
+import { ConferenceStatusMessage } from './models/conference-status-message';
+import { ConsultationMessage } from './models/consultation-message';
+import { HelpMessage } from './models/help-message';
+import { InstantMessage } from './models/instant-message';
+import { ParticipantStatusMessage } from './models/participant-status-message';
 
 @Injectable({
     providedIn: 'root'
@@ -23,7 +24,7 @@ export class EventsService {
     private helpMessageSubject = new Subject<HelpMessage>();
     private consultationMessageSubject = new Subject<ConsultationMessage>();
     private adminConsultationMessageSubject = new Subject<AdminConsultationMessage>();
-    private messageSubject = new Subject<ChatResponse>();
+    private messageSubject = new Subject<InstantMessage>();
     private adminAnsweredChatSubject = new Subject<string>();
     private eventHubDisconnectSubject = new Subject<number>();
     private eventHubReconnectSubject = new Subject();
@@ -173,12 +174,12 @@ export class EventsService {
         return this.adminConsultationMessageSubject.asObservable();
     }
 
-    getChatMessage(): Observable<ChatResponse> {
+    getChatMessage(): Observable<InstantMessage> {
         this.connection.on(
             'ReceiveMessage',
             (conferenceId: string, from: string, message: string, timestamp: Date, messageUuid: string) => {
                 const date = new Date(timestamp);
-                const chat = new ChatResponse({ id: messageUuid, from, message, timestamp: date });
+                const chat = new InstantMessage({ conferenceId, id: messageUuid, from, message, timestamp: date });
                 this.logger.event('ReceiveMessage received', chat);
                 this.messageSubject.next(chat);
             }

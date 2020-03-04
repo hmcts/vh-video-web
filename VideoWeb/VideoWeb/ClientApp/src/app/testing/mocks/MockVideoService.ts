@@ -1,4 +1,4 @@
-import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { IVideoWebApiService } from 'src/app/services/api/video-web-service.interface';
 import {
     ConferenceForUserResponse,
     ConferenceResponse,
@@ -7,13 +7,43 @@ import {
     UpdateParticipantStatusEventRequest,
     AddSelfTestFailureEventRequest,
     TokenResponse,
-    ChatResponse
+    ChatResponse,
+    TestCallScoreResponse,
+    ConferenceEventRequest,
+    ConferenceForVhOfficerResponse
 } from 'src/app/services/clients/api-client';
 import { Observable, of } from 'rxjs';
 import { ConferenceTestData } from './data/conference-test-data';
 import { TasksTestData } from './data/tasks-test-data';
 
-export class MockVideoWebService extends VideoWebService {
+export class MockVideoWebService implements IVideoWebApiService {
+    getConferencesForVHOfficer(): Observable<ConferenceForVhOfficerResponse[]> {
+        throw new Error('Method not implemented.');
+    }
+    sendEvent(request: ConferenceEventRequest): Observable<void> {
+        throw new Error('Method not implemented.');
+    }
+    getTasksForConference(conferenceId: string): Observable<TaskResponse[]> {
+        throw new Error('Method not implemented.');
+    }
+    getTestCallScore(conferenceId: string, participantId: string): Observable<TestCallScoreResponse> {
+        throw new Error('Method not implemented.');
+    }
+    getIndependentTestCallScore(participantId: string): Observable<TestCallScoreResponse> {
+        throw new Error('Method not implemented.');
+    }
+    getJwToken(participantId: string): Observable<TokenResponse> {
+        throw new Error('Method not implemented.');
+    }
+    getPexipConfig(): Observable<import('../../services/clients/api-client').SelfTestPexipResponse> {
+        throw new Error('Method not implemented.');
+    }
+    getObfuscatedName(displayName: string): string {
+        return displayName.replace(/(?!\b)\w/g, '*');
+    }
+    getHearingsVenue(): Observable<import('../../services/clients/api-client').HearingVenueResponse[]> {
+        throw new Error('Method not implemented.');
+    }
     getConferencesForJudge(): Observable<ConferenceForUserResponse[]> {
         return of(new ConferenceTestData().getTestData());
     }
@@ -23,6 +53,7 @@ export class MockVideoWebService extends VideoWebService {
     }
 
     getConferenceById(conferenceId: string): Observable<ConferenceResponse> {
+        console.log(`using mock video web service: getConferenceById ${JSON.stringify(conferenceId)}`);
         return of(new ConferenceTestData().getConferenceDetail());
     }
 
@@ -59,6 +90,6 @@ export class MockVideoWebService extends VideoWebService {
     }
 
     getConferenceChatHistory(conferenceId: string): Observable<ChatResponse[]> {
-        return of(new ConferenceTestData().getChatHistory(null));
+        return of(new ConferenceTestData().getChatHistory(null, conferenceId));
     }
 }

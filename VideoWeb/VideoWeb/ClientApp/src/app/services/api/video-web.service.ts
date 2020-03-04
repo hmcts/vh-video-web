@@ -16,11 +16,12 @@ import {
     ConferenceForVhOfficerResponse
 } from '../clients/api-client';
 import { Observable } from 'rxjs';
+import { IVideoWebApiService } from './video-web-service.interface';
 
 @Injectable({
     providedIn: 'root'
 })
-export class VideoWebService {
+export class VideoWebService implements IVideoWebApiService {
     constructor(private apiClient: ApiClient) {}
 
     getConferencesForJudge(): Observable<ConferenceForUserResponse[]> {
