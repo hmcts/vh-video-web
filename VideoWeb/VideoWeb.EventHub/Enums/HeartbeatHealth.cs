@@ -1,7 +1,7 @@
-﻿namespace VideoWeb.EventHub.Models
+﻿namespace VideoWeb.EventHub.Enums
 {
     public enum HeartbeatHealth
     {
-        None = 0, Good, Poor, Bad
+        None, Good, Poor, Bad
     }
 }
