@@ -120,6 +120,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 Sender = sender,
                 Time = DateTime.Now.ToLocalTime().ToShortTimeString()
             });
+            _browsers[_c.CurrentUser.Key].Click(InstantMessagePage.SendNewMessageTextBox);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(InstantMessagePage.SendNewMessageTextBox).SendKeys(_messages.Last().Message);
             _browsers[_c.CurrentUser.Key].Click(InstantMessagePage.SendNewMessageButton);
         }
