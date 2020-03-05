@@ -22,6 +22,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 
 import { Hearing } from '../../shared/models/hearing';
+import {HeartbeatModelMapper} from '../../shared/mappers/heartbeat-model-mapper';
 
 declare var PexRTC: any;
 declare var HeartbeatFactory: any;
@@ -74,7 +75,8 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         private userMediaService: UserMediaService,
         private logger: Logger,
         private consultationService: ConsultationService,
-        private router: Router
+        private router: Router,
+        private heartbeatMapper: HeartbeatModelMapper
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -479,7 +481,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     handleHeartbeat(self: this) {
         return async function (heartbeat) {
-          await self.eventService.sendHeartbeat(self.hearing.id, self.participant.id, heartbeat, 'chrome', '1');
+          await self.eventService.sendHeartbeat(self.hearing.id, self.participant.id, JSON.parse(heartbeat), 'chrome', '1');
         };
     }
 }

@@ -11,6 +11,7 @@ import { HelpMessage } from './models/help-message';
 import { InstantMessage } from './models/instant-message';
 import { ParticipantStatusMessage } from './models/participant-status-message';
 import {HeartbeatHealth, ParticipantHeartbeat} from './models/participant-heartbeat';
+import {Heartbeat} from '../shared/models/heartbeat';
 
 @Injectable({
     providedIn: 'root'
@@ -203,7 +204,7 @@ export class EventsService {
         await this.connection.send('SendMessage', conferenceId, message);
     }
 
-    async sendHeartbeat(conferenceId: string, participantId: string, heartbeat: string, browserName: string, browserVersion: string) {
+    async sendHeartbeat(conferenceId: string, participantId: string, heartbeat: any, browserName: string, browserVersion: string) {
       await this.connection.send('SendHeartbeat', conferenceId, participantId, heartbeat, browserName, browserVersion);
     }
 

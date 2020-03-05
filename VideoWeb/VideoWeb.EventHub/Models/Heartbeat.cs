@@ -6,6 +6,8 @@ namespace VideoWeb.EventHub.Models
     {
         [JsonPropertyName("hearing_id")]
         public string HearingId { get; set; }
+        [JsonPropertyName("ConferenceId")]
+        public string ConferenceId { get; set; }
         [JsonPropertyName("participant_id")]
         public string ParticipantId { get; set; }
         [JsonPropertyName("media_statistics")] 
@@ -30,15 +32,15 @@ namespace VideoWeb.EventHub.Models
 
     public class PacketData
     {
-        [JsonPropertyName("configured-bitrate")]
+        [JsonPropertyName("configured_bitrate")]
         public string ConfiguredBitrate { get; set; }
-        [JsonPropertyName("packets-sent")]
+        [JsonPropertyName("packets_sent")]
         public string PacketsSent { get; set; }
-        [JsonPropertyName("packets-lost")]
+        [JsonPropertyName("packets_lost")]
         public string PacketsLost { get; set; }
-        [JsonPropertyName("percentage-lost")]
+        [JsonPropertyName("percentage_lost")]
         public string PercentageLost { get; set; }
-        [JsonPropertyName("percentage-lost-recent")]
+        [JsonPropertyName("percentage_lost_recent")]
         public string PercentageLostRecent { get; set; }
         [JsonPropertyName("bitrate")]
         public string Bitrate { get; set; }

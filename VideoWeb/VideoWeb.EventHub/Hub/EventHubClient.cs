@@ -163,12 +163,13 @@ namespace VideoWeb.EventHub.Hub
                 .Equals(Context.UserIdentifier, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public async Task SendHeartbeat(Guid conferenceId, Guid participantId, string heartbeat, 
+        public async Task SendHeartbeat(Guid conferenceId, Guid participantId, Heartbeat heartbeat, 
             string browserName, string browserVersion)
         {
             try
             {
-                var model = JsonSerializer.Deserialize<Heartbeat>(heartbeat);
+                // var model = JsonSerializer.Deserialize<Heartbeat>(heartbeat);
+                var model = heartbeat;
 
                 //Send to clients
                 await Clients.Group(VhOfficersGroupName).ReceiveHeartbeat
