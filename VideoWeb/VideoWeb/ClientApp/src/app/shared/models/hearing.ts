@@ -1,10 +1,13 @@
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse, UserRole } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, ParticipantResponse, UserRole, TaskUserResponse } from 'src/app/services/clients/api-client';
 import * as moment from 'moment';
 import { Participant } from './participant';
 
 export class Hearing {
     private conference: ConferenceResponse;
-    private participants: Participant[];
+  private participants: Participant[];
+  private pendingTasks: number;
+
+
 
     constructor(conference: ConferenceResponse) {
         this.conference = conference;
@@ -70,12 +73,49 @@ export class Hearing {
         const endTime = new Date(this.conference.scheduled_date_time.getTime());
         endTime.setUTCMinutes(endTime.getUTCMinutes() + this.conference.scheduled_duration);
         return endTime;
-    }
+  }
 
-    get status(): ConferenceStatus {
+ get status(): ConferenceStatus {
         return this.conference.status;
-    }
+  }
 
+  set status(status: ConferenceStatus) {
+    this.conference.status = status;
+  }
+
+  get pendingtasks(): number {
+    return this.pendingtasks;
+  }
+
+  set pendingtasks(no_of_pending_tasks: number) {
+    this.pendingtasks = no_of_pending_tasks;
+  }
+
+  get numberOfUnreadMessages(): number {
+    return this.numberOfUnreadMessages;
+  }
+
+  set numberOfUnreadMessages(number_of_unread_messages: number) {
+    this.numberOfUnreadMessages = number_of_unread_messages;
+  }
+
+  get hearingVenueName(): string {
+    return this.hearingVenueName;
+  }
+
+  set hearingVenueName(hearing_venue_name: string) {
+    this.hearingVenueName = hearing_venue_name;
+  }
+
+  get tasks(): TaskUserResponse[] {
+    return this.tasks;
+  }
+
+  set tasks(tasks: TaskUserResponse[]) {
+    this.tasks = tasks;
+  }
+
+  
     getDurationAsText(): string {
         const duration = this.conference.scheduled_duration;
         const h = Math.floor(duration / 60);

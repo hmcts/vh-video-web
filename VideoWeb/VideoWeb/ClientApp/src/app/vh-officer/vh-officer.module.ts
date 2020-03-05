@@ -11,6 +11,7 @@ import { ClipboardModule } from 'ngx-clipboard';
 import { VhoHearingsFilterComponent } from '../vh-officer/vho-herings-filter/vho-hearings-filter.component';
 import { HearingsFilterOptionsService } from '../vh-officer/services/hearings-filter-options.service';
 import { VhoChatComponent } from './vho-chat/vho-chat.component';
+import { ParticipantNetworkStatusComponent } from './participant-network-status/participant-network-status.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { VhoChatComponent } from './vho-chat/vho-chat.component';
     ParticipantStatusComponent,
     ParticipantInfoTooltipComponent,
     VhoHearingsFilterComponent,
-    VhoChatComponent
+    VhoChatComponent,
+    ParticipantNetworkStatusComponent
   ],
   imports: [
     CommonModule,

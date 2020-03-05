@@ -1,7 +1,10 @@
 import { ParticipantResponse, ParticipantStatus, UserRole } from 'src/app/services/clients/api-client';
+import { HeartbeatHealth } from '../../services/models/participant-heartbeat';
 
 export class Participant {
-    private participant: ParticipantResponse;
+  private participant: ParticipantResponse;
+
+    hearbeartHealth: HeartbeatHealth;
 
     constructor(participant: ParticipantResponse) {
         this.participant = participant;
@@ -41,6 +44,10 @@ export class Participant {
 
     get status(): ParticipantStatus {
         return this.participant.status;
+    }
+
+    set status(status: ParticipantStatus) {
+        this.participant.status = status;
     }
 
     get role(): UserRole {
@@ -90,5 +97,7 @@ export class Participant {
             default:
                 return this.participant.status;
         }
-    }
+  }
+
+
 }

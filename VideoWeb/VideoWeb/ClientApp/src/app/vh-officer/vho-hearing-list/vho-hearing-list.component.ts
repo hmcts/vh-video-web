@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ConferenceResponse, ConferenceStatus, ConferenceForVhOfficerResponse } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ClipboardService } from 'ngx-clipboard';
+import { Participant } from 'src/app/shared/models/participant';
 
 @Component({
     selector: 'app-vho-hearing-list',
@@ -9,13 +10,15 @@ import { ClipboardService } from 'ngx-clipboard';
     styleUrls: ['./vho-hearing-list.component.scss']
 })
 export class VhoHearingListComponent implements OnInit {
+
     @Input() conferences: ConferenceForVhOfficerResponse[];
-    @Output() selectedConference = new EventEmitter<ConferenceForVhOfficerResponse>();
-    currentConference: ConferenceForVhOfficerResponse;
+  @Output() selectedConference = new EventEmitter<Hearing>();
+    currentConference: Hearing;
 
-    constructor(private clipboardService: ClipboardService) {}
+    constructor(private clipboardService: ClipboardService) { }
 
-    ngOnInit() {}
+    ngOnInit() {
+    }
 
     isCurrentConference(conference: ConferenceForVhOfficerResponse): boolean {
         return this.currentConference != null && this.currentConference.id === conference.id;
@@ -69,12 +72,16 @@ export class VhoHearingListComponent implements OnInit {
         return new Hearing(conference).getDurationAsText();
     }
 
-    selectConference(conference: ConferenceForVhOfficerResponse) {
+    selectConference(conference: Hearing) {
         this.currentConference = conference;
         this.selectedConference.emit(conference);
     }
 
     copyToClipboard(conference: ConferenceForVhOfficerResponse) {
         this.clipboardService.copyFromContent(conference.id);
+    }
+
+    getParticipantsForConference(conference: ConferenceForVhOfficerResponse): Participant[] {
+        return conference.participants.map(p => new Participant(p));
     }
 }
