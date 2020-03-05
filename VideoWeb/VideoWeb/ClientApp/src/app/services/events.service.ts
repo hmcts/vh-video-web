@@ -204,7 +204,7 @@ export class EventsService {
         await this.connection.send('SendMessage', conferenceId, message);
     }
 
-    async sendHeartbeat(conferenceId: string, participantId: string, heartbeat: any, browserName: string, browserVersion: string) {
+    async sendHeartbeat(conferenceId: string, participantId: string, heartbeat: Heartbeat, browserName: string, browserVersion: string) {
       await this.connection.send('SendHeartbeat', conferenceId, participantId, heartbeat, browserName, browserVersion);
     }
 

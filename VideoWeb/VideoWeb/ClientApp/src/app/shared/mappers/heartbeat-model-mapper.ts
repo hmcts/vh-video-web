@@ -8,9 +8,14 @@ export class HeartbeatModelMapper {
   map(heartbeat: any) {
     const model = new Heartbeat();
 
-    model.hearing_id = heartbeat.hearing_id;
-    model.ConferenceId = heartbeat.hearing_id;
+    model.hearingId = heartbeat.hearing_id;
+    model.participantId = heartbeat.participant_id;
+    model.outgoingAudioPercentageLost = this.removePercent(heartbeat.media_statistics.outgoing.audio['percentage-lost']);
 
     return model;
+  }
+
+  private removePercent(statistic: string) {
+    return statistic.replace('%', '');
   }
 }

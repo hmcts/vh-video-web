@@ -168,17 +168,14 @@ namespace VideoWeb.EventHub.Hub
         {
             try
             {
-                // var model = JsonSerializer.Deserialize<Heartbeat>(heartbeat);
-                var model = heartbeat;
-
                 //Send to clients
                 await Clients.Group(VhOfficersGroupName).ReceiveHeartbeat
                 (
-                    conferenceId, participantId, _heartbeatMapper.MapToHealth(model), browserName, browserVersion
+                    conferenceId, participantId, _heartbeatMapper.MapToHealth(heartbeat), browserName, browserVersion
                 );
 
                 //Save to DB
-                var addHeartbeatRequest = _heartbeatMapper.MapToRequest(model);
+                var addHeartbeatRequest = _heartbeatMapper.MapToRequest(heartbeat);
 
                 await _videoApiClient
                     .SaveHeartbeatDataForParticipantAsync(conferenceId, participantId, addHeartbeatRequest);

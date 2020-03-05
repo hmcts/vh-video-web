@@ -1,52 +1,33 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace VideoWeb.EventHub.Models
 {
     public class Heartbeat
     {
-        [JsonPropertyName("hearing_id")]
-        public string HearingId { get; set; }
-        [JsonPropertyName("ConferenceId")]
-        public string ConferenceId { get; set; }
-        [JsonPropertyName("participant_id")]
-        public string ParticipantId { get; set; }
-        [JsonPropertyName("media_statistics")] 
-        public MediaStatistics MediaStatistics { get; set; }
-    }
-
-    public class MediaStatistics
-    {
-        [JsonPropertyName("outgoing")] 
-        public MediaStatisticsType Outgoing { get; set; }
-        [JsonPropertyName("incoming")] 
-        public MediaStatisticsType Incoming { get; set; }  
-    }
-
-    public class MediaStatisticsType
-    {
-        [JsonPropertyName("audio")] 
-        public PacketData Audio { get; set; }
-        [JsonPropertyName("video")] 
-        public PacketData Video { get; set; }
-    }
-
-    public class PacketData
-    {
-        [JsonPropertyName("configured_bitrate")]
-        public string ConfiguredBitrate { get; set; }
-        [JsonPropertyName("packets_sent")]
-        public string PacketsSent { get; set; }
-        [JsonPropertyName("packets_lost")]
-        public string PacketsLost { get; set; }
-        [JsonPropertyName("percentage_lost")]
-        public string PercentageLost { get; set; }
-        [JsonPropertyName("percentage_lost_recent")]
-        public string PercentageLostRecent { get; set; }
-        [JsonPropertyName("bitrate")]
-        public string Bitrate { get; set; }
-        [JsonPropertyName("resolution")]
-        public string Resolution { get; set; }
-        [JsonPropertyName("codec")]
-        public string Codec { get; set; }
+        [JsonProperty("hearingId")]
+        public Guid HearingId { get; set; }
+        [JsonProperty("participantId")]
+        public Guid ParticipantId { get; set; }
+        [JsonProperty("outgoingAudioPercentageLost")]
+        public decimal OutgoingAudioPercentageLost { get; set; }
+        [JsonProperty("outgoingAudioPercentageLostRecent")]
+        public string OutgoingAudioPercentageLostRecent { get; set; }
+        [JsonProperty("incomingAudioPercentageLost")]
+        public string IncomingAudioPercentageLost { get; set; }
+        [JsonProperty("incomingAudioPercentageLostRecent")]
+        public string IncomingAudioPercentageLostRecent { get; set; }
+        [JsonProperty("outgoingVideoPercentageLost")]
+        public string OutgoingVideoPercentageLost { get; set; }
+        [JsonProperty("outgoingVideoPercentageLostRecent")]
+        public string OutgoingVideoPercentageLostRecent { get; set; }
+        [JsonProperty("incomingVideoPercentageLost")]
+        public string IncomingVideoPercentageLost { get; set; }
+        [JsonProperty("incomingVideoPercentageLostRecent")]
+        public string IncomingVideoPercentageLostRecent { get; set; }
+        [JsonProperty("browserName")]
+        public string BrowserName { get; set; }
+        [JsonProperty("browserVersion")]
+        public string BrowserVersion { get; set; }
     }
 }

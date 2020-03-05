@@ -481,7 +481,9 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     handleHeartbeat(self: this) {
         return async function (heartbeat) {
-          await self.eventService.sendHeartbeat(self.hearing.id, self.participant.id, JSON.parse(heartbeat), 'chrome', '1');
+          const heartbeatModel = self.heartbeatMapper.map(JSON.parse(heartbeat));
+          self.logger.info('****** Mapped' + JSON.stringify(heartbeatModel));
+          await self.eventService.sendHeartbeat(self.hearing.id, self.participant.id, heartbeatModel, 'chrome', '1');
         };
     }
 }
