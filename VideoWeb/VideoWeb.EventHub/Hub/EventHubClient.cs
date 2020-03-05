@@ -163,22 +163,19 @@ namespace VideoWeb.EventHub.Hub
                 .Equals(Context.UserIdentifier, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public async Task SendHeartbeat(Guid conferenceId, Guid participantId, Heartbeat heartbeat, 
-            string browserName, string browserVersion)
+        public async Task SendHeartbeat(Guid conferenceId, Guid participantId, Heartbeat heartbeat)
         {
             try
             {
-                //Send to clients
                 await Clients.Group(VhOfficersGroupName).ReceiveHeartbeat
                 (
-                    conferenceId, participantId, _heartbeatMapper.MapToHealth(heartbeat), browserName, browserVersion
+                    conferenceId, participantId, _heartbeatMapper.MapToHealth(heartbeat), 
+                    heartbeat.BrowserName, heartbeat.BrowserVersion
                 );
 
                 //Save to DB
                 var addHeartbeatRequest = _heartbeatMapper.MapToRequest(heartbeat);
-
-                await _videoApiClient
-                    .SaveHeartbeatDataForParticipantAsync(conferenceId, participantId, addHeartbeatRequest);
+                await _videoApiClient.SaveHeartbeatDataForParticipantAsync(conferenceId, participantId, addHeartbeatRequest);
             }
             catch (HeartbeatException ex)
             {

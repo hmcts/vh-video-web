@@ -30,4 +30,8 @@ export class DeviceTypeService {
   getBrowserName(): string {
     return this.deviceDetectorService.browser;
   }
+
+  getBrowserVersion(): string {
+    return this.deviceDetectorService.browser_version;
+  }
 }

@@ -1,4 +1,5 @@
-﻿using VideoWeb.EventHub.Exceptions;
+﻿using System.Linq;
+using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
 
@@ -19,7 +20,20 @@ namespace VideoWeb.EventHub.Mappers
 
         public HeartbeatHealth MapToHealth(Heartbeat heartbeat)
         {
-            throw new HeartbeatException($"Unable to map to {nameof(HeartbeatHealth)}");
+            if (!heartbeat.IncomingAudioPercentageLostRecent.HasValue)
+            {
+                
+            }
+            
+            var max = new[]
+            {
+                heartbeat.IncomingAudioPercentageLostRecent,
+                heartbeat.IncomingVideoPercentageLostRecent,
+                heartbeat.OutgoingAudioPercentageLostRecent,
+                heartbeat.OutgoingVideoPercentageLostRecent,
+            }.Max();
+
+            return HeartbeatHealth.Good;
         }
     }
 }

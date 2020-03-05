@@ -23,6 +23,7 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
 
 import { Hearing } from '../../shared/models/hearing';
 import {HeartbeatModelMapper} from '../../shared/mappers/heartbeat-model-mapper';
+import {DeviceTypeService} from '../../services/device-type.service';
 
 declare var PexRTC: any;
 declare var HeartbeatFactory: any;
@@ -76,7 +77,8 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         private logger: Logger,
         private consultationService: ConsultationService,
         private router: Router,
-        private heartbeatMapper: HeartbeatModelMapper
+        private heartbeatMapper: HeartbeatModelMapper,
+        private deviceTypeService: DeviceTypeService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -481,9 +483,10 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     handleHeartbeat(self: this) {
         return async function (heartbeat) {
-          const heartbeatModel = self.heartbeatMapper.map(JSON.parse(heartbeat));
-          self.logger.info('****** Mapped' + JSON.stringify(heartbeatModel));
-          await self.eventService.sendHeartbeat(self.hearing.id, self.participant.id, heartbeatModel, 'chrome', '1');
+          const heartbeatModel = self.heartbeatMapper.map(JSON.parse(heartbeat),
+            self.deviceTypeService.getBrowserName(), self.deviceTypeService.getBrowserVersion());
+
+          await self.eventService.sendHeartbeat(self.hearing.id, self.participant.id, heartbeatModel);
         };
     }
 }
