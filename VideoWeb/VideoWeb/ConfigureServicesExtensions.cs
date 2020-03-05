@@ -23,6 +23,7 @@ using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Common.SignalR;
 using VideoWeb.Contract.Request;
 using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.EventHub.Mappers;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
@@ -91,6 +92,7 @@ namespace VideoWeb
             services.AddScoped<IUserProfileService, AdUserProfileService>();
             services.AddScoped<IConferenceCache, ConferenceCache>();
             services.AddScoped<IMessageDecoder, MessageFromDecoder>();
+            services.AddScoped<IHeartbeatMapper, HeartbeatMapper>();
 
             var container = services.BuildServiceProvider();
             var servicesConfiguration = container.GetService<IOptions<HearingServicesConfiguration>>().Value;
