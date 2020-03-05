@@ -481,6 +481,5 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         if (this.hearing.isDelayed() || this.hearing.isSuspended()) {
             return 'hearing-delayed';
         }
-        return '';
     }
 }

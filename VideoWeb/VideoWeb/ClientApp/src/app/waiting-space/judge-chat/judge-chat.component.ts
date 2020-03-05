@@ -60,7 +60,9 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
         this.logger.debug(`[ChatHub Judge] closing chat for ${this._hearing.id}`);
-        this.chatHubSubscription.unsubscribe();
+        if (this.chatHubSubscription) {
+            this.chatHubSubscription.unsubscribe();
+        }
     }
 
     toggleChatDisplay() {
