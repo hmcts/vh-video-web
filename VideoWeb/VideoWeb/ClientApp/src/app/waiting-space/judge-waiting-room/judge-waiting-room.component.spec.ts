@@ -209,4 +209,17 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(judgeEventServiceSpy.raiseJudgeAvailableEvent).toHaveBeenCalled();
         done();
     });
+
+    it('should call the raiseJudgeAvailable event when conference is suspended', async done => {
+        await fixture.whenStable();
+        const conferenceStatus = ConferenceStatus.Suspended;
+        component.handleHearingStatusChange(conferenceStatus);
+
+        const message = eventService.nextJudgeStatusMessage;
+        component.handleParticipantStatusChange(message);
+        const participant = component.conference.participants.find(x => x.id === message.participantId);
+        expect(participant.status === message.status);
+        expect(judgeEventServiceSpy.raiseJudgeAvailableEvent).toHaveBeenCalled();
+        done();
+    });
 });
