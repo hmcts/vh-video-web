@@ -25,7 +25,7 @@
     "@angular/platform-browser-dynamic": "^8.2.14",
     "@angular/platform-server": "^8.2.14",
     "@angular/router": "^8.2.14",
-    "@aspnet/signalr": "^3.0.0-preview6.19307.2",
+    "@microsoft/signalr": "^3.1.2",
     "@hmcts/frontend": "^0.0.41-alpha",
     "@nguniversal/module-map-ngfactory-loader": "8.2.6",
     "@types/jquery": "^3.3.32",

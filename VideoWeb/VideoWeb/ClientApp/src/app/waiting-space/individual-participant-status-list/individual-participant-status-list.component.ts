@@ -1,6 +1,7 @@
-import { Component, Input, NgZone, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
     ConsultationAnswer,
@@ -11,12 +12,11 @@ import {
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ModalService } from 'src/app/services/modal.service';
-import { ConsultationMessage } from 'src/app/services/models/consultation-message';
-import { Participant } from 'src/app/shared/models/participant';
-import { Hearing } from 'src/app/shared/models/hearing';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { ConsultationMessage } from 'src/app/services/models/consultation-message';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { Hearing } from 'src/app/shared/models/hearing';
+import { Participant } from 'src/app/shared/models/participant';
 
 @Component({
     selector: 'app-individual-participant-status-list',
@@ -48,7 +48,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         private adalService: AdalService,
         private consultationService: ConsultationService,
         private eventService: EventsService,
-        private ngZone: NgZone,
+
         private modalService: ModalService,
         private logger: Logger,
         private videoWebService: VideoWebService
@@ -93,32 +93,26 @@ export class IndividualParticipantStatusListComponent implements OnInit {
 
     private setupSubscribers() {
         this.eventService.getConsultationMessage().subscribe(message => {
-            this.ngZone.run(() => {
-                if (message.result === ConsultationAnswer.Accepted) {
-                    this.handleAcceptedConsultationRequest(message);
-                } else if (message.result === ConsultationAnswer.Rejected) {
-                    this.handleRejectedConsultationRequest(message);
-                } else if (message.result === ConsultationAnswer.Cancelled) {
-                    this.handleCancelledConsultationRequest(message);
-                } else {
-                    this.displayConsultationRequestPopup(message);
-                }
-            });
+            if (message.result === ConsultationAnswer.Accepted) {
+                this.handleAcceptedConsultationRequest(message);
+            } else if (message.result === ConsultationAnswer.Rejected) {
+                this.handleRejectedConsultationRequest(message);
+            } else if (message.result === ConsultationAnswer.Cancelled) {
+                this.handleCancelledConsultationRequest(message);
+            } else {
+                this.displayConsultationRequestPopup(message);
+            }
         });
 
         this.eventService.getParticipantStatusMessage().subscribe(message => {
-            this.ngZone.run(() => {
-                this.handleParticipantStatusChange(message);
-            });
+            this.handleParticipantStatusChange(message);
         });
 
         this.eventService.getAdminConsultationMessage().subscribe(message => {
-            this.ngZone.run(() => {
-                if (!message.answer) {
-                    this.adminConsultationMessage = message;
-                    this.handleAdminConsultationMessage(message);
-                }
-            });
+            if (!message.answer) {
+                this.adminConsultationMessage = message;
+                this.handleAdminConsultationMessage(message);
+            }
         });
 
         this.eventService.start();
