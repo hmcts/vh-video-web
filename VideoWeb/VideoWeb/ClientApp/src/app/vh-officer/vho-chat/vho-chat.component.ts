@@ -6,6 +6,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
+import { VHODashboardHelper } from '../helper';
 import { ConferenceUnreadMessageCount } from './vho-conference-unread_message-count.model';
 
 @Component({
@@ -47,19 +48,10 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
     }
 
     updateDivWidthForSection(): void {
-        const listColumnElement: HTMLElement = document.getElementById('list-column');
-        const listWidth = listColumnElement.offsetWidth;
-        const windowWidth = window.innerWidth;
-        const frameWidth = windowWidth - listWidth - 60;
-        this.sectionDivWidth = frameWidth;
+        this.sectionDivWidth = new VHODashboardHelper().getWidthAvailableForConference();
     }
 
-    sendMessage() {
-        if (this.newMessageBody.invalid) {
-            return;
-        }
-        const messageBody = this.newMessageBody.value;
-        this.newMessageBody.reset();
+    sendMessage(messageBody: string) {
         this.eventService.sendMessage(this._hearing.id, messageBody);
     }
 

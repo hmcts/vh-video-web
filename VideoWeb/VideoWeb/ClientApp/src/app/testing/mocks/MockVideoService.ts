@@ -17,6 +17,7 @@ import { ConferenceTestData } from './data/conference-test-data';
 import { TasksTestData } from './data/tasks-test-data';
 
 export class MockVideoWebService implements IVideoWebApiService {
+    username: string;
     getConferencesForVHOfficer(): Observable<ConferenceForVhOfficerResponse[]> {
         throw new Error('Method not implemented.');
     }
@@ -90,6 +91,7 @@ export class MockVideoWebService implements IVideoWebApiService {
     }
 
     getConferenceChatHistory(conferenceId: string): Observable<ChatResponse[]> {
-        return of(new ConferenceTestData().getChatHistory(null, conferenceId));
+        console.log('using mock get conference chat history');
+        return of(new ConferenceTestData().getChatHistory(this.username, conferenceId));
     }
 }

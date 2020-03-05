@@ -6,14 +6,20 @@
 
 .chat-window {
   height: 200px;
+  width: inherit;
 }
 
 .own-message {
-  text-align: right;
+  text-align: left;
 }
 
 .other-message {
-  text-align: left;
+  text-align: right;
+}
+
+.other-message-body {
+  text-align: justify;
+  float: right;
 }
 
 .other-message>p {
