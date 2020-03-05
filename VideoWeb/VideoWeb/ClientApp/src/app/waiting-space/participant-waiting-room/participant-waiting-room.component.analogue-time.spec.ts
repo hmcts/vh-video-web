@@ -28,30 +28,8 @@ import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 describe('ParticipantWaitingRoomComponent message and clock', () => {
     let component: ParticipantWaitingRoomComponent;
     let fixture: ComponentFixture<ParticipantWaitingRoomComponent>;
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    let route: ActivatedRoute;
-    let adalService: MockAdalService;
-    let eventService: MockEventsService;
 
     configureTestSuite(() => {
-        // const conference = new ConferenceTestData().getConferenceDetail();
-        // videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
-        //     'getConferenceById',
-        //     'getObfuscatedName',
-        //     'getJwToken'
-        // ]);
-        // videoWebServiceSpy.getConferenceById.and.returnValue(of(conference));
-        // videoWebServiceSpy.getObfuscatedName.and.returnValue('test-obfs');
-
-        // videoWebServiceSpy.getJwToken.and.returnValue(
-        //     of(
-        //         new TokenResponse({
-        //             expires_on: '2021',
-        //             token: 'token'
-        //         })
-        //     )
-        // );
-
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],
             declarations: [
@@ -62,14 +40,6 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
                 IndividualConsultationControlsStubComponent
             ],
             providers: [
-                // {
-                //     provide: ActivatedRoute,
-                //     useValue: {
-                //         snapshot: {
-                //             paramMap: convertToParamMap({ conferenceId: conference.id })
-                //         }
-                //     }
-                // },
                 { provide: VideoWebService, useClass: MockVideoWebService },
                 { provide: AdalService, useClass: MockAdalService },
                 { provide: ConfigService, useClass: MockConfigService },
@@ -80,9 +50,6 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
     });
 
     beforeEach(() => {
-        adalService = TestBed.get(AdalService);
-        eventService = TestBed.get(EventsService);
-        route = TestBed.get(ActivatedRoute);
         fixture = TestBed.createComponent(ParticipantWaitingRoomComponent);
         component = fixture.componentInstance;
     });
