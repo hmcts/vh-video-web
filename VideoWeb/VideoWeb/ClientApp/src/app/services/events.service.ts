@@ -11,17 +11,6 @@ import { HelpMessage } from './models/help-message';
 import { InstantMessage } from './models/instant-message';
 import { ParticipantStatusMessage } from './models/participant-status-message';
 
-export enum EventMessage {
-    ParticipantStatusMessage = 'ParticipantStatusMessage',
-    ConferenceStatusMessage = 'ConferenceStatusMessage',
-    HelpMessage = 'HelpMessage',
-    ConsultationMessage = 'ConsultationMessage',
-    AdminConsultationMessage = 'AdminConsultationMessage',
-    ReceiveMessage = 'ReceiveMessage',
-    SendMessage = 'SendMessage',
-    AdminAnsweredChat = 'AdminAnsweredChat'
-}
-
 @Injectable({
     providedIn: 'root'
 })
