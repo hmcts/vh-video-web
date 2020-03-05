@@ -154,5 +154,15 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
             response.UserApiHealth.Successful.Should().BeTrue();
             response.VideoApiHealth.Successful.Should().BeTrue();
         }
+
+        [Test]
+        public async Task should_return_the_application_version_from_assembly()
+        {
+            var result = await _controller.Health();
+            var typedResult = (ObjectResult)result;
+            var response = (HealthCheckResponse)typedResult.Value;
+            response.AppVersion.FileVersion.Should().NotBeNullOrEmpty();
+            response.AppVersion.InformationVersion.Should().NotBeNullOrEmpty();
+        }
     }
 }
