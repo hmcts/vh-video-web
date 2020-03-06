@@ -36,8 +36,8 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     interval: NodeJS.Timer;
     loadingData: boolean;
 
-    conferences: Hearing[];
-  conferencesAll: Hearing[];
+  conferences: Hearing[];
+  conferencesAll: ConferenceForVhOfficerResponse[];
     selectedHearing: Hearing;
     participants: Participant[];
     participantStatusModel: ParticipantStatusModel;
@@ -189,7 +189,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
                 this.logger.debug('Successfully retrieved hearings for VHO');
             this.loadingData = false;
             this.conferences = data.map(c => new Hearing(c));
-                this.conferencesAll = data.map(c => new Hearing(c));;
+                this.conferencesAll = data;;
                 if (data && data.length > 0) {
                     this.logger.debug('VH Officer has conferences');
                     this.applyActiveFilter();
@@ -388,8 +388,8 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         if (selectedStatuses.length > 0 || selectedLocations.length > 0 || selectedAlerts.length > 0) {
             this.conferences = Object.assign(this.conferencesAll);
             if (selectedStatuses.length > 0) {
-                const conferencesAllExtended = this.setStatusDelayed(this.conferencesAll);
-                this.conferences = conferencesAllExtended.filter(x => selectedStatuses.includes(x.StatusExtended));
+              const conferencesAllExtended = this.setStatusDelayed(this.conferencesAll);
+              this.conferences = conferencesAllExtended.filter(x => selectedStatuses.includes(x.StatusExtended)).map(c=>new Hearing(c));
             }
           if (selectedLocations.length > 0) {
             this.conferences = this.conferences.filter(x => selectedLocations.includes(x.hearingVenueName));
@@ -398,7 +398,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
                 this.conferences = this.conferences.filter(x => this.findSelectedAlert(x.tasks, selectedAlerts));
             }
         } else {
-            this.conferences = this.conferencesAll;
+          this.conferences = this.conferencesAll.map(c => new Hearing(c));
         }
     }
 
@@ -448,7 +448,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
             const selectedJudgeUserName = selectedJudges[0].username;
             const anotherConferences = this.conferencesAll.filter(x => x.id !== selectedConferenceId);
           anotherConferences.forEach(x => {
-            const judgeStatus = this.findJudgeInAnotherHearing(x.getParticipants().map(p => new Participant(p)), selectedJudgeUserName);
+            const judgeStatus = this.findJudgeInAnotherHearing(x.participants.map(p => new Participant(p)), selectedJudgeUserName);
                 if (judgeStatus !== null) {
                     judgeStatuses.push(judgeStatus);
                 }

@@ -10,7 +10,8 @@ import { ConsultationMessage } from './models/consultation-message';
 import { HelpMessage } from './models/help-message';
 import { InstantMessage } from './models/instant-message';
 import { ParticipantStatusMessage } from './models/participant-status-message';
-import {HeartbeatHealth, ParticipantHeartbeat} from './models/participant-heartbeat';
+import { HeartbeatHealth, ParticipantHeartbeat } from './models/participant-heartbeat';
+import { Heartbeat } from '../shared/models/heartbeat';
 
 @Injectable({
     providedIn: 'root'
