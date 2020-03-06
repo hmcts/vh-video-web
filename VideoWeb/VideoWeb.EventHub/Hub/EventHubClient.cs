@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using VideoWeb.Common.SignalR;
@@ -173,13 +172,8 @@ namespace VideoWeb.EventHub.Hub
                     heartbeat.BrowserName, heartbeat.BrowserVersion
                 );
 
-                //Save to DB
                 var addHeartbeatRequest = _heartbeatMapper.MapToRequest(heartbeat);
                 await _videoApiClient.SaveHeartbeatDataForParticipantAsync(conferenceId, participantId, addHeartbeatRequest);
-            }
-            catch (HeartbeatException ex)
-            {
-                _logger.LogError("Error occured when mapping heartbeat", ex);
             }
             catch (Exception ex)
             {

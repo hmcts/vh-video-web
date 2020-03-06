@@ -5,12 +5,6 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.EventHub.Mappers
 {
-    public interface IHeartbeatMapper
-    {
-        AddHeartbeatRequest MapToRequest(Heartbeat heartbeat);
-        HeartbeatHealth MapToHealth(Heartbeat heartbeat);
-    }
-
     public class HeartbeatMapper : IHeartbeatMapper
     {
         public AddHeartbeatRequest MapToRequest(Heartbeat heartbeat)
@@ -37,7 +31,7 @@ namespace VideoWeb.EventHub.Mappers
                 heartbeat.IncomingAudioPercentageLostRecent,
                 heartbeat.IncomingVideoPercentageLostRecent,
                 heartbeat.OutgoingAudioPercentageLostRecent,
-                heartbeat.OutgoingVideoPercentageLostRecent,
+                heartbeat.OutgoingVideoPercentageLostRecent
             }.Max();
 
             return max < 10m ? HeartbeatHealth.Good : max >= 15m ? HeartbeatHealth.Bad : HeartbeatHealth.Poor;
