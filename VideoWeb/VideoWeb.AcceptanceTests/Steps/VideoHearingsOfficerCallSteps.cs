@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
+using AcceptanceTests.Common.Driver.Support;
 using AcceptanceTests.Common.Test.Helpers;
 using FluentAssertions;
 using TechTalk.SpecFlow;
