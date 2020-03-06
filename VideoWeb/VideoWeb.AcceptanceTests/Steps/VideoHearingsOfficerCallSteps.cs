@@ -15,6 +15,7 @@ namespace VideoWeb.AcceptanceTests.Steps
     public sealed class VideoHearingsOfficerCallSteps
     {
         private const int SecondsWaitToCallAndAnswer = 3;
+        private const int SecondsDelayBeforeCallingTheParticipant = 3;
         private const int Retries = 60;
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _c;
@@ -35,6 +36,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Driver.SwitchTo().Frame(AdminPanelPage.AdminIframeId);
             var participant = _c.Test.ConferenceParticipants.Find(x => x.Name.ToLower().Contains(user.ToLower()));
             _browsers[_c.CurrentUser.Key].Click(AdminPanelPage.ParticipantInIframe(participant.Display_name));
+            Thread.Sleep(TimeSpan.FromSeconds(SecondsDelayBeforeCallingTheParticipant));
             _browsers[_c.CurrentUser.Key].Click(AdminPanelPage.VhoPrivateConsultationLink(participant.Id));
             _browsers[_c.CurrentUser.Key].LastWindowName = _browsers[_c.CurrentUser.Key].SwitchTab("Private Consultation");
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.CloseButton).Displayed.Should().BeTrue();
@@ -83,6 +85,18 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.SelfViewVideo).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Click(AdminPanelPage.SelfViewButton);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(AdminPanelPage.SelfViewVideo).Should().BeTrue();
+        }
+
+        [Then(@"the option to call (.*) is not visible")]
+        public void ThenTheOptionToCallIsNotVisible(string user)
+        {
+            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Conference.Id));
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.SwitchTo().Frame(AdminPanelPage.AdminIframeId);
+            var participant = _c.Test.ConferenceParticipants.Find(x => x.Name.ToLower().Contains(user.ToLower()));
+            _browsers[_c.CurrentUser.Key].Click(AdminPanelPage.ParticipantInIframe(participant.Display_name));
+            Thread.Sleep(TimeSpan.FromSeconds(SecondsDelayBeforeCallingTheParticipant));
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(AdminPanelPage.VhoPrivateConsultationLink(participant.Id)).Should().BeTrue();
         }
     }
 }

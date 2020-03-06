@@ -1,4 +1,4 @@
-import { Input, NgZone } from '@angular/core';
+import { Input } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
@@ -6,13 +6,11 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { Hearing } from 'src/app/shared/models/hearing';
 import { InstantMessage } from 'src/app/services/models/instant-message';
+import { Hearing } from 'src/app/shared/models/hearing';
 
 export abstract class ChatBaseComponent {
     protected _hearing: Hearing;
-    protected chatHubSubscription: Subscription;
-
     messages: InstantMessage[];
 
     @Input() set conference(conference: ConferenceResponse) {
@@ -22,24 +20,24 @@ export abstract class ChatBaseComponent {
     constructor(
         protected videoWebService: VideoWebService,
         protected profileService: ProfileService,
-        protected ngZone: NgZone,
         protected eventService: EventsService,
         protected logger: Logger,
         protected adalService: AdalService
     ) {}
 
-    abstract sendMessage(): void;
+    abstract sendMessage(messageBody: string): void;
     abstract getMessageWindow(): HTMLElement;
 
-    setupChatSubscription(): any {
-        this.logger.debug('Subscribing to chat messages');
-        this.chatHubSubscription = this.eventService.getChatMessage().subscribe(message => {
-            this.ngZone.run(async () => {
+    setupChatSubscription(): Subscription {
+        this.logger.debug('[ChatHub] Subscribing to chat messages');
+        const sub = this.eventService.getChatMessage().subscribe({
+            next: async message => {
                 await this.handleIncomingMessage(message);
-            });
+            }
         });
 
         this.eventService.start();
+        return sub;
     }
 
     async handleIncomingMessage(message: InstantMessage) {
@@ -50,9 +48,11 @@ export abstract class ChatBaseComponent {
 
         // ignore if already received message
         if (this.messages.findIndex(m => m.id === message.id) > -1) {
-            this.logger.debug(`message already been processed ${JSON.stringify(message)}`);
+            this.logger.debug(`[ChatHub] message already been processed ${JSON.stringify(message)}`);
             return;
         }
+        this.messages.push(message);
+
         const from = message.from.toUpperCase();
         const username = this.adalService.userInfo.userName.toUpperCase();
         if (from === username) {
@@ -63,7 +63,6 @@ export abstract class ChatBaseComponent {
             message.is_user = false;
             this.handleIncomingOtherMessage();
         }
-        this.messages.push(message);
     }
 
     async assignMessageFrom(username: string): Promise<string> {
@@ -85,13 +84,5 @@ export abstract class ChatBaseComponent {
             return im;
         });
         return this.messages;
-    }
-
-    onKeydown(event: KeyboardEvent) {
-        if (event.key === 'Enter' && !event.altKey && !event.shiftKey && !event.ctrlKey) {
-            event.stopPropagation();
-            event.preventDefault();
-            this.sendMessage();
-        }
     }
 }

@@ -37,7 +37,10 @@
               "src/scripts/EdgePF.js",
               "src/scripts/IEPF.js",
               "src/scripts/Heartbeat.js",
+              "node_modules/govuk-frontend/govuk/all.js",
+              "src/scripts/init-script.js",
               "node_modules/chart.js/dist/Chart.js"
+
             ]
           },
           "configurations": {

@@ -1,7 +1,8 @@
-import { Component, OnInit, Input, HostListener, Output, EventEmitter } from '@angular/core';
-import { TaskResponse, ConferenceResponse, TaskStatus, TaskType } from 'src/app/services/clients/api-client';
+import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { ConferenceResponse, TaskResponse, TaskStatus, TaskType } from 'src/app/services/clients/api-client';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
+import { VHODashboardHelper } from '../helper';
 
 @Component({
     selector: 'app-tasks-table',
@@ -26,11 +27,7 @@ export class TasksTableComponent implements OnInit {
     }
 
     updateDivWidthForTasks(): void {
-        const listColumnElement: HTMLElement = document.getElementById('list-column');
-        const listWidth = listColumnElement.offsetWidth;
-        const windowWidth = window.innerWidth;
-        const frameWidth = windowWidth - listWidth - 60;
-        this.taskDivWidth = frameWidth;
+        this.taskDivWidth = new VHODashboardHelper().getWidthAvailableForConference();
     }
 
     getOriginName(task: TaskResponse): string {

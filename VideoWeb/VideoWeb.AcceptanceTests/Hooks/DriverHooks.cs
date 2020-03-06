@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using AcceptanceTests.Common.Driver;
 using AcceptanceTests.Common.Driver.Browser;
 using BoDi;
@@ -32,7 +32,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         {
             context.VideoWebConfig.TestConfig.TargetBrowser = _driverManager.GetTargetBrowser(NUnit.Framework.TestContext.Parameters["TargetBrowser"]);
             context.VideoWebConfig.TestConfig.TargetDevice = _driverManager.GetTargetDevice(NUnit.Framework.TestContext.Parameters["TargetDevice"]);
-            _driverManager.KillAnyLocalDriverProcesses(context.VideoWebConfig.TestConfig.TargetBrowser, context.VideoWebConfig.SauceLabsConfiguration.RunningOnSauceLabs());
+            DriverManager.KillAnyLocalDriverProcesses();
             context.Driver = new DriverSetup(context.VideoWebConfig.SauceLabsConfiguration, scenarioContext.ScenarioInfo, context.VideoWebConfig.TestConfig.TargetBrowser);
         }
 
@@ -44,7 +44,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 _browsers.Count > 0 ? _browsers[context.CurrentUser.Key].Driver : context.Driver.GetDriver(""),
                 scenarioContext.TestError == null);
             _driverManager.TearDownBrowsers(_browsers);
-            _driverManager.KillAnyLocalDriverProcesses(context.VideoWebConfig.TestConfig.TargetBrowser, context.VideoWebConfig.SauceLabsConfiguration.RunningOnSauceLabs());
+            DriverManager.KillAnyLocalDriverProcesses();
         }
     }
 }

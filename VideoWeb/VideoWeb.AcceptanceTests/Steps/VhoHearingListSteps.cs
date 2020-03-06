@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
+using AcceptanceTests.Common.Driver.Support;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -57,6 +58,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             firstParticipantLink.Displayed.Should().BeTrue();
             var action = new OpenQA.Selenium.Interactions.Actions(_browsers[_c.CurrentUser.Key].Driver.WrappedDriver);
             action.MoveToElement(firstParticipantLink).Perform();
+            if (_c.VideoWebConfig.TestConfig.TargetBrowser == TargetBrowser.Safari) return; // Latest version of Safari Driver will not hover over the correct element
             var conferenceParticipant = _c.Test.ConferenceParticipants.Find(x => x.Name.Contains(user));
             var participantEmailAndRole = $"{conferenceParticipant.Name} ({conferenceParticipant.Case_type_group})";
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantContactDetails(user, participantEmailAndRole)).Displayed.Should().BeTrue();

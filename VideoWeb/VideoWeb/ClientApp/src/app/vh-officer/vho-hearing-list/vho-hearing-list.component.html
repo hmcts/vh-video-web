@@ -1,55 +1,44 @@
 <div id="list-column" class="govuk-grid-column-one-half govuk-!-padding-0">
   <dl id="conferences-list" class="govuk-summary-list">
-
-    <a style="margin-left:20px;" href="javascript:void(0);" (click)="showMonitoringGraph()">graph</a>
-    <div *ngIf="displayGraph">
-      <div class=" govuk-grid-row">
-        <app-monitoring-graph [pakagesLostData]="packageLostArray" [participantGraphInfo]="selectedParticipant" (closeGraph)="closeGraph($event)">
-        </app-monitoring-graph>
-      </div>
-    </div>
     <div class="govuk-grid-column-full govuk-!-padding-0"
-         [ngClass]="{ 'selected-conference': isCurrentConference(conference) }" *ngFor="let conference of conferences"
-         (click)="selectConference(conference)">
-      <dd id="{{conference.id}}-summary" class="govuk-summary-list__value govuk-!-padding-left-4">
+      [ngClass]="{ 'selected-conference': isCurrentConference(conference) }" *ngFor="let conference of conferences"
+      (click)="selectConference(conference)">
+      <dd id="{{conference.id}}-summary" class="govuk-summary-list__value govuk-!-padding-left-4 govuk-body-s">
         <div class="govuk-grid-column-full">
           <div id="{{conference.id}}-time" class="govuk-grid-column-one-half">
-            {{conference.scheduled_date_time | date:'HH:mm' }}
-          </div>
+            {{conference.scheduled_date_time | date:'HH:mm' }}</div>
           <div id="{{conference.id}}-case-number" class="govuk-grid-column-one-half">
-            {{conference.case_number}}
-          </div>
+            {{conference.case_number}}</div>
         </div>
 
         <div class="govuk-grid-column-full">
           <div id="{{conference.id}}-duration" class="govuk-grid-column-one-half">
-            {{ getDuration(conference) }}
-          </div>
+            {{ getDuration(conference) }}</div>
           <div id="{{conference.id}}-case-name" class="govuk-grid-column-one-half">
-            {{conference.case_name}}
-          </div>
+            {{conference.case_name}}</div>
         </div>
 
         <div class="govuk-grid-column-full">
           <div class="govuk-grid-column-one-half govuk-!-padding-top-3">
             <span id="{{conference.id}}--pending-tasks" class="alert-badge has-alerts"
-                  [ngClass]="{ 'has-alerts': conference.no_of_pending_tasks > 0, 'no-alerts': conference.no_of_pending_tasks === 0}"
-                  [attr.data-badge]="conference.no_of_pending_tasks"></span>
+              [ngClass]="{ 'has-alerts': conference.no_of_pending_tasks > 0, 'no-alerts': conference.no_of_pending_tasks === 0}"
+              [attr.data-badge]="conference.no_of_pending_tasks"></span>
             <div class="govuk-grid-column-one-half notification-badge"
-                 [ngClass]="{ 'has-messages': conference.number_of_unread_messages > 0, 'no-messages' : conference.number_of_unread_messages === 0}"
-                 title="{{conference.no_of_pending_tasks}} Unread messages">
+              [ngClass]="{ 'has-messages': conference.number_of_unread_messages > 0, 'no-messages' : conference.number_of_unread_messages === 0}"
+              title="{{conference.no_of_pending_tasks}} Unread messages">
               <span id="{{conference.id}}-unread-messages" class="notification-badge-counter"
-                    [ngClass]="{ 'has-messages': conference.number_of_unread_messages > 0, 'no-messages' : conference.number_of_unread_messages === 0}">{{ conference.number_of_unread_messages }}</span>
+                [ngClass]="{ 'has-messages': conference.number_of_unread_messages > 0, 'no-messages' : conference.number_of_unread_messages === 0}">{{ conference.number_of_unread_messages }}</span>
             </div>
           </div>
 
           <div class="govuk-grid-column-one-half govuk-!-padding-top-3 right-side">
-            <span id="{{conference.id}}-status" class="govuk-!-padding-1 govuk-body-s"
-                  [ngClass]="{'conference-ready': isOnTime(conference), 'conference-delayed': isDelayed(conference),
-                  'conference-suspended': isSuspended(conference), 'conference-paused': isPaused(conference),
+            <span id="{{conference.id}}-status" class="govuk-!-padding-1 govuk-body-s status-badge"
+              [ngClass]="{'conference-ready': isOnTime(conference), 'conference-delayed': isDelayed(conference), 
+                  'conference-suspended': isSuspended(conference), 'conference-paused': isPaused(conference), 
                   'conference-in-session': isInSession(conference), 'conference-closed': isClosed(conference)}">{{ getConferenceStatusText(conference) }}</span>
-            <span class="govuk-!-padding-1 govuk-!-margin-left-2 report-conference govuk-body-s tooltip-wrapper"
-                  (click)="copyToClipboard(conference);$event.stopPropagation()">
+            <span
+              class="govuk-!-padding-1 govuk-!-margin-left-2 report-conference govuk-body-s tooltip-wrapper status-badge"
+              (click)="copyToClipboard(conference);$event.stopPropagation()">
               Copy UID
               <div id="tooltip-1" class="tooltip">
                 <div class="govuk-grid-row">
@@ -66,5 +55,3 @@
     </div>
   </dl>
 </div>
-
-
