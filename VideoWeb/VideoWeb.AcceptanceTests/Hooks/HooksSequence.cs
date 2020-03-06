@@ -1,4 +1,4 @@
-﻿namespace VideoWeb.AcceptanceTests.Hooks
+namespace VideoWeb.AcceptanceTests.Hooks
 {
     internal enum HooksSequence
     {
@@ -7,6 +7,7 @@
         HealthcheckHooks = 3,
         InitialiseBrowserHooks = 4,
         ConfigureDriverHooks = 5,
-        RemoveDataHooks = 6
+        RemoveDataHooks = 6,
+        ScenarioHooks = 7
     }
 }
