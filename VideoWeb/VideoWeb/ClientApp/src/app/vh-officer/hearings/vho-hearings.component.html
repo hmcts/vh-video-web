@@ -21,7 +21,7 @@
 
 <div *ngIf="!loadingData && hasHearings()" class="govuk-grid-row">
 
-  <app-vho-hearing-list #conferenceList [conferences]="conferences" [participants]="participants" (selectedConference)="onConferenceSelected($event)">
+  <app-vho-hearing-list #conferenceList [conferences]="conferences" (selectedConference)="onConferenceSelected($event)">
   </app-vho-hearing-list>
 
   <div class="govuk-grid-row">
