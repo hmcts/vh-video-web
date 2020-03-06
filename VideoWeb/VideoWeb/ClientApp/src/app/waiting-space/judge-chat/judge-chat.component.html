@@ -14,6 +14,7 @@
   <div *ngIf="showChat">
     <div id="chat-list" #scrollMe [scrollTop]="scrollMe.scrollHeight"
       class="govuk-!-padding-2 govuk-!-padding-left-4 chat-window">
+      <div *ngIf="loading" class="govuk-body">Loading...</div>
       <div *ngFor="let message of messages" class="govuk-grid-row message-container">
 
         <div class="govuk-grid-column-full" [ngClass]="(message.is_user)?'own-message':'other-message'">

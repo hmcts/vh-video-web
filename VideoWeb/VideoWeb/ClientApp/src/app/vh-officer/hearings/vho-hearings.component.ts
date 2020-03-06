@@ -1,4 +1,4 @@
-import { Component, HostListener, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import * as $ from 'jquery';
 import { Subscription } from 'rxjs';
@@ -64,7 +64,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         private videoWebService: VideoWebService,
         public sanitizer: DomSanitizer,
         private errorService: ErrorService,
-        private ngZone: NgZone,
         private eventService: EventsService,
         private logger: Logger
     ) {
@@ -95,51 +94,41 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.logger.debug('Subscribing to conference status changes...');
         this.eventHubSubscriptions.add(
             this.eventService.getHearingStatusMessage().subscribe(message => {
-                this.ngZone.run(() => {
-                    this.handleConferenceStatusChange(message);
-                });
+                this.handleConferenceStatusChange(message);
             })
         );
 
         this.logger.debug('Subscribing to participant status changes...');
         this.eventHubSubscriptions.add(
             this.eventService.getParticipantStatusMessage().subscribe(message => {
-                this.ngZone.run(() => {
-                    this.handleParticipantStatusChange(message);
-                });
+                this.handleParticipantStatusChange(message);
             })
         );
 
         this.logger.debug('Subscribing to EventHub disconnects');
         this.eventHubSubscriptions.add(
             this.eventService.getServiceDisconnected().subscribe(reconnectionAttempt => {
-                this.ngZone.run(() => {
-                    if (reconnectionAttempt < 6) {
-                        this.logger.info(`EventHub disconnection for vh officer`);
-                        this.refreshConferenceDataDuringDisconnect();
-                    } else {
-                        this.errorService.goToServiceError();
-                    }
-                });
+                if (reconnectionAttempt < 6) {
+                    this.logger.info(`EventHub disconnection for vh officer`);
+                    this.refreshConferenceDataDuringDisconnect();
+                } else {
+                    this.errorService.goToServiceError();
+                }
             })
         );
 
         this.logger.debug('Subscribing to EventHub reconnects');
         this.eventHubSubscriptions.add(
             this.eventService.getServiceReconnected().subscribe(() => {
-                this.ngZone.run(() => {
-                    this.logger.info(`EventHub reconnected for vh officer`);
-                    this.refreshConferenceDataDuringDisconnect();
-                });
+                this.logger.info(`EventHub reconnected for vh officer`);
+                this.refreshConferenceDataDuringDisconnect();
             })
         );
 
         this.eventHubSubscriptions.add(
             this.eventService.getAdminAnsweredChat().subscribe(message => {
-                this.ngZone.run(() => {
-                    this.logger.info(`an admin has answered`);
-                    this.resetConferenceUnreadCounter(message);
-                });
+                this.logger.info(`an admin has answered`);
+                this.resetConferenceUnreadCounter(message);
             })
       );
 

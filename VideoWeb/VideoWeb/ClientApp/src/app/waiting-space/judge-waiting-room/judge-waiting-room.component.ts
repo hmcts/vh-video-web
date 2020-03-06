@@ -1,4 +1,4 @@
-import { Component, HostListener, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { interval, Observable, Subscription } from 'rxjs';
@@ -33,7 +33,6 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
         private router: Router,
         private videoWebService: VideoWebService,
         private eventService: EventsService,
-        private ngZone: NgZone,
         private errorService: ErrorService,
         private logger: Logger,
         private adalService: AdalService,
@@ -107,11 +106,9 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
             })
             .catch(error => {
                 this.loadingData = false;
-                this.ngZone.run(() => {
-                    if (!this.errorService.returnHomeIfUnauthorised(error)) {
-                        this.errorService.handleApiError(error);
-                    }
-                });
+                if (!this.errorService.returnHomeIfUnauthorised(error)) {
+                    this.errorService.handleApiError(error);
+                }
             });
     }
 
@@ -160,37 +157,29 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
     setupEventHubSubscribers() {
         this.eventHubSubscriptions.add(
             this.eventService.getHearingStatusMessage().subscribe(message => {
-                this.ngZone.run(() => {
-                    this.handleHearingStatusChange(<ConferenceStatus>message.status);
-                });
+                this.handleHearingStatusChange(<ConferenceStatus>message.status);
             })
         );
 
         this.eventHubSubscriptions.add(
             this.eventService.getParticipantStatusMessage().subscribe(message => {
-                this.ngZone.run(() => {
-                    this.handleParticipantStatusChange(message);
-                });
+                this.handleParticipantStatusChange(message);
             })
         );
 
         this.logger.debug('Subscribing to EventHub disconnects');
         this.eventHubSubscriptions.add(
             this.eventService.getServiceDisconnected().subscribe(() => {
-                this.ngZone.run(() => {
-                    this.logger.info(`EventHub disconnection for vh officer`);
-                    this.getConference();
-                });
+                this.logger.info(`EventHub disconnection for vh officer`);
+                this.getConference();
             })
         );
 
         this.logger.debug('Subscribing to EventHub reconnects');
         this.eventHubSubscriptions.add(
             this.eventService.getServiceReconnected().subscribe(() => {
-                this.ngZone.run(() => {
-                    this.logger.info(`EventHub re-connected for vh officer`);
-                    this.getConference();
-                });
+                this.logger.info(`EventHub re-connected for vh officer`);
+                this.getConference();
             })
         );
 
