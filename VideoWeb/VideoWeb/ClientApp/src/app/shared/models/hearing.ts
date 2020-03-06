@@ -64,6 +64,10 @@ export class Hearing {
         return this.conference.participants;
     }
 
+  getParticipantsWithHeartBeat(): Participant[] {
+    return this.participants;
+  }
+
     get scheduledStartTime(): Date {
         const startTime = new Date(this.conference.scheduled_date_time.getTime());
         return startTime;

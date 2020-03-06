@@ -150,15 +150,16 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
   }
 
   handleHeartbeat(heartBeat: ParticipantHeartbeat) {
-    if (!this.participants) {
+    
+    const conferenceToUpdate = this.conferences.find(c => c.id === heartBeat.conferenceId);
+
+    if (!conferenceToUpdate) {
       return;
     }
-    const participantToUpdate = this.participants.find(x => x.id === heartBeat.participantId);
+
+    const participantToUpdate = conferenceToUpdate.getParticipantsWithHeartBeat().find(x => x.id === heartBeat.participantId);
     if (participantToUpdate) {
       participantToUpdate.hearbeartHealth = heartBeat.heartbeatHealth;
-      if (participantToUpdate.role === UserRole.Judge) {
-        this.getJudgeStatusDetails();
-      }
     }
   }
 

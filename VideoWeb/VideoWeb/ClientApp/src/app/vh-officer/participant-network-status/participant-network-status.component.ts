@@ -18,9 +18,12 @@ export class ParticipantNetworkStatusComponent  {
   }
 
   getParticipantNetworkStatus(): string {
-    if(this.participant.status === ParticipantStatus.Disconnected){
+
+   if(this.participant.status === ParticipantStatus.Disconnected){
        return 'participant-disconnected';
     }
+
+    
 
     switch (this.participant.hearbeartHealth) {
       case HeartbeatHealth.Good:
