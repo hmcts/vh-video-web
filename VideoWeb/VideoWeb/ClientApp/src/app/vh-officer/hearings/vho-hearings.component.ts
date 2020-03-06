@@ -130,15 +130,13 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
                 this.logger.info(`an admin has answered`);
                 this.resetConferenceUnreadCounter(message);
             })
-      );
+        );
 
-      this.eventHubSubscriptions.add(
-        this.eventService.getHeartbeat().subscribe(heartbeat => {
-          this.ngZone.run(() => {
+        this.eventHubSubscriptions.add(
+          this.eventService.getHeartbeat().subscribe(heartbeat => {
             this.handleHeartbeat(heartbeat);
-          });
-        })
-      );
+          })
+        );
 
         this.eventService.start();
     }
