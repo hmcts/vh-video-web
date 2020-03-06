@@ -11,7 +11,7 @@ import { Participant } from 'src/app/shared/models/participant';
 })
 export class VhoHearingListComponent implements OnInit {
 
-    @Input() conferences: ConferenceForVhOfficerResponse[];
+    @Input() conferences: Hearing[];
   @Output() selectedConference = new EventEmitter<Hearing>();
     currentConference: Hearing;
 
@@ -20,7 +20,7 @@ export class VhoHearingListComponent implements OnInit {
     ngOnInit() {
     }
 
-    isCurrentConference(conference: ConferenceForVhOfficerResponse): boolean {
+    isCurrentConference(conference: Hearing): boolean {
         return this.currentConference != null && this.currentConference.id === conference.id;
     }
 

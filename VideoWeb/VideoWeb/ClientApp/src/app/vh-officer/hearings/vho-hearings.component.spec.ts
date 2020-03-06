@@ -74,8 +74,8 @@ describe('VhoHearingsComponent', () => {
         spyOn(component, 'updateWidthForAdminFrame');
         spyOn(component, 'getHeightForFrame').and.returnValue(600);
 
-        component.onConferenceSelected(component.conferences[0]);
-        expect(component.selectedConferenceUrl).toBeDefined();
+      component.onConferenceSelected(component.conferences[0]);
+      expect(component.selectedConferenceUrl).toBeDefined();
     });
 
     it('should return true when current conference is selected', () => {
@@ -104,16 +104,16 @@ describe('VhoHearingsComponent', () => {
 
     it('should update number of pending tasks on task completed', () => {
         const currentConference = component.conferences[0];
-        const initPendingTasks = 5;
-        currentConference.no_of_pending_tasks = initPendingTasks;
+      const initPendingTasks = 5;
+      currentConference.pendingtasks = initPendingTasks;
 
-        component.onTaskCompleted(new TaskCompleted(currentConference.id, 3));
-        expect(component.conferences[0].no_of_pending_tasks).toBeLessThan(initPendingTasks);
+      component.onTaskCompleted(new TaskCompleted(currentConference.id, 3));
+      expect(component.conferences[0].pendingtasks).toBeLessThan(initPendingTasks);
     });
 
     it('should get the selected judge statuses from another hearings', () => {
         component.selectedHearing = new Hearing(component.conferencesAll[0]);
-        component.participants = component.conferencesAll[0].participants;
+      component.participants = component.conferencesAll.map(c => new Hearing(c))[0].getParticipantsWithHeartBeat();
         component.getJudgeStatusDetails();
         expect(component.participantStatusModel.JudgeStatuses.length).toBeGreaterThan(0);
     });
@@ -123,7 +123,7 @@ describe('VhoHearingsComponent', () => {
         const selectedConferenceId = component.conferencesAll[0].id;
         component.selectedHearing = new Hearing(component.conferencesAll[0]);
 
-        component.participants = component.conferencesAll[0].participants;
+      component.participants = component.conferencesAll.map(c => new Hearing(c))[0].getParticipantsWithHeartBeat();
         component.participants.forEach(x => {
             if (x.role === UserRole.Judge) {
                 x.username = 'changeName@email.com';
@@ -134,10 +134,10 @@ describe('VhoHearingsComponent', () => {
     });
 
     it('should reset conference unread counter when vho sends a message', () => {
-        const conference = component.conferences[0];
-        component.conferences[0].number_of_unread_messages = 5;
+      const conference = component.conferences[0];
+      component.conferences[0].numberOfUnreadMessages = 5;
         component.resetConferenceUnreadCounter(conference.id);
-        expect(component.conferences[0].number_of_unread_messages).toBe(0);
+      expect(component.conferences[0].numberOfUnreadMessages).toBe(0);
     });
 });
 

@@ -34,6 +34,10 @@ export class Participant {
         return this.participant.username;
     }
 
+    set username(username: string) {
+        this.username= username;
+    }
+
     get contactTelephone() {
         return this.participant.contact_telephone;
     }

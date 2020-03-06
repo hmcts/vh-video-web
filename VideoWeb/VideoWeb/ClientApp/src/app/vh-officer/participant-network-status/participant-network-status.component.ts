@@ -13,8 +13,7 @@ import { HeartbeatHealth } from '../../services/models/participant-heartbeat';
 export class ParticipantNetworkStatusComponent  {
   @Input() participant: Participant;
 
-  constructor(private logger: Logger) {
-    // this.logger.debug("***************Participant *************** " + this.participant.displayName);
+  constructor() {
   }
 
   getParticipantNetworkStatus(): string {

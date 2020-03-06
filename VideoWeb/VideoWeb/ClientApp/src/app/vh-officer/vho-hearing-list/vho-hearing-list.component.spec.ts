@@ -3,6 +3,7 @@ import { configureTestSuite } from 'ng-bullet';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { VhoHearingListComponent } from './vho-hearing-list.component';
+import { Hearing } from '../../shared/models/hearing';
 
 
 describe('VhoHearingListComponent', () => {
@@ -18,7 +19,7 @@ describe('VhoHearingListComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(VhoHearingListComponent);
     component = fixture.componentInstance;
-    component.conferences = new ConferenceTestData().getTestData();
+    component.conferences = new ConferenceTestData().getTestData().map(c=>new Hearing(c));
     fixture.detectChanges();
   });
 
