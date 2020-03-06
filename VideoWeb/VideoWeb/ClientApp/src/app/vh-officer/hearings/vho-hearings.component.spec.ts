@@ -23,6 +23,7 @@ import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { VhoHearingsFilterStubComponent } from '../../testing/stubs/vho-hearings-filter-stub';
 import { VhoHearingsComponent } from './vho-hearings.component';
 import { VhoChatStubComponent } from 'src/app/testing/stubs/vho-chat-stub';
+import { VhoParticipantNetworkStatusStubComponent } from '../../testing/stubs/vho-participant-network-status-stub';
 
 describe('VhoHearingsComponent', () => {
     let component: VhoHearingsComponent;
@@ -50,7 +51,8 @@ describe('VhoHearingsComponent', () => {
                 VhoHearingListStubComponent,
                 VhoParticipantStatusStubComponent,
                 VhoHearingsFilterStubComponent,
-                VhoChatStubComponent
+              VhoChatStubComponent,
+                VhoParticipantNetworkStatusStubComponent
             ],
             providers: [
                 { provide: VideoWebService, useValue: videoWebServiceSpy },

@@ -4,6 +4,7 @@ import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { VhoHearingListComponent } from './vho-hearing-list.component';
 import { Hearing } from '../../shared/models/hearing';
+import { VhoParticipantNetworkStatusStubComponent } from '../../testing/stubs/vho-participant-network-status-stub';
 
 
 describe('VhoHearingListComponent', () => {
@@ -12,7 +13,8 @@ describe('VhoHearingListComponent', () => {
 
   configureTestSuite(() => {
     TestBed.configureTestingModule({
-      declarations: [ VhoHearingListComponent ]
+      declarations: [VhoHearingListComponent,
+        VhoParticipantNetworkStatusStubComponent]
     });
   });
 
