@@ -12,7 +12,7 @@ export class MonitorGraphService {
   MS_PER_MINUTE = 60000;
   HEARTBEAT_INTERVAL = 5000;
   MAX_LOST = 20;
-  timeEndNow: number;
+  timestampNow: number;
   timeStartPast: number;
   unsupportedBroswer: UnsupportedBrowserHeartbeat[] = [];
 
@@ -55,8 +55,15 @@ export class MonitorGraphService {
   transferPackagesLost(values: PackageLost[]): number[] {
     let packagesLostValues: GraphData[] = [];
     let graphPoints = Array(GraphSettings.MAX_RECORDS).fill(NaN);
-    this.timeEndNow = new Date(Date.now()).getTime();
+
+    this.timestampNow = new Date(Date.now()).getTime();
+   
     if (values.length > 0) {
+
+      // get starting point for timestamp from time 'now' or last heartbeat if its in the 5 sec from now.
+      this.timestampNow = this.timestampNow - this.HEARTBEAT_INTERVAL <= values[values.length - 1].timestamp
+        ? values[values.length - 1].timestamp : this.timestampNow;
+
       packagesLostValues = values.map(x => this.getPointValue(x));
     }
 
@@ -75,10 +82,23 @@ export class MonitorGraphService {
     }
 
     const graphData = new GraphData();
+
+    // converts package lost value in the signal strength,
+    // if package lost >= 20 then signal = 0
+    // otherwise 20 minus package lost value, the good signal is 20 (0-package lost)
+
     graphData.pointY = packageLost.recentPackageLost >= this.MAX_LOST ? this.MAX_LOST : this.MAX_LOST - packageLost.recentPackageLost;
-    if (this.timeEndNow >= packageLost.timestamp) {
-      let xIndex = Math.round((this.timeEndNow - packageLost.timestamp) / this.HEARTBEAT_INTERVAL);
+
+    if (this.timestampNow >= packageLost.timestamp) {
+
+      // defines position of the heartbeat value (y-axise) by timestamp in the data array (x-axise)
+      // we have start point (time now or last time of heartbeat) and every 5 sec we have new value for hartbeat.
+      // by deviding the difference between start point and current hearbeat value on 5 sec we get index position in the array
+      // if there is some break in heartbeat stream then the associated elements of array have value NaN (no graph line)
+
+      let xIndex = Math.round((this.timestampNow - packageLost.timestamp) / this.HEARTBEAT_INTERVAL);
       xIndex = xIndex > GraphSettings.MAX_RECORDS ? GraphSettings.MAX_RECORDS : xIndex;
+
       graphData.pointX = (GraphSettings.MAX_RECORDS - xIndex);
     } else {
       graphData.pointX = GraphSettings.MAX_RECORDS;
@@ -91,10 +111,10 @@ export class MonitorGraphService {
     //just for fake data test
     let list: PackageLost[] = [];
 
-    this.timeEndNow = new Date(Date.now()).getTime();
-    this.timeStartPast = this.timeEndNow - (15 * this.MS_PER_MINUTE);
+    this.timestampNow = new Date(Date.now()).getTime();
+    this.timeStartPast = this.timestampNow - (15 * this.MS_PER_MINUTE);
 
-    const dnow = this.timeEndNow;
+    const dnow = this.timestampNow;
     console.log('NOW DATE: ' + dnow);
 
     const dpast = this.timeStartPast;
@@ -114,7 +134,7 @@ export class MonitorGraphService {
       else if (i >= 100 && i < 150) {
         item = new PackageLost(5, '', '', tstamp);
       } else {
-        item = new PackageLost(0, 'Safari', '', tstamp);
+        item = new PackageLost(0, 'Edge', '79.0.309', tstamp);
       }
       console.log(item);
       list.push(item);
@@ -127,11 +147,11 @@ export class MonitorGraphService {
     //just for fake data test
     let list: PackageLost[] = [];
 
-    this.timeEndNow = new Date(Date.now()).getTime();
-    this.timeStartPast = this.timeEndNow - (15 * this.MS_PER_MINUTE);
+    this.timestampNow = new Date(Date.now()).getTime();
+    this.timeStartPast = this.timestampNow - (15 * this.MS_PER_MINUTE);
     const dpast = this.timeStartPast - 1000;
     console.log('PAST DATE: ' + dpast);
-    console.log('NOW DATE: ' + this.timeEndNow);
+    console.log('NOW DATE: ' + this.timestampNow);
 
     let tstamp = dpast;
     for (var i = 0; i < 180; i++) {
