@@ -1,5 +1,6 @@
-import { AfterViewChecked, Component, HostListener, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
+import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ChatResponse } from 'src/app/services/clients/api-client';
@@ -15,24 +16,29 @@ import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
 export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnDestroy, AfterViewChecked {
     showChat: boolean;
     unreadMessageCount: number;
+    loading: boolean;
+    private chatHubSubscription: Subscription;
 
     constructor(
         protected videoWebService: VideoWebService,
         protected profileService: ProfileService,
-        protected ngZone: NgZone,
         protected eventService: EventsService,
         protected logger: Logger,
         protected adalService: AdalService
     ) {
-        super(videoWebService, profileService, ngZone, eventService, logger, adalService);
+        super(videoWebService, profileService, eventService, logger, adalService);
     }
 
     ngOnInit() {
+        this.logger.debug(`[ChatHub Judge] starting chat for ${this._hearing.id}`);
         this.showChat = false;
         this.unreadMessageCount = 0;
-        this.setupChatSubscription();
+        this.loading = true;
         this.retrieveChatForConference().then(messages => {
+            this.chatHubSubscription = this.setupChatSubscription();
             this.unreadMessageCount = this.getCountSinceUsersLastMessage(messages);
+            this.loading = false;
+            this.messages = messages;
         });
     }
 
@@ -53,7 +59,10 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
 
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
-        this.chatHubSubscription.unsubscribe();
+        this.logger.debug(`[ChatHub Judge] closing chat for ${this._hearing.id}`);
+        if (this.chatHubSubscription) {
+            this.chatHubSubscription.unsubscribe();
+        }
     }
 
     toggleChatDisplay() {

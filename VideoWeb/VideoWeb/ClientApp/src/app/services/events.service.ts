@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as signalR from '@aspnet/signalr';
+import * as signalR from '@microsoft/signalr';
 import { AdalService } from 'adal-angular4';
 import { Observable, Subject } from 'rxjs';
 import { ConferenceStatus, ConsultationAnswer, ParticipantStatus, RoomType } from './clients/api-client';
@@ -58,6 +58,7 @@ export class EventsService {
                         this.connection.onreconnecting(error => this.onEventHubReconnecting(error));
                         this.connection.onreconnected(() => this.onEventHubReconnected());
                         this.connection.onclose(error => this.onEventHubErrorOrClose(error));
+                        this.registerHandlers();
                     },
                     async rejectReason => {
                         this.attemptingConnection = false;
@@ -78,6 +79,60 @@ export class EventsService {
                     this.onEventHubErrorOrClose(err);
                 });
         }
+    }
+
+    private registerHandlers(): void {
+        this.connection.on('ParticipantStatusMessage', (participantId: string, status: ParticipantStatus) => {
+            const message = new ParticipantStatusMessage(participantId, status);
+            this.logger.event('ParticipantStatusMessage received', message);
+            this.participantStatusSubject.next(message);
+        });
+
+        this.connection.on('ConferenceStatusMessage', (conferenceId: string, status: ConferenceStatus) => {
+            const message = new ConferenceStatusMessage(conferenceId, status);
+            this.logger.event('ConferenceStatusMessage received', message);
+            this.hearingStatusSubject.next(message);
+        });
+
+        this.connection.on('HelpMessage', (conferenceId: string, participantName: string) => {
+            const message = new HelpMessage(conferenceId, participantName);
+            this.logger.event('HelpMessage received', message);
+            this.helpMessageSubject.next(message);
+        });
+
+        this.connection.on('ConsultationMessage', (conferenceId: string, requestedBy: string, requestedFor: string, result: string) => {
+            const message = new ConsultationMessage(conferenceId, requestedBy, requestedFor, result);
+            this.logger.event('ConsultationMessage received', message);
+            this.consultationMessageSubject.next(message);
+        });
+
+        this.connection.on(
+            'AdminConsultationMessage',
+            (conferenceId: string, roomType: RoomType, requestedFor: string, answer: ConsultationAnswer) => {
+                const message = new AdminConsultationMessage(conferenceId, roomType, requestedFor, answer);
+                this.logger.event('AdminConsultationMessage received', message);
+                this.adminConsultationMessageSubject.next(message);
+            }
+        );
+
+        this.connection.on(
+            'ReceiveMessage',
+            (conferenceId: string, from: string, message: string, timestamp: Date, messageUuid: string) => {
+                const date = new Date(timestamp);
+                const chat = new InstantMessage({ conferenceId, id: messageUuid, from, message, timestamp: date });
+                this.logger.event('ReceiveMessage received', chat);
+                this.messageSubject.next(chat);
+            }
+        );
+
+        this.connection.on('AdminAnsweredChat', (conferenceId: string) => {
+            this.logger.event('AdminAnsweredChat received', conferenceId);
+            this.adminAnsweredChatSubject.next(conferenceId);
+        });
+    }
+
+    stop() {
+        this.connection.stop().catch(err => this.logger.error('Failed to stop connection to EventHub', err));
     }
 
     async delay(ms: number) {
@@ -117,83 +172,31 @@ export class EventsService {
         return this.eventHubDisconnectSubject.asObservable();
     }
 
-    stop() {
-        this.connection.stop().catch(err => this.logger.error('Failed to stop connection to EventHub', err));
-    }
-
     getParticipantStatusMessage(): Observable<ParticipantStatusMessage> {
-        this.connection.on('ParticipantStatusMessage', (participantId: string, status: ParticipantStatus) => {
-            const message = new ParticipantStatusMessage(participantId, status);
-            this.logger.event('ParticipantStatusMessage received', message);
-            this.participantStatusSubject.next(message);
-        });
-
         return this.participantStatusSubject.asObservable();
     }
 
     getHearingStatusMessage(): Observable<ConferenceStatusMessage> {
-        this.connection.on('ConferenceStatusMessage', (conferenceId: string, status: ConferenceStatus) => {
-            const message = new ConferenceStatusMessage(conferenceId, status);
-            this.logger.event('ConferenceStatusMessage received', message);
-            this.hearingStatusSubject.next(message);
-        });
-
         return this.hearingStatusSubject.asObservable();
     }
 
     getHelpMessage(): Observable<HelpMessage> {
-        this.connection.on('HelpMessage', (conferenceId: string, participantName: string) => {
-            const message = new HelpMessage(conferenceId, participantName);
-            this.logger.event('HelpMessage received', message);
-            this.helpMessageSubject.next(message);
-        });
-
         return this.helpMessageSubject.asObservable();
     }
 
     getConsultationMessage(): Observable<ConsultationMessage> {
-        this.connection.on('ConsultationMessage', (conferenceId: string, requestedBy: string, requestedFor: string, result: string) => {
-            const message = new ConsultationMessage(conferenceId, requestedBy, requestedFor, result);
-            this.logger.event('ConsultationMessage received', message);
-            this.consultationMessageSubject.next(message);
-        });
-
         return this.consultationMessageSubject.asObservable();
     }
 
     getAdminConsultationMessage(): Observable<AdminConsultationMessage> {
-        this.connection.on(
-            'AdminConsultationMessage',
-            (conferenceId: string, roomType: RoomType, requestedFor: string, answer: ConsultationAnswer) => {
-                const message = new AdminConsultationMessage(conferenceId, roomType, requestedFor, answer);
-                this.logger.event('AdminConsultationMessage received', message);
-                this.adminConsultationMessageSubject.next(message);
-            }
-        );
-
         return this.adminConsultationMessageSubject.asObservable();
     }
 
     getChatMessage(): Observable<InstantMessage> {
-        this.connection.on(
-            'ReceiveMessage',
-            (conferenceId: string, from: string, message: string, timestamp: Date, messageUuid: string) => {
-                const date = new Date(timestamp);
-                const chat = new InstantMessage({ conferenceId, id: messageUuid, from, message, timestamp: date });
-                this.logger.event('ReceiveMessage received', chat);
-                this.messageSubject.next(chat);
-            }
-        );
-
         return this.messageSubject.asObservable();
     }
 
     getAdminAnsweredChat(): Observable<string> {
-        this.connection.on('AdminAnsweredChat', (conferenceId: string) => {
-            this.logger.event('AdminAnsweredChat received', conferenceId);
-            this.adminAnsweredChatSubject.next(conferenceId);
-        });
-
         return this.adminAnsweredChatSubject.asObservable();
     }
 

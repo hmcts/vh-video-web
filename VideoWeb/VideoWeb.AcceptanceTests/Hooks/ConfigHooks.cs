@@ -25,7 +25,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         public ConfigHooks(TestContext context)
         {
-            _configRoot = new ConfigurationManager("CA353381-2F0D-47D7-A97B-79A30AFF8B86").BuildConfig(GetTargetEnvironment());
+            _configRoot = ConfigurationManager.BuildConfig("CA353381-2F0D-47D7-A97B-79A30AFF8B86", GetTargetEnvironment());
             context.VideoWebConfig = new VideoWebConfig();
             context.UserAccounts = new List<UserAccount>();
             context.Tokens = new VideoWebTokens();
@@ -84,7 +84,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             context.Test = new Test
             {
                 Case = new CaseResponse(),
-                CommonData = new LoadXmlFile().SerialiseCommonData(),
+                CommonData = LoadXmlFile.SerialiseCommonData(),
                 Conference = new ConferenceDetailsResponse(),
                 ConferenceParticipants = new List<ParticipantDetailsResponse>(),
                 Conferences = new List<ConferenceDetailsResponse>(),

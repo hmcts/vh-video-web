@@ -1,6 +1,7 @@
-import { Component, EventEmitter, HostListener, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { AdalService } from 'adal-angular4';
+import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -16,8 +17,9 @@ import { ConferenceUnreadMessageCount } from './vho-conference-unread_message-co
 })
 export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDestroy {
     sectionDivWidth: number;
-
     newMessageBody: FormControl;
+    private chatHubSubscription: Subscription;
+    loading: boolean;
 
     @Output() unreadMessageCount = new EventEmitter<ConferenceUnreadMessageCount>();
 
@@ -29,18 +31,23 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
     constructor(
         protected videoWebService: VideoWebService,
         protected profileService: ProfileService,
-        protected ngZone: NgZone,
         protected eventService: EventsService,
         protected logger: Logger,
         protected adalService: AdalService
     ) {
-        super(videoWebService, profileService, ngZone, eventService, logger, adalService);
+        super(videoWebService, profileService, eventService, logger, adalService);
     }
 
     ngOnInit() {
+        this.logger.debug(`[ChatHub VHO] starting chat for ${this._hearing.id}`);
         this.updateDivWidthForSection();
         this.initForm();
-        this.retrieveChatForConference().then(() => this.setupChatSubscription());
+        this.chatHubSubscription = this.setupChatSubscription();
+        this.loading = true;
+        this.retrieveChatForConference().then(messages => {
+            this.messages = messages;
+            this.loading = false;
+        });
     }
 
     initForm() {
@@ -61,6 +68,7 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
 
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
+        this.logger.debug(`[ChatHub VHO] closing chat for ${this._hearing.id}`);
         if (this.chatHubSubscription) {
             this.chatHubSubscription.unsubscribe();
         }
