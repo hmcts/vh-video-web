@@ -40,7 +40,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             if (_browsers != null)
             {
                 DriverManager.LogTestResult(
-                    true, //context.VideoWebConfig.SauceLabsConfiguration.RunningOnSauceLabs(),
+                    context.VideoWebConfig.SauceLabsConfiguration.RunningOnSauceLabs(),
                     _browsers.Count > 0 ? _browsers[context.CurrentUser.Key].Driver : context.Driver.GetDriver(""),
                     scenarioContext.TestError == null);
                 DriverManager.TearDownBrowsers(_browsers);
