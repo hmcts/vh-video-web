@@ -18,24 +18,28 @@ export class ParticipantNetworkStatusComponent  {
 
   getParticipantNetworkStatus(): string {
 
+
+    
+
+
    if(this.participant.status === ParticipantStatus.Disconnected){
        return 'participant-disconnected';
     }
 
     
 
-    switch (this.participant.hearbeartHealth) {
-      case HeartbeatHealth.Good:
-        return "Good";
-      case HeartbeatHealth.Bad:
-        return 'Bad';
-      case HeartbeatHealth.Poor:
-        return 'Poor';
-      case HeartbeatHealth.None:
-        return 'None';
-      default:
-        return 'None';
-    }
+    //switch (this.participant.hearbeartHealth) {
+    //  case HeartbeatHealth.Good:
+    //    return "Good";
+    //  case HeartbeatHealth.Bad:
+    //    return 'Bad';
+    //  case HeartbeatHealth.Poor:
+    //    return 'Poor';
+    //  case HeartbeatHealth.None:
+    //    return 'None';
+    //  default:
+    //    return 'None';
+    //}
   }
 
 }

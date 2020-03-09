@@ -11,16 +11,16 @@ import { Participant } from 'src/app/shared/models/participant';
 })
 export class VhoHearingListComponent implements OnInit {
 
-    @Input() conferences: Hearing[];
-  @Output() selectedConference = new EventEmitter<Hearing>();
-    currentConference: Hearing;
+  @Input() conferences: ConferenceForVhOfficerResponse[];
+  @Output() selectedConference = new EventEmitter<ConferenceForVhOfficerResponse>();
+  currentConference: ConferenceForVhOfficerResponse;
 
     constructor(private clipboardService: ClipboardService) { }
 
     ngOnInit() {
     }
 
-    isCurrentConference(conference: Hearing): boolean {
+  isCurrentConference(conference: ConferenceForVhOfficerResponse): boolean {
         return this.currentConference != null && this.currentConference.id === conference.id;
     }
 
@@ -72,7 +72,7 @@ export class VhoHearingListComponent implements OnInit {
         return new Hearing(conference).getDurationAsText();
     }
 
-    selectConference(conference: Hearing) {
+  selectConference(conference: ConferenceForVhOfficerResponse) {
         this.currentConference = conference;
         this.selectedConference.emit(conference);
     }

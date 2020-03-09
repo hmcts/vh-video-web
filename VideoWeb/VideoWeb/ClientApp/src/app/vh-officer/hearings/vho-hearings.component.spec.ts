@@ -107,15 +107,15 @@ describe('VhoHearingsComponent', () => {
     it('should update number of pending tasks on task completed', () => {
         const currentConference = component.conferences[0];
       const initPendingTasks = 5;
-      currentConference.pendingtasks = initPendingTasks;
+      currentConference.no_of_pending_tasks = initPendingTasks;
 
       component.onTaskCompleted(new TaskCompleted(currentConference.id, 3));
-      expect(component.conferences[0].pendingtasks).toBeLessThan(initPendingTasks);
+      expect(component.conferences[0].no_of_pending_tasks).toBeLessThan(initPendingTasks);
     });
 
     it('should get the selected judge statuses from another hearings', () => {
         component.selectedHearing = new Hearing(component.conferencesAll[0]);
-      component.participants = component.conferencesAll.map(c => new Hearing(c))[0].getParticipantsWithHeartBeat();
+        component.participants = component.conferencesAll[0].participants;
         component.getJudgeStatusDetails();
         expect(component.participantStatusModel.JudgeStatuses.length).toBeGreaterThan(0);
     });
@@ -125,7 +125,7 @@ describe('VhoHearingsComponent', () => {
         const selectedConferenceId = component.conferencesAll[0].id;
         component.selectedHearing = new Hearing(component.conferencesAll[0]);
 
-      component.participants = component.conferencesAll.map(c => new Hearing(c))[0].getParticipantsWithHeartBeat();
+        component.participants = component.conferencesAll[0].participants;
         component.participants.forEach(x => {
             if (x.role === UserRole.Judge) {
                 x.username = 'changeName@email.com';
@@ -137,9 +137,9 @@ describe('VhoHearingsComponent', () => {
 
     it('should reset conference unread counter when vho sends a message', () => {
       const conference = component.conferences[0];
-      component.conferences[0].numberOfUnreadMessages = 5;
+      component.conferences[0].number_of_unread_messages = 5;
         component.resetConferenceUnreadCounter(conference.id);
-      expect(component.conferences[0].numberOfUnreadMessages).toBe(0);
+      expect(component.conferences[0].number_of_unread_messages).toBe(0);
     });
 });
 

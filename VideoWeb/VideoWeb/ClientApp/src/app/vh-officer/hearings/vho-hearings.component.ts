@@ -36,10 +36,10 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     interval: NodeJS.Timer;
     loadingData: boolean;
 
-  conferences: Hearing[];
+  conferences: ConferenceForVhOfficerResponse[];
   conferencesAll: ConferenceForVhOfficerResponse[];
-    selectedHearing: Hearing;
-    participants: Participant[];
+  selectedHearing: Hearing;
+  participants: ParticipantResponse[];
     participantStatusModel: ParticipantStatusModel;
     selectedConferenceUrl: SafeResourceUrl;
 
@@ -144,8 +144,8 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     resetConferenceUnreadCounter(conferenceId: string) {
         const conference = this.conferences.find(x => x.id === conferenceId);
         if (conference) {
-            const index = this.conferences.indexOf(conference);
-          this.conferences[index].numberOfUnreadMessages = 0;
+          const index = this.conferences.indexOf(conference);
+          this.conferences[index].number_of_unread_messages = 0;
         }
   }
 
@@ -157,10 +157,10 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const participantToUpdate = conferenceToUpdate.getParticipantsWithHeartBeat().find(x => x.id === heartBeat.participantId);
-    if (participantToUpdate) {
-      participantToUpdate.hearbeartHealth = heartBeat.heartbeatHealth;
-    }
+    //const participantToUpdate = conferenceToUpdate.getParticipantsWithHeartBeat().find(x => x.id === heartBeat.participantId);
+    //if (participantToUpdate) {
+    //  participantToUpdate.hearbeartHealth = heartBeat.heartbeatHealth;
+    //}
   }
 
     refreshConferenceDataDuringDisconnect() {
@@ -176,8 +176,8 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
             (data: ConferenceForVhOfficerResponse[]) => {
                 this.logger.debug('Successfully retrieved hearings for VHO');
             this.loadingData = false;
-            this.conferences = data.map(c => new Hearing(c));
-                this.conferencesAll = data;;
+            this.conferences = data;
+            this.conferencesAll = data;
                 if (data && data.length > 0) {
                     this.logger.debug('VH Officer has conferences');
                     this.applyActiveFilter();
@@ -238,7 +238,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         try {
             const data = await this.videoWebService.getConferenceById(conferenceId).toPromise();
             this.selectedHearing = new Hearing(data);
-            this.participants = data.participants.map(p => new Participant(p));
+          this.participants = data.participants;
             this.sanitiseAndLoadIframe();
             this.getTasksForConference(conferenceId);
             this.getJudgeStatusDetails();
@@ -275,7 +275,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     onTaskCompleted(taskCompleted: TaskCompleted) {
         this.logger.info(`task completed for conference ${taskCompleted.conferenceId}`);
       const conference = this.conferences.find(x => x.id === taskCompleted.conferenceId);
-      conference.pendingtasks = taskCompleted.pendingTasks;
+      conference.no_of_pending_tasks = taskCompleted.pendingTasks;
     }
 
     private sanitiseAndLoadIframe() {
@@ -377,16 +377,16 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
             this.conferences = Object.assign(this.conferencesAll);
             if (selectedStatuses.length > 0) {
               const conferencesAllExtended = this.setStatusDelayed(this.conferencesAll);
-              this.conferences = conferencesAllExtended.filter(x => selectedStatuses.includes(x.StatusExtended)).map(c=>new Hearing(c));
+              this.conferences = conferencesAllExtended.filter(x => selectedStatuses.includes(x.StatusExtended));
             }
           if (selectedLocations.length > 0) {
-            this.conferences = this.conferences.filter(x => selectedLocations.includes(x.hearingVenueName));
+            this.conferences = this.conferences.filter(x => selectedLocations.includes(x.hearing_venue_name));
             }
             if (selectedAlerts.length > 0) {
                 this.conferences = this.conferences.filter(x => this.findSelectedAlert(x.tasks, selectedAlerts));
             }
         } else {
-          this.conferences = this.conferencesAll.map(c => new Hearing(c));
+          this.conferences = this.conferencesAll;
         }
     }
 
@@ -424,7 +424,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     getJudgeStatusDetails() {
         if (this.selectedHearing) {
             this.participantStatusModel = new ParticipantStatusModel();
-            this.participantStatusModel.Participants = this.participants;
+          this.participantStatusModel.Participants = this.participants.map(p => new Participant(p));
             this.participantStatusModel.JudgeStatuses = this.getJudgeDetailsForStatus(this.selectedHearing.id);
         }
     }
