@@ -17,7 +17,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 describe('MicrophoneCheckComponent', () => {
     let component: MicrophoneCheckComponent;
     let fixture: ComponentFixture<MicrophoneCheckComponent>;
-    let microphoneAnswer: AbstractControl;
     let router: Router;
     const conference = new ConferenceTestData().getConferenceDetailFuture();
 
@@ -46,7 +45,6 @@ describe('MicrophoneCheckComponent', () => {
         component = fixture.componentInstance;
         router = TestBed.get(Router);
         fixture.detectChanges();
-        microphoneAnswer = component.form.controls['microphoneCheck'];
     });
 
     it('should default no selected values', () => {
@@ -55,7 +53,7 @@ describe('MicrophoneCheckComponent', () => {
 
     it('should invalidate form when "No" is selected', () => {
         spyOn(router, 'navigate').and.callFake(() => {});
-        microphoneAnswer.setValue('No');
+        component.equipmentCheck.setValue('No');
         component.onSubmit();
         expect(component.form.valid).toBeFalsy();
         expect(router.navigate).toHaveBeenCalledTimes(1);
@@ -64,7 +62,7 @@ describe('MicrophoneCheckComponent', () => {
 
     it('should validate form when "Yes" is selected', () => {
         spyOn(router, 'navigate').and.callFake(() => {});
-        microphoneAnswer.setValue('Yes');
+        component.equipmentCheck.setValue('Yes');
         component.onSubmit();
         expect(component.form.valid).toBeTruthy();
         expect(router.navigate).toHaveBeenCalledWith([PageUrls.VideoWorking, conference.id]);
@@ -72,7 +70,7 @@ describe('MicrophoneCheckComponent', () => {
 
     it('should allow equipment check when answered "No"', () => {
         spyOn(router, 'navigate').and.callFake(() => {});
-        microphoneAnswer.setValue('No');
+        component.equipmentCheck.setValue('No');
         component.form.markAsDirty();
         component.checkEquipmentAgain();
         expect(component.form.invalid).toBeTruthy();
@@ -81,7 +79,7 @@ describe('MicrophoneCheckComponent', () => {
 
     it('should not allow equipment check when answered "Yes"', () => {
         spyOn(router, 'navigate').and.callFake(() => {});
-        microphoneAnswer.setValue('Yes');
+        component.equipmentCheck.setValue('Yes');
         component.form.markAsDirty();
         component.checkEquipmentAgain();
         expect(component.form.valid).toBeTruthy();

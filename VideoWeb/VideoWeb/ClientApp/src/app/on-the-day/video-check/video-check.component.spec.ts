@@ -17,7 +17,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 describe('VideoCheckComponent', () => {
     let component: VideoCheckComponent;
     let fixture: ComponentFixture<VideoCheckComponent>;
-    let videoAnswer: AbstractControl;
     let router: Router;
     const conference = new ConferenceTestData().getConferenceDetailFuture();
 
@@ -46,12 +45,11 @@ describe('VideoCheckComponent', () => {
         component = fixture.componentInstance;
         router = TestBed.get(Router);
         fixture.detectChanges();
-        videoAnswer = component.form.controls['videoCheck'];
     });
 
     it('should invalidate form when "No" is selected', () => {
         spyOn(router, 'navigate').and.callFake(() => {});
-        videoAnswer.setValue('No');
+        component.equipmentCheck.setValue('No');
         component.onSubmit();
         expect(component.form.valid).toBeFalsy();
         expect(router.navigate).toHaveBeenCalledTimes(1);
@@ -60,7 +58,7 @@ describe('VideoCheckComponent', () => {
 
     it('should validate form when "Yes" is selected', () => {
         spyOn(router, 'navigate').and.callFake(() => {});
-        videoAnswer.setValue('Yes');
+        component.equipmentCheck.setValue('Yes');
         component.onSubmit();
         expect(component.form.valid).toBeTruthy();
         expect(router.navigate).toHaveBeenCalledWith([PageUrls.HearingRules, conference.id]);
@@ -68,7 +66,7 @@ describe('VideoCheckComponent', () => {
 
     it('should allow equipment check when answered "No"', () => {
         spyOn(router, 'navigate').and.callFake(() => {});
-        videoAnswer.setValue('No');
+        component.equipmentCheck.setValue('No');
         component.form.markAsDirty();
         component.checkEquipmentAgain();
         expect(component.form.invalid).toBeTruthy();
@@ -77,7 +75,7 @@ describe('VideoCheckComponent', () => {
 
     it('should not allow equipment check when answered "Yes"', () => {
         spyOn(router, 'navigate').and.callFake(() => {});
-        videoAnswer.setValue('Yes');
+        component.equipmentCheck.setValue('Yes');
         component.form.markAsDirty();
         component.checkEquipmentAgain();
         expect(component.form.valid).toBeTruthy();
