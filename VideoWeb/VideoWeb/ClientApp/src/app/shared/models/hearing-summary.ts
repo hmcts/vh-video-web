@@ -21,9 +21,7 @@ export class HearingSummary {
             throw new Error('Object not a ConferenceForUserResponse or ConferenceForVhOfficerResponse');
         }
         this.conference = conference;
-        if (conference.participants) {
-            this.participants = this.conference.participants.map(p => new ParticipantSummary(p));
-        }
+        this.participants = this.conference.participants.map(p => new ParticipantSummary(p));
     }
 
     get id(): string {
@@ -95,10 +93,6 @@ export class HearingSummary {
 
     getDurationAsText(): string {
         return this.timeReader.getDurationAsText(this.conference.scheduled_duration);
-    }
-
-    isReadyToStart(): boolean {
-        return this.timeReader.isReadyToStart(this.conference.scheduled_date_time);
     }
 
     isOnTime(): boolean {

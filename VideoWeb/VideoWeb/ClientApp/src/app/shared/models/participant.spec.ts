@@ -3,6 +3,11 @@ import { Participant } from './participant';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
 
 describe('Participant', () => {
+    it('should throw an error if passing an invlid type', () => {
+        const p = new ConferenceTestData().getConferenceFuture().participants[0];
+        expect(() => new Participant(p)).toThrowError();
+    });
+
     it('should return `not signed in` when with default status', () => {
         const p = new ConferenceTestData().getConferenceDetailFuture().participants[0];
         p.status = ParticipantStatus.None;
@@ -61,7 +66,9 @@ describe('Participant', () => {
         expect(participant.contactTelephone).toBe(p.contact_telephone);
         expect(participant.status).toBe(p.status);
         expect(participant.role).toBe(p.role);
+        expect(participant.representee).toBe(p.representee);
     });
+
     it('should return judge status Unavailable if judge disconnected in another hearing', () => {
         const judgeStatusInAnotherHearing = [ParticipantStatus.Disconnected];
         const p = new ConferenceTestData().getConferenceDetailFuture().participants[0];
@@ -76,6 +83,7 @@ describe('Participant', () => {
         const participant = new Participant(p);
         expect(participant.getStatusAsTextForJudge(judgeStatusInAnotherHearing)).toBe('Unavailable');
     });
+
     it('should return judge status Available if judge not signed in in another hearing', () => {
         const judgeStatusInAnotherHearing = [ParticipantStatus.NotSignedIn];
         const p = new ConferenceTestData().getConferenceDetailFuture().participants[0];
@@ -83,6 +91,7 @@ describe('Participant', () => {
         const participant = new Participant(p);
         expect(participant.getStatusAsTextForJudge(judgeStatusInAnotherHearing)).toBe('Available');
     });
+
     it('should return judge status In another hearing if judge is in the another hearing', () => {
         const judgeStatusInAnotherHearing = [ParticipantStatus.InHearing];
         const p = new ConferenceTestData().getConferenceDetailFuture().participants[0];
@@ -90,6 +99,7 @@ describe('Participant', () => {
         const participant = new Participant(p);
         expect(participant.getStatusAsTextForJudge(judgeStatusInAnotherHearing)).toBe('In another hearing');
     });
+
     it('should return true if a judge', () => {
         const p = new ConferenceTestData().getConferenceDetailFuture().participants[2];
         const participant = new Participant(p);

@@ -5,6 +5,9 @@ export class Participant {
     private participant: ParticipantResponse;
 
     constructor(participant: ParticipantResponse) {
+        if (!(participant instanceof ParticipantResponse)) {
+            throw new Error('Object not a ParticipantResponse');
+        }
         this.participant = participant;
     }
 

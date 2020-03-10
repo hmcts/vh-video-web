@@ -3,6 +3,11 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
 
 describe('Hearing', () => {
+    it('should throw an error if passing an invlid type', () => {
+        const c = new ConferenceTestData().getConferenceFuture();
+        expect(() => new Hearing(c)).toThrowError();
+    });
+
     it('should return start time', () => {
         const conference = new ConferenceTestData().getConferenceDetailNow();
         const hearing = new Hearing(conference);
