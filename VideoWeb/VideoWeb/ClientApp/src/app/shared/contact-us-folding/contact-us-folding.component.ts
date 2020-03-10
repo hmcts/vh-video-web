@@ -7,8 +7,7 @@ import { ErrorService } from 'src/app/services/error.service';
 
 @Component({
     selector: 'app-contact-us-folding',
-    templateUrl: './contact-us-folding.component.html',
-    styleUrls: ['./contact-us-folding.component.css']
+    templateUrl: './contact-us-folding.component.html'
 })
 export class ContactUsFoldingComponent implements OnInit {
     private conference: ConferenceResponse;

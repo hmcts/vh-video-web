@@ -3,8 +3,7 @@ import { ModalService } from 'src/app/services/modal.service';
 
 @Component({
     selector: 'app-modal',
-    template: '<ng-content></ng-content>',
-    styleUrls: ['./modal.component.scss']
+    template: '<ng-content></ng-content>'
 })
 export class ModalComponent implements OnInit, OnDestroy {
     @Input() id: string;

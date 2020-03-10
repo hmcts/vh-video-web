@@ -11,8 +11,7 @@ import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component'
 
 @Component({
     selector: 'app-participant-self-test',
-    templateUrl: './participant-self-test.component.html',
-    styleUrls: ['./participant-self-test.component.scss']
+    templateUrl: './participant-self-test.component.html'
 })
 export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
     videoCompleted: boolean;

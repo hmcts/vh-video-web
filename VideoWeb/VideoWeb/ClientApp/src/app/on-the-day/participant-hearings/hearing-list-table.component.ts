@@ -6,8 +6,7 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
     selector: 'app-hearing-list-table',
-    templateUrl: './hearing-list-table.component.html',
-    styleUrls: ['./hearing-list-table.component.css']
+    templateUrl: './hearing-list-table.component.html'
 })
 export class HearingListTableComponent implements OnInit {
     @Input() conferences: ConferenceForUserResponse[];

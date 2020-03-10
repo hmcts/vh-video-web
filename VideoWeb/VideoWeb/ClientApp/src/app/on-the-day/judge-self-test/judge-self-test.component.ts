@@ -12,8 +12,7 @@ import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component'
 
 @Component({
     selector: 'app-judge-self-test',
-    templateUrl: './judge-self-test.component.html',
-    styleUrls: ['./judge-self-test.component.scss']
+    templateUrl: './judge-self-test.component.html'
 })
 export class JudgeSelfTestComponent extends BaseSelfTestComponent {
     @ViewChild(SelfTestComponent, { static: false })

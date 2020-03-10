@@ -8,8 +8,7 @@ import { Logger } from '../services/logging/logger-base';
 
 @Component({
     selector: 'app-send-video-events',
-    templateUrl: './send-video-events.component.html',
-    styleUrls: ['./send-video-events.component.css']
+    templateUrl: './send-video-events.component.html'
 })
 export class SendVideoEventsComponent implements OnInit {
     loadingData: boolean;

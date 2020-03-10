@@ -12,8 +12,7 @@ import { SelfTestComponent } from '../../shared/self-test/self-test.component';
 
 @Component({
     selector: 'app-independent-self-test',
-    templateUrl: './independent-self-test.component.html',
-    styleUrls: ['./independent-self-test.component.scss']
+    templateUrl: './independent-self-test.component.html'
 })
 export class IndependentSelfTestComponent extends BaseSelfTestComponent {
     @ViewChild(SelfTestComponent, { static: false })

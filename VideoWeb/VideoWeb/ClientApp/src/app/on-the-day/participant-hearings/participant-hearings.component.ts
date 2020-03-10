@@ -9,8 +9,7 @@ import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-participant-hearings',
-    templateUrl: './participant-hearings.component.html',
-    styleUrls: ['./participant-hearings.component.css']
+    templateUrl: './participant-hearings.component.html'
 })
 export class ParticipantHearingsComponent implements OnInit, OnDestroy {
     conferences: ConferenceForUserResponse[];

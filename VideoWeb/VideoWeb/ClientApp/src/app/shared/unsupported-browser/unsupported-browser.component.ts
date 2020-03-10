@@ -4,8 +4,7 @@ import { SupportedBrowserModel } from './SupportedBrowserModel';
 
 @Component({
     selector: 'app-unsupported-browser',
-    templateUrl: './unsupported-browser.component.html',
-    styleUrls: ['./unsupported-browser.component.scss']
+    templateUrl: './unsupported-browser.component.html'
 })
 export class UnsupportedBrowserComponent implements OnInit {
     supportedBrowsers: SupportedBrowserModel[] = [];
