@@ -19,7 +19,7 @@ describe('EquipmentCheckComponent', () => {
     let fixture: ComponentFixture<EquipmentCheckComponent>;
     let debugElement: DebugElement;
     let router: Router;
-    const conference = new ConferenceTestData().getConferenceDetail();
+    const conference = new ConferenceTestData().getConferenceDetailFuture();
     let judgeEventServiceSpy: jasmine.SpyObj<JudgeEventService>;
 
     configureTestSuite(() => {

@@ -19,64 +19,63 @@ import { BaseSelfTestComponent } from '../models/base-self-test.component';
 import { ConferenceResponse } from 'src/app/services/clients/api-client';
 
 describe('IndependentSelfTestComponent', () => {
-  let component: IndependentSelfTestComponent;
-  let fixture: ComponentFixture<IndependentSelfTestComponent>;
-  const conference = new ConferenceTestData().getConferenceDetail();
-  let router: Router;
+    let component: IndependentSelfTestComponent;
+    let fixture: ComponentFixture<IndependentSelfTestComponent>;
+    const conference = new ConferenceTestData().getConferenceDetailFuture();
+    let router: Router;
 
-  configureTestSuite(() => {
-    TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientModule],
-      declarations: [IndependentSelfTestComponent, SelfTestStubComponent, ContactUsFoldingStubComponent],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              paramMap: convertToParamMap({ conferenceId: conference.id })
-            }
-          },
-        },
-        { provide: Logger, useClass: MockLogger },
-        { provide: AdalService, useClass: MockAdalService },
-        { provide: Logger, useClass: MockLogger },
-        { provide: VideoWebService, useClass: MockVideoWebService }
-      ]
-    })
-      .compileComponents();
-  });
+    configureTestSuite(() => {
+        TestBed.configureTestingModule({
+            imports: [RouterTestingModule, HttpClientModule],
+            declarations: [IndependentSelfTestComponent, SelfTestStubComponent, ContactUsFoldingStubComponent],
+            providers: [
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        snapshot: {
+                            paramMap: convertToParamMap({ conferenceId: conference.id })
+                        }
+                    }
+                },
+                { provide: Logger, useClass: MockLogger },
+                { provide: AdalService, useClass: MockAdalService },
+                { provide: Logger, useClass: MockLogger },
+                { provide: VideoWebService, useClass: MockVideoWebService }
+            ]
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(IndependentSelfTestComponent);
-    component = fixture.componentInstance;
-    component.selfTestComponent = TestBed.createComponent(SelfTestStubComponent).componentInstance as SelfTestComponent;
-    router = TestBed.get(Router);
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(IndependentSelfTestComponent);
+        component = fixture.componentInstance;
+        component.selfTestComponent = TestBed.createComponent(SelfTestStubComponent).componentInstance as SelfTestComponent;
+        router = TestBed.get(Router);
+        fixture.detectChanges();
+    });
 
-  it('should navigate to hearing list when equipment works', () => {
-    spyOn(router, 'navigateByUrl').and.callFake(() => { });
-    component.equipmentWorksHandler();
-    expect(router.navigateByUrl).toHaveBeenCalledWith(PageUrls.ParticipantHearingList);
-  });
+    it('should navigate to hearing list when equipment works', () => {
+        spyOn(router, 'navigateByUrl').and.callFake(() => {});
+        component.equipmentWorksHandler();
+        expect(router.navigateByUrl).toHaveBeenCalledWith(PageUrls.ParticipantHearingList);
+    });
 
-  it('should show equipment fault message when equipment fails', () => {
-    component.equipmentFaultyHandler();
-    expect(component.showEquipmentFaultMessage).toBeTruthy();
-    expect(component.testInProgress).toBeFalsy();
-    expect(component.hideSelfTest).toBeTruthy();
-  });
+    it('should show equipment fault message when equipment fails', () => {
+        component.equipmentFaultyHandler();
+        expect(component.showEquipmentFaultMessage).toBeTruthy();
+        expect(component.testInProgress).toBeFalsy();
+        expect(component.hideSelfTest).toBeTruthy();
+    });
 
-  it('should show self test restarting video', () => {
-    const selfTestSpy = jasmine.createSpyObj<SelfTestComponent>('SelfTestComponent', ['replayVideo']);
-    selfTestSpy.replayVideo.and.callFake(() => { });
-    component.selfTestComponent = selfTestSpy;
+    it('should show self test restarting video', () => {
+        const selfTestSpy = jasmine.createSpyObj<SelfTestComponent>('SelfTestComponent', ['replayVideo']);
+        selfTestSpy.replayVideo.and.callFake(() => {});
+        component.selfTestComponent = selfTestSpy;
 
-    component.restartTest();
+        component.restartTest();
 
-    expect(component.showEquipmentFaultMessage).toBeFalsy();
-    expect(component.testInProgress).toBeFalsy();
-    expect(component.hideSelfTest).toBeFalsy();
-    expect(selfTestSpy.replayVideo).toHaveBeenCalled();
-  });
+        expect(component.showEquipmentFaultMessage).toBeFalsy();
+        expect(component.testInProgress).toBeFalsy();
+        expect(component.hideSelfTest).toBeFalsy();
+        expect(selfTestSpy.replayVideo).toHaveBeenCalled();
+    });
 });

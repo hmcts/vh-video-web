@@ -13,46 +13,46 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { Logger } from 'src/app/services/logging/logger-base';
 
 describe('HearingRulesComponent', () => {
-  let component: HearingRulesComponent;
-  let fixture: ComponentFixture<HearingRulesComponent>;
-  let debugElement: DebugElement;
-  let router: Router;
-  const conference = new ConferenceTestData().getConferenceDetail();
+    let component: HearingRulesComponent;
+    let fixture: ComponentFixture<HearingRulesComponent>;
+    let debugElement: DebugElement;
+    let router: Router;
+    const conference = new ConferenceTestData().getConferenceDetailFuture();
 
-  configureTestSuite(() => {
-    TestBed.configureTestingModule({
-      declarations: [HearingRulesComponent],
-      imports: [RouterTestingModule, SharedModule],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              paramMap: convertToParamMap({ conferenceId: conference.id })
-            }
-          },
-        },
-        { provide: VideoWebService, useClass: MockVideoWebService },
-        { provide: Logger, useClass: MockLogger },
-      ]
+    configureTestSuite(() => {
+        TestBed.configureTestingModule({
+            declarations: [HearingRulesComponent],
+            imports: [RouterTestingModule, SharedModule],
+            providers: [
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        snapshot: {
+                            paramMap: convertToParamMap({ conferenceId: conference.id })
+                        }
+                    }
+                },
+                { provide: VideoWebService, useClass: MockVideoWebService },
+                { provide: Logger, useClass: MockLogger }
+            ]
+        });
     });
-  });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(HearingRulesComponent);
-    debugElement = fixture.debugElement;
-    component = debugElement.componentInstance;
-    router = TestBed.get(Router);
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(HearingRulesComponent);
+        debugElement = fixture.debugElement;
+        component = debugElement.componentInstance;
+        router = TestBed.get(Router);
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should navigate to declaration', () => {
-    spyOn(router, 'navigate').and.callFake(() => { });
-    component.goToDeclaration();
-    expect(router.navigate).toHaveBeenCalledWith([PageUrls.Declaration, conference.id]);
-  });
+    it('should navigate to declaration', () => {
+        spyOn(router, 'navigate').and.callFake(() => {});
+        component.goToDeclaration();
+        expect(router.navigate).toHaveBeenCalledWith([PageUrls.Declaration, conference.id]);
+    });
 });

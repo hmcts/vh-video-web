@@ -55,14 +55,14 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
     });
 
     it('should return delayed class when conference is suspended', () => {
-        const conference = new ConferenceTestData().getConferencePast();
+        const conference = new ConferenceTestData().getConferenceDetailPast();
         component.hearing = new Hearing(conference);
         component.hearing.getConference().status = ConferenceStatus.Suspended;
         expect(component.getCurrentTimeClass()).toBe('hearing-delayed');
     });
 
     it('should return delayed class when conference is delayed', () => {
-        const conference = new ConferenceTestData().getConferencePast();
+        const conference = new ConferenceTestData().getConferenceDetailPast();
         conference.scheduled_date_time = conference.scheduled_date_time;
         conference.status = ConferenceStatus.NotStarted;
         component.hearing = new Hearing(conference);
@@ -70,26 +70,26 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
     });
 
     it('should return hearing-near-start class when conference is due to begin', () => {
-        const conference = new ConferenceTestData().getConferenceNow();
+        const conference = new ConferenceTestData().getConferenceDetailNow();
         component.hearing = new Hearing(conference);
         expect(component.getCurrentTimeClass()).toBe('hearing-near-start');
     });
 
     it('should return hearing-on-time class when conference has not started and on time', () => {
-        const conference = new ConferenceTestData().getConferenceFuture();
+        const conference = new ConferenceTestData().getConferenceDetailFuture();
         component.hearing = new Hearing(conference);
         expect(component.getCurrentTimeClass()).toBe('hearing-on-time');
     });
 
     it('should return hearing-on-time class when conference has paused', () => {
-        const conference = new ConferenceTestData().getConferencePast();
+        const conference = new ConferenceTestData().getConferenceDetailPast();
         conference.status = ConferenceStatus.Paused;
         component.hearing = new Hearing(conference);
         expect(component.getCurrentTimeClass()).toBe('hearing-on-time');
     });
 
     it('should return hearing-on-time class when conference has closed', () => {
-        const conference = new ConferenceTestData().getConferencePast();
+        const conference = new ConferenceTestData().getConferenceDetailPast();
         conference.status = ConferenceStatus.Closed;
         component.hearing = new Hearing(conference);
         expect(component.getCurrentTimeClass()).toBe('hearing-on-time');

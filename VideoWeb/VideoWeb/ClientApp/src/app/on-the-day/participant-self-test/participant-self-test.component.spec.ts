@@ -16,42 +16,41 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
 import { configureTestSuite } from 'ng-bullet';
 
 describe('ParticipantSelfTestComponent', () => {
-  let component: ParticipantSelfTestComponent;
-  let fixture: ComponentFixture<ParticipantSelfTestComponent>;
-  const conference = new ConferenceTestData().getConferenceDetail();
-  let router: Router;
+    let component: ParticipantSelfTestComponent;
+    let fixture: ComponentFixture<ParticipantSelfTestComponent>;
+    const conference = new ConferenceTestData().getConferenceDetailFuture();
+    let router: Router;
 
-  configureTestSuite(() => {
-    TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientModule],
-      declarations: [ParticipantSelfTestComponent, SelfTestStubComponent, ContactUsFoldingStubComponent],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              paramMap: convertToParamMap({ conferenceId: conference.id })
-            }
-          },
-        },
-        { provide: AdalService, useClass: MockAdalService },
-        { provide: Logger, useClass: MockLogger },
-        { provide: VideoWebService, useClass: MockVideoWebService }
-      ]
-    })
-      .compileComponents();
-  });
+    configureTestSuite(() => {
+        TestBed.configureTestingModule({
+            imports: [RouterTestingModule, HttpClientModule],
+            declarations: [ParticipantSelfTestComponent, SelfTestStubComponent, ContactUsFoldingStubComponent],
+            providers: [
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        snapshot: {
+                            paramMap: convertToParamMap({ conferenceId: conference.id })
+                        }
+                    }
+                },
+                { provide: AdalService, useClass: MockAdalService },
+                { provide: Logger, useClass: MockLogger },
+                { provide: VideoWebService, useClass: MockVideoWebService }
+            ]
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ParticipantSelfTestComponent);
-    component = fixture.componentInstance;
-    router = TestBed.get(Router);
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ParticipantSelfTestComponent);
+        component = fixture.componentInstance;
+        router = TestBed.get(Router);
+        fixture.detectChanges();
+    });
 
-  it('should navigate to camera working screen', () => {
-    spyOn(router, 'navigate').and.callFake(() => { });
-    component.continueParticipantJourney();
-    expect(router.navigate).toHaveBeenCalledWith([PageUrls.CameraWorking, conference.id]);
-  });
+    it('should navigate to camera working screen', () => {
+        spyOn(router, 'navigate').and.callFake(() => {});
+        component.continueParticipantJourney();
+        expect(router.navigate).toHaveBeenCalledWith([PageUrls.CameraWorking, conference.id]);
+    });
 });

@@ -1,4 +1,5 @@
 import { ParticipantResponse, ParticipantStatus, UserRole } from 'src/app/services/clients/api-client';
+import { ParticipantStatusReader } from './participant-status-reader';
 
 export class Participant {
     private participant: ParticipantResponse;
@@ -60,35 +61,10 @@ export class Participant {
     }
 
     getStatusAsText(): string {
-        switch (this.participant.status) {
-            case ParticipantStatus.None:
-            case ParticipantStatus.NotSignedIn:
-                return 'Not Signed In';
-            case ParticipantStatus.InConsultation:
-                return 'In Consultation';
-            case ParticipantStatus.InHearing:
-                return 'In Hearing';
-            case ParticipantStatus.UnableToJoin:
-                return 'Unable to Join';
-            default:
-                return this.participant.status;
-        }
+        return new ParticipantStatusReader().getStatusAsText(this.participant.status);
     }
 
     getStatusAsTextForJudge(statuses: ParticipantStatus[]): string {
-        switch (this.participant.status) {
-            case ParticipantStatus.None:
-            case ParticipantStatus.NotSignedIn:
-                const inHearing = statuses.filter(x => x === ParticipantStatus.InHearing);
-                return inHearing.length > 0 ? 'In another hearing' : 'Unavailable';
-            case ParticipantStatus.InConsultation:
-            case ParticipantStatus.UnableToJoin:
-                return 'Unavailable';
-            case ParticipantStatus.InHearing:
-                return 'In Hearing';
-
-            default:
-                return this.participant.status;
-        }
+        return new ParticipantStatusReader().getStatusAsTextForJudge(this.participant.status, statuses);
     }
 }

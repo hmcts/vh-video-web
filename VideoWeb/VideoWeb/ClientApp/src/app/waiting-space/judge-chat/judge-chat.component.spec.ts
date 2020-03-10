@@ -21,7 +21,7 @@ describe('JudgeChatComponent', () => {
     let eventService: MockEventsService;
     let adalService: MockAdalService;
     let profileService: MockProfileService;
-    const conference = new ConferenceTestData().getConferenceDetail();
+    const conference = new ConferenceTestData().getConferenceDetailFuture();
     const judgeUsername = 'judge.fudge@hearings.net';
     const videoWebService = new MockVideoWebService();
     videoWebService.username = judgeUsername;

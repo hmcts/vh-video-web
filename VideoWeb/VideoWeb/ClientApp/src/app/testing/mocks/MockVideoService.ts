@@ -55,7 +55,7 @@ export class MockVideoWebService implements IVideoWebApiService {
 
     getConferenceById(conferenceId: string): Observable<ConferenceResponse> {
         console.log(`using mock video web service: getConferenceById ${JSON.stringify(conferenceId)}`);
-        return of(new ConferenceTestData().getConferenceDetail());
+        return of(new ConferenceTestData().getConferenceDetailFuture());
     }
 
     completeTask(conferenceId: string, taskId: number): Observable<TaskResponse> {

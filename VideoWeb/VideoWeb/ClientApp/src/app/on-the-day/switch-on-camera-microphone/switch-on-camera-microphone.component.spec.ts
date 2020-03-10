@@ -20,78 +20,76 @@ import { UserRole, UserProfileResponse } from 'src/app/services/clients/api-clie
 import { BackNavigationStubComponent } from 'src/app/testing/stubs/back-navigation-stub';
 
 describe('SwitchOnCameraMicrophoneComponent', () => {
-  let component: SwitchOnCameraMicrophoneComponent;
-  let fixture: ComponentFixture<SwitchOnCameraMicrophoneComponent>;
-  let profileServiceSpy: jasmine.SpyObj<ProfileService>;
-  let router: Router;
-  let videoWebService: VideoWebService;
-  let userMediaStreamService: UserMediaStreamService;
-  const conference = new ConferenceTestData().getConferenceDetail();
-  const judgerProfile = new UserProfileResponse({ role: UserRole.Judge });
-  const individualProfile = new UserProfileResponse({ role: UserRole.Individual });
+    let component: SwitchOnCameraMicrophoneComponent;
+    let fixture: ComponentFixture<SwitchOnCameraMicrophoneComponent>;
+    let profileServiceSpy: jasmine.SpyObj<ProfileService>;
+    let router: Router;
+    let videoWebService: VideoWebService;
+    let userMediaStreamService: UserMediaStreamService;
+    const conference = new ConferenceTestData().getConferenceDetailFuture();
+    const judgerProfile = new UserProfileResponse({ role: UserRole.Judge });
+    const individualProfile = new UserProfileResponse({ role: UserRole.Individual });
 
-  configureTestSuite(() => {
-    profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-    profileServiceSpy.getUserProfile.and.returnValue(judgerProfile);
-    TestBed.configureTestingModule({
-      imports: [HttpClientModule, RouterTestingModule],
-      declarations: [
-        SwitchOnCameraMicrophoneComponent,
-        ContactUsFoldingStubComponent,
-        BackNavigationStubComponent
-      ],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              paramMap: convertToParamMap({ conferenceId: conference.id })
-            }
-          },
-        },
-        { provide: AdalService, useClass: MockAdalService },
-        { provide: VideoWebService, useClass: MockVideoWebService },
-        { provide: Logger, useClass: MockLogger },
-        { provide: ProfileService, useValue: profileServiceSpy }
-      ]
-    });
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(SwitchOnCameraMicrophoneComponent);
-    component = fixture.componentInstance;
-    router = TestBed.get(Router);
-    videoWebService = TestBed.get(VideoWebService);
-    userMediaStreamService = TestBed.get(UserMediaStreamService);
-    fixture.detectChanges();
-  });
-
-  it('should go to judge self test when profile is judge', async(() => {
-    spyOn(router, 'navigate').and.callFake(() => { });
-    component.isJudge = true;
-    component.goVideoTest();
-    expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeSelfTestVideo, component.conference.id]);
-  }));
-
-  it('should go to participant self test when profile is not a judge', async(() => {
-    spyOn(router, 'navigate').and.callFake(() => { });
-    profileServiceSpy.getUserProfile.and.returnValue(individualProfile);
-    component.isJudge = false;
-    component.goVideoTest();
-    expect(router.navigate).toHaveBeenCalledWith([PageUrls.ParticipantSelfTestVideo, component.conference.id]);
-  }));
-
-  it('should raise permission denied event on media access rejection', async(() => {
-    spyOn(videoWebService, 'raiseMediaEvent').and.callFake(() => of());
-    spyOn(userMediaStreamService, 'requestAccess').and.callFake(() => Promise.resolve(false));
-
-    fixture.whenStable().then(() => {
-      expect(component.mediaAccepted).toBeFalsy();
-    }).then(() => {
-      expect(videoWebService.raiseMediaEvent).toHaveBeenCalled();
+    configureTestSuite(() => {
+        profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
+        profileServiceSpy.getUserProfile.and.returnValue(judgerProfile);
+        TestBed.configureTestingModule({
+            imports: [HttpClientModule, RouterTestingModule],
+            declarations: [SwitchOnCameraMicrophoneComponent, ContactUsFoldingStubComponent, BackNavigationStubComponent],
+            providers: [
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        snapshot: {
+                            paramMap: convertToParamMap({ conferenceId: conference.id })
+                        }
+                    }
+                },
+                { provide: AdalService, useClass: MockAdalService },
+                { provide: VideoWebService, useClass: MockVideoWebService },
+                { provide: Logger, useClass: MockLogger },
+                { provide: ProfileService, useValue: profileServiceSpy }
+            ]
+        });
     });
 
-    component.requestMedia();
-  }));
+    beforeEach(() => {
+        fixture = TestBed.createComponent(SwitchOnCameraMicrophoneComponent);
+        component = fixture.componentInstance;
+        router = TestBed.get(Router);
+        videoWebService = TestBed.get(VideoWebService);
+        userMediaStreamService = TestBed.get(UserMediaStreamService);
+        fixture.detectChanges();
+    });
 
+    it('should go to judge self test when profile is judge', async(() => {
+        spyOn(router, 'navigate').and.callFake(() => {});
+        component.isJudge = true;
+        component.goVideoTest();
+        expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeSelfTestVideo, component.conference.id]);
+    }));
+
+    it('should go to participant self test when profile is not a judge', async(() => {
+        spyOn(router, 'navigate').and.callFake(() => {});
+        profileServiceSpy.getUserProfile.and.returnValue(individualProfile);
+        component.isJudge = false;
+        component.goVideoTest();
+        expect(router.navigate).toHaveBeenCalledWith([PageUrls.ParticipantSelfTestVideo, component.conference.id]);
+    }));
+
+    it('should raise permission denied event on media access rejection', async(() => {
+        spyOn(videoWebService, 'raiseMediaEvent').and.callFake(() => of());
+        spyOn(userMediaStreamService, 'requestAccess').and.callFake(() => Promise.resolve(false));
+
+        fixture
+            .whenStable()
+            .then(() => {
+                expect(component.mediaAccepted).toBeFalsy();
+            })
+            .then(() => {
+                expect(videoWebService.raiseMediaEvent).toHaveBeenCalled();
+            });
+
+        component.requestMedia();
+    }));
 });
