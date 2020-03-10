@@ -1,18 +1,33 @@
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse, UserRole } from 'src/app/services/clients/api-client';
-
+import { ConferenceResponse, ParticipantResponse, UserRole } from 'src/app/services/clients/api-client';
 import { Participant } from './participant';
 import { HearingTimeReader } from './hearing-status-reader';
 
-export class Hearing {
+export class HearingDetails {
     private timeReader = new HearingTimeReader();
     private conference: ConferenceResponse;
     private participants: Participant[];
 
     constructor(conference: ConferenceResponse) {
+        if (!(conference instanceof ConferenceResponse)) {
+            throw new Error(`object is not of type ConferenceResponse`);
+        }
         this.conference = conference;
         if (conference.participants) {
             this.participants = this.conference.participants.map(p => new Participant(p));
         }
+    }
+
+    get scheduledStartTime(): Date {
+        const startTime = new Date(this.conference.scheduled_date_time.getTime());
+        return startTime;
+    }
+
+    getConference(): ConferenceResponse {
+        return this.conference;
+    }
+
+    getParticipants(): ParticipantResponse[] {
+        return this.conference.participants;
     }
 
     get id(): string {
@@ -55,29 +70,6 @@ export class Hearing {
             .filter(x => x.caseGroup.toLowerCase() === 'respondent' || x.caseGroup.toLowerCase() === 'defendant');
     }
 
-    getConference(): ConferenceResponse {
-        return this.conference;
-    }
-
-    getParticipants(): ParticipantResponse[] {
-        return this.conference.participants;
-    }
-
-    get scheduledStartTime(): Date {
-        const startTime = new Date(this.conference.scheduled_date_time.getTime());
-        return startTime;
-    }
-
-    get scheduledEndTime(): Date {
-        const endTime = new Date(this.conference.scheduled_date_time.getTime());
-        endTime.setUTCMinutes(endTime.getUTCMinutes() + this.conference.scheduled_duration);
-        return endTime;
-    }
-
-    get status(): ConferenceStatus {
-        return this.conference.status;
-    }
-
     getDurationAsText(): string {
         return this.timeReader.getDurationAsText(this.conference.scheduled_duration);
     }
@@ -98,10 +90,6 @@ export class Hearing {
         return this.timeReader.isDelayed(this.conference.scheduled_date_time, this.conference.status);
     }
 
-    isPastClosedTime(): boolean {
-        return this.timeReader.isPastClosedTime(this.conference.scheduled_date_time, this.conference.status);
-    }
-
     isNotStarted(): boolean {
         return this.timeReader.isNotStarted(this.conference.status);
     }
@@ -120,6 +108,10 @@ export class Hearing {
 
     isPaused(): boolean {
         return this.timeReader.isPaused(this.conference.status);
+    }
+
+    isPastClosedTime(): boolean {
+        return this.timeReader.isPastClosedTime(this.conference.closed_date_time, this.conference.status);
     }
 
     getParticipantByUsername(username: string) {
