@@ -1,14 +1,6 @@
-import { Component, Input, NgZone, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
-import {
-    ConferenceResponse,
-    ConsultationAnswer,
-    ParticipantResponse,
-    ParticipantStatus,
-    UserRole
-} from 'src/app/services/clients/api-client';
-import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { EventsService } from 'src/app/services/events.service';
+import { ConferenceResponse, ParticipantResponse, ParticipantStatus, UserRole } from 'src/app/services/clients/api-client';
 import { Hearing } from '../../shared/models/hearing';
 import { Participant } from '../../shared/models/participant';
 
@@ -26,17 +18,11 @@ export class JudgeParticipantStatusListComponent implements OnInit {
     litigantInPerson: boolean;
     individualParticipants: ParticipantResponse[];
 
-    constructor(
-        private adalService: AdalService,
-        private consultationService: ConsultationService,
-        private eventService: EventsService,
-        private ngZone: NgZone
-    ) {}
+    constructor(private adalService: AdalService) {}
 
     ngOnInit() {
         this.filterNonJudgeParticipants();
         this.filterJudge();
-        this.setupSubscribers();
 
         this.filterRepresentatives();
     }
@@ -63,24 +49,6 @@ export class JudgeParticipantStatusListComponent implements OnInit {
             return false;
         }
         return false;
-    }
-
-    private setupSubscribers() {
-        this.eventService.getConsultationMessage().subscribe(message => {
-            this.ngZone.run(() => {
-                if (message.result === ConsultationAnswer.Accepted) {
-                    // todo pending judge consultation implementation
-                } else if (message.result === ConsultationAnswer.Rejected) {
-                    // todo pending judge consultation implementation
-                } else if (message.result === ConsultationAnswer.Cancelled) {
-                    // todo pending judge consultation implementation
-                } else {
-                    // todo pending judge consultation implementation
-                }
-            });
-        });
-
-        this.eventService.start();
     }
 
     private filterNonJudgeParticipants(): void {

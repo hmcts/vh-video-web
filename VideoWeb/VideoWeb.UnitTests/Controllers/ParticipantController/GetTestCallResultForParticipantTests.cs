@@ -165,6 +165,5 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
-
     }
 }

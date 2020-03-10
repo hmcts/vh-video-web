@@ -1,4 +1,4 @@
-import { Component, HostListener, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
@@ -20,7 +20,6 @@ import { ConferenceStatusMessage } from 'src/app/services/models/conference-stat
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
-
 import { Hearing } from '../../shared/models/hearing';
 
 declare var PexRTC: any;
@@ -67,7 +66,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         private route: ActivatedRoute,
         private videoWebService: VideoWebService,
         private eventService: EventsService,
-        private ngZone: NgZone,
         private adalService: AdalService,
         private errorService: ErrorService,
         private clockService: ClockService,
@@ -231,42 +229,32 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     startEventHubSubscribers() {
         this.logger.debug('Subscribing to conference status changes...');
         this.eventService.getHearingStatusMessage().subscribe(message => {
-            this.ngZone.run(() => {
-                this.handleConferenceStatusChange(message);
-                this.updateShowVideo();
-            });
+            this.handleConferenceStatusChange(message);
+            this.updateShowVideo();
         });
 
         this.logger.debug('Subscribing to participant status changes...');
         this.eventService.getParticipantStatusMessage().subscribe(message => {
-            this.ngZone.run(() => {
-                this.handleParticipantStatusChange(message);
-                this.updateShowVideo();
-            });
+            this.handleParticipantStatusChange(message);
+            this.updateShowVideo();
         });
 
         this.logger.debug('Subscribing to admin consultation messages...');
         this.eventService.getAdminConsultationMessage().subscribe(message => {
-            this.ngZone.run(() => {
-                if (message.answer && message.answer === ConsultationAnswer.Accepted) {
-                    this.isAdminConsultation = true;
-                }
-            });
+            if (message.answer && message.answer === ConsultationAnswer.Accepted) {
+                this.isAdminConsultation = true;
+            }
         });
 
         this.logger.debug('Subscribing to EventHub disconnects');
         this.eventService.getServiceDisconnected().subscribe(attemptNumber => {
-            this.ngZone.run(() => {
-                this.handleEventHubDisconnection(attemptNumber);
-            });
+            this.handleEventHubDisconnection(attemptNumber);
         });
 
         this.logger.debug('Subscribing to EventHub reconnects');
         this.eventService.getServiceReconnected().subscribe(() => {
-            this.ngZone.run(() => {
-                this.logger.info(`EventHub re-connected for ${this.participant.id} in conference ${this.hearing.id}`);
-                this.getConference().then(() => this.updateShowVideo());
-            });
+            this.logger.info(`EventHub re-connected for ${this.participant.id} in conference ${this.hearing.id}`);
+            this.getConference().then(() => this.updateShowVideo());
         });
 
         this.eventService.start();
@@ -481,5 +469,17 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         return function(heartbeat) {
             self.logger.info(`**** heartbeat callback fired: ${heartbeat}`);
         };
+    }
+
+    getCurrentTimeClass() {
+        if (this.hearing.isOnTime() || this.hearing.isPaused() || this.hearing.isClosed()) {
+            return 'hearing-on-time';
+        }
+        if (this.hearing.isStarting()) {
+            return 'hearing-near-start';
+        }
+        if (this.hearing.isDelayed() || this.hearing.isSuspended()) {
+            return 'hearing-delayed';
+        }
     }
 }
