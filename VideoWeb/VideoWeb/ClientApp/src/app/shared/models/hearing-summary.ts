@@ -7,13 +7,14 @@ import {
 } from 'src/app/services/clients/api-client';
 import { HearingTimeReader } from './hearing-status-reader';
 import { ParticipantSummary } from './participant-summary';
+import { HearingBase } from './hearing-base';
 
-export class HearingSummary {
-    private timeReader = new HearingTimeReader();
+export class HearingSummary extends HearingBase {
     private conference: ConferenceForVhOfficerResponse;
     private participants: ParticipantSummary[];
 
     constructor(conference: ConferenceForVhOfficerResponse) {
+        super();
         const isVhResponse = conference instanceof ConferenceForVhOfficerResponse;
         const isIndividualResponse = conference instanceof ConferenceForUserResponse;
 
@@ -34,6 +35,14 @@ export class HearingSummary {
 
     get caseName(): string {
         return this.conference.case_name;
+    }
+
+    get status(): ConferenceStatus {
+        return this.conference.status;
+    }
+
+    get scheduledDuration(): number {
+        return this.conference.scheduled_duration;
     }
 
     get scheduledStartTime(): Date {
@@ -75,10 +84,6 @@ export class HearingSummary {
         return this.conference.hearing_venue_name;
     }
 
-    get status(): ConferenceStatus {
-        return this.conference.status;
-    }
-
     get judge(): ParticipantSummary {
         return this.participants.find(x => x.role === UserRole.Judge);
     }
@@ -93,33 +98,5 @@ export class HearingSummary {
 
     getDurationAsText(): string {
         return this.timeReader.getDurationAsText(this.conference.scheduled_duration);
-    }
-
-    isOnTime(): boolean {
-        return this.timeReader.isOnTime(this.conference.scheduled_date_time, this.conference.status);
-    }
-
-    isStarting(): boolean {
-        return this.timeReader.isStarting(this.conference.scheduled_date_time, this.conference.status);
-    }
-
-    isDelayed(): boolean {
-        return this.timeReader.isDelayed(this.conference.scheduled_date_time, this.conference.status);
-    }
-
-    isInSession(): boolean {
-        return this.timeReader.isInSession(this.conference.status);
-    }
-
-    isPaused(): boolean {
-        return this.timeReader.isPaused(this.conference.status);
-    }
-
-    isClosed(): boolean {
-        return this.timeReader.isClosed(this.conference.status);
-    }
-
-    isSuspended(): boolean {
-        return this.timeReader.isSuspended(this.conference.status);
     }
 }
