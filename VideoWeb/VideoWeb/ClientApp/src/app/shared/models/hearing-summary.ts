@@ -5,9 +5,8 @@ import {
     ParticipantForUserResponse,
     UserRole
 } from 'src/app/services/clients/api-client';
-import { HearingTimeReader } from './hearing-status-reader';
-import { ParticipantSummary } from './participant-summary';
 import { HearingBase } from './hearing-base';
+import { ParticipantSummary } from './participant-summary';
 
 export class HearingSummary extends HearingBase {
     private conference: ConferenceForVhOfficerResponse;

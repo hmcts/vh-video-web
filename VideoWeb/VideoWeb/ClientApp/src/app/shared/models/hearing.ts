@@ -1,8 +1,6 @@
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse, UserRole } from 'src/app/services/clients/api-client';
-
-import { Participant } from './participant';
-import { HearingTimeReader } from './hearing-status-reader';
 import { HearingBase } from './hearing-base';
+import { Participant } from './participant';
 
 export class Hearing extends HearingBase {
     private conference: ConferenceResponse;
