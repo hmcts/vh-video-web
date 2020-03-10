@@ -1,5 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ContactUsFoldingStubComponent } from 'src/app/testing/stubs/contact-us-stub';
 import { SelfTestStubComponent } from 'src/app/testing/stubs/self-test-stub';

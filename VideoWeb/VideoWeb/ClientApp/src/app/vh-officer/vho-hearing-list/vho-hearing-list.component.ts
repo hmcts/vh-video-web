@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ConferenceForVhOfficerResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
-import { Hearing } from 'src/app/shared/models/hearing';
 import { ClipboardService } from 'ngx-clipboard';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 

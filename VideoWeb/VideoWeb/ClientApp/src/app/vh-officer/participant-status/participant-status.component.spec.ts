@@ -1,4 +1,4 @@
-import { ParticipantStatus, UserRole } from 'src/app/services/clients/api-client';
+import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { ParticipantStatusComponent } from './participant-status.component';
 import { Participant } from 'src/app/shared/models/participant';

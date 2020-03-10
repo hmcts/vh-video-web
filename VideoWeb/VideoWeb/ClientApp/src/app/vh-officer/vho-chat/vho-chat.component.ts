@@ -24,7 +24,7 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
     @Output() unreadMessageCount = new EventEmitter<ConferenceUnreadMessageCount>();
 
     @HostListener('window:resize', ['$event'])
-    onResize(event) {
+    onResize() {
         this.updateDivWidthForSection();
     }
 

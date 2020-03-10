@@ -1,12 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
-import { configureTestSuite, createStableTestContext, createTestContext } from 'ng-bullet';
-import { of } from 'rxjs';
+import { configureTestSuite } from 'ng-bullet';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceStatus, ParticipantStatus, TokenResponse } from 'src/app/services/clients/api-client';
+import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SharedModule } from 'src/app/shared/shared.module';

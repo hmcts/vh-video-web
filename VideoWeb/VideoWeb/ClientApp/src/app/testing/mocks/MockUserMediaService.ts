@@ -4,7 +4,6 @@ import { MediaDeviceTestData } from './data/media-device-test-data';
 import { SessionStorage } from 'src/app/services/session-storage';
 
 export class MockUserMediaService extends UserMediaService {
-
     private testData = new MediaDeviceTestData();
 
     async requestAccess(): Promise<boolean> {

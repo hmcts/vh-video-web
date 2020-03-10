@@ -7,19 +7,8 @@ import { LogoutComponent } from './logout/logout.component';
 import { UnauthorisedComponent } from './unauthorised/unauthorised.component';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    SharedModule,
-    SecurityRoutingModule
-  ],
-  declarations: [
-    LoginComponent,
-    LogoutComponent,
-    UnauthorisedComponent
-  ],
-  exports: [
-    LoginComponent,
-    LogoutComponent
-  ]
+    imports: [CommonModule, SharedModule, SecurityRoutingModule],
+    declarations: [LoginComponent, LogoutComponent, UnauthorisedComponent],
+    exports: [LoginComponent, LogoutComponent]
 })
-export class SecurityModule { }
+export class SecurityModule {}

@@ -10,8 +10,10 @@ describe('VhoHearingsFilterComponent', () => {
     hearingFilter.locations.push(new ListFilter('Birmingham', false));
 
     let hearingsFilterOptionsServiceSpy: jasmine.SpyObj<HearingsFilterOptionsService>;
-    hearingsFilterOptionsServiceSpy = jasmine.createSpyObj<HearingsFilterOptionsService>('HearingsFilterOptionsService',
-        ['getFilter', 'countOptions']);
+    hearingsFilterOptionsServiceSpy = jasmine.createSpyObj<HearingsFilterOptionsService>('HearingsFilterOptionsService', [
+        'getFilter',
+        'countOptions'
+    ]);
     hearingsFilterOptionsServiceSpy.getFilter.and.returnValue(hearingFilter);
     hearingsFilterOptionsServiceSpy.countOptions.and.returnValue(3);
 
@@ -82,7 +84,6 @@ describe('VhoHearingsFilterComponent', () => {
         expect(component.statusAllChecked).toBe(true);
     });
     it('should apply filter and set number selected filter options', () => {
-
         component.applyFilters();
         expect(component.hearingsFilter.numberFilterOptions).toBe(3);
     });

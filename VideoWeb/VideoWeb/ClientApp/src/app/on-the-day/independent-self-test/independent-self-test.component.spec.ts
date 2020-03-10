@@ -1,5 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ContactUsFoldingStubComponent } from 'src/app/testing/stubs/contact-us-stub';
 import { SelfTestStubComponent } from 'src/app/testing/stubs/self-test-stub';
@@ -15,8 +15,6 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
 import { configureTestSuite } from 'ng-bullet';
-import { BaseSelfTestComponent } from '../models/base-self-test.component';
-import { ConferenceResponse } from 'src/app/services/clients/api-client';
 
 describe('IndependentSelfTestComponent', () => {
     let component: IndependentSelfTestComponent;

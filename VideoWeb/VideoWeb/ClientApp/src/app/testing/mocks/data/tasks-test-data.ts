@@ -10,7 +10,7 @@ export class TasksTestData {
             status: TaskStatus.ToDo,
             type: TaskType.Participant,
             body: 'Disconnected',
-            created: new Date(),
+            created: new Date()
         });
         const task2 = new TaskResponse({
             id: 2,
