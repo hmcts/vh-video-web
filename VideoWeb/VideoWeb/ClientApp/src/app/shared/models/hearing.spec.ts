@@ -8,6 +8,17 @@ describe('Hearing', () => {
         expect(() => new Hearing(c)).toThrowError();
     });
 
+    it('should map hearing info', () => {
+        const c = new ConferenceTestData().getConferenceDetailFuture();
+        const hearing = new Hearing(c);
+        expect(hearing.id).toBe(c.id);
+        expect(hearing.status).toBe(c.status);
+        expect(hearing.caseName).toBe(c.case_name);
+        expect(hearing.caseNumber).toBe(c.case_number);
+        expect(hearing.scheduledStartTime).toEqual(c.scheduled_date_time);
+        expect(hearing.scheduledEndTime).toBeDefined();
+    });
+
     it('should return start time', () => {
         const conference = new ConferenceTestData().getConferenceDetailNow();
         const hearing = new Hearing(conference);
@@ -176,5 +187,22 @@ describe('Hearing', () => {
         const conference = new ConferenceTestData().getConferenceDetailPast();
         const hearing = new Hearing(conference);
         expect(hearing.isReadyToStart()).toBeTruthy();
+    });
+
+    it('should return duration as text', () => {
+        const c = new ConferenceTestData().getConferenceDetailFuture();
+        c.scheduled_duration = 80;
+        const hearing = new Hearing(c);
+        expect(hearing.getDurationAsText()).toBe('1 hour and 20 minutes');
+    });
+
+    it('should return is past closed time', () => {
+        const c = new ConferenceTestData().getConferenceDetailFuture();
+        c.status = ConferenceStatus.Closed;
+        const closedDateTime = new Date(new Date().toUTCString());
+        closedDateTime.setUTCMinutes(closedDateTime.getUTCMinutes() - 30);
+        c.closed_date_time = closedDateTime;
+        const hearing = new Hearing(c);
+        expect(hearing.isPastClosedTime()).toBeTruthy();
     });
 });

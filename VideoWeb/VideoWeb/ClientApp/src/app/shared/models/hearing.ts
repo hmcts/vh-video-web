@@ -38,26 +38,6 @@ export class Hearing {
         return this.conference.case_name;
     }
 
-    get applicantRepresentative(): Participant {
-        return this.participants.filter(x => x.role === UserRole.Representative)[0];
-    }
-
-    get defendantRepresentative(): Participant {
-        return this.participants.filter(x => x.role === UserRole.Representative)[1];
-    }
-
-    get applicants(): Participant[] {
-        return this.participants
-            .filter(x => x.caseGroup !== '')
-            .filter(x => x.caseGroup.toLowerCase() === 'applicant' || x.caseGroup.toLowerCase() === 'claimant');
-    }
-
-    get respondents(): Participant[] {
-        return this.participants
-            .filter(x => x.caseGroup !== '')
-            .filter(x => x.caseGroup.toLowerCase() === 'respondent' || x.caseGroup.toLowerCase() === 'defendant');
-    }
-
     getConference(): ConferenceResponse {
         return this.conference;
     }
@@ -102,7 +82,7 @@ export class Hearing {
     }
 
     isPastClosedTime(): boolean {
-        return this.timeReader.isPastClosedTime(this.conference.scheduled_date_time, this.conference.status);
+        return this.timeReader.isPastClosedTime(this.conference.closed_date_time, this.conference.status);
     }
 
     isNotStarted(): boolean {
