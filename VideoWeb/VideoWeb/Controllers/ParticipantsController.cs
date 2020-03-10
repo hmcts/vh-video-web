@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -94,6 +95,24 @@ namespace VideoWeb.Controllers
             {
                 var score = await _videoApiClient.GetIndependentTestCallResultAsync(participantId);
                 return Ok(score);
+            }
+            catch (VideoApiException e)
+            {
+                return StatusCode(e.StatusCode, e.Response);
+            }
+        }
+        
+        [HttpGet("{conferenceId}/participant/{participantId}/heartbeatrecent")]
+        [SwaggerOperation(OperationId = "GetHeartbeatDataForParticipant")]
+        [ProducesResponseType(typeof(IEnumerable<ParticipantHeartbeatResponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetHeartbeatDataForParticipantAsync(Guid conferenceId, Guid participantId)
+        {
+            try
+            {
+                var response = await _videoApiClient.GetHeartbeatDataForParticipantAsync(conferenceId, participantId);
+                
+                return Ok(response);
             }
             catch (VideoApiException e)
             {
