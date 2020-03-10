@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CameraAndMicrophoneComponent } from './camera-and-microphone.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';

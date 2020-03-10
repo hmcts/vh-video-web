@@ -11,16 +11,16 @@ import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.componen
 import { AccessibilityComponent } from './accessibility/accessibility.component';
 
 export const routes: Routes = [
-  { path: `${PageUrls.ContactUs}`, component: ContactUsComponent, canActivate: [AuthGuard] },
-  { path: `${PageUrls.ServiceError}`, component: ErrorComponent, },
-  { path: `${PageUrls.NotFound}`, component: NotFoundComponent },
-  { path: `${PageUrls.UnsupportedBrowser}`, component: UnsupportedBrowserComponent },
-  { path: `${PageUrls.PrivacyPolicy}`, component: PrivacyPolicyComponent },
-  { path: `${PageUrls.Accessibility}`, component: AccessibilityComponent }
+    { path: `${PageUrls.ContactUs}`, component: ContactUsComponent, canActivate: [AuthGuard] },
+    { path: `${PageUrls.ServiceError}`, component: ErrorComponent },
+    { path: `${PageUrls.NotFound}`, component: NotFoundComponent },
+    { path: `${PageUrls.UnsupportedBrowser}`, component: UnsupportedBrowserComponent },
+    { path: `${PageUrls.PrivacyPolicy}`, component: PrivacyPolicyComponent },
+    { path: `${PageUrls.Accessibility}`, component: AccessibilityComponent }
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+    imports: [RouterModule.forChild(routes)],
+    exports: [RouterModule]
 })
-export class SharedRoutingModule { }
+export class SharedRoutingModule {}

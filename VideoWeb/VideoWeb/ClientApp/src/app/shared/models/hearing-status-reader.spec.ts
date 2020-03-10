@@ -1,8 +1,6 @@
-import { Hearing } from './hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { HearingTimeReader } from './hearing-status-reader';
-import { stat } from 'fs';
 
 const timereader = new HearingTimeReader();
 

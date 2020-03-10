@@ -38,6 +38,17 @@ export class HearingSummary {
         return this.conference.case_name;
     }
 
+    get scheduledStartTime(): Date {
+        const startTime = new Date(this.conference.scheduled_date_time.getTime());
+        return startTime;
+    }
+
+    get scheduledEndTime(): Date {
+        const endTime = new Date(this.conference.scheduled_date_time.getTime());
+        endTime.setUTCMinutes(endTime.getUTCMinutes() + this.conference.scheduled_duration);
+        return endTime;
+    }
+
     get applicantRepresentative(): ParticipantSummary {
         return this.participants.filter(x => x.role === UserRole.Representative)[0];
     }
@@ -70,6 +81,10 @@ export class HearingSummary {
         return this.conference.status;
     }
 
+    get judge(): ParticipantSummary {
+        return this.participants.find(x => x.role === UserRole.Judge);
+    }
+
     getConference() {
         return this.conference;
     }
@@ -80,6 +95,10 @@ export class HearingSummary {
 
     getDurationAsText(): string {
         return this.timeReader.getDurationAsText(this.conference.scheduled_duration);
+    }
+
+    isReadyToStart(): boolean {
+        return this.timeReader.isReadyToStart(this.conference.scheduled_date_time);
     }
 
     isOnTime(): boolean {

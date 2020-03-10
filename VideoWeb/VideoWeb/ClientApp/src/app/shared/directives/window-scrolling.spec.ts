@@ -6,9 +6,7 @@ describe('WindowScroll', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [
-                WindowScrolling
-            ]
+            providers: [WindowScrolling]
         }).compileComponents();
 
         scroll = TestBed.get(WindowScrolling);

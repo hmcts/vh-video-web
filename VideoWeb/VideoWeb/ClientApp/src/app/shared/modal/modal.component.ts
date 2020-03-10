@@ -2,54 +2,52 @@ import { Component, OnInit, Input, ElementRef, OnDestroy, HostListener } from '@
 import { ModalService } from 'src/app/services/modal.service';
 
 @Component({
-  selector: 'app-modal',
-  template: '<ng-content></ng-content>',
-  styleUrls: ['./modal.component.scss']
+    selector: 'app-modal',
+    template: '<ng-content></ng-content>',
+    styleUrls: ['./modal.component.scss']
 })
 export class ModalComponent implements OnInit, OnDestroy {
+    @Input() id: string;
+    private element: HTMLElement;
 
-  @Input() id: string;
-  private element: HTMLElement;
-
-  constructor(private modalService: ModalService, private el: ElementRef) {
-    this.element = el.nativeElement;
-  }
-
-  ngOnInit() {
-    const modal = this;
-
-    // ensure id attribute exists
-    if (!this.id) {
-      console.error('modal must have an id');
-      return;
+    constructor(private modalService: ModalService, private el: ElementRef) {
+        this.element = this.el.nativeElement;
     }
 
-    // move element to bottom of page (just before </body>) so it can be displayed above everything else
-    document.body.appendChild(this.element);
-    // close modal on background click
-    this.element.addEventListener('click', function (e: any) {
-      if (e.target.className === 'modal') {
-        modal.close();
-      }
-    });
+    ngOnInit() {
+        const modal = this;
 
-    // add self (this modal instance) to the modal service so it's accessible from controllers
-    this.modalService.add(this);
-  }
+        // ensure id attribute exists
+        if (!this.id) {
+            console.error('modal must have an id');
+            return;
+        }
 
-  // remove self from modal service when directive is destroyed
-  @HostListener('window:beforeunload')
-  ngOnDestroy(): void {
-    this.modalService.remove(this.id);
-    this.element.remove();
-  }
+        // move element to bottom of page (just before </body>) so it can be displayed above everything else
+        document.body.appendChild(this.element);
+        // close modal on background click
+        this.element.addEventListener('click', function(e: any) {
+            if (e.target.className === 'modal') {
+                modal.close();
+            }
+        });
 
-  open(): void {
-    this.element.classList.add('modal-open');
-  }
+        // add self (this modal instance) to the modal service so it's accessible from controllers
+        this.modalService.add(this);
+    }
 
-  close(): void {
-    this.element.classList.remove('modal-open');
-  }
+    // remove self from modal service when directive is destroyed
+    @HostListener('window:beforeunload')
+    ngOnDestroy(): void {
+        this.modalService.remove(this.id);
+        this.element.remove();
+    }
 
+    open(): void {
+        this.element.classList.add('modal-open');
+    }
+
+    close(): void {
+        this.element.classList.remove('modal-open');
+    }
 }

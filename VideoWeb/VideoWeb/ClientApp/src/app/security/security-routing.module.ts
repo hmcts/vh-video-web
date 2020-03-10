@@ -6,13 +6,13 @@ import { UnauthorisedComponent } from './unauthorised/unauthorised.component';
 import { PageUrls } from '../shared/page-url.constants';
 
 export const routes: Routes = [
-  { path: `${PageUrls.Login}`, component: LoginComponent },
-  { path: `${PageUrls.Logout}`, component: LogoutComponent },
-  { path: `${PageUrls.Unauthorised}`, component: UnauthorisedComponent }
+    { path: `${PageUrls.Login}`, component: LoginComponent },
+    { path: `${PageUrls.Logout}`, component: LogoutComponent },
+    { path: `${PageUrls.Unauthorised}`, component: UnauthorisedComponent }
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+    imports: [RouterModule.forChild(routes)],
+    exports: [RouterModule]
 })
-export class SecurityRoutingModule { }
+export class SecurityRoutingModule {}

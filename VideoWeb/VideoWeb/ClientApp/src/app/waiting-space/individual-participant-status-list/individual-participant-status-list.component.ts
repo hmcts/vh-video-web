@@ -17,7 +17,6 @@ import { ConsultationMessage } from 'src/app/services/models/consultation-messag
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
-import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 
 @Component({
     selector: 'app-individual-participant-status-list',

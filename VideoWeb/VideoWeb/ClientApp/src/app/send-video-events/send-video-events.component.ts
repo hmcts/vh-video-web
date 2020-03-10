@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { ConferenceEventRequest, ConferenceResponse, EventType, ParticipantResponse, RoomType } from '../services/clients/api-client';
 import { VideoWebService } from '../services/api/video-web.service';
-import { PageUrls } from '../shared/page-url.constants';
 import { ErrorService } from '../services/error.service';
 import { Logger } from '../services/logging/logger-base';
 

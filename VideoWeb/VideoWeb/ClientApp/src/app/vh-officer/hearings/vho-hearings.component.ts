@@ -55,8 +55,8 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     @ViewChild('conferenceList', { static: false })
     $conferenceList: VhoHearingListComponent;
 
-    @HostListener('window:resize', ['$event'])
-    onResize(event) {
+    @HostListener('window:resize', [])
+    onResize() {
         this.updateWidthForAdminFrame();
     }
 

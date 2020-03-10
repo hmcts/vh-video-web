@@ -10,44 +10,48 @@ import { BaseSelfTestComponent } from '../models/base-self-test.component';
 import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
 
 @Component({
-  selector: 'app-participant-self-test',
-  templateUrl: './participant-self-test.component.html',
-  styleUrls: ['./participant-self-test.component.scss']
+    selector: 'app-participant-self-test',
+    templateUrl: './participant-self-test.component.html',
+    styleUrls: ['./participant-self-test.component.scss']
 })
 export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
-  videoCompleted: boolean;
-  @ViewChild(SelfTestComponent, { static: false }) selfTestComponent: SelfTestComponent;
+    videoCompleted: boolean;
+    @ViewChild(SelfTestComponent, { static: false }) selfTestComponent: SelfTestComponent;
 
-  constructor(private router: Router,
-    protected route: ActivatedRoute,
-    protected videoWebService: VideoWebService,
-    protected errorService: ErrorService,
-    protected adalService: AdalService,
-    protected logger: Logger) {
-    super(route, videoWebService, errorService, adalService, logger);
-    this.videoCompleted = false;
-  }
-
-  onSelfTestCompleted(testcallScore: TestCallScoreResponse): void {
-    this.logger.debug(`participant self test completed`);
-    if (testcallScore) { this.logger.debug(testcallScore.toJSON()); }
-    this.continueParticipantJourney();
-  }
-
-  continueParticipantJourney() {
-    const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-    this.router.navigate([PageUrls.CameraWorking, conferenceId]);
-  }
-
-  restartTest() {
-    this.logger.debug('restarting participant self-test');
-    this.selfTestComponent.replayVideo();
-  }
-
-  testCompleted(): boolean {
-    if (this.selfTestComponent) {
-      this.videoCompleted = this.selfTestComponent.didTestComplete;
+    constructor(
+        private router: Router,
+        protected route: ActivatedRoute,
+        protected videoWebService: VideoWebService,
+        protected errorService: ErrorService,
+        protected adalService: AdalService,
+        protected logger: Logger
+    ) {
+        super(route, videoWebService, errorService, adalService, logger);
+        this.videoCompleted = false;
     }
-    return this.videoCompleted;
-  }
+
+    onSelfTestCompleted(testcallScore: TestCallScoreResponse): void {
+        this.logger.debug(`participant self test completed`);
+        if (testcallScore) {
+            this.logger.debug(testcallScore.toJSON());
+        }
+        this.continueParticipantJourney();
+    }
+
+    continueParticipantJourney() {
+        const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+        this.router.navigate([PageUrls.CameraWorking, conferenceId]);
+    }
+
+    restartTest() {
+        this.logger.debug('restarting participant self-test');
+        this.selfTestComponent.replayVideo();
+    }
+
+    testCompleted(): boolean {
+        if (this.selfTestComponent) {
+            this.videoCompleted = this.selfTestComponent.didTestComplete;
+        }
+        return this.videoCompleted;
+    }
 }

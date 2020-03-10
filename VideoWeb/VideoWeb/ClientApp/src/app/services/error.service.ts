@@ -5,44 +5,52 @@ import { ApiException } from './clients/api-client';
 import { Logger } from './logging/logger-base';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class ErrorService {
+    constructor(private router: Router, private logger: Logger) {}
 
-  constructor(private router: Router, private logger: Logger) { }
-
-  handleApiError(error: any, skipRedirect: boolean = false) {
-    this.logger.error('API error', error);
-    if (skipRedirect) { return; }
-    if (!error.isApiException) { return; }
-    const swaggerError: ApiException = error;
-    switch (swaggerError.status) {
-      case 401: return this.goToUnauthorised();
-      case 404: return this.goToNotFound();
-      default: return this.goToServiceError();
+    handleApiError(error: any, skipRedirect: boolean = false) {
+        this.logger.error('API error', error);
+        if (skipRedirect) {
+            return;
+        }
+        if (!error.isApiException) {
+            return;
+        }
+        const swaggerError: ApiException = error;
+        switch (swaggerError.status) {
+            case 401:
+                return this.goToUnauthorised();
+            case 404:
+                return this.goToNotFound();
+            default:
+                return this.goToServiceError();
+        }
     }
-  }
 
-  returnHomeIfUnauthorised(error: any): boolean {
-    if (!error.isApiException) { return; }
-    const swaggerError: ApiException = error;
-    if (swaggerError.status === 401) {
-      this.logger.warn('Returning back to hearing list');
-      this.router.navigate([PageUrls.Home]);
-      return true;
+    returnHomeIfUnauthorised(error: any): boolean {
+        if (!error.isApiException) {
+            return;
+        }
+        const swaggerError: ApiException = error;
+        if (swaggerError.status === 401) {
+            this.logger.warn('Returning back to hearing list');
+            this.router.navigate([PageUrls.Home]);
+            return true;
+        }
+        return false;
     }
-    return false;
-  }
 
-  goToUnauthorised() {
-    this.router.navigate([PageUrls.Unauthorised]);
-  }
+    goToUnauthorised() {
+        this.router.navigate([PageUrls.Unauthorised]);
+    }
 
-  goToNotFound() {
-    this.router.navigate([PageUrls.NotFound]);
-  }
+    goToNotFound() {
+        this.router.navigate([PageUrls.NotFound]);
+    }
 
-  goToServiceError() {
-    this.router.navigate([PageUrls.ServiceError]);
-  }
+    goToServiceError() {
+        this.router.navigate([PageUrls.ServiceError]);
+    }
 }

@@ -123,10 +123,6 @@ describe('SelfTestComponent', () => {
         spyOn(videoWebService, 'raiseSelfTestFailureEvent');
         component.scoreSent = true;
         await component.ngOnDestroy();
-        const request = new AddSelfTestFailureEventRequest({
-            participant_id: component.participant.id,
-            self_test_failure_reason: SelfTestFailureReason.IncompleteTest
-        });
         expect(videoWebService.raiseSelfTestFailureEvent).toHaveBeenCalledTimes(0);
     });
 });
