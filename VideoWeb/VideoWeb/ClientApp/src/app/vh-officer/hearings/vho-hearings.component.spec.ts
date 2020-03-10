@@ -39,7 +39,7 @@ describe('VhoHearingsComponent', () => {
             'getTasksForConference'
         ]);
         videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(of(conferences));
-        videoWebServiceSpy.getConferenceById.and.returnValue(of(new ConferenceTestData().getConferenceDetail()));
+        videoWebServiceSpy.getConferenceById.and.returnValue(of(new ConferenceTestData().getConferenceDetailFuture()));
         videoWebServiceSpy.getTasksForConference.and.returnValue(of(new ConferenceTestData().getTasksForConference()));
 
         TestBed.configureTestingModule({
@@ -112,7 +112,8 @@ describe('VhoHearingsComponent', () => {
     });
 
     it('should get the selected judge statuses from another hearings', () => {
-        component.selectedHearing = new Hearing(component.conferencesAll[0]);
+        const currentConference = component.conferencesAll[0];
+        component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
         component.participants = component.conferencesAll[0].participants;
         component.getJudgeStatusDetails();
         expect(component.participantStatusModel.JudgeStatuses.length).toBeGreaterThan(0);
@@ -120,8 +121,8 @@ describe('VhoHearingsComponent', () => {
 
     it('should not return selected judge statuses from another hearings', () => {
         component.clearSelectedConference();
-        const selectedConferenceId = component.conferencesAll[0].id;
-        component.selectedHearing = new Hearing(component.conferencesAll[0]);
+        const currentConference = component.conferencesAll[0];
+        component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
 
         component.participants = component.conferencesAll[0].participants;
         component.participants.forEach(x => {

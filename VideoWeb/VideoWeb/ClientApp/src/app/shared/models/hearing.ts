@@ -9,6 +9,9 @@ export class Hearing {
     private participants: Participant[];
 
     constructor(conference: ConferenceResponse) {
+        if (!(conference instanceof ConferenceResponse)) {
+            throw new Error('Object not a ConferenceResponse');
+        }
         this.conference = conference;
         if (conference.participants) {
             this.participants = this.conference.participants.map(p => new Participant(p));

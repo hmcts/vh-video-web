@@ -22,6 +22,7 @@ import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { SessionStorage } from '../../services/session-storage';
 import { ConferenceForUser, ExtendedConferenceStatus, HearingsFilter } from '../../shared/models/hearings-filter';
 import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
+import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 
 @Component({
     selector: 'app-vho-hearings',
@@ -389,7 +390,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
     setStatusDelayed(data: ConferenceForVhOfficerResponse[]) {
         const conferences = data.map(x => {
-            const hearing = new Hearing(x);
+            const hearing = new HearingSummary(x);
             const item = new ConferenceForUser(x);
             if (hearing.isDelayed()) {
                 item.StatusExtended = ExtendedConferenceStatus.Delayed;

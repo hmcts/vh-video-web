@@ -27,7 +27,7 @@ describe('JudgeHearingPageComponent when conference in session', () => {
     let eventService: MockEventsNonHttpService;
 
     configureTestSuite(() => {
-        conference = new ConferenceTestData().getConferenceDetail();
+        conference = new ConferenceTestData().getConferenceDetailFuture();
 
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],

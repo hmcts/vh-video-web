@@ -15,76 +15,76 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { Logger } from 'src/app/services/logging/logger-base';
 
 describe('MicrophoneCheckComponent', () => {
-  let component: MicrophoneCheckComponent;
-  let fixture: ComponentFixture<MicrophoneCheckComponent>;
-  let microphoneAnswer: AbstractControl;
-  let router: Router;
-  const conference = new ConferenceTestData().getConferenceDetail();
+    let component: MicrophoneCheckComponent;
+    let fixture: ComponentFixture<MicrophoneCheckComponent>;
+    let microphoneAnswer: AbstractControl;
+    let router: Router;
+    const conference = new ConferenceTestData().getConferenceDetailFuture();
 
-  configureTestSuite(() => {
-    TestBed.configureTestingModule({
-      imports: [RouterTestingModule, SharedModule],
-      declarations: [MicrophoneCheckComponent],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              paramMap: convertToParamMap({ conferenceId: conference.id })
-            }
-          },
-        },
-        { provide: AdalService, useClass: MockAdalService },
-        { provide: VideoWebService, useClass: MockVideoWebService },
-        { provide: Logger, useClass: MockLogger }
-      ]
+    configureTestSuite(() => {
+        TestBed.configureTestingModule({
+            imports: [RouterTestingModule, SharedModule],
+            declarations: [MicrophoneCheckComponent],
+            providers: [
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        snapshot: {
+                            paramMap: convertToParamMap({ conferenceId: conference.id })
+                        }
+                    }
+                },
+                { provide: AdalService, useClass: MockAdalService },
+                { provide: VideoWebService, useClass: MockVideoWebService },
+                { provide: Logger, useClass: MockLogger }
+            ]
+        });
     });
-  });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(MicrophoneCheckComponent);
-    component = fixture.componentInstance;
-    router = TestBed.get(Router);
-    fixture.detectChanges();
-    microphoneAnswer = component.form.controls['microphoneCheck'];
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(MicrophoneCheckComponent);
+        component = fixture.componentInstance;
+        router = TestBed.get(Router);
+        fixture.detectChanges();
+        microphoneAnswer = component.form.controls['microphoneCheck'];
+    });
 
-  it('should default no selected values', () => {
-    expect(component.form.pristine).toBeTruthy();
-  });
+    it('should default no selected values', () => {
+        expect(component.form.pristine).toBeTruthy();
+    });
 
-  it('should invalidate form when "No" is selected', () => {
-    spyOn(router, 'navigate').and.callFake(() => { });
-    microphoneAnswer.setValue('No');
-    component.onSubmit();
-    expect(component.form.valid).toBeFalsy();
-    expect(router.navigate).toHaveBeenCalledTimes(1);
-    expect(router.navigate).toHaveBeenCalledWith([PageUrls.GetHelp]);
-  });
+    it('should invalidate form when "No" is selected', () => {
+        spyOn(router, 'navigate').and.callFake(() => {});
+        microphoneAnswer.setValue('No');
+        component.onSubmit();
+        expect(component.form.valid).toBeFalsy();
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledWith([PageUrls.GetHelp]);
+    });
 
-  it('should validate form when "Yes" is selected', () => {
-    spyOn(router, 'navigate').and.callFake(() => { });
-    microphoneAnswer.setValue('Yes');
-    component.onSubmit();
-    expect(component.form.valid).toBeTruthy();
-    expect(router.navigate).toHaveBeenCalledWith([PageUrls.VideoWorking, conference.id]);
-  });
+    it('should validate form when "Yes" is selected', () => {
+        spyOn(router, 'navigate').and.callFake(() => {});
+        microphoneAnswer.setValue('Yes');
+        component.onSubmit();
+        expect(component.form.valid).toBeTruthy();
+        expect(router.navigate).toHaveBeenCalledWith([PageUrls.VideoWorking, conference.id]);
+    });
 
-  it('should allow equipment check when answered "No"', () => {
-    spyOn(router, 'navigate').and.callFake(() => { });
-    microphoneAnswer.setValue('No');
-    component.form.markAsDirty();
-    component.checkEquipmentAgain();
-    expect(component.form.invalid).toBeTruthy();
-    expect(router.navigate).toHaveBeenCalledWith([PageUrls.EquipmentCheck, conference.id]);
-  });
+    it('should allow equipment check when answered "No"', () => {
+        spyOn(router, 'navigate').and.callFake(() => {});
+        microphoneAnswer.setValue('No');
+        component.form.markAsDirty();
+        component.checkEquipmentAgain();
+        expect(component.form.invalid).toBeTruthy();
+        expect(router.navigate).toHaveBeenCalledWith([PageUrls.EquipmentCheck, conference.id]);
+    });
 
-  it('should not allow equipment check when answered "Yes"', () => {
-    spyOn(router, 'navigate').and.callFake(() => { });
-    microphoneAnswer.setValue('Yes');
-    component.form.markAsDirty();
-    component.checkEquipmentAgain();
-    expect(component.form.valid).toBeTruthy();
-    expect(router.navigate).toHaveBeenCalledTimes(1);
-  });
+    it('should not allow equipment check when answered "Yes"', () => {
+        spyOn(router, 'navigate').and.callFake(() => {});
+        microphoneAnswer.setValue('Yes');
+        component.form.markAsDirty();
+        component.checkEquipmentAgain();
+        expect(component.form.valid).toBeTruthy();
+        expect(router.navigate).toHaveBeenCalledTimes(1);
+    });
 });

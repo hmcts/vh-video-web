@@ -4,7 +4,6 @@ import { ConferenceStatus } from 'src/app/services/clients/api-client';
 export class HearingTimeReader {
     getDurationAsText(duration: number): string {
         const momDuration = moment.duration(duration, 'minutes');
-        console.log(momDuration);
         const h = momDuration.hours();
         const m = momDuration.minutes();
         const hours = h === 1 ? `${h} hour` : `${h} hours`;
@@ -57,7 +56,6 @@ export class HearingTimeReader {
         const now = moment.utc();
         let closed = moment(closedDateTime);
         closed = closed.add(30, 'minutes');
-        console.log(closedDateTime);
         return now.isSameOrAfter(closed) && status === ConferenceStatus.Closed;
     }
 
