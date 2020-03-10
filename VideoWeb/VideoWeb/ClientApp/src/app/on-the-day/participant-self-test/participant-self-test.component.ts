@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -7,7 +7,6 @@ import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { BaseSelfTestComponent } from '../models/base-self-test.component';
-import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
 
 @Component({
     selector: 'app-participant-self-test',
@@ -15,7 +14,6 @@ import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component'
 })
 export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
     videoCompleted: boolean;
-    @ViewChild(SelfTestComponent, { static: false }) selfTestComponent: SelfTestComponent;
 
     constructor(
         private router: Router,
@@ -30,10 +28,7 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
     }
 
     onSelfTestCompleted(testcallScore: TestCallScoreResponse): void {
-        this.logger.debug(`participant self test completed`);
-        if (testcallScore) {
-            this.logger.debug(testcallScore.toJSON());
-        }
+        super.onSelfTestCompleted(testcallScore);
         this.continueParticipantJourney();
     }
 
