@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
@@ -52,17 +53,17 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         [Test]
         public async Task Should_get_heartbeat_data_for_participant()
         {
-            var response = Builder<ParticipantHeartbeatResponse>.CreateNew().Build();
+            var responses = Builder<List<ParticipantHeartbeatResponse>>.CreateNew().Build();
             var conferenceId = Guid.NewGuid();
             var participantId = Guid.NewGuid();
             _videoApiClientMock
                 .Setup(x => x.GetHeartbeatDataForParticipantAsync(conferenceId, participantId))
-                .Returns(Task.FromResult(response));
+                .Returns(Task.FromResult(responses));
 
             var result = await _controller.GetHeartbeatDataForParticipantAsync(conferenceId, participantId);
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
-            typedResult.Value.Should().BeEquivalentTo(response);
+            typedResult.Value.Should().BeEquivalentTo(responses);
         }
         
         [Test]
