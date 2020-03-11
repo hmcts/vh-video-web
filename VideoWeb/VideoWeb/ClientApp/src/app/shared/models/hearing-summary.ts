@@ -3,7 +3,8 @@ import {
     ConferenceForVhOfficerResponse,
     ConferenceStatus,
     ParticipantForUserResponse,
-    UserRole
+    UserRole,
+    TaskUserResponse
 } from 'src/app/services/clients/api-client';
 import { HearingBase } from './hearing-base';
 import { ParticipantSummary } from './participant-summary';
@@ -40,13 +41,21 @@ export class HearingSummary extends HearingBase {
         return this.conference.status;
     }
 
+    set status(status: ConferenceStatus) {
+      this.conference.status = status;
+    }
+
     get scheduledDuration(): number {
         return this.conference.scheduled_duration;
     }
 
     get scheduledStartTime(): Date {
         return new Date(this.conference.scheduled_date_time.getTime());
-    }
+  }
+
+  get scheduledDateTime(): Date {
+    return this.conference.scheduled_date_time;
+  }
 
     get scheduledEndTime(): Date {
         const endTime = new Date(this.conference.scheduled_date_time.getTime());
@@ -78,13 +87,29 @@ export class HearingSummary extends HearingBase {
         return this.conference.number_of_unread_messages;
     }
 
+    set numberOfUnreadMessages(numberOfUnreadMessages: number) {
+      this.conference.number_of_unread_messages = numberOfUnreadMessages;
+    }
+
     get hearingVenueName(): string {
         return this.conference.hearing_venue_name;
     }
 
     get judge(): ParticipantSummary {
         return this.participants.find(x => x.role === UserRole.Judge);
-    }
+  }
+
+  get numberOfPendingTasks(): number {
+    return this.conference.no_of_pending_tasks;
+  }
+
+  set numberOfPendingTasks(numberOfPendingTasks: number) {
+    this.conference.no_of_pending_tasks = numberOfPendingTasks;
+  }
+
+  get tasks(): TaskUserResponse[] {
+    return this.conference.tasks;
+  }
 
     getConference() {
         return this.conference;

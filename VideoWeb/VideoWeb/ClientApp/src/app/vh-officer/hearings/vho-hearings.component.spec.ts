@@ -109,10 +109,10 @@ describe('VhoHearingsComponent', () => {
     it('should update number of pending tasks on task completed', () => {
         const currentConference = component.conferences[0];
       const initPendingTasks = 5;
-      currentConference.no_of_pending_tasks = initPendingTasks;
+      currentConference.numberOfPendingTasks = initPendingTasks;
 
       component.onTaskCompleted(new TaskCompleted(currentConference.id, 3));
-      expect(component.conferences[0].no_of_pending_tasks).toBeLessThan(initPendingTasks);
+      expect(component.conferences[0].numberOfPendingTasks).toBeLessThan(initPendingTasks);
     });
 
     it('should get the selected judge statuses from another hearings', () => {
@@ -139,9 +139,9 @@ describe('VhoHearingsComponent', () => {
 
     it('should reset conference unread counter when vho sends a message', () => {
       const conference = component.conferences[0];
-      component.conferences[0].number_of_unread_messages = 5;
+      component.conferences[0].numberOfUnreadMessages = 5;
         component.resetConferenceUnreadCounter(conference.id);
-      expect(component.conferences[0].number_of_unread_messages).toBe(0);
+      expect(component.conferences[0].numberOfUnreadMessages).toBe(0);
     });
 });
 

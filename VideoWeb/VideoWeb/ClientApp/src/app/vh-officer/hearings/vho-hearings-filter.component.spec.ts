@@ -80,8 +80,8 @@ describe('VhoHearingsComponent Filter', () => {
         filter.statuses[0].Selected = true;
         component.activateFilterOptions(filter);
       expect(component.conferences.length).toBe(2);
-      expect(component.conferences[0].hearing_venue_name).toBe(filter.locations[1].Description);
-      expect(component.conferences[1].hearing_venue_name).toBe(filter.locations[1].Description);
+      expect(component.conferences[0].hearingVenueName).toBe(filter.locations[1].Description);
+      expect(component.conferences[1].hearingVenueName).toBe(filter.locations[1].Description);
         expect(component.conferences[0].status).toBe(filter.statuses[0].Status);
         expect(component.conferences[1].status).toBe(filter.statuses[0].Status);
     });
