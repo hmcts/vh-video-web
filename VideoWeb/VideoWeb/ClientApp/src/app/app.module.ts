@@ -11,7 +11,6 @@ import { AuthGuard } from './security/auth.guard';
 import { SecurityModule } from './security/security.module';
 import { SendVideoEventsComponent } from './send-video-events/send-video-events.component';
 import { ConfigService } from './services/api/config.service';
-import { VhOfficerModule } from './vh-officer/vh-officer.module';
 import { API_BASE_URL } from './services/clients/api-client';
 import { SharedModule } from './shared/shared.module';
 import { WaitingSpaceModule } from './waiting-space/waiting-space.module';
@@ -21,38 +20,34 @@ import { AppInsightsLoggerService } from './services/logging/loggers/app-insight
 import { Logger } from './services/logging/logger-base';
 
 export function getSettings(configService: ConfigService) {
-  return () => configService.loadConfig();
+    return () => configService.loadConfig();
 }
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    SendVideoEventsComponent
-  ],
-  imports: [
-    BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
-    HttpClientModule,
-    FormsModule,
-    SharedModule,
-    SecurityModule,
-    WaitingSpaceModule,
-    OnTheDayModule,
-    AppRoutingModule
-  ],
-  providers: [
-    { provide: APP_INITIALIZER, useFactory: getSettings, deps: [ConfigService], multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: AdalInterceptor, multi: true },
-    { provide: Logger, useClass: LoggerService },
-    { provide: LOG_ADAPTER, useClass: ConsoleLogger, multi: true },
-    { provide: LOG_ADAPTER, useClass: AppInsightsLoggerService, multi: true },
-    { provide: API_BASE_URL, useFactory: () => '.' },
-    AdalService,
-    AdalGuard,
-    ConfigService,
-    AuthGuard,
-    Title
-  ],
-  bootstrap: [AppComponent]
+    declarations: [AppComponent, HomeComponent, SendVideoEventsComponent],
+    imports: [
+        BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
+        HttpClientModule,
+        FormsModule,
+        SharedModule,
+        SecurityModule,
+        WaitingSpaceModule,
+        OnTheDayModule,
+        AppRoutingModule
+    ],
+    providers: [
+        { provide: APP_INITIALIZER, useFactory: getSettings, deps: [ConfigService], multi: true },
+        { provide: HTTP_INTERCEPTORS, useClass: AdalInterceptor, multi: true },
+        { provide: Logger, useClass: LoggerService },
+        { provide: LOG_ADAPTER, useClass: ConsoleLogger, multi: true },
+        { provide: LOG_ADAPTER, useClass: AppInsightsLoggerService, multi: true },
+        { provide: API_BASE_URL, useFactory: () => '.' },
+        AdalService,
+        AdalGuard,
+        ConfigService,
+        AuthGuard,
+        Title
+    ],
+    bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

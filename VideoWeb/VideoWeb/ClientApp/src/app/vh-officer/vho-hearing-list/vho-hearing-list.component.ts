@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { ConferenceResponse, ConferenceStatus, ConferenceForVhOfficerResponse } from 'src/app/services/clients/api-client';
-import { Hearing } from 'src/app/shared/models/hearing';
+import { ConferenceForVhOfficerResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
 import { ClipboardService } from 'ngx-clipboard';
 import { Participant } from 'src/app/shared/models/participant';
+import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 
 @Component({
     selector: 'app-vho-hearing-list',
@@ -10,46 +10,44 @@ import { Participant } from 'src/app/shared/models/participant';
     styleUrls: ['./vho-hearing-list.component.scss']
 })
 export class VhoHearingListComponent implements OnInit {
+    @Input() conferences: ConferenceForVhOfficerResponse[];
+    @Output() selectedConference = new EventEmitter<ConferenceForVhOfficerResponse>();
+    currentConference: ConferenceForVhOfficerResponse;
 
-  @Input() conferences: ConferenceForVhOfficerResponse[];
-  @Output() selectedConference = new EventEmitter<ConferenceForVhOfficerResponse>();
-  currentConference: ConferenceForVhOfficerResponse;
+    constructor(private clipboardService: ClipboardService) {}
 
-    constructor(private clipboardService: ClipboardService) { }
+    ngOnInit() {}
 
-    ngOnInit() {
-    }
-
-  isCurrentConference(conference: ConferenceForVhOfficerResponse): boolean {
+    isCurrentConference(conference: ConferenceForVhOfficerResponse): boolean {
         return this.currentConference != null && this.currentConference.id === conference.id;
     }
 
-    isOnTime(conference: ConferenceResponse): boolean {
-        return new Hearing(conference).isOnTime() || new Hearing(conference).isStarting();
+    isOnTime(conference: ConferenceForVhOfficerResponse): boolean {
+        return new HearingSummary(conference).isOnTime() || new HearingSummary(conference).isStarting();
     }
 
-    isSuspended(conference: ConferenceResponse): boolean {
+    isSuspended(conference: ConferenceForVhOfficerResponse): boolean {
         return conference.status === ConferenceStatus.Suspended;
     }
 
-    isDelayed(conference: ConferenceResponse): boolean {
-        return new Hearing(conference).isDelayed();
+    isDelayed(conference: ConferenceForVhOfficerResponse): boolean {
+        return new HearingSummary(conference).isDelayed();
     }
 
-    isPaused(conference: ConferenceResponse): boolean {
-        return new Hearing(conference).isPaused();
+    isPaused(conference: ConferenceForVhOfficerResponse): boolean {
+        return new HearingSummary(conference).isPaused();
     }
 
-    isInSession(conference: ConferenceResponse): boolean {
-        return new Hearing(conference).isInSession();
+    isInSession(conference: ConferenceForVhOfficerResponse): boolean {
+        return new HearingSummary(conference).isInSession();
     }
 
-    isClosed(conference: ConferenceResponse): boolean {
-        return new Hearing(conference).isClosed();
+    isClosed(conference: ConferenceForVhOfficerResponse): boolean {
+        return new HearingSummary(conference).isClosed();
     }
 
-    getConferenceStatusText(conference: ConferenceResponse): string {
-        const hearing = new Hearing(conference);
+    getConferenceStatusText(conference: ConferenceForVhOfficerResponse): string {
+        const hearing = new HearingSummary(conference);
         if (hearing.getConference().status === ConferenceStatus.NotStarted) {
             if (hearing.isDelayed()) {
                 return 'Delayed';
@@ -68,11 +66,11 @@ export class VhoHearingListComponent implements OnInit {
         return '';
     }
 
-    getDuration(conference: ConferenceResponse): string {
-        return new Hearing(conference).getDurationAsText();
+    getDuration(conference: ConferenceForVhOfficerResponse): string {
+        return new HearingSummary(conference).getDurationAsText();
     }
 
-  selectConference(conference: ConferenceForVhOfficerResponse) {
+    selectConference(conference: ConferenceForVhOfficerResponse) {
         this.currentConference = conference;
         this.selectedConference.emit(conference);
     }

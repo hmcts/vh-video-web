@@ -1,7 +1,6 @@
 import { UserMediaDevice } from './user-media-device';
 
 export class SelectedUserMediaDevice {
-
     selectedCamera: UserMediaDevice;
     selectedMicrophone: UserMediaDevice;
 

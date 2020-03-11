@@ -33,7 +33,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     let judgeEventServiceSpy: jasmine.SpyObj<JudgeEventService>;
 
     configureTestSuite(() => {
-        conference = new ConferenceTestData().getConferenceDetail();
+        conference = new ConferenceTestData().getConferenceDetailFuture();
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'raiseParticipantEvent']);
         videoWebServiceSpy.getConferenceById.and.returnValue(of(conference));
         videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());

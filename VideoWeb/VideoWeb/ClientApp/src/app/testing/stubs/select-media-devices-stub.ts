@@ -5,5 +5,4 @@ import { SelectedUserMediaDevice } from 'src/app/shared/models/selected-user-med
 export class SelectMediaDevicesStubComponent {
     @Output() cancelMediaDeviceChange = new EventEmitter();
     @Output() acceptMediaDeviceChange = new EventEmitter<SelectedUserMediaDevice>();
-
 }

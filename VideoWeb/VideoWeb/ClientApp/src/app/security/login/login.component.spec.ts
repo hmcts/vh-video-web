@@ -9,7 +9,6 @@ import { configureTestSuite } from 'ng-bullet';
 import { MockLogger } from '../../testing/mocks/MockLogger';
 import { Logger } from '../../services/logging/logger-base';
 
-
 describe('LoginComponent', () => {
     let component: LoginComponent;
     let fixture: ComponentFixture<LoginComponent>;
@@ -24,7 +23,7 @@ describe('LoginComponent', () => {
             imports: [RouterTestingModule],
             providers: [
                 { provide: AdalService, useClass: MockAdalService },
-              { provide: Logger, useClass: MockLogger }
+                { provide: Logger, useClass: MockLogger }
             ]
         });
     });
@@ -54,14 +53,16 @@ describe('LoginComponent', () => {
     it('should use saved return url', () => {
         adalService.setAuthenticated(true);
         spyOn(returnUrlService, 'popUrl').and.returnValue('testurl');
-        spyOn(router, 'navigateByUrl').and.callFake(() => { Promise.resolve(true); });
+        spyOn(router, 'navigateByUrl').and.callFake(() => {
+            Promise.resolve(true);
+        });
         component.ngOnInit();
         expect(router.navigateByUrl).toHaveBeenCalledWith('testurl');
     });
 
     it('should return to root url if no return path is given', () => {
         adalService.setAuthenticated(true);
-        spyOn(router, 'navigateByUrl').and.callFake(() => { });
+        spyOn(router, 'navigateByUrl').and.callFake(() => {});
         component.ngOnInit();
         expect(router.navigateByUrl).toHaveBeenCalledWith('/');
     });
@@ -69,8 +70,10 @@ describe('LoginComponent', () => {
     it('should fallback to root url if return url is invalid', () => {
         spyOn(returnUrlService, 'popUrl').and.returnValue('');
         adalService.setAuthenticated(true);
-        spyOn(router, 'navigate').and.callFake(() => { });
-        spyOn(router, 'navigateByUrl').and.callFake(() => { throw new Error('Invalid URL'); });
+        spyOn(router, 'navigate').and.callFake(() => {});
+        spyOn(router, 'navigateByUrl').and.callFake(() => {
+            throw new Error('Invalid URL');
+        });
         component.ngOnInit();
         expect(router.navigate).toHaveBeenCalledWith(['/']);
     });

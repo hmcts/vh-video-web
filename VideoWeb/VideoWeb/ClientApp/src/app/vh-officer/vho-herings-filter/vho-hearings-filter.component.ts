@@ -1,6 +1,5 @@
 import { Component, Output, EventEmitter, OnInit } from '@angular/core';
 import { HearingsFilter, ListFilter } from '../../shared/models/hearings-filter';
-import { ConferenceStatus } from '../../services/clients/api-client';
 import { HearingsFilterOptionsService } from '../services/hearings-filter-options.service';
 
 @Component({
@@ -9,7 +8,6 @@ import { HearingsFilterOptionsService } from '../services/hearings-filter-option
     styleUrls: ['./vho-hearings-filter.component.scss']
 })
 export class VhoHearingsFilterComponent implements OnInit {
-
     @Output()
     fiterOptionsEvent = new EventEmitter<HearingsFilter>();
 
@@ -21,7 +19,7 @@ export class VhoHearingsFilterComponent implements OnInit {
 
     hearingsFilter: HearingsFilter;
 
-    constructor(private hearingsFilterOptionsService: HearingsFilterOptionsService) { }
+    constructor(private hearingsFilterOptionsService: HearingsFilterOptionsService) {}
 
     ngOnInit() {
         this.hearingsFilter = this.hearingsFilterOptionsService.getFilter();
@@ -53,7 +51,7 @@ export class VhoHearingsFilterComponent implements OnInit {
     }
 
     private removeOptions(options: ListFilter[]) {
-        options.forEach(x => x.Selected = false);
+        options.forEach(x => (x.Selected = false));
     }
 
     statusOptionSelected(optionIndex: number) {
