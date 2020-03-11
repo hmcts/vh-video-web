@@ -13,6 +13,7 @@ namespace VideoWeb.Mappings
         {
             return MapConferenceSummaryToResponseModel<ConferenceForUserResponse>(conference);
         }
+        
         public T MapConferenceSummaryToResponseModel<T>(ConferenceSummaryResponse conference) where T:ConferenceForUserResponse, new()
         {
             var conferenceForUserResponse = new T();
