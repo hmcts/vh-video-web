@@ -8,14 +8,14 @@ describe('ParticipantStatusComponent', () => {
   const component = new ParticipantNetworkStatusComponent();
 
   it('should return "available" class', () => {
-    const p = new ConferenceTestData().getConferenceDetail().participants[0];
+    const p = new ConferenceTestData().getConferenceDetailFuture().participants[0];
     p.status = ParticipantStatus.Available;
     const participant = new Participant(p);
    // expect(component.getParticipantStatusClass(participant)).toBe('participant-available');
   });
 
   it('should return "not signed in" class', () => {
-    const p = new ConferenceTestData().getConferenceDetail().participants[0];
+    const p = new ConferenceTestData().getConferenceDetailFuture().participants[0];
     p.status = ParticipantStatus.None;
     let participant = new Participant(p);
 
@@ -27,7 +27,7 @@ describe('ParticipantStatusComponent', () => {
   });
 
   it('should return "disconnected" class', () => {
-    const p = new ConferenceTestData().getConferenceDetail().participants[0];
+    const p = new ConferenceTestData().getConferenceDetailFuture().participants[0];
     p.status = ParticipantStatus.Disconnected;
     const participant = new Participant(p);
 
@@ -35,7 +35,7 @@ describe('ParticipantStatusComponent', () => {
   });
 
   it('should return "default" class', () => {
-    const p = new ConferenceTestData().getConferenceDetail().participants[0];
+    const p = new ConferenceTestData().getConferenceDetailFuture().participants[0];
     p.status = ParticipantStatus.InConsultation;
     let participant = new Participant(p);
 

@@ -1,9 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { ParticipantStatus, ParticipantForUserResponse } from 'src/app/services/clients/api-client';
-import { Participant } from 'src/app/shared/models/participant';
-import { ParticipantStatusModel } from 'src/app/shared/models/participants-status-model';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { HeartbeatHealth } from '../../services/models/participant-heartbeat';
+import { ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ParticipantSummary } from '../../shared/models/participant-summary';
 
 @Component({
   selector: 'app-participant-network-status',
@@ -11,7 +8,7 @@ import { HeartbeatHealth } from '../../services/models/participant-heartbeat';
   styleUrls: ['./participant-network-status.component.scss']
 })
 export class ParticipantNetworkStatusComponent  {
-  @Input() participant: Participant;
+  @Input() participant: ParticipantSummary;
 
   constructor() {
   }
@@ -28,7 +25,7 @@ export class ParticipantNetworkStatusComponent  {
 
     
 
-    //switch (this.participant.hearbeartHealth) {
+    // switch (this.participant.hearbeartHealth) {
     //  case HeartbeatHealth.Good:
     //    return "Good";
     //  case HeartbeatHealth.Bad:
@@ -39,7 +36,7 @@ export class ParticipantNetworkStatusComponent  {
     //    return 'None';
     //  default:
     //    return 'None';
-    //}
+    // }
   }
 
 }
