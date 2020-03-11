@@ -1,0 +1,29 @@
+#!/bin/sh
+
+COMMIT_MSG_FILE=$1
+COMMIT_SOURCE=$2
+SHA1=$3
+
+
+# Get the current branch name 
+BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+# exstract a part of branch name with the VIH-XXX
+ TRIMMED=$(echo $BRANCH_NAME | sed -e 's/.*\/*\(VIH-[0-9]\{4\}\).*/\1/')
+# get the current commit message
+currentmsg=$(cat "$COMMIT_MSG_FILE")
+message="Commit message must start with the prefix 'feature/VIH-XXXX : ' folowing by 8 or more characters. Your commit will be rejected. You should rename your commit to a valid name and try again."
+valid_mesg_regex="^(feature\/VIH-[0-9]{4} : )([:_, a-zA-Z0-9.-]{8,})+$"
+
+feature="feature/"
+
+if [[ ! $currentmsg =~ $valid_mesg_regex ]]
+then
+	 echo "$message"
+	exit 1
+	fi
+	 exit 0
+fi
+
+
+
+ 
