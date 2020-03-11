@@ -49,10 +49,6 @@ export class Hearing extends HearingBase {
         return this.conference.status;
     }
 
-    get scheduledDuration(): number {
-        return this.conference.scheduled_duration;
-    }
-
     get scheduledStartTime(): Date {
         const startTime = new Date(this.conference.scheduled_date_time.getTime());
         return startTime;

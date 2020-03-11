@@ -5,12 +5,7 @@ export abstract class HearingBase {
     protected timeReader = new HearingTimeReader();
 
     abstract get status(): ConferenceStatus;
-    abstract get scheduledDuration(): number;
     abstract get scheduledStartTime(): Date;
-
-    getDurationAsText(): string {
-        return this.timeReader.getDurationAsText(this.scheduledDuration);
-    }
 
     isReadyToStart(): boolean {
         return this.timeReader.isReadyToStart(this.scheduledStartTime);

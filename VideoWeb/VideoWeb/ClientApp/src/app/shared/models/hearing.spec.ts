@@ -189,13 +189,6 @@ describe('Hearing', () => {
         expect(hearing.isReadyToStart()).toBeTruthy();
     });
 
-    it('should return duration as text', () => {
-        const c = new ConferenceTestData().getConferenceDetailFuture();
-        c.scheduled_duration = 80;
-        const hearing = new Hearing(c);
-        expect(hearing.getDurationAsText()).toBe('1 hour and 20 minutes');
-    });
-
     it('should return is past closed time', () => {
         const c = new ConferenceTestData().getConferenceDetailFuture();
         c.status = ConferenceStatus.Closed;
