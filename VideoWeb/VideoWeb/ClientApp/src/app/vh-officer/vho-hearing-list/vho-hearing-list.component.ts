@@ -1,8 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ConferenceForVhOfficerResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
 import { ClipboardService } from 'ngx-clipboard';
-import { Participant } from 'src/app/shared/models/participant';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
+import { ParticipantSummary } from '../../shared/models/participant-summary';
 
 @Component({
     selector: 'app-vho-hearing-list',
@@ -79,7 +79,7 @@ export class VhoHearingListComponent implements OnInit {
         this.clipboardService.copyFromContent(conference.id);
     }
 
-    getParticipantsForConference(conference: ConferenceForVhOfficerResponse): Participant[] {
-        return conference.participants.map(p => new Participant(p));
+    getParticipantsForConference(conference: ConferenceForVhOfficerResponse): ParticipantSummary[] {
+      return conference.participants.map(p => new ParticipantSummary(p));
     }
 }
