@@ -13,7 +13,9 @@ import {
     SelfTestPexipResponse,
     HearingVenueResponse,
     ChatResponse,
-    ConferenceForVhOfficerResponse
+    ConferenceForVhOfficerResponse,
+    IParticipantHeartbeatResponse,
+    ParticipantHeartbeatResponse
 } from '../clients/api-client';
 import { Observable } from 'rxjs';
 import { IVideoWebApiService } from './video-web-service.interface';
@@ -97,5 +99,9 @@ export class VideoWebService implements IVideoWebApiService {
 
     getConferenceChatHistory(conferenceId: string): Observable<ChatResponse[]> {
         return this.apiClient.getConferenceInstantMessageHistory(conferenceId);
+    }
+
+    getParticipantHeartbeats(conferenceId: string, participantId: string):Observable<ParticipantHeartbeatResponse[]> {
+    return this.apiClient.getHeartbeatDataForParticipant(conferenceId, participantId);
     }
 }

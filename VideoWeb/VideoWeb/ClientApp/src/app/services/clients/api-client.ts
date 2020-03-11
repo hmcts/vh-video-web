@@ -1047,20 +1047,16 @@ export class ApiClient {
     }
 
     /**
-     * @param conferenceId (optional) 
-     * @param participantId (optional) 
      * @return Success
      */
-    getParticipantHeartbeats(conferenceId: string | undefined, participantId: string | undefined): Observable<ParticipantHeartbeatResponse[]> {
-        let url_ = this.baseUrl + "/conferences/heartbeat?";
-        if (conferenceId === null)
-            throw new Error("The parameter 'conferenceId' cannot be null.");
-        else if (conferenceId !== undefined)
-            url_ += "conferenceId=" + encodeURIComponent("" + conferenceId) + "&"; 
-        if (participantId === null)
-            throw new Error("The parameter 'participantId' cannot be null.");
-        else if (participantId !== undefined)
-            url_ += "participantId=" + encodeURIComponent("" + participantId) + "&"; 
+    getHeartbeatDataForParticipant(conferenceId: string, participantId: string): Observable<ParticipantHeartbeatResponse[]> {
+        let url_ = this.baseUrl + "/conferences/{conferenceId}/participant/{participantId}/heartbeatrecent";
+        if (conferenceId === undefined || conferenceId === null)
+            throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace("{conferenceId}", encodeURIComponent("" + conferenceId)); 
+        if (participantId === undefined || participantId === null)
+            throw new Error("The parameter 'participantId' must be defined.");
+        url_ = url_.replace("{participantId}", encodeURIComponent("" + participantId)); 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -1072,11 +1068,11 @@ export class ApiClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetParticipantHeartbeats(response_);
+            return this.processGetHeartbeatDataForParticipant(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetParticipantHeartbeats(<any>response_);
+                    return this.processGetHeartbeatDataForParticipant(<any>response_);
                 } catch (e) {
                     return <Observable<ParticipantHeartbeatResponse[]>><any>_observableThrow(e);
                 }
@@ -1085,7 +1081,7 @@ export class ApiClient {
         }));
     }
 
-    protected processGetParticipantHeartbeats(response: HttpResponseBase): Observable<ParticipantHeartbeatResponse[]> {
+    protected processGetHeartbeatDataForParticipant(response: HttpResponseBase): Observable<ParticipantHeartbeatResponse[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 

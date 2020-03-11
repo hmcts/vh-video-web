@@ -18,7 +18,7 @@ export class GraphSettings {
           ticks: {
             suggestedMin: 0,
             stepSize: 5,
-            suggestedMax: 20,
+            suggestedMax: 25,
             display: false,
           },
           scaleLabel: {

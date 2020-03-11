@@ -58,11 +58,7 @@ export class MonitorGraphService {
 
     this.timestampNow = new Date(Date.now()).getTime();
    
-    if (values.length > 0) {
-
-      // get starting point for timestamp from time 'now' or last heartbeat if its in the 5 sec from now.
-      this.timestampNow = this.timestampNow - this.HEARTBEAT_INTERVAL <= values[values.length - 1].timestamp
-        ? values[values.length - 1].timestamp : this.timestampNow;
+    if (values && values.length > 0) {
 
       packagesLostValues = values.map(x => this.getPointValue(x));
     }
@@ -87,7 +83,10 @@ export class MonitorGraphService {
     // if package lost >= 20 then signal = 0, bad
     // otherwise 20 minus package lost value, the good signal is 20 (0-package lost)
 
-    graphData.pointY = packageLost.recentPackageLost >= this.MAX_LOST ? this.MAX_LOST : this.MAX_LOST - packageLost.recentPackageLost;
+    graphData.pointY = packageLost.recentPackageLost >= this.MAX_LOST ? 0 : this.MAX_LOST - packageLost.recentPackageLost;
+    console.log('now :' + new Date(this.timestampNow));
+    console.log('value time :' + new Date(packageLost.timestamp));
+
 
     if (this.timestampNow >= packageLost.timestamp) {
 
