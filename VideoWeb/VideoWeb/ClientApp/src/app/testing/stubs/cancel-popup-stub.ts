@@ -1,4 +1,3 @@
-
 import { Component, Input, Output } from '@angular/core';
 import { EventEmitter } from 'events';
 

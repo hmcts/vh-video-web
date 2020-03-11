@@ -1,12 +1,16 @@
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse, UserRole } from 'src/app/services/clients/api-client';
-import * as moment from 'moment';
+import { HearingBase } from './hearing-base';
 import { Participant } from './participant';
 
-export class Hearing {
+export class Hearing extends HearingBase {
     private conference: ConferenceResponse;
     private participants: Participant[];
 
     constructor(conference: ConferenceResponse) {
+        super();
+        if (!(conference instanceof ConferenceResponse)) {
+            throw new Error('Object not a ConferenceResponse');
+        }
         this.conference = conference;
         if (conference.participants) {
             this.participants = this.conference.participants.map(p => new Participant(p));
@@ -33,26 +37,6 @@ export class Hearing {
         return this.conference.case_name;
     }
 
-    get applicantRepresentative(): Participant {
-        return this.participants.filter(x => x.role === UserRole.Representative)[0];
-    }
-
-    get defendantRepresentative(): Participant {
-        return this.participants.filter(x => x.role === UserRole.Representative)[1];
-    }
-
-    get applicants(): Participant[] {
-        return this.participants
-            .filter(x => x.caseGroup !== '')
-            .filter(x => x.caseGroup.toLowerCase() === 'applicant' || x.caseGroup.toLowerCase() === 'claimant');
-    }
-
-    get respondents(): Participant[] {
-        return this.participants
-            .filter(x => x.caseGroup !== '')
-            .filter(x => x.caseGroup.toLowerCase() === 'respondent' || x.caseGroup.toLowerCase() === 'defendant');
-    }
-
     getConference(): ConferenceResponse {
         return this.conference;
     }
@@ -61,9 +45,12 @@ export class Hearing {
         return this.conference.participants;
     }
 
+    get status(): ConferenceStatus {
+        return this.conference.status;
+    }
+
     get scheduledStartTime(): Date {
-        const startTime = new Date(this.conference.scheduled_date_time.getTime());
-        return startTime;
+        return new Date(this.conference.scheduled_date_time.getTime());
     }
 
     get scheduledEndTime(): Date {
@@ -72,85 +59,8 @@ export class Hearing {
         return endTime;
     }
 
-    get status(): ConferenceStatus {
-        return this.conference.status;
-    }
-
-    getDurationAsText(): string {
-        const duration = this.conference.scheduled_duration;
-        const h = Math.floor(duration / 60);
-        const m = duration % 60;
-        const hours = h < 1 ? `${h} hours` : `${h} hour`;
-        const minutes = m < 1 ? `${m} minute` : `${m} minutes`;
-        if (h > 0 && m > 0) {
-            return `${hours} and ${minutes}`;
-        } else if (h > 0 && m === 0) {
-            return `${hours}`;
-        } else {
-            return `${minutes}`;
-        }
-    }
-
-    isReadyToStart(): boolean {
-        const currentDateTime = new Date(new Date().getTime());
-        const difference = moment(this.conference.scheduled_date_time).diff(moment(currentDateTime), 'minutes');
-        return difference < 30;
-    }
-
-    isOnTime(): boolean {
-        const now = moment.utc();
-        let scheduled = moment(this.conference.scheduled_date_time);
-        scheduled = scheduled.subtract(2, 'minutes');
-        return now.isBefore(scheduled) && this.conference.status === ConferenceStatus.NotStarted;
-    }
-
-    isStarting(): boolean {
-        const now = moment.utc();
-
-        let minStart = moment(this.conference.scheduled_date_time);
-        minStart = minStart.subtract(2, 'minutes');
-
-        let maxStart = moment(this.conference.scheduled_date_time);
-        maxStart = maxStart.add(10, 'minutes');
-
-        return now.isBetween(minStart, maxStart) && this.conference.status === ConferenceStatus.NotStarted;
-    }
-
-    isDelayed(): boolean {
-        const now = moment.utc();
-        let scheduled = moment(this.conference.scheduled_date_time);
-        scheduled = scheduled.add(10, 'minutes');
-        return now.isAfter(scheduled) && this.conference.status === ConferenceStatus.NotStarted;
-    }
-
-    isNotStarted(): boolean {
-        return this.conference.status === ConferenceStatus.NotStarted;
-    }
-
-    isClosed(): boolean {
-        return this.conference.status === ConferenceStatus.Closed;
-    }
-
-    isSuspended(): boolean {
-        return this.conference.status === ConferenceStatus.Suspended;
-    }
-
-    isInSession(): boolean {
-        return this.conference.status === ConferenceStatus.InSession;
-    }
-
-    isPaused(): boolean {
-        return this.conference.status === ConferenceStatus.Paused;
-    }
-
     isPastClosedTime(): boolean {
-        if (this.conference.status !== ConferenceStatus.Closed) {
-            return false;
-        }
-        const now = moment.utc();
-        let closed = moment(this.conference.closed_date_time);
-        closed = closed.add(30, 'minutes');
-        return now.isAfter(closed) && this.conference.status === ConferenceStatus.Closed;
+        return this.timeReader.isPastClosedTime(this.conference.closed_date_time, this.conference.status);
     }
 
     getParticipantByUsername(username: string) {

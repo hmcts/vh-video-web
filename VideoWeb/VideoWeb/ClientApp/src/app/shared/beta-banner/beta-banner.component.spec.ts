@@ -17,21 +17,17 @@ import { EventsService } from 'src/app/services/events.service';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 
 @Component({ selector: 'app-mock-component', template: '' })
-class Mock1Component {
-}
+class Mock1Component {}
 
 @Component({ selector: 'app-mock-component2', template: '' })
-class Mock2Component {
-}
+class Mock2Component {}
 
-const routes =
-  [
+const routes = [
     { path: 'sub-component1', component: Mock1Component },
     { path: 'sub-component2', component: Mock2Component }
-  ];
+];
 
-describe('BetaBannerComponent',
-  () => {
+describe('BetaBannerComponent', () => {
     let component: BetaBannerComponent;
     let fixture: ComponentFixture<BetaBannerComponent>;
     let router: Router;
@@ -41,49 +37,41 @@ describe('BetaBannerComponent',
     profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
     const profile = new UserProfileResponse({ role: UserRole.Representative });
     profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
-    const conference = new ConferenceTestData().getConferenceDetail();
+    const conference = new ConferenceTestData().getConferenceDetailFuture();
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
     videoWebServiceSpy.getConferenceById.and.returnValue(of(conference));
 
     beforeEach(async(() => {
-      TestBed.configureTestingModule({
-        declarations: [
-          BetaBannerComponent,
-          Mock1Component,
-          Mock2Component
-        ],
-        imports: [
-          RouterTestingModule.withRoutes(routes)
-        ],
-        providers: [
-          { provide: ProfileService, useValue: profileServiceSpy },
-          { provide: Logger, useClass: MockLogger },
-          { provide: VideoWebService, useValue: videoWebServiceSpy },
-          { provide: AdalService, useClass: MockAdalService },
-          { provide: EventsService, useClass: MockEventsService },
-        ],
-        schemas: [NO_ERRORS_SCHEMA]
-      })
-        .compileComponents();
+        TestBed.configureTestingModule({
+            declarations: [BetaBannerComponent, Mock1Component, Mock2Component],
+            imports: [RouterTestingModule.withRoutes(routes)],
+            providers: [
+                { provide: ProfileService, useValue: profileServiceSpy },
+                { provide: Logger, useClass: MockLogger },
+                { provide: VideoWebService, useValue: videoWebServiceSpy },
+                { provide: AdalService, useClass: MockAdalService },
+                { provide: EventsService, useClass: MockEventsService }
+            ],
+            schemas: [NO_ERRORS_SCHEMA]
+        }).compileComponents();
     }));
 
     beforeEach(() => {
-      adalService = TestBed.get(AdalService);
-      eventService = TestBed.get(EventsService);
-      router = TestBed.get(Router);
-      fixture = TestBed.createComponent(BetaBannerComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
+        adalService = TestBed.get(AdalService);
+        eventService = TestBed.get(EventsService);
+        router = TestBed.get(Router);
+        fixture = TestBed.createComponent(BetaBannerComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
     });
 
-    it('navigate to sub-component1 should see sub-component1 in router url',
-      fakeAsync(() => {
+    it('navigate to sub-component1 should see sub-component1 in router url', fakeAsync(() => {
         fixture.ngZone.run(() => {
-          router.navigate(['sub-component1']);
-          tick();
-          expect(router.url).toBe('/sub-component1');
-          expect(component.pageUrl).toBe('https://www.smartsurvey.co.uk/s/VideoHearings_Feedback/?pageurl=/sub-component1');
+            router.navigate(['sub-component1']);
+            tick();
+            expect(router.url).toBe('/sub-component1');
+            expect(component.pageUrl).toBe('https://www.smartsurvey.co.uk/s/VideoHearings_Feedback/?pageurl=/sub-component1');
         });
-      }));
-  });
+    }));
+});

@@ -7,38 +7,37 @@ import { ErrorService } from '../services/error.service';
 import { PageUrls } from '../shared/page-url.constants';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html'
+    selector: 'app-home',
+    templateUrl: './home.component.html'
 })
 export class HomeComponent implements OnInit {
+    constructor(
+        private router: Router,
+        private profileService: ProfileService,
+        private errorService: ErrorService,
+        private deviceTypeService: DeviceTypeService
+    ) {}
 
-  constructor(
-    private router: Router,
-    private profileService: ProfileService,
-    private errorService: ErrorService,
-    private deviceTypeService: DeviceTypeService
-  ) {
-  }
-
-  ngOnInit() {
-    if (this.deviceTypeService.isDesktop()) {
-      this.profileService.getUserProfile()
-        .then((profile) => this.navigateToHearingList(profile))
-        .catch((error) => this.errorService.handleApiError(error));
-    } else {
-      this.router.navigate([PageUrls.SignonAComputer]);
+    ngOnInit() {
+        if (this.deviceTypeService.isDesktop()) {
+            this.profileService
+                .getUserProfile()
+                .then(profile => this.navigateToHearingList(profile))
+                .catch(error => this.errorService.handleApiError(error));
+        } else {
+            this.router.navigate([PageUrls.SignonAComputer]);
+        }
     }
-  }
 
-  navigateToHearingList(userProfile: UserProfileResponse) {
-    if (userProfile.role === UserRole.Judge) {
-      this.router.navigate([PageUrls.JudgeHearingList]);
-    } else if (userProfile.role === UserRole.VideoHearingsOfficer) {
-      this.router.navigate([PageUrls.AdminHearingList]);
-    } else if (userProfile.role === UserRole.Representative || userProfile.role === UserRole.Individual) {
-      this.router.navigate([PageUrls.ParticipantHearingList]);
-    } else {
-      this.router.navigate([PageUrls.Unauthorised]);
+    navigateToHearingList(userProfile: UserProfileResponse) {
+        if (userProfile.role === UserRole.Judge) {
+            this.router.navigate([PageUrls.JudgeHearingList]);
+        } else if (userProfile.role === UserRole.VideoHearingsOfficer) {
+            this.router.navigate([PageUrls.AdminHearingList]);
+        } else if (userProfile.role === UserRole.Representative || userProfile.role === UserRole.Individual) {
+            this.router.navigate([PageUrls.ParticipantHearingList]);
+        } else {
+            this.router.navigate([PageUrls.Unauthorised]);
+        }
     }
-  }
 }

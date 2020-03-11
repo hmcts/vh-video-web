@@ -1,5 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HearingsFilter, ListFilter, StatusFilter, ExtendedConferenceStatus, AlertsStatus, AlertFilter } from '../../shared/models/hearings-filter';
+import {
+    HearingsFilter,
+    ListFilter,
+    StatusFilter,
+    ExtendedConferenceStatus,
+    AlertsStatus,
+    AlertFilter
+} from '../../shared/models/hearings-filter';
 import { SessionStorage } from '../../services/session-storage';
 import { ConferenceStatus, HearingVenueResponse } from 'src/app/services/clients/api-client';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -138,4 +145,3 @@ export class HearingsFilterOptionsService {
         return countOptions;
     }
 }
-

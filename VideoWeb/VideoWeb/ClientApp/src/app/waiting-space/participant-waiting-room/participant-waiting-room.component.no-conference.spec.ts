@@ -19,78 +19,73 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { AnalogueClockStubComponent } from 'src/app/testing/stubs/analogue-clock-stub';
 import { IndividualConsultationControlsStubComponent } from 'src/app/testing/stubs/individual-consultation-controls-stub';
 import {
-  IndividualParticipantStatusListStubComponent,
-  JudgeParticipantStatusListStubComponent
+    IndividualParticipantStatusListStubComponent,
+    JudgeParticipantStatusListStubComponent
 } from 'src/app/testing/stubs/participant-status-list-stub';
 
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room.component';
 
 describe('ParticipantWaitingRoomComponent when service returns an error', () => {
-  let component: ParticipantWaitingRoomComponent;
-  let fixture: ComponentFixture<ParticipantWaitingRoomComponent>;
-  let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-  let route: ActivatedRoute;
-  let router: Router;
-  let conference: ConferenceResponse;
-  let adalService: MockAdalService;
-  let errorService: ErrorService;
+    let component: ParticipantWaitingRoomComponent;
+    let fixture: ComponentFixture<ParticipantWaitingRoomComponent>;
+    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+    let route: ActivatedRoute;
+    let router: Router;
+    let conference: ConferenceResponse;
+    let adalService: MockAdalService;
+    let errorService: ErrorService;
 
-  configureTestSuite(() => {
-    conference = new ConferenceTestData().getConferenceFuture();
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>(
-      'VideoWebService',
-      ['getConferenceById']
-    );
-    videoWebServiceSpy.getConferenceById.and.returnValue(
-      throwError({ status: 404, isApiException: true })
-    );
+    configureTestSuite(() => {
+        conference = new ConferenceTestData().getConferenceFuture();
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
+        videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 404, isApiException: true }));
 
-    TestBed.configureTestingModule({
-      imports: [SharedModule, RouterTestingModule],
-      declarations: [
-        ParticipantWaitingRoomComponent,
-        IndividualParticipantStatusListStubComponent,
-        AnalogueClockStubComponent,
-        JudgeParticipantStatusListStubComponent,
-        IndividualConsultationControlsStubComponent
-      ],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              paramMap: convertToParamMap({ conferenceId: conference.id })
-            }
-          }
-        },
-        { provide: VideoWebService, useValue: videoWebServiceSpy },
-        { provide: AdalService, useClass: MockAdalService },
-        { provide: ConfigService, useClass: MockConfigService },
-        { provide: EventsService, useClass: MockEventsService },
-        { provide: Logger, useClass: MockLogger }
-      ]
+        TestBed.configureTestingModule({
+            imports: [SharedModule, RouterTestingModule],
+            declarations: [
+                ParticipantWaitingRoomComponent,
+                IndividualParticipantStatusListStubComponent,
+                AnalogueClockStubComponent,
+                JudgeParticipantStatusListStubComponent,
+                IndividualConsultationControlsStubComponent
+            ],
+            providers: [
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        snapshot: {
+                            paramMap: convertToParamMap({ conferenceId: conference.id })
+                        }
+                    }
+                },
+                { provide: VideoWebService, useValue: videoWebServiceSpy },
+                { provide: AdalService, useClass: MockAdalService },
+                { provide: ConfigService, useClass: MockConfigService },
+                { provide: EventsService, useClass: MockEventsService },
+                { provide: Logger, useClass: MockLogger }
+            ]
+        });
     });
-  });
 
-  beforeEach(() => {
-    adalService = TestBed.get(AdalService);
-    router = TestBed.get(Router);
-    route = TestBed.get(ActivatedRoute);
-    errorService = TestBed.get(ErrorService);
-    fixture = TestBed.createComponent(ParticipantWaitingRoomComponent);
-    component = fixture.componentInstance;
-  });
-
-  it('should handle api error with error service', async done => {
-    spyOn(errorService, 'handleApiError').and.callFake(() => {
-      Promise.resolve(true);
+    beforeEach(() => {
+        adalService = TestBed.get(AdalService);
+        router = TestBed.get(Router);
+        route = TestBed.get(ActivatedRoute);
+        errorService = TestBed.get(ErrorService);
+        fixture = TestBed.createComponent(ParticipantWaitingRoomComponent);
+        component = fixture.componentInstance;
     });
-    await component.getConference();
-    expect(component).toBeTruthy();
-    expect(component.loadingData).toBeFalsy();
-    expect(component.hearing).toBeUndefined();
-    expect(component.participant).toBeUndefined();
-    expect(errorService.handleApiError).toHaveBeenCalled();
-    done();
-  });
+
+    it('should handle api error with error service', async done => {
+        spyOn(errorService, 'handleApiError').and.callFake(() => {
+            Promise.resolve(true);
+        });
+        await component.getConference();
+        expect(component).toBeTruthy();
+        expect(component.loadingData).toBeFalsy();
+        expect(component.hearing).toBeUndefined();
+        expect(component.participant).toBeUndefined();
+        expect(errorService.handleApiError).toHaveBeenCalled();
+        done();
+    });
 });

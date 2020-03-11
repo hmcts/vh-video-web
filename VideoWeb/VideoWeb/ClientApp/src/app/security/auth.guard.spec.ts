@@ -16,11 +16,7 @@ describe('authguard', () => {
     configureTestSuite(() => {
         TestBed.configureTestingModule({
             imports: [RouterTestingModule],
-            providers: [
-                AuthGuard,
-                { provide: AdalService, useClass: MockAdalService },
-                { provide: Logger, useClass: MockLogger }
-            ]
+            providers: [AuthGuard, { provide: AdalService, useClass: MockAdalService }, { provide: Logger, useClass: MockLogger }]
         });
     });
 
@@ -40,7 +36,7 @@ describe('authguard', () => {
     describe('when login failed with unsuccessful authentication', () => {
         it('canActivate should return false', () => {
             adalSvc.setAuthenticated(false);
-            spyOn(router, 'navigate').and.callFake(() => { });
+            spyOn(router, 'navigate').and.callFake(() => {});
             expect(authGuard.canActivate()).toBeFalsy();
             expect(router.navigate).toHaveBeenCalledWith(['/login']);
         });

@@ -8,7 +8,6 @@ import { PaginationModel } from './pagination-model';
     styleUrls: ['./pagination.component.css']
 })
 export class PaginationComponent {
-
     @Input() pagination: PaginationModel = new PaginationModel(0, 1, 1, 5);
 
     @Output() moveToStart$ = new EventEmitter();

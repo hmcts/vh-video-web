@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { ClientSettingsResponse } from '../clients/api-client';
-import { Observable, of } from 'rxjs';
 import { HttpClient, HttpBackend } from '@angular/common/http';
 import { SessionStorage } from '../session-storage';
 

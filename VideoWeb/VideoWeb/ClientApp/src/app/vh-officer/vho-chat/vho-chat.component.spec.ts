@@ -22,7 +22,7 @@ describe('VhoChatComponent', () => {
     let eventService: MockEventsService;
     let adalService: MockAdalService;
     let profileService: MockProfileService;
-    const conference = new ConferenceTestData().getConferenceDetail();
+    const conference = new ConferenceTestData().getConferenceDetailFuture();
 
     configureTestSuite(() => {
         TestBed.configureTestingModule({

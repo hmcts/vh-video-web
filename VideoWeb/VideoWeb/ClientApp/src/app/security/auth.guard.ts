@@ -4,8 +4,7 @@ import { AdalService } from 'adal-angular4';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-
-    constructor(private adalSvc: AdalService, private router: Router) { }
+    constructor(private adalSvc: AdalService, private router: Router) {}
 
     canActivate(): boolean {
         if (this.adalSvc.userInfo.authenticated) {

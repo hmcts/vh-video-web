@@ -8,5 +8,5 @@ export const TopMenuItems = [
         url: '/bookings-list',
         name: 'Bookings list',
         active: false
-    },
+    }
 ];

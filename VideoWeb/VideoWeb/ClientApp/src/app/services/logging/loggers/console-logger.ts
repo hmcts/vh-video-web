@@ -1,7 +1,6 @@
 import { LogAdapter } from '../log-adapter';
 
 export class ConsoleLogger implements LogAdapter {
-
     debug(message: string): void {
         console.debug(message);
     }
