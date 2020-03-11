@@ -1,5 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({ selector: 'app-back-navigation', template: '' })
-export class BackNavigationStubComponent {
-}
+export class BackNavigationStubComponent {}

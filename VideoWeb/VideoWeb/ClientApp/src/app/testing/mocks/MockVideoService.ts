@@ -10,7 +10,8 @@ import {
     ChatResponse,
     TestCallScoreResponse,
     ConferenceEventRequest,
-    ConferenceForVhOfficerResponse
+    ConferenceForVhOfficerResponse,
+    SelfTestPexipResponse
 } from 'src/app/services/clients/api-client';
 import { Observable, of } from 'rxjs';
 import { ConferenceTestData } from './data/conference-test-data';
@@ -36,8 +37,12 @@ export class MockVideoWebService implements IVideoWebApiService {
     getJwToken(participantId: string): Observable<TokenResponse> {
         throw new Error('Method not implemented.');
     }
-    getPexipConfig(): Observable<import('../../services/clients/api-client').SelfTestPexipResponse> {
-        throw new Error('Method not implemented.');
+    getPexipConfig(): Observable<SelfTestPexipResponse> {
+        return of(
+            new SelfTestPexipResponse({
+                pexip_self_test_node: 'selftest.automated.test'
+            })
+        );
     }
     getObfuscatedName(displayName: string): string {
         return displayName.replace(/(?!\b)\w/g, '*');
@@ -55,7 +60,7 @@ export class MockVideoWebService implements IVideoWebApiService {
 
     getConferenceById(conferenceId: string): Observable<ConferenceResponse> {
         console.log(`using mock video web service: getConferenceById ${JSON.stringify(conferenceId)}`);
-        return of(new ConferenceTestData().getConferenceDetail());
+        return of(new ConferenceTestData().getConferenceDetailFuture());
     }
 
     completeTask(conferenceId: string, taskId: number): Observable<TaskResponse> {

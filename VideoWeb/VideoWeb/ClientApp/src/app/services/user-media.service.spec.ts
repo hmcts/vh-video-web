@@ -6,17 +6,12 @@ import { Logger } from './logging/logger-base';
 import { SessionStorage } from './session-storage';
 import { UserMediaService } from './user-media.service';
 
-
 describe('UserMediaService', () => {
-
     const testData = new MediaDeviceTestData();
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [
-                UserMediaService,
-                { provide: Logger, useClass: MockLogger }
-            ]
+            providers: [UserMediaService, { provide: Logger, useClass: MockLogger }]
         });
     });
 

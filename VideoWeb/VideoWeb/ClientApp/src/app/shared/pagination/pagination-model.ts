@@ -20,7 +20,7 @@ export class PaginationModel {
     }
 
     get fromRecord(): number {
-        return ((this.page - 1) * this.pageSize) + 1;
+        return (this.page - 1) * this.pageSize + 1;
     }
 
     get toRecord(): number {

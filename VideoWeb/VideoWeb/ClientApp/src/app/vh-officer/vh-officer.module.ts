@@ -15,26 +15,20 @@ import { ChartsModule } from 'ng2-charts';
 import { MonitoringGraphComponent } from '../vh-officer/monitoring-graph/monitoring-graph.component';
 
 @NgModule({
-  declarations: [
-    VhoHearingsComponent,
-    TasksTableComponent,
-    VhoHearingListComponent,
-    ParticipantStatusComponent,
-    ParticipantInfoTooltipComponent,
-    VhoHearingsFilterComponent,
+    declarations: [
+        VhoHearingsComponent,
+        TasksTableComponent,
+        VhoHearingListComponent,
+        ParticipantStatusComponent,
+        ParticipantInfoTooltipComponent,
+        VhoHearingsFilterComponent,
     VhoChatComponent,
     MonitoringGraphComponent
-  ],
-  imports: [
-    CommonModule,
-    SharedModule,
-    ClipboardModule,
-    ChartsModule,
-    VhOfficerRoutingModule
     ],
-    providers: [
-        HearingsFilterOptionsService
+    imports: [CommonModule, SharedModule, ClipboardModule, VhOfficerRoutingModule, ChartsModule],
+    providers: [HearingsFilterOptionsService]
+   
   ],
   exports: [MonitoringGraphComponent]
 })
-export class VhOfficerModule { }
+export class VhOfficerModule {}

@@ -1,4 +1,4 @@
-import { Injectable, } from '@angular/core';
+import { Injectable } from '@angular/core';
 import 'webrtc-adapter';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { SessionStorage } from './session-storage';
@@ -6,10 +6,9 @@ import { Logger } from './logging/logger-base';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
-    providedIn: 'root',
+    providedIn: 'root'
 })
 export class UserMediaService {
-
     _navigator = <any>navigator;
 
     private readonly preferredCamCache: SessionStorage<UserMediaDevice>;
@@ -25,8 +24,11 @@ export class UserMediaService {
         this.preferredCamCache = new SessionStorage(this.PREFERRED_CAMERA_KEY);
         this.preferredMicCache = new SessionStorage(this.PREFERRED_MICROPHONE_KEY);
 
-        this._navigator.getUserMedia = (this._navigator.getUserMedia || this._navigator.webkitGetUserMedia
-            || this._navigator.mozGetUserMedia || this._navigator.msGetUserMedia);
+        this._navigator.getUserMedia =
+            this._navigator.getUserMedia ||
+            this._navigator.webkitGetUserMedia ||
+            this._navigator.mozGetUserMedia ||
+            this._navigator.msGetUserMedia;
 
         this._navigator.mediaDevices.ondevicechange = async () => {
             await this.updateAvailableDevicesList();
@@ -49,7 +51,7 @@ export class UserMediaService {
         }
     }
 
-  async updateAvailableDevicesList(): Promise<void> {
+    async updateAvailableDevicesList(): Promise<void> {
         if (!this._navigator.mediaDevices || !this._navigator.mediaDevices.enumerateDevices) {
             this.logger.error('enumerateDevices() not supported.', new Error('enumerateDevices() not supported.'));
             throw new Error('enumerateDevices() not supported.');
@@ -59,16 +61,17 @@ export class UserMediaService {
 
         const stream = await this._navigator.mediaDevices.getUserMedia({ audio: true, video: true });
         if (stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0) {
-          updatedDevices = await navigator.mediaDevices.enumerateDevices();
+            updatedDevices = await navigator.mediaDevices.enumerateDevices();
         }
 
         updatedDevices = updatedDevices.filter(x => x.deviceId !== 'default' && x.kind !== 'audiooutput');
-        this.availableDeviceList = Array.from(updatedDevices, device =>
-            new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)
+        this.availableDeviceList = Array.from(
+            updatedDevices,
+            device => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)
         );
 
-        stream.getTracks().forEach((track) => {
-          track.stop();
+        stream.getTracks().forEach(track => {
+            track.stop();
         });
         this.connectedDevices.next(this.availableDeviceList);
     }
@@ -113,5 +116,5 @@ export class UserMediaService {
     updatePreferredMicrophone(microphone: UserMediaDevice) {
         this.preferredMicCache.set(microphone);
         this.logger.info(`Updating preferred microphone to ${microphone.label}`);
-  }
+    }
 }

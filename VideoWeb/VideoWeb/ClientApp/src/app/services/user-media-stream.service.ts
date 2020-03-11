@@ -1,13 +1,12 @@
-import { Injectable, } from '@angular/core';
+import { Injectable } from '@angular/core';
 import 'webrtc-adapter';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
 
 @Injectable({
-    providedIn: 'root',
+    providedIn: 'root'
 })
 export class UserMediaStreamService {
-
     readonly permissionConstraints = {
         audio: true,
         video: true
@@ -18,8 +17,11 @@ export class UserMediaStreamService {
     private requestStream: MediaStream;
 
     constructor(private logger: Logger) {
-        this._navigator.getUserMedia = (this._navigator.getUserMedia || this._navigator.webkitGetUserMedia
-            || this._navigator.mozGetUserMedia || this._navigator.msGetUserMedia);
+        this._navigator.getUserMedia =
+            this._navigator.getUserMedia ||
+            this._navigator.webkitGetUserMedia ||
+            this._navigator.mozGetUserMedia ||
+            this._navigator.msGetUserMedia;
     }
 
     async requestAccess(): Promise<boolean> {
@@ -52,9 +54,7 @@ export class UserMediaStreamService {
 
     async getStreamForMic(device: UserMediaDevice): Promise<MediaStream> {
         if (device) {
-            const stream = await this._navigator.mediaDevices.getUserMedia(
-                { audio: { deviceId: { exact: device.deviceId } } }
-            );
+            const stream = await this._navigator.mediaDevices.getUserMedia({ audio: { deviceId: { exact: device.deviceId } } });
             return stream;
         } else {
             return this.getDefaultMicStream();
@@ -63,15 +63,12 @@ export class UserMediaStreamService {
 
     async getStreamForCam(device: UserMediaDevice): Promise<MediaStream> {
         if (device) {
-            const stream = await this._navigator.mediaDevices.getUserMedia(
-                { video: { deviceId: { exact: device.deviceId } } }
-            );
+            const stream = await this._navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } });
             return stream;
         } else {
             return this.getDefaultCamStream();
         }
     }
-
 
     private async getDefaultCamStream(): Promise<MediaStream> {
         return await this._navigator.mediaDevices.getUserMedia({
@@ -92,7 +89,7 @@ export class UserMediaStreamService {
             return;
         }
 
-        stream.getTracks().forEach((track) => {
+        stream.getTracks().forEach(track => {
             track.stop();
         });
     }

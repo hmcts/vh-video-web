@@ -1,5 +1,4 @@
-import { Component} from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({ selector: 'app-unsupported-browser', template: '' })
-export class UnsupportedBrowserStubComponent {
-}
+export class UnsupportedBrowserStubComponent {}

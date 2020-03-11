@@ -1,13 +1,17 @@
-import { Injectable, OnInit } from '@angular/core';
+import { OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ErrorService } from 'src/app/services/error.service';
 import { AdalService } from 'adal-angular4';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { ConferenceResponse, ParticipantResponse, SelfTestPexipResponse, TestCallScoreResponse } from 'src/app/services/clients/api-client';
+import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { TestCallScoreResponse, ConferenceResponse, ParticipantResponse, SelfTestPexipResponse } from 'src/app/services/clients/api-client';
+import { VhContactDetails } from 'src/app/shared/contact-information';
+import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
 
-@Injectable()
 export abstract class BaseSelfTestComponent implements OnInit {
+    @ViewChild(SelfTestComponent, { static: false })
+    selfTestComponent: SelfTestComponent;
+
     testInProgress: boolean;
     hideSelfTest = false;
 
@@ -17,13 +21,20 @@ export abstract class BaseSelfTestComponent implements OnInit {
     conferenceId: string;
     selfTestPexipConfig: SelfTestPexipResponse;
 
+    showEquipmentFaultMessage: boolean;
+    contact = {
+        phone: VhContactDetails.phone
+    };
+
     constructor(
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,
         protected errorService: ErrorService,
         protected adalService: AdalService,
         protected logger: Logger
-    ) {}
+    ) {
+        this.showEquipmentFaultMessage = false;
+    }
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
@@ -80,5 +91,11 @@ export abstract class BaseSelfTestComponent implements OnInit {
         this.hideSelfTest = false;
     }
 
-    abstract onSelfTestCompleted(testcallScore: TestCallScoreResponse): void;
+    onSelfTestCompleted(testcallScore: TestCallScoreResponse): void {
+        this.testInProgress = false;
+        this.logger.debug(`self test completed`);
+        if (testcallScore) {
+            this.logger.debug(testcallScore.toJSON());
+        }
+    }
 }
