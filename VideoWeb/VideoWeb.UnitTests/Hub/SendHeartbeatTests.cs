@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.EventHub.Enums;
