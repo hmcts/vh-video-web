@@ -82,26 +82,25 @@ export class MonitorGraphService {
     // converts package lost value in the signal strength,
     // if package lost >= 20 then signal = 0, bad
     // otherwise 20 minus package lost value, the good signal is 20 (0-package lost)
-
-    graphData.pointY = packageLost.recentPackageLost >= this.MAX_LOST ? 0 : this.MAX_LOST - packageLost.recentPackageLost;
-    console.log('now :' + new Date(this.timestampNow));
-    console.log('value time :' + new Date(packageLost.timestamp));
+    
+      graphData.pointY = packageLost.recentPackageLost >= this.MAX_LOST ? 0 : this.MAX_LOST - packageLost.recentPackageLost;
 
 
-    if (this.timestampNow >= packageLost.timestamp) {
+      if (this.timestampNow >= packageLost.timestamp) {
 
-      // defines position of the heartbeat value (y-axise) by timestamp in the data array (x-axise)
-      // we have start point (time now ) and every 5 sec we have new value for hartbeat.
-      // by deviding the difference between start point and current hearbeat value on 5 sec we get index position in the array
-      // if there is some break in heartbeat stream then the associated elements of array have value NaN (no graph line)
+        // defines position of the heartbeat value (y-axise) by timestamp in the data array (x-axise)
+        // we have start point (time now ) and every 5 sec we have new value for hartbeat.
+        // by deviding the difference between start point and current hearbeat value on 5 sec we get index position in the array
+        // if there is some break in heartbeat stream then the associated elements of array have value NaN (no graph line)
 
-      let xIndex = Math.round((this.timestampNow - packageLost.timestamp) / this.HEARTBEAT_INTERVAL);
-      xIndex = xIndex > GraphSettings.MAX_RECORDS ? GraphSettings.MAX_RECORDS : xIndex;
+        let xIndex = Math.round((this.timestampNow - packageLost.timestamp) / this.HEARTBEAT_INTERVAL);
+        xIndex = xIndex > GraphSettings.MAX_RECORDS ? GraphSettings.MAX_RECORDS : xIndex;
 
-      graphData.pointX = (GraphSettings.MAX_RECORDS - xIndex);
-    } else {
-      graphData.pointX = GraphSettings.MAX_RECORDS;
-    }
+        graphData.pointX = (GraphSettings.MAX_RECORDS - xIndex);
+      } else {
+        graphData.pointX = GraphSettings.MAX_RECORDS;
+      }
+    
     return graphData;
   }
 

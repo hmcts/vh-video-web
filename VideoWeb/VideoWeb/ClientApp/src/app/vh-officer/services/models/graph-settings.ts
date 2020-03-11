@@ -9,7 +9,7 @@ export const GraphLabel = {
 export class GraphSettings {
 
   static MAX_RECORDS = 180
-
+  
   static getLineChartOptions() {
    
     return {

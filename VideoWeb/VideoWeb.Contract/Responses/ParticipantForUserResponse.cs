@@ -1,7 +1,14 @@
+using System;
+
 namespace VideoWeb.Contract.Responses
 {
     public class ParticipantForUserResponse
     {
+        /// <summary>
+        /// The participant Id
+        /// </summary>
+        public Guid Id { get; set; }
+
         /// <summary>
         /// The participant username
         /// </summary>

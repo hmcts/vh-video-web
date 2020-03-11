@@ -13,9 +13,7 @@ import {
     SelfTestPexipResponse,
     HearingVenueResponse,
     ChatResponse,
-    ConferenceForVhOfficerResponse,
-    IParticipantHeartbeatResponse,
-    ParticipantHeartbeatResponse
+    ConferenceForVhOfficerResponse,    ParticipantHeartbeatResponse
 } from '../clients/api-client';
 import { Observable } from 'rxjs';
 import { IVideoWebApiService } from './video-web-service.interface';

@@ -12,14 +12,15 @@ namespace VideoWeb.Mappings
         public List<ParticipantForUserResponse> MapParticipants(IEnumerable<ParticipantSummaryResponse> participants)
         {
             return participants.Select(participant => new ParticipantForUserResponse
-                {
-                    Username = participant.Username,
-                    DisplayName = participant.Display_name,
-                    Status = Enum.Parse<ParticipantStatus>(participant.Status.ToString()),
-                    Role = Enum.Parse<UserRole>(participant.User_role.ToString()),
-                    Representee = string.IsNullOrWhiteSpace(participant.Representee) ? null : participant.Representee,
-                    CaseTypeGroup = participant.Case_group
-                })
+            {
+                Id = participant.Id,
+                Username = participant.Username,
+                DisplayName = participant.Display_name,
+                Status = Enum.Parse<ParticipantStatus>(participant.Status.ToString()),
+                Role = Enum.Parse<UserRole>(participant.User_role.ToString()),
+                Representee = string.IsNullOrWhiteSpace(participant.Representee) ? null : participant.Representee,
+                CaseTypeGroup = participant.Case_group
+            })
                 .ToList();
         }
     }
