@@ -14,11 +14,6 @@ export class ParticipantNetworkStatusComponent  {
   }
 
   getParticipantNetworkStatus(): string {
-
-
-
-
-
    // if(this.participant.status === ParticipantStatus.Disconnected){
    //    return 'participant-disconnected';
    // }

@@ -136,6 +136,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
         this.eventHubSubscriptions.add(
           this.eventService.getHeartbeat().subscribe(heartbeat => {
+            this.logger.info(`Participant Network Heartbeat Captured`);
             this.handleHeartbeat(heartbeat);
           })
         );
