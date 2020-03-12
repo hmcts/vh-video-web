@@ -24,6 +24,7 @@ import { ConferenceForUser, ExtendedConferenceStatus, HearingsFilter } from '../
 import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
+import { ParticipantSummary } from '../../shared/models/participant-summary';
 
 @Component({
     selector: 'app-vho-hearings',
@@ -158,10 +159,10 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // const participantToUpdate = conferenceToUpdate.getParticipantsWithHeartBeat().find(x => x.id === heartBeat.participantId);
-    // if (participantToUpdate) {
-    //  participantToUpdate.hearbeartHealth = heartBeat.heartbeatHealth;
-    // }
+    const participantToUpdate = conferenceToUpdate.getParticipants().map(p=>new ParticipantSummary(p)).find(x => x.id === heartBeat.participantId);
+    if (participantToUpdate) {
+      participantToUpdate.participantHertBeatHealth = heartBeat;
+     }
   }
 
     refreshConferenceDataDuringDisconnect() {

@@ -23,7 +23,7 @@ export class ParticipantNetworkStatusComponent  {
    //    return 'participant-disconnected';
    // }
 
-
+    console.log("******************* Heart Beat ************************" + this.participant.participantHertBeatHealth);
 
     switch (this.participant.status) {
       case ParticipantStatus.Disconnected:
