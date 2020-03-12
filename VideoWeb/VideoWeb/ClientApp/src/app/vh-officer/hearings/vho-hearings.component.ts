@@ -24,7 +24,6 @@ import { ConferenceForUser, ExtendedConferenceStatus, HearingsFilter } from '../
 import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
-import { ParticipantSummary } from '../../shared/models/participant-summary';
 
 @Component({
     selector: 'app-vho-hearings',
@@ -154,14 +153,14 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
   handleHeartbeat(heartBeat: ParticipantHeartbeat) {
 
-    console.log(' *********************** Handle Heart Beat **********' + heartBeat);
+    console.log(' *********************** Handle Heart Beat **********' + JSON.stringify(heartBeat));
     const conferenceToUpdate = this.conferences.find(c => c.id === heartBeat.conferenceId);
 
     if (!conferenceToUpdate) {
       return;
     }
 
-    const participantToUpdate = conferenceToUpdate.getParticipants().map(p=>new ParticipantSummary(p)).find(x => x.id === heartBeat.participantId);
+    const participantToUpdate = conferenceToUpdate.getParticipants().find(x => x.id === heartBeat.participantId);
     if (participantToUpdate) {
       participantToUpdate.participantHertBeatHealth = heartBeat;
      }

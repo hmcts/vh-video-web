@@ -14,11 +14,16 @@ export class ParticipantNetworkStatusComponent  {
   }
 
   getParticipantNetworkStatus(): string {
-   // if(this.participant.status === ParticipantStatus.Disconnected){
+    if (this.participant === undefined || this.participant.participantHertBeatHealth === undefined) {
+      return 'not-signed-in.png';
+    }
+
+    console.log('******************* Particpant ************************ ' + JSON.stringify(this.participant));
+    // if(this.participant.status === ParticipantStatus.Disconnected){
    //    return 'participant-disconnected';
    // }
 
-    console.log("******************* Heart Beat ************************" + this.participant.participantHertBeatHealth);
+    console.log('******************* Heart Beat ************************ ' + JSON.stringify(this.participant.participantHertBeatHealth));
 
     switch (this.participant.status) {
       case ParticipantStatus.Disconnected:
@@ -35,5 +40,4 @@ export class ParticipantNetworkStatusComponent  {
         return 'incompatible-browser-signal.png';
     }
   }
-
 }
