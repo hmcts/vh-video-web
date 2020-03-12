@@ -9,6 +9,8 @@ using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 using HealthCheckResponse = VideoWeb.Contract.Responses.HealthCheckResponse;
 using HealthCheck = VideoWeb.Contract.Responses.HealthCheck;
+using VideoWeb.Contract.Responses;
+using System.Reflection;
 
 namespace VideoWeb.Controllers
 {
@@ -44,7 +46,8 @@ namespace VideoWeb.Controllers
             {
                 BookingsApiHealth = {Successful = true},
                 UserApiHealth = {Successful = true},
-                VideoApiHealth = {Successful = true}
+                VideoApiHealth = {Successful = true},
+                AppVersion = GetApplicationVersion()
             };
             try
             {
@@ -107,6 +110,22 @@ namespace VideoWeb.Controllers
             healthCheck.Data = ex.Data;
 
             return healthCheck;
+        }
+        
+        private ApplicationVersion GetApplicationVersion()
+        {
+            var applicationVersion = new ApplicationVersion()
+            {
+                FileVersion = GetExecutingAssemblyAttribute<AssemblyFileVersionAttribute>(a => a.Version),
+                InformationVersion = GetExecutingAssemblyAttribute<AssemblyInformationalVersionAttribute>(a => a.InformationalVersion)
+            };
+            return applicationVersion;
+        }
+
+        private string GetExecutingAssemblyAttribute<T>(Func<T, string> value) where T : Attribute
+        {
+            T attribute = (T)Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(T));
+            return value.Invoke(attribute);
         }
     }
 }
