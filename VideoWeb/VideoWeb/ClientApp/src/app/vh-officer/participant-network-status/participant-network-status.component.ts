@@ -14,12 +14,19 @@ export class ParticipantNetworkStatusComponent  {
   }
 
   getParticipantNetworkStatus(): string {
-   // if(this.participant.status === ParticipantStatus.Disconnected){
-   //    return 'participant-disconnected';
-   // }
+   
 
     console.log("******************* Heart Beat ************************" + this.participant.participantHertBeatHealth);
-
+    //if (this.participant.participantHertBeatHealth.browserName.toLowerCase() == "edge" || this.participant.participantHertBeatHealth.browserName.toLowerCase() == "safari") {
+    //  return 'incompatible-browser-signal.png';
+    //}
+    //else {
+    //  if (this.participant.status === ParticipantStatus.Disconnected) {
+    //    return 'disconnected.png';
+    //  }
+    //  else {
+    //  }
+    //}
     switch (this.participant.status) {
       case ParticipantStatus.Disconnected:
         return 'disconnected.png';
