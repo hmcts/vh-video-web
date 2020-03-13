@@ -39,13 +39,5 @@ export class ParticipantNetworkStatusComponent  {
       }
 
     }
-
-    console.log('******************* Particpant ************************ ' + JSON.stringify(this.participant));
-    // if(this.participant.status === ParticipantStatus.Disconnected){
-   //    return 'participant-disconnected';
-   // }
-
-    console.log('******************* Heart Beat ************************ ' + JSON.stringify(this.participant.participantHertBeatHealth));
-
   }
 }
