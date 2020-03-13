@@ -19,7 +19,7 @@ describe('VhoHearingListComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(VhoHearingListComponent);
     component = fixture.componentInstance;
-    component.conferences = new ConferenceTestData().getVhoTestData().map(c=>new HearingSummary(c));
+    component.conferences = new ConferenceTestData().getVhoTestData().map(c => new HearingSummary(c));
     fixture.detectChanges();
   });
 

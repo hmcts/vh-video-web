@@ -63,7 +63,7 @@ describe('HearingSummary', () => {
         const c = new ConferenceTestData().getConferenceFuture();
         const hearing = new HearingSummary(c);
         const p = hearing.getParticipants();
-        expect(c.participants.map(p=>new ParticipantSummary(p))).toEqual(p);
+        expect(c.participants.map(x => new ParticipantSummary(x))).toEqual(p);
     });
 
     it('should return duration as text', () => {

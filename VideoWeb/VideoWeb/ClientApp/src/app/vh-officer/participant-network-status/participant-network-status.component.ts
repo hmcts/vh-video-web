@@ -16,33 +16,30 @@ export class ParticipantNetworkStatusComponent  {
 
   getParticipantNetworkStatus(): string {
 
-   
 
-    console.log("******************* Heart Beat ************************" + this.participant.participantHertBeatHealth);
-    //if (this.participant.participantHertBeatHealth.browserName.toLowerCase() == "edge" || this.participant.participantHertBeatHealth.browserName.toLowerCase() == "safari") {
+
+    console.log('******************* Heart Beat ************************' + this.participant.participantHertBeatHealth);
+    // if (this.participant.participantHertBeatHealth.browserName.toLowerCase() == "edge" || this.participant.participantHertBeatHealth.browserName.toLowerCase() == "safari") {
     //  return 'incompatible-browser-signal.png';
-    //}
-    //else {
+    // }
+    // else {
     //  if (this.participant.status === ParticipantStatus.Disconnected) {
     //    return 'disconnected.png';
     //  }
     //  else {
     //  }
-    //}
+    // }
 
-    
+
     if (this.participant === undefined || this.participant.participantHertBeatHealth === undefined) {
       return 'not-signed-in.png';
-    }
-    else {
-      if (this.participant.participantHertBeatHealth.browserName.toLowerCase() == "edge" || this.participant.participantHertBeatHealth.browserName.toLowerCase() == "safari") {
+    } else {
+      if (this.participant.participantHertBeatHealth.browserName.toLowerCase() === 'edge' || this.participant.participantHertBeatHealth.browserName.toLowerCase() === 'safari') {
         return 'incompatible-browser-signal.png';
-      }
-      else {
+      } else {
         if (this.participant.status === ParticipantStatus.Disconnected) {
           return 'disconnected.png';
-        }
-        else {
+        } else {
           switch (this.participant.participantHertBeatHealth.heartbeatHealth) {
             case HeartbeatHealth.Good:
               return 'good-signal.png';
@@ -51,7 +48,7 @@ export class ParticipantNetworkStatusComponent  {
             case HeartbeatHealth.Poor:
               return 'poor-signal.png';
             case HeartbeatHealth.None:
-              'incompatible-browser-signal.png'
+              return 'incompatible-browser-signal.png';
           }
         }
       }
@@ -64,6 +61,6 @@ export class ParticipantNetworkStatusComponent  {
    // }
 
     console.log('******************* Heart Beat ************************ ' + JSON.stringify(this.participant.participantHertBeatHealth));
-   
+
   }
 }
