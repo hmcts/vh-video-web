@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
-import { configureTestSuite, createStableTestContext, createTestContext } from 'ng-bullet';
+import { configureTestSuite } from 'ng-bullet';
 import { of } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -33,7 +33,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let eventService: MockEventsService;
 
     configureTestSuite(() => {
-        const conference = new ConferenceTestData().getConferenceDetail();
+        const conference = new ConferenceTestData().getConferenceDetailFuture();
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getConferenceById',
             'getObfuscatedName',
@@ -149,7 +149,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
     it('should return correct conference status text when not started', async done => {
         await fixture.whenStable();
-        const conference = new ConferenceTestData().getConferenceFuture();
+        const conference = new ConferenceTestData().getConferenceDetailFuture();
         component.hearing = new Hearing(conference);
         component.hearing.getConference().status = ConferenceStatus.NotStarted;
         expect(component.getConferenceStatusText()).toBe('');
@@ -157,14 +157,14 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     });
 
     it('should return is about to begin header text', () => {
-        const conference = new ConferenceTestData().getConferenceNow();
+        const conference = new ConferenceTestData().getConferenceDetailNow();
         conference.status = ConferenceStatus.NotStarted;
         component.hearing = new Hearing(conference);
         expect(component.getConferenceStatusText()).toBe('is about to begin');
     });
 
     it('should return is delayed header text', () => {
-        const conference = new ConferenceTestData().getConferencePast();
+        const conference = new ConferenceTestData().getConferenceDetailPast();
         conference.status = ConferenceStatus.NotStarted;
         component.hearing = new Hearing(conference);
         expect(component.getConferenceStatusText()).toBe('is delayed');

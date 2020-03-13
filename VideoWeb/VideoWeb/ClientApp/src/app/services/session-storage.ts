@@ -1,5 +1,5 @@
 export class SessionStorage<TType> {
-    constructor(private storageKey: string) { }
+    constructor(private storageKey: string) {}
 
     /**
      * Returns the of the value `TType` if it exists or null

@@ -91,7 +91,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         this.displayModal(this.REJECTED_PC_MODAL);
     }
 
-    private setupSubscribers() {
+    setupSubscribers() {
         this.eventService.getConsultationMessage().subscribe(message => {
             if (message.result === ConsultationAnswer.Accepted) {
                 this.handleAcceptedConsultationRequest(message);

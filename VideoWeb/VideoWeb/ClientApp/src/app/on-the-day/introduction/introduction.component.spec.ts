@@ -16,46 +16,46 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { Logger } from 'src/app/services/logging/logger-base';
 
 describe('IntroductionComponent', () => {
-  let component: IntroductionComponent;
-  let fixture: ComponentFixture<IntroductionComponent>;
-  let debugElement: DebugElement;
-  let router: Router;
-  const conference = new ConferenceTestData().getConferenceDetail();
+    let component: IntroductionComponent;
+    let fixture: ComponentFixture<IntroductionComponent>;
+    let debugElement: DebugElement;
+    let router: Router;
+    const conference = new ConferenceTestData().getConferenceDetailFuture();
 
-  configureTestSuite(() => {
-    TestBed.configureTestingModule({
-      declarations: [IntroductionComponent],
-      imports: [ReactiveFormsModule, FormsModule, RouterTestingModule, SharedModule],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              paramMap: convertToParamMap({ conferenceId: conference.id })
-            }
-          },
-        },
-        { provide: AdalService, useClass: MockAdalService },
-        { provide: VideoWebService, useClass: MockVideoWebService },
-        { provide: Logger, useClass: MockLogger }
-      ]
+    configureTestSuite(() => {
+        TestBed.configureTestingModule({
+            declarations: [IntroductionComponent],
+            imports: [ReactiveFormsModule, FormsModule, RouterTestingModule, SharedModule],
+            providers: [
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        snapshot: {
+                            paramMap: convertToParamMap({ conferenceId: conference.id })
+                        }
+                    }
+                },
+                { provide: AdalService, useClass: MockAdalService },
+                { provide: VideoWebService, useClass: MockVideoWebService },
+                { provide: Logger, useClass: MockLogger }
+            ]
+        });
+
+        fixture = TestBed.createComponent(IntroductionComponent);
+        debugElement = fixture.debugElement;
+        component = debugElement.componentInstance;
+        router = TestBed.get(Router);
     });
 
-    fixture = TestBed.createComponent(IntroductionComponent);
-    debugElement = fixture.debugElement;
-    component = debugElement.componentInstance;
-    router = TestBed.get(Router);
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(IntroductionComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(IntroductionComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should navigate to equipment check', () => {
-    spyOn(router, 'navigate').and.callFake(() => { });
-    component.goToEquipmentCheck();
-    expect(router.navigate).toHaveBeenCalledWith([PageUrls.EquipmentCheck, conference.id]);
-  });
+    it('should navigate to equipment check', () => {
+        spyOn(router, 'navigate').and.callFake(() => {});
+        component.goToEquipmentCheck();
+        expect(router.navigate).toHaveBeenCalledWith([PageUrls.EquipmentCheck, conference.id]);
+    });
 });

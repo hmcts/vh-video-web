@@ -9,5 +9,5 @@ export class SelfTestStubComponent {
 
     @Output() testCompleted = new EventEmitter<TestCallScoreResponse>();
 
-    replayVideo() { }
+    replayVideo() {}
 }

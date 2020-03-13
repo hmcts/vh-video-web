@@ -32,6 +32,8 @@ describe('VhoHearingsComponent', () => {
     const conferences = new ConferenceTestData().getVhoTestData();
     let errorService: ErrorService;
 
+    const conferenceDetail = new ConferenceTestData().getConferenceDetailFuture();
+
     configureTestSuite(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getConferencesForVHOfficer',
@@ -39,7 +41,7 @@ describe('VhoHearingsComponent', () => {
             'getTasksForConference'
         ]);
         videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(of(conferences));
-        videoWebServiceSpy.getConferenceById.and.returnValue(of(new ConferenceTestData().getConferenceDetail()));
+        videoWebServiceSpy.getConferenceById.and.returnValue(of(conferenceDetail));
         videoWebServiceSpy.getTasksForConference.and.returnValue(of(new ConferenceTestData().getTasksForConference()));
 
         TestBed.configureTestingModule({
@@ -112,18 +114,18 @@ describe('VhoHearingsComponent', () => {
     });
 
     it('should get the selected judge statuses from another hearings', () => {
-        component.selectedHearing = new Hearing(component.conferencesAll[0]);
-        component.participants = component.conferencesAll[0].participants;
+        const currentConference = conferenceDetail;
+        component.selectedHearing = new Hearing(currentConference);
+        component.participants = currentConference.participants;
         component.getJudgeStatusDetails();
         expect(component.participantStatusModel.JudgeStatuses.length).toBeGreaterThan(0);
     });
 
     it('should not return selected judge statuses from another hearings', () => {
         component.clearSelectedConference();
-        const selectedConferenceId = component.conferencesAll[0].id;
-        component.selectedHearing = new Hearing(component.conferencesAll[0]);
-
-        component.participants = component.conferencesAll[0].participants;
+        const currentConference = conferenceDetail;
+        component.selectedHearing = new Hearing(currentConference);
+        component.participants = currentConference.participants;
         component.participants.forEach(x => {
             if (x.role === UserRole.Judge) {
                 x.username = 'changeName@email.com';

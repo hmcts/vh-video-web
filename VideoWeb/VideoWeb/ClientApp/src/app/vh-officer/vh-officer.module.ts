@@ -13,23 +13,16 @@ import { HearingsFilterOptionsService } from '../vh-officer/services/hearings-fi
 import { VhoChatComponent } from './vho-chat/vho-chat.component';
 
 @NgModule({
-  declarations: [
-    VhoHearingsComponent,
-    TasksTableComponent,
-    VhoHearingListComponent,
-    ParticipantStatusComponent,
-    ParticipantInfoTooltipComponent,
-    VhoHearingsFilterComponent,
-    VhoChatComponent
-  ],
-  imports: [
-    CommonModule,
-    SharedModule,
-    ClipboardModule,
-    VhOfficerRoutingModule
+    declarations: [
+        VhoHearingsComponent,
+        TasksTableComponent,
+        VhoHearingListComponent,
+        ParticipantStatusComponent,
+        ParticipantInfoTooltipComponent,
+        VhoHearingsFilterComponent,
+        VhoChatComponent
     ],
-    providers: [
-        HearingsFilterOptionsService
-    ]
+    imports: [CommonModule, SharedModule, ClipboardModule, VhOfficerRoutingModule],
+    providers: [HearingsFilterOptionsService]
 })
-export class VhOfficerModule { }
+export class VhOfficerModule {}

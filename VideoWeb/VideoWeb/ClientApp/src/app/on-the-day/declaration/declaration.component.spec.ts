@@ -14,69 +14,69 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { Logger } from 'src/app/services/logging/logger-base';
 
 describe('DeclarationComponent Tests', () => {
-  let component: DeclarationComponent;
-  let fixture: ComponentFixture<DeclarationComponent>;
-  let checkboxControl: AbstractControl;
-  let debugElement: DebugElement;
-  let router: Router;
-  const conference = new ConferenceTestData().getConferenceDetail();
+    let component: DeclarationComponent;
+    let fixture: ComponentFixture<DeclarationComponent>;
+    let checkboxControl: AbstractControl;
+    let debugElement: DebugElement;
+    let router: Router;
+    const conference = new ConferenceTestData().getConferenceDetailFuture();
 
-  configureTestSuite(() => {
-    TestBed.configureTestingModule({
-      declarations: [DeclarationComponent],
-      imports: [RouterTestingModule, SharedModule],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              paramMap: convertToParamMap({ conferenceId: conference.id })
-            }
-          },
-        },
-        { provide: VideoWebService, useClass: MockVideoWebService },
-        { provide: Logger, useClass: MockLogger },
-      ]
+    configureTestSuite(() => {
+        TestBed.configureTestingModule({
+            declarations: [DeclarationComponent],
+            imports: [RouterTestingModule, SharedModule],
+            providers: [
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        snapshot: {
+                            paramMap: convertToParamMap({ conferenceId: conference.id })
+                        }
+                    }
+                },
+                { provide: VideoWebService, useClass: MockVideoWebService },
+                { provide: Logger, useClass: MockLogger }
+            ]
+        });
     });
-  });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DeclarationComponent);
-    debugElement = fixture.debugElement;
-    component = fixture.componentInstance;
-    router = TestBed.get(Router);
-    component.ngOnInit();
-    checkboxControl = component.declarationForm.controls['declare'];
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(DeclarationComponent);
+        debugElement = fixture.debugElement;
+        component = fixture.componentInstance;
+        router = TestBed.get(Router);
+        component.ngOnInit();
+        checkboxControl = component.declarationForm.controls['declare'];
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should invalidate form when declaration is not checked', () => {
-    expect(checkboxControl.valid).toBeFalsy();
-    checkboxControl.setValue(false);
-    expect(component.declarationForm.valid).toBeFalsy();
-  });
+    it('should invalidate form when declaration is not checked', () => {
+        expect(checkboxControl.valid).toBeFalsy();
+        checkboxControl.setValue(false);
+        expect(component.declarationForm.valid).toBeFalsy();
+    });
 
-  it('should validate form when declaration is checked', () => {
-    expect(checkboxControl.valid).toBeFalsy();
-    checkboxControl.setValue(true);
-    expect(component.declarationForm.valid).toBeTruthy();
-  });
+    it('should validate form when declaration is checked', () => {
+        expect(checkboxControl.valid).toBeFalsy();
+        checkboxControl.setValue(true);
+        expect(component.declarationForm.valid).toBeTruthy();
+    });
 
-  it('should not go to waiting room when form is invalid', () => {
-    spyOn(router, 'navigate').and.callFake(() => { });
-    checkboxControl.setValue(false);
-    component.onSubmit();
-    expect(router.navigate).toHaveBeenCalledTimes(0);
-  });
+    it('should not go to waiting room when form is invalid', () => {
+        spyOn(router, 'navigate').and.callFake(() => {});
+        checkboxControl.setValue(false);
+        component.onSubmit();
+        expect(router.navigate).toHaveBeenCalledTimes(0);
+    });
 
-  it('should go to waiting room when form is valid', () => {
-    spyOn(router, 'navigate').and.callFake(() => { });
-    checkboxControl.setValue(true);
-    component.onSubmit();
-    expect(router.navigate).toHaveBeenCalledWith([PageUrls.ParticipantWaitingRoom, conference.id]);
-  });
+    it('should go to waiting room when form is valid', () => {
+        spyOn(router, 'navigate').and.callFake(() => {});
+        checkboxControl.setValue(true);
+        component.onSubmit();
+        expect(router.navigate).toHaveBeenCalledWith([PageUrls.ParticipantWaitingRoom, conference.id]);
+    });
 });

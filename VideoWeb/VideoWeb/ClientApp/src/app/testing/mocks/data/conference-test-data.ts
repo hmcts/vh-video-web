@@ -57,10 +57,10 @@ export class ConferenceTestData {
         return conference;
     }
 
-    getConferenceFuture(): ConferenceForUserResponse {
+    getConferenceFuture(): ConferenceForVhOfficerResponse {
         const futureDate = new Date(new Date().getTime());
         futureDate.setUTCHours(futureDate.getUTCHours() + 26);
-        const conference = new ConferenceForUserResponse({
+        const conference = new ConferenceForVhOfficerResponse({
             id: '612AB52C-BDA5-4F4D-95B8-3F49065219A6',
             case_name: 'WM V T',
             case_number: '0987UDIHH',
@@ -71,7 +71,10 @@ export class ConferenceTestData {
             no_of_participants_in_consultation: 2,
             scheduled_duration: 50,
             status: ConferenceStatus.NotStarted,
-            participants: this.getListOfParticipants()
+            participants: this.getListOfParticipants(),
+            hearing_venue_name: 'Manchester',
+            number_of_unread_messages: 4,
+            no_of_pending_tasks: 3
         });
         return conference;
     }
@@ -122,16 +125,31 @@ export class ConferenceTestData {
         return testData;
     }
 
-    getConferenceDetail(): ConferenceResponse {
-        const participants = this.getListOfParticipantDetails();
-        const futureDate = new Date(new Date().getTime());
+    getConferenceDetailFuture(): ConferenceResponse {
+        const futureDate = new Date(new Date().toUTCString());
         futureDate.setUTCHours(futureDate.getUTCHours() + 26);
+        return this.initConferenceDetails(futureDate);
+    }
+
+    getConferenceDetailNow(): ConferenceResponse {
+        const now = new Date(new Date().toUTCString());
+        return this.initConferenceDetails(now);
+    }
+
+    getConferenceDetailPast(): ConferenceResponse {
+        const date = new Date(new Date().toUTCString());
+        date.setUTCHours(date.getUTCHours() - 26);
+        return this.initConferenceDetails(date);
+    }
+
+    private initConferenceDetails(scheduledDateTime): ConferenceResponse {
+        const participants = this.getListOfParticipantDetails();
         const conference = new ConferenceResponse({
             id: '612AB52C-BDA5-4F4D-95B8-3F49065219A6',
             case_name: 'WM V T',
             case_number: '0987UDIHH',
             case_type: 'Financial Tax Remedy',
-            scheduled_date_time: futureDate,
+            scheduled_date_time: scheduledDateTime,
             scheduled_duration: 45,
             status: ConferenceStatus.NotStarted,
             participants: participants,
@@ -152,21 +170,24 @@ export class ConferenceTestData {
             display_name: 'C Green',
             username: 'chris.green@hearings.net',
             role: UserRole.Representative,
-            representee: 'James Green'
+            representee: 'James Green',
+            case_type_group: 'applicant'
         });
 
         const participant2 = new ParticipantForUserResponse({
             status: ParticipantStatus.NotSignedIn,
             display_name: 'J Green',
             username: 'james.green@hearings.net',
-            role: UserRole.Individual
+            role: UserRole.Individual,
+            case_type_group: 'applicant'
         });
 
         const participant3 = new ParticipantForUserResponse({
             status: ParticipantStatus.Available,
             display_name: 'Judge Fudge',
             username: 'judge.fudge@hearings.net',
-            role: UserRole.Judge
+            role: UserRole.Judge,
+            case_type_group: 'judge'
         });
 
         const participant4 = new ParticipantForUserResponse({
@@ -174,14 +195,16 @@ export class ConferenceTestData {
             display_name: 'J Doe',
             username: 'john.doe@hearings.net',
             role: UserRole.Representative,
-            representee: 'J Doe'
+            representee: 'J Doe',
+            case_type_group: 'respondent'
         });
 
         const participant5 = new ParticipantForUserResponse({
             status: ParticipantStatus.NotSignedIn,
             display_name: 'J Doe',
             username: 'jane.doe@hearings.net',
-            role: UserRole.Individual
+            role: UserRole.Individual,
+            case_type_group: 'respondent'
         });
 
         participants.push(participant1);
@@ -257,7 +280,6 @@ export class ConferenceTestData {
             type: TaskType.Participant,
             created: new Date()
         });
-        const participants: ParticipantResponse[] = [];
         const tasks: TaskResponse[] = [];
         tasks.push(task);
         tasks.push(task1);
