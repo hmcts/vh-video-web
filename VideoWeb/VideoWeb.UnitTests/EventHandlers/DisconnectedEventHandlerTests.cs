@@ -41,7 +41,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
         [Test]
         public async Task
-            Should_send_disconnect_and_suspend_messages_to_participants_and_service_bus_on_judge_disconnect()
+            Should_not_send_disconnect_but_send_suspend_messages_to_participants_and_service_bus_on_judge_disconnect()
         {
             _eventHandler = new DisconnectedEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
 
@@ -62,7 +62,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id,
                     ParticipantState.Disconnected),
-                Times.Exactly(participantCount));
+                Times.Never());
 
             EventHubClientMock.Verify(
                 x => x.ConferenceStatusMessage(conference.Id, ConferenceState.Suspended),
