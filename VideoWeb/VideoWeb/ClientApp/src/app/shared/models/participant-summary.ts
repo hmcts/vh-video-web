@@ -53,6 +53,6 @@ export class ParticipantSummary {
   }
 
   set participantHertBeatHealth(participantHeartBeat: ParticipantHeartbeat) {
-    this.participantHeartBeat = participantHeartBeat;;
+    this.participantHeartBeat = participantHeartBeat;
   }
 }

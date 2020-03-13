@@ -2,8 +2,8 @@ import {
   ConferenceForUserResponse,
   ConferenceForVhOfficerResponse,
   ConferenceStatus,
-  ParticipantForUserResponse,
-  UserRole,
+  UserRole,
+
   TaskUserResponse
 } from 'src/app/services/clients/api-client';
 import { HearingBase } from './hearing-base';
@@ -119,8 +119,8 @@ export class HearingSummary extends HearingBase {
     return this.conference;
   }
 
-  getParticipants(): ParticipantForUserResponse[] {
-    return this.conference.participants;
+  getParticipants(): ParticipantSummary[] {
+    return this.participants;
   }
 
   getDurationAsText(): string {

@@ -80,6 +80,6 @@ export class VhoHearingListComponent implements OnInit {
     }
 
   getParticipantsForConference(conference: HearingSummary): ParticipantSummary[] {
-    return conference.getParticipants().map(p => new ParticipantSummary(p));
+    return conference.getParticipants();
     }
 }
