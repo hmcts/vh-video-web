@@ -37,7 +37,7 @@ describe('VhoHearingsComponent Filter', () => {
             'getTasksForConference'
         ]);
         videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(of(conferences));
-        videoWebServiceSpy.getConferenceById.and.returnValue(of(new ConferenceTestData().getConferenceDetail()));
+        videoWebServiceSpy.getConferenceById.and.returnValue(of(new ConferenceTestData().getConferenceDetailFuture()));
         videoWebServiceSpy.getTasksForConference.and.returnValue(of(new ConferenceTestData().getTasksForConference()));
 
         TestBed.configureTestingModule({

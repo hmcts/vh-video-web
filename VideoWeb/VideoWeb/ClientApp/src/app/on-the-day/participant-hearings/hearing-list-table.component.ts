@@ -5,42 +5,43 @@ import { Router } from '@angular/router';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
-  selector: 'app-hearing-list-table',
-  templateUrl: './hearing-list-table.component.html',
-  styleUrls: ['./hearing-list-table.component.css']
+    selector: 'app-hearing-list-table',
+    templateUrl: './hearing-list-table.component.html'
 })
 export class HearingListTableComponent implements OnInit {
-  @Input() conferences: ConferenceForUserResponse[];
+    @Input() conferences: ConferenceForUserResponse[];
 
-  constructor(private router: Router) { }
+    constructor(private router: Router) {}
 
-  ngOnInit() {
-  }
+    ngOnInit() {}
 
-  signIntoConference(conference: ConferenceForUserResponse) {
-    this.router.navigate([PageUrls.Introduction, conference.id]);
-  }
-
-  getSignInDate(conference: ConferenceForUserResponse): string {
-    const today = moment.utc().dayOfYear();
-    const scheduledDate = moment(conference.scheduled_date_time).utc().dayOfYear();
-
-    if (today >= scheduledDate) {
-      return 'Today';
-    } else {
-      const dateString = moment(conference.scheduled_date_time).format('Do MMM');
-      return 'on ' + dateString;
+    signIntoConference(conference: ConferenceForUserResponse) {
+        this.router.navigate([PageUrls.Introduction, conference.id]);
     }
-  }
 
-  getSignInTime(conference: ConferenceForUserResponse): Date {
-    return moment(conference.scheduled_date_time).subtract(30, 'minute').toDate();
-  }
+    getSignInDate(conference: ConferenceForUserResponse): string {
+        const today = moment.utc().dayOfYear();
+        const scheduledDate = moment(conference.scheduled_date_time)
+            .utc()
+            .dayOfYear();
 
-  canStartHearing(conference: ConferenceForUserResponse) {
-    const currentDateTime = new Date(new Date().getTime());
-    const difference = moment(conference.scheduled_date_time).diff(moment(currentDateTime), 'minutes');
-    return difference < 30;
-  }
+        if (today >= scheduledDate) {
+            return 'Today';
+        } else {
+            const dateString = moment(conference.scheduled_date_time).format('Do MMM');
+            return 'on ' + dateString;
+        }
+    }
 
+    getSignInTime(conference: ConferenceForUserResponse): Date {
+        return moment(conference.scheduled_date_time)
+            .subtract(30, 'minute')
+            .toDate();
+    }
+
+    canStartHearing(conference: ConferenceForUserResponse) {
+        const currentDateTime = new Date(new Date().getTime());
+        const difference = moment(conference.scheduled_date_time).diff(moment(currentDateTime), 'minutes');
+        return difference < 30;
+    }
 }

@@ -11,7 +11,6 @@ export enum ExtendedConferenceStatus {
     Delayed = 'Delayed'
 }
 export class ListFilter {
-
     constructor(description: string, selected: boolean) {
         this.Description = description;
         this.Selected = selected;
@@ -21,7 +20,6 @@ export class ListFilter {
     Selected: boolean;
 }
 export class StatusFilter extends ListFilter {
-
     constructor(description: string, status: ConferenceStatus | ExtendedConferenceStatus, selected: boolean) {
         super(description, selected);
         this.Status = status;
@@ -31,7 +29,6 @@ export class StatusFilter extends ListFilter {
 }
 
 export class AlertFilter extends ListFilter {
-
     constructor(description: string, status: AlertsStatus, bodyText: string, selected: boolean) {
         super(description, selected);
         this.Status = status;

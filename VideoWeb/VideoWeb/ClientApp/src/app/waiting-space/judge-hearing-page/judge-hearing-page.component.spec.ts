@@ -5,7 +5,6 @@ import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { ConferenceResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockEventsNonHttpService, MockEventsService } from 'src/app/testing/mocks/MockEventService';
-import { JudgeEventService } from 'src/app/services/judge-event.service';
 import { configureTestSuite } from 'ng-bullet';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { SharedModule } from 'src/app/shared/shared.module';
@@ -27,7 +26,7 @@ describe('JudgeHearingPageComponent when conference in session', () => {
     let eventService: MockEventsNonHttpService;
 
     configureTestSuite(() => {
-        conference = new ConferenceTestData().getConferenceDetail();
+        conference = new ConferenceTestData().getConferenceDetailFuture();
 
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],

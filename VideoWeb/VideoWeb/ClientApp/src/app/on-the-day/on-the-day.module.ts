@@ -19,36 +19,30 @@ import { IntroductionComponent } from './introduction/introduction.component';
 import { ParticipantSelfTestComponent } from './participant-self-test/participant-self-test.component';
 import { JudgeSelfTestComponent } from './judge-self-test/judge-self-test.component';
 import { IndependentSelfTestComponent } from './independent-self-test/independent-self-test.component';
-import {PluraliseTextPipe} from '../shared/pipes/pluraliseText.pipe';
+import { PluraliseTextPipe } from '../shared/pipes/pluraliseText.pipe';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    SharedModule,
-    OnTheDayRoutingModule
-  ],
-  declarations: [
-    DeclarationComponent,
-    HearingRulesComponent,
-    HearingListTableComponent,
-    ParticipantHearingsComponent,
-    EquipmentCheckComponent,
-    CameraAndMicrophoneComponent,
-    JudgeHearingListComponent,
-    JudgeHearingTableComponent,
-    CameraCheckComponent,
-    MicrophoneCheckComponent,
-    VideoCheckComponent,
-    SwitchOnCameraMicrophoneComponent,
-    SignonAComputerComponent,
-    IntroductionComponent,
-    ParticipantSelfTestComponent,
-    JudgeSelfTestComponent,
-    IndependentSelfTestComponent,
-    PluraliseTextPipe
-  ],
-  exports: [
-    DeclarationComponent
-  ]
+    imports: [CommonModule, SharedModule, OnTheDayRoutingModule],
+    declarations: [
+        DeclarationComponent,
+        HearingRulesComponent,
+        HearingListTableComponent,
+        ParticipantHearingsComponent,
+        EquipmentCheckComponent,
+        CameraAndMicrophoneComponent,
+        JudgeHearingListComponent,
+        JudgeHearingTableComponent,
+        CameraCheckComponent,
+        MicrophoneCheckComponent,
+        VideoCheckComponent,
+        SwitchOnCameraMicrophoneComponent,
+        SignonAComputerComponent,
+        IntroductionComponent,
+        ParticipantSelfTestComponent,
+        JudgeSelfTestComponent,
+        IndependentSelfTestComponent,
+        PluraliseTextPipe
+    ],
+    exports: [DeclarationComponent]
 })
-export class OnTheDayModule { }
+export class OnTheDayModule {}

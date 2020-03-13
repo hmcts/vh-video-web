@@ -5,8 +5,7 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
     selector: 'app-equipment-check',
-    templateUrl: './equipment-check.component.html',
-    styleUrls: ['./equipment-check.component.css']
+    templateUrl: './equipment-check.component.html'
 })
 export class EquipmentCheckComponent implements OnInit {
     conferenceId: string;
