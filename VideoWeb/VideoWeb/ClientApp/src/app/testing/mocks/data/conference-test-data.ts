@@ -55,7 +55,26 @@ export class ConferenceTestData {
             participants: this.getListOfParticipants()
         });
         return conference;
-    }
+  }
+
+  getVHOConferencePast(): ConferenceForVhOfficerResponse {
+    const pastDate = new Date(new Date().getTime());
+    pastDate.setUTCHours(pastDate.getUTCHours() - 26);
+    const conference = new ConferenceForVhOfficerResponse({
+      id: '58CB20C7-377D-4581-8069-3776F583684B',
+      case_name: 'BW V BP',
+      case_number: 'ABC1234',
+      case_type: 'Financial Tax Remedy',
+      scheduled_date_time: pastDate,
+      no_of_participants_available: 2,
+      no_of_participants_unavailable: 1,
+      no_of_participants_in_consultation: 2,
+      scheduled_duration: 50,
+      status: ConferenceStatus.NotStarted,
+      participants: this.getListOfParticipants()
+    });
+    return conference;
+  }
 
     getConferenceFuture(): ConferenceForVhOfficerResponse {
         const futureDate = new Date(new Date().getTime());

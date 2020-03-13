@@ -1,100 +1,129 @@
 import {
-    ConferenceForUserResponse,
-    ConferenceForVhOfficerResponse,
-    ConferenceStatus,
-    ParticipantForUserResponse,
-    UserRole
+  ConferenceForUserResponse,
+  ConferenceForVhOfficerResponse,
+  ConferenceStatus,
+  UserRole,
+
+  TaskUserResponse
 } from 'src/app/services/clients/api-client';
 import { HearingBase } from './hearing-base';
 import { ParticipantSummary } from './participant-summary';
 
 export class HearingSummary extends HearingBase {
-    private conference: ConferenceForVhOfficerResponse;
-    private participants: ParticipantSummary[];
+  private conference: ConferenceForVhOfficerResponse;
+  private participants: ParticipantSummary[];
 
-    constructor(conference: ConferenceForVhOfficerResponse) {
-        super();
-        const isVhResponse = conference instanceof ConferenceForVhOfficerResponse;
-        const isIndividualResponse = conference instanceof ConferenceForUserResponse;
+  constructor(conference: ConferenceForVhOfficerResponse) {
+    super();
+    const isVhResponse = conference instanceof ConferenceForVhOfficerResponse;
+    const isIndividualResponse = conference instanceof ConferenceForUserResponse;
 
-        if (!(isVhResponse || isIndividualResponse)) {
-            throw new Error('Object not a ConferenceForUserResponse or ConferenceForVhOfficerResponse');
-        }
-        this.conference = conference;
-        this.participants = this.conference.participants.map(p => new ParticipantSummary(p));
+    if (!(isVhResponse || isIndividualResponse)) {
+      throw new Error('Object not a ConferenceForUserResponse or ConferenceForVhOfficerResponse');
     }
+    this.conference = conference;
+    this.participants = this.conference.participants.map(p => new ParticipantSummary(p));
+  }
 
-    get id(): string {
-        return this.conference.id;
-    }
+  get id(): string {
+    return this.conference.id;
+  }
 
-    get caseNumber(): string {
-        return this.conference.case_number;
-    }
+  get caseNumber(): string {
+    return this.conference.case_number;
+  }
 
-    get caseName(): string {
-        return this.conference.case_name;
-    }
+  get caseName(): string {
+    return this.conference.case_name;
+  }
 
-    get status(): ConferenceStatus {
-        return this.conference.status;
-    }
+  get status(): ConferenceStatus {
+    return this.conference.status;
+  }
 
-    get scheduledDuration(): number {
-        return this.conference.scheduled_duration;
-    }
+  set status(status: ConferenceStatus) {
+    this.conference.status = status;
+  }
 
-    get scheduledStartTime(): Date {
-        return new Date(this.conference.scheduled_date_time.getTime());
-    }
+  get scheduledDuration(): number {
+    return this.conference.scheduled_duration;
+  }
 
-    get scheduledEndTime(): Date {
-        const endTime = new Date(this.conference.scheduled_date_time.getTime());
-        endTime.setUTCMinutes(endTime.getUTCMinutes() + this.conference.scheduled_duration);
-        return endTime;
-    }
+  get scheduledStartTime(): Date {
+    return new Date(this.conference.scheduled_date_time.getTime());
+  }
 
-    get applicantRepresentative(): ParticipantSummary {
-        return this.participants.filter(x => x.role === UserRole.Representative)[0];
-    }
+  get scheduledDateTime(): Date {
+    return this.conference.scheduled_date_time;
+  }
 
-    get defendantRepresentative(): ParticipantSummary {
-        return this.participants.filter(x => x.role === UserRole.Representative)[1];
-    }
+  get scheduledEndTime(): Date {
+    const endTime = new Date(this.conference.scheduled_date_time.getTime());
+    endTime.setUTCMinutes(endTime.getUTCMinutes() + this.conference.scheduled_duration);
+    return endTime;
+  }
 
-    get applicants(): ParticipantSummary[] {
-        return this.participants
-            .filter(x => x.caseGroup !== '')
-            .filter(x => x.caseGroup.toLowerCase() === 'applicant' || x.caseGroup.toLowerCase() === 'claimant');
-    }
+  get applicantRepresentative(): ParticipantSummary {
+    return this.participants.filter(x => x.role === UserRole.Representative)[0];
+  }
 
-    get respondents(): ParticipantSummary[] {
-        return this.participants
-            .filter(x => x.caseGroup !== '')
-            .filter(x => x.caseGroup.toLowerCase() === 'respondent' || x.caseGroup.toLowerCase() === 'defendant');
-    }
+  get defendantRepresentative(): ParticipantSummary {
+    return this.participants.filter(x => x.role === UserRole.Representative)[1];
+  }
 
-    get numberOfUnreadMessages(): number {
-        return this.conference.number_of_unread_messages;
-    }
+  get applicants(): ParticipantSummary[] {
+    return this.participants
+      .filter(x => x.caseGroup !== '')
+      .filter(x => x.caseGroup.toLowerCase() === 'applicant' || x.caseGroup.toLowerCase() === 'claimant');
+  }
 
-    get hearingVenueName(): string {
-        return this.conference.hearing_venue_name;
-    }
+  get respondents(): ParticipantSummary[] {
+    return this.participants
+      .filter(x => x.caseGroup !== '')
+      .filter(x => x.caseGroup.toLowerCase() === 'respondent' || x.caseGroup.toLowerCase() === 'defendant');
+  }
 
-    get judge(): ParticipantSummary {
-        return this.participants.find(x => x.role === UserRole.Judge);
-    }
+  get numberOfUnreadMessages(): number {
+    return this.conference.number_of_unread_messages;
+  }
 
-    getConference() {
-        return this.conference;
-    }
+  set numberOfUnreadMessages(numberOfUnreadMessages: number) {
+    this.conference.number_of_unread_messages = numberOfUnreadMessages;
+  }
 
-    getParticipants(): ParticipantForUserResponse[] {
-        return this.conference.participants;
-    }
+  get hearingVenueName(): string {
+    return this.conference.hearing_venue_name;
+  }
 
-    getDurationAsText(): string {
-        return this.timeReader.getDurationAsText(this.conference.scheduled_duration);
-    }
+  get judge(): ParticipantSummary {
+    return this.participants.find(x => x.role === UserRole.Judge);
+  }
+
+  get numberOfPendingTasks(): number {
+    return this.conference.no_of_pending_tasks;
+  }
+
+  set numberOfPendingTasks(numberOfPendingTasks: number) {
+    this.conference.no_of_pending_tasks = numberOfPendingTasks;
+  }
+
+  get tasks(): TaskUserResponse[] {
+    return this.conference.tasks;
+  }
+
+  get caseType(): string {
+    return this.conference.case_type;
+  }
+
+  getConference() {
+    return this.conference;
+  }
+
+  getParticipants(): ParticipantSummary[] {
+    return this.participants;
+  }
+
+  getDurationAsText(): string {
+    return this.timeReader.getDurationAsText(this.conference.scheduled_duration);
+  }
 }
