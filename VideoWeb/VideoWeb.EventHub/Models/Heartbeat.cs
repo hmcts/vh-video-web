@@ -1,14 +1,9 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace VideoWeb.EventHub.Models
 {
     public class Heartbeat
     {
-        [JsonProperty("hearingId")]
-        public Guid HearingId { get; set; }
-        [JsonProperty("participantId")]
-        public Guid ParticipantId { get; set; }
         [JsonProperty("outgoingAudioPercentageLost")]
         public decimal OutgoingAudioPercentageLost { get; set; }
         [JsonProperty("outgoingAudioPercentageLostRecent")]

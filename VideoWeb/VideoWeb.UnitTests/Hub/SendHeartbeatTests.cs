@@ -18,7 +18,6 @@ namespace VideoWeb.UnitTests.Hub
             var participantId = Guid.NewGuid();
             var heartbeat = new Heartbeat
             {
-                HearingId = conferenceId, ParticipantId = participantId,
                 BrowserName = "test_browser", BrowserVersion = "1",
                 IncomingAudioPercentageLostRecent = 10.3m
             };
@@ -57,7 +56,6 @@ namespace VideoWeb.UnitTests.Hub
             var participantId = Guid.NewGuid();
             var heartbeat = new Heartbeat
             {
-                HearingId = conferenceId, ParticipantId = participantId,
                 BrowserName = "test_browser", BrowserVersion = "1",
                 IncomingAudioPercentageLostRecent = 10.3m
             };

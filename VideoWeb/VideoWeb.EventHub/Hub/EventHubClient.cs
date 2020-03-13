@@ -23,15 +23,15 @@ namespace VideoWeb.EventHub.Hub
         private readonly ILogger<EventHub> _logger;
         private readonly IVideoApiClient _videoApiClient;
         private readonly IMemoryCache _memoryCache;
-        private readonly IHeartbeatMapper _heartbeatMapper;
+        private readonly IHeartbeatRequestMapper _heartbeatRequestMapper;
 
         public EventHub(IUserProfileService userProfileService, IVideoApiClient videoApiClient, 
-            ILogger<EventHub> logger, IMemoryCache memoryCache, IHeartbeatMapper heartbeatMapper)
+            ILogger<EventHub> logger, IMemoryCache memoryCache, IHeartbeatRequestMapper heartbeatRequestMapper)
         {
             _userProfileService = userProfileService;
             _logger = logger;
             _memoryCache = memoryCache;
-            _heartbeatMapper = heartbeatMapper;
+            _heartbeatRequestMapper = heartbeatRequestMapper;
             _videoApiClient = videoApiClient;
         }
 
@@ -168,11 +168,11 @@ namespace VideoWeb.EventHub.Hub
             {
                 await Clients.Group(VhOfficersGroupName).ReceiveHeartbeat
                 (
-                    conferenceId, participantId, _heartbeatMapper.MapToHealth(heartbeat), 
+                    conferenceId, participantId, _heartbeatRequestMapper.MapToHealth(heartbeat), 
                     heartbeat.BrowserName, heartbeat.BrowserVersion
                 );
 
-                var addHeartbeatRequest = _heartbeatMapper.MapToRequest(heartbeat);
+                var addHeartbeatRequest = _heartbeatRequestMapper.MapToRequest(heartbeat);
                 await _videoApiClient.SaveHeartbeatDataForParticipantAsync(conferenceId, participantId, addHeartbeatRequest);
             }
             catch (Exception ex)

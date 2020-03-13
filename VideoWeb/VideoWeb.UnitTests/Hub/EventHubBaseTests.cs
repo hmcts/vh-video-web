@@ -27,7 +27,7 @@ namespace VideoWeb.UnitTests.Hub
         protected EventHub.Hub.EventHub Hub;
         protected ClaimsPrincipal Claims;
         protected IMemoryCache MemoryCache;
-        protected Mock<IHeartbeatMapper> HeartbeatMapper;
+        protected Mock<IHeartbeatRequestMapper> HeartbeatMapper;
 
         [SetUp]
         public void Setup()
@@ -38,7 +38,7 @@ namespace VideoWeb.UnitTests.Hub
             LoggerMock = new Mock<ILogger<EventHub.Hub.EventHub>>();
             HubCallerContextMock = new Mock<HubCallerContext>();
             GroupManagerMock = new Mock<IGroupManager>();
-            HeartbeatMapper = new Mock<IHeartbeatMapper>();
+            HeartbeatMapper = new Mock<IHeartbeatRequestMapper>();
 
             Claims = new ClaimsPrincipalBuilder().Build();
             HubCallerContextMock.Setup(x => x.User).Returns(Claims);

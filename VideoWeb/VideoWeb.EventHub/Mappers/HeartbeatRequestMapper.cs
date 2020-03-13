@@ -5,7 +5,7 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.EventHub.Mappers
 {
-    public class HeartbeatMapper : IHeartbeatMapper
+    public class HeartbeatRequestMapper : IHeartbeatRequestMapper
     {
         public AddHeartbeatRequest MapToRequest(Heartbeat heartbeat)
         {

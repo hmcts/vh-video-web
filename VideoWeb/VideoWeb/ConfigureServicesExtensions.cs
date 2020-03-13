@@ -92,7 +92,7 @@ namespace VideoWeb
             services.AddScoped<IUserProfileService, AdUserProfileService>();
             services.AddScoped<IConferenceCache, ConferenceCache>();
             services.AddScoped<IMessageDecoder, MessageFromDecoder>();
-            services.AddScoped<IHeartbeatMapper, HeartbeatMapper>();
+            services.AddScoped<IHeartbeatRequestMapper, HeartbeatRequestMapper>();
 
             var container = services.BuildServiceProvider();
             var servicesConfiguration = container.GetService<IOptions<HearingServicesConfiguration>>().Value;

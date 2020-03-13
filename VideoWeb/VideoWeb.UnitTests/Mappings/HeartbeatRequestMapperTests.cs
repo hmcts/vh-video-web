@@ -1,5 +1,4 @@
-﻿using System;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Mappers;
@@ -8,13 +7,13 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class HeartbeatMapperTests
+    public class HeartbeatRequestMapperTests
     {
-        private readonly IHeartbeatMapper _mapper;
+        private readonly IHeartbeatRequestMapper _mapper;
 
-        public HeartbeatMapperTests()
+        public HeartbeatRequestMapperTests()
         {
-            _mapper = new HeartbeatMapper();    
+            _mapper = new HeartbeatRequestMapper();    
         }
         
         [Test]
@@ -22,7 +21,6 @@ namespace VideoWeb.UnitTests.Mappings
         {
             var heartbeat = new Heartbeat
             {
-                HearingId = Guid.NewGuid(), ParticipantId = Guid.NewGuid(),
                 BrowserName = "test_browser", BrowserVersion = "123",
                 IncomingAudioPercentageLost = 1.56m, IncomingVideoPercentageLost = 2.56m,
                 OutgoingAudioPercentageLost = 3.56m, OutgoingVideoPercentageLost = 4.56m,
