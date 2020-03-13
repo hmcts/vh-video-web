@@ -1,7 +1,5 @@
 import { TestBed, inject } from '@angular/core/testing';
 import {HeartbeatModelMapper} from './heartbeat-model-mapper';
-import {EventsService} from '../../services/events.service';
-import {Heartbeat} from '../models/heartbeat';
 
 describe('HeartbeatModelMapper', () => {
   beforeEach(() => {
