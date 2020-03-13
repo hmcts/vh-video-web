@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
+import { HeartbeatHealth } from '../../services/models/participant-heartbeat';
 
 @Component({
   selector: 'app-participant-network-status',
@@ -29,8 +30,32 @@ export class ParticipantNetworkStatusComponent  {
     //  }
     //}
 
+    
     if (this.participant === undefined || this.participant.participantHertBeatHealth === undefined) {
       return 'not-signed-in.png';
+    }
+    else {
+      if (this.participant.participantHertBeatHealth.browserName.toLowerCase() == "edge" || this.participant.participantHertBeatHealth.browserName.toLowerCase() == "safari") {
+        return 'incompatible-browser-signal.png';
+      }
+      else {
+        if (this.participant.status === ParticipantStatus.Disconnected) {
+          return 'disconnected.png';
+        }
+        else {
+          switch (this.participant.participantHertBeatHealth.heartbeatHealth) {
+            case HeartbeatHealth.Good:
+              return 'good-signal.png';
+            case HeartbeatHealth.Bad:
+              return 'good-signal.png';
+            case HeartbeatHealth.Poor:
+              return 'poor-signal.png';
+            case HeartbeatHealth.None:
+              'incompatible-browser-signal.png'
+          }
+        }
+      }
+
     }
 
     console.log('******************* Particpant ************************ ' + JSON.stringify(this.participant));
@@ -39,21 +64,6 @@ export class ParticipantNetworkStatusComponent  {
    // }
 
     console.log('******************* Heart Beat ************************ ' + JSON.stringify(this.participant.participantHertBeatHealth));
-
-
-    switch (this.participant.status) {
-      case ParticipantStatus.Disconnected:
-        return 'disconnected.png';
-      case ParticipantStatus.Available:
-        return 'good-signal.png';
-      case ParticipantStatus.InConsultation:
-        return 'poor-signal.png';
-      case ParticipantStatus.NotSignedIn:
-        return 'not-signed-in.png';
-      case ParticipantStatus.None:
-        return 'incompatible-browser-signal.png';
-      default:
-        return 'incompatible-browser-signal.png';
-    }
+   
   }
 }

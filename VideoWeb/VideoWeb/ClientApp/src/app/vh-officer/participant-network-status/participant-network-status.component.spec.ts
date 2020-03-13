@@ -3,56 +3,62 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { ParticipantNetworkStatusComponent } from './participant-network-status.component';
 import { Participant } from 'src/app/shared/models/participant';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
+import { ParticipantHeartbeat, HeartbeatHealth } from '../../services/models/participant-heartbeat';
 
-describe('ParticipantStatusComponent', () => {
+describe('ParticipantNetworkStatusComponent', () => {
 
   const component = new ParticipantNetworkStatusComponent();
 
-  it('should return "available" class', () => {
-    const p = new ConferenceTestData().getConferenceDetailFuture().participants[0];
+  it('should return "good signal" image', () => {
+    const p = new ConferenceTestData().getConferenceFuture().participants.map(p => new ParticipantSummary(p))[0];
     p.status = ParticipantStatus.Available;
-    // const participant = new Participant(p);
-   // expect(component.getParticipantStatusClass(participant)).toBe('participant-available');
+    p.participantHertBeatHealth = new ParticipantHeartbeat("1111-1111-1111-1111", "1111-1111-1111-1111", HeartbeatHealth.Good, "Chrome", "80.0.3987.132");
+    component.participant = p;
+    expect(component.getParticipantNetworkStatus()).toBe('good-signal.png');
+  });
+
+  it('should return "bad signal" image', () => {
+    const p = new ConferenceTestData().getConferenceFuture().participants.map(p => new ParticipantSummary(p))[0];
+    p.status = ParticipantStatus.Available;
+    p.participantHertBeatHealth = new ParticipantHeartbeat("1111-1111-1111-1111", "1111-1111-1111-1111", HeartbeatHealth.Bad, "Chrome", "80.0.3987.132");
+    component.participant = p;
+    expect(component.getParticipantNetworkStatus()).toBe('good-signal.png');
+  });
+
+  it('should return "poor signal" image', () => {
+    const p = new ConferenceTestData().getConferenceFuture().participants.map(p => new ParticipantSummary(p))[0];
+    p.status = ParticipantStatus.Available;
+    p.participantHertBeatHealth = new ParticipantHeartbeat("1111-1111-1111-1111", "1111-1111-1111-1111", HeartbeatHealth.Poor, "Chrome", "80.0.3987.132");
+    component.participant = p;
+    expect(component.getParticipantNetworkStatus()).toBe('poor-signal.png');
   });
 
   it('should return "not signed in" class', () => {
-    const p = new ConferenceTestData().getConferenceFuture().participants[0];
-    p.status = ParticipantStatus.None;
+    const p = new ConferenceTestData().getConferenceFuture().participants.map(p => new ParticipantSummary(p))[0];
+    p.participantHertBeatHealth = undefined;
    
-    component.participant = new ParticipantSummary(p);
+    component.participant = p;
 
-    expect(component.getParticipantNetworkStatus()).toBe('incompatible-browser-signal.png');
-
-    p.status = ParticipantStatus.NotSignedIn;
-    component.participant = new ParticipantSummary(p);
     expect(component.getParticipantNetworkStatus()).toBe('not-signed-in.png');
   });
 
   it('should return "disconnected" class', () => {
-    const p = new ConferenceTestData().getConferenceDetailFuture().participants[0];
+    const p = new ConferenceTestData().getConferenceFuture().participants.map(p => new ParticipantSummary(p))[0];
+    p.participantHertBeatHealth = new ParticipantHeartbeat("1111-1111-1111-1111", "1111-1111-1111-1111", HeartbeatHealth.None, "Chrome", "80.0.3987.132");
     p.status = ParticipantStatus.Disconnected;
-    // const participant = new Participant(p);
+    component.participant = p;
 
-   //  expect(component.getParticipantStatusClass(participant)).toBe('participant-disconnected');
+    expect(component.getParticipantNetworkStatus()).toBe('disconnected.png');
   });
 
-  it('should return "default" class', () => {
-    const p = new ConferenceTestData().getConferenceDetailFuture().participants[0];
-    p.status = ParticipantStatus.InConsultation;
-    let participant = new Participant(p);
+  it('should return "non compatible browser" image', () => {
+    const p = new ConferenceTestData().getConferenceFuture().participants.map(p => new ParticipantSummary(p))[0];
+    p.participantHertBeatHealth = new ParticipantHeartbeat("1111-1111-1111-1111", "1111-1111-1111-1111", HeartbeatHealth.None, "Safari", "13.0");
+    component.participant = p;
+    expect(component.getParticipantNetworkStatus()).toBe('incompatible-browser-signal.png');
 
-    // expect(component.getParticipantStatusClass(participant)).toBe('participant-default-status');
-
-    p.status = ParticipantStatus.UnableToJoin;
-    participant = new Participant(p);
-   //  expect(component.getParticipantStatusClass(participant)).toBe('participant-default-status');
-
-    p.status = ParticipantStatus.InHearing;
-    participant = new Participant(p);
-   // expect(component.getParticipantStatusClass(participant)).toBe('participant-default-status');
-
-    p.status = ParticipantStatus.Joining;
-    participant = new Participant(p);
-    // expect(component.getParticipantStatusClass(participant)).toBe('participant-default-status');
+    p.participantHertBeatHealth = new ParticipantHeartbeat("1111-1111-1111-1111", "1111-1111-1111-1111", HeartbeatHealth.None, "Edge", "38.14393");
+    component.participant = p;
+    expect(component.getParticipantNetworkStatus()).toBe('incompatible-browser-signal.png');
   });
 });

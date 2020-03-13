@@ -26,7 +26,11 @@ export class ParticipantSummary {
 
     get status(): ParticipantStatus {
         return this.participant.status;
-    }
+   }
+
+  set status(status: ParticipantStatus) {
+     this.participant.status = status;
+  }
 
     get role(): UserRole {
         return this.participant.role;
