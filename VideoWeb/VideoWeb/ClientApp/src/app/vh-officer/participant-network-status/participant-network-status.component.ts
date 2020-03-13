@@ -16,21 +16,6 @@ export class ParticipantNetworkStatusComponent  {
 
   getParticipantNetworkStatus(): string {
 
-
-
-    console.log('******************* Heart Beat ************************' + this.participant.participantHertBeatHealth);
-    // if (this.participant.participantHertBeatHealth.browserName.toLowerCase() == "edge" || this.participant.participantHertBeatHealth.browserName.toLowerCase() == "safari") {
-    //  return 'incompatible-browser-signal.png';
-    // }
-    // else {
-    //  if (this.participant.status === ParticipantStatus.Disconnected) {
-    //    return 'disconnected.png';
-    //  }
-    //  else {
-    //  }
-    // }
-
-
     if (this.participant === undefined || this.participant.participantHertBeatHealth === undefined) {
       return 'not-signed-in.png';
     } else {

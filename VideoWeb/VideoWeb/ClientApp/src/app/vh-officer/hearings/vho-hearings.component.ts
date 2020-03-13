@@ -152,8 +152,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     }
 
   handleHeartbeat(heartBeat: ParticipantHeartbeat) {
-
-    console.log(' *********************** Handle Heart Beat **********' + JSON.stringify(heartBeat));
     const conferenceToUpdate = this.conferences.find(c => c.id === heartBeat.conferenceId);
 
     if (!conferenceToUpdate) {
