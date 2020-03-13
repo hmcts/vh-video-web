@@ -19,7 +19,8 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            await PublishParticipantDisconnectMessage().ConfigureAwait(false);
+            // skip disonnect events since judge available/unavailable statuses are tracked by other events
+            if (!SourceParticipant.IsJudge()) await PublishParticipantDisconnectMessage().ConfigureAwait(false);
             if (SourceParticipant.IsJudge()) await PublishSuspendedEventMessage().ConfigureAwait(false);
         }
 
