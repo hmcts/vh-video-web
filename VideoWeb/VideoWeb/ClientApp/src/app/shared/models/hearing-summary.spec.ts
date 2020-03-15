@@ -1,6 +1,7 @@
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { HearingSummary } from './hearing-summary';
 import { UserRole } from 'src/app/services/clients/api-client';
+import { ParticipantSummary } from './participant-summary';
 
 describe('HearingSummary', () => {
     it('should throw an error if passing an invlid type', () => {
@@ -62,7 +63,7 @@ describe('HearingSummary', () => {
         const c = new ConferenceTestData().getConferenceFuture();
         const hearing = new HearingSummary(c);
         const p = hearing.getParticipants();
-        expect(c.participants).toEqual(p);
+        expect(c.participants.map(x => new ParticipantSummary(x))).toEqual(p);
     });
 
     it('should return duration as text', () => {

@@ -11,6 +11,7 @@ import { ClipboardModule } from 'ngx-clipboard';
 import { VhoHearingsFilterComponent } from '../vh-officer/vho-herings-filter/vho-hearings-filter.component';
 import { HearingsFilterOptionsService } from '../vh-officer/services/hearings-filter-options.service';
 import { VhoChatComponent } from './vho-chat/vho-chat.component';
+import { ParticipantNetworkStatusComponent } from './participant-network-status/participant-network-status.component';
 import { ChartsModule } from 'ng2-charts';
 import { MonitoringGraphComponent } from '../vh-officer/monitoring-graph/monitoring-graph.component';
 
@@ -23,10 +24,19 @@ import { MonitoringGraphComponent } from '../vh-officer/monitoring-graph/monitor
     ParticipantInfoTooltipComponent,
     VhoHearingsFilterComponent,
     VhoChatComponent,
+    ParticipantNetworkStatusComponent,
     MonitoringGraphComponent
   ],
-  imports: [CommonModule, SharedModule, ClipboardModule, VhOfficerRoutingModule, ChartsModule],
-  providers: [HearingsFilterOptionsService],
-  exports: [MonitoringGraphComponent]
+  imports: [
+    CommonModule,
+    SharedModule,
+    ChartsModule,
+    ClipboardModule,
+    VhOfficerRoutingModule
+    ],
+    providers: [
+        HearingsFilterOptionsService
+    ],
+    exports: [MonitoringGraphComponent]
 })
 export class VhOfficerModule { }

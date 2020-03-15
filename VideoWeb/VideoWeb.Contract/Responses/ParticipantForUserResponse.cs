@@ -8,7 +8,7 @@ namespace VideoWeb.Contract.Responses
         /// The participant Id
         /// </summary>
         public Guid Id { get; set; }
-
+        
         /// <summary>
         /// The participant username
         /// </summary>

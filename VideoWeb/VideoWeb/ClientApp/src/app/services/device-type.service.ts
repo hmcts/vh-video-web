@@ -2,30 +2,36 @@ import { Injectable } from '@angular/core';
 import { DeviceDetectorService } from 'ngx-device-detector';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class DeviceTypeService {
-    constructor(private deviceDetectorService: DeviceDetectorService) {}
 
-    isMobile(): boolean {
-        return this.deviceDetectorService.isMobile();
-    }
+  constructor(private deviceDetectorService: DeviceDetectorService) {
+  }
 
-    isTablet(): boolean {
-        return this.deviceDetectorService.isTablet();
-    }
+  isMobile(): boolean {
+    return this.deviceDetectorService.isMobile();
+  }
 
-    isDesktop(): boolean {
-        return this.deviceDetectorService.isDesktop();
-    }
+  isTablet(): boolean {
+    return this.deviceDetectorService.isTablet();
+  }
 
-    isSupportedBrowser(): boolean {
-        const supportedBrowsers = ['Firefox', 'Safari', 'Chrome', 'MS-Edge'];
-        const browser = this.deviceDetectorService.browser;
-        return supportedBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) > -1;
-    }
+  isDesktop(): boolean {
+    return this.deviceDetectorService.isDesktop();
+  }
 
-    getBrowserName(): string {
-        return this.deviceDetectorService.browser;
-    }
+  isSupportedBrowser(): boolean {
+    const supportedBrowsers = ['Firefox', 'Safari', 'Chrome', 'MS-Edge'];
+    const browser = this.deviceDetectorService.browser;
+    return supportedBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) > -1;
+  }
+
+  getBrowserName(): string {
+    return this.deviceDetectorService.browser;
+  }
+
+  getBrowserVersion(): string {
+    return this.deviceDetectorService.browser_version;
+  }
 }

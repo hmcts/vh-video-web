@@ -49,6 +49,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="ClientApp\src\app\vh-officer\participant-network-status\participant-network-status.component.spec.ts" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />
       <ProjectReference Include="..\VideoWeb.Contract\VideoWeb.Contract.csproj" />
       <ProjectReference Include="..\VideoWeb.EventHub\VideoWeb.EventHub.csproj" />
