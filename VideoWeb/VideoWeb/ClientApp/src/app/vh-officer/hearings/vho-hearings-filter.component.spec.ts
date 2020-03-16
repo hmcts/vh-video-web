@@ -113,10 +113,10 @@ describe('VhoHearingsComponent Filter', () => {
   it('should show monitoring graph for selected participant', () => {
     component.displayGraph = false;
     const param = {
-      participant: new ParticipantSummary(new ParticipantForUserResponse({ id: '1111-2222-3333', display_name:'Adam', status:ParticipantStatus.Disconnected })),
+      participant: new ParticipantSummary(new ParticipantForUserResponse({ id: '1111-2222-3333', display_name: 'Adam', status: ParticipantStatus.Disconnected })),
       conferenceId: '1234-12345678'
     };
-    component.onParticipantSelected(param)
+    component.onParticipantSelected(param);
     expect(component.monitoringParticipant).toBeTruthy();
     expect(component.monitoringParticipant.name).toBe('Adam');
     expect(component.monitoringParticipant.status).toBe(ParticipantStatus.Disconnected);

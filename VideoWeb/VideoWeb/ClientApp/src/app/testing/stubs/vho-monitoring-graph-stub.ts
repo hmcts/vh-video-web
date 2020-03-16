@@ -5,11 +5,9 @@ import { ParticipantGraphInfo } from '../../vh-officer/services/models/participa
 @Component({ selector: 'app-monitoring-graph', template: '' })
 export class VhoMonitoringGraphStubComponent {
   @Input('pakagesLostData')
-  set packagesLostData(packagesLost: PackageLost[]) {
-    
-  };
+  set packagesLostData(packagesLost: PackageLost[]) { }
 
-  @Input('participantGraphInfo')
+  @Input()
   participantGraphInfo: ParticipantGraphInfo;
 
   @Output()

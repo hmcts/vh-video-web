@@ -1,4 +1,4 @@
-import { Component, Input, Output,EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { HeartbeatHealth } from '../../services/models/participant-heartbeat';
@@ -8,7 +8,7 @@ import { HeartbeatHealth } from '../../services/models/participant-heartbeat';
   templateUrl: './participant-network-status.component.html',
   styleUrls: ['./participant-network-status.component.scss']
 })
-export class ParticipantNetworkStatusComponent  {
+export class ParticipantNetworkStatusComponent {
   @Input() participant: ParticipantSummary;
 
   @Output()

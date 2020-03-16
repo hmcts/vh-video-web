@@ -3,15 +3,14 @@ export const GraphLabel = {
   Bad: 'bad',
   Good: 'good',
   Disconnected: 'disconnected'
-}
-
+};
 
 export class GraphSettings {
 
-  static MAX_RECORDS = 180
-  
+  static MAX_RECORDS = 180;
+
   static getLineChartOptions() {
-   
+
     return {
       scales: {
         yAxes: [{
@@ -59,11 +58,11 @@ export class GraphSettings {
     };
   }
 
-  static setTooltipText(yData: number, datasetLabel:string): string {
-    const yLabel = yData <= 0 ? GraphLabel.Disconnected : this.isBadSignal(yData)
+  static setTooltipText(yData: number, datasetLabel: string): string {
+    const yLabel = yData <= 0 ? GraphLabel.Disconnected : this.isBadSignal(yData);
     return `${datasetLabel}: ${yLabel}`;
   }
- 
+
   private static isBadSignal(yData: number): string {
     return yData <= 5 ? GraphLabel.Bad : this.isPoorSignal(yData);
   }
@@ -74,7 +73,7 @@ export class GraphSettings {
 
 
   static getlineChartColors() {
-   return  [
+    return [
       {
         borderColor: '#ffab00',
         backgroundColor: 'rgba(0,0,0,0)',
@@ -89,44 +88,44 @@ export class GraphSettings {
         borderColor: 'black',
         backgroundColor: 'rgba(0,0,0,0)',
         borderWidth: 2
-     },
-     {
-       borderColor: 'blue',
-       backgroundColor: 'rgba(0,0,0,0)',
-       borderWidth: 5
-     },
+      },
+      {
+        borderColor: 'blue',
+        backgroundColor: 'rgba(0,0,0,0)',
+        borderWidth: 5
+      },
     ];
 
   }
 
   static setScaleXLabels(chart, _ease) {
-   
-      let width = chart.width / 3;
-      let ctx = chart.ctx;
-      ctx.restore();
 
-      ctx.textBaseline = "middle";
-      ctx.font = 'bold 12px Arial';
-      ctx.fillStyle = '#777';
-      let y = chart.height - 10;
+    const width = chart.width / 3;
+    const ctx = chart.ctx;
+    ctx.restore();
 
-      let text = '15m';
-      let x = 10;
-      ctx.fillText(text, x, y);
+    ctx.textBaseline = 'middle';
+    ctx.font = 'bold 12px Arial';
+    ctx.fillStyle = '#777';
+    const y = chart.height - 10;
 
-      text = '10m';
-      x = width;
-      ctx.fillText(text, x, y);
+    let text = '15m';
+    let x = 10;
+    ctx.fillText(text, x, y);
 
-      text = '5m';
-      x = width * 2;
-      ctx.fillText(text, x, y);
+    text = '10m';
+    x = width;
+    ctx.fillText(text, x, y);
 
-      text = 'now';
-      x = width * 3 - 30;
-      ctx.fillText(text, x, y);
+    text = '5m';
+    x = width * 2;
+    ctx.fillText(text, x, y);
 
-      ctx.save();
-    }
+    text = 'now';
+    x = width * 3 - 30;
+    ctx.fillText(text, x, y);
+
+    ctx.save();
+  }
 }
 

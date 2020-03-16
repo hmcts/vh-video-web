@@ -16,9 +16,9 @@ export class MonitoringGraphComponent implements OnInit {
   @Input('pakagesLostData')
   set packagesLostData(packagesLost: PackageLost[]) {
     this.transferPackagesLost(packagesLost);
-  };
+  }
 
-  @Input('participantGraphInfo')
+  @Input()
   participantGraphInfo: ParticipantGraphInfo;
 
   @Output()
@@ -32,7 +32,7 @@ export class MonitoringGraphComponent implements OnInit {
   lineChartPlugins = [];
   lineChartColors: Color[] = GraphSettings.getlineChartColors();
 
-  lastPoint: number
+  lastPoint: number;
 
   POOR_SIGNAL = 10;
   BAD_SIGNAL = 5;
@@ -73,7 +73,7 @@ export class MonitoringGraphComponent implements OnInit {
   }
 
   get lastPackageLostValue() {
-    if (!this.lastPoint || this.lastPoint == -1) { return GraphLabel.Disconnected; }
+    if (!this.lastPoint || this.lastPoint === -1) { return GraphLabel.Disconnected; }
     if (this.lastPoint <= this.POOR_SIGNAL && this.lastPoint > this.BAD_SIGNAL) {
       return GraphLabel.Poor;
     } else if (this.lastPoint <= this.BAD_SIGNAL && this.lastPoint >= 0) {

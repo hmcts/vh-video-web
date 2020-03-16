@@ -46,7 +46,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
   participantStatusModel: ParticipantStatusModel;
   selectedConferenceUrl: SafeResourceUrl;
 
-   tasks: TaskResponse[];
+  tasks: TaskResponse[];
   conferencesSubscription: Subscription;
   eventHubSubscriptions: Subscription = new Subscription();
 
@@ -467,7 +467,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.videoWebService.getParticipantHeartbeats(participantInfo.conferenceId, participantInfo.participant.id)
           .subscribe(s => {
             this.packageLostArray = s.map(x => {
-              return new PackageLost(x.recent_packet_loss, x.browser_name, x.browser_version, x.timestamp.getTime())
+              return new PackageLost(x.recent_packet_loss, x.browser_name, x.browser_version, x.timestamp.getTime());
             });
             this.displayGraph = true;
           });
