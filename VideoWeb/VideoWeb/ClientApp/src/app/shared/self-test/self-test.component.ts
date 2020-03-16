@@ -18,6 +18,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
 import { Subscription } from 'rxjs';
 import { Guid } from 'guid-typescript';
+import { window } from 'rxjs/operators';
 declare var PexRTC: any;
 
 @Component({
@@ -154,6 +155,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     setupPexipClient() {
         const self = this;
         this.pexipAPI = new PexRTC();
+        (<any>window).pexRTC = this.pexipAPI; 
         this.updatePexipAudioVideoSource();
         this.pexipAPI.onSetup = function(stream, pin_status, conference_extension) {
             self.logger.info('running pexip test call setup');

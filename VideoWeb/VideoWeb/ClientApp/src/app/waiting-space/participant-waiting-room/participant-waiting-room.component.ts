@@ -301,6 +301,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.logger.debug('Setting up pexip client...');
         const self = this;
         this.pexipAPI = new PexRTC();
+        (<any>window).pexRTC = this.pexipAPI; 
 
         const preferredCam = await this.userMediaService.getPreferredCamera();
         if (preferredCam) {
