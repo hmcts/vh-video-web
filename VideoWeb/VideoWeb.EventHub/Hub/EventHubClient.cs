@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using VideoWeb.Common.SignalR;
 using VideoWeb.EventHub.Exceptions;
+using VideoWeb.EventHub.Mappers;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
 
@@ -21,15 +22,16 @@ namespace VideoWeb.EventHub.Hub
         private readonly IUserProfileService _userProfileService;
         private readonly ILogger<EventHub> _logger;
         private readonly IVideoApiClient _videoApiClient;
-
         private readonly IMemoryCache _memoryCache;
+        private readonly IHeartbeatRequestMapper _heartbeatRequestMapper;
 
-        public EventHub(IUserProfileService userProfileService,
-            IVideoApiClient videoApiClient, ILogger<EventHub> logger, IMemoryCache memoryCache)
+        public EventHub(IUserProfileService userProfileService, IVideoApiClient videoApiClient, 
+            ILogger<EventHub> logger, IMemoryCache memoryCache, IHeartbeatRequestMapper heartbeatRequestMapper)
         {
             _userProfileService = userProfileService;
             _logger = logger;
             _memoryCache = memoryCache;
+            _heartbeatRequestMapper = heartbeatRequestMapper;
             _videoApiClient = videoApiClient;
         }
 
@@ -158,6 +160,25 @@ namespace VideoWeb.EventHub.Hub
 
             return conference.GetJudge().Username
                 .Equals(Context.UserIdentifier, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public async Task SendHeartbeat(Guid conferenceId, Guid participantId, Heartbeat heartbeat)
+        {
+            try
+            {
+                await Clients.Group(VhOfficersGroupName).ReceiveHeartbeat
+                (
+                    conferenceId, participantId, _heartbeatRequestMapper.MapToHealth(heartbeat), 
+                    heartbeat.BrowserName, heartbeat.BrowserVersion
+                );
+
+                var addHeartbeatRequest = _heartbeatRequestMapper.MapToRequest(heartbeat);
+                await _videoApiClient.SaveHeartbeatDataForParticipantAsync(conferenceId, participantId, addHeartbeatRequest);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error occured when sending heartbeat", ex);
+            }
         }
     }
 }

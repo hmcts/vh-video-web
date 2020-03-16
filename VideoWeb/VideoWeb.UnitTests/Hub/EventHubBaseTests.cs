@@ -10,6 +10,7 @@ using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.SignalR;
 using VideoWeb.EventHub.Hub;
+using VideoWeb.EventHub.Mappers;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 
@@ -26,6 +27,7 @@ namespace VideoWeb.UnitTests.Hub
         protected EventHub.Hub.EventHub Hub;
         protected ClaimsPrincipal Claims;
         protected IMemoryCache MemoryCache;
+        protected Mock<IHeartbeatRequestMapper> HeartbeatMapper;
 
         [SetUp]
         public void Setup()
@@ -36,6 +38,7 @@ namespace VideoWeb.UnitTests.Hub
             LoggerMock = new Mock<ILogger<EventHub.Hub.EventHub>>();
             HubCallerContextMock = new Mock<HubCallerContext>();
             GroupManagerMock = new Mock<IGroupManager>();
+            HeartbeatMapper = new Mock<IHeartbeatRequestMapper>();
 
             Claims = new ClaimsPrincipalBuilder().Build();
             HubCallerContextMock.Setup(x => x.User).Returns(Claims);
@@ -47,7 +50,7 @@ namespace VideoWeb.UnitTests.Hub
 
             MemoryCache = new MemoryCache(new MemoryCacheOptions());
             Hub = new EventHub.Hub.EventHub(UserProfileServiceMock.Object, VideoApiClientMock.Object,
-                LoggerMock.Object, MemoryCache)
+                LoggerMock.Object, MemoryCache, HeartbeatMapper.Object)
             {
                 Context = HubCallerContextMock.Object,
                 Groups = GroupManagerMock.Object,

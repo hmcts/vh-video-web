@@ -21,6 +21,8 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { Hearing } from '../../shared/models/hearing';
+import {HeartbeatModelMapper} from '../../shared/mappers/heartbeat-model-mapper';
+import {DeviceTypeService} from '../../services/device-type.service';
 
 declare var PexRTC: any;
 declare var HeartbeatFactory: any;
@@ -72,7 +74,9 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         private userMediaService: UserMediaService,
         private logger: Logger,
         private consultationService: ConsultationService,
-        private router: Router
+        private router: Router,
+        private heartbeatMapper: HeartbeatModelMapper,
+        private deviceTypeService: DeviceTypeService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -466,8 +470,11 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     handleHeartbeat(self: this) {
-        return function(heartbeat) {
-            self.logger.info(`**** heartbeat callback fired: ${heartbeat}`);
+        return async function (heartbeat) {
+          const heartbeatModel = self.heartbeatMapper.map(JSON.parse(heartbeat),
+            self.deviceTypeService.getBrowserName(), self.deviceTypeService.getBrowserVersion());
+
+          await self.eventService.sendHeartbeat(self.hearing.id, self.participant.id, heartbeatModel);
         };
     }
 

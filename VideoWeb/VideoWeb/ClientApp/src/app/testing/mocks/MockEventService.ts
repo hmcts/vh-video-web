@@ -7,6 +7,7 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 import { ConferenceStatus, ParticipantStatus, RoomType, ConsultationAnswer, ChatResponse } from '../../services/clients/api-client';
 import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
 import { Guid } from 'guid-typescript';
+import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 
 export class MockEventsService {
     nextParticipantStatusMessage: ParticipantStatusMessage;
@@ -18,6 +19,7 @@ export class MockEventsService {
     nextAdminAnsweredChatMessage: string;
     nextJudgeStatusMessage: ParticipantStatusMessage;
     nextChatMessage: ChatResponse;
+    nextHeartbeat: ParticipantHeartbeat;
 
     constructor(skip = false) {
         if (skip) {
@@ -89,6 +91,10 @@ export class MockEventsService {
 
     getAdminAnsweredChat(): Observable<string> {
         return of(this.nextAdminAnsweredChatMessage);
+    }
+
+    getHeartbeat(): Observable<ParticipantHeartbeat> {
+      return of(this.nextHeartbeat);
     }
 }
 
