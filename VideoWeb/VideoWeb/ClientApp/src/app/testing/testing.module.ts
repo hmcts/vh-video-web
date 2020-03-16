@@ -28,6 +28,7 @@ import { VhoHearingsFilterStubComponent } from './stubs/vho-hearings-filter-stub
 import { VhoChatStubComponent } from './stubs/vho-chat-stub';
 import { JudgeChatStubComponent } from './stubs/judge-chat-stub.component';
 import { ChatInputBoxStubComponent } from './stubs/chat-input-box-stub.component';
+import { VhoParticipantNetworkStatusStubComponent } from './stubs/vho-participant-network-status-stub';
 
 @NgModule({
     imports: [CommonModule],
@@ -48,6 +49,7 @@ import { ChatInputBoxStubComponent } from './stubs/chat-input-box-stub.component
         VhoHearingListStubComponent,
         MicVisualiserStubComponent,
         VhoParticipantStatusStubComponent,
+        VhoParticipantNetworkStatusStubComponent,
         SelfTestStubComponent,
         SelectMediaDevicesStubComponent,
         IndividualParticipantStatusListStubComponent,

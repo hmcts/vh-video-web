@@ -1,7 +1,9 @@
 import { ParticipantForUserResponse, ParticipantStatus, UserRole } from 'src/app/services/clients/api-client';
+import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 
 export class ParticipantSummary {
-    private participant: ParticipantForUserResponse;
+  private participant: ParticipantForUserResponse;
+  private participantHeartBeat: ParticipantHeartbeat;
 
     constructor(participant: ParticipantForUserResponse) {
         if (!(participant instanceof ParticipantForUserResponse)) {
@@ -14,13 +16,21 @@ export class ParticipantSummary {
         return this.participant;
     }
 
+    get id(): string {
+      return this.participant.id;
+    }
+
     get username() {
         return this.participant.username;
     }
 
     get status(): ParticipantStatus {
         return this.participant.status;
-    }
+   }
+
+  set status(status: ParticipantStatus) {
+     this.participant.status = status;
+  }
 
     get role(): UserRole {
         return this.participant.role;
@@ -40,5 +50,13 @@ export class ParticipantSummary {
 
     get isJudge(): boolean {
         return this.participant.role === UserRole.Judge;
-    }
+  }
+
+  get participantHertBeatHealth(): ParticipantHeartbeat {
+    return this.participantHeartBeat;
+  }
+
+  set participantHertBeatHealth(participantHeartBeat: ParticipantHeartbeat) {
+    this.participantHeartBeat = participantHeartBeat;
+  }
 }
