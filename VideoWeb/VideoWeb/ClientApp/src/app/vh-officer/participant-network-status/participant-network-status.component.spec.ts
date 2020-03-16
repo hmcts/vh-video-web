@@ -1,4 +1,4 @@
-import { ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ParticipantStatus, ParticipantForUserResponse } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { ParticipantNetworkStatusComponent } from './participant-network-status.component';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
@@ -59,5 +59,13 @@ describe('ParticipantNetworkStatusComponent', () => {
     p.participantHertBeatHealth = new ParticipantHeartbeat('1111-1111-1111-1111', '1111-1111-1111-1111', HeartbeatHealth.None, 'Edge', '38.14393');
     component.participant = p;
     expect(component.getParticipantNetworkStatus()).toBe('incompatible-browser-signal.png');
+  });
+  it('should emit event with ParticipantSummary on the click', () => {
+    const participant = new ParticipantSummary(new ParticipantForUserResponse({ id: '1111-2222-3333' }));
+    component.participant = participant;
+    spyOn(component.showMonitorGraph, 'emit');
+    component.showParticipantGraph();
+    expect(component.showMonitorGraph.emit).toHaveBeenCalled();
+    expect(component.showMonitorGraph.emit).toHaveBeenCalledWith(participant);
   });
 });

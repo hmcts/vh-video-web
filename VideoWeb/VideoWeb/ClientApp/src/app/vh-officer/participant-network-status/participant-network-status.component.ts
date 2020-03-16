@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output,EventEmitter } from '@angular/core';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { HeartbeatHealth } from '../../services/models/participant-heartbeat';
@@ -11,7 +11,14 @@ import { HeartbeatHealth } from '../../services/models/participant-heartbeat';
 export class ParticipantNetworkStatusComponent  {
   @Input() participant: ParticipantSummary;
 
+  @Output()
+  showMonitorGraph: EventEmitter<ParticipantSummary> = new EventEmitter<ParticipantSummary>();
+
   constructor() {
+  }
+
+  showParticipantGraph() {
+    this.showMonitorGraph.emit(this.participant);
   }
 
   getParticipantNetworkStatus(): string {

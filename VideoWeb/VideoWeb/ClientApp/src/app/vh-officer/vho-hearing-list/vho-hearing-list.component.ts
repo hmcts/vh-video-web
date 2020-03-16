@@ -11,7 +11,8 @@ import { ParticipantSummary } from '../../shared/models/participant-summary';
 })
 export class VhoHearingListComponent implements OnInit {
   @Input() conferences: HearingSummary[];
-    @Output() selectedConference = new EventEmitter<HearingSummary>();
+  @Output() selectedConference = new EventEmitter<HearingSummary>();
+  @Output() selectedParticipant = new EventEmitter<any>();
   currentConference: HearingSummary;
 
     constructor(private clipboardService: ClipboardService) {}
@@ -81,5 +82,9 @@ export class VhoHearingListComponent implements OnInit {
 
   getParticipantsForConference(conference: HearingSummary): ParticipantSummary[] {
     return conference.getParticipants();
-    }
+  }
+
+  showParticipantGraph(selectedParticipant) {
+    this.selectedParticipant.emit(selectedParticipant);
+  }
 }
