@@ -112,9 +112,9 @@ namespace VideoWeb.Controllers
             return healthCheck;
         }
         
-        private ApplicationVersion GetApplicationVersion()
+        private Contract.Responses.ApplicationVersion GetApplicationVersion()
         {
-            var applicationVersion = new ApplicationVersion()
+            var applicationVersion = new Contract.Responses.ApplicationVersion()
             {
                 FileVersion = GetExecutingAssemblyAttribute<AssemblyFileVersionAttribute>(a => a.Version),
                 InformationVersion = GetExecutingAssemblyAttribute<AssemblyInformationalVersionAttribute>(a => a.InformationalVersion)
