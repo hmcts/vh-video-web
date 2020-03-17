@@ -62,9 +62,8 @@
               </div>
             </div>
             <div class="govuk-grid-column-one-quarter">
-              <!--<app-participant-network-status ></app-participant-network-status>-->
               <app-participant-network-status *ngFor="let participant of getParticipantsForConference(conference)"
-                                              [participant]="participant"></app-participant-network-status>
+                                              [participant]="participant"  (showMonitorGraph)="showParticipantGraph({participant:participant, conferenceId:conference.id})"></app-participant-network-status>
             </div>
           </div>
 

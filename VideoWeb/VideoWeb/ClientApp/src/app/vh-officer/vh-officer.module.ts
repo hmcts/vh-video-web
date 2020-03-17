@@ -12,6 +12,8 @@ import { VhoHearingsFilterComponent } from '../vh-officer/vho-herings-filter/vho
 import { HearingsFilterOptionsService } from '../vh-officer/services/hearings-filter-options.service';
 import { VhoChatComponent } from './vho-chat/vho-chat.component';
 import { ParticipantNetworkStatusComponent } from './participant-network-status/participant-network-status.component';
+import { ChartsModule } from 'ng2-charts';
+import { MonitoringGraphComponent } from '../vh-officer/monitoring-graph/monitoring-graph.component';
 
 @NgModule({
   declarations: [
@@ -22,16 +24,19 @@ import { ParticipantNetworkStatusComponent } from './participant-network-status/
     ParticipantInfoTooltipComponent,
     VhoHearingsFilterComponent,
     VhoChatComponent,
-    ParticipantNetworkStatusComponent
+    ParticipantNetworkStatusComponent,
+    MonitoringGraphComponent
   ],
   imports: [
     CommonModule,
     SharedModule,
+    ChartsModule,
     ClipboardModule,
     VhOfficerRoutingModule
     ],
     providers: [
         HearingsFilterOptionsService
-    ]
+    ],
+    exports: [MonitoringGraphComponent]
 })
 export class VhOfficerModule { }
