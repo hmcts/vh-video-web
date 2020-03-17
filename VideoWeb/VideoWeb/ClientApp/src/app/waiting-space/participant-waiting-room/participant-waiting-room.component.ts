@@ -63,6 +63,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     CALL_TIMEOUT = 31000; // 31 seconds
     callbackTimeout: NodeJS.Timer;
     heartbeat: any;
+    pexRTC: any;
 
     constructor(
         private route: ActivatedRoute,

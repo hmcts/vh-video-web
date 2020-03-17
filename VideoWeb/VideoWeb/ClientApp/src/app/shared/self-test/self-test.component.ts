@@ -55,6 +55,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
     private maxBandwidth = 768;
     subscription: Subscription;
+    pexRTC: any;
 
     constructor(
         private logger: Logger,
