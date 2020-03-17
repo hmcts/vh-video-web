@@ -21,8 +21,8 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { Hearing } from '../../shared/models/hearing';
-import {HeartbeatModelMapper} from '../../shared/mappers/heartbeat-model-mapper';
-import {DeviceTypeService} from '../../services/device-type.service';
+import { HeartbeatModelMapper } from '../../shared/mappers/heartbeat-model-mapper';
+import { DeviceTypeService } from '../../services/device-type.service';
 
 declare var PexRTC: any;
 declare var HeartbeatFactory: any;
@@ -131,7 +131,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         const self = this;
         this.hearingAlertSound.addEventListener(
             'ended',
-            function() {
+            function () {
                 self.currentPlayCount++;
                 if (self.currentPlayCount <= 3) {
                     this.play();
@@ -164,7 +164,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     announceHearingIsAboutToStart(): void {
         const self = this;
-        this.hearingAlertSound.play().catch(function(reason) {
+        this.hearingAlertSound.play().catch(function (reason) {
             self.logger.error('Failed to announce hearing starting', reason);
         });
         this.hearingStartingAnnounced = true;
@@ -319,14 +319,14 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             );
         }
 
-        this.pexipAPI.onSetup = function(stream, pin_status, conference_extension) {
+        this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
             self.logger.info('running pexip setup');
             this.connect('0000', null);
             self.outgoingStream = stream;
             this.showSelfView = true;
         };
 
-        this.pexipAPI.onConnect = function(stream) {
+        this.pexipAPI.onConnect = function (stream) {
             self.errorCount = 0;
             self.connected = true;
             self.logger.info('successfully connected to call');
@@ -353,7 +353,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             );
         };
 
-        this.pexipAPI.onError = function(reason) {
+        this.pexipAPI.onError = function (reason) {
             self.errorCount++;
             self.connected = false;
             self.heartbeat.kill();
@@ -364,7 +364,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             }
         };
 
-        this.pexipAPI.onDisconnect = function(reason) {
+        this.pexipAPI.onDisconnect = function (reason) {
             self.connected = false;
             self.heartbeat.kill();
             self.updateShowVideo();
@@ -376,11 +376,11 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             }
         };
 
-        this.pexipAPI.onParticipantCreate = function(participant) {
+        this.pexipAPI.onParticipantCreate = function (participant) {
             self.logger.debug(`Participant added : ${participant}`);
         };
 
-        this.pexipAPI.onParticipantDelete = function(participant) {
+        this.pexipAPI.onParticipantDelete = function (participant) {
             self.logger.debug(`Participant removed : ${participant}`);
         };
     }
@@ -472,10 +472,10 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     handleHeartbeat(self: this) {
         return async function (heartbeat) {
-          const heartbeatModel = self.heartbeatMapper.map(JSON.parse(heartbeat),
-            self.deviceTypeService.getBrowserName(), self.deviceTypeService.getBrowserVersion());
+            const heartbeatModel = self.heartbeatMapper.map(JSON.parse(heartbeat),
+                self.deviceTypeService.getBrowserName(), self.deviceTypeService.getBrowserVersion());
 
-          await self.eventService.sendHeartbeat(self.hearing.id, self.participant.id, heartbeatModel);
+            await self.eventService.sendHeartbeat(self.hearing.id, self.participant.id, heartbeatModel);
         };
     }
 
