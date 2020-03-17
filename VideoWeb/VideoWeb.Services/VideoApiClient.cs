@@ -3936,6 +3936,18 @@ namespace VideoWeb.Services.Video
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class ApplicationVersion 
+    {
+        [Newtonsoft.Json.JsonProperty("file_version", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string File_version { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("information_version", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Information_version { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
     public partial class HealthCheckResponse 
     {
         [Newtonsoft.Json.JsonProperty("database_health", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -3946,6 +3958,9 @@ namespace VideoWeb.Services.Video
     
         [Newtonsoft.Json.JsonProperty("kinly_api_health", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public HealthCheck Kinly_api_health { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("app_version", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public ApplicationVersion App_version { get; set; }
     
     
     }
