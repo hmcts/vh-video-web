@@ -466,6 +466,8 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
         this.videoWebService.getParticipantHeartbeats(participantInfo.conferenceId, participantInfo.participant.id)
           .subscribe(s => {
+            console.log('*********************Participant Heart Beats **********************' + s);
+            console.log('*********************Participant Heart Beats[0] **********************' + s[0].timestamp);
             this.packageLostArray = s.map(x => {
               return new PackageLost(x.recent_packet_loss, x.browser_name, x.browser_version, x.timestamp.getTime());
             });
