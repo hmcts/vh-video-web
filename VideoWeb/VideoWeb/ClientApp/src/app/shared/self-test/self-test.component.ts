@@ -158,26 +158,26 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.pexipAPI = new PexRTC();
         (<any>window).pexRTC = this.pexipAPI;
         this.updatePexipAudioVideoSource();
-        this.pexipAPI.onSetup = function(stream, pin_status, conference_extension) {
+        this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
             self.logger.info('running pexip test call setup');
             self.outgoingStream = stream;
             this.connect('0000', null);
         };
 
-        this.pexipAPI.onConnect = function(stream) {
+        this.pexipAPI.onConnect = function (stream) {
             self.logger.info('successfully connected');
             self.incomingStream = stream;
             self.displayFeed = true;
             self.testStarted.emit();
         };
 
-        this.pexipAPI.onError = function(reason) {
+        this.pexipAPI.onError = function (reason) {
             self.displayFeed = false;
             self.logger.error('Error from pexip. Reason : ' + reason, reason);
             self.errorService.goToServiceError();
         };
 
-        this.pexipAPI.onDisconnect = function(reason) {
+        this.pexipAPI.onDisconnect = function (reason) {
             self.displayFeed = false;
             self.logger.info('Disconnected from pexip. Reason : ' + reason);
             if (reason === 'Conference terminated by another participant') {
@@ -224,7 +224,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             if (this.conference) {
                 this.logger.info(`Self test : ConferenceId : ${this.conference.id} | retrieveSelfTestScore for Participant Id : ${
                     this.participant.id
-                }
+                    }
           | Participant : ${this.videoWebService.getObfuscatedName(this.participant.first_name + ' ' + this.participant.last_name)}`);
                 this.testCallResult = await this.videoWebService
                     .getTestCallScore(this.conference.id, this.selfTestParticipantId)
