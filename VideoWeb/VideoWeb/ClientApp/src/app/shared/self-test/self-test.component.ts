@@ -54,7 +54,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
     private maxBandwidth = 768;
     subscription: Subscription;
-    pexRTC: any;
 
     constructor(
         private logger: Logger,
@@ -155,7 +154,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     setupPexipClient() {
         const self = this;
         this.pexipAPI = new PexRTC();
-        (<any>window).pexRTC = this.pexipAPI;
         this.updatePexipAudioVideoSource();
         this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
             self.logger.info('running pexip test call setup');
