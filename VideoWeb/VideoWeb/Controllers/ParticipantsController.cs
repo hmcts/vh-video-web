@@ -104,7 +104,7 @@ namespace VideoWeb.Controllers
         
         [HttpGet("{conferenceId}/participant/{participantId}/heartbeatrecent")]
         [SwaggerOperation(OperationId = "GetHeartbeatDataForParticipant")]
-        [ProducesResponseType(typeof(IEnumerable<ParticipantHeartbeatResponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ParticipantHeartbeatResponse[]), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetHeartbeatDataForParticipantAsync(Guid conferenceId, Guid participantId)
         {
@@ -119,5 +119,7 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
+
+        
     }
 }
