@@ -191,6 +191,8 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         if (outgoingCall) {
             this.waitingForConsultationResponse = true;
             this.outgoingCallTimeout = setTimeout(async () => {
+                this.waitingForConsultationResponse = false;
+                this.stopCallRinging();
                 await this.cancelOutgoingCall();
             }, this.CALL_TIMEOUT);
         }
