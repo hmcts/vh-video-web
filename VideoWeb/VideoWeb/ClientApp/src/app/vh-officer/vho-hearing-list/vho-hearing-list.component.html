@@ -61,12 +61,13 @@
 
               </div>
             </div>
-            <div class="govuk-grid-column-one-quarter">
-              <app-participant-network-status *ngFor="let participant of getParticipantsForConference(conference)"
-                                              [participant]="participant"  (showMonitorGraph)="showParticipantGraph({participant:participant, conferenceId:conference.id})"></app-participant-network-status>
+          <div class="govuk-grid-column-one-quarter">
+              <div class="govuk-grid-column-one-half govuk-!-padding-top-3">
+                <app-participant-network-status *ngFor="let participant of getParticipantsForConference(conference)"
+                                              [participant]="participant" (showMonitorGraph)="showParticipantGraph({participant:participant, conferenceId:conference.id})"></app-participant-network-status>
+             </div>
             </div>
           </div>
-
       </dd>
     </div>
   </dl>
