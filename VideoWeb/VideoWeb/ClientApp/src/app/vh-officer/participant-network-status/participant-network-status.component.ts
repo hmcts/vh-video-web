@@ -36,7 +36,7 @@ export class ParticipantNetworkStatusComponent {
             case HeartbeatHealth.Good:
               return 'good-signal.png';
             case HeartbeatHealth.Bad:
-              return 'good-signal.png';
+              return 'bad-signal.png';
             case HeartbeatHealth.Poor:
               return 'poor-signal.png';
             case HeartbeatHealth.None:
