@@ -21,7 +21,7 @@ describe('ParticipantNetworkStatusComponent', () => {
     p.status = ParticipantStatus.Available;
     p.participantHertBeatHealth = new ParticipantHeartbeat('1111-1111-1111-1111', '1111-1111-1111-1111', HeartbeatHealth.Bad, 'Chrome', '80.0.3987.132');
     component.participant = p;
-    expect(component.getParticipantNetworkStatus()).toBe('good-signal.png');
+    expect(component.getParticipantNetworkStatus()).toBe('bad-signal.png');
   });
 
   it('should return "poor signal" image', () => {
@@ -39,6 +39,9 @@ describe('ParticipantNetworkStatusComponent', () => {
     component.participant = p;
 
     expect(component.getParticipantNetworkStatus()).toBe('not-signed-in.png');
+
+    p.status = ParticipantStatus.Disconnected;
+    expect(component.getParticipantNetworkStatus()).toBe('disconnected.png');
   });
 
   it('should return "disconnected" class', () => {
