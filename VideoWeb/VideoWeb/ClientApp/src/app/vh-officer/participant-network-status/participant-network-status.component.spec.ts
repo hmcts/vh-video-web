@@ -41,6 +41,7 @@ describe('ParticipantNetworkStatusComponent', () => {
     expect(component.getParticipantNetworkStatus()).toBe('not-signed-in.png');
 
     p.status = ParticipantStatus.Disconnected;
+    component.participant = p;
     expect(component.getParticipantNetworkStatus()).toBe('disconnected.png');
   });
 
