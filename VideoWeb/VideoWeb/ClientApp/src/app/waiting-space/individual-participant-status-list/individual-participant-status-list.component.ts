@@ -86,6 +86,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
             return;
         }
         this.stopCallRinging();
+        this.waitingForConsultationResponse = false;
         this.logger.info('Consultation request timed-out. Cancelling call');
         await this.answerConsultationRequest(ConsultationAnswer.Cancelled);
         this.displayModal(this.REJECTED_PC_MODAL);
@@ -191,8 +192,6 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         if (outgoingCall) {
             this.waitingForConsultationResponse = true;
             this.outgoingCallTimeout = setTimeout(async () => {
-                this.waitingForConsultationResponse = false;
-                this.stopCallRinging();
                 await this.cancelOutgoingCall();
             }, this.CALL_TIMEOUT);
         }
