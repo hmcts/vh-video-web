@@ -461,7 +461,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         return judgeStatusInAnotherHearings.length > 0 ? judgeStatusInAnotherHearings[0] : null;
     }
 
-    onParticipantSelected(participantInfo) {
+    async onParticipantSelected(participantInfo) {
         if (!this.displayGraph) {
             if (participantInfo && participantInfo.conferenceId && participantInfo.participant) {
                 this.monitoringParticipant = new ParticipantGraphInfo(
@@ -469,12 +469,14 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
                     participantInfo.participant.status
                 );
 
-                this.videoWebService.getParticipantHeartbeats(participantInfo.conferenceId, participantInfo.participant.id).then(s => {
-                    this.packageLostArray = s.map(x => {
-                        return new PackageLost(x.recent_packet_loss, x.browser_name, x.browser_version, x.timestamp.getTime());
+                await this.videoWebService
+                    .getParticipantHeartbeats(participantInfo.conferenceId, participantInfo.participant.id)
+                    .then(s => {
+                        this.packageLostArray = s.map(x => {
+                            return new PackageLost(x.recent_packet_loss, x.browser_name, x.browser_version, x.timestamp.getTime());
+                        });
+                        this.displayGraph = true;
                     });
-                    this.displayGraph = true;
-                });
             }
         }
     }
