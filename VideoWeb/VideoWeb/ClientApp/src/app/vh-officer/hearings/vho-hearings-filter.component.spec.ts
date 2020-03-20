@@ -8,6 +8,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
@@ -15,15 +16,13 @@ import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { TasksTableStubComponent } from 'src/app/testing/stubs/task-table-stub';
+import { VhoChatStubComponent } from 'src/app/testing/stubs/vho-chat-stub';
 import { VhoHearingListStubComponent } from 'src/app/testing/stubs/vho-hearing-list-stub';
+import { VhoMonitoringGraphStubComponent } from 'src/app/testing/stubs/vho-monitoring-graph-stub';
 import { VhoParticipantStatusStubComponent } from 'src/app/testing/stubs/vho-participant-status-stub';
+import { ParticipantHeartbeatResponse } from '../../services/clients/api-client';
 import { VhoHearingsFilterStubComponent } from '../../testing/stubs/vho-hearings-filter-stub';
 import { VhoHearingsComponent } from './vho-hearings.component';
-import { VhoChatStubComponent } from 'src/app/testing/stubs/vho-chat-stub';
-import { VhoMonitoringGraphStubComponent } from 'src/app/testing/stubs/vho-monitoring-graph-stub';
-import { ParticipantSummary } from '../../shared/models/participant-summary';
-import { ParticipantForUserResponse, ParticipantStatus, ParticipantHeartbeatResponse } from '../../services/clients/api-client';
-import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 
 describe('VhoHearingsComponent Filter', () => {
     let component: VhoHearingsComponent;
