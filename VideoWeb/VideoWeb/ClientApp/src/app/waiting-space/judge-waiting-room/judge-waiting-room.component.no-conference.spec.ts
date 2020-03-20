@@ -60,12 +60,11 @@ describe('JudgeWaitingRoomComponent when conference does not exist', () => {
         component = fixture.componentInstance;
     });
 
-    it('should handle api error with error service', async done => {
+    it('should handle api error with error service', async () => {
         spyOn(errorService, 'handleApiError').and.callFake(() => {
             Promise.resolve(true);
         });
         await component.getConference();
         expect(errorService.handleApiError).toHaveBeenCalled();
-        done();
     });
 });
