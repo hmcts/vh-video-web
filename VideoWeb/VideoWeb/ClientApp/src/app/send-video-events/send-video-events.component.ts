@@ -27,20 +27,17 @@ export class SendVideoEventsComponent implements OnInit {
         this.getConference();
     }
 
-    getConference(): void {
+    async getConference(): Promise<void> {
         const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-        this.videoWebService.getConferenceById(conferenceId).subscribe(
-            (data: ConferenceResponse) => {
-                this.loadingData = false;
-                this.conference = data;
-            },
-            error => {
-                this.loadingData = false;
-                if (!this.errorService.returnHomeIfUnauthorised(error)) {
-                    this.errorService.handleApiError(error);
-                }
+        try {
+            this.conference = await this.videoWebService.getConferenceById(conferenceId);
+        } catch (error) {
+            if (!this.errorService.returnHomeIfUnauthorised(error)) {
+                this.errorService.handleApiError(error);
             }
-        );
+        } finally {
+            this.loadingData = false;
+        }
     }
 
     private buildBasicEventRequest(): ConferenceEventRequest {
@@ -146,14 +143,11 @@ export class SendVideoEventsComponent implements OnInit {
         this.sendEvent(request);
     }
 
-    private sendEvent(request: ConferenceEventRequest) {
-        this.videoWebService.sendEvent(request).subscribe(
-            () => {
-                this.logger.event('Raised video event on test page', request);
-            },
-            error => {
-                this.logger.error('Failed to raise video event on test page', error);
-            }
-        );
+    private async sendEvent(request: ConferenceEventRequest) {
+        try {
+            await this.videoWebService.sendEvent(request);
+        } catch (error) {
+            this.logger.error('Failed to raise video event on test page', error);
+        }
     }
 }

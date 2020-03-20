@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { ConfigService } from './services/api/config.service';
@@ -9,13 +9,14 @@ import { ErrorService } from './services/error.service';
 import { UserRole } from './services/clients/api-client';
 import { Title } from '@angular/platform-browser';
 import { filter, map } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
     @ViewChild('maincontent', { static: true })
     main: ElementRef;
 
@@ -25,6 +26,9 @@ export class AppComponent implements OnInit {
     loggedIn: boolean;
     isRepresentativeOrIndividual: boolean;
     pageTitle = 'Video Hearings - ';
+
+    subscriptions = new Subscription();
+
     constructor(
         private adalService: AdalService,
         private configService: ConfigService,
@@ -56,6 +60,10 @@ export class AppComponent implements OnInit {
         this.checkBrowser();
         this.setPageTitle();
         this.scrollToTop();
+    }
+
+    ngOnDestroy(): void {
+        this.subscriptions.unsubscribe();
     }
 
     checkBrowser(): void {
@@ -100,29 +108,33 @@ export class AppComponent implements OnInit {
 
     setPageTitle(): void {
         const applTitle = this.titleService.getTitle() + ' - ';
-        this.router.events
-            .pipe(
-                filter(event => event instanceof NavigationEnd),
-                map(() => {
-                    let child = this.activatedRoute.firstChild;
-                    while (child.firstChild) {
-                        child = child.firstChild;
-                    }
-                    if (child.snapshot.data['title']) {
-                        return child.snapshot.data['title'];
-                    }
-                    return applTitle;
+        this.subscriptions.add(
+            this.router.events
+                .pipe(
+                    filter(event => event instanceof NavigationEnd),
+                    map(() => {
+                        let child = this.activatedRoute.firstChild;
+                        while (child.firstChild) {
+                            child = child.firstChild;
+                        }
+                        if (child.snapshot.data['title']) {
+                            return child.snapshot.data['title'];
+                        }
+                        return applTitle;
+                    })
+                )
+                .subscribe((appendTitle: string) => {
+                    this.titleService.setTitle(applTitle + appendTitle);
                 })
-            )
-            .subscribe((appendTitle: string) => {
-                this.titleService.setTitle(applTitle + appendTitle);
-            });
+        );
     }
 
     scrollToTop() {
-        this.router.events.subscribe((event: NavigationEnd) => {
-            window.scroll(0, 0);
-            this.skipLinkDiv.nativeElement.focus();
-        });
+        this.subscriptions.add(
+            this.router.events.subscribe((event: NavigationEnd) => {
+                window.scroll(0, 0);
+                this.skipLinkDiv.nativeElement.focus();
+            })
+        );
     }
 }

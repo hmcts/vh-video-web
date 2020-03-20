@@ -48,7 +48,7 @@ export abstract class BaseSelfTestComponent implements OnInit {
 
     getConference(): void {
         this.logger.debug(`retrieving conference ${this.conferenceId}`);
-        this.videoWebService.getConferenceById(this.conferenceId).subscribe(
+        this.videoWebService.getConferenceById(this.conferenceId).then(
             response => {
                 this.logger.debug(`retrieved conference ${this.conferenceId} successfully`);
                 this.loadingData = false;
@@ -66,20 +66,17 @@ export abstract class BaseSelfTestComponent implements OnInit {
         );
     }
 
-    getPexipConfig(): void {
+    async getPexipConfig(): Promise<void> {
         this.logger.debug(`retrieving pexip configuration`);
-        this.videoWebService.getPexipConfig().subscribe(
-            response => {
-                this.logger.debug(`retrieved pexip configuration successfully`);
-                this.selfTestPexipConfig = response;
-                this.logger.debug('Self test Pexip cofig: ' + JSON.stringify(this.selfTestPexipConfig));
-            },
-            error => {
-                if (!this.errorService.returnHomeIfUnauthorised(error)) {
-                    this.errorService.handleApiError(error);
-                }
+        try {
+            this.selfTestPexipConfig = await this.videoWebService.getPexipConfig();
+            this.logger.debug(`retrieved pexip configuration successfully`);
+            this.logger.debug('Self test Pexip cofig: ' + JSON.stringify(this.selfTestPexipConfig));
+        } catch (error) {
+            if (!this.errorService.returnHomeIfUnauthorised(error)) {
+                this.errorService.handleApiError(error);
             }
-        );
+        }
     }
 
     onTestStarted() {

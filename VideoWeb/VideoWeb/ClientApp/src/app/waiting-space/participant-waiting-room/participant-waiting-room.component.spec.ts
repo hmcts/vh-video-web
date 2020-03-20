@@ -39,7 +39,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             'getObfuscatedName',
             'getJwToken'
         ]);
-        videoWebServiceSpy.getConferenceById.and.returnValue(of(conference));
+        videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(conference));
         videoWebServiceSpy.getObfuscatedName.and.returnValue('test-obfs');
 
         videoWebServiceSpy.getJwToken.and.returnValue(

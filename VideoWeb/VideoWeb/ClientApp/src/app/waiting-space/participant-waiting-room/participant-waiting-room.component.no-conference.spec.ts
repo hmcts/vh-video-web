@@ -3,7 +3,6 @@ import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
-import { throwError } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse } from 'src/app/services/clients/api-client';
@@ -22,7 +21,6 @@ import {
     IndividualParticipantStatusListStubComponent,
     JudgeParticipantStatusListStubComponent
 } from 'src/app/testing/stubs/participant-status-list-stub';
-
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room.component';
 
 describe('ParticipantWaitingRoomComponent when service returns an error', () => {
@@ -38,7 +36,7 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
     configureTestSuite(() => {
         conference = new ConferenceTestData().getConferenceFuture();
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
-        videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 404, isApiException: true }));
+        videoWebServiceSpy.getConferenceById.and.returnValue(Promise.reject({ status: 404, isApiException: true }));
 
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],

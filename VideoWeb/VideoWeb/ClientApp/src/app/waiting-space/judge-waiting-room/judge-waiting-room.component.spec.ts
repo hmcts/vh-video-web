@@ -3,7 +3,6 @@ import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
-import { of } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
@@ -35,8 +34,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     configureTestSuite(() => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'raiseParticipantEvent']);
-        videoWebServiceSpy.getConferenceById.and.returnValue(of(conference));
-        videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
+        videoWebServiceSpy.getConferenceById.and.returnValue(conference);
+        videoWebServiceSpy.raiseParticipantEvent.and.returnValue(Promise.resolve());
 
         judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService', [
             'raiseJudgeAvailableEvent',
