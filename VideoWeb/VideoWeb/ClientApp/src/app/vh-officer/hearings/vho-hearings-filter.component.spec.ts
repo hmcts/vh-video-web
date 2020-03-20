@@ -32,7 +32,7 @@ describe('VhoHearingsComponent Filter', () => {
     const conferences = new ConferenceTestData().getTestDataForFilter();
     let errorService: ErrorService;
     const filter = new ConferenceTestData().getHearingsFilter();
-    const mockEventsService = new MockEventsService(true);
+    const mockEventsService = new MockEventsService();
 
     configureTestSuite(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
