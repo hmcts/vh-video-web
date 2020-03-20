@@ -1,5 +1,5 @@
 import { Guid } from 'guid-typescript';
-import { Observable, of, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
