@@ -44,7 +44,6 @@ export abstract class EquipmentCheckBaseComponent {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         this.videoWebService
             .getConferenceById(this.conferenceId)
-            .toPromise()
             .then(conference => {
                 this.conference = conference;
                 const participant = this.conference.participants.find(
@@ -73,28 +72,26 @@ export abstract class EquipmentCheckBaseComponent {
         return this.form.invalid && this.submitted && this.form.pristine;
     }
 
-    onSubmit() {
+    async onSubmit() {
         this.submitted = true;
         if (this.form.invalid) {
             if (this.equipmentCheck.value === 'No') {
-                this.videoWebService
-                    .raiseSelfTestFailureEvent(
+                try {
+                    await this.videoWebService.raiseSelfTestFailureEvent(
                         this.conferenceId,
                         new AddSelfTestFailureEventRequest({
                             participant_id: this.participantId,
                             self_test_failure_reason: this.getFailureReason()
                         })
-                    )
-                    .subscribe(
-                        () => {},
-                        error => {
-                            this.logger.error('Failed to raise "SelfTestFailureEvent"', error);
-                        }
                     );
-                this.logger.info(
-                    `Camera check | ConferenceId : ${this.conferenceId} | Participant : ${this.participantName} responded camera not working.`
-                );
-                this.router.navigate([PageUrls.GetHelp]);
+
+                    this.logger.info(
+                        `Camera check | ConferenceId : ${this.conferenceId} | Participant : ${this.participantName} responded camera not working.`
+                    );
+                    this.router.navigate([PageUrls.GetHelp]);
+                } catch (error) {
+                    this.logger.error('Failed to raise "SelfTestFailureEvent"', error);
+                }
             }
             return;
         }

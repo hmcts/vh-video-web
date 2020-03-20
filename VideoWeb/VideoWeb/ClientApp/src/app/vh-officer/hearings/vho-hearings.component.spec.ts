@@ -43,8 +43,8 @@ describe('VhoHearingsComponent', () => {
             'getTasksForConference'
         ]);
         videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(of(conferences));
-        videoWebServiceSpy.getConferenceById.and.returnValue(of(conferenceDetail));
-        videoWebServiceSpy.getTasksForConference.and.returnValue(of(new ConferenceTestData().getTasksForConference()));
+        videoWebServiceSpy.getConferenceById.and.returnValue(conferenceDetail);
+        videoWebServiceSpy.getTasksForConference.and.returnValue(new ConferenceTestData().getTasksForConference());
 
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],
@@ -54,8 +54,8 @@ describe('VhoHearingsComponent', () => {
                 VhoHearingListStubComponent,
                 VhoParticipantStatusStubComponent,
                 VhoHearingsFilterStubComponent,
-              VhoChatStubComponent,
-              VhoParticipantNetworkStatusStubComponent,
+                VhoChatStubComponent,
+                VhoParticipantNetworkStatusStubComponent,
                 VhoMonitoringGraphStubComponent
             ],
             providers: [
@@ -80,8 +80,8 @@ describe('VhoHearingsComponent', () => {
         spyOn(component, 'updateWidthForAdminFrame');
         spyOn(component, 'getHeightForFrame').and.returnValue(600);
 
-      component.onConferenceSelected(new ConferenceForVhOfficerResponse({ id: component.conferences[0].id }));
-      expect(component.selectedConferenceUrl).toBeDefined();
+        component.onConferenceSelected(new ConferenceForVhOfficerResponse({ id: component.conferences[0].id }));
+        expect(component.selectedConferenceUrl).toBeDefined();
     });
 
     it('should return true when current conference is selected', () => {
@@ -101,20 +101,20 @@ describe('VhoHearingsComponent', () => {
         expect(component.isCurrentConference(currentConference)).toBeFalsy();
     });
 
-    it('should load tasks for conference when current conference is selected', () => {
+    it('should load tasks for conference when current conference is selected', async () => {
         const currentConference = conferences[0];
         component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
-        component.getTasksForConference(currentConference.id);
+        await component.getTasksForConference(currentConference.id);
         expect(component.tasks.length > 0).toBeTruthy();
     });
 
     it('should update number of pending tasks on task completed', () => {
         const currentConference = component.conferences[0];
-      const initPendingTasks = 5;
-      currentConference.numberOfPendingTasks = initPendingTasks;
+        const initPendingTasks = 5;
+        currentConference.numberOfPendingTasks = initPendingTasks;
 
-      component.onTaskCompleted(new TaskCompleted(currentConference.id, 3));
-      expect(component.conferences[0].numberOfPendingTasks).toBeLessThan(initPendingTasks);
+        component.onTaskCompleted(new TaskCompleted(currentConference.id, 3));
+        expect(component.conferences[0].numberOfPendingTasks).toBeLessThan(initPendingTasks);
     });
 
     it('should get the selected judge statuses from another hearings', () => {
@@ -140,10 +140,10 @@ describe('VhoHearingsComponent', () => {
     });
 
     it('should reset conference unread counter when vho sends a message', () => {
-      const conference = component.conferences[0];
-      component.conferences[0].numberOfUnreadMessages = 5;
+        const conference = component.conferences[0];
+        component.conferences[0].numberOfUnreadMessages = 5;
         component.resetConferenceUnreadCounter(conference.id);
-      expect(component.conferences[0].numberOfUnreadMessages).toBe(0);
+        expect(component.conferences[0].numberOfUnreadMessages).toBe(0);
     });
 });
 
@@ -192,13 +192,12 @@ describe('VhoHearingsComponent when conference retrieval fails', () => {
         component.selectedHearing = null;
     });
 
-    it('should handle api error when retrieving conference fails', async done => {
+    it('should handle api error when retrieving conference fails', async () => {
         spyOn(errorService, 'handleApiError').and.callFake(() => {
             Promise.resolve(true);
         });
         component.retrieveHearingsForVhOfficer();
         await fixture.whenStable();
         expect(errorService.handleApiError).toHaveBeenCalledTimes(1);
-        done();
     });
 });

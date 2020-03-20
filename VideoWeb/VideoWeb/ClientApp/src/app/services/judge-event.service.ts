@@ -55,12 +55,10 @@ export class JudgeEventService {
             participant_id: participantId,
             event_type: eventType
         });
-        await this.videoWebService
-            .raiseParticipantEvent(conferenceId, request)
-            .toPromise()
-            .then(() => {})
-            .catch(error => {
-                this.logger.error('Failed to raise "UpdateParticipantStatusEventRequest" for judge', error);
-            });
+        try {
+            this.videoWebService.raiseParticipantEvent(conferenceId, request);
+        } catch (error) {
+            this.logger.error('Failed to raise "UpdateParticipantStatusEventRequest" for judge', error);
+        }
     }
 }

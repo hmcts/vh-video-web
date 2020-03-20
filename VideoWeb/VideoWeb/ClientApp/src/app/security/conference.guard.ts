@@ -15,7 +15,7 @@ export class ConferenceGuard implements CanActivate {
         try {
             const conferenceId = next.paramMap.get('conferenceId');
 
-            const data = await this.videoWebService.getConferenceById(conferenceId).toPromise();
+            const data = await this.videoWebService.getConferenceById(conferenceId);
 
             if (data.status === ConferenceStatus.Closed) {
                 this.logger.info('Conference Guard - Returning back to hearing list because status closed');

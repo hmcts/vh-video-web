@@ -7,6 +7,8 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { TasksTestData } from 'src/app/testing/mocks/data/tasks-test-data';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { TasksTableComponent } from './tasks-table.component';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 
 describe('TasksTableComponent', () => {
     let component: TasksTableComponent;
@@ -16,7 +18,10 @@ describe('TasksTableComponent', () => {
         TestBed.configureTestingModule({
             imports: [SharedModule],
             declarations: [TasksTableComponent],
-            providers: [{ provide: VideoWebService, useClass: MockVideoWebService }]
+            providers: [
+                { provide: VideoWebService, useClass: MockVideoWebService },
+                { provide: Logger, useClass: MockLogger }
+            ]
         });
     });
 
