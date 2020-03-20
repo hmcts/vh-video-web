@@ -25,7 +25,7 @@ describe('VhoHearingsComponent when conference retrieval fails', () => {
     let component: VhoHearingsComponent;
     let fixture: ComponentFixture<VhoHearingsComponent>;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    const mockEventsService = new MockEventsService(true);
+    const mockEventsService = new MockEventsService();
     let adalService: MockAdalService;
     let errorService: ErrorService;
 

@@ -32,10 +32,7 @@ export class MockEventsService {
     eventHubDisconnectSubject = new Subject<number>();
     eventHubReconnectSubject = new Subject();
 
-    constructor(skip = false) {
-        // if (skip) {
-        //     return;
-        // }
+    constructor() {
         this.nextParticipantStatusMessage = new ParticipantStatusMessage(
             '9F681318-4955-49AF-A887-DED64554429D',
             ParticipantStatus.Available
