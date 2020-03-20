@@ -23,8 +23,14 @@ export class ParticipantNetworkStatusComponent {
 
   getParticipantNetworkStatus(): string {
 
-    if (this.participant === undefined || this.participant.participantHertBeatHealth === undefined) {
+    if (this.participant === undefined)  {
       return 'not-signed-in.png';
+    } else if (this.participant.participantHertBeatHealth === undefined) {
+      if (this.participant.status === ParticipantStatus.Disconnected) {
+        return 'disconnected.png';
+      } else {
+        return 'not-signed-in.png';
+      }
     } else {
       if (this.participant.participantHertBeatHealth.browserName.toLowerCase() === 'edge' || this.participant.participantHertBeatHealth.browserName.toLowerCase() === 'safari') {
         return 'incompatible-browser-signal.png';
