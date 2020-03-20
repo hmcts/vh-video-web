@@ -12,7 +12,8 @@ import {
     ConferenceEventRequest,
     ConferenceForVhOfficerResponse,
     SelfTestPexipResponse,
-    HearingVenueResponse
+    HearingVenueResponse,
+    ParticipantHeartbeatResponse
 } from 'src/app/services/clients/api-client';
 import { Observable, of } from 'rxjs';
 import { ConferenceTestData } from './data/conference-test-data';
@@ -96,5 +97,9 @@ export class MockVideoWebService implements IVideoWebApiService {
     getConferenceChatHistory(conferenceId: string): Promise<ChatResponse[]> {
         console.log('using mock get conference chat history');
         return Promise.resolve(new ConferenceTestData().getChatHistory(this.username, conferenceId));
+    }
+
+    getParticipantHeartbeats(conferenceId: string, participantId: string): Promise<ParticipantHeartbeatResponse[]> {
+        throw new Error('Method not implemented.');
     }
 }

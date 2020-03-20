@@ -11,7 +11,8 @@ import {
     SelfTestPexipResponse,
     HearingVenueResponse,
     ChatResponse,
-    ConferenceForVhOfficerResponse
+    ConferenceForVhOfficerResponse,
+    ParticipantHeartbeatResponse
 } from '../clients/api-client';
 import { Observable } from 'rxjs';
 export interface IVideoWebApiService {
@@ -33,4 +34,5 @@ export interface IVideoWebApiService {
     getObfuscatedName(displayName: string): string;
     getHearingsVenue(): Promise<HearingVenueResponse[]>;
     getConferenceChatHistory(conferenceId: string): Promise<ChatResponse[]>;
+    getParticipantHeartbeats(conferenceId: string, participantId: string): Promise<ParticipantHeartbeatResponse[]>;
 }

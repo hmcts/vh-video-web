@@ -5,7 +5,13 @@ import { configureTestSuite } from 'ng-bullet';
 import { of, throwError } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, UserRole, ConferenceForVhOfficerResponse } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    UserRole,
+    ConferenceForVhOfficerResponse,
+    ParticipantForUserResponse,
+    ParticipantStatus
+} from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -25,6 +31,7 @@ import { VhoHearingsComponent } from './vho-hearings.component';
 import { VhoChatStubComponent } from 'src/app/testing/stubs/vho-chat-stub';
 import { VhoParticipantNetworkStatusStubComponent } from '../../testing/stubs/vho-participant-network-status-stub';
 import { VhoMonitoringGraphStubComponent } from '../../testing/stubs/vho-monitoring-graph-stub';
+import { ParticipantSummary } from 'src/app/shared/models/participant-summary';
 
 describe('VhoHearingsComponent', () => {
     let component: VhoHearingsComponent;
@@ -144,6 +151,21 @@ describe('VhoHearingsComponent', () => {
         component.conferences[0].numberOfUnreadMessages = 5;
         component.resetConferenceUnreadCounter(conference.id);
         expect(component.conferences[0].numberOfUnreadMessages).toBe(0);
+    });
+
+    it('should show monitoring graph for selected participant', () => {
+        component.displayGraph = false;
+        const param = {
+            participant: new ParticipantSummary(
+                new ParticipantForUserResponse({ id: '1111-2222-3333', display_name: 'Adam', status: ParticipantStatus.Disconnected })
+            ),
+            conferenceId: '1234-12345678'
+        };
+        component.onParticipantSelected(param);
+        expect(component.monitoringParticipant).toBeTruthy();
+        expect(component.monitoringParticipant.name).toBe('Adam');
+        expect(component.monitoringParticipant.status).toBe(ParticipantStatus.Disconnected);
+        expect(videoWebServiceSpy.getParticipantHeartbeats).toHaveBeenCalled();
     });
 });
 

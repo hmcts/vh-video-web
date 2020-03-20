@@ -21,7 +21,7 @@ export class VhoHearingsFilterComponent implements OnInit {
 
     constructor(private hearingsFilterOptionsService: HearingsFilterOptionsService) {}
 
-    ngOnInit() {
+    async ngOnInit() {
         this.hearingsFilterOptionsService.getFilter().then(filter => {
             this.hearingsFilter = filter;
             this.countOptions(false);

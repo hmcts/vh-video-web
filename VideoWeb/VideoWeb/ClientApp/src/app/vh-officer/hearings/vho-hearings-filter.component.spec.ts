@@ -23,6 +23,7 @@ import { VhoChatStubComponent } from 'src/app/testing/stubs/vho-chat-stub';
 import { VhoMonitoringGraphStubComponent } from 'src/app/testing/stubs/vho-monitoring-graph-stub';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { ParticipantForUserResponse, ParticipantStatus, ParticipantHeartbeatResponse } from '../../services/clients/api-client';
+import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 
 describe('VhoHearingsComponent Filter', () => {
     let component: VhoHearingsComponent;
@@ -32,6 +33,7 @@ describe('VhoHearingsComponent Filter', () => {
     const conferences = new ConferenceTestData().getTestDataForFilter();
     let errorService: ErrorService;
     const filter = new ConferenceTestData().getHearingsFilter();
+    const mockEventsService = new MockEventsService(true);
 
     configureTestSuite(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
@@ -58,7 +60,7 @@ describe('VhoHearingsComponent Filter', () => {
             providers: [
                 { provide: VideoWebService, useValue: videoWebServiceSpy },
                 { provide: AdalService, useClass: MockAdalService },
-                { provide: EventsService, useClass: MockEventsService },
+                { provide: EventsService, useValue: mockEventsService },
                 { provide: ConfigService, useClass: MockConfigService },
                 { provide: Logger, useClass: MockLogger }
             ]
@@ -70,7 +72,8 @@ describe('VhoHearingsComponent Filter', () => {
         errorService = TestBed.get(ErrorService);
         fixture = TestBed.createComponent(VhoHearingsComponent);
         component = fixture.componentInstance;
-        fixture.detectChanges();
+        component.conferencesAll = conferences;
+        component.conferences = component.conferencesAll.map(c => new HearingSummary(c));
     });
 
     it('should apply filter with selected all to conferences records', () => {
@@ -109,19 +112,5 @@ describe('VhoHearingsComponent Filter', () => {
         component.displayGraph = true;
         component.closeGraph(true);
         expect(component.displayGraph).toBe(false);
-    });
-    it('should show monitoring graph for selected participant', () => {
-        component.displayGraph = false;
-        const param = {
-            participant: new ParticipantSummary(
-                new ParticipantForUserResponse({ id: '1111-2222-3333', display_name: 'Adam', status: ParticipantStatus.Disconnected })
-            ),
-            conferenceId: '1234-12345678'
-        };
-        component.onParticipantSelected(param);
-        expect(component.monitoringParticipant).toBeTruthy();
-        expect(component.monitoringParticipant.name).toBe('Adam');
-        expect(component.monitoringParticipant.status).toBe(ParticipantStatus.Disconnected);
-        expect(videoWebServiceSpy.getParticipantHeartbeats).toHaveBeenCalled();
     });
 });
