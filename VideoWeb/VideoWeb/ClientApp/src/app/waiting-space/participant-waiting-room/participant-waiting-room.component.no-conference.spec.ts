@@ -74,7 +74,7 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
         component = fixture.componentInstance;
     });
 
-    it('should handle api error with error service', async done => {
+    it('should handle api error with error service', async () => {
         spyOn(errorService, 'handleApiError').and.callFake(() => {
             Promise.resolve(true);
         });
@@ -84,6 +84,5 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
         expect(component.hearing).toBeUndefined();
         expect(component.participant).toBeUndefined();
         expect(errorService.handleApiError).toHaveBeenCalled();
-        done();
     });
 });

@@ -94,66 +94,58 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.ngOnInit();
     });
 
-    it('should create and display conference details', async done => {
+    it('should create and display conference details', async () => {
         await fixture.whenStable();
         expect(component).toBeTruthy();
         expect(component.loadingData).toBeFalsy();
         expect(component.hearing.getConference()).toBeDefined();
-        done();
     });
 
-    it('should update conference status', async done => {
+    it('should update conference status', async () => {
         await fixture.whenStable();
         const message = eventService.nextHearingStatusMessage;
         component.handleConferenceStatusChange(message);
         expect(component.hearing.getConference().status).toBe(message.status);
-        done();
     });
 
-    it('should update participant status', async done => {
+    it('should update participant status', async () => {
         await fixture.whenStable();
         const message = eventService.nextParticipantStatusMessage;
         component.handleParticipantStatusChange(message);
         const participant = component.hearing.getConference().participants.find(x => x.id === message.participantId);
         expect(participant.status).toBe(message.status);
-        done();
     });
 
-    it('should return correct conference status text when suspended', async done => {
+    it('should return correct conference status text when suspended', async () => {
         await fixture.whenStable();
         component.hearing.getConference().status = ConferenceStatus.Suspended;
         expect(component.getConferenceStatusText()).toBe('is suspended');
-        done();
     });
 
-    it('should return correct conference status text when paused', async done => {
+    it('should return correct conference status text when paused', async () => {
         await fixture.whenStable();
         component.hearing.getConference().status = ConferenceStatus.Paused;
         expect(component.getConferenceStatusText()).toBe('is paused');
-        done();
     });
 
-    it('should return correct conference status text when closed', async done => {
+    it('should return correct conference status text when closed', async () => {
         await fixture.whenStable();
         component.hearing.getConference().status = ConferenceStatus.Closed;
         expect(component.getConferenceStatusText()).toBe('is closed');
-        done();
     });
 
-    it('should return correct conference status text when in session', async done => {
+    it('should return correct conference status text when in session', async () => {
         await fixture.whenStable();
         component.hearing.getConference().status = ConferenceStatus.InSession;
         expect(component.getConferenceStatusText()).toBe('is in session');
-        done();
     });
 
-    it('should return correct conference status text when not started', async done => {
+    it('should return correct conference status text when not started', async () => {
         await fixture.whenStable();
         const conference = new ConferenceTestData().getConferenceDetailFuture();
         component.hearing = new Hearing(conference);
         component.hearing.getConference().status = ConferenceStatus.NotStarted;
         expect(component.getConferenceStatusText()).toBe('');
-        done();
     });
 
     it('should return is about to begin header text', () => {
@@ -170,49 +162,44 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         expect(component.getConferenceStatusText()).toBe('is delayed');
     });
 
-    it('should not show video stream when user is not connected to call', async done => {
+    it('should not show video stream when user is not connected to call', async () => {
         await fixture.whenStable();
         component.connected = false;
         component.updateShowVideo();
         expect(component.showVideo).toBeFalsy();
-        done();
     });
 
-    it('should show video stream when conference is in session', async done => {
+    it('should show video stream when conference is in session', async () => {
         await fixture.whenStable();
         component.connected = true;
         component.hearing.getConference().status = ConferenceStatus.InSession;
         component.updateShowVideo();
         expect(component.showVideo).toBeTruthy();
-        done();
     });
 
-    it('should show video stream when participant is in consultation', async done => {
+    it('should show video stream when participant is in consultation', async () => {
         await fixture.whenStable();
         component.connected = true;
         component.hearing.getConference().status = ConferenceStatus.Paused;
         component.participant.status = ParticipantStatus.InConsultation;
         component.updateShowVideo();
         expect(component.showVideo).toBeTruthy();
-        done();
     });
 
-    it('should not show video stream when hearing is not in session and participant is not in consultation', async done => {
+    it('should not show video stream when hearing is not in session and participant is not in consultation', async () => {
         await fixture.whenStable();
         component.connected = true;
         component.hearing.getConference().status = ConferenceStatus.Paused;
         component.participant.status = ParticipantStatus.Available;
         component.updateShowVideo();
         expect(component.showVideo).toBeFalsy();
-        done();
     });
 
-    it('should not announce hearing is starting when already announced', async done => {
+    it('should not announce hearing is starting when already announced', async () => {
         await fixture.whenStable();
         spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => {});
         component.hearingStartingAnnounced = true;
         component.checkIfHearingIsStarting();
         expect(component.announceHearingIsAboutToStart).toHaveBeenCalledTimes(0);
-        done();
     });
 });
