@@ -47,7 +47,7 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(userProfile);
 
-            var result = await _controller.GetUserProfile();
+            var result = await _controller.GetUserProfileAsync();
             var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
         }
@@ -61,7 +61,7 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetUserProfile();
+            var result = await _controller.GetUserProfileAsync();
             var typedResult = (ObjectResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
         }
@@ -75,7 +75,7 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetUserProfile();
+            var result = await _controller.GetUserProfileAsync();
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
         } 
