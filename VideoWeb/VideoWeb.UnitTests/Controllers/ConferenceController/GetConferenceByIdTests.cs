@@ -73,7 +73,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
 
-            var result = await _controller.GetConferenceById(conference.Id);
+            var result = await _controller.GetConferenceByIdAsync(conference.Id);
             var typedResult = result.Value;
             typedResult.Should().BeNull();
             var objectResult = (ObjectResult) result.Result;
@@ -94,7 +94,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
 
-            var result = await _controller.GetConferenceById(conference.Id);
+            var result = await _controller.GetConferenceByIdAsync(conference.Id);
             var typedResult = result.Value;
             typedResult.Should().BeNull();
             var objectResult = (ObjectResult) result.Result;
@@ -115,7 +115,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetAllParticipantsInHearingAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(bookingParticipants);
             
-            var result = await _controller.GetConferenceById(conference.Id);
+            var result = await _controller.GetConferenceByIdAsync(conference.Id);
             var typedResult = (OkObjectResult) result.Result;
             typedResult.Should().NotBeNull();
         }
@@ -134,7 +134,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetAllParticipantsInHearingAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(bookingParticipants);
             
-            var result = await _controller.GetConferenceById(conference.Id);
+            var result = await _controller.GetConferenceByIdAsync(conference.Id);
             
             var typedResult = (ObjectResult) result.Result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.ExpectationFailed);
@@ -160,7 +160,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetAllParticipantsInHearingAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(bookingParticipants);
 
-            var result = await _controller.GetConferenceById(conference.Id);
+            var result = await _controller.GetConferenceByIdAsync(conference.Id);
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
             _mockConferenceCache.Verify(x => x.AddConferenceToCache(new ConferenceDetailsResponse()), Times.Never);
@@ -185,7 +185,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetAllParticipantsInHearingAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(bookingParticipants);
 
-            var result = await _controller.GetConferenceById(conference.Id);
+            var result = await _controller.GetConferenceByIdAsync(conference.Id);
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
             _mockConferenceCache.Verify(x => x.AddConferenceToCache(It.IsAny<ConferenceDetailsResponse>()), Times.Once());
@@ -199,7 +199,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
 
-            var result = await _controller.GetConferenceById(conference.Id);
+            var result = await _controller.GetConferenceByIdAsync(conference.Id);
             var typedResult = (UnauthorizedResult) result.Result;
             typedResult.Should().NotBeNull();
         }
@@ -213,7 +213,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferenceById(Guid.Empty);
+            var result = await _controller.GetConferenceByIdAsync(Guid.Empty);
 
             var typedResult = (BadRequestObjectResult) result.Result;
             typedResult.Should().NotBeNull();
@@ -229,7 +229,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferenceById(Guid.NewGuid());
+            var result = await _controller.GetConferenceByIdAsync(Guid.NewGuid());
 
             var typedResult = (ObjectResult) result.Result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.Unauthorized);
@@ -245,7 +245,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferenceById(Guid.NewGuid());
+            var result = await _controller.GetConferenceByIdAsync(Guid.NewGuid());
             var typedResult = result.Value;
             typedResult.Should().BeNull();
         }

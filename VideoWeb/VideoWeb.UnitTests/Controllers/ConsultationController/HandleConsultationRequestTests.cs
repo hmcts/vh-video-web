@@ -69,7 +69,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Returns(Task.FromResult(default(object)));
             _memoryCache.Remove(_testConference.Id);
             var consultationRequest = ConsultationHelper.GetConsultationRequest(_testConference);
-            var result = await _controller.HandleConsultationRequest(consultationRequest);
+            var result = await _controller.HandleConsultationRequestAsync(consultationRequest);
 
             var typedResult = (NotFoundResult)result;
             typedResult.Should().NotBeNull();
@@ -85,7 +85,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _memoryCache.Set(conference.Id, conference);
 
             var consultationRequest = Builder<ConsultationRequest>.CreateNew().With(x => x.Conference_id = conference.Id).Build();
-            var result = await _controller.HandleConsultationRequest(consultationRequest);
+            var result = await _controller.HandleConsultationRequestAsync(consultationRequest);
 
             var typedResult = (NotFoundResult)result;
             typedResult.Should().NotBeNull();
@@ -98,7 +98,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .Returns(Task.FromResult(default(object)));
 
-            var result = await _controller.HandleConsultationRequest(ConsultationHelper.GetConsultationRequest(_testConference));
+            var result = await _controller.HandleConsultationRequestAsync(ConsultationHelper.GetConsultationRequest(_testConference));
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
             _eventHubClientMock.Verify(
@@ -115,7 +115,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.HandleConsultationRequest(ConsultationHelper.GetConsultationRequest(_testConference));
+            var result = await _controller.HandleConsultationRequestAsync(ConsultationHelper.GetConsultationRequest(_testConference));
             var typedResult = (ObjectResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
         }
@@ -130,7 +130,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.HandleConsultationRequest(ConsultationHelper.GetConsultationRequest(_testConference));
+            var result = await _controller.HandleConsultationRequestAsync(ConsultationHelper.GetConsultationRequest(_testConference));
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
         }
@@ -142,7 +142,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>())).Returns(Task.FromResult(HttpStatusCode.NoContent));
 
             var consultationRequest = ConsultationHelper.GetConsultationRequest(_testConference);
-            var result = await _controller.HandleConsultationRequest(consultationRequest);
+            var result = await _controller.HandleConsultationRequestAsync(consultationRequest);
             var typedResult = (NoContentResult)result;
             typedResult.Should().NotBeNull();
 
@@ -160,7 +160,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             var consultationRequest = ConsultationHelper.GetConsultationRequest(_testConference);
             consultationRequest.Answer = answer;
-            var result = await _controller.HandleConsultationRequest(consultationRequest);
+            var result = await _controller.HandleConsultationRequestAsync(consultationRequest);
             var typedResult = (NoContentResult)result;
             typedResult.Should().NotBeNull();
 
@@ -181,7 +181,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _testConference.Participants[1].Id = findId;
             _memoryCache.Set(_testConference.Id, _testConference);
 
-            Assert.ThrowsAsync<InvalidOperationException>(()=> _controller.HandleConsultationRequest(consultationRequest));
+            Assert.ThrowsAsync<InvalidOperationException>(()=> _controller.HandleConsultationRequestAsync(consultationRequest));
         }
 
         [Test]
@@ -198,7 +198,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _testConference.Participants[2].Id = consultationRequest.Requested_by;
             _memoryCache.Set(_testConference.Id, _testConference);
 
-            Assert.ThrowsAsync<InvalidOperationException>(() => _controller.HandleConsultationRequest(consultationRequest));
+            Assert.ThrowsAsync<InvalidOperationException>(() => _controller.HandleConsultationRequestAsync(consultationRequest));
         }
 
         [Test]
@@ -216,7 +216,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
            
             _memoryCache.Set(_testConference.Id, _testConference);
 
-            var result = await _controller.HandleConsultationRequest(consultationRequest);
+            var result = await _controller.HandleConsultationRequestAsync(consultationRequest);
             var typedResult = (NotFoundResult)result;
             typedResult.Should().NotBeNull();
         }
@@ -234,7 +234,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _testConference.Participants[2].Id = consultationRequest.Requested_by;
             _memoryCache.Set(_testConference.Id, _testConference);
 
-            var result = await _controller.HandleConsultationRequest(consultationRequest);
+            var result = await _controller.HandleConsultationRequestAsync(consultationRequest);
             var typedResult = (NotFoundResult)result;
             typedResult.Should().NotBeNull();
         }

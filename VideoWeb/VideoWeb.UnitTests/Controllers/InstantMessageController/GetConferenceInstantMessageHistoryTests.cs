@@ -70,7 +70,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             _videoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
                 .ReturnsAsync(messages);
 
-            var result = await _controller.GetConferenceInstantMessageHistory(conferenceId);
+            var result = await _controller.GetConferenceInstantMessageHistoryAsync(conferenceId);
             var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
             var responseModel = typedResult.Value as List<ChatResponse>;
@@ -86,7 +86,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             _videoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
                 .ReturnsAsync(messages);
 
-            var result = await _controller.GetConferenceInstantMessageHistory(conferenceId);
+            var result = await _controller.GetConferenceInstantMessageHistoryAsync(conferenceId);
             var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
             var responseModel = typedResult.Value as List<ChatResponse>;
@@ -108,7 +108,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             _videoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
                 .ReturnsAsync(messages);
 
-            var result = await _controller.GetConferenceInstantMessageHistory(conferenceId);
+            var result = await _controller.GetConferenceInstantMessageHistoryAsync(conferenceId);
 
             _messageDecoder.Verify(x => x.IsMessageFromUser(
                     It.Is<InstantMessageResponse>(m => m.From == loggedInUser), loggedInUser),
@@ -134,7 +134,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             _videoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferenceInstantMessageHistory(conferenceId);
+            var result = await _controller.GetConferenceInstantMessageHistoryAsync(conferenceId);
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
         }

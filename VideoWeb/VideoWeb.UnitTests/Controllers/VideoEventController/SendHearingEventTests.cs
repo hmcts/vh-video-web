@@ -75,7 +75,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .Returns(Task.FromResult(default(object)));
             
-            var result = await _controller.SendHearingEvent(CreateRequest());
+            var result = await _controller.SendHearingEventAsync(CreateRequest());
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
             _videoApiClientMock.Verify(v => v.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()), Times.Once);
@@ -90,7 +90,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
             
-            var result = await _controller.SendHearingEvent(CreateRequest());
+            var result = await _controller.SendHearingEventAsync(CreateRequest());
             var typedResult = (ObjectResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
         }
@@ -104,7 +104,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.SendHearingEvent(CreateRequest());
+            var result = await _controller.SendHearingEventAsync(CreateRequest());
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
         }
