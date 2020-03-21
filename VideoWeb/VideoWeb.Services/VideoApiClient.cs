@@ -297,18 +297,18 @@ namespace VideoWeb.Services.Video
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task RemoveInstantMessagesAsync(System.Guid conferenceId, System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Get list of closed conferenceswith instant messages (closed over 30 minutes ago)</summary>
+        /// <summary>Get list of closed conferences with instant messages (closed over 30 minutes ago)</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.List<ClosedConferencesResponse>> GetClosedConferencesWithInstantMessagesAsync();
     
-        /// <summary>Get list of closed conferenceswith instant messages (closed over 30 minutes ago)</summary>
+        /// <summary>Get list of closed conferences with instant messages (closed over 30 minutes ago)</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Collections.Generic.List<ClosedConferencesResponse> GetClosedConferencesWithInstantMessages();
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Get list of closed conferenceswith instant messages (closed over 30 minutes ago)</summary>
+        /// <summary>Get list of closed conferences with instant messages (closed over 30 minutes ago)</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.List<ClosedConferencesResponse>> GetClosedConferencesWithInstantMessagesAsync(System.Threading.CancellationToken cancellationToken);
@@ -446,12 +446,16 @@ namespace VideoWeb.Services.Video
         System.Threading.Tasks.Task<System.Collections.Generic.List<ParticipantHeartbeatResponse>> GetHeartbeatDataForParticipantAsync(System.Guid conferenceId, System.Guid participantId, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Post the Heartbeat Data For Participant</summary>
+        /// <param name="conferenceId">The id of the conference</param>
+        /// <param name="participantId">The id of the participant</param>
         /// <param name="body">The AddHeartbeatRequest</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task SaveHeartbeatDataForParticipantAsync(System.Guid conferenceId, System.Guid participantId, AddHeartbeatRequest body);
     
         /// <summary>Post the Heartbeat Data For Participant</summary>
+        /// <param name="conferenceId">The id of the conference</param>
+        /// <param name="participantId">The id of the participant</param>
         /// <param name="body">The AddHeartbeatRequest</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
@@ -459,6 +463,8 @@ namespace VideoWeb.Services.Video
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Post the Heartbeat Data For Participant</summary>
+        /// <param name="conferenceId">The id of the conference</param>
+        /// <param name="participantId">The id of the participant</param>
         /// <param name="body">The AddHeartbeatRequest</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
@@ -2065,7 +2071,7 @@ namespace VideoWeb.Services.Video
             }
         }
     
-        /// <summary>Get list of closed conferenceswith instant messages (closed over 30 minutes ago)</summary>
+        /// <summary>Get list of closed conferences with instant messages (closed over 30 minutes ago)</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task<System.Collections.Generic.List<ClosedConferencesResponse>> GetClosedConferencesWithInstantMessagesAsync()
@@ -2073,7 +2079,7 @@ namespace VideoWeb.Services.Video
             return GetClosedConferencesWithInstantMessagesAsync(System.Threading.CancellationToken.None);
         }
     
-        /// <summary>Get list of closed conferenceswith instant messages (closed over 30 minutes ago)</summary>
+        /// <summary>Get list of closed conferences with instant messages (closed over 30 minutes ago)</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public System.Collections.Generic.List<ClosedConferencesResponse> GetClosedConferencesWithInstantMessages()
@@ -2082,7 +2088,7 @@ namespace VideoWeb.Services.Video
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Get list of closed conferenceswith instant messages (closed over 30 minutes ago)</summary>
+        /// <summary>Get list of closed conferences with instant messages (closed over 30 minutes ago)</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task<System.Collections.Generic.List<ClosedConferencesResponse>> GetClosedConferencesWithInstantMessagesAsync(System.Threading.CancellationToken cancellationToken)
@@ -2772,6 +2778,8 @@ namespace VideoWeb.Services.Video
         }
     
         /// <summary>Post the Heartbeat Data For Participant</summary>
+        /// <param name="conferenceId">The id of the conference</param>
+        /// <param name="participantId">The id of the participant</param>
         /// <param name="body">The AddHeartbeatRequest</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
@@ -2781,6 +2789,8 @@ namespace VideoWeb.Services.Video
         }
     
         /// <summary>Post the Heartbeat Data For Participant</summary>
+        /// <param name="conferenceId">The id of the conference</param>
+        /// <param name="participantId">The id of the participant</param>
         /// <param name="body">The AddHeartbeatRequest</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
@@ -2791,6 +2801,8 @@ namespace VideoWeb.Services.Video
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Post the Heartbeat Data For Participant</summary>
+        /// <param name="conferenceId">The id of the conference</param>
+        /// <param name="participantId">The id of the participant</param>
         /// <param name="body">The AddHeartbeatRequest</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
