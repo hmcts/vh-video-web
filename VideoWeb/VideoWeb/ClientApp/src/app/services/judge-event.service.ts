@@ -37,7 +37,11 @@ export class JudgeEventService {
     public async raiseJudgeAvailableEvent(conferenceId: string, participantId: string) {
         this.logger.debug(`Raising judge ${participantId} available event in conference ${conferenceId}`);
         this.setJudgeEventDetails(conferenceId, participantId);
-        await this.sendEventAsync(conferenceId, participantId, EventType.JudgeAvailable);
+        try {
+            await this.sendEventAsync(conferenceId, participantId, EventType.JudgeUnavailable);
+        } catch (error) {
+            this.logger.error('Failed to raise "UpdateParticipantStatusEventRequest" for judge', error);
+        }
     }
 
     public async raiseJudgeUnavailableEvent() {
@@ -46,7 +50,11 @@ export class JudgeEventService {
             this.logger.debug(
                 `Raising judge ${eventStatusDetails.ParticipantId} unavailable event in conference ${eventStatusDetails.ConferenceId}`
             );
-            await this.sendEventAsync(eventStatusDetails.ConferenceId, eventStatusDetails.ParticipantId, EventType.JudgeUnavailable);
+            try {
+                await this.sendEventAsync(eventStatusDetails.ConferenceId, eventStatusDetails.ParticipantId, EventType.JudgeUnavailable);
+            } catch (error) {
+                this.logger.error('Failed to raise "UpdateParticipantStatusEventRequest" for judge', error);
+            }
         }
     }
 
@@ -56,7 +64,7 @@ export class JudgeEventService {
             event_type: eventType
         });
         try {
-            this.videoWebService.raiseParticipantEvent(conferenceId, request);
+            await this.videoWebService.raiseParticipantEvent(conferenceId, request);
         } catch (error) {
             this.logger.error('Failed to raise "UpdateParticipantStatusEventRequest" for judge', error);
         }

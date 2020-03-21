@@ -1,5 +1,5 @@
 import { JudgeHearingPageComponent } from './judge-hearing-page.component';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, async } from '@angular/core/testing';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { ConferenceResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
@@ -15,6 +15,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { PageUrls } from 'src/app/shared/page-url.constants';
+import { ErrorService } from 'src/app/services/error.service';
 
 describe('JudgeHearingPageComponent when conference in session', () => {
     let component: JudgeHearingPageComponent;
@@ -24,6 +25,7 @@ describe('JudgeHearingPageComponent when conference in session', () => {
     let conference: ConferenceResponse;
     let adalService: MockAdalService;
     let eventService: MockEventsNonHttpService;
+    let errorService: ErrorService;
 
     configureTestSuite(() => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
@@ -51,6 +53,7 @@ describe('JudgeHearingPageComponent when conference in session', () => {
     beforeEach(async () => {
         adalService = TestBed.get(AdalService);
         eventService = TestBed.get(EventsService);
+        errorService = TestBed.get(ErrorService);
         router = TestBed.get(Router);
         fixture = TestBed.createComponent(JudgeHearingPageComponent);
         component = fixture.componentInstance;
@@ -92,5 +95,47 @@ describe('JudgeHearingPageComponent when conference in session', () => {
         component.handleHearingStatusChange(status);
         expect(component.conference.status).toBe(status);
         expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeWaitingRoom, conference.id]);
+    });
+
+    it('should not send judge anywhere is conference is in session', () => {
+        spyOn(router, 'navigate').and.callFake(() => {
+            Promise.resolve(true);
+        });
+        spyOn(component, 'judgeURLChanged').and.callFake(() => {});
+        const status = ConferenceStatus.InSession;
+        component.handleHearingStatusChange(status);
+        expect(component.conference.status).toBe(status);
+        expect(router.navigate).toHaveBeenCalledTimes(0);
+    });
+
+    it('should get conference and determine location when eventhub connection disconnects', async () => {
+        spyOn(videoWebServiceMock, 'getConferenceById');
+        spyOn(component, 'determineJudgeLocation');
+
+        await component.refreshConferenceDataDuringDisconnect();
+
+        expect(videoWebServiceMock.getConferenceById).toHaveBeenCalled();
+        expect(component.determineJudgeLocation).toHaveBeenCalled();
+    });
+
+    it('should connect to iframe on load', async () => {
+        component.conference = undefined;
+        await component.ngOnInit();
+
+        expect(component.loadingData).toBeFalsy();
+        expect(component.conference).toBeDefined();
+    });
+
+    it('should return home if user not authorised', async () => {
+        component.conference = undefined;
+        spyOn(videoWebServiceMock, 'getConferenceById').and.returnValue(Promise.reject({ status: 401, isApiException: false }));
+        spyOn(errorService, 'returnHomeIfUnauthorised');
+        spyOn(errorService, 'handleApiError');
+
+        await component.ngOnInit();
+
+        expect(component.conference).toBeUndefined();
+        expect(errorService.returnHomeIfUnauthorised).toBeTruthy();
+        expect(errorService.handleApiError).toHaveBeenCalledTimes(0);
     });
 });

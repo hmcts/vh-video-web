@@ -37,7 +37,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
         this.loadingData = true;
     }
 
-    ngOnInit() {
+    async ngOnInit() {
         this.getConference()
             .then(conference => {
                 this.loadingData = false;
