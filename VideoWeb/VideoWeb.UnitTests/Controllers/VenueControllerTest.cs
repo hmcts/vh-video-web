@@ -31,7 +31,7 @@ namespace VideoWeb.UnitTests.Controllers
             var venues = new List<HearingVenueResponse> { new HearingVenueResponse() };
 
             _bookingsApiClientMock.Setup(x => x.GetHearingVenuesAsync()).ReturnsAsync(venues);
-            var result = await _controller.GetHearingsVenues();
+            var result = await _controller.GetHearingsVenuesAsync();
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
             var venuesList = typedResult.Value;
@@ -47,7 +47,7 @@ namespace VideoWeb.UnitTests.Controllers
                 .Setup(x => x.GetHearingVenuesAsync())
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetHearingsVenues();
+            var result = await _controller.GetHearingsVenuesAsync();
             var typedResult = (NotFoundResult)result.Result;
             typedResult.Should().NotBeNull();
             typedResult.StatusCode.Should().Be(apiException.StatusCode);

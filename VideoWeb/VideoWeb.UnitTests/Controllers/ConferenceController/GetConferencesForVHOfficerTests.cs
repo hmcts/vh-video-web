@@ -67,7 +67,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .ReturnsAsync(userProfile);
 
 
-            var result = await _controller.GetConferencesForVhOfficer();
+            var result = await _controller.GetConferencesForVhOfficerAsync();
 
             var typedResult = (UnauthorizedObjectResult) result.Result;
             typedResult.Should().NotBeNull();
@@ -84,7 +84,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferencesForVhOfficer();
+            var result = await _controller.GetConferencesForVhOfficerAsync();
 
             var typedResult = (ObjectResult) result.Result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
@@ -105,7 +105,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferencesTodayAsync())
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferencesForVhOfficer();
+            var result = await _controller.GetConferencesForVhOfficerAsync();
 
             var typedResult = (ObjectResult) result.Result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
@@ -179,7 +179,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             _videoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceWithMessages.Id))
                 .ReturnsAsync(messages);
 
-            var result = await _controller.GetConferencesForVhOfficer();
+            var result = await _controller.GetConferencesForVhOfficerAsync();
 
             var typedResult = (OkObjectResult) result.Result;
             typedResult.Should().NotBeNull();

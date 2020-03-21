@@ -42,7 +42,7 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "GetConferenceInstantMessageHistory")]
         [ProducesResponseType(typeof(List<ChatResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetConferenceInstantMessageHistory(Guid conferenceId)
+        public async Task<IActionResult> GetConferenceInstantMessageHistoryAsync(Guid conferenceId)
         {
             _logger.LogDebug($"GetMessages for {conferenceId}");
             try

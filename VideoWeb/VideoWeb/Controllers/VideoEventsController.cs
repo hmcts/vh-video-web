@@ -40,7 +40,7 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "SendEvent")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> SendHearingEvent(ConferenceEventRequest request)
+        public async Task<IActionResult> SendHearingEventAsync(ConferenceEventRequest request)
         {
             try
             {
