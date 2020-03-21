@@ -285,7 +285,9 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     }
 
     closeConsultationRejection() {
+        this.stopCallRinging();
         this.closeAllPCModals();
+        this.waitingForConsultationResponse = false;
     }
 
     private initConsultationParticipants(message: ConsultationMessage): void {
