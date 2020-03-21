@@ -102,6 +102,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         try {
             this.token = await this.videoWebService.getToken(this.selfTestParticipantId);
             this.logger.debug('retrieved token for self test');
+            this.call();
         } catch (error) {
             this.errorService.handleApiError(error);
         }
