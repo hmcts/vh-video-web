@@ -369,14 +369,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
                 }, self.CALL_TIMEOUT);
             }
         };
-
-        this.pexipAPI.onParticipantCreate = function(participant) {
-            self.logger.debug(`Participant added : ${participant}`);
-        };
-
-        this.pexipAPI.onParticipantDelete = function(participant) {
-            self.logger.debug(`Participant removed : ${participant}`);
-        };
     }
 
     call() {
