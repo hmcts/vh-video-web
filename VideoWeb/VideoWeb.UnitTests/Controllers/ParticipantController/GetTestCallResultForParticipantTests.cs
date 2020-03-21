@@ -62,7 +62,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .Setup(x => x.GetTestCallResultForParticipantAsync(conferenceId, participantId))
                 .Returns(Task.FromResult(testCallResponse));
 
-            var result = await _controller.GetTestCallResultForParticipant(conferenceId, participantId);
+            var result = await _controller.GetTestCallResultForParticipantAsync(conferenceId, participantId);
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().BeEquivalentTo(testCallResponse);
@@ -79,7 +79,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .Setup(x => x.GetTestCallResultForParticipantAsync(conferenceId, participantId))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetTestCallResultForParticipant(conferenceId, participantId);
+            var result = await _controller.GetTestCallResultForParticipantAsync(conferenceId, participantId);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
@@ -94,7 +94,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var eventRequest = Builder<UpdateParticipantStatusEventRequest>.CreateNew().With(x => x.ParticipantId = _testConference.Participants.First().Id).Build();
             eventRequest.EventType = EventType.ParticipantJoining;
 
-            var result = await _controller.UpdateParticipantStatus(_testConference.Id, eventRequest);
+            var result = await _controller.UpdateParticipantStatusAsync(_testConference.Id, eventRequest);
             var typedResult = (NoContentResult)result;
             typedResult.Should().NotBeNull();
             _videoApiClientMock.Verify(v =>
@@ -113,7 +113,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var eventRequest = Builder<UpdateParticipantStatusEventRequest>.CreateNew().Build();
             eventRequest.EventType = EventType.Joined;
 
-            var result = await _controller.UpdateParticipantStatus(Guid.NewGuid(), eventRequest);
+            var result = await _controller.UpdateParticipantStatusAsync(Guid.NewGuid(), eventRequest);
             var typedResult = (BadRequestResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
@@ -131,7 +131,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var eventRequest = Builder<UpdateParticipantStatusEventRequest>.CreateNew().With(x => x.ParticipantId = _testConference.Participants.First().Id).Build();
             eventRequest.EventType = EventType.Joined;
 
-            var result = await _controller.UpdateParticipantStatus(_testConference.Id, eventRequest);
+            var result = await _controller.UpdateParticipantStatusAsync(_testConference.Id, eventRequest);
             var typedResult = (ObjectResult)result;
             typedResult.Should().NotBeNull();
         }
@@ -145,7 +145,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .Setup(x => x.GetIndependentTestCallResultAsync(participantId))
                 .Returns(Task.FromResult(testCallResponse));
 
-            var result = await _controller.GetIndependentTestCallResult(participantId);
+            var result = await _controller.GetIndependentTestCallResultAsync(participantId);
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().BeEquivalentTo(testCallResponse);
@@ -161,7 +161,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .Setup(x => x.GetIndependentTestCallResultAsync(participantId))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetIndependentTestCallResult(participantId);
+            var result = await _controller.GetIndependentTestCallResultAsync(participantId);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }

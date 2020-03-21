@@ -58,7 +58,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Returns(Task.FromResult(default(object)));
             _memoryCache.Remove(_testConference.Id);
             var leaveConsultationRequest = ConsultationHelper.GetLeaveConsultationRequest(_testConference);
-            var result = await _controller.LeavePrivateConsultation(leaveConsultationRequest);
+            var result = await _controller.LeavePrivateConsultationAsync(leaveConsultationRequest);
 
             var typedResult = (NotFoundResult) result;
             typedResult.Should().NotBeNull();
@@ -74,7 +74,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _memoryCache.Set(conference.Id, conference);
 
             var leaveConsultationRequest = Builder<LeaveConsultationRequest>.CreateNew().With(x => x.Conference_id = conference.Id).Build();
-            var result = await _controller.LeavePrivateConsultation(leaveConsultationRequest);
+            var result = await _controller.LeavePrivateConsultationAsync(leaveConsultationRequest);
 
             var typedResult = (NotFoundResult) result;
             typedResult.Should().NotBeNull();
@@ -88,7 +88,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Returns(Task.FromResult(default(object)));
 
             var leaveConsultationRequest = ConsultationHelper.GetLeaveConsultationRequest(_testConference);
-            var result = await _controller.LeavePrivateConsultation(leaveConsultationRequest);
+            var result = await _controller.LeavePrivateConsultationAsync(leaveConsultationRequest);
 
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
@@ -103,7 +103,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Setup(x => x.LeavePrivateConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.LeavePrivateConsultation(ConsultationHelper.GetLeaveConsultationRequest(_testConference));
+            var result = await _controller.LeavePrivateConsultationAsync(ConsultationHelper.GetLeaveConsultationRequest(_testConference));
             var typedResult = (ObjectResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
         }
@@ -118,7 +118,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Setup(x => x.LeavePrivateConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.LeavePrivateConsultation(ConsultationHelper.GetLeaveConsultationRequest(_testConference));
+            var result = await _controller.LeavePrivateConsultationAsync(ConsultationHelper.GetLeaveConsultationRequest(_testConference));
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
         }
@@ -137,7 +137,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             conference.Participants[1].Id = findId;
 
 
-            Assert.ThrowsAsync<InvalidOperationException>(() => _controller.LeavePrivateConsultation(leaveConsultationRequest));
+            Assert.ThrowsAsync<InvalidOperationException>(() => _controller.LeavePrivateConsultationAsync(leaveConsultationRequest));
 
         }
 

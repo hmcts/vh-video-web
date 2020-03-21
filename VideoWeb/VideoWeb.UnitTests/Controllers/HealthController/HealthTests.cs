@@ -47,7 +47,7 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
                 .Setup(x => x.GetJudgesAsync())
                 .ThrowsAsync(exception);
 
-            var result = await _controller.Health();
+            var result = await _controller.HealthAsync();
             var typedResult = (ObjectResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
             var response = (HealthCheckResponse) typedResult.Value;
@@ -64,7 +64,7 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
                 .Setup(x => x.GetCaseTypesAsync())
                 .ThrowsAsync(exception);
 
-            var result = await _controller.Health();
+            var result = await _controller.HealthAsync();
             var typedResult = (ObjectResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
             var response = (HealthCheckResponse) typedResult.Value;
@@ -82,7 +82,7 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
                 .Setup(x => x.GetConferencesTodayAsync())
                 .ThrowsAsync(exception);
 
-            var result = await _controller.Health();
+            var result = await _controller.HealthAsync();
             var typedResult = (ObjectResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
             var response = (HealthCheckResponse) typedResult.Value;
@@ -100,7 +100,7 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
                 .Setup(x => x.GetConferencesTodayAsync())
                 .ThrowsAsync(exception);
 
-            var result = await _controller.Health();
+            var result = await _controller.HealthAsync();
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
             var response = (HealthCheckResponse)typedResult.Value;
@@ -117,7 +117,7 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
                 .Setup(x => x.GetCaseTypesAsync())
                 .ThrowsAsync(exception);
 
-            var result = await _controller.Health();
+            var result = await _controller.HealthAsync();
             var typedResult = (ObjectResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
             var response = (HealthCheckResponse) typedResult.Value;
@@ -135,7 +135,7 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
                 .Setup(x => x.BookNewHearingAsync(It.IsAny<BookNewHearingRequest>()))
                 .ThrowsAsync(exception);
 
-            var result = await _controller.Health();
+            var result = await _controller.HealthAsync();
             var typedResult = (ObjectResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.OK);
             var response = (HealthCheckResponse) typedResult.Value;
@@ -145,7 +145,7 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
         [Test]
         public async Task Should_return_ok_when_all_services_are_running()
         {
-            var result = await _controller.Health();
+            var result = await _controller.HealthAsync();
             var typedResult = (ObjectResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.OK);
             

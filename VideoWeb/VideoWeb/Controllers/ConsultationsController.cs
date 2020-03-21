@@ -40,7 +40,7 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "HandleConsultationRequest")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> HandleConsultationRequest(ConsultationRequest request)
+        public async Task<IActionResult> HandleConsultationRequestAsync(ConsultationRequest request)
         {
             var conference = _memoryCache.Get<Conference>(request.Conference_id);
             if (conference == null)
@@ -65,15 +65,15 @@ namespace VideoWeb.Controllers
             var requestRaised = !request.Answer.HasValue;
             if (requestRaised)
             {
-                await NotifyConsultationRequest(conference, requestedBy, requestedFor);
+                await NotifyConsultationRequestAsync(conference, requestedBy, requestedFor);
             }
             else if (request.Answer == ConsultationAnswer.Cancelled)
             {
-                await NotifyConsultationCancelled(conference, requestedBy, requestedFor);
+                await NotifyConsultationCancelledAsync(conference, requestedBy, requestedFor);
             }
             else
             {
-                await NotifyConsultationResponse(conference, requestedBy, requestedFor, request.Answer.Value);
+                await NotifyConsultationResponseAsync(conference, requestedBy, requestedFor, request.Answer.Value);
             }
 
             try
@@ -92,7 +92,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> LeavePrivateConsultation(LeaveConsultationRequest request)
+        public async Task<IActionResult> LeavePrivateConsultationAsync(LeaveConsultationRequest request)
         {
             var conference = _memoryCache.Get<Conference>(request.Conference_id);
             if (conference == null)
@@ -124,7 +124,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> RespondToAdminConsultationRequest(AdminConsultationRequest request)
+        public async Task<IActionResult> RespondToAdminConsultationRequestAsync(AdminConsultationRequest request)
         {
             var conference = _memoryCache.Get<Conference>(request.Conference_id);
             if (conference == null)
@@ -165,7 +165,7 @@ namespace VideoWeb.Controllers
         /// <param name="conference">The conference Id</param>
         /// <param name="requestedBy">The participant raising the consultation request</param>
         /// <param name="requestedFor">The participant with whom the consultation is being requested with</param>
-        private async Task NotifyConsultationRequest(Conference conference, Participant requestedBy,
+        private async Task NotifyConsultationRequestAsync(Conference conference, Participant requestedBy,
             Participant requestedFor)
         {
             await _hubContext.Clients.Group(requestedFor.Username.ToLowerInvariant())
@@ -180,14 +180,14 @@ namespace VideoWeb.Controllers
         /// <param name="requestedBy">The participant raising the consultation request</param>
         /// <param name="requestedFor">The participant with whom the consultation is being requested with</param>
         /// /// <param name="answer">The answer to the request (i.e. Accepted or Rejected)</param>
-        private async Task NotifyConsultationResponse(Conference conference, Participant requestedBy,
+        private async Task NotifyConsultationResponseAsync(Conference conference, Participant requestedBy,
             Participant requestedFor, ConsultationAnswer answer)
         {
             await _hubContext.Clients.Group(requestedBy.Username.ToLowerInvariant())
                 .ConsultationMessage(conference.Id, requestedBy.Username, requestedFor.Username, answer.ToString());
         }
 
-        private async Task NotifyConsultationCancelled(Conference conference, Participant requestedBy,
+        private async Task NotifyConsultationCancelledAsync(Conference conference, Participant requestedBy,
             Participant requestedFor)
         {
             await _hubContext.Clients.Group(requestedFor.Username.ToLowerInvariant())

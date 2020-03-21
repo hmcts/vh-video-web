@@ -50,9 +50,9 @@ namespace VideoWeb.EventHub.Hub
         private async Task AddUserToConferenceGroups(bool isAdmin)
         {
             var conferences = await GetConferencesForUser(isAdmin);
-            var tasks = conferences.Select(c => Groups.AddToGroupAsync(Context.ConnectionId, c.Id.ToString()))
-                .ToArray();
-            Task.WaitAll(tasks);
+            var tasks = conferences.Select(c => Groups.AddToGroupAsync(Context.ConnectionId, c.Id.ToString())).ToArray();
+            
+            await Task.WhenAll(tasks);
         }
 
         private async Task AddUserToUserGroup(bool isAdmin)
@@ -101,9 +101,9 @@ namespace VideoWeb.EventHub.Hub
         private async Task RemoveUserFromConferenceGroups(bool isAdmin)
         {
             var conferences = await GetConferencesForUser(isAdmin);
-            var tasks = conferences.Select(c => Groups.RemoveFromGroupAsync(Context.ConnectionId, c.Id.ToString()))
-                .ToArray();
-            Task.WaitAll(tasks);
+            var tasks = conferences.Select(c => Groups.RemoveFromGroupAsync(Context.ConnectionId, c.Id.ToString())).ToArray();
+            
+            await Task.WhenAll(tasks);
         }
 
         private async Task<IEnumerable<ConferenceSummaryResponse>> GetConferencesForUser(bool isAdmin)
