@@ -46,19 +46,21 @@ describe('VideoCheckComponent', () => {
         fixture.detectChanges();
     });
 
-    it('should invalidate form when "No" is selected', () => {
+    it('should invalidate form when "No" is selected', async () => {
         spyOn(router, 'navigate').and.callFake(() => {});
         component.equipmentCheck.setValue('No');
-        component.onSubmit();
+        component.equipmentCheck.markAsDirty();
+        await component.onSubmit();
         expect(component.form.valid).toBeFalsy();
         expect(router.navigate).toHaveBeenCalledTimes(1);
         expect(router.navigate).toHaveBeenCalledWith([PageUrls.GetHelp]);
     });
 
-    it('should validate form when "Yes" is selected', () => {
+    it('should validate form when "Yes" is selected', async () => {
         spyOn(router, 'navigate').and.callFake(() => {});
         component.equipmentCheck.setValue('Yes');
-        component.onSubmit();
+        component.equipmentCheck.markAsDirty();
+        await component.onSubmit();
         expect(component.form.valid).toBeTruthy();
         expect(router.navigate).toHaveBeenCalledWith([PageUrls.HearingRules, conference.id]);
     });

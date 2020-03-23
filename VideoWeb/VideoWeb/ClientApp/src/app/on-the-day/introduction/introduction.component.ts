@@ -29,42 +29,36 @@ export class IntroductionComponent implements OnInit {
         this.getConference();
     }
 
-    getConference() {
+    async getConference() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-        this.videoWebService.getConferenceById(this.conferenceId).subscribe(
-            conference => {
-                this.conference = conference;
-                this.postParticipantJoiningStatus();
-            },
-            error => {
-                if (!this.errorService.returnHomeIfUnauthorised(error)) {
-                    this.errorService.handleApiError(error);
-                }
+        try {
+            this.conference = await this.videoWebService.getConferenceById(this.conferenceId);
+            this.postParticipantJoiningStatus();
+        } catch (error) {
+            if (!this.errorService.returnHomeIfUnauthorised(error)) {
+                this.errorService.handleApiError(error);
             }
-        );
+        }
     }
 
     goToEquipmentCheck() {
         this.router.navigate([PageUrls.EquipmentCheck, this.conferenceId]);
     }
 
-    postParticipantJoiningStatus() {
+    async postParticipantJoiningStatus() {
         const participant = this.conference.participants.find(
             x => x.username.toLocaleLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase()
         );
-        this.videoWebService
-            .raiseParticipantEvent(
+        try {
+            await this.videoWebService.raiseParticipantEvent(
                 this.conference.id,
                 new UpdateParticipantStatusEventRequest({
                     participant_id: participant.id.toString(),
                     event_type: EventType.ParticipantJoining
                 })
-            )
-            .subscribe(
-                () => {},
-                error => {
-                    this.logger.error('Failed to raise "UpdateParticipantStatusEventRequest"', error);
-                }
             );
+        } catch (error) {
+            this.logger.error('Failed to raise "UpdateParticipantStatusEventRequest"', error);
+        }
     }
 }

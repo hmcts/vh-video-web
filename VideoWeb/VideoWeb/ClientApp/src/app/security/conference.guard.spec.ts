@@ -1,13 +1,12 @@
 import { async, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { SharedModule } from '../shared/shared.module';
 import { ActivatedRoute, ActivatedRouteSnapshot, convertToParamMap, Router } from '@angular/router';
-import { ConferenceResponse, ConferenceStatus } from '../services/clients/api-client';
-import { MockLogger } from '../testing/mocks/MockLogger';
-import { Logger } from '../services/logging/logger-base';
+import { RouterTestingModule } from '@angular/router/testing';
 import { VideoWebService } from '../services/api/video-web.service';
+import { ConferenceResponse, ConferenceStatus } from '../services/clients/api-client';
+import { Logger } from '../services/logging/logger-base';
+import { SharedModule } from '../shared/shared.module';
+import { MockLogger } from '../testing/mocks/MockLogger';
 import { ConferenceGuard } from './conference.guard';
-import { of, throwError } from 'rxjs';
 
 describe('ConferenceGuard', () => {
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
@@ -36,7 +35,7 @@ describe('ConferenceGuard', () => {
 
     it('should be able to activate component', async(async () => {
         const response = new ConferenceResponse({ status: ConferenceStatus.NotStarted });
-        videoWebServiceSpy.getConferenceById.and.returnValue(of(response));
+        videoWebServiceSpy.getConferenceById.and.returnValue(response);
         const result = await guard.canActivate(activateRoute);
 
         expect(result).toBeTruthy();
@@ -44,7 +43,7 @@ describe('ConferenceGuard', () => {
 
     it('should not be able to activate component when conference closed', async () => {
         const response = new ConferenceResponse({ status: ConferenceStatus.Closed });
-        videoWebServiceSpy.getConferenceById.and.returnValue(of(response));
+        videoWebServiceSpy.getConferenceById.and.returnValue(response);
         const result = await guard.canActivate(activateRoute);
 
         expect(result).toBeFalsy();
@@ -61,7 +60,7 @@ describe('ConferenceGuard', () => {
     }));
 
     it('should not be able to activate component when exception', async(async () => {
-        videoWebServiceSpy.getConferenceById.and.returnValue(throwError({ status: 500, isApiException: true }));
+        videoWebServiceSpy.getConferenceById.and.returnValue(Promise.reject({ status: 500, isApiException: true }));
         const result = await guard.canActivate(activateRoute);
 
         expect(result).toBeFalsy();
