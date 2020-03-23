@@ -40,13 +40,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService', [
             'raiseJudgeAvailableEvent',
-            'raiseJudgeUnavailableEvent',
-            'setJudgeUnload',
-            'isUnload'
+            'raiseJudgeUnavailableEvent'
         ]);
         judgeEventServiceSpy.raiseJudgeAvailableEvent.and.callThrough();
         judgeEventServiceSpy.raiseJudgeUnavailableEvent.and.callThrough();
-        judgeEventServiceSpy.isUnload.and.returnValue(true);
 
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],
@@ -166,11 +163,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     it('should raise judge avaliable event', () => {
         component.ngOnInit();
         expect(judgeEventServiceSpy.raiseJudgeAvailableEvent).toHaveBeenCalled();
-    });
-
-    it('should raise judge unavaliable event', () => {
-        component.beforeunloadHandler(new Event('unload'));
-        expect(judgeEventServiceSpy.raiseJudgeUnavailableEvent).toHaveBeenCalled();
     });
 
     it('should call the raiseJudgeAvailable event when judge is disconnected and conference is paused', async () => {

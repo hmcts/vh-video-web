@@ -1,9 +1,8 @@
 import { of } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { EventType, UpdateParticipantStatusEventRequest } from './clients/api-client';
 import { JudgeEventService } from './judge-event.service';
-import { EventStatusModel } from './models/event-status.model';
-import { SessionStorage } from './session-storage';
 
 describe('JudgeEventService', () => {
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
@@ -12,26 +11,62 @@ describe('JudgeEventService', () => {
     const service = new JudgeEventService(videoWebServiceSpy, new MockLogger());
 
     it('should raise judge available event', () => {
-        service.clearJudgeUnload();
-        service.raiseJudgeAvailableEvent('123', '345');
-        expect(videoWebServiceSpy.raiseParticipantEvent).toHaveBeenCalled();
+        const participantId = '1234';
+        const conferenceId = '4321';
+        const request = new UpdateParticipantStatusEventRequest({
+            participant_id: participantId,
+            event_type: EventType.JudgeAvailable
+        });
+        service.raiseJudgeAvailableEvent(conferenceId, participantId);
+        expect(videoWebServiceSpy.raiseParticipantEvent).toHaveBeenCalledWith(conferenceId, request);
     });
     it('should raise judge unavailable event', () => {
-        const JUDGE_STATUS_KEY = 'vh.judge.status';
-        const sessionStorage = new SessionStorage<EventStatusModel>(JUDGE_STATUS_KEY);
-        sessionStorage.set(new EventStatusModel('1234', '4567'));
-        service.raiseJudgeUnavailableEvent();
-        expect(videoWebServiceSpy.raiseParticipantEvent).toHaveBeenCalled();
+        const participantId = '1234';
+        const conferenceId = '4321';
+        const request = new UpdateParticipantStatusEventRequest({
+            participant_id: participantId,
+            event_type: EventType.JudgeUnavailable
+        });
+        service.raiseJudgeUnavailableEvent(conferenceId, participantId);
+        expect(videoWebServiceSpy.raiseParticipantEvent).toHaveBeenCalledWith(conferenceId, request);
+    });
+});
+
+describe('JudgeEventService failure', () => {
+    const error = { error: 'failed to raise event' };
+    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['raiseParticipantEvent']);
+    videoWebServiceSpy.raiseParticipantEvent.and.returnValue(Promise.reject(error));
+    let logger: MockLogger;
+    let service: JudgeEventService;
+
+    beforeEach(() => {
+        logger = new MockLogger();
+        service = new JudgeEventService(videoWebServiceSpy, logger);
     });
 
-    it('should set value in cache to true to indicate judge is closing browser ', () => {
-        service.setJudgeUnload();
-        expect(service.isUnload()).toBe(true);
+    it('should log error when fails to judge available event', async () => {
+        spyOn(logger, 'error');
+        const participantId = '1234';
+        const conferenceId = '4321';
+        const request = new UpdateParticipantStatusEventRequest({
+            participant_id: participantId,
+            event_type: EventType.JudgeAvailable
+        });
+        await service.raiseJudgeAvailableEvent(conferenceId, participantId);
+        expect(videoWebServiceSpy.raiseParticipantEvent).toHaveBeenCalledWith(conferenceId, request);
+        expect(logger.error).toHaveBeenCalled();
     });
-    it('should remove value from cache that is indicated judge is closing browser ', () => {
-        service.setJudgeUnload();
-        expect(service.isUnload()).toBe(true);
-        service.clearJudgeUnload();
-        expect(service.isUnload()).toBeNull();
+    it('should log error when fails raise judge unavailable event', async () => {
+        spyOn(logger, 'error');
+        const participantId = '1234';
+        const conferenceId = '4321';
+        const request = new UpdateParticipantStatusEventRequest({
+            participant_id: participantId,
+            event_type: EventType.JudgeUnavailable
+        });
+        await service.raiseJudgeUnavailableEvent(conferenceId, participantId);
+        expect(videoWebServiceSpy.raiseParticipantEvent).toHaveBeenCalledWith(conferenceId, request);
+        expect(logger.error).toHaveBeenCalled();
     });
 });

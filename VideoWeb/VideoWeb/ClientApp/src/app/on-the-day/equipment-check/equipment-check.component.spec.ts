@@ -4,14 +4,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { configureTestSuite } from 'ng-bullet';
-import { JudgeEventService } from 'src/app/services/judge-event.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { EquipmentCheckComponent } from './equipment-check.component';
-import { ContactUsFoldingStubComponent } from 'src/app/testing/stubs/contact-us-stub';
 import { BackNavigationStubComponent } from 'src/app/testing/stubs/back-navigation-stub';
+import { ContactUsFoldingStubComponent } from 'src/app/testing/stubs/contact-us-stub';
+import { EquipmentCheckComponent } from './equipment-check.component';
 
 describe('EquipmentCheckComponent', () => {
     let component: EquipmentCheckComponent;
@@ -19,11 +18,8 @@ describe('EquipmentCheckComponent', () => {
     let debugElement: DebugElement;
     let router: Router;
     const conference = new ConferenceTestData().getConferenceDetailFuture();
-    let judgeEventServiceSpy: jasmine.SpyObj<JudgeEventService>;
 
     configureTestSuite(() => {
-        judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService', ['raiseJudgeUnavailableEvent']);
-
         TestBed.configureTestingModule({
             declarations: [EquipmentCheckComponent, ContactUsFoldingStubComponent, BackNavigationStubComponent],
             imports: [ReactiveFormsModule, FormsModule, RouterTestingModule],
@@ -36,8 +32,7 @@ describe('EquipmentCheckComponent', () => {
                         }
                     }
                 },
-                { provide: Logger, useClass: MockLogger },
-                { provide: JudgeEventService, useValue: judgeEventServiceSpy }
+                { provide: Logger, useClass: MockLogger }
             ]
         });
 
@@ -57,10 +52,5 @@ describe('EquipmentCheckComponent', () => {
         spyOn(router, 'navigate').and.callFake(() => {});
         component.goToCameraAndMicCheck();
         expect(router.navigate).toHaveBeenCalledWith([PageUrls.SwitchOnCameraMicrophone, conference.id]);
-    });
-
-    it('should raise judge unavaliable event', () => {
-        component.ngOnInit();
-        expect(judgeEventServiceSpy.raiseJudgeUnavailableEvent).toHaveBeenCalled();
     });
 });
