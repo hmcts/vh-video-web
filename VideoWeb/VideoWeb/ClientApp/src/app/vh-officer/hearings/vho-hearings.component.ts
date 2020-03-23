@@ -61,6 +61,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
   @ViewChild('conferenceList', { static: false })
   $conferenceList: VhoHearingListComponent;
+  participantsHeartBeat: ParticipantHeartbeat[] = [];
 
   @HostListener('window:resize', [])
   onResize() {
@@ -142,6 +143,20 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     this.eventHubSubscriptions.add(
       this.eventService.getHeartbeat().subscribe(heartbeat => {
         this.logger.info(`Participant Network Heartbeat Captured`);
+        if (this.participantsHeartBeat !== undefined && this.participantsHeartBeat.length > 0) {
+          let participantPreviousHeartbeat = this.participantsHeartBeat.find(x => x.participantId == heartbeat.participantId && x.conferenceId == heartbeat.conferenceId)
+          if (participantPreviousHeartbeat == undefined) {
+            this.participantsHeartBeat.push(heartbeat);
+          }
+          else {
+            const heartBeatIndex = this.participantsHeartBeat.indexOf(participantPreviousHeartbeat);
+            this.participantsHeartBeat[heartBeatIndex] = heartbeat;
+          }
+        }
+        else {
+          this.participantsHeartBeat.push(heartbeat);
+        }
+
         this.handleHeartbeat(heartbeat);
       })
     );
@@ -158,15 +173,17 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
   }
 
   handleHeartbeat(heartBeat: ParticipantHeartbeat) {
-    const conferenceToUpdate = this.conferences.find(c => c.id === heartBeat.conferenceId);
+    if (this.conferences !== undefined) {
+      const conferenceToUpdate = this.conferences.find(c => c.id === heartBeat.conferenceId);
 
-    if (!conferenceToUpdate) {
-      return;
-    }
+      if (!conferenceToUpdate) {
+        return;
+      }
 
-    const participantToUpdate = conferenceToUpdate.getParticipants().find(x => x.id === heartBeat.participantId);
-    if (participantToUpdate) {
-      participantToUpdate.participantHertBeatHealth = heartBeat;
+      const participantToUpdate = conferenceToUpdate.getParticipants().find(x => x.id === heartBeat.participantId);
+      if (participantToUpdate) {
+        participantToUpdate.participantHertBeatHealth = heartBeat;
+      }
     }
   }
 
@@ -184,6 +201,11 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.logger.debug('Successfully retrieved hearings for VHO');
         this.loadingData = false;
         this.conferences = data.map(c => new HearingSummary(c));
+        if (this.participantsHeartBeat !== undefined && this.participantsHeartBeat.length > 0) {
+          this.participantsHeartBeat.forEach(x => {
+            this.handleHeartbeat(x);
+          });
+        }
         this.conferencesAll = data;
         if (data && data.length > 0) {
           this.logger.debug('VH Officer has conferences');
@@ -298,6 +320,13 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     const participantToUpdate = this.participants.find(x => x.id === message.participantId);
     if (participantToUpdate) {
       participantToUpdate.status = message.status;
+      if (participantToUpdate.status === ParticipantStatus.Disconnected) {
+        const participantHeartBeat = this.participantsHeartBeat.find(y => y.participantId === participantToUpdate.id);
+        if (participantHeartBeat !== undefined) {
+          const heartBeatIndex = this.participantsHeartBeat.indexOf(participantHeartBeat);
+          this.participantsHeartBeat.splice(heartBeatIndex, 1);
+        }
+      }
       if (participantToUpdate.role === UserRole.Judge) {
         this.getJudgeStatusDetails();
       }
