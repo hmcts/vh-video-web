@@ -33,6 +33,7 @@ import { VhoHearingsFilterStubComponent } from '../../testing/stubs/vho-hearings
 import { VhoMonitoringGraphStubComponent } from '../../testing/stubs/vho-monitoring-graph-stub';
 import { VhoParticipantNetworkStatusStubComponent } from '../../testing/stubs/vho-participant-network-status-stub';
 import { VhoHearingsComponent } from './vho-hearings.component';
+import { ParticipantHeartbeat, HeartbeatHealth } from '../../services/models/participant-heartbeat';
 
 describe('VhoHearingsComponent', () => {
     let component: VhoHearingsComponent;
@@ -175,4 +176,11 @@ describe('VhoHearingsComponent', () => {
         expect(component.monitoringParticipant.status).toBe(ParticipantStatus.Disconnected);
         expect(videoWebServiceSpy.getParticipantHeartbeats).toHaveBeenCalled();
     });
+
+  it('should add participant heartbeat to  the heartbeatList', async () => {
+    const heartBeat = new ParticipantHeartbeat('1111-1111-1111-1111', '1111-1111-1111-1111', HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
+    component.addHeartBeatToTheList(heartBeat);
+    expect(component.participantsHeartBeat.length > 0);
+    expect(component.participantsHeartBeat).toContain(heartBeat);
+  });
 });

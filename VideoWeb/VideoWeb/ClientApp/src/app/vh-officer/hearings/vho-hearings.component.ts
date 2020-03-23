@@ -147,17 +147,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     this.eventHubSubscriptions.add(
       this.eventService.getHeartbeat().subscribe(heartbeat => {
         this.logger.info(`Participant Network Heartbeat Captured`);
-        if (this.participantsHeartBeat !== undefined && this.participantsHeartBeat.length > 0) {
-          const participantPreviousHeartbeat = this.participantsHeartBeat.find(x => x.participantId === heartbeat.participantId && x.conferenceId === heartbeat.conferenceId);
-          if (participantPreviousHeartbeat === undefined) {
-            this.participantsHeartBeat.push(heartbeat);
-          } else {
-            const heartBeatIndex = this.participantsHeartBeat.indexOf(participantPreviousHeartbeat);
-            this.participantsHeartBeat[heartBeatIndex] = heartbeat;
-          }
-        } else {
-          this.participantsHeartBeat.push(heartbeat);
-        }
+        this.addHeartBeatToTheList(heartbeat);
         this.handleHeartbeat(heartbeat);
       })
     );
@@ -504,5 +494,19 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
   closeGraph(value) {
     this.displayGraph = !value;
+  }
+
+  addHeartBeatToTheList(heartbeat: ParticipantHeartbeat) {
+    if (this.participantsHeartBeat !== undefined && this.participantsHeartBeat.length > 0) {
+      const participantPreviousHeartbeat = this.participantsHeartBeat.find(x => x.participantId === heartbeat.participantId && x.conferenceId === heartbeat.conferenceId);
+      if (participantPreviousHeartbeat === undefined) {
+        this.participantsHeartBeat.push(heartbeat);
+      } else {
+        const heartBeatIndex = this.participantsHeartBeat.indexOf(participantPreviousHeartbeat);
+        this.participantsHeartBeat[heartBeatIndex] = heartbeat;
+      }
+    } else {
+      this.participantsHeartBeat.push(heartbeat);
+    }
   }
 }
