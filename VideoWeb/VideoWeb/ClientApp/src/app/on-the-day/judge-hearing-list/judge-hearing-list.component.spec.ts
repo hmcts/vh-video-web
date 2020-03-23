@@ -14,8 +14,11 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MockProfileService } from 'src/app/testing/mocks/MockProfileService';
 import { JudgeHearingTableStubComponent } from 'src/app/testing/stubs/judge-hearing-list-table-stub';
-import { ConferenceForUserResponse } from '../../services/clients/api-client';
+import { ConferenceForUserResponse, ConferenceStatus } from '../../services/clients/api-client';
 import { JudgeHearingListComponent } from './judge-hearing-list.component';
+import { EventsService } from 'src/app/services/events.service';
+import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 
 describe('JudgeHearingListComponent with no conferences for user', () => {
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
@@ -44,7 +47,8 @@ describe('JudgeHearingListComponent with no conferences for user', () => {
                 { provide: VideoWebService, useValue: videoWebServiceSpy },
                 { provide: ProfileService, useClass: MockProfileService },
                 { provide: Logger, useClass: MockLogger },
-                { provide: JudgeEventService, useValue: judgeEventServiceSpy }
+                { provide: JudgeEventService, useValue: judgeEventServiceSpy },
+                { provide: EventsService, useClass: MockEventsService }
             ]
         });
     });
@@ -94,7 +98,8 @@ describe('JudgeHearingListComponent with conferences for user', () => {
                 { provide: VideoWebService, useValue: videoWebServiceSpy },
                 { provide: ProfileService, useClass: MockProfileService },
                 { provide: Logger, useClass: MockLogger },
-                { provide: JudgeEventService, useValue: judgeEventServiceSpy }
+                { provide: JudgeEventService, useValue: judgeEventServiceSpy },
+                { provide: EventsService, useClass: MockEventsService }
             ]
         });
     });
@@ -127,6 +132,21 @@ describe('JudgeHearingListComponent with conferences for user', () => {
         component.onConferenceSelected(conference);
         expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeWaitingRoom, conference.id]);
     });
+
+    it('should update conference status when message arrives', () => {
+        const eventsService: MockEventsService = TestBed.get(EventsService);
+        const conference = conferences[0];
+        const message = new ConferenceStatusMessage(conference.id, ConferenceStatus.Closed);
+        eventsService.hearingStatusSubject.next(message);
+        const updatedConference = component.conferences.find(x => x.id === conference.id);
+        expect(updatedConference.status).toBe(message.status);
+    });
+
+    it('should navigate to equipment check', () => {
+        spyOn(router, 'navigate');
+        component.goToEquipmentCheck();
+        expect(router.navigate).toHaveBeenCalledWith([PageUrls.EquipmentCheck]);
+    });
 });
 
 describe('JudgeHearingListComponent with service error', () => {
@@ -156,7 +176,8 @@ describe('JudgeHearingListComponent with service error', () => {
                 { provide: VideoWebService, useValue: videoWebServiceSpy },
                 { provide: ProfileService, useClass: MockProfileService },
                 { provide: Logger, useClass: MockLogger },
-                { provide: JudgeEventService, useValue: judgeEventServiceSpy }
+                { provide: JudgeEventService, useValue: judgeEventServiceSpy },
+                { provide: EventsService, useClass: MockEventsService }
             ]
         });
     });
