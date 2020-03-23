@@ -1,20 +1,18 @@
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { Component } from '@angular/core';
-import { BetaBannerComponent } from './beta-banner.component';
 import { RouterTestingModule } from '@angular/router/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ProfileService } from 'src/app/services/api/profile.service';
-import { UserProfileResponse, UserRole } from 'src/app/services/clients/api-client';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { of } from 'rxjs';
 import { AdalService } from 'adal-angular4';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
+import { ProfileService } from 'src/app/services/api/profile.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { UserProfileResponse, UserRole } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { BetaBannerComponent } from './beta-banner.component';
 
 @Component({ selector: 'app-mock-component', template: '' })
 class Mock1Component {}
@@ -40,7 +38,7 @@ describe('BetaBannerComponent', () => {
     const conference = new ConferenceTestData().getConferenceDetailFuture();
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
-    videoWebServiceSpy.getConferenceById.and.returnValue(of(conference));
+    videoWebServiceSpy.getConferenceById.and.returnValue(conference);
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({

@@ -18,8 +18,22 @@ describe('ErrorService', () => {
         router = TestBed.get(Router);
     });
 
-    it('should be created', inject([ErrorService], (service: ErrorService) => {
-        expect(service).toBeTruthy();
+    it('should do nothing if skip redirect is true', inject([ErrorService], (service: ErrorService) => {
+        spyOn(router, 'navigate').and.callFake(() => {});
+        const error = { status: 401, isApiException: true };
+
+        service.handleApiError(error, true);
+
+        expect(router.navigate).toHaveBeenCalledTimes(0);
+    }));
+
+    it('should do nothing if error is not an api exception', inject([ErrorService], (service: ErrorService) => {
+        spyOn(router, 'navigate').and.callFake(() => {});
+        const error = { message: 'this is a standard error' };
+
+        service.handleApiError(error);
+
+        expect(router.navigate).toHaveBeenCalledTimes(0);
     }));
 
     it('should navigate to unauthorised', inject([ErrorService], (service: ErrorService) => {
@@ -42,4 +56,34 @@ describe('ErrorService', () => {
         service.handleApiError(error);
         expect(router.navigate).toHaveBeenCalledWith([PageUrls.ServiceError]);
     }));
+
+    it('should navigate to service error', inject([ErrorService], (service: ErrorService) => {
+        spyOn(router, 'navigate').and.callFake(() => {});
+        const error = { status: 500, isApiException: true };
+        service.handleApiError(error);
+        expect(router.navigate).toHaveBeenCalledWith([PageUrls.ServiceError]);
+    }));
+
+    it('should return false when error not an ApiException during unauthorised check', inject([ErrorService], (service: ErrorService) => {
+        const error = { message: 'this is a standard error' };
+        expect(service.returnHomeIfUnauthorised(error)).toBeFalsy();
+    }));
+
+    it('should return false when error not a 401 ApiException during unauthorised check', inject(
+        [ErrorService],
+        (service: ErrorService) => {
+            const error = { status: 500, isApiException: true };
+            expect(service.returnHomeIfUnauthorised(error)).toBeFalsy();
+        }
+    ));
+
+    it('should return true and navigate to home when error is a 401 ApiException during unauthorised check', inject(
+        [ErrorService],
+        (service: ErrorService) => {
+            spyOn(router, 'navigate').and.callFake(() => {});
+            const error = { status: 401, isApiException: true };
+            expect(service.returnHomeIfUnauthorised(error)).toBeTruthy();
+            expect(router.navigate).toHaveBeenCalledWith([PageUrls.Home]);
+        }
+    ));
 });

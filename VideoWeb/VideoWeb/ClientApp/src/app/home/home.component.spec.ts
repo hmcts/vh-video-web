@@ -63,7 +63,7 @@ describe('HomeComponent', () => {
         expect(router.navigate).toHaveBeenCalledWith([PageUrls.SignonAComputer]);
     });
 
-    it('should navigate to hearing list when device is a desktop', async done => {
+    it('should navigate to hearing list when device is a desktop', async () => {
         const profile = new UserProfileResponse({ role: UserRole.Representative });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         deviceTypeServiceSpy.isDesktop.and.returnValue(true);
@@ -72,6 +72,5 @@ describe('HomeComponent', () => {
         fixture.detectChanges();
         await fixture.whenStable();
         expect(component.navigateToHearingList).toHaveBeenCalledWith(profile);
-        done();
     });
 });

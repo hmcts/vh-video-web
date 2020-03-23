@@ -27,15 +27,14 @@ export class ContactUsFoldingComponent implements OnInit {
         }
     }
 
-    getConference(conferenceId: string): void {
-        this.videoWebService.getConferenceById(conferenceId).subscribe(
-            conference => (this.conference = conference),
-            error => {
-                if (!this.errorService.returnHomeIfUnauthorised(error)) {
-                    this.errorService.handleApiError(error);
-                }
+    async getConference(conferenceId: string): Promise<void> {
+        try {
+            this.conference = await this.videoWebService.getConferenceById(conferenceId);
+        } catch (error) {
+            if (!this.errorService.returnHomeIfUnauthorised(error)) {
+                this.errorService.handleApiError(error);
             }
-        );
+        }
     }
 
     get caseNumber(): string {

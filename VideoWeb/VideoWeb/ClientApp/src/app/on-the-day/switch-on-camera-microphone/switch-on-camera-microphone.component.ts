@@ -43,12 +43,13 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
         this.isJudge = false;
     }
 
-    async ngOnInit() {
+    ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-        this.retrieveProfile();
-        if (this.conferenceId) {
-            this.getConference();
-        }
+        this.retrieveProfile().then(() => {
+            if (this.conferenceId) {
+                this.getConference();
+            }
+        });
     }
 
     async retrieveProfile(): Promise<void> {
@@ -57,16 +58,15 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
         this.participantName = this.videoWebService.getObfuscatedName(profile.first_name + ' ' + profile.last_name);
     }
 
-    getConference(): void {
+    async getConference(): Promise<void> {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-        this.videoWebService.getConferenceById(this.conferenceId).subscribe(
-            conference => (this.conference = conference),
-            error => {
-                if (!this.errorService.returnHomeIfUnauthorised(error)) {
-                    this.errorService.handleApiError(error);
-                }
+        try {
+            this.conference = await this.videoWebService.getConferenceById(this.conferenceId);
+        } catch (error) {
+            if (!this.errorService.returnHomeIfUnauthorised(error)) {
+                this.errorService.handleApiError(error);
             }
-        );
+        }
     }
 
     async requestMedia() {
@@ -96,17 +96,17 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
         }
     }
 
-    postPermissionDeniedAlert() {
+    async postPermissionDeniedAlert() {
         const participant = this.conference.participants.find(
             x => x.username.toLocaleLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase()
         );
-        this.videoWebService
-            .raiseMediaEvent(this.conference.id, new AddMediaEventRequest({ participant_id: participant.id.toString() }))
-            .subscribe(
-                () => {},
-                error => {
-                    this.logger.error('Failed to post media permission denied alert', error);
-                }
+        try {
+            await this.videoWebService.raiseMediaEvent(
+                this.conference.id,
+                new AddMediaEventRequest({ participant_id: participant.id.toString() })
             );
+        } catch (error) {
+            this.logger.error('Failed to post media permission denied alert', error);
+        }
     }
 }
