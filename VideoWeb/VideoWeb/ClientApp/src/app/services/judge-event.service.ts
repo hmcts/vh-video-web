@@ -38,7 +38,7 @@ export class JudgeEventService {
         this.logger.debug(`Raising judge ${participantId} available event in conference ${conferenceId}`);
         this.setJudgeEventDetails(conferenceId, participantId);
         try {
-            await this.sendEventAsync(conferenceId, participantId, EventType.JudgeUnavailable);
+            await this.sendEventAsync(conferenceId, participantId, EventType.JudgeAvailable);
         } catch (error) {
             this.logger.error('Failed to raise "UpdateParticipantStatusEventRequest" for judge', error);
         }
