@@ -7,14 +7,12 @@ import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceForUserResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
+import { EventsService } from 'src/app/services/events.service';
 import { JudgeEventService } from 'src/app/services/judge-event.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { VhContactDetails } from 'src/app/shared/contact-information';
 import { PageUrls } from 'src/app/shared/page-url.constants';
-import { EventsService } from 'src/app/services/events.service';
-import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { ConferenceHelper } from 'src/app/shared/conference-helper';
 
 @Component({
     selector: 'app-judge-hearing-list',
