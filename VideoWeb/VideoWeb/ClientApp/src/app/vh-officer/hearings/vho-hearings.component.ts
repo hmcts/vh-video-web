@@ -144,16 +144,14 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
       this.eventService.getHeartbeat().subscribe(heartbeat => {
         this.logger.info(`Participant Network Heartbeat Captured`);
         if (this.participantsHeartBeat !== undefined && this.participantsHeartBeat.length > 0) {
-          let participantPreviousHeartbeat = this.participantsHeartBeat.find(x => x.participantId == heartbeat.participantId && x.conferenceId == heartbeat.conferenceId)
+          const participantPreviousHeartbeat = this.participantsHeartBeat.find(x => x.participantId == heartbeat.participantId && x.conferenceId == heartbeat.conferenceId);
           if (participantPreviousHeartbeat == undefined) {
             this.participantsHeartBeat.push(heartbeat);
-          }
-          else {
+          } else {
             const heartBeatIndex = this.participantsHeartBeat.indexOf(participantPreviousHeartbeat);
             this.participantsHeartBeat[heartBeatIndex] = heartbeat;
           }
-        }
-        else {
+        } else {
           this.participantsHeartBeat.push(heartbeat);
         }
 
