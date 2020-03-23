@@ -193,6 +193,11 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.loadingData = false;
         this.conferences = data.map(c => new HearingSummary(c));
         this.conferencesAll = data;
+        if (this.participantsHeartBeat !== undefined && this.participantsHeartBeat.length > 0) {
+          this.participantsHeartBeat.forEach(x => {
+            this.handleHeartbeat(x);
+          });
+        }
         if (data && data.length > 0) {
           this.logger.debug('VH Officer has conferences');
           this.applyActiveFilter();
