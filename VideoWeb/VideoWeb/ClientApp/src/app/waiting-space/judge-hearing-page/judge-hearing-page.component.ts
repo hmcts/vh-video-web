@@ -37,7 +37,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
         this.loadingData = true;
     }
 
-    ngOnInit() {
+    async ngOnInit() {
         this.getConference()
             .then(conference => {
                 this.loadingData = false;
@@ -62,7 +62,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
         this.logger.debug('getting conf for judge hearing');
         const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         this.logger.debug(`getting conf ${conferenceId}`);
-        return this.videoWebService.getConferenceById(conferenceId).toPromise();
+        return this.videoWebService.getConferenceById(conferenceId);
     }
 
     async sanitiseIframeUrl(): Promise<void> {

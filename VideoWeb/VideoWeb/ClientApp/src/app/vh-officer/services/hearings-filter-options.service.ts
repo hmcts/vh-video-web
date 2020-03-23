@@ -23,29 +23,27 @@ export class HearingsFilterOptionsService {
         this.hearingsFilterStorage = new SessionStorage(this.HEARINGS_FITER_KEY);
     }
 
-    getFilter() {
+    async getFilter() {
         this.hearingsFilter = this.hearingsFilterStorage.get();
         if (!this.hearingsFilter) {
-            this.setFilterOptions();
+            await this.setFilterOptions();
         }
         this.hearingsFilter.numberFilterOptions = this.countOptions(this.hearingsFilter);
         return this.hearingsFilter;
     }
 
-    private setFilterOptions() {
+    private async setFilterOptions() {
         this.hearingsFilter = new HearingsFilter();
         this.setStatuses();
-        this.setLocations();
+        await this.setLocations();
         this.setAlerts();
 
         return this.hearingsFilter;
     }
 
-    private setLocations() {
-        this.videoWebService.getHearingsVenue().subscribe((data: HearingVenueResponse[]) => {
-            const locations = data;
-            this.addLocations(locations);
-        });
+    private async setLocations() {
+        const locations = await this.videoWebService.getHearingsVenue();
+        this.addLocations(locations);
     }
 
     private setAlerts() {

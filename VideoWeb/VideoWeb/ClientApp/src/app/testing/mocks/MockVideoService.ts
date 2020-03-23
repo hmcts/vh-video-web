@@ -11,7 +11,9 @@ import {
     TestCallScoreResponse,
     ConferenceEventRequest,
     ConferenceForVhOfficerResponse,
-    SelfTestPexipResponse
+    SelfTestPexipResponse,
+    HearingVenueResponse,
+    ParticipantHeartbeatResponse
 } from 'src/app/services/clients/api-client';
 import { Observable, of } from 'rxjs';
 import { ConferenceTestData } from './data/conference-test-data';
@@ -22,23 +24,23 @@ export class MockVideoWebService implements IVideoWebApiService {
     getConferencesForVHOfficer(): Observable<ConferenceForVhOfficerResponse[]> {
         throw new Error('Method not implemented.');
     }
-    sendEvent(request: ConferenceEventRequest): Observable<void> {
+    sendEvent(request: ConferenceEventRequest): Promise<void> {
         throw new Error('Method not implemented.');
     }
-    getTasksForConference(conferenceId: string): Observable<TaskResponse[]> {
+    getTasksForConference(conferenceId: string): Promise<TaskResponse[]> {
         throw new Error('Method not implemented.');
     }
-    getTestCallScore(conferenceId: string, participantId: string): Observable<TestCallScoreResponse> {
+    getTestCallScore(conferenceId: string, participantId: string): Promise<TestCallScoreResponse> {
         throw new Error('Method not implemented.');
     }
-    getIndependentTestCallScore(participantId: string): Observable<TestCallScoreResponse> {
+    getIndependentTestCallScore(participantId: string): Promise<TestCallScoreResponse> {
         throw new Error('Method not implemented.');
     }
-    getJwToken(participantId: string): Observable<TokenResponse> {
+    getJwToken(participantId: string): Promise<TokenResponse> {
         throw new Error('Method not implemented.');
     }
-    getPexipConfig(): Observable<SelfTestPexipResponse> {
-        return of(
+    getPexipConfig(): Promise<SelfTestPexipResponse> {
+        return Promise.resolve(
             new SelfTestPexipResponse({
                 pexip_self_test_node: 'selftest.automated.test'
             })
@@ -47,7 +49,7 @@ export class MockVideoWebService implements IVideoWebApiService {
     getObfuscatedName(displayName: string): string {
         return displayName.replace(/(?!\b)\w/g, '*');
     }
-    getHearingsVenue(): Observable<import('../../services/clients/api-client').HearingVenueResponse[]> {
+    getHearingsVenue(): Promise<HearingVenueResponse[]> {
         throw new Error('Method not implemented.');
     }
     getConferencesForJudge(): Observable<ConferenceForUserResponse[]> {
@@ -58,45 +60,46 @@ export class MockVideoWebService implements IVideoWebApiService {
         return of(new ConferenceTestData().getTestData());
     }
 
-    getConferenceById(conferenceId: string): Observable<ConferenceResponse> {
+    getConferenceById(conferenceId: string): Promise<ConferenceResponse> {
         console.log(`using mock video web service: getConferenceById ${JSON.stringify(conferenceId)}`);
-        return of(new ConferenceTestData().getConferenceDetailFuture());
+        return Promise.resolve(new ConferenceTestData().getConferenceDetailFuture());
     }
 
-    completeTask(conferenceId: string, taskId: number): Observable<TaskResponse> {
+    completeTask(conferenceId: string, taskId: number): Promise<TaskResponse> {
         console.log('using mock video web service: completeTask');
-        return of(new TasksTestData().getCompletedTask());
+        return Promise.resolve(new TasksTestData().getCompletedTask());
     }
 
-    raiseMediaEvent(conferenceId: string, addMediaEventRequest: AddMediaEventRequest): Observable<void> {
+    raiseMediaEvent(conferenceId: string, addMediaEventRequest: AddMediaEventRequest): Promise<void> {
         console.log('using mock raise event');
-        return of();
+        return Promise.resolve();
     }
 
-    raiseParticipantEvent(
-        conferenceId: string,
-        updateParticipantStatusEventRequest: UpdateParticipantStatusEventRequest
-    ): Observable<void> {
+    raiseParticipantEvent(conferenceId: string, updateParticipantStatusEventRequest: UpdateParticipantStatusEventRequest): Promise<void> {
         console.log('using mock raise event for participant status');
-        return of();
+        return Promise.resolve();
     }
 
-    raiseSelfTestFailureEvent(conferenceId: string, addSelfTestFailureEventRequest: AddSelfTestFailureEventRequest): Observable<void> {
+    raiseSelfTestFailureEvent(conferenceId: string, addSelfTestFailureEventRequest: AddSelfTestFailureEventRequest): Promise<void> {
         console.log('using mock raise participant self test failed event');
-        return of();
+        return Promise.resolve();
     }
 
-    getToken(participantId: string): Observable<TokenResponse> {
+    getToken(participantId: string): Promise<TokenResponse> {
         console.log('using mock get token');
         const token = new TokenResponse({
             expires_on: new Date().toDateString(),
             token: participantId
         });
-        return of(token);
+        return Promise.resolve(token);
     }
 
-    getConferenceChatHistory(conferenceId: string): Observable<ChatResponse[]> {
+    getConferenceChatHistory(conferenceId: string): Promise<ChatResponse[]> {
         console.log('using mock get conference chat history');
-        return of(new ConferenceTestData().getChatHistory(this.username, conferenceId));
+        return Promise.resolve(new ConferenceTestData().getChatHistory(this.username, conferenceId));
+    }
+
+    getParticipantHeartbeats(conferenceId: string, participantId: string): Promise<ParticipantHeartbeatResponse[]> {
+        throw new Error('Method not implemented.');
     }
 }

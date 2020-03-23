@@ -82,20 +82,18 @@ describe('SelectMediaDevicesComponent', () => {
         component.onCancel();
     }));
 
-    it('should not emit device updated event when form is invalid', async done => {
+    it('should not emit device updated event when form is invalid', async () => {
         spyOn(component.acceptMediaDeviceChange, 'emit');
         await fixture.whenStable();
         component.selectedMediaDevicesForm.setValue({ camera: '', microphone: '' });
         component.onSubmit();
         expect(component.acceptMediaDeviceChange.emit).toHaveBeenCalledTimes(0);
-        done();
     });
 
-    it('should emit device updated event when form is valid', async done => {
+    it('should emit device updated event when form is valid', async () => {
         spyOn(component.acceptMediaDeviceChange, 'emit');
         await fixture.whenStable();
         component.onSubmit();
         expect(component.acceptMediaDeviceChange.emit).toHaveBeenCalled();
-        done();
     });
 });

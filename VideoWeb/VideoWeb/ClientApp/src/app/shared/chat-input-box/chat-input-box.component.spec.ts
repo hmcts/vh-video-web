@@ -24,7 +24,7 @@ describe('ChatInputBoxComponent', () => {
         expect(component).toBeTruthy();
     });
 
-    it('should clear field when message has been sent', async done => {
+    it('should clear field when message has been sent', async () => {
         await fixture.whenStable();
         const body = 'test body';
         setTextInput(body);
@@ -32,7 +32,6 @@ describe('ChatInputBoxComponent', () => {
         component.sendMessage();
         expect(component.newMessageBody.value).toBeNull();
         expect(component.submittedMessage.emit).toHaveBeenCalledWith(body);
-        done();
     });
 
     it('should not send message when validation fails', () => {

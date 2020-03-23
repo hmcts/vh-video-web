@@ -53,7 +53,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     selfTestPexipNode: string;
 
     private maxBandwidth = 768;
-    subscription: Subscription;
+    subscription: Subscription = new Subscription();
 
     constructor(
         private logger: Logger,
@@ -96,19 +96,16 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         return this.outgoingStream && this.outgoingStream.active && this.incomingStream && this.incomingStream.active;
     }
 
-    setupTestAndCall(): void {
+    async setupTestAndCall(): Promise<void> {
         this.logger.debug('setting up pexip client and call');
         this.setupPexipClient();
-        this.subscription = this.videoWebService.getToken(this.selfTestParticipantId).subscribe(
-            (token: TokenResponse) => {
-                this.logger.debug('retrieved token for self test');
-                this.token = token;
-                this.call();
-            },
-            error => {
-                this.errorService.handleApiError(error);
-            }
-        );
+        try {
+            this.token = await this.videoWebService.getToken(this.selfTestParticipantId);
+            this.logger.debug('retrieved token for self test');
+            this.call();
+        } catch (error) {
+            this.errorService.handleApiError(error);
+        }
     }
 
     async changeDevices() {
@@ -131,9 +128,11 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     }
 
     setupSubscribers() {
-        this.userMediaService.connectedDevices.subscribe(async () => {
-            this.hasMultipleDevices = await this.userMediaService.hasMultipleDevices();
-        });
+        this.subscription.add(
+            this.userMediaService.connectedDevices.subscribe(async () => {
+                this.hasMultipleDevices = await this.userMediaService.hasMultipleDevices();
+            })
+        );
     }
 
     async updatePexipAudioVideoSource() {
@@ -223,13 +222,11 @@ export class SelfTestComponent implements OnInit, OnDestroy {
                     this.participant.id
                 }
           | Participant : ${this.videoWebService.getObfuscatedName(this.participant.first_name + ' ' + this.participant.last_name)}`);
-                this.testCallResult = await this.videoWebService
-                    .getTestCallScore(this.conference.id, this.selfTestParticipantId)
-                    .toPromise();
+                this.testCallResult = await this.videoWebService.getTestCallScore(this.conference.id, this.selfTestParticipantId);
             } else {
                 this.logger.info(`Self test : retrieveSelfTestScore for Participant Id : ${this.participant.id}
           | Participant : ${this.videoWebService.getObfuscatedName(this.participant.first_name + ' ' + this.participant.last_name)}`);
-                this.testCallResult = await this.videoWebService.getIndependentTestCallScore(this.selfTestParticipantId).toPromise();
+                this.testCallResult = await this.videoWebService.getIndependentTestCallScore(this.selfTestParticipantId);
             }
 
             this.logger.info(`test call score: ${this.testCallResult.score}`);
@@ -280,7 +277,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         });
         if (this.conference && this.participant.role !== UserRole.Judge) {
             try {
-                await this.videoWebService.raiseSelfTestFailureEvent(this.conference.id, request).toPromise();
+                await this.videoWebService.raiseSelfTestFailureEvent(this.conference.id, request);
                 this.logger.info(`Notified failed self test because of ${reason}`);
                 this.scoreSent = true;
             } catch (err) {

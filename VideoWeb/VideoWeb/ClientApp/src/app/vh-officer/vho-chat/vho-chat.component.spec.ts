@@ -32,7 +32,7 @@ describe('VhoChatComponent', () => {
                 { provide: VideoWebService, useClass: MockVideoWebService },
                 { provide: ProfileService, useClass: MockProfileService },
                 { provide: Logger, useClass: MockLogger },
-                { provide: EventsService, useValue: new MockEventsService(true) }
+                { provide: EventsService, useValue: new MockEventsService() }
             ]
         }).compileComponents();
     });
