@@ -11,6 +11,10 @@ import { JudgeEventService } from 'src/app/services/judge-event.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { VhContactDetails } from 'src/app/shared/contact-information';
 import { PageUrls } from 'src/app/shared/page-url.constants';
+import { EventsService } from 'src/app/services/events.service';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { ConferenceHelper } from 'src/app/shared/conference-helper';
 
 @Component({
     selector: 'app-judge-hearing-list',
@@ -30,13 +34,16 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
     today = new Date();
     profile: UserProfileResponse;
 
+    eventHubSubscriptions: Subscription = new Subscription();
+
     constructor(
         private videoWebService: VideoWebService,
         private errorService: ErrorService,
         private router: Router,
         private profileService: ProfileService,
         private logger: Logger,
-        private judgeEventService: JudgeEventService
+        private judgeEventService: JudgeEventService,
+        private eventsService: EventsService
     ) {
         this.loadingData = true;
     }
@@ -48,6 +55,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         this.judgeEventService.clearJudgeUnload();
         this.judgeEventService.raiseJudgeUnavailableEvent();
         this.retrieveHearingsForUser();
+        this.setupSubscribers();
         this.interval = setInterval(() => {
             this.retrieveHearingsForUser();
         }, 30000);
@@ -59,6 +67,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         clearInterval(this.interval);
         this.conferencesSubscription.unsubscribe();
         this.enableFullScreen(false);
+        this.eventHubSubscriptions.unsubscribe();
     }
 
     retrieveHearingsForUser() {
@@ -112,5 +121,18 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         } else {
             masterContainer.classList.remove('fullscreen');
         }
+    }
+
+    setupSubscribers() {
+        this.eventHubSubscriptions.add(
+            this.eventsService.getHearingStatusMessage().subscribe(message => {
+                this.handleConferenceStatusChange(message);
+            })
+        );
+    }
+
+    handleConferenceStatusChange(message: ConferenceStatusMessage) {
+        const conference = this.conferences.find(c => c.id === message.conferenceId);
+        conference.status = message.status;
     }
 }
