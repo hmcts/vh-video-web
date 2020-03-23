@@ -78,7 +78,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
                 .ReturnsAsync(conferences);
 
-            var result = await _controller.GetConferencesForJudge();
+            var result = await _controller.GetConferencesForJudgeAsync();
             
             var typedResult = (OkObjectResult) result.Result;
             typedResult.Should().NotBeNull();
@@ -101,7 +101,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
                 .ReturnsAsync(conferences);
 
-            var result = await _controller.GetConferencesForJudge();
+            var result = await _controller.GetConferencesForJudgeAsync();
             
             var typedResult = (OkObjectResult) result.Result;
             typedResult.Should().NotBeNull();
@@ -119,7 +119,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferencesForJudge();
+            var result = await _controller.GetConferencesForJudgeAsync();
             
             var typedResult = (ObjectResult) result.Result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
@@ -134,7 +134,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferencesForJudge();
+            var result = await _controller.GetConferencesForJudgeAsync();
             
             var typedResult = (ObjectResult) result.Result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
@@ -149,7 +149,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferencesForJudge();
+            var result = await _controller.GetConferencesForJudgeAsync();
             var typedResult = result.Value;
             typedResult.Should().BeNull();
         } 

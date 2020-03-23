@@ -38,7 +38,7 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "CheckServiceHealth")]
         [ProducesResponseType(typeof(HealthCheckResponse), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(HealthCheckResponse), (int) HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> Health()
+        public async Task<IActionResult> HealthAsync()
         {
             var response = new HealthCheckResponse
             {
@@ -93,7 +93,7 @@ namespace VideoWeb.Controllers
             return Ok(response);
         }
 
-        private HealthCheck HandleVideoApiCallException(Exception ex)
+        private static HealthCheck HandleVideoApiCallException(Exception ex)
         {
             var isApiException = ex is VideoApiException;
             var healthCheck = new HealthCheck {Successful = true};

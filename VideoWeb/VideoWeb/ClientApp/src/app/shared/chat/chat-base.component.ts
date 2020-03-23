@@ -78,7 +78,7 @@ export abstract class ChatBaseComponent {
     handleIncomingOtherMessage() {}
 
     async retrieveChatForConference(): Promise<InstantMessage[]> {
-        this.messages = (await this.videoWebService.getConferenceChatHistory(this._hearing.id).toPromise()).map(m => {
+        this.messages = (await this.videoWebService.getConferenceChatHistory(this._hearing.id)).map(m => {
             const im = new InstantMessage(m);
             im.conferenceId = this._hearing.id;
             return im;

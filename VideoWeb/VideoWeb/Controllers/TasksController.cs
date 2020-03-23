@@ -26,7 +26,7 @@ namespace VideoWeb.Controllers
         [HttpGet("{conferenceId}/tasks")]
         [SwaggerOperation(OperationId = "GetTasks")]
         [ProducesResponseType(typeof(List<TaskResponse>), (int) HttpStatusCode.OK)]
-        public async Task<IActionResult> GetTasks(Guid conferenceId)
+        public async Task<IActionResult> GetTasksAsync(Guid conferenceId)
         {
             try
             {
@@ -51,7 +51,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(TaskResponse), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> CompleteTask([FromRoute]Guid conferenceId, [FromRoute]long taskId)
+        public async Task<IActionResult> CompleteTaskAsync([FromRoute]Guid conferenceId, [FromRoute]long taskId)
         {
             var username = User.Identity.Name.ToLower().Trim();
             try

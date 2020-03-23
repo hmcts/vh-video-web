@@ -93,23 +93,17 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
 
     async getConference() {
         const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-        return this.videoWebService
-            .getConferenceById(conferenceId)
-            .toPromise()
-            .then((data: ConferenceResponse) => {
-                this.loadingData = false;
-                this.conference = data;
-
-                this.postEventJudgeAvailableStatus();
-
-                this.hearing = new Hearing(data);
-            })
-            .catch(error => {
-                this.loadingData = false;
-                if (!this.errorService.returnHomeIfUnauthorised(error)) {
-                    this.errorService.handleApiError(error);
-                }
-            });
+        try {
+            this.conference = await this.videoWebService.getConferenceById(conferenceId);
+            this.hearing = new Hearing(this.conference);
+            this.loadingData = false;
+            this.postEventJudgeAvailableStatus();
+        } catch (error) {
+            this.loadingData = false;
+            if (!this.errorService.returnHomeIfUnauthorised(error)) {
+                this.errorService.handleApiError(error);
+            }
+        }
     }
 
     async postEventJudgeAvailableStatus() {

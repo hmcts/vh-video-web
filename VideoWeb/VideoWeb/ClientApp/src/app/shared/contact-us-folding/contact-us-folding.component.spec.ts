@@ -1,15 +1,13 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { ContactUsFoldingComponent } from './contact-us-folding.component';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { HttpClientModule } from '@angular/common/http';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { of } from 'rxjs';
-import { configureTestSuite } from 'ng-bullet';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { Logger } from 'src/app/services/logging/logger-base';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { configureTestSuite } from 'ng-bullet';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { ContactUsFoldingComponent } from './contact-us-folding.component';
 
 describe('ContactUsFoldingComponent', () => {
     let component: ContactUsFoldingComponent;
@@ -43,15 +41,17 @@ describe('ContactUsFoldingComponent', () => {
         component = fixture.componentInstance;
     });
 
-    it('should return blank case number', () => {
-        videoWebServiceSpy.getConferenceById.and.returnValue(of(null));
+    it('should return blank case number', async () => {
+        videoWebServiceSpy.getConferenceById.and.returnValue(null);
         component.ngOnInit();
+        await fixture.whenStable();
         expect(component.caseNumber).toBe('');
     });
 
-    it('should return case number', () => {
-        videoWebServiceSpy.getConferenceById.and.returnValue(of(conference));
+    it('should return case number', async () => {
+        videoWebServiceSpy.getConferenceById.and.returnValue(conference);
         component.ngOnInit();
+        await fixture.whenStable();
         expect(component.caseNumber).toBe(conference.case_number);
     });
 

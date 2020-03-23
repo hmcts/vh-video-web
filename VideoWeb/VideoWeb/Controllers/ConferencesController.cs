@@ -47,7 +47,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(List<ConferenceForUserResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [SwaggerOperation(OperationId = "GetConferencesForJudge")]
-        public async Task<ActionResult<List<ConferenceForUserResponse>>> GetConferencesForJudge()
+        public async Task<ActionResult<List<ConferenceForUserResponse>>> GetConferencesForJudgeAsync()
         {
             _logger.LogDebug("GetConferencesForJudge");
             return await GetConferenceForUserAsync(false);
@@ -102,7 +102,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(List<ConferenceForVhOfficerResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [SwaggerOperation(OperationId = "GetConferencesForVhOfficer")]
-        public async Task<ActionResult<List<ConferenceForVhOfficerResponse>>> GetConferencesForVhOfficer()
+        public async Task<ActionResult<List<ConferenceForVhOfficerResponse>>> GetConferencesForVhOfficerAsync()
         {
             _logger.LogDebug("GetConferencesForVhOfficer");
             try
@@ -127,10 +127,11 @@ namespace VideoWeb.Controllers
                 conferences = conferences.Where(ConferenceHelper.HasNotPassed).ToList();
                 conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();
                 var mapper = new ConferenceForVhOfficerResponseMapper();
-                var tasks = conferences.Select(c => MapConferenceForVho(mapper, c)).ToArray();
-                var response = Task.WhenAll(tasks).Result.ToList();
+                var tasks = conferences.Select(c => MapConferenceForVhoAsync(mapper, c)).ToArray();
+                
+                var response = await Task.WhenAll(tasks);
 
-                return Ok(response);
+                return Ok(response.ToList());
             }
             catch (VideoApiException e)
             {
@@ -138,16 +139,19 @@ namespace VideoWeb.Controllers
             }
         }
 
-        private async Task<ConferenceForVhOfficerResponse> MapConferenceForVho(
+        private async Task<ConferenceForVhOfficerResponse> MapConferenceForVhoAsync(
             ConferenceForVhOfficerResponseMapper mapper, ConferenceSummaryResponse conference)
         {
-            if (!IsInStateToChat(conference)) return mapper.MapConferenceSummaryToResponseModel(conference, null);
+            if (!IsInStateToChat(conference))
+            {
+                return mapper.MapConferenceSummaryToResponseModel(conference, null);
+            }
 
             var messages = await _videoApiClient.GetInstantMessageHistoryAsync(conference.Id);
             return mapper.MapConferenceSummaryToResponseModel(conference, messages);
         }
 
-        private bool IsInStateToChat(ConferenceSummaryResponse conference)
+        private static bool IsInStateToChat(ConferenceSummaryResponse conference)
         {
             return conference.Status == ConferenceState.NotStarted ||
                    conference.Status == ConferenceState.Paused ||
@@ -164,7 +168,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [SwaggerOperation(OperationId = "GetConferenceById")]
-        public async Task<ActionResult<ConferenceResponse>> GetConferenceById(Guid conferenceId)
+        public async Task<ActionResult<ConferenceResponse>> GetConferenceByIdAsync(Guid conferenceId)
         {
             _logger.LogDebug("GetConferenceById");
             if (conferenceId == Guid.Empty)

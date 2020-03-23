@@ -26,7 +26,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> AddMediaEventToConference(Guid conferenceId, [FromBody] AddMediaEventRequest addMediaEventRequest)
+        public async Task<IActionResult> AddMediaEventToConferenceAsync(Guid conferenceId, [FromBody] AddMediaEventRequest addMediaEventRequest)
         {
             try
             {
@@ -53,7 +53,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> AddSelfTestFailureEventToConference(Guid conferenceId, 
+        public async Task<IActionResult> AddSelfTestFailureEventToConferenceAsync(Guid conferenceId, 
             [FromBody] AddSelfTestFailureEventRequest addSelfTestFailureEventRequest)
         {
             try

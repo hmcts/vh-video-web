@@ -2,14 +2,22 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, UserRole, ConferenceForVhOfficerResponse } from 'src/app/services/clients/api-client';
+import {
+    ConferenceForVhOfficerResponse,
+    ConferenceResponse,
+    ParticipantForUserResponse,
+    ParticipantHeartbeatResponse,
+    ParticipantStatus,
+    UserRole
+} from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { ParticipantSummary } from 'src/app/shared/models/participant-summary';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
@@ -17,14 +25,14 @@ import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { TasksTableStubComponent } from 'src/app/testing/stubs/task-table-stub';
+import { VhoChatStubComponent } from 'src/app/testing/stubs/vho-chat-stub';
 import { VhoHearingListStubComponent } from 'src/app/testing/stubs/vho-hearing-list-stub';
 import { VhoParticipantStatusStubComponent } from 'src/app/testing/stubs/vho-participant-status-stub';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { VhoHearingsFilterStubComponent } from '../../testing/stubs/vho-hearings-filter-stub';
-import { VhoHearingsComponent } from './vho-hearings.component';
-import { VhoChatStubComponent } from 'src/app/testing/stubs/vho-chat-stub';
-import { VhoParticipantNetworkStatusStubComponent } from '../../testing/stubs/vho-participant-network-status-stub';
 import { VhoMonitoringGraphStubComponent } from '../../testing/stubs/vho-monitoring-graph-stub';
+import { VhoParticipantNetworkStatusStubComponent } from '../../testing/stubs/vho-participant-network-status-stub';
+import { VhoHearingsComponent } from './vho-hearings.component';
 
 describe('VhoHearingsComponent', () => {
     let component: VhoHearingsComponent;
@@ -40,12 +48,12 @@ describe('VhoHearingsComponent', () => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getConferencesForVHOfficer',
             'getConferenceById',
-            'getTasksForConference'
+            'getTasksForConference',
+            'getParticipantHeartbeats'
         ]);
         videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(of(conferences));
-        videoWebServiceSpy.getConferenceById.and.returnValue(of(conferenceDetail));
-        videoWebServiceSpy.getTasksForConference.and.returnValue(of(new ConferenceTestData().getTasksForConference()));
-
+        videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(conferenceDetail));
+        videoWebServiceSpy.getTasksForConference.and.returnValue(Promise.resolve(new ConferenceTestData().getTasksForConference()));
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],
             declarations: [
@@ -54,8 +62,8 @@ describe('VhoHearingsComponent', () => {
                 VhoHearingListStubComponent,
                 VhoParticipantStatusStubComponent,
                 VhoHearingsFilterStubComponent,
-              VhoChatStubComponent,
-              VhoParticipantNetworkStatusStubComponent,
+                VhoChatStubComponent,
+                VhoParticipantNetworkStatusStubComponent,
                 VhoMonitoringGraphStubComponent
             ],
             providers: [
@@ -80,8 +88,8 @@ describe('VhoHearingsComponent', () => {
         spyOn(component, 'updateWidthForAdminFrame');
         spyOn(component, 'getHeightForFrame').and.returnValue(600);
 
-      component.onConferenceSelected(new ConferenceForVhOfficerResponse({ id: component.conferences[0].id }));
-      expect(component.selectedConferenceUrl).toBeDefined();
+        component.onConferenceSelected(new ConferenceForVhOfficerResponse({ id: component.conferences[0].id }));
+        expect(component.selectedConferenceUrl).toBeDefined();
     });
 
     it('should return true when current conference is selected', () => {
@@ -101,20 +109,20 @@ describe('VhoHearingsComponent', () => {
         expect(component.isCurrentConference(currentConference)).toBeFalsy();
     });
 
-    it('should load tasks for conference when current conference is selected', () => {
+    it('should load tasks for conference when current conference is selected', async () => {
         const currentConference = conferences[0];
         component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
-        component.getTasksForConference(currentConference.id);
+        await component.getTasksForConference(currentConference.id);
         expect(component.tasks.length > 0).toBeTruthy();
     });
 
     it('should update number of pending tasks on task completed', () => {
         const currentConference = component.conferences[0];
-      const initPendingTasks = 5;
-      currentConference.numberOfPendingTasks = initPendingTasks;
+        const initPendingTasks = 5;
+        currentConference.numberOfPendingTasks = initPendingTasks;
 
-      component.onTaskCompleted(new TaskCompleted(currentConference.id, 3));
-      expect(component.conferences[0].numberOfPendingTasks).toBeLessThan(initPendingTasks);
+        component.onTaskCompleted(new TaskCompleted(currentConference.id, 3));
+        expect(component.conferences[0].numberOfPendingTasks).toBeLessThan(initPendingTasks);
     });
 
     it('should get the selected judge statuses from another hearings', () => {
@@ -140,65 +148,31 @@ describe('VhoHearingsComponent', () => {
     });
 
     it('should reset conference unread counter when vho sends a message', () => {
-      const conference = component.conferences[0];
-      component.conferences[0].numberOfUnreadMessages = 5;
+        const conference = component.conferences[0];
+        component.conferences[0].numberOfUnreadMessages = 5;
         component.resetConferenceUnreadCounter(conference.id);
-      expect(component.conferences[0].numberOfUnreadMessages).toBe(0);
+        expect(component.conferences[0].numberOfUnreadMessages).toBe(0);
     });
-});
 
-describe('VhoHearingsComponent when conference retrieval fails', () => {
-    let component: VhoHearingsComponent;
-    let fixture: ComponentFixture<VhoHearingsComponent>;
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    const mockEventsService = new MockEventsService(true);
-    let adalService: MockAdalService;
-    let errorService: ErrorService;
-
-    configureTestSuite(() => {
-        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
-            'getConferencesForVHOfficer',
-            'getConferenceById',
-            'getTasksForConference'
-        ]);
-        videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(throwError({ status: 404, isApiException: true }));
-
-        TestBed.configureTestingModule({
-            imports: [SharedModule, RouterTestingModule],
-            declarations: [
-                VhoHearingsComponent,
-                TasksTableStubComponent,
-                VhoHearingListStubComponent,
-                VhoParticipantStatusStubComponent,
-                VhoHearingsFilterStubComponent,
-                VhoChatStubComponent,
-                VhoMonitoringGraphStubComponent
-            ],
-            providers: [
-                { provide: VideoWebService, useValue: videoWebServiceSpy },
-                { provide: AdalService, useClass: MockAdalService },
-                { provide: EventsService, useValue: mockEventsService },
-                { provide: ConfigService, useClass: MockConfigService },
-                { provide: Logger, useClass: MockLogger }
-            ]
+    it('should show monitoring graph for selected participant', async () => {
+        const hearbeatResponse = new ParticipantHeartbeatResponse({
+            browser_name: 'Chrome',
+            browser_version: '80.0.3987.132',
+            recent_packet_loss: 78,
+            timestamp: new Date(new Date().toUTCString())
         });
-    });
-
-    beforeEach(() => {
-        adalService = TestBed.get(AdalService);
-        errorService = TestBed.get(ErrorService);
-        fixture = TestBed.createComponent(VhoHearingsComponent);
-        component = fixture.componentInstance;
-        component.selectedHearing = null;
-    });
-
-    it('should handle api error when retrieving conference fails', async done => {
-        spyOn(errorService, 'handleApiError').and.callFake(() => {
-            Promise.resolve(true);
-        });
-        component.retrieveHearingsForVhOfficer();
-        await fixture.whenStable();
-        expect(errorService.handleApiError).toHaveBeenCalledTimes(1);
-        done();
+        videoWebServiceSpy.getParticipantHeartbeats.and.returnValue(Promise.resolve([hearbeatResponse]));
+        component.displayGraph = false;
+        const param = {
+            participant: new ParticipantSummary(
+                new ParticipantForUserResponse({ id: '1111-2222-3333', display_name: 'Adam', status: ParticipantStatus.Disconnected })
+            ),
+            conferenceId: '1234-12345678'
+        };
+        await component.onParticipantSelected(param);
+        expect(component.monitoringParticipant).toBeTruthy();
+        expect(component.monitoringParticipant.name).toBe('Adam');
+        expect(component.monitoringParticipant.status).toBe(ParticipantStatus.Disconnected);
+        expect(videoWebServiceSpy.getParticipantHeartbeats).toHaveBeenCalled();
     });
 });
