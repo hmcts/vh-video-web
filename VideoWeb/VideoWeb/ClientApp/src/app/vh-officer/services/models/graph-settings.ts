@@ -47,7 +47,7 @@ export class GraphSettings {
         }
       },
       tooltips: {
-        enabled:false,
+        enabled: false,
       }
     };
   }
