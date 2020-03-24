@@ -105,4 +105,28 @@ describe('Participant', () => {
         const participant = new Participant(p);
         expect(participant.isJudge).toBe(true);
     });
+    it('should return empty initialed name if no first and last names set', () => {
+      const p = new ConferenceTestData().getConferenceDetailFuture().participants[2];
+      p.first_name = null;
+      p.last_name = null;
+      const participant = new Participant(p);
+      expect(participant.initialedName).toBe(' ');
+    });
+    it('should return initialed name if last names set', () => {
+      const p = new ConferenceTestData().getConferenceDetailFuture().participants[2];
+      p.first_name = null;
+      const participant = new Participant(p);
+      expect(participant.initialedName.length > 0).toBe(true);
+    });
+    it('should return initialed name if first names set', () => {
+      const p = new ConferenceTestData().getConferenceDetailFuture().participants[2];
+      p.last_name = null;
+      const participant = new Participant(p);
+      expect(participant.initialedName.length > 0).toBe(true);
+    });
+    it('should return initialed name if first names set and last', () => {
+      const p = new ConferenceTestData().getConferenceDetailFuture().participants[2];
+      const participant = new Participant(p);
+      expect(participant.initialedName.length > 0).toBe(true);
+    });
 });
