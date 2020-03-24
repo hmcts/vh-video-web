@@ -8,7 +8,7 @@
       <div class="govuk-body-s tooltip-wrapper">
         {{participant.initialedName}}
         <div id="tooltip-{{participant.id}}" class="tooltip">
-          <app-participant-info-tooltip [participant]="participant"></app-participant-info-tooltip>
+          <app-participant-info-tooltip [participant]="participant" [venueName]="_venueName"></app-participant-info-tooltip>
         </div>
       </div>
     </div>
