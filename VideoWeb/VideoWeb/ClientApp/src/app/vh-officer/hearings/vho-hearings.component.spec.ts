@@ -231,4 +231,11 @@ describe('VhoHearingsComponent', () => {
     expect(component.participants[0].status).toBe(ParticipantStatus.Available);
     expect(component.participantsHeartBeat.length).toBe(2);
   });
+
+  it('should not return conferences if VHO has no hearings', async () => {
+    videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(of(undefined));
+    component.retrieveHearingsForVhOfficer();
+    expect(component.conferences).toBe(undefined)
+    component.handleHeartbeat(undefined);
+   });
 });
