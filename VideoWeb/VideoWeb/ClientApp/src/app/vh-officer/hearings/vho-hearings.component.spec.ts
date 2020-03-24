@@ -203,6 +203,7 @@ describe('VhoHearingsComponent', () => {
     component.participantsHeartBeat.push(heartBeat2);
     component.participants = conferenceDetail.participants;
     component.handleParticipantStatusChange(message);
+    expect(component.participants).not.toBe(undefined);
     expect(component.participants[0].status).toBe(ParticipantStatus.Disconnected);
     expect(component.participantsHeartBeat).not.toContain(heartBeat1);
   });
