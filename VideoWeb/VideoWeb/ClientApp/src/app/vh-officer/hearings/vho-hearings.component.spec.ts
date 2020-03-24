@@ -233,7 +233,8 @@ describe('VhoHearingsComponent', () => {
   });
 
   it('should not return conferences if VHO has no hearings', async () => {
-    videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(of(undefined));
+    const conferences = [];
+    videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(of(conferences));
     component.retrieveHearingsForVhOfficer();
     expect(component.conferences).toBe(undefined);
     component.handleHeartbeat(undefined);
