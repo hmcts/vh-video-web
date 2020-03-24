@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -11,7 +10,6 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
@@ -45,7 +43,6 @@ describe('JudgeWaitingRoomComponent when conference does not exist', () => {
                     }
                 },
                 { provide: VideoWebService, useValue: videoWebServiceSpy },
-                { provide: AdalService, useClass: MockAdalService },
                 { provide: ConfigService, useClass: MockConfigService },
                 { provide: EventsService, useClass: MockEventsService },
                 { provide: Logger, useClass: MockLogger }

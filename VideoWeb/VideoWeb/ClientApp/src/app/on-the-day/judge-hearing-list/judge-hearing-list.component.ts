@@ -8,7 +8,6 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceForUserResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
-import { JudgeEventService } from 'src/app/services/judge-event.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { VhContactDetails } from 'src/app/shared/contact-information';
@@ -40,7 +39,6 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         private router: Router,
         private profileService: ProfileService,
         private logger: Logger,
-        private judgeEventService: JudgeEventService,
         private eventsService: EventsService
     ) {
         this.loadingData = true;
@@ -50,8 +48,6 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         this.profileService.getUserProfile().then(profile => {
             this.profile = profile;
         });
-        this.judgeEventService.clearJudgeUnload();
-        this.judgeEventService.raiseJudgeUnavailableEvent();
         this.retrieveHearingsForUser();
         this.setupSubscribers();
         this.interval = setInterval(() => {
