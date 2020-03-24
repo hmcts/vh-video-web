@@ -34,6 +34,7 @@ import { VhoMonitoringGraphStubComponent } from '../../testing/stubs/vho-monitor
 import { VhoParticipantNetworkStatusStubComponent } from '../../testing/stubs/vho-participant-network-status-stub';
 import { VhoHearingsComponent } from './vho-hearings.component';
 import { ParticipantHeartbeat, HeartbeatHealth } from '../../services/models/participant-heartbeat';
+import { ParticipantStatusMessage } from '../../services/models/participant-status-message';
 
 describe('VhoHearingsComponent', () => {
     let component: VhoHearingsComponent;
@@ -191,5 +192,21 @@ describe('VhoHearingsComponent', () => {
     const heartBeat = new ParticipantHeartbeat(conference.id, conference.getParticipants()[0].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
     component.handleHeartbeat(heartBeat);
     expect(component.conferences[0].getParticipants()[0].participantHertBeatHealth).toBe(heartBeat);
-   });
+  });
+
+  it('should change participant status for particpant', async () => {
+    const conference = component.conferences[0];
+    const heartBeat1 = new ParticipantHeartbeat(conferenceDetail.id, conferenceDetail.participants[0].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
+    const heartBeat2 = new ParticipantHeartbeat(conferenceDetail.id, conferenceDetail.participants[0].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
+    const message = new ParticipantStatusMessage(conferenceDetail.participants[0].id, ParticipantStatus.Disconnected);
+    component.participantsHeartBeat = [];
+    component.participantsHeartBeat.push(heartBeat1);
+    component.participantsHeartBeat.push(heartBeat2);
+    component.participants = conferenceDetail.participants;
+    component.handleParticipantStatusChange(message);
+    expect(component.participants[0].status).toBe(ParticipantStatus.Disconnected);
+    expect(component.participantsHeartBeat).not.toContain(heartBeat1);
+  });
+
+
 });
