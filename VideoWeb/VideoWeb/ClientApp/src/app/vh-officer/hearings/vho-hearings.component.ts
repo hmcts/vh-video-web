@@ -26,6 +26,7 @@ import { ParticipantHeartbeat } from '../../services/models/participant-heartbea
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { ParticipantGraphInfo } from '../services/models/participant-graph-info';
 import { PackageLost } from '../services/models/package-lost';
+import { ParticipantSummary } from '../../shared/models/participant-summary';
 
 @Component({
     selector: 'app-vho-hearings',
@@ -464,10 +465,12 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
     async onParticipantSelected(participantInfo) {
         if (!this.displayGraph) {
-            if (participantInfo && participantInfo.conferenceId && participantInfo.participant) {
+          if (participantInfo && participantInfo.conferenceId && participantInfo.participant) {
+            const participant: ParticipantSummary = participantInfo.participant;
                 this.monitoringParticipant = new ParticipantGraphInfo(
-                    participantInfo.participant.displayName,
-                    participantInfo.participant.status
+                   participant.displayName,
+                   participant.status,
+                   participant.representee,
                 );
 
                 await this.videoWebService

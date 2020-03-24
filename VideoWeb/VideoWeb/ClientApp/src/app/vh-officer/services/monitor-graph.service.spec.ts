@@ -34,14 +34,16 @@ describe('MonitorGraphService', () => {
     service.unsupportedBroswer.push(new UnsupportedBrowserHeartbeat('Chrome', '80.0.3987.122'));
     expect(result).toBe(false);
   });
+  it('should return false if the user browser version equal to first supported version', () => {
+    const result = service.isUnsupportedBrowser(new PackageLost(10, 'MS-Edge', '44.19041', 1583487492315));
+    expect(result).toBe(false);
+  });
   it('should return true if the user browser version equal to unsupported version', () => {
-
-    const result = service.isUnsupportedBrowser(new PackageLost(10, 'Edge', '44.19041', 1583487492315));
+    const result = service.isUnsupportedBrowser(new PackageLost(10, 'MS-Edge', '44.18', 1583487492315));
     expect(result).toBe(true);
   });
   it('should return false if the user browser version is supported version', () => {
-
-    const result = service.isUnsupportedBrowser(new PackageLost(10, 'Edge', '79.0.309', 1583487492315));
+    const result = service.isUnsupportedBrowser(new PackageLost(10, 'MS-Edge', '79.0.309', 1583487492315));
     expect(result).toBe(false);
   });
   it('should reverse package lost value', () => {

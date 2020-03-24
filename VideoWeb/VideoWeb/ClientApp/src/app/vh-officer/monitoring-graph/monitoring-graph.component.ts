@@ -39,6 +39,7 @@ export class MonitoringGraphComponent implements OnInit {
 
   lineChartOptions = GraphSettings.getLineChartOptions();
   showUnsupportedBrowser = false;
+  participantName: string;
 
   constructor(private monitorGraphService: MonitorGraphService) { }
 
@@ -52,6 +53,15 @@ export class MonitoringGraphComponent implements OnInit {
     this.lineChartLabels = Array.from(Array(GraphSettings.MAX_RECORDS), (item, index) => index.toString());
     this.packagesLostValues = Array(GraphSettings.MAX_RECORDS).fill(NaN);
     this.registerPlugin();
+    this.setParticipantName();
+  }
+
+  setParticipantName() {
+    if (this.participantGraphInfo) {
+      this.participantName = this.participantGraphInfo.representee && this.participantGraphInfo.representee.length > 0 ?
+        `${this.participantGraphInfo.name}, representing ${this.participantGraphInfo.representee}` :
+        this.participantGraphInfo.name;
+    }
   }
 
   registerPlugin() {
