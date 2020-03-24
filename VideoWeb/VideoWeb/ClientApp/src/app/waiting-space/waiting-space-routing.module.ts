@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import { ParticipantWaitingRoomComponent } from './participant-waiting-room/participant-waiting-room.component';
-import { JudgeWaitingRoomComponent } from './judge-waiting-room/judge-waiting-room.component';
-import { JudgeHearingPageComponent } from './judge-hearing-page/judge-hearing-page.component';
-import { PageUrls } from '../shared/page-url.constants';
+import { RouterModule, Routes } from '@angular/router';
 import { ConferenceGuard } from '../security/conference.guard';
+import { PageUrls } from '../shared/page-url.constants';
+import { JudgeHearingPageComponent } from './judge-hearing-page/judge-hearing-page.component';
+import { JudgeWaitingRoomComponent } from './judge-waiting-room/judge-waiting-room.component';
+import { ParticipantWaitingRoomComponent } from './participant-waiting-room/participant-waiting-room.component';
 
 const routes: Routes = [
     {
