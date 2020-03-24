@@ -183,4 +183,11 @@ describe('VhoHearingsComponent', () => {
     expect(component.participantsHeartBeat.length > 0);
     expect(component.participantsHeartBeat).toContain(heartBeat);
   });
+
+  it('should set participant heartbeat', async () => {
+    const conference = component.conferences[0];
+    const heartBeat = new ParticipantHeartbeat(conference.id, conference.getParticipants()[0].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
+    component.handleHeartbeat(heartBeat);
+    expect(component.conferences[0].getParticipants()[0].participantHertBeatHealth).toBe(heartBeat);
+   });
 });
