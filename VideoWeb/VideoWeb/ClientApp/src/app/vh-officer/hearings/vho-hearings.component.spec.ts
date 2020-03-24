@@ -195,7 +195,6 @@ describe('VhoHearingsComponent', () => {
   });
 
   it('should change participant status for particpant', async () => {
-    const conference = component.conferences[0];
     const heartBeat1 = new ParticipantHeartbeat(conferenceDetail.id, conferenceDetail.participants[0].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
     const heartBeat2 = new ParticipantHeartbeat(conferenceDetail.id, conferenceDetail.participants[0].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
     const message = new ParticipantStatusMessage(conferenceDetail.participants[0].id, ParticipantStatus.Disconnected);
