@@ -230,5 +230,5 @@ describe('VhoHearingsComponent', () => {
     const conferenceToUpdate = component.conferences.find(x => x.id === heartBeat1.conferenceId);
     const participantToUpdate = conferenceToUpdate.getParticipants().find(p => p.id === heartBeat1.participantId);
     expect(participantToUpdate).toBe(undefined);
-   });   
+   });
 });
