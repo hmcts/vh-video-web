@@ -231,4 +231,17 @@ describe('VhoHearingsComponent', () => {
     const participantToUpdate = conferenceToUpdate.getParticipants().find(p => p.id === heartBeat1.participantId);
     expect(participantToUpdate).toBe(undefined);
    });
+    it('should change participant status for particpant when status is not disconnected', async () => {
+      const heartBeat1 = new ParticipantHeartbeat(conferenceDetail.id, conferenceDetail.participants[0].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
+      const heartBeat2 = new ParticipantHeartbeat(conferenceDetail.id, conferenceDetail.participants[1].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
+      const message = new ParticipantStatusMessage(conferenceDetail.participants[0].id, ParticipantStatus.Available);
+      component.participantsHeartBeat = [];
+      component.participantsHeartBeat.push(heartBeat1);
+      component.participantsHeartBeat.push(heartBeat2);
+      component.participants = conferenceDetail.participants;
+      component.handleParticipantStatusChange(message);
+      expect(component.participants).not.toBe(undefined);
+      expect(component.participants[0].status).toBe(ParticipantStatus.Available);
+      expect(component.participantsHeartBeat.length).toBe(2);
+    });
 });
