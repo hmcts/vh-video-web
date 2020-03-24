@@ -1,6 +1,5 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
@@ -31,7 +30,6 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
         private eventService: EventsService,
         private errorService: ErrorService,
         private logger: Logger,
-        private adalService: AdalService,
         private judgeEventService: JudgeEventService
     ) {
         this.loadingData = true;
@@ -46,13 +44,9 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
 
     @HostListener('window:beforeunload')
     async ngOnDestroy(): Promise<void> {
-        this.logger.debug('Clearing intervals and subscriptions for judge waiting room');
+        this.logger.debug('[Judge WR] - Clearing intervals and subscriptions for judge waiting room');
         this.eventHubSubscriptions.unsubscribe();
         await this.postEventJudgeUnvailableStatus();
-    }
-
-    sendMessage() {
-        this.eventService.sendMessage(this.conference.id, `message from judge ${this.adalService.userInfo.userName}`);
     }
 
     async getConference() {
@@ -70,18 +64,16 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     async postEventJudgeAvailableStatus() {
-        if (this.hearing) {
-            await this.judgeEventService.raiseJudgeAvailableEvent(this.hearing.id, this.hearing.judge.id);
-        }
+        await this.judgeEventService.raiseJudgeAvailableEvent(this.hearing.id, this.hearing.judge.id);
     }
 
     async postEventJudgeUnvailableStatus(): Promise<boolean> {
-        this.logger.debug('[Judge WR Guard] - running exit code');
+        this.logger.debug('[Judge WR] - running exit code');
         try {
             await this.judgeEventService.raiseJudgeUnavailableEvent(this.hearing.id, this.hearing.judge.id);
             return true;
         } catch (error) {
-            this.logger.error('[Judge WR Guard] - failed to run exit code', error);
+            this.logger.error('[Judge WR] - failed to run exit code', error);
             return false;
         }
     }
@@ -120,7 +112,7 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
     setupEventHubSubscribers() {
         this.eventHubSubscriptions.add(
             this.eventService.getHearingStatusMessage().subscribe(message => {
-                this.handleHearingStatusChange(<ConferenceStatus>message.status);
+                this.handleHearingStatusChange(message.status);
             })
         );
 
@@ -130,18 +122,18 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
             })
         );
 
-        this.logger.debug('Subscribing to EventHub disconnects');
+        this.logger.debug('[Judge WR] - Subscribing to EventHub disconnects');
         this.eventHubSubscriptions.add(
             this.eventService.getServiceDisconnected().subscribe(() => {
-                this.logger.info(`EventHub disconnection for vh officer`);
+                this.logger.info(`[Judge WR] - EventHub disconnection for vh officer`);
                 this.getConference();
             })
         );
 
-        this.logger.debug('Subscribing to EventHub reconnects');
+        this.logger.debug('[Judge WR] - Subscribing to EventHub reconnects');
         this.eventHubSubscriptions.add(
             this.eventService.getServiceReconnected().subscribe(() => {
-                this.logger.info(`EventHub re-connected for vh officer`);
+                this.logger.info(`[Judge WR] - EventHub re-connected for vh officer`);
                 this.getConference();
             })
         );
@@ -151,7 +143,7 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): any {
         const participant = this.conference.participants.find(p => p.id === message.participantId);
-        const status = <ParticipantStatus>message.status;
+        const status = message.status;
         participant.status = status;
 
         const judgeDisconnected = this.hearing.judge.id === message.participantId && message.status === ParticipantStatus.Disconnected;

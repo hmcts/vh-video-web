@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -9,17 +8,17 @@ import { ConferenceResponse, ConferenceStatus, ParticipantStatus } from 'src/app
 import { EventsService } from 'src/app/services/events.service';
 import { JudgeEventService } from 'src/app/services/judge-event.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { JudgeChatStubComponent } from 'src/app/testing/stubs/judge-chat-stub.component';
 import { JudgeParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
 import { JudgeWaitingRoomComponent } from './judge-waiting-room.component';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
@@ -28,7 +27,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     let route: ActivatedRoute;
     let router: Router;
     let conference: ConferenceResponse;
-    let adalService: MockAdalService;
     let eventService: MockEventsService;
     let judgeEventServiceSpy: jasmine.SpyObj<JudgeEventService>;
 
@@ -58,7 +56,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                     }
                 },
                 { provide: VideoWebService, useValue: videoWebServiceSpy },
-                { provide: AdalService, useClass: MockAdalService },
                 { provide: ConfigService, useClass: MockConfigService },
                 { provide: EventsService, useClass: MockEventsService },
                 { provide: Logger, useClass: MockLogger },
@@ -68,7 +65,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     beforeEach(async () => {
-        adalService = TestBed.get(AdalService);
         eventService = TestBed.get(EventsService);
         route = TestBed.get(ActivatedRoute);
         router = TestBed.get(Router);
@@ -160,6 +156,16 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.checkEquipment();
         expect(router.navigate).toHaveBeenCalledWith([PageUrls.EquipmentCheck, component.conference.id]);
     });
+
+    it('should navigate to judge hearing list', async () => {
+        spyOn(router, 'navigate').and.callFake(() => {
+            Promise.resolve(true);
+        });
+
+        component.goToJudgeHearingList();
+        expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeHearingList]);
+    });
+
     it('should raise judge avaliable event', () => {
         component.ngOnInit();
         expect(judgeEventServiceSpy.raiseJudgeAvailableEvent).toHaveBeenCalled();
@@ -185,5 +191,54 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         const participant = component.conference.participants.find(x => x.id === message.participantId);
         expect(participant.status === message.status);
         expect(judgeEventServiceSpy.raiseJudgeAvailableEvent).toHaveBeenCalled();
+    });
+
+    it('should return "hearingSuspended" true when conference status is suspended', () => {
+        component.conference.status = ConferenceStatus.Suspended;
+        expect(component.hearingSuspended()).toBeTruthy();
+    });
+
+    it('should return "hearingSuspended" false when conference status is not suspended', () => {
+        component.conference.status = ConferenceStatus.InSession;
+        expect(component.hearingSuspended()).toBeFalsy();
+    });
+
+    it('should return "hearingPaused" true when conference status is paused', () => {
+        component.conference.status = ConferenceStatus.Paused;
+        expect(component.hearingPaused()).toBeTruthy();
+    });
+
+    it('should return "hearingPaused" false when conference status is not paused', () => {
+        component.conference.status = ConferenceStatus.InSession;
+        expect(component.hearingPaused()).toBeFalsy();
+    });
+
+    it('should get latest conference on eventhub disconnect', () => {
+        eventService.eventHubDisconnectSubject.next(1);
+        expect(videoWebServiceSpy.getConferenceById).toHaveBeenCalled();
+    });
+
+    it('should get latest conference on eventhub disconnect', () => {
+        eventService.eventHubReconnectSubject.next();
+        expect(videoWebServiceSpy.getConferenceById).toHaveBeenCalled();
+    });
+
+    it('should update hearing status when message received', () => {
+        component.conference.status = ConferenceStatus.InSession;
+        const message = new ConferenceStatusMessage(conference.id, ConferenceStatus.Paused);
+
+        eventService.hearingStatusSubject.next(message);
+
+        expect(component.conference.status).toBe(message.status);
+    });
+
+    it('should update participant status when message received', () => {
+        const participantId = conference.participants[0].id;
+        component.conference.participants[0].status = ParticipantStatus.Available;
+        const message = new ParticipantStatusMessage(participantId, ParticipantStatus.InConsultation);
+
+        eventService.participantStatusSubject.next(message);
+
+        expect(component.conference.participants[0].status).toBe(message.status);
     });
 });
