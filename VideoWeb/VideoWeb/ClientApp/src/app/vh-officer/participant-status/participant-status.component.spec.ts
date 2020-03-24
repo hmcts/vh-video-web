@@ -2,6 +2,7 @@ import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { ParticipantStatusComponent } from './participant-status.component';
 import { Participant } from 'src/app/shared/models/participant';
+import { ParticipantStatusModel } from '../../shared/models/participants-status-model';
 
 describe('ParticipantStatusComponent', () => {
     const component = new ParticipantStatusComponent();
@@ -51,5 +52,11 @@ describe('ParticipantStatusComponent', () => {
         p.status = ParticipantStatus.Joining;
         participant = new Participant(p);
         expect(component.getParticipantStatusClass(participant)).toBe('participant-default-status');
+    });
+    it('should set venue name', () => {
+      const p = new ParticipantStatusModel();
+      p.HearingVenueName = 'venue';
+      component.participants = p;
+      expect(component._venueName).toBe('venue');
     });
 });

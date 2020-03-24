@@ -128,10 +128,12 @@ describe('VhoHearingsComponent', () => {
 
     it('should get the selected judge statuses from another hearings', () => {
         const currentConference = conferenceDetail;
+        currentConference.hearing_venue_name = 'venue name';
         component.selectedHearing = new Hearing(currentConference);
         component.participants = currentConference.participants;
         component.getJudgeStatusDetails();
         expect(component.participantStatusModel.JudgeStatuses.length).toBeGreaterThan(0);
+        expect(component.participantStatusModel.HearingVenueName).toBe('venue name');
     });
 
     it('should not return selected judge statuses from another hearings', () => {

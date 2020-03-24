@@ -484,7 +484,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
           participantInfo.participant.displayName,
           participantInfo.participant.status
         );
-
         await this.videoWebService
           .getParticipantHeartbeats(participantInfo.conferenceId, participantInfo.participant.id)
           .then(s => {

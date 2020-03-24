@@ -66,4 +66,8 @@ export class Hearing extends HearingBase {
     getParticipantByUsername(username: string) {
         return this.participants.find(p => p.username.toLocaleLowerCase() === username.toLocaleLowerCase());
     }
+
+    get hearingVenueName(): string {
+      return this.conference.hearing_venue_name;
+    }
 }
