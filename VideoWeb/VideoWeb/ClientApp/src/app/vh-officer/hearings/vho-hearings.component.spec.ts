@@ -217,4 +217,18 @@ describe('VhoHearingsComponent', () => {
     expect(component.participantsHeartBeat).not.toBe(undefined);
     expect(component.participantsHeartBeat.length).toBeGreaterThan(0);
   });
+  it('should not update hearbeat when no matching conference', async () => {
+    const heartBeat1 = new ParticipantHeartbeat('0000-0000-0000-0000', '0000-0000-0000-0000', HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
+    component.handleHeartbeat(heartBeat1);
+    const conferenceToUpdate = component.conferences.find(x => x.id === heartBeat1.conferenceId);
+    expect(conferenceToUpdate).toBe(undefined);
+   });
+   it('should not update hearbeat when no matching participant', async () => {
+    const conference = component.conferences[0];
+    const heartBeat1 = new ParticipantHeartbeat(conference.id, '0000-0000-0000-0000', HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
+    component.handleHeartbeat(heartBeat1);
+    const conferenceToUpdate = component.conferences.find(x => x.id === heartBeat1.conferenceId);
+    const participantToUpdate = conferenceToUpdate.getParticipants().find(p => p.id === heartBeat1.participantId);
+    expect(participantToUpdate).toBe(undefined);
+   });   
 });
