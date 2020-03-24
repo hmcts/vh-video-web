@@ -194,7 +194,7 @@ describe('VhoHearingsComponent', () => {
     expect(component.conferences[0].getParticipants()[0].participantHertBeatHealth).toBe(heartBeat);
   });
 
-  it('should change participant status for particpant', async () => {
+  it('should change participant status for particpant when status is disconnected', async () => {
     const heartBeat1 = new ParticipantHeartbeat(conferenceDetail.id, conferenceDetail.participants[0].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
     const heartBeat2 = new ParticipantHeartbeat(conferenceDetail.id, conferenceDetail.participants[1].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
     const message = new ParticipantStatusMessage(conferenceDetail.participants[0].id, ParticipantStatus.Disconnected);
