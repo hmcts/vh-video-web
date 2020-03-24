@@ -175,7 +175,8 @@ export class ConferenceTestData {
             admin_i_frame_uri: 'adminiframe@kinly..com',
             judge_i_frame_uri: 'judgeiframe@kinly..com',
             participant_uri: 'participant@kinly..com',
-            pexip_node_uri: 'node@kinly..com'
+            pexip_node_uri: 'node@kinly..com',
+            hearing_venue_name: 'venue name'
         });
 
         return conference;

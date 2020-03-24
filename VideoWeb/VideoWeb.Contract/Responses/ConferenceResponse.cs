@@ -76,5 +76,10 @@ namespace VideoWeb.Contract.Responses
         /// Closed date time as UTC
         /// </summary>
         public DateTime? ClosedDateTime { get; set; }
+
+        /// <summary>
+        /// The name of venue
+        /// </summary>
+        public string HearingVenueName { get; set; }
     }
 }

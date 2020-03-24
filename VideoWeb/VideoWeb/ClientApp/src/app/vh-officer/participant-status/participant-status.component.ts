@@ -11,10 +11,12 @@ import { ParticipantStatusModel } from 'src/app/shared/models/participants-statu
 export class ParticipantStatusComponent {
     _participants: Participant[];
     _judgeStatuses: ParticipantStatus[];
+    _venueName: string;
 
     @Input() set participants(participants: ParticipantStatusModel) {
         this._participants = participants.Participants;
         this._judgeStatuses = participants.JudgeStatuses;
+        this._venueName = participants.HearingVenueName;
     }
 
     getParticipantStatusClass(participant: Participant): string {

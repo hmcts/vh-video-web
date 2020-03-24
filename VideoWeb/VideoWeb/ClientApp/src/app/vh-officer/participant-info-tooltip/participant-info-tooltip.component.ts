@@ -7,6 +7,7 @@ import { Participant } from 'src/app/shared/models/participant';
 })
 export class ParticipantInfoTooltipComponent implements OnInit {
     @Input() participant: Participant;
+    @Input() venueName: string;
     constructor() {}
 
     ngOnInit() {}
