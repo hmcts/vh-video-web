@@ -47,30 +47,10 @@ export class GraphSettings {
         }
       },
       tooltips: {
-        callbacks: {
-          label: (tooltipItem, data) => {
-            const datasetLabel = data.datasets[tooltipItem.datasetIndex].label || '';
-            const yData = Number(tooltipItem.yLabel);
-            return this.setTooltipText(yData, datasetLabel);
-          }
-        }
+        enabled: false,
       }
     };
   }
-
-  static setTooltipText(yData: number, datasetLabel: string): string {
-    const yLabel = yData <= 0 ? GraphLabel.Disconnected : this.isBadSignal(yData);
-    return `${datasetLabel}: ${yLabel}`;
-  }
-
-  private static isBadSignal(yData: number): string {
-    return yData <= 5 ? GraphLabel.Bad : this.isPoorSignal(yData);
-  }
-
-  private static isPoorSignal(yData: number): string {
-    return yData > 5 && yData <= 10 ? GraphLabel.Poor : GraphLabel.Good;
-  }
-
 
   static getlineChartColors() {
     return [
