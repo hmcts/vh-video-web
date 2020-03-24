@@ -40,7 +40,9 @@ export class Participant {
     }
 
     get initialedName(): string {
-        return `${this.participant.first_name.substr(0, 1)} ${this.participant.last_name}`;
+        const initial = this.participant.first_name ? this.participant.first_name.substr(0, 1) : '';
+        const name = this.participant.last_name || '';
+        return `${initial} ${name}`; 
     }
 
     get status(): ParticipantStatus {
