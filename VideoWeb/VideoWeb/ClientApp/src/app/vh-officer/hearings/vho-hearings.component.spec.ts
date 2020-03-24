@@ -206,4 +206,14 @@ describe('VhoHearingsComponent', () => {
     expect(component.participants[0].status).toBe(ParticipantStatus.Disconnected);
     expect(component.participantsHeartBeat).not.toContain(heartBeat1);
   });
+  it('should change participant status for particpant', async () => {
+    const heartBeat = new ParticipantHeartbeat(conferences[0].id, conferences[0].participants[0].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
+    component.participantsHeartBeat = [];
+    component.participantsHeartBeat.push(heartBeat);
+    component.retrieveHearingsForVhOfficer();
+    expect(component.conferences).not.toBe(undefined);
+    expect(component.conferences.length).toBeGreaterThan(0);
+    expect(component.participantsHeartBeat).not.toBe(undefined);
+    expect(component.participantsHeartBeat.length).toBeGreaterThan(0);
+  });
 });
