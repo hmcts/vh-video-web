@@ -436,6 +436,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
             this.participantStatusModel = new ParticipantStatusModel();
             this.participantStatusModel.Participants = this.participants.map(p => new Participant(p));
             this.participantStatusModel.JudgeStatuses = this.getJudgeDetailsForStatus(this.selectedHearing.id);
+      this.participantStatusModel.HearingVenueName = this.selectedHearing.hearingVenueName;
         }
     }
 
