@@ -185,7 +185,8 @@ export class ConferenceTestData {
     getListOfParticipants(): ParticipantForUserResponse[] {
         const participants: ParticipantForUserResponse[] = [];
 
-        const participant1 = new ParticipantForUserResponse({
+      const participant1 = new ParticipantForUserResponse({
+            id: '1111-1111-1111-1111',
             status: ParticipantStatus.Available,
             display_name: 'C Green',
             username: 'chris.green@hearings.net',
@@ -194,7 +195,8 @@ export class ConferenceTestData {
             case_type_group: 'applicant'
         });
 
-        const participant2 = new ParticipantForUserResponse({
+      const participant2 = new ParticipantForUserResponse({
+            id: '2222-2222-2222-2222',
             status: ParticipantStatus.NotSignedIn,
             display_name: 'J Green',
             username: 'james.green@hearings.net',
@@ -202,7 +204,8 @@ export class ConferenceTestData {
             case_type_group: 'applicant'
         });
 
-        const participant3 = new ParticipantForUserResponse({
+      const participant3 = new ParticipantForUserResponse({
+            id: '3333-3333-3333-3333',
             status: ParticipantStatus.Available,
             display_name: 'Judge Fudge',
             username: 'judge.fudge@hearings.net',
@@ -210,7 +213,8 @@ export class ConferenceTestData {
             case_type_group: 'judge'
         });
 
-        const participant4 = new ParticipantForUserResponse({
+      const participant4 = new ParticipantForUserResponse({
+            id: '4444-4444-4444-4444',
             status: ParticipantStatus.Available,
             display_name: 'J Doe',
             username: 'john.doe@hearings.net',
@@ -219,7 +223,8 @@ export class ConferenceTestData {
             case_type_group: 'respondent'
         });
 
-        const participant5 = new ParticipantForUserResponse({
+      const participant5 = new ParticipantForUserResponse({
+            id: '4444-4444-4444-444',
             status: ParticipantStatus.NotSignedIn,
             display_name: 'J Doe',
             username: 'jane.doe@hearings.net',
