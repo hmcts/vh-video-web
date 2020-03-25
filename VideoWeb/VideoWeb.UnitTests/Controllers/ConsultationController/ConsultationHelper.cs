@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using FizzWare.NBuilder;
-using VideoWeb.EventHub.Models;
+using VideoWeb.Common.Models;
 using VideoWeb.Services.Video;
-using UserRole = VideoWeb.EventHub.Enums.UserRole;
+using UserRole = VideoWeb.Common.Models.UserRole;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
 {
@@ -18,13 +18,13 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 Participants = new List<Participant>()
                 {
                     Builder<Participant>.CreateNew()
-                        .With(x => x.Role = EventHub.Enums.UserRole.Judge).With(x => x.Id = Guid.NewGuid())
+                        .With(x => x.Role = UserRole.Judge).With(x => x.Id = Guid.NewGuid())
                         .Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = EventHub.Enums.UserRole.Individual)
+                    Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Individual)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = EventHub.Enums.UserRole.Representative)
+                    Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Representative)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = EventHub.Enums.UserRole.Individual)
+                    Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Individual)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Representative)
                         .With(x => x.Id = Guid.NewGuid()).Build()

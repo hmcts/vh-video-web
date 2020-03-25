@@ -2,17 +2,13 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using VideoWeb.EventHub.Models;
+using VideoWeb.Common.Models;
 using VideoWeb.Services.Video;
-using UserRole = VideoWeb.Contract.Responses.UserRole;
+using UserRole = VideoWeb.Common.Models.UserRole;
 
-namespace VideoWeb
-{   public interface IConferenceCache
-    {
-        Task AddConferenceToCache(ConferenceDetailsResponse conferenceResponse);
-    }
-
-    public class ConferenceCache :IConferenceCache
+namespace VideoWeb.Common.Caching
+{
+    public class ConferenceCache : IConferenceCache
     {
         private readonly IMemoryCache _memoryCache;
 
@@ -21,7 +17,7 @@ namespace VideoWeb
             _memoryCache = memoryCache;
         }
 
-        public  async Task AddConferenceToCache(ConferenceDetailsResponse conferenceResponse)
+        public async Task AddConferenceToCache(ConferenceDetailsResponse conferenceResponse)
         {
             var participants = conferenceResponse
                 .Participants
@@ -29,7 +25,7 @@ namespace VideoWeb
                 {
                     Id = participant.Id, 
                     DisplayName = participant.Display_name, 
-                    Role = (VideoWeb.EventHub.Enums.UserRole) Enum.Parse(typeof(UserRole), participant.User_role.ToString()), 
+                    Role = (UserRole) Enum.Parse(typeof(UserRole), participant.User_role.ToString()), 
                     Username = participant.Username
                 })
                 .ToList();
@@ -46,6 +42,11 @@ namespace VideoWeb
                 entry.SlidingExpiration = TimeSpan.FromHours(4);
                 return Task.FromResult(conference);
             });
+        }
+
+        public Conference GetConference(Guid id)
+        {
+            return _memoryCache.Get<Conference>(id);
         }
     }
 }

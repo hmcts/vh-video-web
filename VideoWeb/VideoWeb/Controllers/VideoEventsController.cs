@@ -2,11 +2,11 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
+using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using EventType = VideoWeb.EventHub.Enums.EventType;
@@ -22,16 +22,14 @@ namespace VideoWeb.Controllers
         private readonly IVideoApiClient _videoApiClient;
         private readonly IEventHandlerFactory _eventHandlerFactory;
         private readonly IConferenceCache _conferenceCache;
-        private readonly IMemoryCache _memoryCache;
         private readonly ILogger<VideoEventsController> _logger;
 
         public VideoEventsController(IVideoApiClient videoApiClient, 
-            IEventHandlerFactory eventHandlerFactory, IMemoryCache memoryCache,
-            IConferenceCache conferenceCache, ILogger<VideoEventsController> logger)
+            IEventHandlerFactory eventHandlerFactory, IConferenceCache conferenceCache, 
+            ILogger<VideoEventsController> logger)
         {
             _videoApiClient = videoApiClient;
             _eventHandlerFactory = eventHandlerFactory;
-            _memoryCache = memoryCache;
             _conferenceCache = conferenceCache;
             _logger = logger;
         }
@@ -47,7 +45,7 @@ namespace VideoWeb.Controllers
                 _logger.LogTrace("Received callback from Kinly.");
                 _logger.LogTrace($"ConferenceId: {request.Conference_id}, EventType: {request.Event_type}");
                 var callbackEvent = CallbackEventMapper.MapConferenceEventToCallbackEventModel(request);
-                if (_memoryCache.Get<Conference>(callbackEvent.ConferenceId) == null)
+                if (_conferenceCache.GetConference(callbackEvent.ConferenceId) == null)
                 {
                     try
                     {

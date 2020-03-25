@@ -1,7 +1,6 @@
 using System;
-using VideoWeb.EventHub.Enums;
 
-namespace VideoWeb.EventHub.Models
+namespace VideoWeb.Common.Models
 {
     public class Participant
     {

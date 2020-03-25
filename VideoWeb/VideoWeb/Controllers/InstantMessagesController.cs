@@ -7,8 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
+using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
-using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 
@@ -21,17 +22,17 @@ namespace VideoWeb.Controllers
     public class InstantMessagesController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
-        private readonly IMemoryCache _memoryCache;
+        private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<InstantMessagesController> _logger;
         private readonly IMessageDecoder _messageDecoder;
 
         public InstantMessagesController(IVideoApiClient videoApiClient, ILogger<InstantMessagesController> logger,
-            IMessageDecoder messageDecoder, IMemoryCache memoryCache)
+            IMessageDecoder messageDecoder, IConferenceCache conferenceCache)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _messageDecoder = messageDecoder;
-            _memoryCache = memoryCache;
+            _conferenceCache = conferenceCache;
         }
 
         /// <summary>
@@ -74,7 +75,7 @@ namespace VideoWeb.Controllers
                 return response;
             }
             
-            var conference = _memoryCache.Get<Conference>(conferenceId);
+            var conference = _conferenceCache.GetConference(conferenceId);
             var username = User.Identity.Name;
 
             foreach (var message in messages)
