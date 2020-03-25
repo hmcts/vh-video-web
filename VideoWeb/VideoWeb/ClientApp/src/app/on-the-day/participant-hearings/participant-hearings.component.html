@@ -4,21 +4,23 @@
 
 <div *ngIf="!loadingData && hasHearings()">
   <div class="govuk-!-margin-top-5">
-    <h1 class="govuk-heading-xl govuk-!-padding-top-5">{{this.conferences.length | pluraliseTextPipe:'Your video hearing':'Your video hearings'}}</h1>
+    <h1 class="govuk-heading-xl govuk-!-padding-top-5">
+      {{this.conferences.length | pluraliseTextPipe:'Your video hearing':'Your video hearings'}}</h1>
   </div>
   <div class="govuk-!-margin-top-1">
-    <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button"
-            (click)="goToEquipmentCheck()" alt="Check equipment">
+    <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button" (click)="goToEquipmentCheck()"
+      alt="Check equipment">
       Check equipment
     </button>
   </div>
-  <app-hearing-list-table [conferences]="conferences"></app-hearing-list-table>
+  <app-hearing-list-table [conferences]="conferences" (selectedConference)="onConferenceSelected($event)">
+  </app-hearing-list-table>
 </div>
 <div *ngIf="!loadingData && !hasHearings()">
   <h1 class="govuk-heading-xl">You do not have a video hearing today</h1>
   <div class="govuk-!-margin-top-1">
-    <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button"
-           (click)="goToEquipmentCheck()" alt="Check equipment">Check equipment</button>
+    <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button" (click)="goToEquipmentCheck()"
+      alt="Check equipment">Check equipment</button>
   </div>
   <p class="govuk-body">
     If you were expecting to see the details of a hearing here, please contact the video hearings team.

@@ -28,7 +28,7 @@ describe('JudgeWaitingRoomComponent when conference does not exist', () => {
     configureTestSuite(() => {
         conference = new ConferenceTestData().getConferenceFuture();
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
-        videoWebServiceSpy.getConferenceById.and.returnValue(Promise.reject({ status: 404, isApiException: true }));
+        videoWebServiceSpy.getConferenceById.and.callFake(() => Promise.reject({ status: 404, isApiException: true }));
 
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],

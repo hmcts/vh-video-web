@@ -8,25 +8,23 @@ namespace VideoWeb.UnitTests.Mappings
 {
     public class ClientSettingsResponseMapperTests
     {
-        private readonly ClientSettingsResponseMapper _mapper = new ClientSettingsResponseMapper();
-
         [Test]
         public void Should_map_all_properties()
         {
             var azureAdConfiguration = Builder<AzureAdConfiguration>.CreateNew()
                 .With(x => x.ApplicationInsights = Builder<ApplicationInsightsConfiguration>.CreateNew().Build())
                 .Build();
+            
             var servicesConfiguration = Builder<HearingServicesConfiguration>.CreateNew().Build();
 
-            var response = _mapper.MapAppConfigurationToResponseModel(azureAdConfiguration, servicesConfiguration);
+            var response = ClientSettingsResponseMapper.MapAppConfigurationToResponseModel(azureAdConfiguration, servicesConfiguration);
 
             response.TenantId.Should().Be(azureAdConfiguration.TenantId);
             response.ClientId.Should().Be(azureAdConfiguration.ClientId);
             response.RedirectUri.Should().Be(azureAdConfiguration.RedirectUri);
             response.PostLogoutRedirectUri.Should().Be(azureAdConfiguration.PostLogoutRedirectUri);
             response.VideoApiUrl.Should().Be(servicesConfiguration.VideoApiUrl);
-            response.AppInsightsInstrumentationKey.Should()
-                .Be((azureAdConfiguration.ApplicationInsights.InstrumentationKey));
+            response.AppInsightsInstrumentationKey.Should().Be(azureAdConfiguration.ApplicationInsights.InstrumentationKey);
 
         }
     }

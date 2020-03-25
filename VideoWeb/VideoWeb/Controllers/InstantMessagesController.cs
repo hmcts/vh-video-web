@@ -8,6 +8,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Responses;
+using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 
@@ -53,8 +54,7 @@ namespace VideoWeb.Controllers
                     return Ok(new List<ChatResponse>());
                 }
 
-                var mapper = new ChatResponseMapper();
-                var response = await MapMessages(mapper, messages, conferenceId);
+                var response = await MapMessages(messages, conferenceId);
                 response = response.OrderBy(r => r.Timestamp).ToList();
                 return Ok(response);
             }
@@ -65,15 +65,16 @@ namespace VideoWeb.Controllers
             }
         }
 
-        private async Task<List<ChatResponse>> MapMessages(ChatResponseMapper mapper,
-            IList<InstantMessageResponse> messages, Guid conferenceId)
+        private async Task<List<ChatResponse>> MapMessages(IList<InstantMessageResponse> messages, Guid conferenceId)
         {
             var response = new List<ChatResponse>();
+            
             if (!messages.Any())
             {
                 return response;
             }
-            var conference = _memoryCache.Get<ConferenceDetailsResponse>($"{conferenceId}_details");
+            
+            var conference = _memoryCache.Get<Conference>(conferenceId);
             var username = User.Identity.Name;
 
             foreach (var message in messages)
@@ -88,7 +89,7 @@ namespace VideoWeb.Controllers
                 {
                     from = await _messageDecoder.GetMessageOriginatorAsync(conference, message);
                 }
-                var mapped = mapper.MapToResponseModel(message, from, isUser);
+                var mapped = ChatResponseMapper.MapToResponseModel(message, from, isUser);
                 response.Add(mapped);
             }
 

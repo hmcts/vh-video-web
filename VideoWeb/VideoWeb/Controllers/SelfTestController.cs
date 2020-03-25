@@ -35,7 +35,7 @@ namespace VideoWeb.Controllers
             {
                 _logger.LogDebug("GetPexipNodeForIndependentSelfTest");
                 var config = _videoApiClient.GetPexipServicesConfiguration();
-                var response = new PexipServiceConfigurationResponseMapper().MapConfigToResponseModel(config);
+                var response = PexipServiceConfigurationResponseMapper.MapConfigToResponseModel(config);
                 return Ok(response);
             }
             catch (VideoApiException e)

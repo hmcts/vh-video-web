@@ -4,23 +4,28 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceLite, ParticipantLite } from 'src/app/services/models/conference-lite';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { MicrophoneCheckComponent } from './microphone-check.component';
-import { ErrorService } from 'src/app/services/error.service';
 
 describe('MicrophoneCheckComponent', () => {
     let component: MicrophoneCheckComponent;
     let fixture: ComponentFixture<MicrophoneCheckComponent>;
     let router: Router;
+    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     const conference = new ConferenceTestData().getConferenceDetailFuture();
+    const pats = conference.participants.map(p => new ParticipantLite(p.id, p.username, p.display_name));
+    const confLite = new ConferenceLite(conference.id, conference.case_number, pats);
 
     configureTestSuite(() => {
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getActiveConference', 'raiseSelfTestFailureEvent']);
+        videoWebServiceSpy.getActiveConference.and.returnValue(confLite);
         TestBed.configureTestingModule({
             imports: [RouterTestingModule, SharedModule],
             declarations: [MicrophoneCheckComponent],
@@ -34,7 +39,7 @@ describe('MicrophoneCheckComponent', () => {
                     }
                 },
                 { provide: AdalService, useClass: MockAdalService },
-                { provide: VideoWebService, useClass: MockVideoWebService },
+                { provide: VideoWebService, useValue: videoWebServiceSpy },
                 { provide: Logger, useClass: MockLogger }
             ]
         });
@@ -103,30 +108,13 @@ describe('MicrophoneCheckComponent', () => {
         expect(component.showError).toBeTruthy();
     });
 
-    it('should return home if user not authorised', async () => {
-        const videoWebService = TestBed.get(VideoWebService);
-        const errorService = TestBed.get(ErrorService);
-        component.conference = undefined;
-        spyOn(videoWebService, 'getConferenceById').and.returnValue(Promise.reject({ status: 401, isApiException: false }));
-        spyOn(errorService, 'returnHomeIfUnauthorised');
-        spyOn(errorService, 'handleApiError');
-
-        await component.getConference();
-
-        expect(component.conference).toBeUndefined();
-        expect(errorService.returnHomeIfUnauthorised).toBeTruthy();
-        expect(errorService.handleApiError).toHaveBeenCalledTimes(0);
-    });
-
     it('should log error when self test event cannot be raised', async () => {
-        const videoWebService = TestBed.get(VideoWebService);
+        videoWebServiceSpy.raiseSelfTestFailureEvent.and.callFake(() => Promise.reject({ status: 401, isApiException: false }));
         const logger = TestBed.get(Logger);
         spyOn(logger, 'error');
 
         component.form.markAsDirty();
         component.equipmentCheck.setValue('No');
-
-        spyOn(videoWebService, 'raiseSelfTestFailureEvent').and.returnValue(Promise.reject({ status: 401, isApiException: false }));
 
         await component.onSubmit();
 

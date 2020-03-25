@@ -5,6 +5,7 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
@@ -53,8 +54,8 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public async Task should_get_participant_display_name_when_message_from_participant_in_conference()
         {
-            var loggedInUsername = "john@doe.com";
-            var displayName = "johnny";
+            const string loggedInUsername = "john@doe.com";
+            const string displayName = "johnny";
             var conference = CreateConferenceResponse(loggedInUsername, displayName);
 
             var message = new InstantMessageResponse
@@ -94,16 +95,17 @@ namespace VideoWeb.UnitTests.Mappings
             result.Should().BeEquivalentTo(userProfile.First_name);
         }
 
-        private ConferenceDetailsResponse CreateConferenceResponse(string username, string displayName)
+        private static Conference CreateConferenceResponse(string username, string displayName)
         {
-            var participants = Builder<ParticipantDetailsResponse>.CreateListOfSize(2)
+            var participants = Builder<Participant>.CreateListOfSize(2)
                 .TheFirst(1).With(x => x.Username = username)
-                .With(x => x.Display_name = displayName)
+                .With(x => x.DisplayName = displayName)
                 .Build().ToList();
 
-            var conference = Builder<ConferenceDetailsResponse>.CreateNew()
+            var conference = Builder<Conference>.CreateNew()
                 .With(x => x.Participants = participants)
                 .Build();
+            
             return conference;
         }
     }
