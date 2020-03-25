@@ -16,6 +16,11 @@ namespace VideoWeb.Contract.Responses
         public DateTime ScheduledDateTime { get; set; }
         
         /// <summary>
+        /// The scheduled duration in minutes
+        /// </summary>
+        public int ScheduledDuration { get; set; }
+        
+        /// <summary>
         /// The case type
         /// </summary>
         public string CaseType { get; set; }
@@ -29,11 +34,6 @@ namespace VideoWeb.Contract.Responses
         /// The case name
         /// </summary>
         public string CaseName { get; set; }
-        
-        /// <summary>
-        /// The scheduled duration in minutes
-        /// </summary>
-        public int ScheduledDuration { get; set; }
         
         /// <summary>
         /// The current conference status

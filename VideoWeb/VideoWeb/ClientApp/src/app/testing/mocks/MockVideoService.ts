@@ -1,6 +1,6 @@
 import { IVideoWebApiService } from 'src/app/services/api/video-web-service.interface';
 import {
-    ConferenceForParticipantResponse,
+    ConferenceForIndividualResponse,
     ConferenceResponse,
     TaskResponse,
     AddMediaEventRequest,
@@ -57,7 +57,7 @@ export class MockVideoWebService implements IVideoWebApiService {
         return of(new ConferenceTestData().getTestData());
     }
 
-    getConferencesForIndividual(): Observable<ConferenceForParticipantResponse[]> {
+    getConferencesForIndividual(): Observable<ConferenceForIndividualResponse[]> {
         return of(new ConferenceTestData().getTestData());
     }
 

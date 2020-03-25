@@ -98,7 +98,7 @@ export class ApiClient {
      * Get conferences today for individual or representative excluding those that have been closed for over 30 minutes
      * @return Success
      */
-    getConferencesForIndividual(): Observable<ConferenceForParticipantResponse[]> {
+    getConferencesForIndividual(): Observable<ConferenceForIndividualResponse[]> {
         let url_ = this.baseUrl + "/conferences/individuals";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -117,14 +117,14 @@ export class ApiClient {
                 try {
                     return this.processGetConferencesForIndividual(<any>response_);
                 } catch (e) {
-                    return <Observable<ConferenceForParticipantResponse[]>><any>_observableThrow(e);
+                    return <Observable<ConferenceForIndividualResponse[]>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<ConferenceForParticipantResponse[]>><any>_observableThrow(response_);
+                return <Observable<ConferenceForIndividualResponse[]>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetConferencesForIndividual(response: HttpResponseBase): Observable<ConferenceForParticipantResponse[]> {
+    protected processGetConferencesForIndividual(response: HttpResponseBase): Observable<ConferenceForIndividualResponse[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -138,7 +138,7 @@ export class ApiClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(ConferenceForParticipantResponse.fromJS(item));
+                    result200!.push(ConferenceForIndividualResponse.fromJS(item));
             }
             return _observableOf(result200);
             }));
@@ -158,7 +158,7 @@ export class ApiClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<ConferenceForParticipantResponse[]>(<any>null);
+        return _observableOf<ConferenceForIndividualResponse[]>(<any>null);
     }
 
     /**
@@ -1775,10 +1775,10 @@ export class ConferenceForJudgeResponse implements IConferenceForJudgeResponse {
     /** Conference UUID */
     id?: string;
     scheduled_date_time?: Date;
+    scheduled_duration?: number;
     case_type?: string | undefined;
     case_number?: string | undefined;
     case_name?: string | undefined;
-    scheduled_duration?: number;
     /** The current conference status */
     status?: ConferenceStatus;
     /** The conference participants */
@@ -1797,10 +1797,10 @@ export class ConferenceForJudgeResponse implements IConferenceForJudgeResponse {
         if (_data) {
             this.id = _data["id"];
             this.scheduled_date_time = _data["scheduled_date_time"] ? new Date(_data["scheduled_date_time"].toString()) : <any>undefined;
+            this.scheduled_duration = _data["scheduled_duration"];
             this.case_type = _data["case_type"];
             this.case_number = _data["case_number"];
             this.case_name = _data["case_name"];
-            this.scheduled_duration = _data["scheduled_duration"];
             this.status = _data["status"];
             if (Array.isArray(_data["participants"])) {
                 this.participants = [] as any;
@@ -1821,10 +1821,10 @@ export class ConferenceForJudgeResponse implements IConferenceForJudgeResponse {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["scheduled_date_time"] = this.scheduled_date_time ? this.scheduled_date_time.toISOString() : <any>undefined;
+        data["scheduled_duration"] = this.scheduled_duration;
         data["case_type"] = this.case_type;
         data["case_number"] = this.case_number;
         data["case_name"] = this.case_name;
-        data["scheduled_duration"] = this.scheduled_duration;
         data["status"] = this.status;
         if (Array.isArray(this.participants)) {
             data["participants"] = [];
@@ -1839,10 +1839,10 @@ export interface IConferenceForJudgeResponse {
     /** Conference UUID */
     id?: string;
     scheduled_date_time?: Date;
+    scheduled_duration?: number;
     case_type?: string | undefined;
     case_number?: string | undefined;
     case_name?: string | undefined;
-    scheduled_duration?: number;
     /** The current conference status */
     status?: ConferenceStatus;
     /** The conference participants */
@@ -1917,7 +1917,7 @@ export interface IProblemDetails {
     extensions?: { [key: string]: any; } | undefined;
 }
 
-export class ConferenceForParticipantResponse implements IConferenceForParticipantResponse {
+export class ConferenceForIndividualResponse implements IConferenceForIndividualResponse {
     /** Conference UUID */
     id?: string;
     scheduled_date_time?: Date;
@@ -1926,7 +1926,7 @@ export class ConferenceForParticipantResponse implements IConferenceForParticipa
     logged_in_participant_id?: string;
     logged_in_participant_display_name?: string | undefined;
 
-    constructor(data?: IConferenceForParticipantResponse) {
+    constructor(data?: IConferenceForIndividualResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1946,9 +1946,9 @@ export class ConferenceForParticipantResponse implements IConferenceForParticipa
         }
     }
 
-    static fromJS(data: any): ConferenceForParticipantResponse {
+    static fromJS(data: any): ConferenceForIndividualResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new ConferenceForParticipantResponse();
+        let result = new ConferenceForIndividualResponse();
         result.init(data);
         return result;
     }
@@ -1965,7 +1965,7 @@ export class ConferenceForParticipantResponse implements IConferenceForParticipa
     }
 }
 
-export interface IConferenceForParticipantResponse {
+export interface IConferenceForIndividualResponse {
     /** Conference UUID */
     id?: string;
     scheduled_date_time?: Date;
@@ -2110,9 +2110,6 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
     status?: ConferenceStatus;
     /** The conference participants */
     participants?: ParticipantForUserResponse[] | undefined;
-    no_of_participants_available?: number;
-    no_of_participants_unavailable?: number;
-    no_of_participants_in_consultation?: number;
     no_of_pending_tasks?: number;
     hearing_venue_name?: string | undefined;
     /** The conferences tasks */
@@ -2142,9 +2139,6 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
                 for (let item of _data["participants"])
                     this.participants!.push(ParticipantForUserResponse.fromJS(item));
             }
-            this.no_of_participants_available = _data["no_of_participants_available"];
-            this.no_of_participants_unavailable = _data["no_of_participants_unavailable"];
-            this.no_of_participants_in_consultation = _data["no_of_participants_in_consultation"];
             this.no_of_pending_tasks = _data["no_of_pending_tasks"];
             this.hearing_venue_name = _data["hearing_venue_name"];
             if (Array.isArray(_data["tasks"])) {
@@ -2177,9 +2171,6 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
             for (let item of this.participants)
                 data["participants"].push(item.toJSON());
         }
-        data["no_of_participants_available"] = this.no_of_participants_available;
-        data["no_of_participants_unavailable"] = this.no_of_participants_unavailable;
-        data["no_of_participants_in_consultation"] = this.no_of_participants_in_consultation;
         data["no_of_pending_tasks"] = this.no_of_pending_tasks;
         data["hearing_venue_name"] = this.hearing_venue_name;
         if (Array.isArray(this.tasks)) {
@@ -2204,9 +2195,6 @@ export interface IConferenceForVhOfficerResponse {
     status?: ConferenceStatus;
     /** The conference participants */
     participants?: ParticipantForUserResponse[] | undefined;
-    no_of_participants_available?: number;
-    no_of_participants_unavailable?: number;
-    no_of_participants_in_consultation?: number;
     no_of_pending_tasks?: number;
     hearing_venue_name?: string | undefined;
     /** The conferences tasks */

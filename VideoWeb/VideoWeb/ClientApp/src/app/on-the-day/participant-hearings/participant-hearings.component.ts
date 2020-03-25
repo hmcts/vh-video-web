@@ -2,7 +2,7 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceForParticipantResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { ConferenceForIndividualResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { ProfileService } from '../../services/api/profile.service';
 import { PageUrls } from '../../shared/page-url.constants';
@@ -12,7 +12,7 @@ import { PageUrls } from '../../shared/page-url.constants';
     templateUrl: './participant-hearings.component.html'
 })
 export class ParticipantHearingsComponent implements OnInit, OnDestroy {
-    conferences: ConferenceForParticipantResponse[];
+    conferences: ConferenceForIndividualResponse[];
     conferencesSubscription: Subscription;
     loadingData: boolean;
     interval: any;
@@ -47,7 +47,7 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
 
     retrieveHearingsForUser() {
         this.conferencesSubscription = this.videoWebService.getConferencesForIndividual().subscribe(
-            (data: ConferenceForParticipantResponse[]) => {
+            (data: ConferenceForIndividualResponse[]) => {
                 this.errorCount = 0;
                 this.loadingData = false;
                 this.conferences = data;
@@ -76,7 +76,7 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
         this.router.navigate([PageUrls.EquipmentCheck]);
     }
 
-    onConferenceSelected(conference: ConferenceForParticipantResponse) {
+    onConferenceSelected(conference: ConferenceForIndividualResponse) {
         this.videoWebService.setActiveIndividualConference(conference);
         this.router.navigate([PageUrls.Introduction, conference.id]);
     }

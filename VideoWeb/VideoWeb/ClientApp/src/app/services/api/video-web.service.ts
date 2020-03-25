@@ -7,7 +7,7 @@ import {
     ChatResponse,
     ConferenceEventRequest,
     ConferenceForJudgeResponse,
-    ConferenceForParticipantResponse,
+    ConferenceForIndividualResponse,
     ConferenceForVhOfficerResponse,
     ConferenceResponse,
     HearingVenueResponse,
@@ -37,7 +37,7 @@ export class VideoWebService implements IVideoWebApiService {
         return this.apiClient.getConferencesForJudge();
     }
 
-    getConferencesForIndividual(): Observable<ConferenceForParticipantResponse[]> {
+    getConferencesForIndividual(): Observable<ConferenceForIndividualResponse[]> {
         return this.apiClient.getConferencesForIndividual();
     }
 
@@ -109,7 +109,7 @@ export class VideoWebService implements IVideoWebApiService {
         return this.apiClient.getHeartbeatDataForParticipant(conferenceId, participantId).toPromise();
     }
 
-    setActiveIndividualConference(conference: ConferenceForParticipantResponse) {
+    setActiveIndividualConference(conference: ConferenceForIndividualResponse) {
         const conf = new ConferenceLite(
             conference.id,
             conference.case_number,

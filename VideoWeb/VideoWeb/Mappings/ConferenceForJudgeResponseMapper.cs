@@ -33,7 +33,7 @@ namespace VideoWeb.Mappings
             {
                 Role = Enum.Parse<UserRole>(participant.User_role.ToString()),
                 DisplayName = participant.Display_name,
-                Representee = participant.Display_name,
+                Representee = participant.Representee,
                 CaseTypeGroup = participant.Case_group
             };
         }

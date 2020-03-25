@@ -52,11 +52,19 @@ namespace VideoWeb.Controllers
         public async Task<ActionResult<List<ConferenceForJudgeResponse>>> GetConferencesForJudgeAsync()
         {
             _logger.LogDebug("GetConferencesForJudge");
-            var conferencesForJudge = await GetConferenceSummaryForUserAsync(true);
-            var response = conferencesForJudge
-                .Select(ConferenceForJudgeResponseMapper.MapConferenceSummaryToModel)
-                .ToList();
-            return response;
+            try
+            {
+                var conferencesForJudge = await GetConferenceSummaryForUserAsync(false);
+                var response = conferencesForJudge
+                    .Select(ConferenceForJudgeResponseMapper.MapConferenceSummaryToModel)
+                    .ToList();
+                return Ok(response);
+            }
+            catch (VideoApiException e)
+            {
+                _logger.LogError(e, "Unable to get conferences for user");
+                return StatusCode(e.StatusCode, e.Response);
+            }
         }
 
         /// <summary>
@@ -64,17 +72,25 @@ namespace VideoWeb.Controllers
         /// </summary>
         /// <returns>List of conferences, if any</returns>
         [HttpGet("individuals")]
-        [ProducesResponseType(typeof(List<ConferenceForParticipantResponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(List<ConferenceForIndividualResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [SwaggerOperation(OperationId = "GetConferencesForIndividual")]
-        public async Task<ActionResult<IEnumerable<ConferenceForParticipantResponse>>> GetConferencesForIndividual()
+        public async Task<ActionResult<IEnumerable<ConferenceForIndividualResponse>>> GetConferencesForIndividual()
         {
             var username = User.Identity.Name;
             _logger.LogDebug("GetConferencesForIndividual");
-            var conferencesForIndividual = await GetConferenceSummaryForUserAsync(true);
-            var response = conferencesForIndividual.Select(c =>
-                ConferenceForParticipantResponseMapper.MapConferenceSummaryToModel(c, username)).ToList();
-            return response;
+            try
+            {
+                var conferencesForIndividual = await GetConferenceSummaryForUserAsync(true);
+                var response = conferencesForIndividual.Select(c =>
+                    ConferenceForIndividualResponseMapper.MapConferenceSummaryToModel(c, username)).ToList();
+                return Ok(response);
+            }
+            catch (VideoApiException e)
+            {
+                _logger.LogError(e, "Unable to get conferences for user");
+                return StatusCode(e.StatusCode, e.Response);
+            }
 
         }
 
@@ -82,26 +98,20 @@ namespace VideoWeb.Controllers
             bool excludeStaleConferences)
         {
             var username = User.Identity.Name;
-            try
+            var conferences = await _videoApiClient.GetConferencesForUsernameAsync(username);
+            _logger.LogTrace("Successfully retrieved conferences for user");
+
+            if (excludeStaleConferences)
             {
-                var conferences = await _videoApiClient.GetConferencesForUsernameAsync(username);
-                _logger.LogTrace("Successfully retrieved conferences for user");
-
-                if (excludeStaleConferences)
-                {
-                    _logger.LogTrace("Filtering conference that have been closed for more than 30 minutes");
-                    conferences = conferences.Where(ConferenceHelper.HasNotPassed).ToList();
-                }
-
-                conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();
-
-                return conferences;
+                _logger.LogTrace("Filtering conference that have been closed for more than 30 minutes");
+                conferences = conferences.Where(ConferenceHelper.HasNotPassed).ToList();
             }
-            catch (VideoApiException e)
-            {
-                _logger.LogError(e, "Unable to get conferences for user");
-                throw;
-            }
+
+            conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();
+
+            return conferences;
+
+
         }
 
 

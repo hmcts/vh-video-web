@@ -2,7 +2,7 @@ using System;
 
 namespace VideoWeb.Contract.Responses
 {
-    public class ConferenceForParticipantResponse
+    public class ConferenceForIndividualResponse
     {
         /// <summary>
         /// Conference UUID

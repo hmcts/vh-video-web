@@ -36,7 +36,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id,
-                    ParticipantState.Joining), Times.Exactly(participantCount));
+                    ParticipantState.Joining), Times.Once);
         }
     }
 }

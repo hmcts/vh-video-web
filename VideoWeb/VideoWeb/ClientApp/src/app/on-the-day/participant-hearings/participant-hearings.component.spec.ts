@@ -12,7 +12,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { HearingListTableStubComponent } from 'src/app/testing/stubs/hearing-list-table-stub';
 import { ProfileService } from '../../services/api/profile.service';
-import { ConferenceForParticipantResponse, UserProfileResponse, UserRole } from '../../services/clients/api-client';
+import { ConferenceForIndividualResponse, UserProfileResponse, UserRole } from '../../services/clients/api-client';
 import { PluraliseTextPipe } from '../../shared/pipes/pluraliseText.pipe';
 import { ParticipantHearingsComponent } from './participant-hearings.component';
 
@@ -32,7 +32,7 @@ describe('ParticipantHearingsComponent with no conferences for user', () => {
 
     let component: ParticipantHearingsComponent;
     let fixture: ComponentFixture<ParticipantHearingsComponent>;
-    const noConferences: ConferenceForParticipantResponse[] = [];
+    const noConferences: ConferenceForIndividualResponse[] = [];
 
     beforeEach(() => {
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);

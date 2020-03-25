@@ -27,16 +27,6 @@ namespace VideoWeb.Mappings
                 var filteredParticipants = conference.Participants
                     .Where(x => participantStatusRoles.Contains(x.User_role)).ToList();
 
-                conferenceForUserResponse.NoOfParticipantsAvailable =
-                    filteredParticipants.Count(x => x.Status == ParticipantState.Available);
-
-                conferenceForUserResponse.NoOfParticipantsInConsultation =
-                    filteredParticipants.Count(x => x.Status == ParticipantState.InConsultation);
-
-                conferenceForUserResponse.NoOfParticipantsUnavailable =
-                    filteredParticipants.Count(x =>
-                        (x.Status != ParticipantState.InConsultation && x.Status != ParticipantState.Available));
-
                 conferenceForUserResponse.Participants = ParticipantForUserResponseMapper.MapParticipants(conference.Participants);
             }
 

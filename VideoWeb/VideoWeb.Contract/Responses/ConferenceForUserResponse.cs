@@ -49,21 +49,6 @@ namespace VideoWeb.Contract.Responses
         public List<ParticipantForUserResponse> Participants { get; set; }
 
         /// <summary>
-        /// The number of participants available
-        /// </summary>
-        public int NoOfParticipantsAvailable { get; set; }
-
-        /// <summary>
-        /// The number of participants unavailable
-        /// </summary>
-        public int NoOfParticipantsUnavailable { get; set; }
-
-        /// <summary>
-        /// The number of participants in consultation
-        /// </summary>
-        public int NoOfParticipantsInConsultation { get; set; }
-
-        /// <summary>
         /// Number of pending tasks for a given hearing
         /// </summary>
         public int NoOfPendingTasks { get; set; }

@@ -5,13 +5,13 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings
 {
-    public static class ConferenceForParticipantResponseMapper
+    public static class ConferenceForIndividualResponseMapper
     {
-        public static ConferenceForParticipantResponse MapConferenceSummaryToModel(ConferenceSummaryResponse conference, string loggedInUsername)
+        public static ConferenceForIndividualResponse MapConferenceSummaryToModel(ConferenceSummaryResponse conference, string loggedInUsername)
         {
             var participant = conference.Participants.Single(p =>
                 p.Username.Equals(loggedInUsername, StringComparison.OrdinalIgnoreCase));
-            return new ConferenceForParticipantResponse
+            return new ConferenceForIndividualResponse
             {
                 Id = conference.Id,
                 CaseName = conference.Case_name,
