@@ -13,6 +13,7 @@ using Moq;
 using NUnit.Framework;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
+using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
@@ -53,7 +54,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
                 };
 
             _messageDecoder.Setup(x =>
-                    x.GetMessageOriginatorAsync(It.IsAny<ConferenceDetailsResponse>(),
+                    x.GetMessageOriginatorAsync(It.IsAny<Conference>(),
                         It.IsAny<InstantMessageResponse>()))
                 .ReturnsAsync("Johnny");
 

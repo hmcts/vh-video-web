@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using VideoWeb.EventHub.Models;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 
@@ -17,8 +18,7 @@ namespace VideoWeb.Mappings
         /// <param name="conference">Conference with participants</param>
         /// <param name="message">Message to decode</param>
         /// <returns>name to display</returns>
-        Task<string> GetMessageOriginatorAsync(ConferenceDetailsResponse conference, InstantMessageResponse message);
-
+        Task<string> GetMessageOriginatorAsync(Conference conference, InstantMessageResponse message);
         bool IsMessageFromUser(InstantMessageResponse message, string loggedInUsername);
     }
 
@@ -31,14 +31,13 @@ namespace VideoWeb.Mappings
             _userApiClient = userApiClient;
         }
 
-        public async Task<string> GetMessageOriginatorAsync(ConferenceDetailsResponse conference,
-            InstantMessageResponse message)
+        public async Task<string> GetMessageOriginatorAsync(Conference conference, InstantMessageResponse message)
         {
             var participant = conference.Participants.SingleOrDefault(x =>
                 x.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase));
             if (participant != null)
             {
-                return participant.Display_name;
+                return participant.DisplayName;
             }
 
             var profile = await _userApiClient.GetUserByAdUserNameAsync(message.From);

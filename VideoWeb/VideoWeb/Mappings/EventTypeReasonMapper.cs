@@ -1,6 +1,5 @@
 using VideoWeb.Services.Video;
 
-
 namespace VideoWeb.Mappings
 {
     public static class EventTypeReasonMapper
@@ -8,21 +7,13 @@ namespace VideoWeb.Mappings
 
         public static string Map(EventType eventType)
         {
-            var reason = string.Empty;
-            switch (eventType)
+            var reason = eventType switch
             {
-                case EventType.ParticipantJoining:
-                    reason = "participant joining";
-                    break;
-                case EventType.JudgeAvailable:
-                    reason = "judge available";
-                    break;
-                case EventType.JudgeUnavailable:
-                    reason = "judge unavailable";
-                    break;
-                default:
-                    break;
-            }
+                EventType.ParticipantJoining => "participant joining",
+                EventType.JudgeAvailable => "judge available",
+                EventType.JudgeUnavailable => "judge unavailable",
+                _ => string.Empty
+            };
 
             return reason;
         }

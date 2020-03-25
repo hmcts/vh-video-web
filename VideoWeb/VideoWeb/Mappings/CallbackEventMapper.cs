@@ -6,9 +6,9 @@ using RoomType = VideoWeb.EventHub.Enums.RoomType;
 
 namespace VideoWeb.Mappings
 {
-    public class CallbackEventMapper
+    public static class CallbackEventMapper
     {
-        public CallbackEvent MapConferenceEventToCallbackEventModel(ConferenceEventRequest request)
+        public static CallbackEvent MapConferenceEventToCallbackEventModel(ConferenceEventRequest request)
         {
             var eventType = Enum.Parse<EventType>(request.Event_type.ToString());
             var conferenceId = Guid.Parse(request.Conference_id);
@@ -32,7 +32,7 @@ namespace VideoWeb.Mappings
             return callbackEvent;
         }
 
-        private RoomType? MapRoom(string room)
+        private static RoomType? MapRoom(string room)
         {
             if (string.IsNullOrWhiteSpace(room))
             {

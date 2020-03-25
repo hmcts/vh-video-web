@@ -36,7 +36,7 @@ namespace VideoWeb.Controllers
             try
             {
                 var profile = await _userApiClient.GetUserByAdUserNameAsync(username);
-                var response = new UserProfileResponseMapper().MapToResponseModel(profile);
+                var response = UserProfileResponseMapper.MapToResponseModel(profile);
                 return Ok(response);
             }
             catch (UserApiException e)
@@ -60,7 +60,7 @@ namespace VideoWeb.Controllers
             try
             {
                 var profile = await _userApiClient.GetUserByAdUserNameAsync(usernameClean);
-                var response = new UserProfileResponseMapper().MapToResponseModel(profile);
+                var response = UserProfileResponseMapper.MapToResponseModel(profile);
                 return Ok(response);
             }
             catch (UserApiException e)

@@ -4,25 +4,27 @@ using VideoWeb.Services.User;
 
 namespace VideoWeb.Mappings
 {
-    public class UserProfileResponseMapper
+    public static class UserProfileResponseMapper
     {
-        public UserProfileResponse MapToResponseModel(UserProfile profile)
+        public static UserProfileResponse MapToResponseModel(UserProfile profile)
         {
-            var response = new UserProfileResponse();
-            response.FirstName = profile.First_name;
-            response.LastName = profile.Last_name;
-            response.DisplayName = profile.Display_name;
+            var response = new UserProfileResponse
+            {
+                FirstName = profile.First_name, LastName = profile.Last_name, DisplayName = profile.Display_name
+            };
 
             var userRole = profile.User_role;
-            switch (userRole)
+
+            response.Role = userRole switch
             {
-                case "VhOfficer": response.Role = UserRole.VideoHearingsOfficer; break;
-                case "Representative": response.Role = UserRole.Representative; break;
-                case "Individual": response.Role = UserRole.Individual; break;
-                case "Judge": response.Role = UserRole.Judge; break;
-                case "CaseAdmin": response.Role = UserRole.CaseAdmin; break;
-                default: throw new NotSupportedException($"Role {userRole} is not supported for this application");
-            }
+                "VhOfficer" => UserRole.VideoHearingsOfficer,
+                "Representative" => UserRole.Representative,
+                "Individual" => UserRole.Individual,
+                "Judge" => UserRole.Judge,
+                "CaseAdmin" => UserRole.CaseAdmin,
+                _ => throw new NotSupportedException($"Role {userRole} is not supported for this application")
+            };
+
             return response;
         }
     }

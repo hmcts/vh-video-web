@@ -7,18 +7,16 @@ using ConferenceUserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.Mappings
 {
-    public class ConferenceForUserResponseMapper
+    public static class ConferenceForUserResponseMapper
     {
-        public ConferenceForUserResponse MapConferenceSummaryToResponseModel(ConferenceSummaryResponse conference)
+        public static ConferenceForUserResponse MapConferenceSummaryToResponseModel(ConferenceSummaryResponse conference)
         {
             return MapConferenceSummaryToResponseModel<ConferenceForUserResponse>(conference);
         }
         
-        public T MapConferenceSummaryToResponseModel<T>(ConferenceSummaryResponse conference) where T:ConferenceForUserResponse, new()
+        public static T MapConferenceSummaryToResponseModel<T>(ConferenceSummaryResponse conference) where T:ConferenceForUserResponse, new()
         {
             var conferenceForUserResponse = new T();
-
-            var participantMapper = new ParticipantForUserResponseMapper();
 
             if (conference.Participants != null)
             {
@@ -39,12 +37,15 @@ namespace VideoWeb.Mappings
                     filteredParticipants.Count(x =>
                         (x.Status != ParticipantState.InConsultation && x.Status != ParticipantState.Available));
 
-                conferenceForUserResponse.Participants = participantMapper.MapParticipants(conference.Participants);
+                conferenceForUserResponse.Participants = ParticipantForUserResponseMapper.MapParticipants(conference.Participants);
             }
 
             if (conference.Tasks != null)
             {
-                var conferenceTasks = conference.Tasks.Select(x => { return new TaskUserResponse { Id = x.Id, Body = x.Body }; }).ToList();
+                var conferenceTasks = conference.Tasks
+                    .Select(x => new TaskUserResponse { Id = x.Id, Body = x.Body })
+                    .ToList();
+                
                 conferenceForUserResponse.Tasks = conferenceTasks;
             }
 

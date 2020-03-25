@@ -3,9 +3,9 @@ using VideoWeb.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
-    public class ClientSettingsResponseMapper
+    public static class ClientSettingsResponseMapper
     {
-        public ClientSettingsResponse MapAppConfigurationToResponseModel(AzureAdConfiguration azureAdConfiguration,
+        public static ClientSettingsResponse MapAppConfigurationToResponseModel(AzureAdConfiguration azureAdConfiguration,
             HearingServicesConfiguration servicesConfiguration)
         {
             return new ClientSettingsResponse

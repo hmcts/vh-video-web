@@ -9,20 +9,12 @@ namespace VideoWeb.UnitTests.Mappings
 {
     public class ChatResponseMapperTests
     {
-        
-        private ChatResponseMapper _mapper;
-
-        [SetUp]
-        public void Setup()
-        {
-            _mapper = new ChatResponseMapper();
-        }
-        
         [Test]
         public void should_map_all_properties()
         {
-            var username = "john@doe.com";
-            var fromDisplayName = "Johnny";
+            const string username = "john@doe.com";
+            const string fromDisplayName = "Johnny";
+            
             var message = new InstantMessageResponse
             {
                 From = username,
@@ -30,7 +22,8 @@ namespace VideoWeb.UnitTests.Mappings
                 Time_stamp = DateTime.Now.AsUtc()
             };
 
-            var response = _mapper.MapToResponseModel(message, fromDisplayName, true);
+            var response = ChatResponseMapper.MapToResponseModel(message, fromDisplayName, true);
+            
             response.From.Should().Be(fromDisplayName);
             response.Message.Should().Be(message.Message_text);
             response.Timestamp.Should().Be(message.Time_stamp);

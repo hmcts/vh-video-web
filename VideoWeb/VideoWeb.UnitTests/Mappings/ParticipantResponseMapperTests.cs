@@ -12,8 +12,6 @@ namespace VideoWeb.UnitTests.Mappings
 {
     public class ParticipantResponseMapperTests
     {
-        private readonly ParticipantResponseMapper _mapper = new ParticipantResponseMapper();
-
         [Test]
         public void Should_map_all_properties()
         {
@@ -25,7 +23,7 @@ namespace VideoWeb.UnitTests.Mappings
             var bookingParticipant = Builder<BookingParticipant>.CreateNew().With(
                 x => x.Id = participant.Ref_id).Build();
             
-            var response = _mapper.MapParticipantToResponseModel(participant, bookingParticipant);
+            var response = ParticipantResponseMapper.MapParticipantToResponseModel(participant, bookingParticipant);
             response.Id.Should().Be(participant.Id);
             response.Name.Should().Be(participant.Name);
             response.Username.Should().Be(participant.Username);
