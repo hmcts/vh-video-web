@@ -53,15 +53,19 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
                 this.conferences = data;
             },
             error => {
-                this.errorCount++;
-                this.loadingData = false;
-                if (this.errorCount > 3) {
-                    this.errorService.handleApiError(error);
-                } else {
-                    this.errorService.handleApiError(error, true);
-                }
+                this.handleApiError(error);
             }
         );
+    }
+
+    handleApiError(error) {
+        this.errorCount++;
+        this.loadingData = false;
+        if (this.errorCount > 3) {
+            this.errorService.handleApiError(error);
+        } else {
+            this.errorService.handleApiError(error, true);
+        }
     }
 
     hasHearings() {
@@ -70,5 +74,10 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
 
     goToEquipmentCheck() {
         this.router.navigate([PageUrls.EquipmentCheck]);
+    }
+
+    onConferenceSelected(conference: ConferenceForUserResponse) {
+        this.videoWebService.setActiveConference(conference);
+        this.router.navigate([PageUrls.Introduction, conference.id]);
     }
 }

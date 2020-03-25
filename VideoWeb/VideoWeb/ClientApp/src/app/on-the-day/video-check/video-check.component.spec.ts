@@ -5,21 +5,27 @@ import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceLite, ParticipantLite } from 'src/app/services/models/conference-lite';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { VideoCheckComponent } from './video-check.component';
 
 describe('VideoCheckComponent', () => {
     let component: VideoCheckComponent;
     let fixture: ComponentFixture<VideoCheckComponent>;
     let router: Router;
+
+    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     const conference = new ConferenceTestData().getConferenceDetailFuture();
+    const pats = conference.participants.map(p => new ParticipantLite(p.id, p.username, p.display_name));
+    const confLite = new ConferenceLite(conference.id, conference.case_number, pats);
 
     configureTestSuite(() => {
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getActiveConference', 'raiseSelfTestFailureEvent']);
+        videoWebServiceSpy.getActiveConference.and.returnValue(confLite);
         TestBed.configureTestingModule({
             imports: [RouterTestingModule, SharedModule],
             declarations: [VideoCheckComponent],
@@ -33,7 +39,7 @@ describe('VideoCheckComponent', () => {
                     }
                 },
                 { provide: AdalService, useClass: MockAdalService },
-                { provide: VideoWebService, useClass: MockVideoWebService },
+                { provide: VideoWebService, useValue: videoWebServiceSpy },
                 { provide: Logger, useClass: MockLogger }
             ]
         });

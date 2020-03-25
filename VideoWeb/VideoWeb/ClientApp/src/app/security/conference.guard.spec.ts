@@ -60,7 +60,7 @@ describe('ConferenceGuard', () => {
     }));
 
     it('should not be able to activate component when exception', async(async () => {
-        videoWebServiceSpy.getConferenceById.and.returnValue(Promise.reject({ status: 500, isApiException: true }));
+        videoWebServiceSpy.getConferenceById.and.callFake(() => Promise.reject({ status: 500, isApiException: true }));
         const result = await guard.canActivate(activateRoute);
 
         expect(result).toBeFalsy();

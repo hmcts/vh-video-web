@@ -128,7 +128,7 @@ describe('JudgeHearingPageComponent when conference in session', () => {
 
     it('should return home if user not authorised', async () => {
         component.conference = undefined;
-        spyOn(videoWebServiceMock, 'getConferenceById').and.returnValue(Promise.reject({ status: 401, isApiException: false }));
+        spyOn(videoWebServiceMock, 'getConferenceById').and.callFake(() => Promise.reject({ status: 401, isApiException: false }));
         spyOn(errorService, 'returnHomeIfUnauthorised');
         spyOn(errorService, 'handleApiError');
 
