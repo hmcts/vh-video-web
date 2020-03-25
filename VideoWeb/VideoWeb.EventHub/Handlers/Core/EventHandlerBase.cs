@@ -3,6 +3,8 @@ using System.Linq;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Hub;
@@ -14,13 +16,13 @@ namespace VideoWeb.EventHub.Handlers.Core
     public abstract class EventHandlerBase : IEventHandler
     {
         protected readonly IHubContext<Hub.EventHub, IEventHubClient> HubContext;
-        private readonly IMemoryCache _memoryCache;
+        private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<EventHandlerBase> _logger;
 
-        protected EventHandlerBase(IHubContext<Hub.EventHub, IEventHubClient> hubContext, IMemoryCache memoryCache, ILogger<EventHandlerBase> logger)
+        protected EventHandlerBase(IHubContext<Hub.EventHub, IEventHubClient> hubContext, IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger)
         {
             HubContext = hubContext;
-            _memoryCache = memoryCache;
+            _conferenceCache = conferenceCache;
             _logger = logger;
         }
 
@@ -31,7 +33,7 @@ namespace VideoWeb.EventHub.Handlers.Core
 
         public async Task HandleAsync(CallbackEvent callbackEvent)
         {
-            SourceConference = _memoryCache.Get<Conference>(callbackEvent.ConferenceId);
+            SourceConference = _conferenceCache.GetConference(callbackEvent.ConferenceId);
             if (SourceConference == null) throw new ConferenceNotFoundException(callbackEvent.ConferenceId);
 
             SourceParticipant = SourceConference.Participants

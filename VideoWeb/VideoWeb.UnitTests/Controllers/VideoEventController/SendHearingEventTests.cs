@@ -11,15 +11,16 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using EventComponentHelper = VideoWeb.UnitTests.Builders.EventComponentHelper;
 using MemoryCache = Microsoft.Extensions.Caching.Memory.MemoryCache;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
-using Role = VideoWeb.EventHub.Enums.UserRole;
+using Role = VideoWeb.Common.Models.UserRole;
 
 namespace VideoWeb.UnitTests.Controllers.VideoEventController
 {
@@ -56,7 +57,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             };
             
             _controller = new VideoEventsController(_videoApiClientMock.Object, eventHandlerFactory, 
-                new MemoryCache(new MemoryCacheOptions()), _mockConferenceCache.Object, _mockLogger.Object)
+                _mockConferenceCache.Object, _mockLogger.Object)
             {
                 ControllerContext = context
             };

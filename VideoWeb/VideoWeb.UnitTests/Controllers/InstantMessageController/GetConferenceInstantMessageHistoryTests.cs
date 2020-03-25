@@ -7,13 +7,13 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
-using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
@@ -27,12 +27,12 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
         private Mock<IVideoApiClient> _videoApiClientMock;
         private Mock<IMessageDecoder> _messageDecoder;
         private Mock<ILogger<InstantMessagesController>> _mockLogger;
-        private IMemoryCache _memoryCache;
+        private Mock<IConferenceCache> _conferenceCache;
 
         [SetUp]
         public void Setup()
         {
-            _memoryCache = new MemoryCache(new MemoryCacheOptions());
+            _conferenceCache = new Mock<IConferenceCache>();
             _videoApiClientMock = new Mock<IVideoApiClient>();
             _messageDecoder = new Mock<IMessageDecoder>();
             _mockLogger = new Mock<ILogger<InstantMessagesController>>();
@@ -48,7 +48,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
 
             _controller =
                 new InstantMessagesController(_videoApiClientMock.Object, _mockLogger.Object, _messageDecoder.Object,
-                    _memoryCache)
+                    _conferenceCache.Object)
                 {
                     ControllerContext = context
                 };

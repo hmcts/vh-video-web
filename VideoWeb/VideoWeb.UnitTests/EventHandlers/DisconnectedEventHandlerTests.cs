@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
@@ -16,7 +17,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task Should_send_disconnect_messages_to_participants_and_service_bus_on_participant_disconnect()
         {
-            _eventHandler = new DisconnectedEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
+            _eventHandler = new DisconnectedEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object);
 
             var conference = TestConference;
             var participantCount = conference.Participants.Count + 1; // plus one for admin
@@ -43,7 +44,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         public async Task
             Should_send_disconnect_and_suspend_messages_to_participants_and_service_bus_on_judge_disconnect()
         {
-            _eventHandler = new DisconnectedEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
+            _eventHandler = new DisconnectedEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object);
 
             var conference = TestConference;
             var participantCount = conference.Participants.Count + 1; // plus one for admin

@@ -9,9 +9,10 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Hub;
-using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
@@ -23,7 +24,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         private ConsultationsController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
         private Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> _eventHubContextMock;
-        private IMemoryCache _memoryCache;
+        private MemoryCache _memoryCache;
+        private IConferenceCache _conferenceCache;
         private Conference _testConference;
 
         [SetUp]
@@ -33,6 +35,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             _eventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>();
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
+            _conferenceCache = new ConferenceCache(_memoryCache);
             _testConference = ConsultationHelper.BuildConferenceForTest();
             _memoryCache.Set(_testConference.Id, _testConference);
 
@@ -44,7 +47,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 }
             };
 
-            _controller = new ConsultationsController(_videoApiClientMock.Object, _eventHubContextMock.Object, _memoryCache)
+            _controller = new ConsultationsController(_videoApiClientMock.Object, _eventHubContextMock.Object, _conferenceCache)
             {
                 ControllerContext = context
             };

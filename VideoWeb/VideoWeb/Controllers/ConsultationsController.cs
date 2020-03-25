@@ -7,8 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Swashbuckle.AspNetCore.Annotations;
+using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Hub;
-using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Controllers
@@ -20,15 +21,15 @@ namespace VideoWeb.Controllers
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IHubContext<EventHub.Hub.EventHub, IEventHubClient> _hubContext;
-        private readonly IMemoryCache _memoryCache;
+        private readonly IConferenceCache _conferenceCache;
 
         public ConsultationsController(IVideoApiClient videoApiClient, 
             IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext,
-            IMemoryCache memoryCache)
+            IConferenceCache conferenceCache)
         {
             _videoApiClient = videoApiClient;
             _hubContext = hubContext;
-            _memoryCache = memoryCache;
+            _conferenceCache = conferenceCache;
         }
         
         /// <summary>
@@ -42,7 +43,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> HandleConsultationRequestAsync(ConsultationRequest request)
         {
-            var conference = _memoryCache.Get<Conference>(request.Conference_id);
+            var conference = _conferenceCache.GetConference(request.Conference_id);
             if (conference == null)
             {
                 return NotFound();
@@ -94,7 +95,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> LeavePrivateConsultationAsync(LeaveConsultationRequest request)
         {
-            var conference = _memoryCache.Get<Conference>(request.Conference_id);
+            var conference = _conferenceCache.GetConference(request.Conference_id);
             if (conference == null)
             {
                 return NotFound();
@@ -126,7 +127,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> RespondToAdminConsultationRequestAsync(AdminConsultationRequest request)
         {
-            var conference = _memoryCache.Get<Conference>(request.Conference_id);
+            var conference = _conferenceCache.GetConference(request.Conference_id);
             if (conference == null)
             {
                 return NotFound();
