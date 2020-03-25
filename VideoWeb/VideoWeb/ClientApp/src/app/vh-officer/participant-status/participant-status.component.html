@@ -6,9 +6,15 @@
   <div *ngFor="let participant of _participants" class="govuk-grid-row">
     <div id="p-row-{{participant.id}}" class="govuk-grid-column-one-half">
       <div class="govuk-body-s tooltip-wrapper">
-        {{participant.initialedName}}
+        <ng-container *ngIf="participant.isJudge; else individualName">
+          {{participant.displayName}}
+        </ng-container>
+        <ng-template #individualName>
+          {{participant.initialedName}}
+        </ng-template>
         <div id="tooltip-{{participant.id}}" class="tooltip">
-          <app-participant-info-tooltip [participant]="participant" [venueName]="_venueName"></app-participant-info-tooltip>
+          <app-participant-info-tooltip [participant]="participant" [venueName]="_venueName">
+          </app-participant-info-tooltip>
         </div>
       </div>
     </div>
