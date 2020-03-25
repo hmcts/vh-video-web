@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { PageUrls } from 'src/app/shared/page-url.constants';
-import { Router, ActivatedRoute } from '@angular/router';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { UpdateParticipantStatusEventRequest, ConferenceResponse, EventType } from 'src/app/services/clients/api-client';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { EventType, UpdateParticipantStatusEventRequest } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceLite } from 'src/app/services/models/conference-lite';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
     selector: 'app-introduction',
@@ -14,7 +15,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 })
 export class IntroductionComponent implements OnInit {
     conferenceId: string;
-    conference: ConferenceResponse;
+    conference: ConferenceLite;
 
     constructor(
         private router: Router,
@@ -32,7 +33,7 @@ export class IntroductionComponent implements OnInit {
     async getConference() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         try {
-            this.conference = await this.videoWebService.getConferenceById(this.conferenceId);
+            this.conference = this.videoWebService.getActiveConference();
             this.postParticipantJoiningStatus();
         } catch (error) {
             if (!this.errorService.returnHomeIfUnauthorised(error)) {

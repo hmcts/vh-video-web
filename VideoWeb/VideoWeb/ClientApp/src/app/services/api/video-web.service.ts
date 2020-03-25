@@ -1,29 +1,36 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import {
-    ApiClient,
-    ConferenceForUserResponse,
-    ConferenceResponse,
-    ConferenceEventRequest,
-    TaskResponse,
     AddMediaEventRequest,
+    AddSelfTestFailureEventRequest,
+    ApiClient,
+    ChatResponse,
+    ConferenceEventRequest,
+    ConferenceForUserResponse,
+    ConferenceForVhOfficerResponse,
+    ConferenceResponse,
+    HearingVenueResponse,
+    ParticipantHeartbeatResponse,
+    SelfTestPexipResponse,
+    TaskResponse,
     TestCallScoreResponse,
     TokenResponse,
-    AddSelfTestFailureEventRequest,
-    UpdateParticipantStatusEventRequest,
-    SelfTestPexipResponse,
-    HearingVenueResponse,
-    ChatResponse,
-    ConferenceForVhOfficerResponse,
-    ParticipantHeartbeatResponse
+    UpdateParticipantStatusEventRequest
 } from '../clients/api-client';
-import { Observable } from 'rxjs';
+import { ConferenceLite, ParticipantLite } from '../models/conference-lite';
+import { SessionStorage } from '../session-storage';
 import { IVideoWebApiService } from './video-web-service.interface';
 
 @Injectable({
     providedIn: 'root'
 })
 export class VideoWebService implements IVideoWebApiService {
-    constructor(private apiClient: ApiClient) {}
+    readonly ACTIVE_CONFERENCE_KEY = 'vh.active.conference';
+    private readonly activeConferencesCache: SessionStorage<ConferenceLite>;
+
+    constructor(private apiClient: ApiClient) {
+        this.activeConferencesCache = new SessionStorage<ConferenceLite>(this.ACTIVE_CONFERENCE_KEY);
+    }
 
     getConferencesForJudge(): Observable<ConferenceForUserResponse[]> {
         return this.apiClient.getConferencesForJudge();
@@ -99,5 +106,16 @@ export class VideoWebService implements IVideoWebApiService {
 
     getParticipantHeartbeats(conferenceId: string, participantId: string): Promise<ParticipantHeartbeatResponse[]> {
         return this.apiClient.getHeartbeatDataForParticipant(conferenceId, participantId).toPromise();
+    }
+
+    setActiveConference(conference: ConferenceForUserResponse) {
+        const pats = conference.participants.map(p => new ParticipantLite(p.id, p.username, this.getObfuscatedName(p.display_name)));
+        const conf = new ConferenceLite(conference.id, conference.case_number, pats);
+        this.activeConferencesCache.clear();
+        this.activeConferencesCache.set(conf);
+    }
+
+    getActiveConference(): ConferenceLite {
+        return this.activeConferencesCache.get();
     }
 }

@@ -1,16 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse } from 'src/app/services/clients/api-client';
+import { Component } from '@angular/core';
 import { VhContactDetails } from 'src/app/shared/contact-information';
-import { ErrorService } from 'src/app/services/error.service';
 
 @Component({
     selector: 'app-contact-us-folding',
     templateUrl: './contact-us-folding.component.html'
 })
-export class ContactUsFoldingComponent implements OnInit {
-    private conference: ConferenceResponse;
+export class ContactUsFoldingComponent {
     expanded: boolean;
 
     contact = {
@@ -18,32 +13,7 @@ export class ContactUsFoldingComponent implements OnInit {
         email: VhContactDetails.adminEmail
     };
 
-    constructor(private route: ActivatedRoute, private videoWebService: VideoWebService, private errorService: ErrorService) {}
-
-    ngOnInit() {
-        const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-        if (conferenceId) {
-            this.getConference(conferenceId);
-        }
-    }
-
-    async getConference(conferenceId: string): Promise<void> {
-        try {
-            this.conference = await this.videoWebService.getConferenceById(conferenceId);
-        } catch (error) {
-            if (!this.errorService.returnHomeIfUnauthorised(error)) {
-                this.errorService.handleApiError(error);
-            }
-        }
-    }
-
-    get caseNumber(): string {
-        if (this.conference == null) {
-            return '';
-        } else {
-            return this.conference.case_number;
-        }
-    }
+    constructor() {}
 
     toggle() {
         this.expanded = !this.expanded;

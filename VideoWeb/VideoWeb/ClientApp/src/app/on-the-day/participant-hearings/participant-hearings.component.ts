@@ -71,4 +71,9 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
     goToEquipmentCheck() {
         this.router.navigate([PageUrls.EquipmentCheck]);
     }
+
+    onConferenceSelected(conference: ConferenceForUserResponse) {
+        this.videoWebService.setActiveConference(conference);
+        this.router.navigate([PageUrls.Introduction, conference.id]);
+    }
 }
