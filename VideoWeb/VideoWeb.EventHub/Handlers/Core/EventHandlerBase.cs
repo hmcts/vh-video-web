@@ -31,7 +31,7 @@ namespace VideoWeb.EventHub.Handlers.Core
 
         public abstract EventType EventType { get; }
 
-        public async Task HandleAsync(CallbackEvent callbackEvent)
+        public virtual async Task HandleAsync(CallbackEvent callbackEvent)
         {
             SourceConference = _conferenceCache.GetConference(callbackEvent.ConferenceId);
             if (SourceConference == null) throw new ConferenceNotFoundException(callbackEvent.ConferenceId);
@@ -40,7 +40,7 @@ namespace VideoWeb.EventHub.Handlers.Core
                 .SingleOrDefault(x => x.Id == callbackEvent.ParticipantId);
 
             _logger.LogTrace($"Handling Event: {callbackEvent.EventType} for conferenceId {callbackEvent.ConferenceId} with reason " +
-                $"{callbackEvent.Reason} at Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") }");
+                $"{callbackEvent.Reason} at Timestamp: { (DateTime.Now) :yyyy-MM-dd HH:mm:ss.fffffff}");
             await PublishStatusAsync(callbackEvent);
         }
 
