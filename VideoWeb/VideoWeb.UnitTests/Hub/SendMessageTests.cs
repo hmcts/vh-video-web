@@ -5,10 +5,9 @@ using FizzWare.NBuilder;
 using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.EventHub.Enums;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Hub;
-using VideoWeb.EventHub.Models;
 
 namespace VideoWeb.UnitTests.Hub
 {

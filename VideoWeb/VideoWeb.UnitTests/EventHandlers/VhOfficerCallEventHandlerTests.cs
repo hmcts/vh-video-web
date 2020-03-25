@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
@@ -20,7 +21,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [TestCase(RoomType.WaitingRoom)]
         public void Should_throw_exception_when_transfer_to_is_not_a_consultation_room(RoomType? transferTo)
         {
-            _eventHandler = new VhOfficerCallEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
+            _eventHandler = new VhOfficerCallEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object);
             
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == UserRole.Individual);
@@ -44,7 +45,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [TestCase(RoomType.ConsultationRoom2)]
         public async Task Should_raise_admin_consultation_message(RoomType? transferTo)
         {
-            _eventHandler = new VhOfficerCallEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
+            _eventHandler = new VhOfficerCallEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object);
             
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == UserRole.Individual);

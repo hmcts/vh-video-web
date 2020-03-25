@@ -6,11 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using VideoWeb.Common.Models;
 using VideoWeb.Common.SignalR;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Mappers;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
+using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.EventHub.Hub
 {

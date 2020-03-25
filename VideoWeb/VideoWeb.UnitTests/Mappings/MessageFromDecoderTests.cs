@@ -5,10 +5,11 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.EventHub.Models;
+using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
+using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.UnitTests.Mappings
 {

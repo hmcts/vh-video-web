@@ -4,10 +4,11 @@ using FluentAssertions;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
-using Role = VideoWeb.EventHub.Enums.UserRole;
+using Role = VideoWeb.Common.Models.UserRole;
 
 namespace VideoWeb.UnitTests.Mappings
 {

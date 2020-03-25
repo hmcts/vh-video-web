@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
@@ -16,7 +17,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task Should_send_available_message_to_participants_and_service_bus_when_participant_joins()
         {
-            _eventHandler = new LeaveEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
+            _eventHandler = new LeaveEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == UserRole.Individual);

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace VideoWeb.EventHub.Models
+namespace VideoWeb.Common.Models
 {
     public class Conference
     {

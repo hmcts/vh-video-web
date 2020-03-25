@@ -19,7 +19,7 @@ using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using RoomType = VideoWeb.EventHub.Enums.RoomType;
-using UserRole = VideoWeb.EventHub.Enums.UserRole;
+using UserRole = VideoWeb.Common.Models.UserRole;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {

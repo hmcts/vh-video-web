@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using VideoWeb.Common.Caching;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
@@ -11,7 +11,7 @@ namespace VideoWeb.EventHub.Handlers
 {
     public class DisconnectedEventHandler : EventHandlerBase
     {
-        public DisconnectedEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext, IMemoryCache memoryCache, ILogger<EventHandlerBase> logger) : base(hubContext, memoryCache, logger)
+        public DisconnectedEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext, IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger) : base(hubContext, conferenceCache, logger)
         {
         }
 
