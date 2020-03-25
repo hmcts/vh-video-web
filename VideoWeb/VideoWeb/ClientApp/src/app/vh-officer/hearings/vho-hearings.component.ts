@@ -26,6 +26,7 @@ import { ParticipantHeartbeat } from '../../services/models/participant-heartbea
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { ParticipantGraphInfo } from '../services/models/participant-graph-info';
 import { PackageLost } from '../services/models/package-lost';
+import { ParticipantSummary } from '../../shared/models/participant-summary';
 
 @Component({
   selector: 'app-vho-hearings',
@@ -477,25 +478,27 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     const judgeStatusInAnotherHearings = participantsIn.filter(x => x.username === selectedJudgeUserName).map(x => x.status);
     return judgeStatusInAnotherHearings.length > 0 ? judgeStatusInAnotherHearings[0] : null;
   }
+    async onParticipantSelected(participantInfo) {
+        if (!this.displayGraph) {
+          if (participantInfo && participantInfo.conferenceId && participantInfo.participant) {
+            const participant: ParticipantSummary = participantInfo.participant;
+                this.monitoringParticipant = new ParticipantGraphInfo(
+                   participant.displayName,
+                   participant.status,
+                   participant.representee,
+                );
 
-  async onParticipantSelected(participantInfo) {
-    if (!this.displayGraph) {
-      if (participantInfo && participantInfo.conferenceId && participantInfo.participant) {
-        this.monitoringParticipant = new ParticipantGraphInfo(
-          participantInfo.participant.displayName,
-          participantInfo.participant.status
-        );
-        await this.videoWebService
-          .getParticipantHeartbeats(participantInfo.conferenceId, participantInfo.participant.id)
-          .then(s => {
-            this.packageLostArray = s.map(x => {
-              return new PackageLost(x.recent_packet_loss, x.browser_name, x.browser_version, x.timestamp.getTime());
-            });
-            this.displayGraph = true;
-          });
-      }
+                await this.videoWebService
+                    .getParticipantHeartbeats(participantInfo.conferenceId, participantInfo.participant.id)
+                    .then(s => {
+                        this.packageLostArray = s.map(x => {
+                            return new PackageLost(x.recent_packet_loss, x.browser_name, x.browser_version, x.timestamp.getTime());
+                        });
+                        this.displayGraph = true;
+                    });
+            }
+        }
     }
-  }
 
   closeGraph(value) {
     this.displayGraph = !value;

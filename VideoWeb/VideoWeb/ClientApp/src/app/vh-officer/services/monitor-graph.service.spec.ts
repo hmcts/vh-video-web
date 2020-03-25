@@ -8,8 +8,20 @@ class GraphTestData {
     const valuesPackageLost: PackageLost[] = [];
     let timePackage = new Date(Date.now()).getTime();
     for (let i = 0; i < 90; i++) {
-      valuesPackageLost.push(new PackageLost(1, 'Edje', '44.001', timePackage - 5000));
+      valuesPackageLost.push(new PackageLost(1, 'MS-Edge', '44.19041', timePackage - 5000));
       valuesPackageLost.push(new PackageLost(10, 'Chrome', '80.0.3987.122', timePackage - 10000));
+      timePackage = timePackage - 10000;
+    }
+
+    return valuesPackageLost;
+  }
+
+  static getDataWithUnsupportedBrowser() {
+    const valuesPackageLost: PackageLost[] = [];
+    let timePackage = new Date(Date.now()).getTime();
+    for (let i = 0; i < 90; i++) {
+      valuesPackageLost.push(new PackageLost(1, 'MS-Edge', '44.18', timePackage - 5000));
+      valuesPackageLost.push(new PackageLost(10, 'Safari', '80.0.3987.122', timePackage - 10000));
       timePackage = timePackage - 10000;
     }
 
@@ -34,14 +46,16 @@ describe('MonitorGraphService', () => {
     service.unsupportedBroswer.push(new UnsupportedBrowserHeartbeat('Chrome', '80.0.3987.122'));
     expect(result).toBe(false);
   });
+  it('should return false if the user browser version equal to first supported version', () => {
+    const result = service.isUnsupportedBrowser(new PackageLost(10, 'MS-Edge', '44.19041', 1583487492315));
+    expect(result).toBe(false);
+  });
   it('should return true if the user browser version equal to unsupported version', () => {
-
-    const result = service.isUnsupportedBrowser(new PackageLost(10, 'Edge', '44.19041', 1583487492315));
+    const result = service.isUnsupportedBrowser(new PackageLost(10, 'MS-Edge', '44.18', 1583487492315));
     expect(result).toBe(true);
   });
   it('should return false if the user browser version is supported version', () => {
-
-    const result = service.isUnsupportedBrowser(new PackageLost(10, 'Edge', '79.0.309', 1583487492315));
+    const result = service.isUnsupportedBrowser(new PackageLost(10, 'MS-Edge', '79.0.309', 1583487492315));
     expect(result).toBe(false);
   });
   it('should reverse package lost value', () => {
@@ -49,6 +63,13 @@ describe('MonitorGraphService', () => {
     const result = service.transferPackagesLost(data);
     expect(result.length).toBe(GraphSettings.MAX_RECORDS);
     expect(result[result.length - 1]).toBe(19);
+  });
+  it('should reverse package lost value to NaN with unsupported browser', () => {
+    const data = GraphTestData.getDataWithUnsupportedBrowser();
+    const result = service.transferPackagesLost(data);
+    expect(result.length).toBe(GraphSettings.MAX_RECORDS);
+    expect(isNaN(result[result.length - 1])).toBe(true);
+    expect(isNaN(result[0])).toBe(true);
   });
 });
 

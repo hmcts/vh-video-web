@@ -2,6 +2,7 @@ import { MonitoringGraphComponent } from '../monitoring-graph/monitoring-graph.c
 import { MonitorGraphService } from '../services/monitor-graph.service';
 import { GraphSettings } from '../services/models/graph-settings';
 import { PackageLost } from '../services/models/package-lost';
+import { ParticipantGraphInfo } from '../services/models/participant-graph-info';
 
 class GraphTestData {
   static getData() {
@@ -70,6 +71,16 @@ describe('MonitoringGraphComponent', () => {
     component.transferPackagesLost(valuesPackageLoss);
     const lastValue = component.lastPackageLostValue;
     expect(lastValue).toBe('disconnected');
+  });
+  it('should defined the participant name with representee', () => {
+    component.participantGraphInfo = new ParticipantGraphInfo('David', 'Disconnected', 'Mr X');
+    component.ngOnInit();
+    expect(component.participantName).toBe('David, representing Mr X');
+  });
+  it('should defined the participant name with no representee', () => {
+    component.participantGraphInfo = new ParticipantGraphInfo('David', 'Disconnected', null);
+    component.ngOnInit();
+    expect(component.participantName).toBe('David');
   });
 });
 
