@@ -22,7 +22,7 @@ export class MonitorGraphService {
 
   setUnsupportedBrowser() {
     this.unsupportedBroswer.push(new UnsupportedBrowserHeartbeat('Safari', null));
-    this.unsupportedBroswer.push(new UnsupportedBrowserHeartbeat('Edge', '44.19041'));
+    this.unsupportedBroswer.push(new UnsupportedBrowserHeartbeat('MS-Edge', '44.19041'));
   }
 
   isUnsupportedBrowser(packageLost: PackageLost): boolean {
@@ -43,9 +43,13 @@ export class MonitorGraphService {
     const versionToCheck = versionBrowserToCheck.split('.');
     const minIndex = Math.min(unsupportedVersion.length, versionToCheck.length);
     let result = false;
-    for (let i = 0; i < minIndex - 1; i++) {
-      if (versionToCheck[i] <= unsupportedVersion[i]) {
+    for (let i = 0; i < minIndex; i++) {
+      if (versionToCheck[i] < unsupportedVersion[i]) {
         result = true;
+        break;
+      }
+      if (versionToCheck[i] > unsupportedVersion[i]) {
+        result = false;
         break;
       }
     }
@@ -73,7 +77,7 @@ export class MonitorGraphService {
   }
 
   private getPointValue(packageLost: PackageLost): GraphData {
-    if (!packageLost) {
+    if (!packageLost || this.isUnsupportedBrowser(packageLost)) {
       return null;
     }
 

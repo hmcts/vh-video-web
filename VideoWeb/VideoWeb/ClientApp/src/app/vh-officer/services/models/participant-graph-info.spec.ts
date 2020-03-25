@@ -1,7 +1,7 @@
 import { ParticipantGraphInfo } from '../models/participant-graph-info';
 
 describe('ParticipantGraphInfo', () => {
-  const model = new ParticipantGraphInfo('name', 'None');
+  const model = new ParticipantGraphInfo('name', 'None', 'representee');
   it('should get text for status None as Not signed in ', () => {
     expect(model.getStatusAsText('None')).toBe('Not signed in');
   });
