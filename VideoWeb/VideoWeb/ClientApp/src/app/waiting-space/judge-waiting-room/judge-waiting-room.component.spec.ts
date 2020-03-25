@@ -40,8 +40,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             'raiseJudgeAvailableEvent',
             'raiseJudgeUnavailableEvent'
         ]);
-        judgeEventServiceSpy.raiseJudgeAvailableEvent.and.callThrough();
-        judgeEventServiceSpy.raiseJudgeUnavailableEvent.and.callThrough();
 
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],

@@ -107,7 +107,7 @@ describe('TasksTableComponent', () => {
     it('should throw error when task cannot complete', async () => {
         const videoWebService = TestBed.get(VideoWebService);
         const error = { error: 'service error' };
-        spyOn(videoWebService, 'completeTask').and.returnValue(Promise.reject(error));
+        spyOn(videoWebService, 'completeTask').and.callFake(() => Promise.reject(error));
         spyOn(component.taskCompleted, 'emit');
         const task = component.tasks.find(x => x.status === TaskStatus.ToDo);
 

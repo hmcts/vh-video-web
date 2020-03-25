@@ -109,7 +109,7 @@ describe('MicrophoneCheckComponent', () => {
     });
 
     it('should log error when self test event cannot be raised', async () => {
-        videoWebServiceSpy.raiseSelfTestFailureEvent.and.returnValue(Promise.reject({ status: 401, isApiException: false }));
+        videoWebServiceSpy.raiseSelfTestFailureEvent.and.callFake(() => Promise.reject({ status: 401, isApiException: false }));
         const logger = TestBed.get(Logger);
         spyOn(logger, 'error');
 

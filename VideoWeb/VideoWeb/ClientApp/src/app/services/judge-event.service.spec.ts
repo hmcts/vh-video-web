@@ -36,7 +36,7 @@ describe('JudgeEventService failure', () => {
     const error = { error: 'failed to raise event' };
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['raiseParticipantEvent']);
-    videoWebServiceSpy.raiseParticipantEvent.and.returnValue(Promise.reject(error));
+    videoWebServiceSpy.raiseParticipantEvent.and.callFake(() => Promise.reject(error));
     let logger: MockLogger;
     let service: JudgeEventService;
 
@@ -57,6 +57,7 @@ describe('JudgeEventService failure', () => {
         expect(videoWebServiceSpy.raiseParticipantEvent).toHaveBeenCalledWith(conferenceId, request);
         expect(logger.error).toHaveBeenCalled();
     });
+
     it('should log error when fails raise judge unavailable event', async () => {
         spyOn(logger, 'error');
         const participantId = '1234';
