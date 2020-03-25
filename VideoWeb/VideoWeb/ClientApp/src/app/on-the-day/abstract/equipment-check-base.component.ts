@@ -1,10 +1,11 @@
-import { ConferenceResponse, SelfTestFailureReason, AddSelfTestFailureEventRequest } from 'src/app/services/clients/api-client';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { AdalService } from 'adal-angular4';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { AddSelfTestFailureEventRequest, SelfTestFailureReason } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceLite } from 'src/app/services/models/conference-lite';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 
 export abstract class EquipmentCheckBaseComponent {
@@ -12,7 +13,7 @@ export abstract class EquipmentCheckBaseComponent {
     submitted = false;
 
     conferenceId: string;
-    conference: ConferenceResponse;
+    conference: ConferenceLite;
     participantId: string;
     participantName: string;
 
@@ -42,21 +43,12 @@ export abstract class EquipmentCheckBaseComponent {
 
     getConference(): void {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-        this.videoWebService
-            .getConferenceById(this.conferenceId)
-            .then(conference => {
-                this.conference = conference;
-                const participant = this.conference.participants.find(
-                    x => x.username.toLocaleLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase()
-                );
-                this.participantId = participant.id.toString();
-                this.participantName = this.videoWebService.getObfuscatedName(participant.first_name + ' ' + participant.last_name);
-            })
-            .catch(error => {
-                if (!this.errorService.returnHomeIfUnauthorised(error)) {
-                    this.errorService.handleApiError(error);
-                }
-            });
+        this.conference = this.videoWebService.getActiveConference();
+        const participant = this.conference.participants.find(
+            x => x.username.toLocaleLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase()
+        );
+        this.participantId = participant.id;
+        this.participantName = participant.obfuscatedDisplayName;
     }
 
     checkEquipmentAgain() {

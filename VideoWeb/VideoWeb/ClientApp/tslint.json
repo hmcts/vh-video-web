@@ -25,7 +25,6 @@
       true,
       "spaces"
     ],
-    "no-unused-variable": true,
     "interface-over-type-literal": true,
     "label-position": true,
     "member-access": false,

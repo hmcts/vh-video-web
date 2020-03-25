@@ -14,15 +14,23 @@ import { IntroductionComponent } from './introduction.component';
 import { AdalService } from 'adal-angular4';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ParticipantLite, ConferenceLite } from 'src/app/services/models/conference-lite';
 
 describe('IntroductionComponent', () => {
     let component: IntroductionComponent;
     let fixture: ComponentFixture<IntroductionComponent>;
     let debugElement: DebugElement;
     let router: Router;
+
+    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     const conference = new ConferenceTestData().getConferenceDetailFuture();
+    const pats = conference.participants.map(p => new ParticipantLite(p.id, p.username, p.display_name));
+    const confLite = new ConferenceLite(conference.id, conference.case_number, pats);
 
     configureTestSuite(() => {
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getActiveConference', 'raiseParticipantEvent']);
+        videoWebServiceSpy.getActiveConference.and.returnValue(confLite);
+
         TestBed.configureTestingModule({
             declarations: [IntroductionComponent],
             imports: [ReactiveFormsModule, FormsModule, RouterTestingModule, SharedModule],
@@ -36,7 +44,7 @@ describe('IntroductionComponent', () => {
                     }
                 },
                 { provide: AdalService, useClass: MockAdalService },
-                { provide: VideoWebService, useClass: MockVideoWebService },
+                { provide: VideoWebService, useValue: videoWebServiceSpy },
                 { provide: Logger, useClass: MockLogger }
             ]
         });
