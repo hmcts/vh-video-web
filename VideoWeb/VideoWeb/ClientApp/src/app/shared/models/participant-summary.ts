@@ -1,13 +1,15 @@
-import { ParticipantForUserResponse, ParticipantStatus, UserRole } from 'src/app/services/clients/api-client';
+import { ParticipantForUserResponse, ParticipantStatus, UserRole, ParticipantForJudgeResponse } from 'src/app/services/clients/api-client';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 
 export class ParticipantSummary {
-  private participant: ParticipantForUserResponse;
-  private participantHeartBeat: ParticipantHeartbeat;
+    private participant: ParticipantForUserResponse;
+    private participantHeartBeat: ParticipantHeartbeat;
 
     constructor(participant: ParticipantForUserResponse) {
-        if (!(participant instanceof ParticipantForUserResponse)) {
-            throw new Error('Object not a ParticipantForUserResponse');
+        const isParticipantForUserResponse = participant instanceof ParticipantForUserResponse;
+        const isParticipantForJudgeResponse = participant instanceof ParticipantForJudgeResponse;
+        if (!(isParticipantForUserResponse || isParticipantForJudgeResponse)) {
+            throw new Error('Object not a ParticipantForUserResponse or ParticipantForJudgeResponse');
         }
         this.participant = participant;
     }
@@ -17,7 +19,7 @@ export class ParticipantSummary {
     }
 
     get id(): string {
-      return this.participant.id;
+        return this.participant.id;
     }
 
     get username() {
@@ -26,11 +28,11 @@ export class ParticipantSummary {
 
     get status(): ParticipantStatus {
         return this.participant.status;
-   }
+    }
 
-  set status(status: ParticipantStatus) {
-     this.participant.status = status;
-  }
+    set status(status: ParticipantStatus) {
+        this.participant.status = status;
+    }
 
     get role(): UserRole {
         return this.participant.role;
@@ -50,13 +52,13 @@ export class ParticipantSummary {
 
     get isJudge(): boolean {
         return this.participant.role === UserRole.Judge;
-  }
+    }
 
-  get participantHertBeatHealth(): ParticipantHeartbeat {
-    return this.participantHeartBeat;
-  }
+    get participantHertBeatHealth(): ParticipantHeartbeat {
+        return this.participantHeartBeat;
+    }
 
-  set participantHertBeatHealth(participantHeartBeat: ParticipantHeartbeat) {
-    this.participantHeartBeat = participantHeartBeat;
-  }
+    set participantHertBeatHealth(participantHeartBeat: ParticipantHeartbeat) {
+        this.participantHeartBeat = participantHeartBeat;
+    }
 }

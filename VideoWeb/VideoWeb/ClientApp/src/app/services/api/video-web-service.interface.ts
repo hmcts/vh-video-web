@@ -1,5 +1,5 @@
 import {
-    ConferenceForUserResponse,
+    ConferenceForParticipantResponse,
     ConferenceResponse,
     ConferenceEventRequest,
     TaskResponse,
@@ -12,12 +12,13 @@ import {
     HearingVenueResponse,
     ChatResponse,
     ConferenceForVhOfficerResponse,
-    ParticipantHeartbeatResponse
+    ParticipantHeartbeatResponse,
+    ConferenceForJudgeResponse
 } from '../clients/api-client';
 import { Observable } from 'rxjs';
 export interface IVideoWebApiService {
-    getConferencesForJudge(): Observable<ConferenceForUserResponse[]>;
-    getConferencesForIndividual(): Observable<ConferenceForUserResponse[]>;
+    getConferencesForJudge(): Observable<ConferenceForJudgeResponse[]>;
+    getConferencesForIndividual(): Observable<ConferenceForParticipantResponse[]>;
     getConferencesForVHOfficer(): Observable<ConferenceForVhOfficerResponse[]>;
     getConferenceById(conferenceId: string): Promise<ConferenceResponse>;
     sendEvent(request: ConferenceEventRequest): Promise<void>;

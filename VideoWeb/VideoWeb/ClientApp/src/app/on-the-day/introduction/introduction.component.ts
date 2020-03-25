@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { EventType, UpdateParticipantStatusEventRequest } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -21,7 +20,6 @@ export class IntroductionComponent implements OnInit {
         private router: Router,
         private route: ActivatedRoute,
         private videoWebService: VideoWebService,
-        private adalService: AdalService,
         private errorService: ErrorService,
         private logger: Logger
     ) {}
@@ -33,7 +31,7 @@ export class IntroductionComponent implements OnInit {
     async getConference() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         try {
-            this.conference = this.videoWebService.getActiveConference();
+            this.conference = this.videoWebService.getActiveIndividualConference();
             this.postParticipantJoiningStatus();
         } catch (error) {
             if (!this.errorService.returnHomeIfUnauthorised(error)) {
@@ -47,14 +45,12 @@ export class IntroductionComponent implements OnInit {
     }
 
     async postParticipantJoiningStatus() {
-        const participant = this.conference.participants.find(
-            x => x.username.toLocaleLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase()
-        );
+        const participantId = this.conference.loggedInParticipantId;
         try {
             await this.videoWebService.raiseParticipantEvent(
                 this.conference.id,
                 new UpdateParticipantStatusEventRequest({
-                    participant_id: participant.id.toString(),
+                    participant_id: participantId,
                     event_type: EventType.ParticipantJoining
                 })
             );

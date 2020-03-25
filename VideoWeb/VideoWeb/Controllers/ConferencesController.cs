@@ -31,7 +31,8 @@ namespace VideoWeb.Controllers
         private readonly IConferenceCache _conferenceCache;
 
         public ConferencesController(IVideoApiClient videoApiClient, IUserApiClient userApiClient,
-            IBookingsApiClient bookingsApiClient, ILogger<ConferencesController> logger, IConferenceCache conferenceCache)
+            IBookingsApiClient bookingsApiClient, ILogger<ConferencesController> logger,
+            IConferenceCache conferenceCache)
         {
             _videoApiClient = videoApiClient;
             _userApiClient = userApiClient;
@@ -45,13 +46,17 @@ namespace VideoWeb.Controllers
         /// </summary>
         /// <returns>List of conferences, if any</returns>
         [HttpGet("judges")]
-        [ProducesResponseType(typeof(List<ConferenceForUserResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(List<ConferenceForJudgeResponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [SwaggerOperation(OperationId = "GetConferencesForJudge")]
-        public async Task<ActionResult<List<ConferenceForUserResponse>>> GetConferencesForJudgeAsync()
+        public async Task<ActionResult<List<ConferenceForJudgeResponse>>> GetConferencesForJudgeAsync()
         {
             _logger.LogDebug("GetConferencesForJudge");
-            return await GetConferenceForUserAsync(false);
+            var conferencesForJudge = await GetConferenceSummaryForUserAsync(true);
+            var response = conferencesForJudge
+                .Select(ConferenceForJudgeResponseMapper.MapConferenceSummaryToModel)
+                .ToList();
+            return response;
         }
 
         /// <summary>
@@ -59,17 +64,22 @@ namespace VideoWeb.Controllers
         /// </summary>
         /// <returns>List of conferences, if any</returns>
         [HttpGet("individuals")]
-        [ProducesResponseType(typeof(List<ConferenceForUserResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(List<ConferenceForParticipantResponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [SwaggerOperation(OperationId = "GetConferencesForIndividual")]
-        public async Task<ActionResult<List<ConferenceForUserResponse>>> GetConferencesForIndividual()
+        public async Task<ActionResult<IEnumerable<ConferenceForParticipantResponse>>> GetConferencesForIndividual()
         {
+            var username = User.Identity.Name;
             _logger.LogDebug("GetConferencesForIndividual");
-            return await GetConferenceForUserAsync(true);
+            var conferencesForIndividual = await GetConferenceSummaryForUserAsync(true);
+            var response = conferencesForIndividual.Select(c =>
+                ConferenceForParticipantResponseMapper.MapConferenceSummaryToModel(c, username)).ToList();
+            return response;
 
         }
 
-        private async Task<ActionResult<List<ConferenceForUserResponse>>> GetConferenceForUserAsync(bool excludeStaleConferences)
+        private async Task<List<ConferenceSummaryResponse>> GetConferenceSummaryForUserAsync(
+            bool excludeStaleConferences)
         {
             var username = User.Identity.Name;
             try
@@ -84,27 +94,24 @@ namespace VideoWeb.Controllers
                 }
 
                 conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();
-                
-                var response = conferences
-                    .Select(ConferenceForUserResponseMapper.MapConferenceSummaryToResponseModel)
-                    .ToList();
-                
-                return Ok(response);
+
+                return conferences;
             }
             catch (VideoApiException e)
             {
                 _logger.LogError(e, "Unable to get conferences for user");
-                return StatusCode(e.StatusCode, e.Response);
+                throw;
             }
         }
+
 
         /// <summary>
         /// Get conferences for user
         /// </summary>
         /// <returns>List of conferences, if any</returns>
         [HttpGet("vhofficer")]
-        [ProducesResponseType(typeof(List<ConferenceForVhOfficerResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        [ProducesResponseType(typeof(List<ConferenceForVhOfficerResponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.Unauthorized)]
         [SwaggerOperation(OperationId = "GetConferencesForVhOfficer")]
         public async Task<ActionResult<List<ConferenceForVhOfficerResponse>>> GetConferencesForVhOfficerAsync()
         {
@@ -131,7 +138,7 @@ namespace VideoWeb.Controllers
                 conferences = conferences.Where(ConferenceHelper.HasNotPassed).ToList();
                 conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();
                 var tasks = conferences.Select(MapConferenceForVhoAsync).ToArray();
-                
+
                 var response = await Task.WhenAll(tasks);
 
                 return Ok(response.ToList());
@@ -142,7 +149,8 @@ namespace VideoWeb.Controllers
             }
         }
 
-        private async Task<ConferenceForVhOfficerResponse> MapConferenceForVhoAsync(ConferenceSummaryResponse conference)
+        private async Task<ConferenceForVhOfficerResponse> MapConferenceForVhoAsync(
+            ConferenceSummaryResponse conference)
         {
             if (!IsInStateToChat(conference))
             {
@@ -150,7 +158,7 @@ namespace VideoWeb.Controllers
             }
 
             var messages = await _videoApiClient.GetInstantMessageHistoryAsync(conference.Id);
-            
+
             return ConferenceForVhOfficerResponseMapper.MapConferenceSummaryToResponseModel(conference, messages);
         }
 
@@ -167,9 +175,9 @@ namespace VideoWeb.Controllers
         /// <param name="conferenceId">The unique id of the conference</param>
         /// <returns>the details of a conference, if permitted</returns>
         [HttpGet("{conferenceId}")]
-        [ProducesResponseType(typeof(ConferenceResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ConferenceResponse), (int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
         [SwaggerOperation(OperationId = "GetConferenceById")]
         public async Task<ActionResult<ConferenceResponse>> GetConferenceByIdAsync(Guid conferenceId)
         {
@@ -209,7 +217,7 @@ namespace VideoWeb.Controllers
             }
 
             var exceededTimeLimit = !ConferenceHelper.HasNotPassed(new ConferenceSummaryResponse
-            { Status = conference.Current_status, Closed_date_time = conference.Closed_date_time });
+                {Status = conference.Current_status, Closed_date_time = conference.Closed_date_time});
             if (!isVhOfficer && (conference.Participants.All(x => x.Username.ToLower().Trim() != username) ||
                                  exceededTimeLimit))
             {
@@ -242,7 +250,7 @@ namespace VideoWeb.Controllers
                 }
                 catch (AggregateException e)
                 {
-                    return StatusCode((int)HttpStatusCode.ExpectationFailed, e);
+                    return StatusCode((int) HttpStatusCode.ExpectationFailed, e);
                 }
             }
 
@@ -254,15 +262,17 @@ namespace VideoWeb.Controllers
                 UserRole.Representative
             };
             conference.Participants = conference.Participants
-                .Where(x => displayRoles.Contains((UserRole)x.User_role)).ToList();
+                .Where(x => displayRoles.Contains((UserRole) x.User_role)).ToList();
 
-            var response = ConferenceResponseMapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
+            var response =
+                ConferenceResponseMapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
             await _conferenceCache.AddConferenceToCache(conference);
 
             return Ok(response);
         }
 
-        private static void ValidateConferenceAndBookingParticipantsMatch(IEnumerable<ParticipantDetailsResponse> participants,
+        private static void ValidateConferenceAndBookingParticipantsMatch(
+            IEnumerable<ParticipantDetailsResponse> participants,
             IReadOnlyCollection<BookingParticipant> bookingParticipants)
         {
             var missingBookingParticipantIds = new List<Exception>();
@@ -274,6 +284,7 @@ namespace VideoWeb.Controllers
                         $"Unable to find a participant in bookings api with id ${participant.Ref_id}"));
                 }
             }
+
             if (missingBookingParticipantIds.Any())
             {
                 throw new AggregateException(missingBookingParticipantIds);

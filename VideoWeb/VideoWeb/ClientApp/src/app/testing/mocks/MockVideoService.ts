@@ -1,6 +1,6 @@
 import { IVideoWebApiService } from 'src/app/services/api/video-web-service.interface';
 import {
-    ConferenceForUserResponse,
+    ConferenceForParticipantResponse,
     ConferenceResponse,
     TaskResponse,
     AddMediaEventRequest,
@@ -13,7 +13,8 @@ import {
     ConferenceForVhOfficerResponse,
     SelfTestPexipResponse,
     HearingVenueResponse,
-    ParticipantHeartbeatResponse
+    ParticipantHeartbeatResponse,
+    ConferenceForJudgeResponse
 } from 'src/app/services/clients/api-client';
 import { Observable, of } from 'rxjs';
 import { ConferenceTestData } from './data/conference-test-data';
@@ -52,11 +53,11 @@ export class MockVideoWebService implements IVideoWebApiService {
     getHearingsVenue(): Promise<HearingVenueResponse[]> {
         throw new Error('Method not implemented.');
     }
-    getConferencesForJudge(): Observable<ConferenceForUserResponse[]> {
+    getConferencesForJudge(): Observable<ConferenceForJudgeResponse[]> {
         return of(new ConferenceTestData().getTestData());
     }
 
-    getConferencesForIndividual(): Observable<ConferenceForUserResponse[]> {
+    getConferencesForIndividual(): Observable<ConferenceForParticipantResponse[]> {
         return of(new ConferenceTestData().getTestData());
     }
 
