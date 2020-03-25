@@ -244,4 +244,18 @@ describe('VhoHearingsComponent', () => {
       expect(component.participants[0].status).toBe(ParticipantStatus.Available);
       expect(component.participantsHeartBeat.length).toBe(2);
     });
+
+  it('should add participant heartbeat to the list when heartbeat for participant does not exist previously', async () => {
+    const heartBeat1 = new ParticipantHeartbeat(component.conferences[0].id, component.conferences[0].getParticipants()[0].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
+    const heartBeat2 = new ParticipantHeartbeat(component.conferences[0].id, component.conferences[0].getParticipants()[1].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
+    component.participantsHeartBeat = [];
+    component.participantsHeartBeat.push(heartBeat1);
+    component.participantsHeartBeat.push(heartBeat2);
+    const participantsHeartbeatCurrentCount = component.participantsHeartBeat.length;
+    const heartBeat3 = new ParticipantHeartbeat(component.conferences[0].id, component.conferences[0].getParticipants()[2].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
+    component.addHeartBeatToTheList(heartBeat3);
+    expect(component.participantsHeartBeat.length).toBeGreaterThan(participantsHeartbeatCurrentCount);
+    expect(component.participantsHeartBeat).toContain(heartBeat3);
+
+  });
 });
