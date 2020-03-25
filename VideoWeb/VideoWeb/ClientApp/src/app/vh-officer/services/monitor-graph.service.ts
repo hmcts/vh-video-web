@@ -77,7 +77,7 @@ export class MonitorGraphService {
   }
 
   private getPointValue(packageLost: PackageLost): GraphData {
-    if (!packageLost) {
+    if (!packageLost || this.isUnsupportedBrowser(packageLost)) {
       return null;
     }
 

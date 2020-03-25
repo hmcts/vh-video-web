@@ -8,8 +8,20 @@ class GraphTestData {
     const valuesPackageLost: PackageLost[] = [];
     let timePackage = new Date(Date.now()).getTime();
     for (let i = 0; i < 90; i++) {
-      valuesPackageLost.push(new PackageLost(1, 'Edje', '44.001', timePackage - 5000));
+      valuesPackageLost.push(new PackageLost(1, 'MS-Edge', '44.19041', timePackage - 5000));
       valuesPackageLost.push(new PackageLost(10, 'Chrome', '80.0.3987.122', timePackage - 10000));
+      timePackage = timePackage - 10000;
+    }
+
+    return valuesPackageLost;
+  }
+
+  static getDataWithUnsupportedBrowser() {
+    const valuesPackageLost: PackageLost[] = [];
+    let timePackage = new Date(Date.now()).getTime();
+    for (let i = 0; i < 90; i++) {
+      valuesPackageLost.push(new PackageLost(1, 'MS-Edge', '44.18', timePackage - 5000));
+      valuesPackageLost.push(new PackageLost(10, 'Safari', '80.0.3987.122', timePackage - 10000));
       timePackage = timePackage - 10000;
     }
 
@@ -51,6 +63,13 @@ describe('MonitorGraphService', () => {
     const result = service.transferPackagesLost(data);
     expect(result.length).toBe(GraphSettings.MAX_RECORDS);
     expect(result[result.length - 1]).toBe(19);
+  });
+  it('should reverse package lost value to NaN with unsupported browser', () => {
+    const data = GraphTestData.getDataWithUnsupportedBrowser();
+    const result = service.transferPackagesLost(data);
+    expect(result.length).toBe(GraphSettings.MAX_RECORDS);
+    expect(isNaN(result[result.length - 1])).toBe(true);
+    expect(isNaN(result[0])).toBe(true);
   });
 });
 
