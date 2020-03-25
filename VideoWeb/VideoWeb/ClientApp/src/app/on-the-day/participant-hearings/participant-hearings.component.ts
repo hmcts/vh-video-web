@@ -61,7 +61,6 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
     handleApiError(error) {
         this.errorCount++;
         this.loadingData = false;
-        console.log(this.errorCount);
         if (this.errorCount > 3) {
             this.errorService.handleApiError(error);
         } else {
