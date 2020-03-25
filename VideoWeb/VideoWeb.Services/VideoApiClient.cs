@@ -3500,36 +3500,6 @@ namespace VideoWeb.Services.Video
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
-    public enum TestScore
-    {
-        [System.Runtime.Serialization.EnumMember(Value = @"Good")]
-        Good = 0,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Okay")]
-        Okay = 1,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Bad")]
-        Bad = 2,
-    
-    }
-    
-    /// <summary>The score of a test call</summary>
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
-    public partial class TestCallScoreResponse 
-    {
-        /// <summary>The score of the test call</summary>
-        [Newtonsoft.Json.JsonProperty("score", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public TestScore Score { get; set; }
-    
-        /// <summary>Whether or not the call was successful</summary>
-        [Newtonsoft.Json.JsonProperty("passed", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool Passed { get; set; }
-    
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
     public partial class ParticipantDetailsResponse 
     {
         /// <summary>The participant's UUID</summary>
@@ -3564,9 +3534,6 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonProperty("current_status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public ParticipantState Current_status { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("self_test_score", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public TestCallScoreResponse Self_test_score { get; set; }
     
     
     }
@@ -4037,6 +4004,36 @@ namespace VideoWeb.Services.Video
         /// <summary>Representee</summary>
         [Newtonsoft.Json.JsonProperty("representee", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Representee { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public enum TestScore
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"Good")]
+        Good = 0,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Okay")]
+        Okay = 1,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Bad")]
+        Bad = 2,
+    
+    }
+    
+    /// <summary>The score of a test call</summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class TestCallScoreResponse 
+    {
+        /// <summary>The score of the test call</summary>
+        [Newtonsoft.Json.JsonProperty("score", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public TestScore Score { get; set; }
+    
+        /// <summary>Whether or not the call was successful</summary>
+        [Newtonsoft.Json.JsonProperty("passed", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool Passed { get; set; }
     
     
     }

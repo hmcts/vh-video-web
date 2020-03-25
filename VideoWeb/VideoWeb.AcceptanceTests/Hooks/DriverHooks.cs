@@ -31,7 +31,11 @@ namespace VideoWeb.AcceptanceTests.Hooks
             context.VideoWebConfig.TestConfig.TargetBrowser = DriverManager.GetTargetBrowser(NUnit.Framework.TestContext.Parameters["TargetBrowser"]);
             context.VideoWebConfig.TestConfig.TargetDevice = DriverManager.GetTargetDevice(NUnit.Framework.TestContext.Parameters["TargetDevice"]);
             DriverManager.KillAnyLocalDriverProcesses();
-            context.Driver = new DriverSetup(context.VideoWebConfig.SauceLabsConfiguration, scenarioContext.ScenarioInfo, context.VideoWebConfig.TestConfig.TargetBrowser);
+            context.Driver = new DriverSetup(
+                context.VideoWebConfig.SauceLabsConfiguration, 
+                scenarioContext.ScenarioInfo,
+                context.VideoWebConfig.TestConfig.TargetDevice,
+                context.VideoWebConfig.TestConfig.TargetBrowser);
         }
 
         [AfterScenario]

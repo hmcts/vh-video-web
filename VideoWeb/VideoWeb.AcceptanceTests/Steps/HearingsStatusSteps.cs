@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AcceptanceTests.Common.Api.Requests;
+using AcceptanceTests.Common.Api.Helpers;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
