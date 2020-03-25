@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using VideoWeb.EventHub.Models;
@@ -16,23 +16,23 @@ namespace VideoWeb
     {
         private readonly IMemoryCache _memoryCache;
 
-        public ConferenceCache(IMemoryCache memoryCache) {
+        public ConferenceCache(IMemoryCache memoryCache) 
+        {
             _memoryCache = memoryCache;
         }
 
         public  async Task AddConferenceToCache(ConferenceDetailsResponse conferenceResponse)
         {
-            var participants = new List<Participant>();
-            foreach (var participant in conferenceResponse.Participants)
-            {
-                participants.Add(new Participant
+            var participants = conferenceResponse
+                .Participants
+                .Select(participant => new Participant
                 {
-                    Id = participant.Id,
-                    DisplayName = participant.Display_name,
-                    Role = (VideoWeb.EventHub.Enums.UserRole)Enum.Parse(typeof(UserRole), participant.User_role.ToString()),
+                    Id = participant.Id, 
+                    DisplayName = participant.Display_name, 
+                    Role = (VideoWeb.EventHub.Enums.UserRole) Enum.Parse(typeof(UserRole), participant.User_role.ToString()), 
                     Username = participant.Username
-                });
-            }
+                })
+                .ToList();
 
             var conference = new Conference
             {
@@ -40,12 +40,6 @@ namespace VideoWeb
                 HearingId = conferenceResponse.Hearing_id,
                 Participants = participants
             };
-
-            await _memoryCache.GetOrCreateAsync($"{conference.Id}_details", entry =>
-            {
-                entry.SlidingExpiration = TimeSpan.FromHours(4);
-                return Task.FromResult(conferenceResponse);
-            });
             
             await _memoryCache.GetOrCreateAsync(conference.Id, entry =>
             {
