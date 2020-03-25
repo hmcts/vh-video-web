@@ -9,13 +9,12 @@ namespace VideoWeb.UnitTests.Mappings
 {
     public class ParticipantForUserResponseMapperTests
     {
-        private readonly ParticipantForUserResponseMapper _mapper = new ParticipantForUserResponseMapper();
         [Test]
         public void Should_map_all_participants()
         {
             var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(2).Build().ToList();
 
-            var response = _mapper.MapParticipants(participants);
+            var response = ParticipantForUserResponseMapper.MapParticipants(participants);
 
             for (var index = 0; index < participants.Count; index++)
             {

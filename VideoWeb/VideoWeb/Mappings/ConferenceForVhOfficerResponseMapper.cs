@@ -6,13 +6,12 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings
 {
-    public class ConferenceForVhOfficerResponseMapper
+    public static class ConferenceForVhOfficerResponseMapper
     {
-        public ConferenceForVhOfficerResponse MapConferenceSummaryToResponseModel(ConferenceSummaryResponse conference,
+        public static ConferenceForVhOfficerResponse MapConferenceSummaryToResponseModel(ConferenceSummaryResponse conference,
             IList<InstantMessageResponse> messageResponses)
         {
-            var response = new ConferenceForUserResponseMapper()
-                .MapConferenceSummaryToResponseModel<ConferenceForVhOfficerResponse>(conference);
+            var response = ConferenceForUserResponseMapper.MapConferenceSummaryToResponseModel<ConferenceForVhOfficerResponse>(conference);
 
             if (messageResponses == null || !messageResponses.Any())
             {
@@ -29,11 +28,9 @@ namespace VideoWeb.Mappings
             return response;
         }
 
-        private static bool IsNonParticipantMessage(ConferenceSummaryResponse conference,
-            InstantMessageResponse message)
+        private static bool IsNonParticipantMessage(ConferenceSummaryResponse conference, InstantMessageResponse message)
         {
-            return !conference.Participants.Any(p =>
-                p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase));
+            return !conference.Participants.Any(p => p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase));
         }
     }
 }

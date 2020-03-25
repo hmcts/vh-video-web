@@ -12,8 +12,6 @@ namespace VideoWeb.UnitTests.Mappings
 {
     public class ConferenceForUserResponseMapperTests
     {
-        private readonly ConferenceForUserResponseMapper _mapper = new ConferenceForUserResponseMapper();
-
         [Test]
         public void Should_map_all_properties()
         {
@@ -45,7 +43,7 @@ namespace VideoWeb.UnitTests.Mappings
             conference.Participants = participants;
             conference.Tasks = new List<TaskResponse> { new TaskResponse { Id = 1, Status = TaskStatus.ToDo, Body = "self-test" } };
 
-            var response = _mapper.MapConferenceSummaryToResponseModel(conference);
+            var response = ConferenceForUserResponseMapper.MapConferenceSummaryToResponseModel(conference);
 
             response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.Case_name);

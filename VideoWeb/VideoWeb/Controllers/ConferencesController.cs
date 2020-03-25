@@ -83,8 +83,11 @@ namespace VideoWeb.Controllers
                 }
 
                 conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();
-                var mapper = new ConferenceForUserResponseMapper();
-                var response = conferences.Select(x => mapper.MapConferenceSummaryToResponseModel(x)).ToList();
+                
+                var response = conferences
+                    .Select(ConferenceForUserResponseMapper.MapConferenceSummaryToResponseModel)
+                    .ToList();
+                
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -109,7 +112,7 @@ namespace VideoWeb.Controllers
             {
                 var username = User.Identity.Name.ToLower().Trim();
                 var profile = await _userApiClient.GetUserByAdUserNameAsync(username);
-                var profileResponse = new UserProfileResponseMapper().MapToResponseModel(profile);
+                var profileResponse = UserProfileResponseMapper.MapToResponseModel(profile);
                 if (profileResponse.Role != UserRole.VideoHearingsOfficer)
                 {
                     _logger.LogError($"Failed to get conferences for today: {username} is not a VH officer");
@@ -126,8 +129,7 @@ namespace VideoWeb.Controllers
                 var conferences = await _videoApiClient.GetConferencesTodayAsync();
                 conferences = conferences.Where(ConferenceHelper.HasNotPassed).ToList();
                 conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();
-                var mapper = new ConferenceForVhOfficerResponseMapper();
-                var tasks = conferences.Select(c => MapConferenceForVhoAsync(mapper, c)).ToArray();
+                var tasks = conferences.Select(MapConferenceForVhoAsync).ToArray();
                 
                 var response = await Task.WhenAll(tasks);
 
@@ -139,16 +141,16 @@ namespace VideoWeb.Controllers
             }
         }
 
-        private async Task<ConferenceForVhOfficerResponse> MapConferenceForVhoAsync(
-            ConferenceForVhOfficerResponseMapper mapper, ConferenceSummaryResponse conference)
+        private async Task<ConferenceForVhOfficerResponse> MapConferenceForVhoAsync(ConferenceSummaryResponse conference)
         {
             if (!IsInStateToChat(conference))
             {
-                return mapper.MapConferenceSummaryToResponseModel(conference, null);
+                return ConferenceForVhOfficerResponseMapper.MapConferenceSummaryToResponseModel(conference, null);
             }
 
             var messages = await _videoApiClient.GetInstantMessageHistoryAsync(conference.Id);
-            return mapper.MapConferenceSummaryToResponseModel(conference, messages);
+            
+            return ConferenceForVhOfficerResponseMapper.MapConferenceSummaryToResponseModel(conference, messages);
         }
 
         private static bool IsInStateToChat(ConferenceSummaryResponse conference)
@@ -184,7 +186,7 @@ namespace VideoWeb.Controllers
             {
                 _logger.LogTrace("Checking to see if user is a VH Officer");
                 var profile = await _userApiClient.GetUserByAdUserNameAsync(username);
-                var profileResponse = new UserProfileResponseMapper().MapToResponseModel(profile);
+                var profileResponse = UserProfileResponseMapper.MapToResponseModel(profile);
                 isVhOfficer = profileResponse.Role == UserRole.VideoHearingsOfficer;
             }
             catch (UserApiException e)
@@ -253,8 +255,7 @@ namespace VideoWeb.Controllers
             conference.Participants = conference.Participants
                 .Where(x => displayRoles.Contains((UserRole)x.User_role)).ToList();
 
-            var mapper = new ConferenceResponseMapper();
-            var response = mapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
+            var response = ConferenceResponseMapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
             await _conferenceCache.AddConferenceToCache(conference);
 
             return Ok(response);

@@ -62,7 +62,7 @@ namespace VideoWeb.Controllers
                 Reason = EventTypeReasonMapper.Map(updateParticipantStatusEventRequest.EventType)
             };
 
-            var callbackEvent = new CallbackEventMapper().MapConferenceEventToCallbackEventModel(conferenceEventRequest);
+            var callbackEvent = CallbackEventMapper.MapConferenceEventToCallbackEventModel(conferenceEventRequest);
             var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
             try
             {

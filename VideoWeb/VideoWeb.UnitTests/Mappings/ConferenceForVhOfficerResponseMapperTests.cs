@@ -12,8 +12,6 @@ namespace VideoWeb.UnitTests.Mappings
 {
     public class ConferenceForVhOfficerResponseMapperTests
     {
-        private readonly ConferenceForVhOfficerResponseMapper _mapper = new ConferenceForVhOfficerResponseMapper();
-
         [Test]
         public void should_map_and_count_number_of_messages_since_vho_message()
         {
@@ -24,31 +22,25 @@ namespace VideoWeb.UnitTests.Mappings
                 .TheRest().With(x => x.User_role = UserRole.Individual).Build().ToList();
 
             var judge = participants.Single(x => x.User_role == UserRole.Judge);
-            var vho1Username = "vho1@hmcts.net";
-            var vho2Username = "vho2@hmcts.net";
+            const string vho1Username = "vho1@hmcts.net";
+            const string vho2Username = "vho2@hmcts.net";
 
             var conference = Builder<ConferenceSummaryResponse>.CreateNew().With(x => x.Participants = participants)
                 .Build();
 
             var messages = new List<InstantMessageResponse>
             {
-                new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 5", Time_stamp = DateTime.UtcNow.AddMinutes(-1)},
-                new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 4", Time_stamp = DateTime.UtcNow.AddMinutes(-2)},
-                new InstantMessageResponse
-                    {From = vho1Username, Message_text = "vho - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-3)},
-                new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 3", Time_stamp = DateTime.UtcNow.AddMinutes(-4)},
-                new InstantMessageResponse
-                    {From = vho2Username, Message_text = "vho2 - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-5)},
-                new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 2", Time_stamp = DateTime.UtcNow.AddMinutes(-6)},
-                new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-7)},
+                new InstantMessageResponse {From = judge.Username, Message_text = "judge - 5", Time_stamp = DateTime.UtcNow.AddMinutes(-1)},
+                new InstantMessageResponse {From = judge.Username, Message_text = "judge - 4", Time_stamp = DateTime.UtcNow.AddMinutes(-2)},
+                new InstantMessageResponse {From = vho1Username, Message_text = "vho - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-3)},
+                new InstantMessageResponse {From = judge.Username, Message_text = "judge - 3", Time_stamp = DateTime.UtcNow.AddMinutes(-4)},
+                new InstantMessageResponse {From = vho2Username, Message_text = "vho2 - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-5)},
+                new InstantMessageResponse {From = judge.Username, Message_text = "judge - 2", Time_stamp = DateTime.UtcNow.AddMinutes(-6)},
+                new InstantMessageResponse {From = judge.Username, Message_text = "judge - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-7)},
             };
 
-            var response = _mapper.MapConferenceSummaryToResponseModel(conference, messages);
+            var response = ConferenceForVhOfficerResponseMapper.MapConferenceSummaryToResponseModel(conference, messages);
+            
             response.NumberOfUnreadMessages.Should().Be(2);
         }
 
@@ -68,19 +60,15 @@ namespace VideoWeb.UnitTests.Mappings
 
             var messages = new List<InstantMessageResponse>
             {
-                new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 5", Time_stamp = DateTime.UtcNow.AddMinutes(-1)},
-                new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 4", Time_stamp = DateTime.UtcNow.AddMinutes(-2)},
-                new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 3", Time_stamp = DateTime.UtcNow.AddMinutes(-4)},
-                new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 2", Time_stamp = DateTime.UtcNow.AddMinutes(-6)},
-                new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-7)},
+                new InstantMessageResponse {From = judge.Username, Message_text = "judge - 5", Time_stamp = DateTime.UtcNow.AddMinutes(-1)},
+                new InstantMessageResponse {From = judge.Username, Message_text = "judge - 4", Time_stamp = DateTime.UtcNow.AddMinutes(-2)},
+                new InstantMessageResponse {From = judge.Username, Message_text = "judge - 3", Time_stamp = DateTime.UtcNow.AddMinutes(-4)},
+                new InstantMessageResponse {From = judge.Username, Message_text = "judge - 2", Time_stamp = DateTime.UtcNow.AddMinutes(-6)},
+                new InstantMessageResponse {From = judge.Username, Message_text = "judge - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-7)},
             };
 
-            var response = _mapper.MapConferenceSummaryToResponseModel(conference, messages);
+            var response = ConferenceForVhOfficerResponseMapper.MapConferenceSummaryToResponseModel(conference, messages);
+            
             response.NumberOfUnreadMessages.Should().Be(messages.Count);
         }
     }

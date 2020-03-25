@@ -15,8 +15,6 @@ namespace VideoWeb.UnitTests.Mappings
 {
     public class ConferenceResponseMapperTests
     {
-        private readonly ConferenceResponseMapper _mapper = new ConferenceResponseMapper();
-
         [Test]
         public void Should_map_all_properties()
         {
@@ -47,7 +45,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Meeting_room = meetingRoom)
                 .Build();
 
-            var response = _mapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
+            var response = ConferenceResponseMapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
 
             response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.Case_name);
@@ -111,7 +109,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Meeting_room = meetingRoom)
                 .Build();
 
-            var response = _mapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
+            var response = ConferenceResponseMapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
 
             response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.Case_name);
@@ -143,7 +141,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Meeting_room = meetingRoom)
                 .Build();
 
-            var response = _mapper.MapConferenceDetailsToResponseModel(conference, null);
+            var response = ConferenceResponseMapper.MapConferenceDetailsToResponseModel(conference, null);
 
             response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.Case_name);
@@ -190,7 +188,8 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Meeting_room = meetingRoom)
                 .Build();
 
-            Assert.Throws<InvalidOperationException>(()=> _mapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants));
+            Assert.Throws<InvalidOperationException>(()=> 
+                ConferenceResponseMapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants));
         }
 
         [Test]
@@ -223,7 +222,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Meeting_room = meetingRoom)
                 .Build();
 
-            var response = _mapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
+            var response = ConferenceResponseMapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
 
             response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.Case_name);

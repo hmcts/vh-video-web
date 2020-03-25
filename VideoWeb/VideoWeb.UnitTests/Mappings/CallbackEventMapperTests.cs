@@ -13,14 +13,6 @@ namespace VideoWeb.UnitTests.Mappings
 {
     public class CallbackEventMapperTests
     {
-        public CallbackEventMapper callbackEventMapper;
-
-        [SetUp]
-        public void Setup()
-        {
-            callbackEventMapper = new CallbackEventMapper();
-        }
-
         [Test]
         public void should_map_conferenceevent_to_callbackevent()
         {
@@ -48,7 +40,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Event_type = EventType.Joined)
                 .Build();
 
-            var result = callbackEventMapper.MapConferenceEventToCallbackEventModel(conferenceEventRequest);
+            var result = CallbackEventMapper.MapConferenceEventToCallbackEventModel(conferenceEventRequest);
             result.Should().NotBeNull();
             result.TransferFrom.Should().Be(conferenceEventRequest.Transfer_from);
             result.TransferTo.Should().Be(conferenceEventRequest.Transfer_to);
