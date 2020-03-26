@@ -17,7 +17,8 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task should_send_unavailable_participant_messages_when_judge_unavailable()
         {
-            _eventHandler = new JudgeUnavailableEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object);
+            _eventHandler = new JudgeUnavailableEventHandler(EventHubContextMock.Object, ConferenceCache,
+                LoggerMock.Object, VideoApiClientMock.Object);
 
             var conference = TestConference;
             var participantCount = conference.Participants.Count + 1; // plus one for admin

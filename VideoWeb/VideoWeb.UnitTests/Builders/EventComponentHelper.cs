@@ -10,6 +10,8 @@ using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
+using VideoWeb.Services.Video;
+using UserRole = VideoWeb.Common.Models.UserRole;
 
 namespace VideoWeb.UnitTests.Builders
 {
@@ -22,6 +24,7 @@ namespace VideoWeb.UnitTests.Builders
         public Mock<IEventHubClient> EventHubClientMock { get; set; }
 
         public Mock<ILogger<EventHandlerBase>> EventHandlerBaseMock { get; set; }
+        public Mock<IVideoApiClient> VideoApiClientMock { get; set; }
 
 
         public List<IEventHandler> GetHandlers()
@@ -29,32 +32,43 @@ namespace VideoWeb.UnitTests.Builders
             var cache = new MemoryCache(new MemoryCacheOptions());
             var eventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>();
             var logger = new Mock<ILogger<EventHandlerBase>>();
+            var apiClient = new Mock<IVideoApiClient>();
 
-            return GetHandlers(eventHubContextMock, cache, logger);
+            return GetHandlers(eventHubContextMock, cache, logger, apiClient);
         }
 
-        public List<IEventHandler> GetHandlers(Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> eventHubContextMock,
-            IMemoryCache memoryCache, Mock<ILogger<EventHandlerBase>> logger)
+        private List<IEventHandler> GetHandlers(
+            Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> eventHubContextMock,
+            IMemoryCache memoryCache, Mock<ILogger<EventHandlerBase>> logger, Mock<IVideoApiClient> apiClientMock)
         {
             Cache = memoryCache;
             ConferenceCache = new ConferenceCache(memoryCache);
             EventHubContextMock = eventHubContextMock;
             EventHubClientMock = new Mock<IEventHubClient>();
             EventHandlerBaseMock = new Mock<ILogger<EventHandlerBase>>();
+            VideoApiClientMock = apiClientMock;
             return new List<IEventHandler>
             {
-                new CloseEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object),
-                new DisconnectedEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object),
-                new HelpEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object),
-                new JoinedEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object),
-                new JudgeAvailableEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object),
-                new JudgeUnavailableEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object),
-                new LeaveEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object),
-                new PauseEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object),
-                new SuspendEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object),
-                new TransferEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object),
-                new ParticipantJoiningEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object),
-                new VhOfficerCallEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object)
+                new CloseEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object, apiClientMock.Object),
+                new DisconnectedEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
+                    apiClientMock.Object),
+                new HelpEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object, apiClientMock.Object),
+                new JoinedEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
+                    apiClientMock.Object),
+                new JudgeAvailableEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
+                    apiClientMock.Object),
+                new JudgeUnavailableEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
+                    apiClientMock.Object),
+                new LeaveEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object, apiClientMock.Object),
+                new PauseEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object, apiClientMock.Object),
+                new SuspendEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
+                    apiClientMock.Object),
+                new TransferEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
+                    apiClientMock.Object),
+                new ParticipantJoiningEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
+                    apiClientMock.Object),
+                new VhOfficerCallEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
+                    apiClientMock.Object)
             };
         }
 

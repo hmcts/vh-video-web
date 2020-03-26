@@ -21,12 +21,13 @@ namespace VideoWeb.UnitTests.EventHandlers
         [TestCase(RoomType.WaitingRoom)]
         public void Should_throw_exception_when_transfer_to_is_not_a_consultation_room(RoomType? transferTo)
         {
-            _eventHandler = new VhOfficerCallEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object);
-            
+            _eventHandler = new VhOfficerCallEventHandler(EventHubContextMock.Object, ConferenceCache,
+                LoggerMock.Object, VideoApiClientMock.Object);
+
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == UserRole.Individual);
 
-            
+
             var callbackEvent = new CallbackEvent
             {
                 EventType = EventType.Transfer,
@@ -37,7 +38,8 @@ namespace VideoWeb.UnitTests.EventHandlers
                 TimeStampUtc = DateTime.UtcNow
             };
 
-            var exception = Assert.ThrowsAsync<ArgumentException>(async () => await _eventHandler.HandleAsync(callbackEvent));
+            var exception =
+                Assert.ThrowsAsync<ArgumentException>(async () => await _eventHandler.HandleAsync(callbackEvent));
             exception.Message.Should().Be("No consultation room provided");
         }
 
@@ -45,12 +47,13 @@ namespace VideoWeb.UnitTests.EventHandlers
         [TestCase(RoomType.ConsultationRoom2)]
         public async Task Should_raise_admin_consultation_message(RoomType? transferTo)
         {
-            _eventHandler = new VhOfficerCallEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object);
-            
+            _eventHandler = new VhOfficerCallEventHandler(EventHubContextMock.Object, ConferenceCache,
+                LoggerMock.Object, VideoApiClientMock.Object);
+
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == UserRole.Individual);
 
-            
+
             var callbackEvent = new CallbackEvent
             {
                 EventType = EventType.Transfer,
