@@ -5,24 +5,32 @@ import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { configureTestSuite } from 'ng-bullet';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceLite } from 'src/app/services/models/conference-lite';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
-import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
-import { IntroductionComponent } from './introduction.component';
-import { AdalService } from 'adal-angular4';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { Logger } from 'src/app/services/logging/logger-base';
+import { IntroductionComponent } from './introduction.component';
 
 describe('IntroductionComponent', () => {
     let component: IntroductionComponent;
     let fixture: ComponentFixture<IntroductionComponent>;
     let debugElement: DebugElement;
     let router: Router;
+
+    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     const conference = new ConferenceTestData().getConferenceDetailFuture();
+    const pat = conference.participants[0];
+    const confLite = new ConferenceLite(conference.id, conference.case_number, pat.id, pat.display_name);
 
     configureTestSuite(() => {
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
+            'getActiveIndividualConference',
+            'raiseParticipantEvent'
+        ]);
+        videoWebServiceSpy.getActiveIndividualConference.and.returnValue(confLite);
+
         TestBed.configureTestingModule({
             declarations: [IntroductionComponent],
             imports: [ReactiveFormsModule, FormsModule, RouterTestingModule, SharedModule],
@@ -35,8 +43,7 @@ describe('IntroductionComponent', () => {
                         }
                     }
                 },
-                { provide: AdalService, useClass: MockAdalService },
-                { provide: VideoWebService, useClass: MockVideoWebService },
+                { provide: VideoWebService, useValue: videoWebServiceSpy },
                 { provide: Logger, useClass: MockLogger }
             ]
         });

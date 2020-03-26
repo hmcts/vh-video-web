@@ -1,9 +1,10 @@
 import {
-    ConferenceForUserResponse,
+    ConferenceForIndividualResponse,
     ConferenceForVhOfficerResponse,
     ConferenceStatus,
-    ParticipantForUserResponse,
-    UserRole
+    TaskUserResponse,
+    UserRole,
+    ConferenceForJudgeResponse
 } from 'src/app/services/clients/api-client';
 import { HearingBase } from './hearing-base';
 import { ParticipantSummary } from './participant-summary';
@@ -15,10 +16,11 @@ export class HearingSummary extends HearingBase {
     constructor(conference: ConferenceForVhOfficerResponse) {
         super();
         const isVhResponse = conference instanceof ConferenceForVhOfficerResponse;
-        const isIndividualResponse = conference instanceof ConferenceForUserResponse;
+        const isIndividualResponse =
+            conference instanceof ConferenceForIndividualResponse || conference instanceof ConferenceForJudgeResponse;
 
         if (!(isVhResponse || isIndividualResponse)) {
-            throw new Error('Object not a ConferenceForUserResponse or ConferenceForVhOfficerResponse');
+            throw new Error('Object not a ConferenceForIndividualResponse or ConferenceForVhOfficerResponse or ConferenceForJudgeResponse');
         }
         this.conference = conference;
         this.participants = this.conference.participants.map(p => new ParticipantSummary(p));
@@ -40,12 +42,20 @@ export class HearingSummary extends HearingBase {
         return this.conference.status;
     }
 
+    set status(status: ConferenceStatus) {
+        this.conference.status = status;
+    }
+
     get scheduledDuration(): number {
         return this.conference.scheduled_duration;
     }
 
     get scheduledStartTime(): Date {
         return new Date(this.conference.scheduled_date_time.getTime());
+    }
+
+    get scheduledDateTime(): Date {
+        return this.conference.scheduled_date_time;
     }
 
     get scheduledEndTime(): Date {
@@ -78,6 +88,10 @@ export class HearingSummary extends HearingBase {
         return this.conference.number_of_unread_messages;
     }
 
+    set numberOfUnreadMessages(numberOfUnreadMessages: number) {
+        this.conference.number_of_unread_messages = numberOfUnreadMessages;
+    }
+
     get hearingVenueName(): string {
         return this.conference.hearing_venue_name;
     }
@@ -86,12 +100,28 @@ export class HearingSummary extends HearingBase {
         return this.participants.find(x => x.role === UserRole.Judge);
     }
 
+    get numberOfPendingTasks(): number {
+        return this.conference.no_of_pending_tasks;
+    }
+
+    set numberOfPendingTasks(numberOfPendingTasks: number) {
+        this.conference.no_of_pending_tasks = numberOfPendingTasks;
+    }
+
+    get tasks(): TaskUserResponse[] {
+        return this.conference.tasks;
+    }
+
+    get caseType(): string {
+        return this.conference.case_type;
+    }
+
     getConference() {
         return this.conference;
     }
 
-    getParticipants(): ParticipantForUserResponse[] {
-        return this.conference.participants;
+    getParticipants(): ParticipantSummary[] {
+        return this.participants;
     }
 
     getDurationAsText(): string {

@@ -1,12 +1,13 @@
-import { Observable, of } from 'rxjs';
+import { Guid } from 'guid-typescript';
+import { Observable, Subject } from 'rxjs';
+import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { HelpMessage } from 'src/app/services/models/help-message';
+import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-
-import { ConferenceStatus, ParticipantStatus, RoomType, ConsultationAnswer, ChatResponse } from '../../services/clients/api-client';
-import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
-import { Guid } from 'guid-typescript';
+import { ChatResponse, ConferenceStatus, ConsultationAnswer, ParticipantStatus, RoomType } from '../../services/clients/api-client';
+import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 
 export class MockEventsService {
     nextParticipantStatusMessage: ParticipantStatusMessage;
@@ -18,11 +19,20 @@ export class MockEventsService {
     nextAdminAnsweredChatMessage: string;
     nextJudgeStatusMessage: ParticipantStatusMessage;
     nextChatMessage: ChatResponse;
+    nextHeartbeat: ParticipantHeartbeat;
 
-    constructor(skip = false) {
-        if (skip) {
-            return;
-        }
+    participantStatusSubject = new Subject<ParticipantStatusMessage>();
+    hearingStatusSubject = new Subject<ConferenceStatusMessage>();
+    helpMessageSubject = new Subject<HelpMessage>();
+    consultationMessageSubject = new Subject<ConsultationMessage>();
+    adminConsultationMessageSubject = new Subject<AdminConsultationMessage>();
+    messageSubject = new Subject<InstantMessage>();
+    participantHeartbeat = new Subject<ParticipantHeartbeat>();
+    adminAnsweredChatSubject = new Subject<string>();
+    eventHubDisconnectSubject = new Subject<number>();
+    eventHubReconnectSubject = new Subject();
+
+    constructor() {
         this.nextParticipantStatusMessage = new ParticipantStatusMessage(
             '9F681318-4955-49AF-A887-DED64554429D',
             ParticipantStatus.Available
@@ -54,41 +64,45 @@ export class MockEventsService {
     stop() {}
 
     getParticipantStatusMessage(): Observable<ParticipantStatusMessage> {
-        return of(this.nextParticipantStatusMessage);
+        return this.participantStatusSubject.asObservable();
     }
 
     getHearingStatusMessage(): Observable<ConferenceStatusMessage> {
-        return of(this.nextHearingStatusMessage);
+        return this.hearingStatusSubject.asObservable();
     }
 
     getHelpMessage(): Observable<HelpMessage> {
-        return of(this.nextHelpMessage);
+        return this.helpMessageSubject.asObservable();
     }
 
     getConsultationMessage(): Observable<ConsultationMessage> {
-        return of(this.nextConsultationMessage);
+        return this.consultationMessageSubject.asObservable();
     }
 
     getAdminConsultationMessage(): Observable<AdminConsultationMessage> {
-        return of(this.nextAdminConsultationMessage);
+        return this.adminConsultationMessageSubject.asObservable();
     }
 
     getChatMessage(): Observable<ChatResponse> {
-        return of(this.nextChatMessage);
+        return this.messageSubject.asObservable();
     }
 
     getServiceDisconnected(): Observable<any> {
-        return of(true);
+        return this.eventHubDisconnectSubject.asObservable();
     }
 
     getServiceReconnected(): Observable<any> {
-        return of(true);
+        return this.eventHubReconnectSubject.asObservable();
     }
 
     sendMessage(conferenceId: string, message: string) {}
 
     getAdminAnsweredChat(): Observable<string> {
-        return of(this.nextAdminAnsweredChatMessage);
+        return this.adminAnsweredChatSubject.asObservable();
+    }
+
+    getHeartbeat(): Observable<ParticipantHeartbeat> {
+        return this.participantHeartbeat.asObservable();
     }
 }
 

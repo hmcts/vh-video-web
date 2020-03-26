@@ -1,10 +1,11 @@
-import { ConferenceResponse, SelfTestFailureReason, AddSelfTestFailureEventRequest } from 'src/app/services/clients/api-client';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { AdalService } from 'adal-angular4';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { AddSelfTestFailureEventRequest, SelfTestFailureReason } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceLite } from 'src/app/services/models/conference-lite';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 
 export abstract class EquipmentCheckBaseComponent {
@@ -12,7 +13,7 @@ export abstract class EquipmentCheckBaseComponent {
     submitted = false;
 
     conferenceId: string;
-    conference: ConferenceResponse;
+    conference: ConferenceLite;
     participantId: string;
     participantName: string;
 
@@ -42,22 +43,9 @@ export abstract class EquipmentCheckBaseComponent {
 
     getConference(): void {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-        this.videoWebService
-            .getConferenceById(this.conferenceId)
-            .toPromise()
-            .then(conference => {
-                this.conference = conference;
-                const participant = this.conference.participants.find(
-                    x => x.username.toLocaleLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase()
-                );
-                this.participantId = participant.id.toString();
-                this.participantName = this.videoWebService.getObfuscatedName(participant.first_name + ' ' + participant.last_name);
-            })
-            .catch(error => {
-                if (!this.errorService.returnHomeIfUnauthorised(error)) {
-                    this.errorService.handleApiError(error);
-                }
-            });
+        this.conference = this.videoWebService.getActiveIndividualConference();
+        this.participantId = this.conference.loggedInParticipantId;
+        this.participantName = this.conference.loggedInParticipantDisplayName;
     }
 
     checkEquipmentAgain() {
@@ -73,31 +61,31 @@ export abstract class EquipmentCheckBaseComponent {
         return this.form.invalid && this.submitted && this.form.pristine;
     }
 
-    onSubmit() {
+    async onSubmit() {
         this.submitted = true;
-        if (this.form.invalid) {
-            if (this.equipmentCheck.value === 'No') {
-                this.videoWebService
-                    .raiseSelfTestFailureEvent(
-                        this.conferenceId,
-                        new AddSelfTestFailureEventRequest({
-                            participant_id: this.participantId,
-                            self_test_failure_reason: this.getFailureReason()
-                        })
-                    )
-                    .subscribe(
-                        () => {},
-                        error => {
-                            this.logger.error('Failed to raise "SelfTestFailureEvent"', error);
-                        }
-                    );
-                this.logger.info(
-                    `Camera check | ConferenceId : ${this.conferenceId} | Participant : ${this.participantName} responded camera not working.`
-                );
-                this.router.navigate([PageUrls.GetHelp]);
-            }
+        if (this.form.pristine) {
             return;
         }
-        this.navigateToNextPage();
+
+        if (this.form.valid && this.form.dirty) {
+            this.navigateToNextPage();
+            return;
+        }
+        try {
+            await this.videoWebService.raiseSelfTestFailureEvent(
+                this.conferenceId,
+                new AddSelfTestFailureEventRequest({
+                    participant_id: this.participantId,
+                    self_test_failure_reason: this.getFailureReason()
+                })
+            );
+
+            this.logger.info(
+                `Camera check | ConferenceId : ${this.conferenceId} | Participant : ${this.participantName} responded camera not working.`
+            );
+            this.router.navigate([PageUrls.GetHelp]);
+        } catch (error) {
+            this.logger.error('Failed to raise "SelfTestFailureEvent"', error);
+        }
     }
 }

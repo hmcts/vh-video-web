@@ -9,9 +9,10 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Hub;
-using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
@@ -24,7 +25,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         private ConsultationsController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
         private Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> _eventHubContextMock;
-        private IMemoryCache _memoryCache;
+        private MemoryCache _memoryCache;
+        private IConferenceCache _conferenceCache;
         private Conference _testConference;
         private Mock<IEventHubClient> _eventHubClientMock;
 
@@ -35,6 +37,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             _eventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>();
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
+            _conferenceCache = new ConferenceCache(_memoryCache);
             _eventHubClientMock = new Mock<IEventHubClient>();
 
             _testConference = ConsultationHelper.BuildConferenceForTest();
@@ -57,7 +60,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 }
             };
 
-            _controller = new ConsultationsController(_videoApiClientMock.Object, _eventHubContextMock.Object, _memoryCache)
+            _controller = new ConsultationsController(_videoApiClientMock.Object, _eventHubContextMock.Object, _conferenceCache)
             {
                 ControllerContext = context
             };
@@ -71,7 +74,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Returns(Task.FromResult(default(object)));
             _memoryCache.Remove(_testConference.Id);
             var consultationRequest = ConsultationHelper.GetAdminConsultationRequest(_testConference, ConsultationAnswer.None);
-            var result = await _controller.RespondToAdminConsultationRequest(consultationRequest);
+            var result = await _controller.RespondToAdminConsultationRequestAsync(consultationRequest);
 
             var typedResult = (NotFoundResult)result;
             typedResult.Should().NotBeNull();
@@ -87,7 +90,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _memoryCache.Set(conference.Id, conference);
 
             var consultationRequest = Builder<AdminConsultationRequest>.CreateNew().With(x => x.Conference_id = conference.Id).Build();
-            var result = await _controller.RespondToAdminConsultationRequest(consultationRequest);
+            var result = await _controller.RespondToAdminConsultationRequestAsync(consultationRequest);
 
             var typedResult = (NotFoundResult)result;
             typedResult.Should().NotBeNull();
@@ -100,7 +103,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Setup(x => x.RespondToAdminConsultationRequestAsync(It.IsAny<AdminConsultationRequest>()))
                 .Returns(Task.FromResult(default(object)));
 
-            var result = await _controller.RespondToAdminConsultationRequest(ConsultationHelper.GetAdminConsultationRequest(_testConference, ConsultationAnswer.None));
+            var result = await _controller.RespondToAdminConsultationRequestAsync(ConsultationHelper.GetAdminConsultationRequest(_testConference, ConsultationAnswer.None));
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
             _eventHubClientMock.Verify(
@@ -119,7 +122,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Setup(x => x.RespondToAdminConsultationRequestAsync(It.IsAny<AdminConsultationRequest>()))
                 .ThrowsAsync(apiException);
             
-            var result = await _controller.RespondToAdminConsultationRequest(ConsultationHelper.GetAdminConsultationRequest(_testConference, ConsultationAnswer.None));
+            var result = await _controller.RespondToAdminConsultationRequestAsync(ConsultationHelper.GetAdminConsultationRequest(_testConference, ConsultationAnswer.None));
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
         }
@@ -131,7 +134,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Setup(x => x.RespondToAdminConsultationRequestAsync(It.IsAny<AdminConsultationRequest>())).Returns(Task.FromResult(HttpStatusCode.NoContent));
 
             var adminConsultationRequest = ConsultationHelper.GetAdminConsultationRequest(_testConference, ConsultationAnswer.Accepted);
-            var result = await _controller.RespondToAdminConsultationRequest(adminConsultationRequest);
+            var result = await _controller.RespondToAdminConsultationRequestAsync(adminConsultationRequest);
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
 

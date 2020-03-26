@@ -2,6 +2,9 @@
   <div class="govuk-grid-column-full">
     <p>{{participant.fullName}} ({{participant.caseGroup}})</p>
   </div>
+  <div class="govuk-grid-column-full" *ngIf="participant.isJudge">
+    <p>{{venueName}}</p>
+  </div>
   <div class="govuk-grid-column-full">
     <a class="govuk-body-s govuk-link" href="mailto:{{participant.contactEmail}}">{{participant.contactEmail}}</a>
   </div>

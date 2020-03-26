@@ -5,21 +5,31 @@ import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceLite } from 'src/app/services/models/conference-lite';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { CameraCheckComponent } from './camera-check.component';
 
 describe('CameraCheckComponent', () => {
     let component: CameraCheckComponent;
     let fixture: ComponentFixture<CameraCheckComponent>;
     let router: Router;
+
+    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     const conference = new ConferenceTestData().getConferenceDetailFuture();
+    const pat = conference.participants[0];
+    const confLite = new ConferenceLite(conference.id, conference.case_number, pat.id, pat.display_name);
 
     configureTestSuite(() => {
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
+            'getActiveIndividualConference',
+            'raiseSelfTestFailureEvent'
+        ]);
+        videoWebServiceSpy.getActiveIndividualConference.and.returnValue(confLite);
+
         TestBed.configureTestingModule({
             imports: [RouterTestingModule, SharedModule],
             declarations: [CameraCheckComponent],
@@ -33,7 +43,7 @@ describe('CameraCheckComponent', () => {
                     }
                 },
                 { provide: AdalService, useClass: MockAdalService },
-                { provide: VideoWebService, useClass: MockVideoWebService },
+                { provide: VideoWebService, useValue: videoWebServiceSpy },
                 { provide: Logger, useClass: MockLogger }
             ]
         });
@@ -50,19 +60,21 @@ describe('CameraCheckComponent', () => {
         expect(component.form.pristine).toBeTruthy();
     });
 
-    it('should invalidate form when "No" is selected', () => {
+    it('should invalidate form when "No" is selected', async () => {
         spyOn(router, 'navigate').and.callFake(() => {});
         component.equipmentCheck.setValue('No');
-        component.onSubmit();
+        component.equipmentCheck.markAsDirty();
+        await component.onSubmit();
         expect(component.form.valid).toBeFalsy();
         expect(router.navigate).toHaveBeenCalledTimes(1);
         expect(router.navigate).toHaveBeenCalledWith([PageUrls.GetHelp]);
     });
 
-    it('should validate form when "Yes" is selected', () => {
+    it('should validate form when "Yes" is selected', async () => {
         spyOn(router, 'navigate').and.callFake(() => {});
         component.equipmentCheck.setValue('Yes');
-        component.onSubmit();
+        component.equipmentCheck.markAsDirty();
+        await component.onSubmit();
         expect(component.form.valid).toBeTruthy();
         expect(router.navigate).toHaveBeenCalledWith([PageUrls.MicrophoneWorking, conference.id]);
     });

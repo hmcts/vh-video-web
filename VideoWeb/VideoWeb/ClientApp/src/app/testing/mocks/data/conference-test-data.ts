@@ -1,7 +1,6 @@
 import { Guid } from 'guid-typescript';
 import * as moment from 'moment';
 import {
-    ConferenceForUserResponse,
     ConferenceForVhOfficerResponse,
     ConferenceResponse,
     ConferenceStatus,
@@ -18,17 +17,14 @@ import { InstantMessage } from 'src/app/services/models/instant-message';
 import { AlertFilter, AlertsStatus, HearingsFilter, ListFilter, StatusFilter } from '../../../shared/models/hearings-filter';
 
 export class ConferenceTestData {
-    getConferenceNow(): ConferenceForUserResponse {
+    getConferenceNow(): ConferenceForVhOfficerResponse {
         const currentDateTime = new Date();
-        const conference = new ConferenceForUserResponse({
+        const conference = new ConferenceForVhOfficerResponse({
             id: '363725D0-E3D6-4D4A-8D0A-E8E57575FBC4',
             case_name: 'C V I',
             case_number: '123ABC',
             case_type: 'Financial Tax Remedy',
             scheduled_date_time: currentDateTime,
-            no_of_participants_available: 2,
-            no_of_participants_unavailable: 1,
-            no_of_participants_in_consultation: 2,
             scheduled_duration: 50,
             status: ConferenceStatus.NotStarted,
             participants: this.getListOfParticipants(),
@@ -38,18 +34,31 @@ export class ConferenceTestData {
         return conference;
     }
 
-    getConferencePast(): ConferenceForUserResponse {
+    getConferencePast(): ConferenceForVhOfficerResponse {
         const pastDate = new Date(new Date().getTime());
         pastDate.setUTCHours(pastDate.getUTCHours() - 26);
-        const conference = new ConferenceForUserResponse({
+        const conference = new ConferenceForVhOfficerResponse({
             id: '58CB20C7-377D-4581-8069-3776F583684B',
             case_name: 'BW V BP',
             case_number: 'ABC1234',
             case_type: 'Financial Tax Remedy',
             scheduled_date_time: pastDate,
-            no_of_participants_available: 2,
-            no_of_participants_unavailable: 1,
-            no_of_participants_in_consultation: 2,
+            scheduled_duration: 50,
+            status: ConferenceStatus.NotStarted,
+            participants: this.getListOfParticipants()
+        });
+        return conference;
+    }
+
+    getVHOConferencePast(): ConferenceForVhOfficerResponse {
+        const pastDate = new Date(new Date().getTime());
+        pastDate.setUTCHours(pastDate.getUTCHours() - 26);
+        const conference = new ConferenceForVhOfficerResponse({
+            id: '58CB20C7-377D-4581-8069-3776F583684B',
+            case_name: 'BW V BP',
+            case_number: 'ABC1234',
+            case_type: 'Financial Tax Remedy',
+            scheduled_date_time: pastDate,
             scheduled_duration: 50,
             status: ConferenceStatus.NotStarted,
             participants: this.getListOfParticipants()
@@ -66,9 +75,6 @@ export class ConferenceTestData {
             case_number: '0987UDIHH',
             case_type: 'Financial Tax Remedy',
             scheduled_date_time: futureDate,
-            no_of_participants_available: 2,
-            no_of_participants_unavailable: 1,
-            no_of_participants_in_consultation: 2,
             scheduled_duration: 50,
             status: ConferenceStatus.NotStarted,
             participants: this.getListOfParticipants(),
@@ -79,8 +85,8 @@ export class ConferenceTestData {
         return conference;
     }
 
-    getTestData(): Array<ConferenceForUserResponse> {
-        const testData: Array<ConferenceForUserResponse> = [];
+    getTestData(): Array<ConferenceForVhOfficerResponse> {
+        const testData: Array<ConferenceForVhOfficerResponse> = [];
         const conference1 = this.getConferenceNow();
         const conference2 = this.getConferencePast();
         const conference3 = this.getConferenceFuture();
@@ -101,8 +107,8 @@ export class ConferenceTestData {
         return testData;
     }
 
-    getTestDataForFilter(): Array<ConferenceForUserResponse> {
-        const testData: Array<ConferenceForUserResponse> = [];
+    getTestDataForFilter(): Array<ConferenceForVhOfficerResponse> {
+        const testData: Array<ConferenceForVhOfficerResponse> = [];
         const task1 = new TaskUserResponse({ id: 1, body: 'Disconnected' });
         const task2 = new TaskUserResponse({ id: 2, body: 'Failed self-test (Bad Score)' });
         const conference1 = this.getConferenceNow();
@@ -156,7 +162,8 @@ export class ConferenceTestData {
             admin_i_frame_uri: 'adminiframe@kinly..com',
             judge_i_frame_uri: 'judgeiframe@kinly..com',
             participant_uri: 'participant@kinly..com',
-            pexip_node_uri: 'node@kinly..com'
+            pexip_node_uri: 'node@kinly..com',
+            hearing_venue_name: 'venue name'
         });
 
         return conference;
@@ -166,6 +173,7 @@ export class ConferenceTestData {
         const participants: ParticipantForUserResponse[] = [];
 
         const participant1 = new ParticipantForUserResponse({
+            id: '1111-1111-1111-1111',
             status: ParticipantStatus.Available,
             display_name: 'C Green',
             username: 'chris.green@hearings.net',
@@ -175,6 +183,7 @@ export class ConferenceTestData {
         });
 
         const participant2 = new ParticipantForUserResponse({
+            id: '2222-2222-2222-2222',
             status: ParticipantStatus.NotSignedIn,
             display_name: 'J Green',
             username: 'james.green@hearings.net',
@@ -183,6 +192,7 @@ export class ConferenceTestData {
         });
 
         const participant3 = new ParticipantForUserResponse({
+            id: '3333-3333-3333-3333',
             status: ParticipantStatus.Available,
             display_name: 'Judge Fudge',
             username: 'judge.fudge@hearings.net',
@@ -191,6 +201,7 @@ export class ConferenceTestData {
         });
 
         const participant4 = new ParticipantForUserResponse({
+            id: '4444-4444-4444-4444',
             status: ParticipantStatus.Available,
             display_name: 'J Doe',
             username: 'john.doe@hearings.net',
@@ -200,6 +211,7 @@ export class ConferenceTestData {
         });
 
         const participant5 = new ParticipantForUserResponse({
+            id: '4444-4444-4444-444',
             status: ParticipantStatus.NotSignedIn,
             display_name: 'J Doe',
             username: 'jane.doe@hearings.net',

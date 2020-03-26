@@ -21,6 +21,8 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { Hearing } from '../../shared/models/hearing';
+import { HeartbeatModelMapper } from '../../shared/mappers/heartbeat-model-mapper';
+import { DeviceTypeService } from '../../services/device-type.service';
 
 declare var PexRTC: any;
 declare var HeartbeatFactory: any;
@@ -72,7 +74,9 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         private userMediaService: UserMediaService,
         private logger: Logger,
         private consultationService: ConsultationService,
-        private router: Router
+        private router: Router,
+        private heartbeatMapper: HeartbeatModelMapper,
+        private deviceTypeService: DeviceTypeService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -169,7 +173,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         return this.videoWebService
             .getConferenceById(conferenceId)
-            .toPromise()
             .then((data: ConferenceResponse) => {
                 this.errorCount = 0;
                 this.loadingData = false;
@@ -190,21 +193,17 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             });
     }
 
-    getJwtokenAndConnectToPexip(): void {
-        this.logger.debug('retrieving jwtoken');
-        this.videoWebService.getJwToken(this.participant.id).subscribe(
-            async (token: TokenResponse) => {
-                this.logger.debug('retrieved jwtoken for heartbeat');
-                this.token = token;
-
-                await this.setupPexipClient();
-                this.call();
-            },
-            error => {
-                this.logger.error(`There was an error getting a jwtoken for ${this.participant.id}`, error);
-                this.errorService.handleApiError(error);
-            }
-        );
+    async getJwtokenAndConnectToPexip(): Promise<void> {
+        try {
+            this.logger.debug('retrieving jwtoken');
+            this.token = await this.videoWebService.getJwToken(this.participant.id);
+            this.logger.debug('retrieved jwtoken for heartbeat');
+            await this.setupPexipClient();
+            this.call();
+        } catch (error) {
+            this.logger.error(`There was an error getting a jwtoken for ${this.participant.id}`, error);
+            this.errorService.handleApiError(error);
+        }
     }
 
     getConferenceStatusText(): string {
@@ -370,14 +369,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
                 }, self.CALL_TIMEOUT);
             }
         };
-
-        this.pexipAPI.onParticipantCreate = function(participant) {
-            self.logger.debug(`Participant added : ${participant}`);
-        };
-
-        this.pexipAPI.onParticipantDelete = function(participant) {
-            self.logger.debug(`Participant removed : ${participant}`);
-        };
     }
 
     call() {
@@ -439,22 +430,19 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         return (this.selfViewOpen = !this.selfViewOpen);
     }
 
-    getConferenceClosedTime(conferenceId: string): void {
-        this.videoWebService.getConferenceById(conferenceId).subscribe(
-            async (data: ConferenceResponse) => {
-                this.hearing = new Hearing(data);
-                this.conference = this.hearing.getConference();
-                this.participant = data.participants.find(
-                    x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
-                );
-                this.logger.info(
-                    `Participant waiting room : Conference with id ${conferenceId} closed | Participant Id : ${this.participant.id}, ${this.participant.display_name}.`
-                );
-            },
-            error => {
-                this.logger.error(`There was an error getting a conference ${conferenceId}`, error);
-            }
-        );
+    async getConferenceClosedTime(conferenceId: string): Promise<void> {
+        try {
+            this.conference = await this.videoWebService.getConferenceById(conferenceId);
+            this.hearing = new Hearing(this.conference);
+            this.participant = this.conference.participants.find(
+                x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
+            );
+            this.logger.info(
+                `Participant waiting room : Conference with id ${conferenceId} closed | Participant Id : ${this.participant.id}, ${this.participant.display_name}.`
+            );
+        } catch (error) {
+            this.logger.error(`There was an error getting a conference ${conferenceId}`, error);
+        }
     }
 
     assignStream(videoElement, stream) {
@@ -466,8 +454,14 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     handleHeartbeat(self: this) {
-        return function(heartbeat) {
-            self.logger.info(`**** heartbeat callback fired: ${heartbeat}`);
+        return async function(heartbeat) {
+            const heartbeatModel = self.heartbeatMapper.map(
+                JSON.parse(heartbeat),
+                self.deviceTypeService.getBrowserName(),
+                self.deviceTypeService.getBrowserVersion()
+            );
+
+            await self.eventService.sendHeartbeat(self.hearing.id, self.participant.id, heartbeatModel);
         };
     }
 

@@ -6,10 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using VideoWeb.Common.Models;
 using VideoWeb.Common.SignalR;
 using VideoWeb.EventHub.Exceptions;
+using VideoWeb.EventHub.Mappers;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
+using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.EventHub.Hub
 {
@@ -21,15 +24,16 @@ namespace VideoWeb.EventHub.Hub
         private readonly IUserProfileService _userProfileService;
         private readonly ILogger<EventHub> _logger;
         private readonly IVideoApiClient _videoApiClient;
-
         private readonly IMemoryCache _memoryCache;
+        private readonly IHeartbeatRequestMapper _heartbeatRequestMapper;
 
-        public EventHub(IUserProfileService userProfileService,
-            IVideoApiClient videoApiClient, ILogger<EventHub> logger, IMemoryCache memoryCache)
+        public EventHub(IUserProfileService userProfileService, IVideoApiClient videoApiClient, 
+            ILogger<EventHub> logger, IMemoryCache memoryCache, IHeartbeatRequestMapper heartbeatRequestMapper)
         {
             _userProfileService = userProfileService;
             _logger = logger;
             _memoryCache = memoryCache;
+            _heartbeatRequestMapper = heartbeatRequestMapper;
             _videoApiClient = videoApiClient;
         }
 
@@ -48,9 +52,9 @@ namespace VideoWeb.EventHub.Hub
         private async Task AddUserToConferenceGroups(bool isAdmin)
         {
             var conferences = await GetConferencesForUser(isAdmin);
-            var tasks = conferences.Select(c => Groups.AddToGroupAsync(Context.ConnectionId, c.Id.ToString()))
-                .ToArray();
-            Task.WaitAll(tasks);
+            var tasks = conferences.Select(c => Groups.AddToGroupAsync(Context.ConnectionId, c.Id.ToString())).ToArray();
+            
+            await Task.WhenAll(tasks);
         }
 
         private async Task AddUserToUserGroup(bool isAdmin)
@@ -99,9 +103,9 @@ namespace VideoWeb.EventHub.Hub
         private async Task RemoveUserFromConferenceGroups(bool isAdmin)
         {
             var conferences = await GetConferencesForUser(isAdmin);
-            var tasks = conferences.Select(c => Groups.RemoveFromGroupAsync(Context.ConnectionId, c.Id.ToString()))
-                .ToArray();
-            Task.WaitAll(tasks);
+            var tasks = conferences.Select(c => Groups.RemoveFromGroupAsync(Context.ConnectionId, c.Id.ToString())).ToArray();
+            
+            await Task.WhenAll(tasks);
         }
 
         private async Task<IEnumerable<ConferenceSummaryResponse>> GetConferencesForUser(bool isAdmin)
@@ -158,6 +162,25 @@ namespace VideoWeb.EventHub.Hub
 
             return conference.GetJudge().Username
                 .Equals(Context.UserIdentifier, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public async Task SendHeartbeat(Guid conferenceId, Guid participantId, Heartbeat heartbeat)
+        {
+            try
+            {
+                await Clients.Group(VhOfficersGroupName).ReceiveHeartbeat
+                (
+                    conferenceId, participantId, _heartbeatRequestMapper.MapToHealth(heartbeat), 
+                    heartbeat.BrowserName, heartbeat.BrowserVersion
+                );
+
+                var addHeartbeatRequest = _heartbeatRequestMapper.MapToRequest(heartbeat);
+                await _videoApiClient.SaveHeartbeatDataForParticipantAsync(conferenceId, participantId, addHeartbeatRequest);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error occured when sending heartbeat", ex);
+            }
         }
     }
 }

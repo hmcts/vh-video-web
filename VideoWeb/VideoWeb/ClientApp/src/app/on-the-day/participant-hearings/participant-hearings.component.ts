@@ -1,18 +1,18 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { ConferenceForUserResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ErrorService } from 'src/app/services/error.service';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { ConferenceForIndividualResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { ErrorService } from 'src/app/services/error.service';
 import { ProfileService } from '../../services/api/profile.service';
 import { PageUrls } from '../../shared/page-url.constants';
-import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-participant-hearings',
     templateUrl: './participant-hearings.component.html'
 })
 export class ParticipantHearingsComponent implements OnInit, OnDestroy {
-    conferences: ConferenceForUserResponse[];
+    conferences: ConferenceForIndividualResponse[];
     conferencesSubscription: Subscription;
     loadingData: boolean;
     interval: any;
@@ -47,21 +47,25 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
 
     retrieveHearingsForUser() {
         this.conferencesSubscription = this.videoWebService.getConferencesForIndividual().subscribe(
-            (data: ConferenceForUserResponse[]) => {
+            (data: ConferenceForIndividualResponse[]) => {
                 this.errorCount = 0;
                 this.loadingData = false;
                 this.conferences = data;
             },
             error => {
-                this.errorCount++;
-                this.loadingData = false;
-                if (this.errorCount > 3) {
-                    this.errorService.handleApiError(error);
-                } else {
-                    this.errorService.handleApiError(error, true);
-                }
+                this.handleApiError(error);
             }
         );
+    }
+
+    handleApiError(error) {
+        this.errorCount++;
+        this.loadingData = false;
+        if (this.errorCount > 3) {
+            this.errorService.handleApiError(error);
+        } else {
+            this.errorService.handleApiError(error, true);
+        }
     }
 
     hasHearings() {
@@ -70,5 +74,10 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
 
     goToEquipmentCheck() {
         this.router.navigate([PageUrls.EquipmentCheck]);
+    }
+
+    onConferenceSelected(conference: ConferenceForIndividualResponse) {
+        this.videoWebService.setActiveIndividualConference(conference);
+        this.router.navigate([PageUrls.Introduction, conference.id]);
     }
 }

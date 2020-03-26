@@ -15,7 +15,7 @@ export class ErrorService {
         if (skipRedirect) {
             return;
         }
-        if (!error.isApiException) {
+        if (!ApiException.isApiException(error)) {
             return;
         }
         const swaggerError: ApiException = error;
@@ -30,8 +30,8 @@ export class ErrorService {
     }
 
     returnHomeIfUnauthorised(error: any): boolean {
-        if (!error.isApiException) {
-            return;
+        if (!ApiException.isApiException(error)) {
+            return false;
         }
         const swaggerError: ApiException = error;
         if (swaggerError.status === 401) {

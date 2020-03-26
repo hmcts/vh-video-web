@@ -1,7 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { ConferenceForVhOfficerResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
+import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { ClipboardService } from 'ngx-clipboard';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
+import { ParticipantSummary } from '../../shared/models/participant-summary';
 
 @Component({
     selector: 'app-vho-hearing-list',
@@ -9,44 +10,45 @@ import { HearingSummary } from 'src/app/shared/models/hearing-summary';
     styleUrls: ['./vho-hearing-list.component.scss']
 })
 export class VhoHearingListComponent implements OnInit {
-    @Input() conferences: ConferenceForVhOfficerResponse[];
-    @Output() selectedConference = new EventEmitter<ConferenceForVhOfficerResponse>();
-    currentConference: ConferenceForVhOfficerResponse;
+  @Input() conferences: HearingSummary[];
+  @Output() selectedConference = new EventEmitter<HearingSummary>();
+  @Output() selectedParticipant = new EventEmitter<any>();
+  currentConference: HearingSummary;
 
     constructor(private clipboardService: ClipboardService) {}
 
     ngOnInit() {}
 
-    isCurrentConference(conference: ConferenceForVhOfficerResponse): boolean {
+  isCurrentConference(conference: HearingSummary): boolean {
         return this.currentConference != null && this.currentConference.id === conference.id;
     }
 
-    isOnTime(conference: ConferenceForVhOfficerResponse): boolean {
-        return new HearingSummary(conference).isOnTime() || new HearingSummary(conference).isStarting();
+  isOnTime(conference: HearingSummary): boolean {
+        return conference.isOnTime() || conference.isStarting();
     }
 
-    isSuspended(conference: ConferenceForVhOfficerResponse): boolean {
+  isSuspended(conference: HearingSummary): boolean {
         return conference.status === ConferenceStatus.Suspended;
     }
 
-    isDelayed(conference: ConferenceForVhOfficerResponse): boolean {
-        return new HearingSummary(conference).isDelayed();
+  isDelayed(conference: HearingSummary): boolean {
+        return conference.isDelayed();
     }
 
-    isPaused(conference: ConferenceForVhOfficerResponse): boolean {
-        return new HearingSummary(conference).isPaused();
+  isPaused(conference: HearingSummary): boolean {
+        return conference.isPaused();
     }
 
-    isInSession(conference: ConferenceForVhOfficerResponse): boolean {
-        return new HearingSummary(conference).isInSession();
+  isInSession(conference: HearingSummary): boolean {
+        return conference.isInSession();
     }
 
-    isClosed(conference: ConferenceForVhOfficerResponse): boolean {
-        return new HearingSummary(conference).isClosed();
+  isClosed(conference: HearingSummary): boolean {
+        return conference.isClosed();
     }
 
-    getConferenceStatusText(conference: ConferenceForVhOfficerResponse): string {
-        const hearing = new HearingSummary(conference);
+  getConferenceStatusText(conference: HearingSummary): string {
+    const hearing = conference;
         if (hearing.getConference().status === ConferenceStatus.NotStarted) {
             if (hearing.isDelayed()) {
                 return 'Delayed';
@@ -65,16 +67,24 @@ export class VhoHearingListComponent implements OnInit {
         return '';
     }
 
-    getDuration(conference: ConferenceForVhOfficerResponse): string {
-        return new HearingSummary(conference).getDurationAsText();
+  getDuration(conference: HearingSummary): string {
+        return conference.getDurationAsText();
     }
 
-    selectConference(conference: ConferenceForVhOfficerResponse) {
+  selectConference(conference: HearingSummary) {
         this.currentConference = conference;
         this.selectedConference.emit(conference);
     }
 
-    copyToClipboard(conference: ConferenceForVhOfficerResponse) {
+    copyToClipboard(conference: HearingSummary) {
         this.clipboardService.copyFromContent(conference.id);
     }
+
+  getParticipantsForConference(conference: HearingSummary): ParticipantSummary[] {
+    return conference.getParticipants();
+  }
+
+  showParticipantGraph(selectedParticipant) {
+    this.selectedParticipant.emit(selectedParticipant);
+  }
 }

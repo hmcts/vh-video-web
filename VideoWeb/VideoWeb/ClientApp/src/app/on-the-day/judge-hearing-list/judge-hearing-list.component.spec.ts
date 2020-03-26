@@ -6,23 +6,24 @@ import { of, throwError } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
-import { JudgeEventService } from 'src/app/services/judge-event.service';
+import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MockProfileService } from 'src/app/testing/mocks/MockProfileService';
 import { JudgeHearingTableStubComponent } from 'src/app/testing/stubs/judge-hearing-list-table-stub';
-import { ConferenceForUserResponse } from '../../services/clients/api-client';
+import { ConferenceForJudgeResponse, ConferenceStatus } from '../../services/clients/api-client';
 import { JudgeHearingListComponent } from './judge-hearing-list.component';
 
 describe('JudgeHearingListComponent with no conferences for user', () => {
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     let component: JudgeHearingListComponent;
     let fixture: ComponentFixture<JudgeHearingListComponent>;
-    const noConferences: ConferenceForUserResponse[] = [];
-    let judgeEventServiceSpy: jasmine.SpyObj<JudgeEventService>;
+    const noConferences: ConferenceForJudgeResponse[] = [];
 
     configureTestSuite(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
@@ -32,10 +33,6 @@ describe('JudgeHearingListComponent with no conferences for user', () => {
         ]);
         videoWebServiceSpy.getConferencesForJudge.and.returnValue(of(noConferences));
         videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
-        judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService', [
-            'raiseJudgeUnavailableEvent',
-            'clearJudgeUnload'
-        ]);
 
         TestBed.configureTestingModule({
             imports: [RouterTestingModule, SharedModule],
@@ -44,7 +41,7 @@ describe('JudgeHearingListComponent with no conferences for user', () => {
                 { provide: VideoWebService, useValue: videoWebServiceSpy },
                 { provide: ProfileService, useClass: MockProfileService },
                 { provide: Logger, useClass: MockLogger },
-                { provide: JudgeEventService, useValue: judgeEventServiceSpy }
+                { provide: EventsService, useClass: MockEventsService }
             ]
         });
     });
@@ -58,11 +55,6 @@ describe('JudgeHearingListComponent with no conferences for user', () => {
     it('should show no hearings message', () => {
         expect(component.hasHearings()).toBeFalsy();
     });
-    it('should raise judge unavaliable event and clear cache for unload flag', () => {
-        component.ngOnInit();
-        expect(judgeEventServiceSpy.raiseJudgeUnavailableEvent).toHaveBeenCalled();
-        expect(judgeEventServiceSpy.clearJudgeUnload).toHaveBeenCalled();
-    });
 });
 
 describe('JudgeHearingListComponent with conferences for user', () => {
@@ -72,7 +64,6 @@ describe('JudgeHearingListComponent with conferences for user', () => {
     const conferences = new ConferenceTestData().getTestData();
     let router: Router;
     let profileService: MockProfileService;
-    let judgeEventServiceSpy: jasmine.SpyObj<JudgeEventService>;
 
     configureTestSuite(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
@@ -82,10 +73,6 @@ describe('JudgeHearingListComponent with conferences for user', () => {
         ]);
         videoWebServiceSpy.getConferencesForJudge.and.returnValue(of(conferences));
         videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
-        judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService', [
-            'raiseJudgeUnavailableEvent',
-            'clearJudgeUnload'
-        ]);
 
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],
@@ -94,7 +81,7 @@ describe('JudgeHearingListComponent with conferences for user', () => {
                 { provide: VideoWebService, useValue: videoWebServiceSpy },
                 { provide: ProfileService, useClass: MockProfileService },
                 { provide: Logger, useClass: MockLogger },
-                { provide: JudgeEventService, useValue: judgeEventServiceSpy }
+                { provide: EventsService, useClass: MockEventsService }
             ]
         });
     });
@@ -127,6 +114,21 @@ describe('JudgeHearingListComponent with conferences for user', () => {
         component.onConferenceSelected(conference);
         expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeWaitingRoom, conference.id]);
     });
+
+    it('should update conference status when message arrives', () => {
+        const eventsService: MockEventsService = TestBed.get(EventsService);
+        const conference = conferences[0];
+        const message = new ConferenceStatusMessage(conference.id, ConferenceStatus.Closed);
+        eventsService.hearingStatusSubject.next(message);
+        const updatedConference = component.conferences.find(x => x.id === conference.id);
+        expect(updatedConference.status).toBe(message.status);
+    });
+
+    it('should navigate to equipment check', () => {
+        spyOn(router, 'navigate');
+        component.goToEquipmentCheck();
+        expect(router.navigate).toHaveBeenCalledWith([PageUrls.EquipmentCheck]);
+    });
 });
 
 describe('JudgeHearingListComponent with service error', () => {
@@ -134,7 +136,6 @@ describe('JudgeHearingListComponent with service error', () => {
     let component: JudgeHearingListComponent;
     let fixture: ComponentFixture<JudgeHearingListComponent>;
     let errorService: ErrorService;
-    let judgeEventServiceSpy: jasmine.SpyObj<JudgeEventService>;
 
     configureTestSuite(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
@@ -144,10 +145,6 @@ describe('JudgeHearingListComponent with service error', () => {
         ]);
         videoWebServiceSpy.getConferencesForJudge.and.returnValue(throwError({ status: 401, isApiException: true }));
         videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
-        judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService', [
-            'raiseJudgeUnavailableEvent',
-            'clearJudgeUnload'
-        ]);
 
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],
@@ -156,7 +153,7 @@ describe('JudgeHearingListComponent with service error', () => {
                 { provide: VideoWebService, useValue: videoWebServiceSpy },
                 { provide: ProfileService, useClass: MockProfileService },
                 { provide: Logger, useClass: MockLogger },
-                { provide: JudgeEventService, useValue: judgeEventServiceSpy }
+                { provide: EventsService, useClass: MockEventsService }
             ]
         });
     });

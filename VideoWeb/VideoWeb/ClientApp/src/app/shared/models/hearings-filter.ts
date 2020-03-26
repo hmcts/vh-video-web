@@ -1,4 +1,4 @@
-import { ConferenceStatus, ConferenceForUserResponse } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, ConferenceForVhOfficerResponse } from 'src/app/services/clients/api-client';
 
 export enum AlertsStatus {
     Disconnected = 'Disconnected',
@@ -39,8 +39,8 @@ export class AlertFilter extends ListFilter {
     BodyText: string;
 }
 
-export class ConferenceForUser extends ConferenceForUserResponse {
-    constructor(conference: ConferenceForUserResponse) {
+export class ConferenceForUser extends ConferenceForVhOfficerResponse {
+    constructor(conference: ConferenceForVhOfficerResponse) {
         super(conference);
         this.StatusExtended = conference.status;
     }

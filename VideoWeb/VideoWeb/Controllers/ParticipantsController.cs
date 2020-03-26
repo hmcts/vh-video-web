@@ -31,7 +31,7 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "GetTestCallResult")]
         [ProducesResponseType(typeof(TestCallScoreResponse), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetTestCallResultForParticipant(Guid conferenceId, Guid participantId)
+        public async Task<IActionResult> GetTestCallResultForParticipantAsync(Guid conferenceId, Guid participantId)
         {
             try
             {
@@ -49,7 +49,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> UpdateParticipantStatus(Guid conferenceId, 
+        public async Task<IActionResult> UpdateParticipantStatusAsync(Guid conferenceId, 
             UpdateParticipantStatusEventRequest updateParticipantStatusEventRequest)
         {
             var conferenceEventRequest = new ConferenceEventRequest
@@ -62,7 +62,7 @@ namespace VideoWeb.Controllers
                 Reason = EventTypeReasonMapper.Map(updateParticipantStatusEventRequest.EventType)
             };
 
-            var callbackEvent = new CallbackEventMapper().MapConferenceEventToCallbackEventModel(conferenceEventRequest);
+            var callbackEvent = CallbackEventMapper.MapConferenceEventToCallbackEventModel(conferenceEventRequest);
             var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
             try
             {
@@ -89,7 +89,7 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "GetIndependentTestCallResult")]
         [ProducesResponseType(typeof(TestCallScoreResponse), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetIndependentTestCallResult(Guid participantId)
+        public async Task<IActionResult> GetIndependentTestCallResultAsync(Guid participantId)
         {
             try
             {
@@ -104,7 +104,7 @@ namespace VideoWeb.Controllers
         
         [HttpGet("{conferenceId}/participant/{participantId}/heartbeatrecent")]
         [SwaggerOperation(OperationId = "GetHeartbeatDataForParticipant")]
-        [ProducesResponseType(typeof(IEnumerable<ParticipantHeartbeatResponse>), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ParticipantHeartbeatResponse[]), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetHeartbeatDataForParticipantAsync(Guid conferenceId, Guid participantId)
         {
@@ -119,5 +119,7 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
+
+        
     }
 }

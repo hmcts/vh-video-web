@@ -7,13 +7,12 @@ using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
+using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Mappings
 {
     public class ConferenceForVhOfficerResponseMapperTests
     {
-        private readonly ConferenceForVhOfficerResponseMapper _mapper = new ConferenceForVhOfficerResponseMapper();
-
         [Test]
         public void should_map_and_count_number_of_messages_since_vho_message()
         {
@@ -24,8 +23,8 @@ namespace VideoWeb.UnitTests.Mappings
                 .TheRest().With(x => x.User_role = UserRole.Individual).Build().ToList();
 
             var judge = participants.Single(x => x.User_role == UserRole.Judge);
-            var vho1Username = "vho1@hmcts.net";
-            var vho2Username = "vho2@hmcts.net";
+            const string vho1Username = "vho1@hmcts.net";
+            const string vho2Username = "vho2@hmcts.net";
 
             var conference = Builder<ConferenceSummaryResponse>.CreateNew().With(x => x.Participants = participants)
                 .Build();
@@ -48,7 +47,9 @@ namespace VideoWeb.UnitTests.Mappings
                     {From = judge.Username, Message_text = "judge - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-7)},
             };
 
-            var response = _mapper.MapConferenceSummaryToResponseModel(conference, messages);
+            var response =
+                ConferenceForVhOfficerResponseMapper.MapConferenceSummaryToResponseModel(conference, messages);
+
             response.NumberOfUnreadMessages.Should().Be(2);
         }
 
@@ -80,8 +81,51 @@ namespace VideoWeb.UnitTests.Mappings
                     {From = judge.Username, Message_text = "judge - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-7)},
             };
 
-            var response = _mapper.MapConferenceSummaryToResponseModel(conference, messages);
+            var response =
+                ConferenceForVhOfficerResponseMapper.MapConferenceSummaryToResponseModel(conference, messages);
+
             response.NumberOfUnreadMessages.Should().Be(messages.Count);
+        }
+
+        [Test]
+        public void Should_map_all_properties()
+        {
+            var conference = Builder<ConferenceSummaryResponse>.CreateNew()
+                .With(x => x.Id = Guid.NewGuid())
+                .With(x => x.Hearing_ref_id = Guid.NewGuid())
+                .Build();
+
+            var participants = new List<ParticipantSummaryResponse>
+            {
+                new ParticipantSummaryResponseBuilder(UserRole.Individual)
+                    .WithStatus(ParticipantState.Available).Build(),
+                new ParticipantSummaryResponseBuilder(UserRole.Representative)
+                    .WithStatus(ParticipantState.Disconnected).Build(),
+                new ParticipantSummaryResponseBuilder(UserRole.Judge)
+                    .WithStatus(ParticipantState.NotSignedIn).Build()
+            };
+
+            conference.Participants = participants;
+            conference.Tasks = new List<TaskResponse>
+                {new TaskResponse {Id = 1, Status = TaskStatus.ToDo, Body = "self-test"}};
+
+            var response =
+                ConferenceForVhOfficerResponseMapper.MapConferenceSummaryToResponseModel(conference,
+                    new List<InstantMessageResponse>());
+
+            response.Id.Should().Be(conference.Id);
+            response.CaseName.Should().Be(conference.Case_name);
+            response.CaseNumber.Should().Be(conference.Case_number);
+            response.CaseType.Should().Be(conference.Case_type);
+            response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);
+            response.ScheduledDuration.Should().Be(conference.Scheduled_duration);
+            response.Status.ToString().Should().Be(conference.Status.ToString());
+            response.NoOfPendingTasks.Should().Be(conference.Pending_tasks);
+            response.HearingVenueName.Should().Be(conference.Hearing_venue_name);
+            response.Tasks.Count.Should().Be(1);
+            response.Tasks[0].Id.Should().Be(1);
+            response.Tasks[0].Body.Should().Be("self-test");
+            response.Participants.Count.Should().Be(participants.Count);
         }
     }
 }

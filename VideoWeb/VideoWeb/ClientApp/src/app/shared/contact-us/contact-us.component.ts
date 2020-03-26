@@ -3,8 +3,7 @@ import { VhContactDetails } from '../contact-information';
 
 @Component({
     selector: 'app-contact-us',
-    templateUrl: './contact-us.component.html',
-    styleUrls: ['./contact-us.component.css']
+    templateUrl: './contact-us.component.html'
 })
 export class ContactUsComponent {
     contact = {

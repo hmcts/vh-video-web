@@ -1,5 +1,5 @@
 import {
-    ConferenceForUserResponse,
+    ConferenceForIndividualResponse,
     ConferenceResponse,
     ConferenceEventRequest,
     TaskResponse,
@@ -11,26 +11,29 @@ import {
     SelfTestPexipResponse,
     HearingVenueResponse,
     ChatResponse,
-    ConferenceForVhOfficerResponse
+    ConferenceForVhOfficerResponse,
+    ParticipantHeartbeatResponse,
+    ConferenceForJudgeResponse
 } from '../clients/api-client';
 import { Observable } from 'rxjs';
 export interface IVideoWebApiService {
-    getConferencesForJudge(): Observable<ConferenceForUserResponse[]>;
-    getConferencesForIndividual(): Observable<ConferenceForUserResponse[]>;
+    getConferencesForJudge(): Observable<ConferenceForJudgeResponse[]>;
+    getConferencesForIndividual(): Observable<ConferenceForIndividualResponse[]>;
     getConferencesForVHOfficer(): Observable<ConferenceForVhOfficerResponse[]>;
-    getConferenceById(conferenceId: string): Observable<ConferenceResponse>;
-    sendEvent(request: ConferenceEventRequest): Observable<void>;
-    raiseMediaEvent(conferenceId: string, addMediaEventRequest: AddMediaEventRequest): Observable<void>;
-    getTasksForConference(conferenceId: string): Observable<TaskResponse[]>;
-    completeTask(conferenceId: string, taskId: number): Observable<TaskResponse>;
-    getTestCallScore(conferenceId: string, participantId: string): Observable<TestCallScoreResponse>;
-    getIndependentTestCallScore(participantId: string): Observable<TestCallScoreResponse>;
-    getToken(participantId: string): Observable<TokenResponse>;
-    getJwToken(participantId: string): Observable<TokenResponse>;
-    raiseParticipantEvent(conferenceId: string, updateParticipantStatusEventRequest: UpdateParticipantStatusEventRequest): Observable<void>;
-    raiseSelfTestFailureEvent(conferenceId: string, addSelfTestFailureEventRequest: AddSelfTestFailureEventRequest): Observable<void>;
-    getPexipConfig(): Observable<SelfTestPexipResponse>;
+    getConferenceById(conferenceId: string): Promise<ConferenceResponse>;
+    sendEvent(request: ConferenceEventRequest): Promise<void>;
+    raiseMediaEvent(conferenceId: string, addMediaEventRequest: AddMediaEventRequest): Promise<void>;
+    getTasksForConference(conferenceId: string): Promise<TaskResponse[]>;
+    completeTask(conferenceId: string, taskId: number): Promise<TaskResponse>;
+    getTestCallScore(conferenceId: string, participantId: string): Promise<TestCallScoreResponse>;
+    getIndependentTestCallScore(participantId: string): Promise<TestCallScoreResponse>;
+    getToken(participantId: string): Promise<TokenResponse>;
+    getJwToken(participantId: string): Promise<TokenResponse>;
+    raiseParticipantEvent(conferenceId: string, updateParticipantStatusEventRequest: UpdateParticipantStatusEventRequest): Promise<void>;
+    raiseSelfTestFailureEvent(conferenceId: string, addSelfTestFailureEventRequest: AddSelfTestFailureEventRequest): Promise<void>;
+    getPexipConfig(): Promise<SelfTestPexipResponse>;
     getObfuscatedName(displayName: string): string;
-    getHearingsVenue(): Observable<HearingVenueResponse[]>;
-    getConferenceChatHistory(conferenceId: string): Observable<ChatResponse[]>;
+    getHearingsVenue(): Promise<HearingVenueResponse[]>;
+    getConferenceChatHistory(conferenceId: string): Promise<ChatResponse[]>;
+    getParticipantHeartbeats(conferenceId: string, participantId: string): Promise<ParticipantHeartbeatResponse[]>;
 }

@@ -30,7 +30,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(List<HearingVenueResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [SwaggerOperation(OperationId = "GetHearingsVenues")]
-        public async Task<ActionResult<List<HearingVenueResponse>>> GetHearingsVenues()
+        public async Task<ActionResult<List<HearingVenueResponse>>> GetHearingsVenuesAsync()
         {
             _logger.LogDebug("GetHearingsVenues");
             try

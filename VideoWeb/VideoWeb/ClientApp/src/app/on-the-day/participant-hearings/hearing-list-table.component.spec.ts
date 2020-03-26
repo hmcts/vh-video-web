@@ -27,10 +27,6 @@ describe('HearingListTableComponent', () => {
         fixture.detectChanges();
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
-
     it('should not show sign in when start time is more 30 minutes from start time', () => {
         const conference = new ConferenceTestData().getConferenceFuture();
         expect(component.canStartHearing(conference)).toBeFalsy();
@@ -67,10 +63,11 @@ describe('HearingListTableComponent', () => {
         expect(result).toBe(expectedDateString);
     });
 
-    it('should navigate to introduction page with conference id', () => {
+    it('should emit conference selected', () => {
+        spyOn(component.selectedConference, 'emit');
         const conference = new ConferenceTestData().getConferenceFuture();
         spyOn(router, 'navigate').and.callFake(() => {});
         component.signIntoConference(conference);
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.Introduction, conference.id]);
+        expect(component.selectedConference.emit).toHaveBeenCalledWith(conference);
     });
 });

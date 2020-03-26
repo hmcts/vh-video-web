@@ -1,18 +1,23 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using VideoWeb.EventHub.Enums;
+using VideoWeb.Common.Caching;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
+using VideoWeb.Services.Video;
+using EventType = VideoWeb.EventHub.Enums.EventType;
+using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
+using RoomType = VideoWeb.EventHub.Enums.RoomType;
 
 namespace VideoWeb.EventHub.Handlers
 {
     public class TransferEventHandler : EventHandlerBase
     {
-        public TransferEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext, IMemoryCache memoryCache, ILogger<EventHandlerBase> logger) : base(hubContext, memoryCache, logger)
+        public TransferEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+            IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient) : base(
+            hubContext, conferenceCache, logger, videoApiClient)
         {
         }
 

@@ -8,24 +8,23 @@ using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.Mappings
 {
-    public class ConferenceResponseMapper
+    public static class ConferenceResponseMapper
     {
-        public ConferenceResponse MapConferenceDetailsToResponseModel(ConferenceDetailsResponse conference,
-            List<BookingParticipant> bookingParticipants)
+        public static ConferenceResponse MapConferenceDetailsToResponseModel(ConferenceDetailsResponse conference,
+            IEnumerable<BookingParticipant> bookingParticipants)
         {
             if (!Enum.TryParse(conference.Current_status.ToString(), true, out ConferenceStatus status))
             {
                 status = ConferenceStatus.NotStarted;
             }
 
-            var participantMapper = new ParticipantResponseMapper();
             conference.Participants ??= new List<ParticipantDetailsResponse>();
             
                 var participants = conference.Participants
                     .OrderBy(x => x.Case_type_group)
                     .Select(x =>
-                        participantMapper.MapParticipantToResponseModel(x,
-                            bookingParticipants.SingleOrDefault(p => x.Ref_id == p.Id)))
+                        ParticipantResponseMapper
+                            .MapParticipantToResponseModel(x, bookingParticipants.SingleOrDefault(p => x.Ref_id == p.Id)))
                     .ToList();
             
             var response = new ConferenceResponse
@@ -38,7 +37,8 @@ namespace VideoWeb.Mappings
                 ScheduledDuration = conference.Scheduled_duration,
                 Status = status,
                 Participants = participants,
-                ClosedDateTime = conference.Closed_date_time
+                ClosedDateTime = conference.Closed_date_time,
+                HearingVenueName = conference.Hearing_venue_name
             };
 
             if (conference.Meeting_room == null) return response;

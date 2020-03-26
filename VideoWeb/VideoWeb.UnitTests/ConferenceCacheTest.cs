@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
@@ -5,6 +6,8 @@ using FluentAssertions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.Services.Video;
 
 
@@ -30,7 +33,22 @@ namespace VideoWeb.UnitTests
             _memoryCache.Get(conference.Id).Should().NotBeNull();
         }
         
-        private ConferenceDetailsResponse CreateConferenceResponse()
+        [Test]
+        public void Should_get_conference_from_cache()
+        { 
+            var conference = new Conference
+            {
+                Id = Guid.NewGuid()
+            };
+
+            _memoryCache.Set(conference.Id, conference);
+            var result = _conferenceCache.GetConference(conference.Id);
+
+            result.Should().NotBeNull();
+            result.Id.Should().Be(conference.Id);
+        }
+        
+        private static ConferenceDetailsResponse CreateConferenceResponse()
         {
             var participants = Builder<ParticipantDetailsResponse>.CreateListOfSize(2).Build().ToList();
           
@@ -40,7 +58,7 @@ namespace VideoWeb.UnitTests
             return conference;
         }
 
-        private IMemoryCache GetCache()
+        private static IMemoryCache GetCache()
         {
             var services = new ServiceCollection();
             services.AddMemoryCache();

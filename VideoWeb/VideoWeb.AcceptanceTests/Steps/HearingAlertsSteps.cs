@@ -19,7 +19,7 @@ using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using RoomType = VideoWeb.EventHub.Enums.RoomType;
-using UserRole = VideoWeb.EventHub.Enums.UserRole;
+using UserRole = VideoWeb.Common.Models.UserRole;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -222,7 +222,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {
                     Row = i,
                     Checkbox = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertCheckboxes)[i],
-                    CheckboxEnabled = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertCheckboxes)[i].Enabled,
+                    CheckboxEnabled = TryGetEnabledStatus(i),
                     Timestamp = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertTimestamp)[i].Text,
                     AlertType = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertMessage)[i].Text.Trim(),
                     Username = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertByUser)[i].Text.Trim()
@@ -237,6 +237,18 @@ namespace VideoWeb.AcceptanceTests.Steps
             }
 
             return alerts;
+        }
+
+        private bool TryGetEnabledStatus(int row)
+        {
+            try
+            {
+                return _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertCheckboxes)[row].Enabled;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private IRestResponse SendEventToVideoApi(CallbackEvent request)

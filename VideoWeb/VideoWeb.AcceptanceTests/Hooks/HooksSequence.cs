@@ -8,6 +8,9 @@ namespace VideoWeb.AcceptanceTests.Hooks
         HealthcheckHooks = 4,
         InitialiseBrowserHooks = 5,
         ConfigureDriverHooks = 6,
-        RemoveDataHooks = 7
+        RemoveDataHooks = 7,
+        SignOutHooks = 8,
+        LogResultHooks = 9,
+        TearDownBrowserHooks = 10
     }
 }

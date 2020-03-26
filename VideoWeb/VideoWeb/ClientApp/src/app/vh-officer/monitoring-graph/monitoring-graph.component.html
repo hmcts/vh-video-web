@@ -1,0 +1,43 @@
+<div id="monitoring-graph" class="vh-popup-overlay">
+  <div class="vh-popup vh-popup-xsmall">
+    <div class="govuk-grid-row graph-panel graph-title">
+      <span class="govuk-body-s vh-c vh-text-panel" id="participant-name">
+        {{participantName}}
+      </span>
+      <a class="vh-close-popup" href="javascript:void(0);" (click)="close()" id="closeGraphBtn">&#10006;</a>
+    </div>
+
+    <div class="govuk-grid-row" *ngIf="!showUnsupportedBrowser">
+      <div style="display: block; margin:20px;">
+
+        <canvas baseChart width="700" height="200" id="chartCanvas"
+                [datasets]="lineChartData"
+                [labels]="lineChartLabels"
+                [options]="lineChartOptions"
+                [colors]="lineChartColors"
+                [legend]="lineChartLegend"
+                [chartType]="lineChartType"
+                [plugins]="lineChartPlugins">
+        </canvas>
+      </div>
+    </div>
+    <div class="govuk-grid-row" *ngIf="showUnsupportedBrowser" style="display: block; margin:20px;">
+      <span class="govuk-body-l vh-center-panel">Browser not sending heartbeat information</span>
+    </div>
+    <div class="govuk-grid-row graph-panel" *ngIf="!showUnsupportedBrowser"
+         [ngClass]="{'graph-footer-yellow':lastPackageLostValue === 'poor',
+         'graph-footer-green':lastPackageLostValue === 'good',
+         'graph-footer-red':lastPackageLostValue === 'bad',
+         'graph-footer-gray':lastPackageLostValue === 'disconnected'}">
+      <span class="govuk-body-s  vh-text-panel" id="signal-strength"
+            [ngClass]="{'vh-c':lastPackageLostValue !== 'poor'}">
+        {{participantGraphInfo.status}}: {{lastPackageLostValue}} signal
+      </span>
+    </div>
+    <div class="govuk-grid-row graph-panel graph-footer-gray" *ngIf="showUnsupportedBrowser">
+      <span class="govuk-body-s vh-c vh-text-panel" id="signal-unsupported">
+        {{participantGraphInfo.status}}: no network quality information
+      </span>
+    </div>
+  </div>
+</div>

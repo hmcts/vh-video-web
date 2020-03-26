@@ -45,14 +45,16 @@ export class BetaBannerComponent implements OnInit, OnDestroy {
     }
 
     private getInPageFeedbackUrl() {
-        this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
-            this.pageUrl = '';
-            if (this.status === ConferenceStatus.Closed && this.router.url.indexOf('waiting-room') > -1) {
-                this.updateFeedbackUrl(this.exitSurveyUrl);
-            } else {
-                this.updateFeedbackUrl(this.inPageFeedbackUrl);
-            }
-        });
+        this.subscriptions.add(
+            this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
+                this.pageUrl = '';
+                if (this.status === ConferenceStatus.Closed && this.router.url.indexOf('waiting-room') > -1) {
+                    this.updateFeedbackUrl(this.exitSurveyUrl);
+                } else {
+                    this.updateFeedbackUrl(this.inPageFeedbackUrl);
+                }
+            })
+        );
     }
 
     updateFeedbackUrl(feedbackUrl: string): void {

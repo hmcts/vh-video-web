@@ -20,6 +20,10 @@
         <UserSecretsId>CA353381-2F0D-47D7-A97B-79A30AFF8B86</UserSecretsId>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <UseAppHost>false</UseAppHost>
+    </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="FluentValidation.AspNetCore" Version="8.6.1" />
         <PackageReference Include="MicroElements.Swashbuckle.FluentValidation" Version="3.0.0-rc.4" />
@@ -46,6 +50,10 @@
         <Content Remove="$(SpaRoot)**" />
         <None Remove="$(SpaRoot)**" />
         <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="ClientApp\src\app\vh-officer\participant-network-status\participant-network-status.component.spec.ts" />
     </ItemGroup>
 
     <ItemGroup>

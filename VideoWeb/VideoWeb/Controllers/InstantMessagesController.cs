@@ -4,9 +4,9 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
+using VideoWeb.Common.Caching;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
@@ -20,17 +20,17 @@ namespace VideoWeb.Controllers
     public class InstantMessagesController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
-        private readonly IMemoryCache _memoryCache;
+        private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<InstantMessagesController> _logger;
         private readonly IMessageDecoder _messageDecoder;
 
         public InstantMessagesController(IVideoApiClient videoApiClient, ILogger<InstantMessagesController> logger,
-            IMessageDecoder messageDecoder, IMemoryCache memoryCache)
+            IMessageDecoder messageDecoder, IConferenceCache conferenceCache)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _messageDecoder = messageDecoder;
-            _memoryCache = memoryCache;
+            _conferenceCache = conferenceCache;
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "GetConferenceInstantMessageHistory")]
         [ProducesResponseType(typeof(List<ChatResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetConferenceInstantMessageHistory(Guid conferenceId)
+        public async Task<IActionResult> GetConferenceInstantMessageHistoryAsync(Guid conferenceId)
         {
             _logger.LogDebug($"GetMessages for {conferenceId}");
             try
@@ -53,8 +53,7 @@ namespace VideoWeb.Controllers
                     return Ok(new List<ChatResponse>());
                 }
 
-                var mapper = new ChatResponseMapper();
-                var response = await MapMessages(mapper, messages, conferenceId);
+                var response = await MapMessages(messages, conferenceId);
                 response = response.OrderBy(r => r.Timestamp).ToList();
                 return Ok(response);
             }
@@ -65,15 +64,16 @@ namespace VideoWeb.Controllers
             }
         }
 
-        private async Task<List<ChatResponse>> MapMessages(ChatResponseMapper mapper,
-            IList<InstantMessageResponse> messages, Guid conferenceId)
+        private async Task<List<ChatResponse>> MapMessages(IList<InstantMessageResponse> messages, Guid conferenceId)
         {
             var response = new List<ChatResponse>();
+            
             if (!messages.Any())
             {
                 return response;
             }
-            var conference = _memoryCache.Get<ConferenceDetailsResponse>($"{conferenceId}_details");
+            
+            var conference = _conferenceCache.GetConference(conferenceId);
             var username = User.Identity.Name;
 
             foreach (var message in messages)
@@ -88,7 +88,7 @@ namespace VideoWeb.Controllers
                 {
                     from = await _messageDecoder.GetMessageOriginatorAsync(conference, message);
                 }
-                var mapped = mapper.MapToResponseModel(message, from, isUser);
+                var mapped = ChatResponseMapper.MapToResponseModel(message, from, isUser);
                 response.Add(mapped);
             }
 

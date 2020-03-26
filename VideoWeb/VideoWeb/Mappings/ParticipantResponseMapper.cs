@@ -7,14 +7,16 @@ using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
 
 namespace VideoWeb.Mappings
 {
-    public class ParticipantResponseMapper
+    public static class ParticipantResponseMapper
     {
-        public ParticipantResponse MapParticipantToResponseModel(ParticipantDetailsResponse participant, BookingParticipant bookingParticipant)
+        public static ParticipantResponse MapParticipantToResponseModel(ParticipantDetailsResponse participant, BookingParticipant bookingParticipant)
         {
             var status = Enum.Parse<ParticipantStatus>(participant.Current_status.ToString());
 
-            if (!Enum.TryParse(participant.User_role.ToString(), true, out UserRole role)) 
+            if (!Enum.TryParse(participant.User_role.ToString(), true, out UserRole role))
+            {
                 role = UserRole.None;
+            }
 
             var response = new ParticipantResponse
             {

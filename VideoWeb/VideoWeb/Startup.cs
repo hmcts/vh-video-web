@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -35,26 +34,26 @@ namespace VideoWeb
             services.AddSwagger();
             services.AddJsonOptions();
             RegisterSettings(services);
-            
+
             services.AddCustomTypes();
-            
+
             RegisterAuth(services);
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddApplicationInsightsTelemetry(Configuration["ApplicationInsights:InstrumentationKey"]);
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
         }
-        
+
         private void RegisterSettings(IServiceCollection services)
         {
-            
+
             services.Configure<AzureAdConfiguration>(options =>
             {
                 Configuration.Bind("AzureAd", options);
                 options.ApplicationInsights = new ApplicationInsightsConfiguration();
                 Configuration.Bind("ApplicationInsights", options.ApplicationInsights);
             });
-            services.Configure<HearingServicesConfiguration>(options => Configuration.Bind("VhServices",options));
+            services.Configure<HearingServicesConfiguration>(options => Configuration.Bind("VhServices", options));
             var customTokenSettings = Configuration.GetSection("CustomToken").Get<CustomTokenSettings>();
             services.AddSingleton(customTokenSettings);
         }
@@ -126,7 +125,7 @@ namespace VideoWeb
                 app.UseSwagger();
                 app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Video Web App API V1"); });
             }
-            
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -137,12 +136,12 @@ namespace VideoWeb
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            
-            if (!env .IsDevelopment())
+
+            if (!env.IsDevelopment())
             {
                 app.UseSpaStaticFiles();
             }
-            
+
             app.UseRouting();
             app.UseAuthorization();
             app.UseAuthentication();
@@ -159,21 +158,20 @@ namespace VideoWeb
                                          HttpTransportType.WebSockets;
                 });
             });
-            
+
             app.UseSpa(spa =>
             {
                 // To learn more about options for serving an Angular SPA from ASP.NET Core,
                 // see https://go.microsoft.com/fwlink/?linkid=864501
-            
-                spa.Options.SourcePath = "ClientApp";
-            
+
                 if (env.IsDevelopment())
                 {
-                    spa.UseAngularCliServer(npmScript: "start");
+                    const string ngBaseUri = "http://localhost:4200/";
+                    spa.UseProxyToSpaDevelopmentServer(ngBaseUri);
                 }
             });
         }
-        
+
         private static void AddPolicies(AuthorizationOptions options)
         {
             options.DefaultPolicy = new AuthorizationPolicyBuilder()

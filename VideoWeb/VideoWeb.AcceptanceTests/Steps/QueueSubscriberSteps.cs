@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using AcceptanceTests.Common.Api.Hearings;
-using AcceptanceTests.Common.Api.Requests;
+using AcceptanceTests.Common.Api.Helpers;
 using AcceptanceTests.Common.Configuration.Users;
 using FluentAssertions;
 using TechTalk.SpecFlow;

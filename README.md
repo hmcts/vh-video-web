@@ -76,3 +76,4 @@ $ git config core.hooksPath .githooks
 ##Commit message 
 The commit message will be validated by prepare-commit-msg hook.
 The commit message format should start with : 'feature/VIH-XXXX : ' folowing by 8 or more characters description of commit, otherwise the warning message will be presented.
+

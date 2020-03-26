@@ -11,18 +11,32 @@ import { ClipboardModule } from 'ngx-clipboard';
 import { VhoHearingsFilterComponent } from '../vh-officer/vho-herings-filter/vho-hearings-filter.component';
 import { HearingsFilterOptionsService } from '../vh-officer/services/hearings-filter-options.service';
 import { VhoChatComponent } from './vho-chat/vho-chat.component';
+import { ParticipantNetworkStatusComponent } from './participant-network-status/participant-network-status.component';
+import { ChartsModule } from 'ng2-charts';
+import { MonitoringGraphComponent } from '../vh-officer/monitoring-graph/monitoring-graph.component';
 
 @NgModule({
-    declarations: [
-        VhoHearingsComponent,
-        TasksTableComponent,
-        VhoHearingListComponent,
-        ParticipantStatusComponent,
-        ParticipantInfoTooltipComponent,
-        VhoHearingsFilterComponent,
-        VhoChatComponent
+  declarations: [
+    VhoHearingsComponent,
+    TasksTableComponent,
+    VhoHearingListComponent,
+    ParticipantStatusComponent,
+    ParticipantInfoTooltipComponent,
+    VhoHearingsFilterComponent,
+    VhoChatComponent,
+    ParticipantNetworkStatusComponent,
+    MonitoringGraphComponent
+  ],
+  imports: [
+    CommonModule,
+    SharedModule,
+    ChartsModule,
+    ClipboardModule,
+    VhOfficerRoutingModule
     ],
-    imports: [CommonModule, SharedModule, ClipboardModule, VhOfficerRoutingModule],
-    providers: [HearingsFilterOptionsService]
+    providers: [
+        HearingsFilterOptionsService
+    ],
+    exports: [MonitoringGraphComponent]
 })
-export class VhOfficerModule {}
+export class VhOfficerModule { }
