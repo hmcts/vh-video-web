@@ -43,12 +43,9 @@ export abstract class EquipmentCheckBaseComponent {
 
     getConference(): void {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-        this.conference = this.videoWebService.getActiveConference();
-        const participant = this.conference.participants.find(
-            x => x.username.toLocaleLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase()
-        );
-        this.participantId = participant.id;
-        this.participantName = participant.obfuscatedDisplayName;
+        this.conference = this.videoWebService.getActiveIndividualConference();
+        this.participantId = this.conference.loggedInParticipantId;
+        this.participantName = this.conference.loggedInParticipantDisplayName;
     }
 
     checkEquipmentAgain() {

@@ -5,7 +5,7 @@ import * as $ from 'jquery';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceForUserResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { ConferenceForJudgeResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -23,7 +23,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         phone: VhContactDetails.phone
     };
 
-    conferences: ConferenceForUserResponse[];
+    conferences: ConferenceForJudgeResponse[];
     conferencesSubscription: Subscription;
     hearingListForm: FormGroup;
     loadingData: boolean;
@@ -66,7 +66,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
 
     retrieveHearingsForUser() {
         this.conferencesSubscription = this.videoWebService.getConferencesForJudge().subscribe(
-            (data: ConferenceForUserResponse[]) => {
+            (data: ConferenceForJudgeResponse[]) => {
                 this.loadingData = false;
                 this.conferences = data;
                 if (this.conferences.length > 0) {
@@ -89,7 +89,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         return this.conferences !== undefined && this.conferences.length > 0;
     }
 
-    onConferenceSelected(conference: ConferenceForUserResponse) {
+    onConferenceSelected(conference: ConferenceForJudgeResponse) {
         this.logger.event('signing into judge waiting room', { conference: conference.id });
         this.router.navigate([PageUrls.JudgeWaitingRoom, conference.id]);
     }

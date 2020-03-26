@@ -18,6 +18,7 @@ using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
+using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
@@ -61,11 +62,24 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         [Test]
         public async Task Should_return_ok_with_list_of_conferences()
         {
+            var loggedInUsername = ClaimsPrincipalBuilder.Username;
+            var participants = new List<ParticipantSummaryResponse>
+            {
+                new ParticipantSummaryResponseBuilder(UserRole.Individual)
+                    .WithStatus(ParticipantState.Available).Build(),
+                new ParticipantSummaryResponseBuilder(UserRole.Representative)
+                    .WithStatus(ParticipantState.Disconnected).Build(),
+                new ParticipantSummaryResponseBuilder(UserRole.Judge)
+                    .WithStatus(ParticipantState.NotSignedIn).Build()
+            };
+            participants[0].Username = loggedInUsername;
+            
             var conferences = Builder<ConferenceSummaryResponse>.CreateListOfSize(10).All()
                 .With(x => x.Scheduled_date_time = DateTime.UtcNow.AddMinutes(-60))
                 .With(x => x.Scheduled_duration = 20)
                 .With(x => x.Status = ConferenceState.NotStarted)
                 .With(x => x.Closed_date_time = null)
+                .With(x => x.Participants = participants)
                 .Build().ToList();
             var minutes = -60;
             foreach (var conference in conferences)
@@ -84,7 +98,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
 
-            var conferencesForUser = (List<ConferenceForUserResponse>)typedResult.Value;
+            var conferencesForUser = (List<ConferenceForIndividualResponse>)typedResult.Value;
             conferencesForUser.Should().NotBeNullOrEmpty();
             conferencesForUser.Count.Should().Be(9);
             var i = 2;
@@ -107,7 +121,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
 
-            var conferencesForUser = (List<ConferenceForUserResponse>)typedResult.Value;
+            var conferencesForUser = (List<ConferenceForIndividualResponse>)typedResult.Value;
             conferencesForUser.Should().BeEmpty();
         }
 

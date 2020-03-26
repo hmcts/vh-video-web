@@ -25,7 +25,6 @@ using VideoWeb.Common.SignalR;
 using VideoWeb.Contract.Request;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Mappers;
-using VideoWeb.Helpers;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;

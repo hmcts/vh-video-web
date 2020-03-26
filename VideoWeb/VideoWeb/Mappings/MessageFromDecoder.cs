@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using VideoWeb.Common.Models;
-using VideoWeb.EventHub.Models;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 

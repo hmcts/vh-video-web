@@ -1,7 +1,7 @@
-import { ConferenceForUserResponse, ParticipantForUserResponse } from '../services/clients/api-client';
+import { ConferenceForVhOfficerResponse, ParticipantForUserResponse } from '../services/clients/api-client';
 
 export class ConferenceHelper {
-    static findParticipantInConferences(conferences: ConferenceForUserResponse[], participantId: string): ParticipantForUserResponse {
+    static findParticipantInConferences(conferences: ConferenceForVhOfficerResponse[], participantId: string): ParticipantForUserResponse {
         const filtered = conferences.find(x => x.participants.find(p => p.id === participantId));
         if (!filtered) {
             return null;

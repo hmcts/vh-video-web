@@ -3,13 +3,10 @@ using System.Collections.Generic;
 
 namespace VideoWeb.Contract.Responses
 {
-    /// <summary>
-    /// High level summary of a conference for a user
-    /// </summary>
-    public class ConferenceForUserResponse
+    public class ConferenceForJudgeResponse
     {
         /// <summary>
-        /// Conference ID
+        /// Conference UUID
         /// </summary>
         public Guid Id { get; set; }
         
@@ -17,6 +14,11 @@ namespace VideoWeb.Contract.Responses
         /// Scheduled date time as UTC
         /// </summary>
         public DateTime ScheduledDateTime { get; set; }
+        
+        /// <summary>
+        /// The scheduled duration in minutes
+        /// </summary>
+        public int ScheduledDuration { get; set; }
         
         /// <summary>
         /// The case type
@@ -34,11 +36,6 @@ namespace VideoWeb.Contract.Responses
         public string CaseName { get; set; }
         
         /// <summary>
-        /// The scheduled duration in minutes
-        /// </summary>
-        public int ScheduledDuration { get; set; }
-        
-        /// <summary>
         /// The current conference status
         /// </summary>
         public ConferenceStatus Status { get; set; }
@@ -46,36 +43,29 @@ namespace VideoWeb.Contract.Responses
         /// <summary>
         /// The conference participants
         /// </summary>
-        public List<ParticipantForUserResponse> Participants { get; set; }
-        
-        /// <summary>
-        /// The number of participants available
-        /// </summary>
-        public int NoOfParticipantsAvailable { get; set; }
-        
-        /// <summary>
-        /// The number of participants unavailable
-        /// </summary>
-        public int NoOfParticipantsUnavailable { get; set; }
-        
-        /// <summary>
-        /// The number of participants in consultation
-        /// </summary>
-        public int NoOfParticipantsInConsultation { get; set; }
-        
-        /// <summary>
-        /// Number of pending tasks for a given hearing
-        /// </summary>
-        public int NoOfPendingTasks { get; set; }
+        public List<ParticipantForJudgeResponse> Participants { get; set; }
+    }
 
+    public class ParticipantForJudgeResponse
+    {
         /// <summary>
-        /// The name of the hearing venue
+        /// The participant display name during a conference
         /// </summary>
-        public string HearingVenueName { get; set; }
-
+        public string DisplayName { get; set; }
+        
         /// <summary>
-        /// The conferences tasks
+        /// The participant role in conference
         /// </summary>
-        public List<TaskUserResponse> Tasks { get; set; }
+        public UserRole Role { get; set; }
+        
+        /// <summary>
+        /// The representee (if participant is a representative)
+        /// </summary>
+        public string Representee { get; set; }
+        
+        /// <summary>
+        /// The group a participant belongs to
+        /// </summary>
+        public string CaseTypeGroup { get; set; }
     }
 }
