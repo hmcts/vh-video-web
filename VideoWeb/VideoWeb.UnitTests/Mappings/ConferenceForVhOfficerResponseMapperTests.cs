@@ -125,6 +125,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.Tasks.Count.Should().Be(1);
             response.Tasks[0].Id.Should().Be(1);
             response.Tasks[0].Body.Should().Be("self-test");
+            response.Participants.Count.Should().Be(participants.Count);
         }
     }
 }
