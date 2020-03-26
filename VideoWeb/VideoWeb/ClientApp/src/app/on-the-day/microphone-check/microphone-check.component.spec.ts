@@ -4,9 +4,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ConferenceLite, ParticipantLite } from 'src/app/services/models/conference-lite';
+import { ConferenceLite } from 'src/app/services/models/conference-lite';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -20,12 +19,15 @@ describe('MicrophoneCheckComponent', () => {
     let router: Router;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     const conference = new ConferenceTestData().getConferenceDetailFuture();
-    const pats = conference.participants.map(p => new ParticipantLite(p.id, p.username, p.display_name));
-    const confLite = new ConferenceLite(conference.id, conference.case_number, pats);
+    const pat = conference.participants[0];
+    const confLite = new ConferenceLite(conference.id, conference.case_number, pat.id, pat.display_name);
 
     configureTestSuite(() => {
-        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getActiveConference', 'raiseSelfTestFailureEvent']);
-        videoWebServiceSpy.getActiveConference.and.returnValue(confLite);
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
+            'getActiveIndividualConference',
+            'raiseSelfTestFailureEvent'
+        ]);
+        videoWebServiceSpy.getActiveIndividualConference.and.returnValue(confLite);
         TestBed.configureTestingModule({
             imports: [RouterTestingModule, SharedModule],
             declarations: [MicrophoneCheckComponent],

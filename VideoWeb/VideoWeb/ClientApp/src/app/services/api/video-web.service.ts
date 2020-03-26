@@ -6,7 +6,8 @@ import {
     ApiClient,
     ChatResponse,
     ConferenceEventRequest,
-    ConferenceForUserResponse,
+    ConferenceForJudgeResponse,
+    ConferenceForIndividualResponse,
     ConferenceForVhOfficerResponse,
     ConferenceResponse,
     HearingVenueResponse,
@@ -17,7 +18,7 @@ import {
     TokenResponse,
     UpdateParticipantStatusEventRequest
 } from '../clients/api-client';
-import { ConferenceLite, ParticipantLite } from '../models/conference-lite';
+import { ConferenceLite } from '../models/conference-lite';
 import { SessionStorage } from '../session-storage';
 import { IVideoWebApiService } from './video-web-service.interface';
 
@@ -32,11 +33,11 @@ export class VideoWebService implements IVideoWebApiService {
         this.activeConferencesCache = new SessionStorage<ConferenceLite>(this.ACTIVE_CONFERENCE_KEY);
     }
 
-    getConferencesForJudge(): Observable<ConferenceForUserResponse[]> {
+    getConferencesForJudge(): Observable<ConferenceForJudgeResponse[]> {
         return this.apiClient.getConferencesForJudge();
     }
 
-    getConferencesForIndividual(): Observable<ConferenceForUserResponse[]> {
+    getConferencesForIndividual(): Observable<ConferenceForIndividualResponse[]> {
         return this.apiClient.getConferencesForIndividual();
     }
 
@@ -108,14 +109,18 @@ export class VideoWebService implements IVideoWebApiService {
         return this.apiClient.getHeartbeatDataForParticipant(conferenceId, participantId).toPromise();
     }
 
-    setActiveConference(conference: ConferenceForUserResponse) {
-        const pats = conference.participants.map(p => new ParticipantLite(p.id, p.username, this.getObfuscatedName(p.display_name)));
-        const conf = new ConferenceLite(conference.id, conference.case_number, pats);
+    setActiveIndividualConference(conference: ConferenceForIndividualResponse) {
+        const conf = new ConferenceLite(
+            conference.id,
+            conference.case_number,
+            conference.logged_in_participant_id,
+            this.getObfuscatedName(conference.logged_in_participant_display_name)
+        );
         this.activeConferencesCache.clear();
         this.activeConferencesCache.set(conf);
     }
 
-    getActiveConference(): ConferenceLite {
+    getActiveIndividualConference(): ConferenceLite {
         return this.activeConferencesCache.get();
     }
 }
