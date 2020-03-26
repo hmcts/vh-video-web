@@ -81,7 +81,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         }
 
         [AfterScenario(Order = (int)HooksSequence.TearDownBrowserHooks)]
-        public void TearDownBrowser(TestContext context, ScenarioContext scenarioContext)
+        public void TearDownBrowser()
         {
             if (_browsers != null)
                 DriverManager.TearDownBrowsers(_browsers);
