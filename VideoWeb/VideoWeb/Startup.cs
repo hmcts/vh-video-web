@@ -1,6 +1,8 @@
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights.AspNetCore.Extensions;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -39,7 +41,13 @@ namespace VideoWeb
 
             RegisterAuth(services);
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-            services.AddApplicationInsightsTelemetry(Configuration["ApplicationInsights:InstrumentationKey"]);
+            
+            services.AddApplicationInsightsTelemetry(new ApplicationInsightsServiceOptions
+            {
+                InstrumentationKey = Configuration["ApplicationInsights:InstrumentationKey"],
+                EnableAdaptiveSampling = false
+            });
+            
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
         }
@@ -120,6 +128,15 @@ namespace VideoWeb
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Application Insights fixed rate 100% sampling
+            var configuration = app.ApplicationServices.GetService<TelemetryConfiguration>();
+            var builder = configuration.DefaultTelemetrySink.TelemetryProcessorChainBuilder;
+            // For older versions of the Application Insights SDK, use the following line instead:
+            // var builder = TelemetryConfiguration.Active.TelemetryProcessorChainBuilder;
+            // Using fixed rate sampling   
+            builder.UseSampling(100);
+            builder.Build();
+            
             if (!env.IsProduction())
             {
                 app.UseSwagger();

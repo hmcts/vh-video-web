@@ -29,7 +29,11 @@ export class AppInsightsLoggerService implements LogAdapter {
     private setupAppInsights(configService: ConfigService) {
         const config = configService.getClientSettings();
         const appInsightsConfig: Microsoft.ApplicationInsights.IConfig = {
-            instrumentationKey: config.app_insights_instrumentation_key
+            instrumentationKey: config.app_insights_instrumentation_key,
+            samplingPercentage: 100,
+            maxAjaxCallsPerView: -1,
+            enableCorsCorrelation: true,
+            verboseLogging: true
         };
 
         if (!AppInsights.config) {
