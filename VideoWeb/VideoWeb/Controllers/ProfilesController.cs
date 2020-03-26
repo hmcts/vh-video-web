@@ -30,13 +30,13 @@ namespace VideoWeb.Controllers
         [HttpGet]
         [SwaggerOperation(OperationId = "GetUserProfile")]
         [ProducesResponseType(typeof(UserProfileResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetUserProfile()
+        public async Task<IActionResult> GetUserProfileAsync()
         {
             var username = User.Identity.Name.ToLower().Trim();
             try
             {
                 var profile = await _userApiClient.GetUserByAdUserNameAsync(username);
-                var response = new UserProfileResponseMapper().MapToResponseModel(profile);
+                var response = UserProfileResponseMapper.MapToResponseModel(profile);
                 return Ok(response);
             }
             catch (UserApiException e)
@@ -54,13 +54,13 @@ namespace VideoWeb.Controllers
         [HttpGet("query")]
         [SwaggerOperation(OperationId = "GetProfileByUsername")]
         [ProducesResponseType(typeof(UserProfileResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetProfileByUsername([FromQuery]string username)
+        public async Task<IActionResult> GetProfileByUsernameAsync([FromQuery]string username)
         {
             var usernameClean = username.ToLower().Trim();
             try
             {
                 var profile = await _userApiClient.GetUserByAdUserNameAsync(usernameClean);
-                var response = new UserProfileResponseMapper().MapToResponseModel(profile);
+                var response = UserProfileResponseMapper.MapToResponseModel(profile);
                 return Ok(response);
             }
             catch (UserApiException e)

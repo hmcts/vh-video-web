@@ -7,10 +7,11 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Mappings;
@@ -26,12 +27,12 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
         private Mock<IVideoApiClient> _videoApiClientMock;
         private Mock<IMessageDecoder> _messageDecoder;
         private Mock<ILogger<InstantMessagesController>> _mockLogger;
-        private IMemoryCache _memoryCache;
+        private Mock<IConferenceCache> _conferenceCache;
 
         [SetUp]
         public void Setup()
         {
-            _memoryCache = new MemoryCache(new MemoryCacheOptions());
+            _conferenceCache = new Mock<IConferenceCache>();
             _videoApiClientMock = new Mock<IVideoApiClient>();
             _messageDecoder = new Mock<IMessageDecoder>();
             _mockLogger = new Mock<ILogger<InstantMessagesController>>();
@@ -47,13 +48,13 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
 
             _controller =
                 new InstantMessagesController(_videoApiClientMock.Object, _mockLogger.Object, _messageDecoder.Object,
-                    _memoryCache)
+                    _conferenceCache.Object)
                 {
                     ControllerContext = context
                 };
 
             _messageDecoder.Setup(x =>
-                    x.GetMessageOriginatorAsync(It.IsAny<ConferenceDetailsResponse>(),
+                    x.GetMessageOriginatorAsync(It.IsAny<Conference>(),
                         It.IsAny<InstantMessageResponse>()))
                 .ReturnsAsync("Johnny");
 
@@ -70,7 +71,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             _videoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
                 .ReturnsAsync(messages);
 
-            var result = await _controller.GetConferenceInstantMessageHistory(conferenceId);
+            var result = await _controller.GetConferenceInstantMessageHistoryAsync(conferenceId);
             var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
             var responseModel = typedResult.Value as List<ChatResponse>;
@@ -86,7 +87,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             _videoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
                 .ReturnsAsync(messages);
 
-            var result = await _controller.GetConferenceInstantMessageHistory(conferenceId);
+            var result = await _controller.GetConferenceInstantMessageHistoryAsync(conferenceId);
             var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
             var responseModel = typedResult.Value as List<ChatResponse>;
@@ -108,7 +109,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             _videoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
                 .ReturnsAsync(messages);
 
-            var result = await _controller.GetConferenceInstantMessageHistory(conferenceId);
+            var result = await _controller.GetConferenceInstantMessageHistoryAsync(conferenceId);
 
             _messageDecoder.Verify(x => x.IsMessageFromUser(
                     It.Is<InstantMessageResponse>(m => m.From == loggedInUser), loggedInUser),
@@ -134,7 +135,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             _videoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferenceInstantMessageHistory(conferenceId);
+            var result = await _controller.GetConferenceInstantMessageHistoryAsync(conferenceId);
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
         }

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
@@ -9,10 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Contract.Request;
+using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using EventComponentHelper = VideoWeb.UnitTests.Builders.EventComponentHelper;
@@ -62,7 +60,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .Setup(x => x.GetTestCallResultForParticipantAsync(conferenceId, participantId))
                 .Returns(Task.FromResult(testCallResponse));
 
-            var result = await _controller.GetTestCallResultForParticipant(conferenceId, participantId);
+            var result = await _controller.GetTestCallResultForParticipantAsync(conferenceId, participantId);
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().BeEquivalentTo(testCallResponse);
@@ -79,61 +77,9 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .Setup(x => x.GetTestCallResultForParticipantAsync(conferenceId, participantId))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetTestCallResultForParticipant(conferenceId, participantId);
+            var result = await _controller.GetTestCallResultForParticipantAsync(conferenceId, participantId);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        }
-
-        [Test]
-        public async Task Should_return_no_content_when_event_is_sent()
-        {
-            _videoApiClientMock
-                .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
-                .Returns(Task.FromResult(default(object)));
-
-            var eventRequest = Builder<UpdateParticipantStatusEventRequest>.CreateNew().With(x => x.ParticipantId = _testConference.Participants.First().Id).Build();
-            eventRequest.EventType = EventType.ParticipantJoining;
-
-            var result = await _controller.UpdateParticipantStatus(_testConference.Id, eventRequest);
-            var typedResult = (NoContentResult)result;
-            typedResult.Should().NotBeNull();
-            _videoApiClientMock.Verify(v =>
-                v.RaiseVideoEventAsync(It.Is<ConferenceEventRequest>(c => c.Reason == "participant joining")), Times.Once);
-        }
-
-        [Test]
-        public async Task Should_return_bad_request()
-        {
-            var apiException = new VideoApiException<ProblemDetails>("Bad Request",
-                (int)HttpStatusCode.BadRequest, "Please provide a valid conference Id", null,
-                default, null);
-            _videoApiClientMock
-                .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
-                .ThrowsAsync(apiException);
-            var eventRequest = Builder<UpdateParticipantStatusEventRequest>.CreateNew().Build();
-            eventRequest.EventType = EventType.Joined;
-
-            var result = await _controller.UpdateParticipantStatus(Guid.NewGuid(), eventRequest);
-            var typedResult = (BadRequestResult)result;
-            typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        }
-
-        [Test]
-        public async Task Should_return_exception()
-        {
-            var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
-                (int)HttpStatusCode.InternalServerError, "Stacktrace goes here", null,
-                default, null);
-            _videoApiClientMock
-                .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
-                .ThrowsAsync(apiException);
-
-            var eventRequest = Builder<UpdateParticipantStatusEventRequest>.CreateNew().With(x => x.ParticipantId = _testConference.Participants.First().Id).Build();
-            eventRequest.EventType = EventType.Joined;
-
-            var result = await _controller.UpdateParticipantStatus(_testConference.Id, eventRequest);
-            var typedResult = (ObjectResult)result;
-            typedResult.Should().NotBeNull();
         }
 
         [Test]
@@ -145,7 +91,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .Setup(x => x.GetIndependentTestCallResultAsync(participantId))
                 .Returns(Task.FromResult(testCallResponse));
 
-            var result = await _controller.GetIndependentTestCallResult(participantId);
+            var result = await _controller.GetIndependentTestCallResultAsync(participantId);
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().BeEquivalentTo(testCallResponse);
@@ -161,7 +107,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .Setup(x => x.GetIndependentTestCallResultAsync(participantId))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetIndependentTestCallResult(participantId);
+            var result = await _controller.GetIndependentTestCallResultAsync(participantId);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }

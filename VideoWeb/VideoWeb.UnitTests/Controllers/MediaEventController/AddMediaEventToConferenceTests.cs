@@ -47,7 +47,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
 
             var conferenceId = Guid.NewGuid();
             var addMediaEventRequest = Builder<AddMediaEventRequest>.CreateNew().Build();
-            var result = await _controller.AddMediaEventToConference(conferenceId, addMediaEventRequest);
+            var result = await _controller.AddMediaEventToConferenceAsync(conferenceId, addMediaEventRequest);
 
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
@@ -72,7 +72,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.AddMediaEventToConference(Guid.NewGuid(), Builder<AddMediaEventRequest>.CreateNew().Build());
+            var result = await _controller.AddMediaEventToConferenceAsync(Guid.NewGuid(), Builder<AddMediaEventRequest>.CreateNew().Build());
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
@@ -86,7 +86,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.AddMediaEventToConference(Guid.NewGuid(), Builder<AddMediaEventRequest>.CreateNew().Build());
+            var result = await _controller.AddMediaEventToConferenceAsync(Guid.NewGuid(), Builder<AddMediaEventRequest>.CreateNew().Build());
             var typedResult = (ObjectResult)result;
             typedResult.Should().NotBeNull();
         }
@@ -98,7 +98,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .Returns(Task.FromResult(default(object)));
 
-            var result = await _controller.AddSelfTestFailureEventToConference(Guid.NewGuid(), 
+            var result = await _controller.AddSelfTestFailureEventToConferenceAsync(Guid.NewGuid(), 
                 Builder<AddSelfTestFailureEventRequest>.CreateNew().Build());
             var typedResult = (NoContentResult)result;
             typedResult.Should().NotBeNull();
@@ -116,7 +116,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.AddSelfTestFailureEventToConference(Guid.NewGuid(), 
+            var result = await _controller.AddSelfTestFailureEventToConferenceAsync(Guid.NewGuid(), 
                 Builder<AddSelfTestFailureEventRequest>.CreateNew().Build());
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
@@ -131,7 +131,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.AddSelfTestFailureEventToConference(Guid.NewGuid(), 
+            var result = await _controller.AddSelfTestFailureEventToConferenceAsync(Guid.NewGuid(), 
                 Builder<AddSelfTestFailureEventRequest>.CreateNew().Build());
             var typedResult = (ObjectResult)result;
             typedResult.Should().NotBeNull();

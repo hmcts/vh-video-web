@@ -82,14 +82,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             foreach (var participant in participants)
             {
-                var participantName = NameInCorrectFormat(participant);
-                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatus(participant.Id, participantName)).Text.Trim().Should().Be(participantStatus);
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatus(participant.Id)).Text.Trim().Should().Be(participantStatus);
             }
-        }
-
-        private static string NameInCorrectFormat(ParticipantDetailsResponse participant)
-        {
-            return $"{participant.Name} ({participant.Case_type_group})";
         }
     }
 }

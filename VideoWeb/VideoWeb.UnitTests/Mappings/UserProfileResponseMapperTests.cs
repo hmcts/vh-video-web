@@ -9,14 +9,6 @@ namespace VideoWeb.UnitTests.Mappings
 {
     public class UserProfileResponseMapperTests
     {
-        private UserProfileResponseMapper _mapper;
-        
-        [OneTimeSetUp]
-        public void OneTimeSetup()
-        {
-            _mapper = new UserProfileResponseMapper();
-        }
-        
         [TestCase("VhOfficer", UserRole.VideoHearingsOfficer)]
         [TestCase("Representative", UserRole.Representative)]
         [TestCase("Individual", UserRole.Individual)]
@@ -31,7 +23,7 @@ namespace VideoWeb.UnitTests.Mappings
                 Last_name = "Taylor House",
                 User_name = "Court 11, Taylor House"
             };
-            var response = _mapper.MapToResponseModel(profile);
+            var response = UserProfileResponseMapper.MapToResponseModel(profile);
 
             response.Role.Should().Be(expectedRole);
             response.FirstName.Should().Be(profile.First_name);
@@ -42,7 +34,7 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_throw_exception_when_role_is_unsupported()
         {
-            Action action = () => _mapper.MapToResponseModel(new UserProfile
+            Action action = () => UserProfileResponseMapper.MapToResponseModel(new UserProfile
             {
                 User_role = "Random"
             });

@@ -35,7 +35,7 @@ namespace VideoWeb.Controllers
         public ActionResult<ClientSettingsResponse> GetClientConfigurationSettings()
         {
             var response =
-                new ClientSettingsResponseMapper().MapAppConfigurationToResponseModel(_azureAdConfiguration,
+                ClientSettingsResponseMapper.MapAppConfigurationToResponseModel(_azureAdConfiguration,
                     _servicesConfiguration);
 
             return Ok(response);

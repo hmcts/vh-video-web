@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -9,7 +9,7 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="FluentAssertions" Version="5.10.2" />
+        <PackageReference Include="FluentAssertions" Version="5.10.3" />
         <PackageReference Include="Microsoft.TestPlatform" Version="16.5.0" />
         <PackageReference Include="Moq" Version="4.13.1" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />

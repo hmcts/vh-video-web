@@ -6,11 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using VideoWeb.Common.Models;
 using VideoWeb.Common.SignalR;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Mappers;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
+using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.EventHub.Hub
 {
@@ -50,9 +52,9 @@ namespace VideoWeb.EventHub.Hub
         private async Task AddUserToConferenceGroups(bool isAdmin)
         {
             var conferences = await GetConferencesForUser(isAdmin);
-            var tasks = conferences.Select(c => Groups.AddToGroupAsync(Context.ConnectionId, c.Id.ToString()))
-                .ToArray();
-            Task.WaitAll(tasks);
+            var tasks = conferences.Select(c => Groups.AddToGroupAsync(Context.ConnectionId, c.Id.ToString())).ToArray();
+            
+            await Task.WhenAll(tasks);
         }
 
         private async Task AddUserToUserGroup(bool isAdmin)
@@ -101,9 +103,9 @@ namespace VideoWeb.EventHub.Hub
         private async Task RemoveUserFromConferenceGroups(bool isAdmin)
         {
             var conferences = await GetConferencesForUser(isAdmin);
-            var tasks = conferences.Select(c => Groups.RemoveFromGroupAsync(Context.ConnectionId, c.Id.ToString()))
-                .ToArray();
-            Task.WaitAll(tasks);
+            var tasks = conferences.Select(c => Groups.RemoveFromGroupAsync(Context.ConnectionId, c.Id.ToString())).ToArray();
+            
+            await Task.WhenAll(tasks);
         }
 
         private async Task<IEnumerable<ConferenceSummaryResponse>> GetConferencesForUser(bool isAdmin)

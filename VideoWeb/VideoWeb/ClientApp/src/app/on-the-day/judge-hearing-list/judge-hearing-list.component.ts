@@ -5,10 +5,11 @@ import * as $ from 'jquery';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceForUserResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { ConferenceForJudgeResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
-import { JudgeEventService } from 'src/app/services/judge-event.service';
+import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { VhContactDetails } from 'src/app/shared/contact-information';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 
@@ -22,7 +23,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         phone: VhContactDetails.phone
     };
 
-    conferences: ConferenceForUserResponse[];
+    conferences: ConferenceForJudgeResponse[];
     conferencesSubscription: Subscription;
     hearingListForm: FormGroup;
     loadingData: boolean;
@@ -30,13 +31,15 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
     today = new Date();
     profile: UserProfileResponse;
 
+    eventHubSubscriptions: Subscription = new Subscription();
+
     constructor(
         private videoWebService: VideoWebService,
         private errorService: ErrorService,
         private router: Router,
         private profileService: ProfileService,
         private logger: Logger,
-        private judgeEventService: JudgeEventService
+        private eventsService: EventsService
     ) {
         this.loadingData = true;
     }
@@ -45,9 +48,8 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         this.profileService.getUserProfile().then(profile => {
             this.profile = profile;
         });
-        this.judgeEventService.clearJudgeUnload();
-        this.judgeEventService.raiseJudgeUnavailableEvent();
         this.retrieveHearingsForUser();
+        this.setupSubscribers();
         this.interval = setInterval(() => {
             this.retrieveHearingsForUser();
         }, 30000);
@@ -59,11 +61,12 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         clearInterval(this.interval);
         this.conferencesSubscription.unsubscribe();
         this.enableFullScreen(false);
+        this.eventHubSubscriptions.unsubscribe();
     }
 
     retrieveHearingsForUser() {
         this.conferencesSubscription = this.videoWebService.getConferencesForJudge().subscribe(
-            (data: ConferenceForUserResponse[]) => {
+            (data: ConferenceForJudgeResponse[]) => {
                 this.loadingData = false;
                 this.conferences = data;
                 if (this.conferences.length > 0) {
@@ -86,7 +89,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         return this.conferences !== undefined && this.conferences.length > 0;
     }
 
-    onConferenceSelected(conference: ConferenceForUserResponse) {
+    onConferenceSelected(conference: ConferenceForJudgeResponse) {
         this.logger.event('signing into judge waiting room', { conference: conference.id });
         this.router.navigate([PageUrls.JudgeWaitingRoom, conference.id]);
     }
@@ -112,5 +115,18 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         } else {
             masterContainer.classList.remove('fullscreen');
         }
+    }
+
+    setupSubscribers() {
+        this.eventHubSubscriptions.add(
+            this.eventsService.getHearingStatusMessage().subscribe(message => {
+                this.handleConferenceStatusChange(message);
+            })
+        );
+    }
+
+    handleConferenceStatusChange(message: ConferenceStatusMessage) {
+        const conference = this.conferences.find(c => c.id === message.conferenceId);
+        conference.status = message.status;
     }
 }

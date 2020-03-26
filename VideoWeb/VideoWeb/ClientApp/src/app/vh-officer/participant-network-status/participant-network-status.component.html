@@ -1,5 +1,7 @@
 <div class="govuk-grid-row">
   <div id="p-row-{{participant.id}}" class="govuk-grid-column-one-half" title="{{participant.displayName}}" *ngIf="!participant.isJudge">
-    <img id="network-status-icon" src="/assets/images/{{getParticipantNetworkStatus()}}" alt="Open instant messaging chat window arrow" />
+    <img id="network-status-icon" src="/assets/images/{{getParticipantNetworkStatus()}}"
+         (click)="showParticipantGraph()"
+         alt="Open instant messaging chat window arrow" />
   </div>
 </div>

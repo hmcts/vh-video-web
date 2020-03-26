@@ -17,6 +17,7 @@ using Polly;
 using Polly.Extensions.Http;
 using Swashbuckle.AspNetCore.Swagger;
 using VideoWeb.Common;
+using VideoWeb.Common.Caching;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;

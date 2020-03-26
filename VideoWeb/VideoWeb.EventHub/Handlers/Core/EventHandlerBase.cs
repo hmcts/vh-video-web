@@ -1,12 +1,17 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using VideoWeb.EventHub.Enums;
+using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
+using VideoWeb.Services.Video;
+using ConferenceState = VideoWeb.EventHub.Enums.ConferenceState;
+using EventType = VideoWeb.EventHub.Enums.EventType;
+using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
 using Task = System.Threading.Tasks.Task;
 
 namespace VideoWeb.EventHub.Handlers.Core
@@ -14,14 +19,17 @@ namespace VideoWeb.EventHub.Handlers.Core
     public abstract class EventHandlerBase : IEventHandler
     {
         protected readonly IHubContext<Hub.EventHub, IEventHubClient> HubContext;
-        private readonly IMemoryCache _memoryCache;
+        private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<EventHandlerBase> _logger;
+        private readonly IVideoApiClient _videoApiClient;
 
-        protected EventHandlerBase(IHubContext<Hub.EventHub, IEventHubClient> hubContext, IMemoryCache memoryCache, ILogger<EventHandlerBase> logger)
+        protected EventHandlerBase(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+            IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient)
         {
             HubContext = hubContext;
-            _memoryCache = memoryCache;
+            _conferenceCache = conferenceCache;
             _logger = logger;
+            _videoApiClient = videoApiClient;
         }
 
         public Conference SourceConference { get; set; }
@@ -31,15 +39,26 @@ namespace VideoWeb.EventHub.Handlers.Core
 
         public async Task HandleAsync(CallbackEvent callbackEvent)
         {
-            SourceConference = _memoryCache.Get<Conference>(callbackEvent.ConferenceId);
+            SourceConference = await GetConference(callbackEvent.ConferenceId);
             if (SourceConference == null) throw new ConferenceNotFoundException(callbackEvent.ConferenceId);
 
             SourceParticipant = SourceConference.Participants
                 .SingleOrDefault(x => x.Id == callbackEvent.ParticipantId);
 
             _logger.LogTrace($"Handling Event: {callbackEvent.EventType} for conferenceId {callbackEvent.ConferenceId} with reason " +
-                $"{callbackEvent.Reason} at Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") }");
+                $"{callbackEvent.Reason} at Timestamp: { (DateTime.Now) :yyyy-MM-dd HH:mm:ss.fffffff}");
             await PublishStatusAsync(callbackEvent);
+        }
+
+        private async Task<Conference> GetConference(Guid conferenceId)
+        {
+            var conference = _conferenceCache.GetConference(conferenceId);
+            if (conference != null) return conference;
+            var conferenceDetail = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+            await _conferenceCache.AddConferenceToCache(conferenceDetail);
+
+            return _conferenceCache.GetConference(conferenceId);
+
         }
 
         /// <summary>

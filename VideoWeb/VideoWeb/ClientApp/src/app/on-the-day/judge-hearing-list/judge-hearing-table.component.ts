@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ConferenceForUserResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
+import { ConferenceForJudgeResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { ParticipantSummary } from 'src/app/shared/models/participant-summary';
@@ -10,15 +10,15 @@ import { ParticipantSummary } from 'src/app/shared/models/participant-summary';
     styleUrls: ['./judge-hearing-table.component.scss']
 })
 export class JudgeHearingTableComponent implements OnInit {
-    private _conferences: ConferenceForUserResponse[];
+    private _conferences: ConferenceForJudgeResponse[];
     hearings: HearingSummary[];
 
-    @Input() set conferences(conferences: ConferenceForUserResponse[]) {
+    @Input() set conferences(conferences: ConferenceForJudgeResponse[]) {
         this._conferences = conferences;
         this.hearings = conferences.map(c => new HearingSummary(c));
     }
 
-    @Output() selectedConference = new EventEmitter<ConferenceForUserResponse>();
+    @Output() selectedConference = new EventEmitter<ConferenceForJudgeResponse>();
 
     constructor(private logger: Logger) {}
 

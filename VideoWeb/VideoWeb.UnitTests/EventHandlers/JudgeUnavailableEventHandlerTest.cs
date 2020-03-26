@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
@@ -16,7 +17,8 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task should_send_unavailable_participant_messages_when_judge_unavailable()
         {
-            _eventHandler = new JudgeUnavailableEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
+            _eventHandler = new JudgeUnavailableEventHandler(EventHubContextMock.Object, ConferenceCache,
+                LoggerMock.Object, VideoApiClientMock.Object);
 
             var conference = TestConference;
             var participantCount = conference.Participants.Count + 1; // plus one for admin

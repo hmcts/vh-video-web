@@ -1,0 +1,92 @@
+@import "~govuk-frontend/govuk/all";
+
+.vh-popup {
+  margin: 0;
+  background: #fff;
+  border-radius: 0px;
+  position: relative;
+  transition: all 2s ease-in-out;
+  box-shadow: 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 8px 0 rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  width: 50%;
+}
+
+.vh-popup-overlay {
+  position: fixed;
+  top: 25%;
+  bottom: 10%;
+  left: 25%;
+  right: 0;
+}
+
+.vh-popup-small {
+  max-height: 300px !important;
+  min-width: 500px !important;
+}
+
+
+.graph-title {
+  background-color: gray;
+  color: #fff;
+}
+
+.graph-panel {
+  margin-left: 0;
+  margin-right: 0;
+  height: 50px;
+  line-height: 50px;
+  text-align: left;
+}
+
+
+.graph-footer-yellow {
+  background-color: #ffab00;
+}
+
+.graph-footer-green {
+  background-color: #009900;
+}
+
+.graph-footer-red {
+  background-color: #ff3300;
+}
+
+.graph-footer-gray {
+  background-color: gray;
+}
+
+.vh-text-panel {
+  margin-left: 20px;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: normal;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.vh-c {
+  color: white;
+}
+
+.vh-center-panel {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: normal;
+  font-weight: bold;
+  text-align: center;
+  width: 100%;
+  margin-top: 30px;
+}
+
+.vh-close-popup {
+  float: right;
+  vertical-align: top;
+  margin-top: 0;
+  margin-right: 5px;
+  text-decoration: none;
+  color: white;
+}
+.vh-close-popup:active {
+  background-color: gray !important;
+  color: #fff;
+}
+

@@ -49,7 +49,7 @@ namespace VideoWeb.UnitTests.Controllers.TasksController
                 .Setup(x => x.UpdateTaskStatusAsync(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<UpdateTaskRequest>()))
                 .ReturnsAsync(task);
 
-            var result = await _controller.CompleteTask(Guid.NewGuid(), 1);
+            var result = await _controller.CompleteTaskAsync(Guid.NewGuid(), 1);
             var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
         }
@@ -64,7 +64,7 @@ namespace VideoWeb.UnitTests.Controllers.TasksController
                 .Setup(x => x.UpdateTaskStatusAsync(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<UpdateTaskRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.CompleteTask(Guid.NewGuid(), 1);
+            var result = await _controller.CompleteTaskAsync(Guid.NewGuid(), 1);
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
         }

@@ -5,11 +5,12 @@ namespace VideoWeb.UnitTests.Builders
 {
     public class ClaimsPrincipalBuilder
     {
+        public static string Username = "john@doe.com";
         public ClaimsPrincipal Build()
         {
             var claims = new List<Claim>
             { 
-                new Claim(ClaimTypes.Name, "john@doe.com"),
+                new Claim(ClaimTypes.Name, Username),
                 new Claim(ClaimTypes.NameIdentifier, "userId"),
                 new Claim("name", "John Doe")
             };

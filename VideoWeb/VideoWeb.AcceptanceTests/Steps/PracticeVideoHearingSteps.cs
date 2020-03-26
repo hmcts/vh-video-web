@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Net;
 using AcceptanceTests.Common.Api.Hearings;
-using AcceptanceTests.Common.Api.Requests;
+using AcceptanceTests.Common.Api.Helpers;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.Driver.Support;

@@ -6,11 +6,13 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.EventHub.Enums;
+using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
-using VideoWeb.EventHub.Models;
+using VideoWeb.Services.Video;
 using EventComponentHelper = VideoWeb.UnitTests.Builders.EventComponentHelper;
+using UserRole = VideoWeb.Common.Models.UserRole;
 
 namespace VideoWeb.UnitTests.EventHandlers
 {
@@ -19,10 +21,13 @@ namespace VideoWeb.UnitTests.EventHandlers
         protected List<IEventHandler> EventHandlersList { get; private set; }
         protected Mock<IEventHubClient> EventHubClientMock { get; private set; }
         protected Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> EventHubContextMock { get; private set; }
-        protected IMemoryCache MemoryCache { get; private set; }
+        protected IMemoryCache MemoryCache { get; set; }
+        protected IConferenceCache ConferenceCache { get; private set; }
         protected Mock<ILogger<EventHandlerBase>> LoggerMock { get; private set; }
+        
+        protected Mock<IVideoApiClient> VideoApiClientMock { get; private set; }
 
-        protected Conference TestConference;
+        protected Conference TestConference { get; private set; }
         
         [SetUp]
         public void Setup()
@@ -32,7 +37,9 @@ namespace VideoWeb.UnitTests.EventHandlers
             EventHubContextMock = helper.EventHubContextMock;
             EventHubClientMock = helper.EventHubClientMock;
             MemoryCache = helper.Cache;
+            ConferenceCache = helper.ConferenceCache;
             LoggerMock = helper.EventHandlerBaseMock;
+            VideoApiClientMock = helper.VideoApiClientMock;
 
             TestConference = BuildConferenceForTest();
             MemoryCache.Set(TestConference.Id, TestConference);

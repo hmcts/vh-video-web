@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Threading;
 using AcceptanceTests.Common.Api.Hearings;
-using AcceptanceTests.Common.Api.Requests;
+using AcceptanceTests.Common.Api.Helpers;
 using VideoWeb.Services.Video;
 using UpdateParticipantRequest = VideoWeb.Services.Bookings.UpdateParticipantRequest;
 

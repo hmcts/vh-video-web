@@ -16,8 +16,8 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By AlertByUser = By.XPath("//div[contains(@class,'task-origin')]/p");
         public static By ActionedBy(string alertType) => By.XPath($"//div[contains(@class,'task-body')]/p[contains(text(),'{alertType}')]/../..//div/p[contains(text(),':')]");
         public static By ParticipantStatusTable = By.Id("participant-status");
-        public static By ParticipantStatus(Guid participantId, string name) => By.XPath($"//div[@id='p-row-{participantId}']/..//p[text()!='{name}']");
-        public static By ParticipantInIframe(string DisplayName) => By.XPath($"//b[contains(text(),'{DisplayName}')]");
+        public static By ParticipantStatus(Guid participantId) => By.XPath($"//div[@id='p-row-{participantId}']/../div[2]/p");
+        public static By ParticipantInIframe(string displayName) => By.XPath($"//b[contains(text(),'{displayName}')]");
         public static By VhoPrivateConsultationLink(Guid? participantId) => By.XPath($"//a[contains(@href,'{participantId}') and @aria-label='Private consultation']");
         public static By IncomingCallMessage = CommonLocators.ElementContainingText("Incoming call from Video Hearings Team");
         public static By AcceptPrivateCall = CommonLocators.ButtonWithInnerText("Accept call");

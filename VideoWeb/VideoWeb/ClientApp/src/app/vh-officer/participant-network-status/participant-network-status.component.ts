@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { HeartbeatHealth } from '../../services/models/participant-heartbeat';
@@ -8,16 +8,29 @@ import { HeartbeatHealth } from '../../services/models/participant-heartbeat';
   templateUrl: './participant-network-status.component.html',
   styleUrls: ['./participant-network-status.component.scss']
 })
-export class ParticipantNetworkStatusComponent  {
+export class ParticipantNetworkStatusComponent {
   @Input() participant: ParticipantSummary;
+
+  @Output()
+  showMonitorGraph: EventEmitter<ParticipantSummary> = new EventEmitter<ParticipantSummary>();
 
   constructor() {
   }
 
+  showParticipantGraph() {
+    this.showMonitorGraph.emit(this.participant);
+  }
+
   getParticipantNetworkStatus(): string {
 
-    if (this.participant === undefined || this.participant.participantHertBeatHealth === undefined) {
+    if (this.participant === undefined)  {
       return 'not-signed-in.png';
+    } else if (this.participant.participantHertBeatHealth === undefined) {
+      if (this.participant.status === ParticipantStatus.Disconnected) {
+        return 'disconnected.png';
+      } else {
+        return 'not-signed-in.png';
+      }
     } else {
       if (this.participant.participantHertBeatHealth.browserName.toLowerCase() === 'edge' || this.participant.participantHertBeatHealth.browserName.toLowerCase() === 'safari') {
         return 'incompatible-browser-signal.png';
@@ -29,7 +42,7 @@ export class ParticipantNetworkStatusComponent  {
             case HeartbeatHealth.Good:
               return 'good-signal.png';
             case HeartbeatHealth.Bad:
-              return 'good-signal.png';
+              return 'bad-signal.png';
             case HeartbeatHealth.Poor:
               return 'poor-signal.png';
             case HeartbeatHealth.None:

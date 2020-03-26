@@ -50,7 +50,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 ParticipantId = Guid.NewGuid(),
                 SelfTestFailureReason = SelfTestFailureReason.BadScore
             };
-            var result = await _controller.AddSelfTestFailureEventToConference(conferenceId, request);
+            var result = await _controller.AddSelfTestFailureEventToConferenceAsync(conferenceId, request);
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
         }
@@ -71,7 +71,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 ParticipantId = Guid.NewGuid(),
                 SelfTestFailureReason = SelfTestFailureReason.BadScore
             };
-            var result = await _controller.AddSelfTestFailureEventToConference(conferenceId, request);
+            var result = await _controller.AddSelfTestFailureEventToConferenceAsync(conferenceId, request);
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
         }

@@ -1,10 +1,8 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
-import { interval, Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
-import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { JudgeEventService } from 'src/app/services/judge-event.service';
@@ -22,10 +20,7 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
     loadingData: boolean;
     conference: ConferenceResponse;
     hearing: Hearing;
-    $afterStayOnSubcription: Subscription;
-    intervalSource: Observable<number>;
 
-    apiSubscriptions: Subscription = new Subscription();
     eventHubSubscriptions: Subscription = new Subscription();
 
     constructor(
@@ -35,9 +30,7 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
         private eventService: EventsService,
         private errorService: ErrorService,
         private logger: Logger,
-        private adalService: AdalService,
-        private judgeEventService: JudgeEventService,
-        private deviceTypeService: DeviceTypeService
+        private judgeEventService: JudgeEventService
     ) {
         this.loadingData = true;
     }
@@ -45,81 +38,43 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.getConference().then(() => {
             this.setupEventHubSubscribers();
+            this.postEventJudgeAvailableStatus();
         });
-
-        this.firefoxUnload();
-        this.subcribeForStayOn();
-    }
-
-    async firefoxUnload() {
-        if (this.judgeEventService.isUnload() && this.deviceTypeService.getBrowserName() === 'Firefox') {
-            this.judgeEventService.clearJudgeUnload();
-            await this.judgeEventService.raiseJudgeUnavailableEvent();
-        }
-    }
-
-    // if the user after logged out in the browser dialog selected stay on,
-    // then the satatus should be updated back to available. It's not possible to
-    // detect browser leave/stay on button click event(security reason).
-    // The interval is used to detect stay on.
-    subcribeForStayOn() {
-        if (!this.judgeEventService.isUnload()) {
-            this.intervalSource = interval(10000);
-            this.$afterStayOnSubcription = this.intervalSource.subscribe(() => {
-                this.afterStayOn();
-            });
-        }
-    }
-
-    afterStayOn() {
-        this.judgeEventService.setJudgeUnload();
-        this.postEventJudgeAvailableStatus();
     }
 
     @HostListener('window:beforeunload')
-    ngOnDestroy(): void {
-        this.logger.debug('Clearing intervals and subscriptions for judge waiting room');
+    async ngOnDestroy(): Promise<void> {
+        this.logger.debug('[Judge WR] - Clearing intervals and subscriptions for judge waiting room');
         this.eventHubSubscriptions.unsubscribe();
-        this.apiSubscriptions.unsubscribe();
-
-        if (this.$afterStayOnSubcription) {
-            this.$afterStayOnSubcription.unsubscribe();
-        }
-    }
-
-    sendMessage() {
-        this.eventService.sendMessage(this.conference.id, `message from judge ${this.adalService.userInfo.userName}`);
+        await this.postEventJudgeUnvailableStatus();
     }
 
     async getConference() {
         const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-        return this.videoWebService
-            .getConferenceById(conferenceId)
-            .toPromise()
-            .then((data: ConferenceResponse) => {
-                this.loadingData = false;
-                this.conference = data;
-
-                this.postEventJudgeAvailableStatus();
-
-                this.hearing = new Hearing(data);
-            })
-            .catch(error => {
-                this.loadingData = false;
-                if (!this.errorService.returnHomeIfUnauthorised(error)) {
-                    this.errorService.handleApiError(error);
-                }
-            });
+        try {
+            this.conference = await this.videoWebService.getConferenceById(conferenceId);
+            this.hearing = new Hearing(this.conference);
+            this.loadingData = false;
+        } catch (error) {
+            this.loadingData = false;
+            if (!this.errorService.returnHomeIfUnauthorised(error)) {
+                this.errorService.handleApiError(error);
+            }
+        }
     }
 
     async postEventJudgeAvailableStatus() {
-        if (this.conference) {
-            const participant = this.conference.participants.find(
-                x => x.username.toLocaleLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase()
-            );
-            if (participant) {
-                await this.judgeEventService.raiseJudgeAvailableEvent(this.conference.id, participant.id.toString());
-            }
+        await this.judgeEventService.raiseJudgeAvailableEvent(this.hearing.id, this.hearing.judge.id);
+    }
+
+    async postEventJudgeUnvailableStatus(): Promise<boolean> {
+        this.logger.debug('[Judge WR] - running exit code');
+        try {
+            await this.judgeEventService.raiseJudgeUnavailableEvent(this.hearing.id, this.hearing.judge.id);
+            return true;
+        } catch (error) {
+            this.logger.error('[Judge WR] - failed to run exit code', error);
+            return false;
         }
     }
 
@@ -157,7 +112,7 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
     setupEventHubSubscribers() {
         this.eventHubSubscriptions.add(
             this.eventService.getHearingStatusMessage().subscribe(message => {
-                this.handleHearingStatusChange(<ConferenceStatus>message.status);
+                this.handleHearingStatusChange(message.status);
             })
         );
 
@@ -167,18 +122,18 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
             })
         );
 
-        this.logger.debug('Subscribing to EventHub disconnects');
+        this.logger.debug('[Judge WR] - Subscribing to EventHub disconnects');
         this.eventHubSubscriptions.add(
             this.eventService.getServiceDisconnected().subscribe(() => {
-                this.logger.info(`EventHub disconnection for vh officer`);
+                this.logger.info(`[Judge WR] - EventHub disconnection for vh officer`);
                 this.getConference();
             })
         );
 
-        this.logger.debug('Subscribing to EventHub reconnects');
+        this.logger.debug('[Judge WR] - Subscribing to EventHub reconnects');
         this.eventHubSubscriptions.add(
             this.eventService.getServiceReconnected().subscribe(() => {
-                this.logger.info(`EventHub re-connected for vh officer`);
+                this.logger.info(`[Judge WR] - EventHub re-connected for vh officer`);
                 this.getConference();
             })
         );
@@ -188,11 +143,13 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): any {
         const participant = this.conference.participants.find(p => p.id === message.participantId);
-        const status = <ParticipantStatus>message.status;
+        const status = message.status;
         participant.status = status;
+
+        const judgeDisconnected = this.hearing.judge.id === message.participantId && message.status === ParticipantStatus.Disconnected;
         if (
             (this.conference.status === ConferenceStatus.Suspended || this.conference.status === ConferenceStatus.Paused) &&
-            participant.status === ParticipantStatus.Disconnected
+            judgeDisconnected
         ) {
             this.postEventJudgeAvailableStatus();
         }
@@ -212,14 +169,5 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
 
     hearingPaused(): boolean {
         return this.conference.status === ConferenceStatus.Paused;
-    }
-
-    @HostListener('window:beforeunload', ['$event'])
-    public async beforeunloadHandler($event: any) {
-        $event.preventDefault();
-        $event.returnValue = 'save';
-
-        this.judgeEventService.setJudgeUnload();
-        await this.judgeEventService.raiseJudgeUnavailableEvent();
     }
 }

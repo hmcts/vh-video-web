@@ -3,9 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
+using VideoWeb.Services.Video;
+using ConferenceState = VideoWeb.EventHub.Enums.ConferenceState;
+using EventType = VideoWeb.EventHub.Enums.EventType;
+using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
+using UserRole = VideoWeb.Common.Models.UserRole;
 
 namespace VideoWeb.UnitTests.EventHandlers
 {
@@ -16,7 +20,12 @@ namespace VideoWeb.UnitTests.EventHandlers
         [Test]
         public async Task Should_send_available_message_to_participants_and_service_bus_when_participant_joins()
         {
-            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
+            MemoryCache.Remove(TestConference.Id);
+            var confDetail = CreateConferenceDetailsResponse();
+            VideoApiClientMock.Setup(x => x.GetConferenceDetailsByIdAsync(TestConference.Id)).ReturnsAsync(confDetail);
+
+            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
+                VideoApiClientMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == UserRole.Individual);
@@ -30,19 +39,22 @@ namespace VideoWeb.UnitTests.EventHandlers
                 ParticipantId = participantForEvent.Id,
                 TimeStampUtc = DateTime.UtcNow
             };
-            
+
             await _eventHandler.HandleAsync(callbackEvent);
 
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id,
                     ParticipantState.Available), Times.Exactly(participantCount));
+            
+            VideoApiClientMock.Verify(x => x.GetConferenceDetailsByIdAsync(TestConference.Id), Times.Once);
         }
 
         [Test]
         public async Task
             Should_send_in_hearing_message_to_participants_and_live_message_to_service_bus_when_judge_joins()
         {
-            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, MemoryCache, LoggerMock.Object);
+            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
+                VideoApiClientMock.Object);
 
             var conference = TestConference;
             var participantForEvent = conference.Participants.First(x => x.Role == UserRole.Judge);
@@ -59,6 +71,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             await _eventHandler.HandleAsync(callbackEvent);
 
+
             // Verify event hub client
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id,
@@ -67,6 +80,24 @@ namespace VideoWeb.UnitTests.EventHandlers
             EventHubClientMock.Verify(
                 x => x.ConferenceStatusMessage(conference.Id, ConferenceState.InSession),
                 Times.Exactly(participantCount));
+        }
+
+        private ConferenceDetailsResponse CreateConferenceDetailsResponse()
+        {
+            var pats = TestConference.Participants.Select(p => new ParticipantDetailsResponse
+            {
+                Id = p.Id,
+                Username = p.Username,
+                Display_name = p.DisplayName,
+            }).ToList();
+
+            var conference = new ConferenceDetailsResponse
+            {
+                Id = TestConference.Id,
+                Hearing_id = TestConference.HearingId,
+                Participants = pats
+            };
+            return conference;
         }
     }
 }
