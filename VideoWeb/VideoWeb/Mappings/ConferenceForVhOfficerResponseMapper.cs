@@ -21,7 +21,8 @@ namespace VideoWeb.Mappings
                 ScheduledDuration = conference.Scheduled_duration,
                 Status = Enum.Parse<ConferenceStatus>(conference.Status.ToString()),
                 NoOfPendingTasks = conference.Pending_tasks,
-                HearingVenueName = conference.Hearing_venue_name
+                HearingVenueName = conference.Hearing_venue_name,
+                Participants = ParticipantForUserResponseMapper.MapParticipants(conference.Participants)
             };
             
             MapMessages(response, conference, messageResponses);

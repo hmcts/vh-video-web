@@ -2098,7 +2098,6 @@ export interface ITaskUserResponse {
 }
 
 export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerResponse {
-    number_of_unread_messages?: number;
     /** Conference ID */
     id?: string;
     scheduled_date_time?: Date;
@@ -2114,6 +2113,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
     hearing_venue_name?: string | undefined;
     /** The conferences tasks */
     tasks?: TaskUserResponse[] | undefined;
+    number_of_unread_messages?: number;
 
     constructor(data?: IConferenceForVhOfficerResponse) {
         if (data) {
@@ -2126,7 +2126,6 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
 
     init(_data?: any) {
         if (_data) {
-            this.number_of_unread_messages = _data["number_of_unread_messages"];
             this.id = _data["id"];
             this.scheduled_date_time = _data["scheduled_date_time"] ? new Date(_data["scheduled_date_time"].toString()) : <any>undefined;
             this.case_type = _data["case_type"];
@@ -2146,6 +2145,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
                 for (let item of _data["tasks"])
                     this.tasks!.push(TaskUserResponse.fromJS(item));
             }
+            this.number_of_unread_messages = _data["number_of_unread_messages"];
         }
     }
 
@@ -2158,7 +2158,6 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["number_of_unread_messages"] = this.number_of_unread_messages;
         data["id"] = this.id;
         data["scheduled_date_time"] = this.scheduled_date_time ? this.scheduled_date_time.toISOString() : <any>undefined;
         data["case_type"] = this.case_type;
@@ -2178,12 +2177,12 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
             for (let item of this.tasks)
                 data["tasks"].push(item.toJSON());
         }
+        data["number_of_unread_messages"] = this.number_of_unread_messages;
         return data; 
     }
 }
 
 export interface IConferenceForVhOfficerResponse {
-    number_of_unread_messages?: number;
     /** Conference ID */
     id?: string;
     scheduled_date_time?: Date;
@@ -2199,6 +2198,7 @@ export interface IConferenceForVhOfficerResponse {
     hearing_venue_name?: string | undefined;
     /** The conferences tasks */
     tasks?: TaskUserResponse[] | undefined;
+    number_of_unread_messages?: number;
 }
 
 /** Information about a participant in a conference */
