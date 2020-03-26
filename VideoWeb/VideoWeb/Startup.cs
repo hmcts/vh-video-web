@@ -166,7 +166,8 @@ namespace VideoWeb
 
                 if (env.IsDevelopment())
                 {
-                    spa.UseProxyToSpaDevelopmentServer("http://localhost:4200/");
+                    const string ngBaseUri = "http://localhost:4200/";
+                    spa.UseProxyToSpaDevelopmentServer(ngBaseUri);
                 }
             });
         }

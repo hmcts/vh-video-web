@@ -16,14 +16,14 @@ import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MockProfileService } from 'src/app/testing/mocks/MockProfileService';
 import { JudgeHearingTableStubComponent } from 'src/app/testing/stubs/judge-hearing-list-table-stub';
-import { ConferenceForUserResponse, ConferenceStatus } from '../../services/clients/api-client';
+import { ConferenceForJudgeResponse, ConferenceStatus } from '../../services/clients/api-client';
 import { JudgeHearingListComponent } from './judge-hearing-list.component';
 
 describe('JudgeHearingListComponent with no conferences for user', () => {
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     let component: JudgeHearingListComponent;
     let fixture: ComponentFixture<JudgeHearingListComponent>;
-    const noConferences: ConferenceForUserResponse[] = [];
+    const noConferences: ConferenceForJudgeResponse[] = [];
 
     configureTestSuite(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
