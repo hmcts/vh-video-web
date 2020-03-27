@@ -43,8 +43,6 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _testConference = _eventComponentHelper.BuildConferenceForTest();
             _testConference.Participants[0].Username = ClaimsPrincipalBuilder.Username;
 
-            _conferenceCacheMock.Setup(x => x.GetConference(_testConference.Id)).Returns(_testConference);
-            
             var context = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext
@@ -75,6 +73,26 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var result = await _controller.UpdateParticipantStatusAsync(conferenceId, request);
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
+        }
+        
+        [Test]
+        public async Task should_call_api_when_cache_is_empty()
+        {
+            _conferenceCacheMock.SetupSequence(cache => cache.GetConference(_testConference.Id))
+                .Returns((Conference) null)
+                .Returns(_testConference);
+            
+            var conferenceId = _testConference.Id;
+            var request = new UpdateParticipantStatusEventRequest
+            {
+                EventType = EventType.JudgeAvailable
+            };
+            _videoApiClientMock
+                .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
+                .Returns(Task.FromResult(default(object)));
+            
+            var result = await _controller.UpdateParticipantStatusAsync(conferenceId, request);
+            _videoApiClientMock.Verify(x => x.GetConferenceDetailsByIdAsync(_testConference.Id), Times.Once);
         }
 
         [Test]
