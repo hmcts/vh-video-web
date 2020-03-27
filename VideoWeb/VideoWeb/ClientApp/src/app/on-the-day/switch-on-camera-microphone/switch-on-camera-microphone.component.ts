@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
-import { AddMediaEventRequest, ConferenceResponse, UserRole } from 'src/app/services/clients/api-client';
+import { AddMediaEventRequest, ConferenceResponse, Role } from 'src/app/services/clients/api-client';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import 'webrtc-adapter';
@@ -54,7 +54,7 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
 
     async retrieveProfile(): Promise<void> {
         const profile = await this.profileService.getUserProfile();
-        this.isJudge = profile.role === UserRole.Judge;
+        this.isJudge = profile.role === Role.Judge;
         this.participantName = this.videoWebService.getObfuscatedName(profile.first_name + ' ' + profile.last_name);
     }
 

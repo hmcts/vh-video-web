@@ -2,11 +2,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
-using ConferenceState = VideoWeb.EventHub.Enums.ConferenceState;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.EventHub.Handlers
@@ -22,7 +22,7 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            var conferenceState = ConferenceState.Closed;
+            var conferenceState = ConferenceStatus.Closed;
             await PublishConferenceStatusMessage(conferenceState);
        
 

@@ -13,9 +13,9 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.UnitTests
 {
-       public class ConferenceCacheTest
+    public class ConferenceCacheTest
     {
-        private  IMemoryCache _memoryCache;
+        private IMemoryCache _memoryCache;
         private ConferenceCache _conferenceCache;
 
         [SetUp]
@@ -27,15 +27,15 @@ namespace VideoWeb.UnitTests
 
         [Test]
         public async Task Should_add_conference_to_cache()
-        { 
+        {
             var conference = CreateConferenceResponse();
             await _conferenceCache.AddConferenceToCache(conference);
             _memoryCache.Get(conference.Id).Should().NotBeNull();
         }
-        
+
         [Test]
         public void Should_get_conference_from_cache()
-        { 
+        {
             var conference = new Conference
             {
                 Id = Guid.NewGuid()
@@ -47,11 +47,11 @@ namespace VideoWeb.UnitTests
             result.Should().NotBeNull();
             result.Id.Should().Be(conference.Id);
         }
-        
+
         private static ConferenceDetailsResponse CreateConferenceResponse()
         {
             var participants = Builder<ParticipantDetailsResponse>.CreateListOfSize(2).Build().ToList();
-          
+
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
                 .With(x => x.Participants = participants)
                 .Build();

@@ -211,7 +211,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id", null, default, null);
             _videoApiClientMock
-                .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
+                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ThrowsAsync(apiException);
 
             var result = await _controller.GetConferenceByIdAsync(Guid.Empty);

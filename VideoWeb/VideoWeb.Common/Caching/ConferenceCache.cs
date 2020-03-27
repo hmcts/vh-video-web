@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using VideoWeb.Common.Models;
 using VideoWeb.Services.Video;
-using UserRole = VideoWeb.Common.Models.UserRole;
 
 namespace VideoWeb.Common.Caching
 {
@@ -25,7 +24,7 @@ namespace VideoWeb.Common.Caching
                 {
                     Id = participant.Id, 
                     DisplayName = participant.Display_name, 
-                    Role = (UserRole) Enum.Parse(typeof(UserRole), participant.User_role.ToString()), 
+                    Role = (Role) Enum.Parse(typeof(Role), participant.User_role.ToString()), 
                     Username = participant.Username
                 })
                 .ToList();

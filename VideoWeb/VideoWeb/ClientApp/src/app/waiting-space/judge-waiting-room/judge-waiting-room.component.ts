@@ -64,13 +64,13 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     async postEventJudgeAvailableStatus() {
-        await this.judgeEventService.raiseJudgeAvailableEvent(this.hearing.id, this.hearing.judge.id);
+        await this.judgeEventService.raiseJudgeAvailableEvent(this.hearing.id);
     }
 
     async postEventJudgeUnvailableStatus(): Promise<boolean> {
         this.logger.debug('[Judge WR] - running exit code');
         try {
-            await this.judgeEventService.raiseJudgeUnavailableEvent(this.hearing.id, this.hearing.judge.id);
+            await this.judgeEventService.raiseJudgeUnavailableEvent(this.hearing.id);
             return true;
         } catch (error) {
             this.logger.error('[Judge WR] - failed to run exit code', error);

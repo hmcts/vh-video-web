@@ -4,6 +4,7 @@ using System.Linq;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
@@ -59,21 +60,21 @@ namespace VideoWeb.UnitTests.Mappings
             participantsResponse.Should().NotBeNullOrEmpty();
             foreach (var participantResponse in participantsResponse)
             {
-                if (participantResponse.Role == Contract.Responses.UserRole.Representative)
+                if (participantResponse.Role == Role.Representative)
                 {
                     participantResponse.TiledDisplayName.StartsWith("T4").Should().BeTrue();
 
                 }
-                if (participantResponse.Role == Contract.Responses.UserRole.Judge)
+                if (participantResponse.Role == Role.Judge)
                 {
                     participantResponse.TiledDisplayName.StartsWith("T0").Should().BeTrue();
                 }
-                if (participantResponse.Role == Contract.Responses.UserRole.Individual)
+                if (participantResponse.Role == Role.Individual)
                 {
                     (participantResponse.TiledDisplayName.StartsWith("T1") ||
                         participantResponse.TiledDisplayName.StartsWith("T2")).Should().BeTrue();
                 }
-                if (participantResponse.Role == Contract.Responses.UserRole.CaseAdmin)
+                if (participantResponse.Role == Role.CaseAdmin)
                 {
                     participantResponse.TiledDisplayName.Should().BeNull();
                 }
@@ -97,8 +98,6 @@ namespace VideoWeb.UnitTests.Mappings
         {
             var participants = new List<ParticipantDetailsResponse>();
 
-            var bookingParticipants = new List<BookingParticipant>();
-
             var expectedConferenceStatus = ConferenceStatus.Suspended;
 
             var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
@@ -109,7 +108,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Meeting_room = meetingRoom)
                 .Build();
 
-            var response = ConferenceResponseMapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
+            var response = ConferenceResponseMapper.MapConferenceDetailsToResponseModel(conference, new List<BookingParticipant>());
 
             response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.Case_name);
@@ -127,17 +126,15 @@ namespace VideoWeb.UnitTests.Mappings
         }
 
         [Test]
-        public void Should_map_all_properties_with_pariticipants_list_null()
+        public void Should_map_all_properties_with_participants_list_null()
         {
-            List<ParticipantDetailsResponse> participants = null;
-
             var expectedConferenceStatus = ConferenceStatus.Suspended;
 
             var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
 
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
                 .With(x => x.Current_status = ConferenceState.Suspended)
-                .With(x => x.Participants = participants)
+                .With(x => x.Participants = null)
                 .With(x => x.Meeting_room = meetingRoom)
                 .Build();
 
