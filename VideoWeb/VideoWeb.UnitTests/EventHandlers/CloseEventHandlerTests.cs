@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
@@ -31,7 +32,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             await _eventHandler.HandleAsync(callbackEvent);
 
             // Verify messages sent to event hub clients
-            EventHubClientMock.Verify(x => x.ConferenceStatusMessage(conference.Id, ConferenceState.Closed),
+            EventHubClientMock.Verify(x => x.ConferenceStatusMessage(conference.Id, ConferenceStatus.Closed),
                 Times.Exactly(participantCount));
         }
     }

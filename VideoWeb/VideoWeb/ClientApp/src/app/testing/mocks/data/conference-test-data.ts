@@ -11,7 +11,7 @@ import {
     TaskResponse,
     TaskType,
     TaskUserResponse,
-    UserRole
+    Role
 } from 'src/app/services/clients/api-client';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { AlertFilter, AlertsStatus, HearingsFilter, ListFilter, StatusFilter } from '../../../shared/models/hearings-filter';
@@ -177,7 +177,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.Available,
             display_name: 'C Green',
             username: 'chris.green@hearings.net',
-            role: UserRole.Representative,
+            role: Role.Representative,
             representee: 'James Green',
             case_type_group: 'applicant'
         });
@@ -187,7 +187,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.NotSignedIn,
             display_name: 'J Green',
             username: 'james.green@hearings.net',
-            role: UserRole.Individual,
+            role: Role.Individual,
             case_type_group: 'applicant'
         });
 
@@ -196,7 +196,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.Available,
             display_name: 'Judge Fudge',
             username: 'judge.fudge@hearings.net',
-            role: UserRole.Judge,
+            role: Role.Judge,
             case_type_group: 'judge'
         });
 
@@ -205,7 +205,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.Available,
             display_name: 'J Doe',
             username: 'john.doe@hearings.net',
-            role: UserRole.Representative,
+            role: Role.Representative,
             representee: 'J Doe',
             case_type_group: 'respondent'
         });
@@ -215,7 +215,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.NotSignedIn,
             display_name: 'J Doe',
             username: 'jane.doe@hearings.net',
-            role: UserRole.Individual,
+            role: Role.Individual,
             case_type_group: 'respondent'
         });
 
@@ -237,7 +237,7 @@ export class ConferenceTestData {
             contact_telephone: '0123456780',
             name: 'Mr Chris Green',
             status: ParticipantStatus.Available,
-            role: UserRole.Individual,
+            role: Role.Individual,
             case_type_group: 'Defendent',
             display_name: 'Greeno',
             username: 'chris.green@hearings.net',
@@ -253,7 +253,7 @@ export class ConferenceTestData {
             name: 'Mr James Green',
             representee: 'Chris Green',
             status: ParticipantStatus.NotSignedIn,
-            role: UserRole.Representative,
+            role: Role.Representative,
             display_name: 'James Green',
             case_type_group: 'Defendent',
             username: 'james.green@hearings.net',
@@ -268,7 +268,7 @@ export class ConferenceTestData {
             contact_telephone: '01235468791',
             name: 'Judge Fudge',
             status: ParticipantStatus.Available,
-            role: UserRole.Judge,
+            role: Role.Judge,
             display_name: 'Judge Fudge',
             username: 'judge.fudge@hearings.net',
             case_type_group: 'Judge',

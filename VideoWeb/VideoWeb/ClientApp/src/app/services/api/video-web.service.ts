@@ -110,12 +110,7 @@ export class VideoWebService implements IVideoWebApiService {
     }
 
     setActiveIndividualConference(conference: ConferenceForIndividualResponse) {
-        const conf = new ConferenceLite(
-            conference.id,
-            conference.case_number,
-            conference.logged_in_participant_id,
-            this.getObfuscatedName(conference.logged_in_participant_display_name)
-        );
+        const conf = new ConferenceLite(conference.id, conference.case_number);
         this.activeConferencesCache.clear();
         this.activeConferencesCache.set(conf);
     }

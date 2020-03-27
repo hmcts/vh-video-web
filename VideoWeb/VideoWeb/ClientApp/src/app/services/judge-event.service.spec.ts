@@ -11,23 +11,19 @@ describe('JudgeEventService', () => {
     const service = new JudgeEventService(videoWebServiceSpy, new MockLogger());
 
     it('should raise judge available event', () => {
-        const participantId = '1234';
         const conferenceId = '4321';
         const request = new UpdateParticipantStatusEventRequest({
-            participant_id: participantId,
             event_type: EventType.JudgeAvailable
         });
-        service.raiseJudgeAvailableEvent(conferenceId, participantId);
+        service.raiseJudgeAvailableEvent(conferenceId);
         expect(videoWebServiceSpy.raiseParticipantEvent).toHaveBeenCalledWith(conferenceId, request);
     });
     it('should raise judge unavailable event', () => {
-        const participantId = '1234';
         const conferenceId = '4321';
         const request = new UpdateParticipantStatusEventRequest({
-            participant_id: participantId,
             event_type: EventType.JudgeUnavailable
         });
-        service.raiseJudgeUnavailableEvent(conferenceId, participantId);
+        service.raiseJudgeUnavailableEvent(conferenceId);
         expect(videoWebServiceSpy.raiseParticipantEvent).toHaveBeenCalledWith(conferenceId, request);
     });
 });
@@ -47,26 +43,22 @@ describe('JudgeEventService failure', () => {
 
     it('should log error when fails to judge available event', async () => {
         spyOn(logger, 'error');
-        const participantId = '1234';
         const conferenceId = '4321';
         const request = new UpdateParticipantStatusEventRequest({
-            participant_id: participantId,
             event_type: EventType.JudgeAvailable
         });
-        await service.raiseJudgeAvailableEvent(conferenceId, participantId);
+        await service.raiseJudgeAvailableEvent(conferenceId);
         expect(videoWebServiceSpy.raiseParticipantEvent).toHaveBeenCalledWith(conferenceId, request);
         expect(logger.error).toHaveBeenCalled();
     });
 
     it('should log error when fails raise judge unavailable event', async () => {
         spyOn(logger, 'error');
-        const participantId = '1234';
         const conferenceId = '4321';
         const request = new UpdateParticipantStatusEventRequest({
-            participant_id: participantId,
             event_type: EventType.JudgeUnavailable
         });
-        await service.raiseJudgeUnavailableEvent(conferenceId, participantId);
+        await service.raiseJudgeUnavailableEvent(conferenceId);
         expect(videoWebServiceSpy.raiseParticipantEvent).toHaveBeenCalledWith(conferenceId, request);
         expect(logger.error).toHaveBeenCalled();
     });

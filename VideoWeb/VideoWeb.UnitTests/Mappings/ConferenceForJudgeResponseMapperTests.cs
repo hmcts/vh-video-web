@@ -5,7 +5,8 @@ using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
-using VideoWeb.UnitTests.Builders;
+using Conference = VideoWeb.Services.Video.ConferenceForJudgeResponse;
+using Participant = VideoWeb.Services.Video.ParticipantForJudgeResponse;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -14,19 +15,16 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void should_map_all_properties()
         {
-            var participants = new List<ParticipantSummaryResponse>
+            Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Individual).Build();
+            var participants = new List<Participant>
             {
-                new ParticipantSummaryResponseBuilder(UserRole.Individual)
-                    .WithStatus(ParticipantState.Available).Build(),
-                new ParticipantSummaryResponseBuilder(UserRole.Representative)
-                    .WithStatus(ParticipantState.Disconnected).Build(),
-                new ParticipantSummaryResponseBuilder(UserRole.Judge)
-                    .WithStatus(ParticipantState.NotSignedIn).Build()
+                Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Individual).Build(),
+                Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Representative).Build(),
+                Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Judge).Build()
             };
 
-            var conference = Builder<ConferenceSummaryResponse>.CreateNew()
+            var conference = Builder<Conference>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
-                .With(x => x.Hearing_ref_id = Guid.NewGuid())
                 .With(x => x.Participants = participants)
                 .Build();
 

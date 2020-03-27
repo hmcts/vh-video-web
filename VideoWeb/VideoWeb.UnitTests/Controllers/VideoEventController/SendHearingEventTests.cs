@@ -18,9 +18,7 @@ using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using EventComponentHelper = VideoWeb.UnitTests.Builders.EventComponentHelper;
-using MemoryCache = Microsoft.Extensions.Caching.Memory.MemoryCache;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
-using Role = VideoWeb.Common.Models.UserRole;
 
 namespace VideoWeb.UnitTests.Controllers.VideoEventController
 {

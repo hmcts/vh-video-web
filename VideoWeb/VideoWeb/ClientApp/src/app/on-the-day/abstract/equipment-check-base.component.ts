@@ -44,8 +44,6 @@ export abstract class EquipmentCheckBaseComponent {
     getConference(): void {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         this.conference = this.videoWebService.getActiveIndividualConference();
-        this.participantId = this.conference.loggedInParticipantId;
-        this.participantName = this.conference.loggedInParticipantDisplayName;
     }
 
     checkEquipmentAgain() {

@@ -2,7 +2,7 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
+using Participant = VideoWeb.Services.Video.ParticipantForJudgeResponse;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -11,14 +11,14 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_map_all_participants()
         {
-            var participant = Builder<ParticipantSummaryResponse>.CreateNew().Build();
+            var participant = Builder<Participant>.CreateNew().Build();
 
             var response = ParticipantForJudgeResponseMapper.MapParticipantSummaryToModel(participant);
 
             response.DisplayName.Should().BeEquivalentTo(participant.Display_name);
-            response.Role.Should().BeEquivalentTo(participant.User_role);
+            response.Role.Should().BeEquivalentTo(participant.Role);
             response.Representee.Should().BeEquivalentTo(participant.Representee);
-            response.CaseTypeGroup.Should().BeEquivalentTo(participant.Case_group);
+            response.CaseTypeGroup.Should().BeEquivalentTo(participant.Case_type_group);
         }
     }
 }

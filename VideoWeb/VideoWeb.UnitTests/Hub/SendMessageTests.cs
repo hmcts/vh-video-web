@@ -19,7 +19,7 @@ namespace VideoWeb.UnitTests.Hub
             var username = "john@doe.com";
             var conferenceId = Guid.NewGuid();
             var participants = Builder<Participant>.CreateListOfSize(2)
-                .TheFirst(1).With(x => x.Role = UserRole.Judge).With(x => x.Username = username)
+                .TheFirst(1).With(x => x.Role = Role.Judge).With(x => x.Username = username)
                 .Build().ToList();
             var conference = Builder<Conference>.CreateNew()
                 .With(x => x.Id = conferenceId)
@@ -58,7 +58,7 @@ namespace VideoWeb.UnitTests.Hub
             var username = "john@doe.com";
             var conferenceId = Guid.NewGuid();
             var participants = Builder<Participant>.CreateListOfSize(2)
-                .TheFirst(1).With(x => x.Role = UserRole.Individual).With(x => x.Username = username)
+                .TheFirst(1).With(x => x.Role = Role.Individual).With(x => x.Username = username)
                 .Build().ToList();
             var conference = Builder<Conference>.CreateNew()
                 .With(x => x.Id = conferenceId)
@@ -90,8 +90,8 @@ namespace VideoWeb.UnitTests.Hub
             var username = "john@doe.com";
             var conferenceId = Guid.NewGuid();
             var participants = Builder<Participant>.CreateListOfSize(2)
-                .TheFirst(1).With(x => x.Role = UserRole.Judge).With(x => x.Username = judgeUsername)
-                .TheNext(1).With(x => x.Role = UserRole.Individual).With(x => x.Username = username)
+                .TheFirst(1).With(x => x.Role = Role.Judge).With(x => x.Username = judgeUsername)
+                .TheNext(1).With(x => x.Role = Role.Individual).With(x => x.Username = username)
                 .Build().ToList();
             var conference = Builder<Conference>.CreateNew()
                 .With(x => x.Id = conferenceId)

@@ -7,9 +7,9 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.Common.Models;
 using ParticipantResponse = VideoWeb.Services.Bookings.ParticipantResponse;
 using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
-using UserRole = VideoWeb.Contract.Responses.UserRole;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -152,22 +152,22 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
            foreach (var participant in participants)
            {
-                if (!participant.User_role_name.Equals(UserRole.Individual.ToString()) &&
-                    !participant.User_role_name.Equals(UserRole.Representative.ToString())) continue;
+                if (!participant.User_role_name.Equals(Role.Individual.ToString()) &&
+                    !participant.User_role_name.Equals(Role.Representative.ToString())) continue;
 
                 var individualIsDisplayed = false;
                 var representativeIsDisplayed = false;
 
                 foreach (var party in rowData.Parties)
                 {                   
-                    if (participant.User_role_name.Equals(UserRole.Individual.ToString()) &&
+                    if (participant.User_role_name.Equals(Role.Individual.ToString()) &&
                         party.IndividualName.Trim().Equals(participant.Display_name))
                     {
                         individualIsDisplayed = true;
                         break;
                     }
 
-                    if (!participant.User_role_name.Equals(UserRole.Representative.ToString()) ||
+                    if (!participant.User_role_name.Equals(Role.Representative.ToString()) ||
                         !party.RepresentativeName.Equals(participant.Display_name)) continue;
                     representativeIsDisplayed = true;
                     break;
