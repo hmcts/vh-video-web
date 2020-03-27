@@ -11,22 +11,28 @@ import { PageUrls } from '../shared/page-url.constants';
     templateUrl: './home.component.html'
 })
 export class HomeComponent implements OnInit {
+
     constructor(
         private router: Router,
         private profileService: ProfileService,
         private errorService: ErrorService,
         private deviceTypeService: DeviceTypeService
-    ) {}
+    ) { }
 
     ngOnInit() {
-        if (this.deviceTypeService.isDesktop()) {
-            this.profileService
-                .getUserProfile()
-                .then(profile => this.navigateToHearingList(profile))
-                .catch(error => this.errorService.handleApiError(error));
-        } else {
-            this.router.navigate([PageUrls.SignonAComputer]);
-        }
+        this.profileService.getUserProfile()
+            .then(profile => {
+                if (profile.role === UserRole.Individual || profile.role === UserRole.Representative) {
+                    this.navigateToHearingList(profile);
+                } else {
+                    if (this.deviceTypeService.isDesktop()) {
+                        this.navigateToHearingList(profile);
+                    } else {
+                        this.router.navigate([PageUrls.SignonAComputer]);
+                    }
+                }
+            })
+            .catch(error => this.errorService.handleApiError(error));
     }
 
     navigateToHearingList(userProfile: UserProfileResponse) {
