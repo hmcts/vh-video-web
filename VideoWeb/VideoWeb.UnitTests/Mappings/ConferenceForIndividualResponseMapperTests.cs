@@ -6,6 +6,7 @@ using NUnit.Framework;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
+using Conference = VideoWeb.Services.Video.ConferenceForIndividualResponse;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -27,20 +28,16 @@ namespace VideoWeb.UnitTests.Mappings
             };
             participants[0].Username = loggedInUsername;
 
-            var conference = Builder<ConferenceSummaryResponse>.CreateNew()
+            var conference = Builder<Conference>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
-                .With(x => x.Hearing_ref_id = Guid.NewGuid())
-                .With(x => x.Participants = participants)
                 .Build();
 
-            var response = ConferenceForIndividualResponseMapper.MapConferenceSummaryToModel(conference, loggedInUsername);
+            var response = ConferenceForIndividualResponseMapper.MapConferenceSummaryToModel(conference);
 
             response.Id.Should().Be(conference.Id);
             response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);
             response.CaseNumber.Should().Be(conference.Case_number);
             response.CaseName.Should().Be(conference.Case_name);
-            response.LoggedInParticipantDisplayName.Should().Be(participants[0].Display_name);
-            response.LoggedInParticipantId.Should().Be(participants[0].Id);
         }
     }
 }

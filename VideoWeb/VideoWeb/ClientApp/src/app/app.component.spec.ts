@@ -6,7 +6,7 @@ import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { AppComponent } from './app.component';
 import { ConfigService } from './services/api/config.service';
-import { ClientSettingsResponse, UserProfileResponse, UserRole } from './services/clients/api-client';
+import { ClientSettingsResponse, UserProfileResponse, Role } from './services/clients/api-client';
 import { DeviceTypeService } from './services/device-type.service';
 import { Logger } from './services/logging/logger-base';
 import { PageUrls } from './shared/page-url.constants';
@@ -43,7 +43,7 @@ describe('AppComponent', () => {
         deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isSupportedBrowser']);
 
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-        const profile = new UserProfileResponse({ role: UserRole.Representative });
+        const profile = new UserProfileResponse({ role: Role.Representative });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
 
         TestBed.configureTestingModule({

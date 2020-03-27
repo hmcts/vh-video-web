@@ -2,13 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import {
-    ConferenceResponse,
-    ConsultationAnswer,
-    ParticipantResponse,
-    ParticipantStatus,
-    UserRole
-} from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConsultationAnswer, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ModalService } from 'src/app/services/modal.service';
@@ -298,10 +292,10 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     }
 
     private filterNonJudgeParticipants(): void {
-        this.nonJugdeParticipants = this.conference.participants.filter(x => x.role !== UserRole.Judge);
+        this.nonJugdeParticipants = this.conference.participants.filter(x => x.role !== Role.Judge);
     }
 
     private filterJudge(): void {
-        this.judge = this.conference.participants.find(x => x.role === UserRole.Judge);
+        this.judge = this.conference.participants.find(x => x.role === Role.Judge);
     }
 }

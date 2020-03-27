@@ -1699,7 +1699,6 @@ export class ApiClient {
     }
 }
 
-/** Known states of a conference */
 export enum ConferenceStatus {
     NotStarted = "NotStarted",
     InSession = "InSession",
@@ -1708,8 +1707,7 @@ export enum ConferenceStatus {
     Closed = "Closed",
 }
 
-/** Known user roles */
-export enum UserRole {
+export enum Role {
     None = "None",
     CaseAdmin = "CaseAdmin",
     VideoHearingsOfficer = "VideoHearingsOfficer",
@@ -1722,7 +1720,7 @@ export enum UserRole {
 export class ParticipantForJudgeResponse implements IParticipantForJudgeResponse {
     display_name?: string | undefined;
     /** The participant role in conference */
-    role?: UserRole;
+    role?: Role;
     /** The representee (if participant is a representative) */
     representee?: string | undefined;
     case_type_group?: string | undefined;
@@ -1765,7 +1763,7 @@ export class ParticipantForJudgeResponse implements IParticipantForJudgeResponse
 export interface IParticipantForJudgeResponse {
     display_name?: string | undefined;
     /** The participant role in conference */
-    role?: UserRole;
+    role?: Role;
     /** The representee (if participant is a representative) */
     representee?: string | undefined;
     case_type_group?: string | undefined;
@@ -1923,8 +1921,6 @@ export class ConferenceForIndividualResponse implements IConferenceForIndividual
     scheduled_date_time?: Date;
     case_number?: string | undefined;
     case_name?: string | undefined;
-    logged_in_participant_id?: string;
-    logged_in_participant_display_name?: string | undefined;
 
     constructor(data?: IConferenceForIndividualResponse) {
         if (data) {
@@ -1941,8 +1937,6 @@ export class ConferenceForIndividualResponse implements IConferenceForIndividual
             this.scheduled_date_time = _data["scheduled_date_time"] ? new Date(_data["scheduled_date_time"].toString()) : <any>undefined;
             this.case_number = _data["case_number"];
             this.case_name = _data["case_name"];
-            this.logged_in_participant_id = _data["logged_in_participant_id"];
-            this.logged_in_participant_display_name = _data["logged_in_participant_display_name"];
         }
     }
 
@@ -1959,8 +1953,6 @@ export class ConferenceForIndividualResponse implements IConferenceForIndividual
         data["scheduled_date_time"] = this.scheduled_date_time ? this.scheduled_date_time.toISOString() : <any>undefined;
         data["case_number"] = this.case_number;
         data["case_name"] = this.case_name;
-        data["logged_in_participant_id"] = this.logged_in_participant_id;
-        data["logged_in_participant_display_name"] = this.logged_in_participant_display_name;
         return data; 
     }
 }
@@ -1971,8 +1963,6 @@ export interface IConferenceForIndividualResponse {
     scheduled_date_time?: Date;
     case_number?: string | undefined;
     case_name?: string | undefined;
-    logged_in_participant_id?: string;
-    logged_in_participant_display_name?: string | undefined;
 }
 
 /** Known states of a participant */
@@ -1994,7 +1984,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     username?: string | undefined;
     display_name?: string | undefined;
     /** The participant role in conference */
-    role?: UserRole;
+    role?: Role;
     /** The current status of a participant */
     status?: ParticipantStatus;
     /** The representee (if participant is a representative) */
@@ -2049,7 +2039,7 @@ export interface IParticipantForUserResponse {
     username?: string | undefined;
     display_name?: string | undefined;
     /** The participant role in conference */
-    role?: UserRole;
+    role?: Role;
     /** The current status of a participant */
     status?: ParticipantStatus;
     /** The representee (if participant is a representative) */
@@ -2214,7 +2204,7 @@ export class ParticipantResponse implements IParticipantResponse {
     /** The participant's username */
     username?: string | undefined;
     /** The participant's role */
-    role?: UserRole;
+    role?: Role;
     /** The participant's status */
     status?: ParticipantStatus;
     display_name?: string | undefined;
@@ -2289,7 +2279,7 @@ export interface IParticipantResponse {
     /** The participant's username */
     username?: string | undefined;
     /** The participant's role */
-    role?: UserRole;
+    role?: Role;
     /** The participant's status */
     status?: ParticipantStatus;
     display_name?: string | undefined;
@@ -2926,7 +2916,6 @@ export interface ITestCallScoreResponse {
 }
 
 export class UpdateParticipantStatusEventRequest implements IUpdateParticipantStatusEventRequest {
-    participant_id?: string;
     event_type?: EventType;
 
     constructor(data?: IUpdateParticipantStatusEventRequest) {
@@ -2940,7 +2929,6 @@ export class UpdateParticipantStatusEventRequest implements IUpdateParticipantSt
 
     init(_data?: any) {
         if (_data) {
-            this.participant_id = _data["participant_id"];
             this.event_type = _data["event_type"];
         }
     }
@@ -2954,14 +2942,12 @@ export class UpdateParticipantStatusEventRequest implements IUpdateParticipantSt
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["participant_id"] = this.participant_id;
         data["event_type"] = this.event_type;
         return data; 
     }
 }
 
 export interface IUpdateParticipantStatusEventRequest {
-    participant_id?: string;
     event_type?: EventType;
 }
 
@@ -3014,7 +3000,7 @@ export interface IParticipantHeartbeatResponse {
 }
 
 export class UserProfileResponse implements IUserProfileResponse {
-    role?: UserRole;
+    role?: Role;
     first_name?: string | undefined;
     last_name?: string | undefined;
     display_name?: string | undefined;
@@ -3055,7 +3041,7 @@ export class UserProfileResponse implements IUserProfileResponse {
 }
 
 export interface IUserProfileResponse {
-    role?: UserRole;
+    role?: Role;
     first_name?: string | undefined;
     last_name?: string | undefined;
     display_name?: string | undefined;

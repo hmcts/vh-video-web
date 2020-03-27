@@ -45,12 +45,10 @@ export class IntroductionComponent implements OnInit {
     }
 
     async postParticipantJoiningStatus() {
-        const participantId = this.conference.loggedInParticipantId;
         try {
             await this.videoWebService.raiseParticipantEvent(
                 this.conference.id,
                 new UpdateParticipantStatusEventRequest({
-                    participant_id: participantId,
                     event_type: EventType.ParticipantJoining
                 })
             );

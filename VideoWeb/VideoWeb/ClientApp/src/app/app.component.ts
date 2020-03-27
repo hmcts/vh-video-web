@@ -6,7 +6,7 @@ import { DeviceTypeService } from './services/device-type.service';
 import { PageUrls } from './shared/page-url.constants';
 import { ProfileService } from './services/api/profile.service';
 import { ErrorService } from './services/error.service';
-import { UserRole } from './services/clients/api-client';
+import { Role } from './services/clients/api-client';
 import { Title } from '@angular/platform-browser';
 import { filter, map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
@@ -89,7 +89,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.profileService
             .getUserProfile()
             .then(profile => {
-                if (profile.role === UserRole.Representative || profile.role === UserRole.Individual) {
+                if (profile.role === Role.Representative || profile.role === Role.Individual) {
                     this.isRepresentativeOrIndividual = true;
                 }
             })

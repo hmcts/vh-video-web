@@ -1,4 +1,4 @@
-import { UserRole } from 'src/app/services/clients/api-client';
+import { Role } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { ParticipantSummary } from './participant-summary';
 
@@ -26,13 +26,13 @@ describe('ParticipantSummary', () => {
     });
 
     it('should return true if a judge', () => {
-        const p = new ConferenceTestData().getConferenceFuture().participants.find(x => x.role === UserRole.Judge);
+        const p = new ConferenceTestData().getConferenceFuture().participants.find(x => x.role === Role.Judge);
         const participant = new ParticipantSummary(p);
         expect(participant.isJudge).toBeTruthy();
     });
 
     it('should return false if not a judge', () => {
-        const p = new ConferenceTestData().getConferenceFuture().participants.find(x => x.role !== UserRole.Judge);
+        const p = new ConferenceTestData().getConferenceFuture().participants.find(x => x.role !== Role.Judge);
         const participant = new ParticipantSummary(p);
         expect(participant.isJudge).toBeFalsy();
     });

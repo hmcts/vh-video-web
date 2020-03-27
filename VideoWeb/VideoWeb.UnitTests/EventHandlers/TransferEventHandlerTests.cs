@@ -30,7 +30,7 @@ namespace VideoWeb.UnitTests.EventHandlers
                 VideoApiClientMock.Object);
 
             var conference = TestConference;
-            var participantForEvent = conference.Participants.First(x => x.Role == UserRole.Individual);
+            var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
             var participantCount = conference.Participants.Count + 1; // plus one for admin
 
             var callbackEvent = new CallbackEvent
@@ -58,7 +58,7 @@ namespace VideoWeb.UnitTests.EventHandlers
                 VideoApiClientMock.Object);
 
             var conference = TestConference;
-            var participantForEvent = conference.Participants.First(x => x.Role == UserRole.Individual);
+            var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
 
             var callbackEvent = new CallbackEvent
             {

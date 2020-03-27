@@ -9,7 +9,6 @@ using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
-using ConferenceState = VideoWeb.EventHub.Enums.ConferenceState;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
 using Task = System.Threading.Tasks.Task;
@@ -87,7 +86,7 @@ namespace VideoWeb.EventHub.Handlers.Core
         /// </summary>
         /// <param name="hearingEventStatus">Hearing status event to publish</param>
         /// <returns></returns>
-        protected async Task PublishConferenceStatusMessage(ConferenceState hearingEventStatus)
+        protected async Task PublishConferenceStatusMessage(ConferenceStatus hearingEventStatus)
         {
             foreach (var participant in SourceConference.Participants)
             {

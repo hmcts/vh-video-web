@@ -1,9 +1,10 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using VideoWeb.Common.Caching;
 using VideoWeb.Contract.Request;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Handlers.Core;
@@ -19,12 +20,14 @@ namespace VideoWeb.Controllers
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IEventHandlerFactory _eventHandlerFactory;
+        private readonly IConferenceCache _conferenceCache;
 
-
-        public ParticipantsController(IVideoApiClient videoApiClient, IEventHandlerFactory eventHandlerFactory)
+        public ParticipantsController(IVideoApiClient videoApiClient, IEventHandlerFactory eventHandlerFactory,
+            IConferenceCache conferenceCache)
         {
             _videoApiClient = videoApiClient;
             _eventHandlerFactory = eventHandlerFactory;
+            _conferenceCache = conferenceCache;
         }
 
         [HttpGet("{conferenceId}/participants/{participantId}/selftestresult")]
@@ -52,10 +55,12 @@ namespace VideoWeb.Controllers
         public async Task<IActionResult> UpdateParticipantStatusAsync(Guid conferenceId, 
             UpdateParticipantStatusEventRequest updateParticipantStatusEventRequest)
         {
+            var username = User.Identity.Name;
+            var participantId = await GetIdForParticipantByUsernameInConference(conferenceId, username);
             var conferenceEventRequest = new ConferenceEventRequest
             {
                 Conference_id = conferenceId.ToString(),
-                Participant_id = updateParticipantStatusEventRequest.ParticipantId.ToString(),
+                Participant_id = participantId.ToString(),
                 Event_id = Guid.NewGuid().ToString(),
                 Event_type = updateParticipantStatusEventRequest.EventType,
                 Time_stamp_utc = DateTime.UtcNow,
@@ -83,6 +88,20 @@ namespace VideoWeb.Controllers
             {
                 return StatusCode(e.StatusCode, e.Response);
             }
+        }
+
+        private async Task<Guid> GetIdForParticipantByUsernameInConference(Guid conferenceId, string username)
+        {
+            var conference = _conferenceCache.GetConference(conferenceId);
+            if (conference == null)
+            {
+                var conferenceDetail = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+                await _conferenceCache.AddConferenceToCache(conferenceDetail);
+                conference = _conferenceCache.GetConference(conferenceId);
+            }
+
+            return conference.Participants
+                .Single(x => x.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase)).Id;
         }
 
         [HttpGet("independentselftestresult")]

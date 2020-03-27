@@ -4,7 +4,7 @@ import { AdminGuard } from './admin.guard';
 import { SharedModule } from '../shared/shared.module';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ProfileService } from '../services/api/profile.service';
-import { UserProfileResponse, UserRole } from '../services/clients/api-client';
+import { UserProfileResponse, Role } from '../services/clients/api-client';
 import { Router } from '@angular/router';
 import { Logger } from '../services/logging/logger-base';
 import { MockLogger } from '../testing/mocks/MockLogger';
@@ -31,7 +31,7 @@ describe('AdminGuard', () => {
     });
 
     it('should not be able to activate component if role is not VHOfficer', async(async () => {
-        const profile = new UserProfileResponse({ role: UserRole.Judge });
+        const profile = new UserProfileResponse({ role: Role.Judge });
         profileServiceSpy.getUserProfile.and.returnValue(profile);
         const result = await guard.canActivate(null, null);
         expect(result).toBeFalsy();
@@ -39,7 +39,7 @@ describe('AdminGuard', () => {
     }));
 
     it('should be able to activate component if role is VHOfficer', async(async () => {
-        const profile = new UserProfileResponse({ role: UserRole.VideoHearingsOfficer });
+        const profile = new UserProfileResponse({ role: Role.VideoHearingsOfficer });
         profileServiceSpy.getUserProfile.and.returnValue(profile);
         const result = await guard.canActivate(null, null);
         expect(result).toBeTruthy();

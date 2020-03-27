@@ -11,14 +11,14 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
-using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
-using UserRole = VideoWeb.Services.Video.UserRole;
+using Conference = VideoWeb.Services.Video.ConferenceForIndividualResponse;
+using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
@@ -62,35 +62,12 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         [Test]
         public async Task Should_return_ok_with_list_of_conferences()
         {
-            var loggedInUsername = ClaimsPrincipalBuilder.Username;
-            var participants = new List<ParticipantSummaryResponse>
-            {
-                new ParticipantSummaryResponseBuilder(UserRole.Individual)
-                    .WithStatus(ParticipantState.Available).Build(),
-                new ParticipantSummaryResponseBuilder(UserRole.Representative)
-                    .WithStatus(ParticipantState.Disconnected).Build(),
-                new ParticipantSummaryResponseBuilder(UserRole.Judge)
-                    .WithStatus(ParticipantState.NotSignedIn).Build()
-            };
-            participants[0].Username = loggedInUsername;
-            
-            var conferences = Builder<ConferenceSummaryResponse>.CreateListOfSize(10).All()
+            var conferences = Builder<Conference>.CreateListOfSize(10).All()
                 .With(x => x.Scheduled_date_time = DateTime.UtcNow.AddMinutes(-60))
-                .With(x => x.Scheduled_duration = 20)
-                .With(x => x.Status = ConferenceState.NotStarted)
-                .With(x => x.Closed_date_time = null)
-                .With(x => x.Participants = participants)
                 .Build().ToList();
-            var minutes = -60;
-            foreach (var conference in conferences)
-            {
-                conference.Status = minutes < 0 ? ConferenceState.Closed : ConferenceState.NotStarted;
-                conference.Closed_date_time = DateTime.UtcNow.AddMinutes(minutes);
-                minutes += 90;
-            }
 
             _videoApiClientMock
-                .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
+                .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>()))
                 .ReturnsAsync(conferences);
 
             var result = await _controller.GetConferencesForIndividual();
@@ -111,9 +88,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         [Test]
         public async Task Should_return_ok_with_no_conferences()
         {
-            var conferences = new List<ConferenceSummaryResponse>();
+            var conferences = new List<Conference>();
             _videoApiClientMock
-                .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
+                .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>()))
                 .ReturnsAsync(conferences);
 
             var result = await _controller.GetConferencesForIndividual();
@@ -131,7 +108,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
                 "Please provide a valid email", null, default, null);
             _videoApiClientMock
-                .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
+                .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
             var result = await _controller.GetConferencesForIndividual();
@@ -146,7 +123,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var apiException = new VideoApiException<ProblemDetails>("Unauthorised Token", (int)HttpStatusCode.Unauthorized,
                 "Invalid Client ID", null, default, null);
             _videoApiClientMock
-                .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
+                .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
             var result = await _controller.GetConferencesForIndividual();
@@ -161,7 +138,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int)HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
             _videoApiClientMock
-                .Setup(x => x.GetConferencesForUsernameAsync(It.IsAny<string>()))
+                .Setup(x => x.GetConferencesTodayForIndividualByUsernameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
             var result = await _controller.GetConferencesForIndividual();

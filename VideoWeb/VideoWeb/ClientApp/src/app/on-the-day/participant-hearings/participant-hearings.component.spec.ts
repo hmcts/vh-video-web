@@ -12,12 +12,12 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { HearingListTableStubComponent } from 'src/app/testing/stubs/hearing-list-table-stub';
 import { ProfileService } from '../../services/api/profile.service';
-import { ConferenceForIndividualResponse, UserProfileResponse, UserRole } from '../../services/clients/api-client';
+import { ConferenceForIndividualResponse, UserProfileResponse, Role } from '../../services/clients/api-client';
 import { PluraliseTextPipe } from '../../shared/pipes/pluraliseText.pipe';
 import { ParticipantHearingsComponent } from './participant-hearings.component';
 
 const profile = new UserProfileResponse({
-    role: UserRole.Individual,
+    role: Role.Individual,
     display_name: 'Display name',
     first_name: 'test',
     last_name: 'unit'
