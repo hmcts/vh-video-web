@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
@@ -34,7 +34,22 @@ namespace VideoWeb.EventHub.Mappers
                 heartbeat.OutgoingVideoPercentageLostRecent
             }.Max();
 
-            return max < 10m ? HeartbeatHealth.Good : max >= 15m ? HeartbeatHealth.Bad : HeartbeatHealth.Poor;
+            var heartbeatHealth = HeartbeatHealth.None;
+            
+            if(max != -1 && max <=10m)
+            {
+                heartbeatHealth = HeartbeatHealth.Good;
+            }
+            else if(max>10 && max<=15)
+            {
+                heartbeatHealth = HeartbeatHealth.Poor;
+            }
+            else if(max>15)
+
+            {
+                heartbeatHealth = HeartbeatHealth.Bad;
+            }
+            return heartbeatHealth;
         }
     }
 }
