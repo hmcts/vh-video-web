@@ -1,8 +1,8 @@
 using System;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Services.Video;
 using ParticipantStatus = VideoWeb.Contract.Responses.ParticipantStatus;
-using UserRole = VideoWeb.Contract.Responses.UserRole;
 using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
 
 namespace VideoWeb.Mappings
@@ -12,11 +12,7 @@ namespace VideoWeb.Mappings
         public static ParticipantResponse MapParticipantToResponseModel(ParticipantDetailsResponse participant, BookingParticipant bookingParticipant)
         {
             var status = Enum.Parse<ParticipantStatus>(participant.Current_status.ToString());
-
-            if (!Enum.TryParse(participant.User_role.ToString(), true, out UserRole role))
-            {
-                role = UserRole.None;
-            }
+            var role = Enum.Parse<Role>(participant.User_role.ToString());
 
             var response = new ParticipantResponse
             {
@@ -34,7 +30,7 @@ namespace VideoWeb.Mappings
                 ContactTelephone = bookingParticipant?.Telephone_number
             };
 
-            if (role == UserRole.Judge)
+            if (role == Role.Judge)
             {
                 response.TiledDisplayName = $"T{0};{participant.Display_name};{participant.Id}";
             }

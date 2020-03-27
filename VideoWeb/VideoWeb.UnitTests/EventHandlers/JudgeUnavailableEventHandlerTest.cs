@@ -22,7 +22,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             var conference = TestConference;
             var participantCount = conference.Participants.Count + 1; // plus one for admin
-            var participantForEvent = conference.Participants.First(x => x.Role == UserRole.Judge);
+            var participantForEvent = conference.Participants.First(x => x.Role == Role.Judge);
             var callbackEvent = new CallbackEvent
             {
                 EventType = EventType.JudgeUnavailable,

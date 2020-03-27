@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 
 namespace VideoWeb.EventHub.Hub
@@ -7,7 +8,7 @@ namespace VideoWeb.EventHub.Hub
     public interface IEventHubClient
     {
         Task ParticipantStatusMessage(Guid participantId, ParticipantState participantState);
-        Task ConferenceStatusMessage(Guid conferenceId, ConferenceState conferenceState);
+        Task ConferenceStatusMessage(Guid conferenceId, ConferenceStatus conferenceState);
         Task ConsultationMessage(Guid conferenceId, string requestedBy, string requestedFor, string result);
         Task AdminConsultationMessage(Guid conferenceId, RoomType room, string requestedFor, ConsultationAnswer? answer = null);
         Task HelpMessage(Guid conferenceId, string participantName);

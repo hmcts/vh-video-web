@@ -9,7 +9,7 @@ import {
     AddSelfTestFailureEventRequest,
     SelfTestFailureReason,
     SelfTestPexipResponse,
-    UserRole
+    Role
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -275,7 +275,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             participant_id: this.selfTestParticipantId,
             self_test_failure_reason: reason
         });
-        if (this.conference && this.participant.role !== UserRole.Judge) {
+        if (this.conference && this.participant.role !== Role.Judge) {
             try {
                 await this.videoWebService.raiseSelfTestFailureEvent(this.conference.id, request);
                 this.logger.info(`Notified failed self test because of ${reason}`);

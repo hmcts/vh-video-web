@@ -6,7 +6,7 @@ import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { AppComponent } from './app.component';
 import { ConfigService } from './services/api/config.service';
-import { ClientSettingsResponse, UserProfileResponse, UserRole } from './services/clients/api-client';
+import { ClientSettingsResponse, UserProfileResponse, Role } from './services/clients/api-client';
 import { DeviceTypeService } from './services/device-type.service';
 import { Logger } from './services/logging/logger-base';
 import { PageUrls } from './shared/page-url.constants';
@@ -15,12 +15,14 @@ import { FooterStubComponent } from './testing/stubs/footer-stub';
 import { HeaderStubComponent } from './testing/stubs/header-stub';
 import { ProfileService } from './services/api/profile.service';
 import { BetaBannerStubComponent } from './testing/stubs/beta-banner-stub';
+import { LocationService } from './services/location.service';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let adalServiceSpy: jasmine.SpyObj<AdalService>;
     let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
+    let locationServiceSpy: jasmine.SpyObj<LocationService>;
 
     const clientSettings = new ClientSettingsResponse({
         tenant_id: 'tenantid',
@@ -43,8 +45,10 @@ describe('AppComponent', () => {
         deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isSupportedBrowser']);
 
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-        const profile = new UserProfileResponse({ role: UserRole.Representative });
+        const profile = new UserProfileResponse({ role: Role.Representative });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
+
+        locationServiceSpy = jasmine.createSpyObj<LocationService>('LocationService', ['getCurrentUrl', 'getCurrentPathName']);
 
         TestBed.configureTestingModule({
             imports: [HttpClientModule, RouterTestingModule],
@@ -55,7 +59,8 @@ describe('AppComponent', () => {
                 { provide: Logger, useClass: MockLogger },
                 { provide: DeviceTypeService, useValue: deviceTypeServiceSpy },
                 { provide: DeviceTypeService, useValue: deviceTypeServiceSpy },
-                { provide: ProfileService, useValue: profileServiceSpy }
+                { provide: ProfileService, useValue: profileServiceSpy },
+                { provide: LocationService, useValue: locationServiceSpy }
             ]
         });
     });
@@ -96,4 +101,25 @@ describe('AppComponent', () => {
         const compiled = fixture.debugElement.nativeElement;
         expect(compiled.querySelector('a').textContent).toContain('Skip to main content');
     }));
+
+    it('should set to true when user profile is a representative', async () => {
+        const profile = new UserProfileResponse({ role: Role.Representative });
+        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
+        await component.retrieveProfileRole();
+        expect(component.isRepresentativeOrIndividual).toBeTruthy();
+    });
+
+    it('should set to true when user profile is an individual', async () => {
+        const profile = new UserProfileResponse({ role: Role.Individual });
+        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
+        await component.retrieveProfileRole();
+        expect(component.isRepresentativeOrIndividual).toBeTruthy();
+    });
+
+    it('should set to false when user profile is a judge', async () => {
+        const profile = new UserProfileResponse({ role: Role.Judge });
+        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
+        await component.retrieveProfileRole();
+        expect(component.isRepresentativeOrIndividual).toBeFalsy();
+    });
 });

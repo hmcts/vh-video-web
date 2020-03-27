@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Polly.CircuitBreaker;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
 using VideoWeb.Mappings;
@@ -15,7 +16,8 @@ using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
-using UserRole = VideoWeb.Contract.Responses.UserRole;
+using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
+using ConferenceForJudgeResponse = VideoWeb.Contract.Responses.ConferenceForJudgeResponse;
 
 namespace VideoWeb.Controllers
 {
@@ -54,7 +56,8 @@ namespace VideoWeb.Controllers
             _logger.LogDebug("GetConferencesForJudge");
             try
             {
-                var conferencesForJudge = await GetConferenceSummaryForUserAsync(false);
+                var username = User.Identity.Name;
+                var conferencesForJudge = await _videoApiClient.GetConferencesTodayForJudgeByUsernameAsync(username);
                 var response = conferencesForJudge
                     .Select(ConferenceForJudgeResponseMapper.MapConferenceSummaryToModel)
                     .ToList();
@@ -77,13 +80,13 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "GetConferencesForIndividual")]
         public async Task<ActionResult<IEnumerable<ConferenceForIndividualResponse>>> GetConferencesForIndividual()
         {
-            var username = User.Identity.Name;
             _logger.LogDebug("GetConferencesForIndividual");
             try
             {
-                var conferencesForIndividual = await GetConferenceSummaryForUserAsync(true);
-                var response = conferencesForIndividual.Select(c =>
-                    ConferenceForIndividualResponseMapper.MapConferenceSummaryToModel(c, username)).ToList();
+                var username = User.Identity.Name;
+                var conferencesForIndividual = await _videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username);
+                var response = conferencesForIndividual
+                    .Select(ConferenceForIndividualResponseMapper.MapConferenceSummaryToModel).ToList();
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -91,27 +94,6 @@ namespace VideoWeb.Controllers
                 _logger.LogError(e, "Unable to get conferences for user");
                 return StatusCode(e.StatusCode, e.Response);
             }
-
-        }
-
-        private async Task<List<ConferenceSummaryResponse>> GetConferenceSummaryForUserAsync(
-            bool excludeStaleConferences)
-        {
-            var username = User.Identity.Name;
-            var conferences = await _videoApiClient.GetConferencesForUsernameAsync(username);
-            _logger.LogTrace("Successfully retrieved conferences for user");
-
-            if (excludeStaleConferences)
-            {
-                _logger.LogTrace("Filtering conference that have been closed for more than 30 minutes");
-                conferences = conferences.Where(ConferenceHelper.HasNotPassed).ToList();
-            }
-
-            conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();
-
-            return conferences;
-
-
         }
 
 
@@ -131,7 +113,7 @@ namespace VideoWeb.Controllers
                 var username = User.Identity.Name.ToLower().Trim();
                 var profile = await _userApiClient.GetUserByAdUserNameAsync(username);
                 var profileResponse = UserProfileResponseMapper.MapToResponseModel(profile);
-                if (profileResponse.Role != UserRole.VideoHearingsOfficer)
+                if (profileResponse.Role != Role.VideoHearingsOfficer)
                 {
                     _logger.LogError($"Failed to get conferences for today: {username} is not a VH officer");
                     return Unauthorized("User must be a VH Officer");
@@ -206,7 +188,7 @@ namespace VideoWeb.Controllers
                 _logger.LogTrace("Checking to see if user is a VH Officer");
                 var profile = await _userApiClient.GetUserByAdUserNameAsync(username);
                 var profileResponse = UserProfileResponseMapper.MapToResponseModel(profile);
-                isVhOfficer = profileResponse.Role == UserRole.VideoHearingsOfficer;
+                isVhOfficer = profileResponse.Role == Role.VideoHearingsOfficer;
             }
             catch (UserApiException e)
             {
@@ -265,14 +247,14 @@ namespace VideoWeb.Controllers
             }
 
             // these are roles that are filtered against when lists participants on the UI
-            var displayRoles = new List<UserRole>
+            var displayRoles = new List<Role>
             {
-                UserRole.Judge,
-                UserRole.Individual,
-                UserRole.Representative
+                Role.Judge,
+                Role.Individual,
+                Role.Representative
             };
             conference.Participants = conference.Participants
-                .Where(x => displayRoles.Contains((UserRole) x.User_role)).ToList();
+                .Where(x => displayRoles.Contains((Role) x.User_role)).ToList();
 
             var response =
                 ConferenceResponseMapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);

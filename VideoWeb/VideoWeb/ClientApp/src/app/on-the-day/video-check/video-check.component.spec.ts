@@ -20,8 +20,7 @@ describe('VideoCheckComponent', () => {
 
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     const conference = new ConferenceTestData().getConferenceDetailFuture();
-    const pat = conference.participants[0];
-    const confLite = new ConferenceLite(conference.id, conference.case_number, pat.id, pat.display_name);
+    const confLite = new ConferenceLite(conference.id, conference.case_number);
 
     configureTestSuite(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [

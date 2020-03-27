@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { ProfileService } from '../services/api/profile.service';
-import { UserRole } from '../services/clients/api-client';
+import { Role } from '../services/clients/api-client';
 import { Logger } from '../services/logging/logger-base';
 
 @Injectable({
@@ -13,7 +13,7 @@ export class AdminGuard implements CanActivate {
     async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
         try {
             const profile = await this.userProfileService.getUserProfile();
-            if (profile.role === UserRole.VideoHearingsOfficer) {
+            if (profile.role === Role.VideoHearingsOfficer) {
                 return true;
             } else {
                 this.router.navigate(['/home']);
