@@ -12,11 +12,7 @@ namespace VideoWeb.Mappings
         public static ParticipantResponse MapParticipantToResponseModel(ParticipantDetailsResponse participant, BookingParticipant bookingParticipant)
         {
             var status = Enum.Parse<ParticipantStatus>(participant.Current_status.ToString());
-
-            if (!Enum.TryParse(participant.User_role.ToString(), true, out Role role))
-            {
-                role = Role.None;
-            }
+            var role = Enum.Parse<Role>(participant.User_role.ToString());
 
             var response = new ParticipantResponse
             {
