@@ -77,12 +77,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             var conferencesForUser = (List<ConferenceForIndividualResponse>)typedResult.Value;
             conferencesForUser.Should().NotBeNullOrEmpty();
-            conferencesForUser.Count.Should().Be(9);
-            var i = 2;
-            foreach (var conference in conferencesForUser)
-            {
-                conference.CaseName.Should().Be($"Case_name{i++}");
-            }
+            conferencesForUser.Count.Should().Be(conferences.Count);
         }
 
         [Test]
