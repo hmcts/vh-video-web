@@ -46,7 +46,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         private void ClearClosedConferencesForClerk(BookingsApiManager bookingsApi, VideoApiManager videoApi)
         {
             var response = videoApi.GetConferencesForToday();
-            var todaysConferences = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ConferenceSummaryResponse>>(response.Content);
+            var todaysConferences = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ConferenceForAdminResponse>>(response.Content);
             if (todaysConferences == null) return;
 
             foreach (var conference in todaysConferences)

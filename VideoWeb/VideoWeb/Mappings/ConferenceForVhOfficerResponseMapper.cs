@@ -9,7 +9,7 @@ namespace VideoWeb.Mappings
 {
     public static class ConferenceForVhOfficerResponseMapper
     {
-        public static ConferenceForVhOfficerResponse MapConferenceSummaryToResponseModel(ConferenceSummaryResponse conference,
+        public static ConferenceForVhOfficerResponse MapConferenceSummaryToResponseModel(ConferenceForAdminResponse conference,
             IList<InstantMessageResponse> messageResponses)
         {
             var response = new ConferenceForVhOfficerResponse
@@ -23,42 +23,37 @@ namespace VideoWeb.Mappings
                 Status = Enum.Parse<ConferenceStatus>(conference.Status.ToString()),
                 NoOfPendingTasks = conference.Pending_tasks,
                 HearingVenueName = conference.Hearing_venue_name,
-                Participants = ParticipantForUserResponseMapper.MapParticipants(conference.Participants)
+                Participants = ParticipantForUserResponseMapper.MapParticipants(conference.Participants),
+                NumberOfUnreadMessages = MapMessages(conference, messageResponses),
+                Tasks = MapTasks(conference)
             };
-            
-            MapMessages(response, conference, messageResponses);
-            MapTasks(response, conference);
-            
+
+
             return response;
         }
 
-        private static void MapTasks(ConferenceForVhOfficerResponse response, ConferenceSummaryResponse conference)
+        private static List<TaskUserResponse> MapTasks(ConferenceForAdminResponse conference)
         {
-            if (conference.Tasks == null) return;
-            var conferenceTasks = conference.Tasks
-                .Select(x => new TaskUserResponse { Id = x.Id, Body = x.Body })
-                .ToList();
-                
-            response.Tasks = conferenceTasks;
+            return conference.Tasks?.Select(x => 
+                    new TaskUserResponse { Id = x.Id, Body = x.Body }
+                ).ToList();
         }
 
-        private static void MapMessages(ConferenceForVhOfficerResponse response, ConferenceSummaryResponse conference,
+        private static int MapMessages(ConferenceForAdminResponse conference,
             IList<InstantMessageResponse> messageResponses)
         {
             if (messageResponses == null || !messageResponses.Any())
             {
-                response.NumberOfUnreadMessages = 0;
+                return 0;
             }
-            else
-            {
-                messageResponses = messageResponses.OrderByDescending(x => x.Time_stamp).ToList();
-                var vhoMessage = messageResponses.FirstOrDefault(m => IsNonParticipantMessage(conference, m));
-                response.NumberOfUnreadMessages =
-                    vhoMessage == null ? messageResponses.Count() : messageResponses.IndexOf(vhoMessage);
-            }
+
+            messageResponses = messageResponses.OrderByDescending(x => x.Time_stamp).ToList();
+            var vhoMessage = messageResponses.FirstOrDefault(m => IsNonParticipantMessage(conference, m));
+            return
+                vhoMessage == null ? messageResponses.Count() : messageResponses.IndexOf(vhoMessage);
         }
 
-        private static bool IsNonParticipantMessage(ConferenceSummaryResponse conference, InstantMessageResponse message)
+        private static bool IsNonParticipantMessage(ConferenceForAdminResponse conference, InstantMessageResponse message)
         {
             return !conference.Participants.Any(p => p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase));
         }

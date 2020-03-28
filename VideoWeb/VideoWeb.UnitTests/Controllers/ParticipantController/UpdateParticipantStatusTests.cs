@@ -91,7 +91,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .Returns(Task.FromResult(default(object)));
             
-            var result = await _controller.UpdateParticipantStatusAsync(conferenceId, request);
+            await _controller.UpdateParticipantStatusAsync(conferenceId, request);
             _videoApiClientMock.Verify(x => x.GetConferenceDetailsByIdAsync(_testConference.Id), Times.Once);
         }
 
