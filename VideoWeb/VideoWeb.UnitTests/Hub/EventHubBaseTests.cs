@@ -58,16 +58,16 @@ namespace VideoWeb.UnitTests.Hub
             };
         }
 
-        protected List<ConferenceSummaryResponse> SetupAdminConferences(int numOfConferences)
+        protected List<ConferenceForAdminResponse> SetupAdminConferences(int numOfConferences)
         {
-            var conferences = Builder<ConferenceSummaryResponse>.CreateListOfSize(numOfConferences).All()
+            var conferences = Builder<ConferenceForAdminResponse>.CreateListOfSize(numOfConferences).All()
                 .With(x => x.Id = Guid.NewGuid())
                 .Build().ToList();
 
             UserProfileServiceMock.Setup(x => x.IsVhOfficerAsync(It.IsAny<string>()))
                 .ReturnsAsync(true);
 
-            VideoApiClientMock.Setup(x => x.GetConferencesTodayAsync()).ReturnsAsync(conferences);
+            VideoApiClientMock.Setup(x => x.GetConferencesTodayForAdminAsync()).ReturnsAsync(conferences);
 
             return conferences;
         }
@@ -81,7 +81,7 @@ namespace VideoWeb.UnitTests.Hub
                 .TheFirst(1).With(x => x.User_role = UserRole.Judge)
                 .Build().ToList();
 
-            var conferences = Builder<ConferenceSummaryResponse>.CreateListOfSize(numOfConferences).All()
+            var conferences = Builder<ConferenceForAdminResponse>.CreateListOfSize(numOfConferences).All()
                 .With(x => x.Id = Guid.NewGuid())
                 .TheFirst(numOfConferencesWithUser).With(x => x.Participants = participantsWithUser)
                 .TheRest().With(x => x.Participants = participantsWithoutUser)
@@ -90,7 +90,7 @@ namespace VideoWeb.UnitTests.Hub
             UserProfileServiceMock.Setup(x => x.IsVhOfficerAsync(It.IsAny<string>()))
                 .ReturnsAsync(false);
 
-            VideoApiClientMock.Setup(x => x.GetConferencesTodayAsync()).ReturnsAsync(conferences);
+            VideoApiClientMock.Setup(x => x.GetConferencesTodayForAdminAsync()).ReturnsAsync(conferences);
 
             return conferences
                 .Where(x => x.Participants.Any(p => p.Username == Claims.Identity.Name))

@@ -108,9 +108,9 @@ namespace VideoWeb.EventHub.Hub
             await Task.WhenAll(tasks);
         }
 
-        private async Task<IEnumerable<ConferenceSummaryResponse>> GetConferencesForUser(bool isAdmin)
+        private async Task<IEnumerable<ConferenceForAdminResponse>> GetConferencesForUser(bool isAdmin)
         {
-            var conferences = await _videoApiClient.GetConferencesTodayAsync();
+            var conferences = await _videoApiClient.GetConferencesTodayForAdminAsync();
             if (isAdmin)
             {
                 return conferences;
