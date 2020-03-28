@@ -6,10 +6,11 @@ import { DeviceTypeService } from './services/device-type.service';
 import { PageUrls } from './shared/page-url.constants';
 import { ProfileService } from './services/api/profile.service';
 import { ErrorService } from './services/error.service';
-import { UserRole } from './services/clients/api-client';
+import { Role } from './services/clients/api-client';
 import { Title } from '@angular/platform-browser';
 import { filter, map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
+import { LocationService } from './services/location.service';
 
 @Component({
     selector: 'app-root',
@@ -37,7 +38,8 @@ export class AppComponent implements OnInit, OnDestroy {
         private profileService: ProfileService,
         private errorService: ErrorService,
         private titleService: Title,
-        private activatedRoute: ActivatedRoute
+        private activatedRoute: ActivatedRoute,
+        private locationService: LocationService
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
@@ -56,10 +58,11 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.checkAuth();
-        this.checkBrowser();
-        this.setPageTitle();
-        this.scrollToTop();
+        this.checkAuth().then(() => {
+            this.checkBrowser();
+            this.setPageTitle();
+            this.scrollToTop();
+        });
     }
 
     ngOnDestroy(): void {
@@ -72,28 +75,28 @@ export class AppComponent implements OnInit, OnDestroy {
         }
     }
 
-    checkAuth(): void {
-        const currentUrl = window.location.href;
-        if (window.location.pathname !== `/${PageUrls.Logout}`) {
+    async checkAuth(): Promise<void> {
+        const currentUrl = this.locationService.getCurrentUrl();
+        if (this.locationService.getCurrentPathName() !== `/${PageUrls.Logout}`) {
             this.adalService.handleWindowCallback();
             this.loggedIn = this.adalService.userInfo.authenticated;
             if (!this.loggedIn) {
                 this.router.navigate(['/login'], { queryParams: { returnUrl: currentUrl } });
                 return;
             }
-            this.retrieveProfileRole();
+            await this.retrieveProfileRole();
         }
     }
 
-    retrieveProfileRole(): void {
-        this.profileService
-            .getUserProfile()
-            .then(profile => {
-                if (profile.role === UserRole.Representative || profile.role === UserRole.Individual) {
-                    this.isRepresentativeOrIndividual = true;
-                }
-            })
-            .catch(error => this.errorService.handleApiError(error));
+    async retrieveProfileRole(): Promise<void> {
+        try {
+            const profile = await this.profileService.getUserProfile();
+            if (profile.role === Role.Representative || profile.role === Role.Individual) {
+                this.isRepresentativeOrIndividual = true;
+            }
+        } catch (error) {
+            this.errorService.handleApiError(error);
+        }
     }
 
     logOut() {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Services.Video;
 using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;

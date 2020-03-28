@@ -5,7 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '../shared/shared.module';
 import { ProfileService } from '../services/api/profile.service';
 import { Router } from '@angular/router';
-import { UserProfileResponse, UserRole } from '../services/clients/api-client';
+import { UserProfileResponse, Role } from '../services/clients/api-client';
 import { MockLogger } from '../testing/mocks/MockLogger';
 import { Logger } from '../services/logging/logger-base';
 
@@ -31,7 +31,7 @@ describe('ParticipantGuard', () => {
     });
 
     it('should not be able to activate component if role is VHOfficer', async(async () => {
-        const profile = new UserProfileResponse({ role: UserRole.VideoHearingsOfficer });
+        const profile = new UserProfileResponse({ role: Role.VideoHearingsOfficer });
         profileServiceSpy.getUserProfile.and.returnValue(profile);
         const result = await guard.canActivate(null, null);
         expect(result).toBeFalsy();
@@ -39,7 +39,7 @@ describe('ParticipantGuard', () => {
     }));
 
     it('should not be able to activate component if role is Judge', async(async () => {
-        const profile = new UserProfileResponse({ role: UserRole.Judge });
+        const profile = new UserProfileResponse({ role: Role.Judge });
         profileServiceSpy.getUserProfile.and.returnValue(profile);
         const result = await guard.canActivate(null, null);
         expect(result).toBeFalsy();
@@ -47,7 +47,7 @@ describe('ParticipantGuard', () => {
     }));
 
     it('should not be able to activate component if role is Case Admin', async(async () => {
-        const profile = new UserProfileResponse({ role: UserRole.CaseAdmin });
+        const profile = new UserProfileResponse({ role: Role.CaseAdmin });
         profileServiceSpy.getUserProfile.and.returnValue(profile);
         const result = await guard.canActivate(null, null);
         expect(result).toBeFalsy();
@@ -55,14 +55,14 @@ describe('ParticipantGuard', () => {
     }));
 
     it('should be able to activate component if role is Individual', async(async () => {
-        const profile = new UserProfileResponse({ role: UserRole.Individual });
+        const profile = new UserProfileResponse({ role: Role.Individual });
         profileServiceSpy.getUserProfile.and.returnValue(profile);
         const result = await guard.canActivate(null, null);
         expect(result).toBeTruthy();
     }));
 
     it('should be able to activate component if role is Representative', async(async () => {
-        const profile = new UserProfileResponse({ role: UserRole.Representative });
+        const profile = new UserProfileResponse({ role: Role.Representative });
         profileServiceSpy.getUserProfile.and.returnValue(profile);
         const result = await guard.canActivate(null, null);
         expect(result).toBeTruthy();

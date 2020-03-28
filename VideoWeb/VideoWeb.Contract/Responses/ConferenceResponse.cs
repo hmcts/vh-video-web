@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.Contract.Responses
 {

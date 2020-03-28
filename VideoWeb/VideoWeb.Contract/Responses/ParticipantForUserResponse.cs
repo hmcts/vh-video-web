@@ -1,4 +1,5 @@
 using System;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.Contract.Responses
 {
@@ -22,7 +23,7 @@ namespace VideoWeb.Contract.Responses
         /// <summary>
         /// The participant role in conference
         /// </summary>
-        public UserRole Role { get; set; }
+        public Role Role { get; set; }
         
         /// <summary>
         /// The current status of a participant

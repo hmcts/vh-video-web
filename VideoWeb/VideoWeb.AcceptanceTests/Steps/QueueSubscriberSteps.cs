@@ -10,13 +10,13 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Api;
 using VideoWeb.AcceptanceTests.Assertions;
 using VideoWeb.AcceptanceTests.Builders;
+using VideoWeb.Common.Models;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
 using ParticipantRequest = VideoWeb.Services.Bookings.ParticipantRequest;
 using ParticipantResponse = VideoWeb.Services.Bookings.ParticipantResponse;
 using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
 using UpdateParticipantRequest = VideoWeb.Services.Bookings.UpdateParticipantRequest;
-using UserRole = VideoWeb.Contract.Responses.UserRole;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -96,7 +96,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"I remove a participant from the hearing")]
         public void WhenIRemoveAParticipantFromTheHearing()
         {
-            _deletedUser = _c.Test.HearingParticipants.Find(x => x.User_role_name.Equals(UserRole.Individual.ToString()));
+            _deletedUser = _c.Test.HearingParticipants.Find(x => x.User_role_name.Equals(Role.Individual.ToString()));
             var response =  _c.Apis.BookingsApi.RemoveParticipant(_c.Test.NewHearingId, _deletedUser.Id);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }

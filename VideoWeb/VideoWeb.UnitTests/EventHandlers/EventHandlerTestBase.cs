@@ -12,7 +12,6 @@ using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.Services.Video;
 using EventComponentHelper = VideoWeb.UnitTests.Builders.EventComponentHelper;
-using UserRole = VideoWeb.Common.Models.UserRole;
 
 namespace VideoWeb.UnitTests.EventHandlers
 {
@@ -56,15 +55,15 @@ namespace VideoWeb.UnitTests.EventHandlers
                 Participants = new List<Participant>()
                 {
                     Builder<Participant>.CreateNew()
-                        .With(x => x.Role = UserRole.Judge).With(x => x.Id = Guid.NewGuid())
+                        .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
                         .Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Individual)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Representative)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Individual)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Representative)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                         .With(x => x.Id = Guid.NewGuid()).Build()
                 }
             };

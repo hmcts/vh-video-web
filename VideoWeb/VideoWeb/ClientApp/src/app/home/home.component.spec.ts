@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { configureTestSuite } from 'ng-bullet';
 import { ProfileService } from '../services/api/profile.service';
-import { UserProfileResponse, UserRole } from '../services/clients/api-client';
+import { UserProfileResponse, Role } from '../services/clients/api-client';
 import { DeviceTypeService } from '../services/device-type.service';
 import { Logger } from '../services/logging/logger-base';
 import { PageUrls } from '../shared/page-url.constants';
@@ -40,19 +40,19 @@ describe('HomeComponent', () => {
     });
 
     it('should go to judge hearing list', async () => {
-        const profile = new UserProfileResponse({ role: UserRole.Judge });
+        const profile = new UserProfileResponse({ role: Role.Judge });
         component.navigateToHearingList(profile);
         expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeHearingList]);
     });
 
     it('should go to admin hearing list', () => {
-        const profile = new UserProfileResponse({ role: UserRole.VideoHearingsOfficer });
+        const profile = new UserProfileResponse({ role: Role.VideoHearingsOfficer });
         component.navigateToHearingList(profile);
         expect(router.navigate).toHaveBeenCalledWith([PageUrls.AdminHearingList]);
     });
 
     it('should go to participant hearing list', () => {
-        const profile = new UserProfileResponse({ role: UserRole.Representative });
+        const profile = new UserProfileResponse({ role: Role.Representative });
         component.navigateToHearingList(profile);
         expect(router.navigate).toHaveBeenCalledWith([PageUrls.ParticipantHearingList]);
     });
@@ -64,7 +64,7 @@ describe('HomeComponent', () => {
     });
 
     it('should navigate to hearing list when device is a desktop', async () => {
-        const profile = new UserProfileResponse({ role: UserRole.Representative });
+        const profile = new UserProfileResponse({ role: Role.Representative });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         deviceTypeServiceSpy.isDesktop.and.returnValue(true);
         spyOn(component, 'navigateToHearingList');

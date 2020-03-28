@@ -2,13 +2,13 @@ import { TestBed, inject } from '@angular/core/testing';
 
 import { ProfileService } from './profile.service';
 import { SharedModule } from '../../shared/shared.module';
-import { UserProfileResponse, UserRole, ApiClient } from '../clients/api-client';
+import { UserProfileResponse, Role, ApiClient } from '../clients/api-client';
 import { of } from 'rxjs';
 
 describe('ProfileService', () => {
     let apiClient: ApiClient;
     const knownProfile = new UserProfileResponse({
-        role: UserRole.Individual,
+        role: Role.Individual,
         display_name: 'John Doe',
         first_name: 'John',
         last_name: 'Doe'
