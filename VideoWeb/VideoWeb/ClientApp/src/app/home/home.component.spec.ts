@@ -57,14 +57,30 @@ describe('HomeComponent', () => {
         expect(router.navigate).toHaveBeenCalledWith([PageUrls.ParticipantHearingList]);
     });
 
-    it('should redirect to signon-a-computer screen if on a mobile device', () => {
-        deviceTypeServiceSpy.isDesktop.and.returnValue(false);
+    it('should navigate to hearing list when device is a desktop', async () => {
+        const profile = new UserProfileResponse({ role: Role.Representative });
+        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
+        deviceTypeServiceSpy.isDesktop.and.returnValue(true);
+        spyOn(component, 'navigateToHearingList');
+
         fixture.detectChanges();
+        await fixture.whenStable();
+        expect(component.navigateToHearingList).toHaveBeenCalledWith(profile);
+    });
+
+    it('should redirect to signon-a-computer screen if on a mobile device for judge', async () => {
+        const profile = new UserProfileResponse({ role: Role.Judge });
+        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
+        deviceTypeServiceSpy.isDesktop.and.returnValue(false);
+        spyOn(component, 'navigateToHearingList');
+
+        fixture.detectChanges();
+        await fixture.whenStable();
         expect(router.navigate).toHaveBeenCalledWith([PageUrls.SignonAComputer]);
     });
 
-    it('should navigate to hearing list when device is a desktop', async () => {
-        const profile = new UserProfileResponse({ role: Role.Representative });
+    it('should navigate to judge hearing list when device is a desktop and user is judge', async () => {
+        const profile = new UserProfileResponse({ role: Role.Judge });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         deviceTypeServiceSpy.isDesktop.and.returnValue(true);
         spyOn(component, 'navigateToHearingList');
