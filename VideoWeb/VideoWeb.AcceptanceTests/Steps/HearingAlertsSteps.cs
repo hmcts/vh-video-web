@@ -15,11 +15,11 @@ using VideoWeb.AcceptanceTests.Configuration;
 using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using RoomType = VideoWeb.EventHub.Enums.RoomType;
-using UserRole = VideoWeb.Common.Models.UserRole;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -43,7 +43,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"a participant has chosen to block user media")]
         public void WhenAParticipantHasChosenToBlockUserMedia()
         {
-            var participantUser = GetUserFromConferenceDetails(UserRole.Individual.ToString());
+            var participantUser = GetUserFromConferenceDetails(Role.Individual.ToString());
 
             var request = new CallbackEventRequestBuilder()
                 .WithConferenceId(_c.Test.NewConferenceId)
@@ -88,7 +88,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"a participant has failed the self-test with (.*)")]
         public void WhenAParticipantHasFailedTheSelfTestWithReason(string reason)
         {
-            var participant = GetUserFromConferenceDetails(UserRole.Individual.ToString());
+            var participant = GetUserFromConferenceDetails(Role.Individual.ToString());
 
             var request = new CallbackEventRequestBuilder()
                 .WithConferenceId(_c.Test.NewConferenceId)
@@ -104,8 +104,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         private ParticipantDetailsResponse GetUserFromConferenceDetails(string userRole)
         {
             var participantUser = userRole.ToLower().Equals("judge") || userRole.ToLower().Equals("clerk")
-                ? _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(UserRole.Judge.ToString()))
-                : _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(UserRole.Individual.ToString()));
+                ? _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(Role.Judge.ToString()))
+                : _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(Role.Individual.ToString()));
 
             if (participantUser.Id == Guid.Empty)
                 throw new DataMisalignedException("Participant Id is not set");
@@ -207,7 +207,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private Guid? GetClerkParticipantId()
         {
-            return _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(UserRole.Judge.ToString())).Id;
+            return _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(Role.Judge.ToString())).Id;
         }
 
         private List<Alert> GetAlerts()

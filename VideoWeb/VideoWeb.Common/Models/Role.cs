@@ -1,6 +1,6 @@
 namespace VideoWeb.Common.Models
 {
-    public enum UserRole
+    public enum Role
     {
         None = 0,
         CaseAdmin = 1,

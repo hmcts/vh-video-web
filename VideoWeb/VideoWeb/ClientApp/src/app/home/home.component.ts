@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProfileService } from '../services/api/profile.service';
-import { UserProfileResponse, UserRole } from '../services/clients/api-client';
+import { UserProfileResponse, Role } from '../services/clients/api-client';
 import { DeviceTypeService } from '../services/device-type.service';
 import { ErrorService } from '../services/error.service';
 import { PageUrls } from '../shared/page-url.constants';
@@ -36,11 +36,11 @@ export class HomeComponent implements OnInit {
     }
 
     navigateToHearingList(userProfile: UserProfileResponse) {
-        if (userProfile.role === UserRole.Judge) {
+        if (userProfile.role === Role.Judge) {
             this.router.navigate([PageUrls.JudgeHearingList]);
-        } else if (userProfile.role === UserRole.VideoHearingsOfficer) {
+        } else if (userProfile.role === Role.VideoHearingsOfficer) {
             this.router.navigate([PageUrls.AdminHearingList]);
-        } else if (userProfile.role === UserRole.Representative || userProfile.role === UserRole.Individual) {
+        } else if (userProfile.role === Role.Representative || userProfile.role === Role.Individual) {
             this.router.navigate([PageUrls.ParticipantHearingList]);
         } else {
             this.router.navigate([PageUrls.Unauthorised]);

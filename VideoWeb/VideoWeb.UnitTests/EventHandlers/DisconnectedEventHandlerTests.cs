@@ -22,7 +22,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             var conference = TestConference;
             var participantCount = conference.Participants.Count + 1; // plus one for admin
-            var participantForEvent = conference.Participants.First(x => x.Role == UserRole.Individual);
+            var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
             var callbackEvent = new CallbackEvent
             {
                 EventType = EventType.Disconnected,
@@ -50,7 +50,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             var conference = TestConference;
             var participantCount = conference.Participants.Count + 1; // plus one for admin
-            var participantForEvent = conference.Participants.First(x => x.Role == UserRole.Judge);
+            var participantForEvent = conference.Participants.First(x => x.Role == Role.Judge);
             var callbackEvent = new CallbackEvent
             {
                 EventType = EventType.Disconnected,
@@ -68,7 +68,7 @@ namespace VideoWeb.UnitTests.EventHandlers
                 Times.Exactly(participantCount));
 
             EventHubClientMock.Verify(
-                x => x.ConferenceStatusMessage(conference.Id, ConferenceState.Suspended),
+                x => x.ConferenceStatusMessage(conference.Id, ConferenceStatus.Suspended),
                 Times.Exactly(participantCount));
         }
     }

@@ -6,7 +6,7 @@ import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { UserProfileResponse, UserRole } from 'src/app/services/clients/api-client';
+import { UserProfileResponse, Role } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
@@ -26,8 +26,8 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
     let videoWebService: VideoWebService;
     let userMediaStreamService: UserMediaStreamService;
     const conference = new ConferenceTestData().getConferenceDetailFuture();
-    const judgerProfile = new UserProfileResponse({ role: UserRole.Judge });
-    const individualProfile = new UserProfileResponse({ role: UserRole.Individual });
+    const judgerProfile = new UserProfileResponse({ role: Role.Judge });
+    const individualProfile = new UserProfileResponse({ role: Role.Individual });
 
     configureTestSuite(() => {
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);

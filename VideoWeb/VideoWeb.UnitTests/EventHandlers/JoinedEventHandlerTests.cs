@@ -3,13 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
-using ConferenceState = VideoWeb.EventHub.Enums.ConferenceState;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
-using UserRole = VideoWeb.Common.Models.UserRole;
 
 namespace VideoWeb.UnitTests.EventHandlers
 {
@@ -28,7 +27,7 @@ namespace VideoWeb.UnitTests.EventHandlers
                 VideoApiClientMock.Object);
 
             var conference = TestConference;
-            var participantForEvent = conference.Participants.First(x => x.Role == UserRole.Individual);
+            var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
             var participantCount = conference.Participants.Count + 1; // plus one for admin
 
             var callbackEvent = new CallbackEvent
@@ -57,7 +56,7 @@ namespace VideoWeb.UnitTests.EventHandlers
                 VideoApiClientMock.Object);
 
             var conference = TestConference;
-            var participantForEvent = conference.Participants.First(x => x.Role == UserRole.Judge);
+            var participantForEvent = conference.Participants.First(x => x.Role == Role.Judge);
             var participantCount = conference.Participants.Count + 1; // plus one for admin
 
             var callbackEvent = new CallbackEvent
@@ -78,7 +77,7 @@ namespace VideoWeb.UnitTests.EventHandlers
                     ParticipantState.InHearing), Times.Exactly(participantCount));
 
             EventHubClientMock.Verify(
-                x => x.ConferenceStatusMessage(conference.Id, ConferenceState.InSession),
+                x => x.ConferenceStatusMessage(conference.Id, ConferenceStatus.InSession),
                 Times.Exactly(participantCount));
         }
 

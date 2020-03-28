@@ -1,7 +1,7 @@
 using System;
 using FluentAssertions;
 using NUnit.Framework;
-using VideoWeb.Contract.Responses;
+using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.User;
 
@@ -9,12 +9,12 @@ namespace VideoWeb.UnitTests.Mappings
 {
     public class UserProfileResponseMapperTests
     {
-        [TestCase("VhOfficer", UserRole.VideoHearingsOfficer)]
-        [TestCase("Representative", UserRole.Representative)]
-        [TestCase("Individual", UserRole.Individual)]
-        [TestCase("Judge", UserRole.Judge)]
-        [TestCase("CaseAdmin", UserRole.CaseAdmin)]
-        public void Should_map_to_user_role(string role, UserRole expectedRole)
+        [TestCase("VhOfficer", Role.VideoHearingsOfficer)]
+        [TestCase("Representative", Role.Representative)]
+        [TestCase("Individual", Role.Individual)]
+        [TestCase("Judge", Role.Judge)]
+        [TestCase("CaseAdmin", Role.CaseAdmin)]
+        public void Should_map_to_user_role(string role, Role expectedRole)
         {
             var profile = new UserProfile
             {

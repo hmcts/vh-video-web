@@ -11,7 +11,7 @@ import {
     ParticipantForUserResponse,
     ParticipantHeartbeatResponse,
     ParticipantStatus,
-    UserRole
+    Role
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -143,7 +143,7 @@ describe('VhoHearingsComponent', () => {
         component.selectedHearing = new Hearing(currentConference);
         component.participants = currentConference.participants;
         component.participants.forEach(x => {
-            if (x.role === UserRole.Judge) {
+            if (x.role === Role.Judge) {
                 x.username = 'changeName@email.com';
             }
         });
@@ -180,95 +180,177 @@ describe('VhoHearingsComponent', () => {
         expect(videoWebServiceSpy.getParticipantHeartbeats).toHaveBeenCalled();
     });
 
-  it('should add participant heartbeat to  the heartbeatList', async () => {
-    const heartBeat = new ParticipantHeartbeat('1111-1111-1111-1111', '1111-1111-1111-1111', HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
-    component.addHeartBeatToTheList(heartBeat);
-    expect(component.participantsHeartBeat.length > 0);
-    expect(component.participantsHeartBeat).toContain(heartBeat);
-  });
-
-  it('should set participant heartbeat', async () => {
-    const conference = component.conferences[0];
-    const heartBeat = new ParticipantHeartbeat(conference.id, conference.getParticipants()[0].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
-    component.handleHeartbeat(heartBeat);
-    expect(component.conferences[0].getParticipants()[0].participantHertBeatHealth).toBe(heartBeat);
-  });
-
-  it('should change participant status for particpant when status is disconnected', async () => {
-    const heartBeat1 = new ParticipantHeartbeat(conferenceDetail.id, conferenceDetail.participants[0].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
-    const heartBeat2 = new ParticipantHeartbeat(conferenceDetail.id, conferenceDetail.participants[1].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
-    const message = new ParticipantStatusMessage(conferenceDetail.participants[0].id, ParticipantStatus.Disconnected);
-    component.participantsHeartBeat = [];
-    component.participantsHeartBeat.push(heartBeat1);
-    component.participantsHeartBeat.push(heartBeat2);
-    component.participants = conferenceDetail.participants;
-    component.handleParticipantStatusChange(message);
-    expect(component.participants).not.toBe(undefined);
-    expect(component.participants[0].status).toBe(ParticipantStatus.Disconnected);
-    expect(component.participantsHeartBeat).not.toContain(heartBeat1);
-  });
-  it('should change participant status for particpant', async () => {
-    const heartBeat = new ParticipantHeartbeat(conferences[0].id, conferences[0].participants[0].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
-    component.participantsHeartBeat = [];
-    component.participantsHeartBeat.push(heartBeat);
-    component.retrieveHearingsForVhOfficer();
-    expect(component.conferences).not.toBe(undefined);
-    expect(component.conferences.length).toBeGreaterThan(0);
-    expect(component.participantsHeartBeat).not.toBe(undefined);
-    expect(component.participantsHeartBeat.length).toBeGreaterThan(0);
-  });
-  it('should not update hearbeat when no matching conference', async () => {
-    const heartBeat1 = new ParticipantHeartbeat('0000-0000-0000-0000', '0000-0000-0000-0000', HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
-    component.handleHeartbeat(heartBeat1);
-    const conferenceToUpdate = component.conferences.find(x => x.id === heartBeat1.conferenceId);
-    expect(conferenceToUpdate).toBe(undefined);
-   });
-   it('should not update hearbeat when no matching participant', async () => {
-    const conference = component.conferences[0];
-    const heartBeat1 = new ParticipantHeartbeat(conference.id, '0000-0000-0000-0000', HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
-    component.handleHeartbeat(heartBeat1);
-    const conferenceToUpdate = component.conferences.find(x => x.id === heartBeat1.conferenceId);
-    const participantToUpdate = conferenceToUpdate.getParticipants().find(p => p.id === heartBeat1.participantId);
-    expect(participantToUpdate).toBe(undefined);
-   });
-    it('should change participant status for particpant when status is not disconnected', async () => {
-      const heartBeat1 = new ParticipantHeartbeat(conferenceDetail.id, conferenceDetail.participants[0].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
-      const heartBeat2 = new ParticipantHeartbeat(conferenceDetail.id, conferenceDetail.participants[1].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
-      const message = new ParticipantStatusMessage(conferenceDetail.participants[0].id, ParticipantStatus.Available);
-      component.participantsHeartBeat = [];
-      component.participantsHeartBeat.push(heartBeat1);
-      component.participantsHeartBeat.push(heartBeat2);
-      component.participants = conferenceDetail.participants;
-      component.handleParticipantStatusChange(message);
-      expect(component.participants).not.toBe(undefined);
-      expect(component.participants[0].status).toBe(ParticipantStatus.Available);
-      expect(component.participantsHeartBeat.length).toBe(2);
+    it('should add participant heartbeat to  the heartbeatList', async () => {
+        const heartBeat = new ParticipantHeartbeat(
+            '1111-1111-1111-1111',
+            '1111-1111-1111-1111',
+            HeartbeatHealth.Good,
+            'Chrome',
+            '80.0.3987.132'
+        );
+        component.addHeartBeatToTheList(heartBeat);
+        expect(component.participantsHeartBeat.length > 0);
+        expect(component.participantsHeartBeat).toContain(heartBeat);
     });
 
-  it('should add participant heartbeat to the list when heartbeat for participant does not exist previously', async () => {
-    const heartBeat1 = new ParticipantHeartbeat(component.conferences[0].id, component.conferences[0].getParticipants()[0].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
-    const heartBeat2 = new ParticipantHeartbeat(component.conferences[0].id, component.conferences[0].getParticipants()[1].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
-    component.participantsHeartBeat = [];
-    component.participantsHeartBeat.push(heartBeat1);
-    component.participantsHeartBeat.push(heartBeat2);
-    const participantsHeartbeatCurrentCount = component.participantsHeartBeat.length;
-    const heartBeat3 = new ParticipantHeartbeat(component.conferences[0].id, component.conferences[0].getParticipants()[2].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
-    component.addHeartBeatToTheList(heartBeat3);
-    expect(component.participantsHeartBeat.length).toBeGreaterThan(participantsHeartbeatCurrentCount);
-    expect(component.participantsHeartBeat).toContain(heartBeat3);
+    it('should set participant heartbeat', async () => {
+        const conference = component.conferences[0];
+        const heartBeat = new ParticipantHeartbeat(
+            conference.id,
+            conference.getParticipants()[0].id,
+            HeartbeatHealth.Good,
+            'Chrome',
+            '80.0.3987.132'
+        );
+        component.handleHeartbeat(heartBeat);
+        expect(component.conferences[0].getParticipants()[0].participantHertBeatHealth).toBe(heartBeat);
+    });
 
-  });
-  it('should update participant heartbeat in the list when heartbeat for participant does exist previously', async () => {
-    const heartBeat1 = new ParticipantHeartbeat(component.conferences[0].id, component.conferences[0].getParticipants()[0].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
-    const heartBeat2 = new ParticipantHeartbeat(component.conferences[0].id, component.conferences[0].getParticipants()[1].id, HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
-    component.participantsHeartBeat = [];
-    component.participantsHeartBeat.push(heartBeat1);
-    component.participantsHeartBeat.push(heartBeat2);
-    const participantsHeartbeatCurrentCount = component.participantsHeartBeat.length;
-    const heartBeat3 = new ParticipantHeartbeat(component.conferences[0].id, component.conferences[0].getParticipants()[1].id, HeartbeatHealth.Bad, 'Chrome', '80.0.3987.132');
-    component.addHeartBeatToTheList(heartBeat3);
-    expect(component.participantsHeartBeat.length).toEqual(participantsHeartbeatCurrentCount);
-    expect(component.participantsHeartBeat).toContain(heartBeat3);
+    it('should change participant status for particpant when status is disconnected', async () => {
+        const heartBeat1 = new ParticipantHeartbeat(
+            conferenceDetail.id,
+            conferenceDetail.participants[0].id,
+            HeartbeatHealth.Good,
+            'Chrome',
+            '80.0.3987.132'
+        );
+        const heartBeat2 = new ParticipantHeartbeat(
+            conferenceDetail.id,
+            conferenceDetail.participants[1].id,
+            HeartbeatHealth.Good,
+            'Chrome',
+            '80.0.3987.132'
+        );
+        const message = new ParticipantStatusMessage(conferenceDetail.participants[0].id, ParticipantStatus.Disconnected);
+        component.participantsHeartBeat = [];
+        component.participantsHeartBeat.push(heartBeat1);
+        component.participantsHeartBeat.push(heartBeat2);
+        component.participants = conferenceDetail.participants;
+        component.handleParticipantStatusChange(message);
+        expect(component.participants).not.toBe(undefined);
+        expect(component.participants[0].status).toBe(ParticipantStatus.Disconnected);
+        expect(component.participantsHeartBeat).not.toContain(heartBeat1);
+    });
+    it('should change participant status for particpant', async () => {
+        const heartBeat = new ParticipantHeartbeat(
+            conferences[0].id,
+            conferences[0].participants[0].id,
+            HeartbeatHealth.Good,
+            'Chrome',
+            '80.0.3987.132'
+        );
+        component.participantsHeartBeat = [];
+        component.participantsHeartBeat.push(heartBeat);
+        component.retrieveHearingsForVhOfficer();
+        expect(component.conferences).not.toBe(undefined);
+        expect(component.conferences.length).toBeGreaterThan(0);
+        expect(component.participantsHeartBeat).not.toBe(undefined);
+        expect(component.participantsHeartBeat.length).toBeGreaterThan(0);
+    });
+    it('should not update hearbeat when no matching conference', async () => {
+        const heartBeat1 = new ParticipantHeartbeat(
+            '0000-0000-0000-0000',
+            '0000-0000-0000-0000',
+            HeartbeatHealth.Good,
+            'Chrome',
+            '80.0.3987.132'
+        );
+        component.handleHeartbeat(heartBeat1);
+        const conferenceToUpdate = component.conferences.find(x => x.id === heartBeat1.conferenceId);
+        expect(conferenceToUpdate).toBe(undefined);
+    });
+    it('should not update hearbeat when no matching participant', async () => {
+        const conference = component.conferences[0];
+        const heartBeat1 = new ParticipantHeartbeat(conference.id, '0000-0000-0000-0000', HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
+        component.handleHeartbeat(heartBeat1);
+        const conferenceToUpdate = component.conferences.find(x => x.id === heartBeat1.conferenceId);
+        const participantToUpdate = conferenceToUpdate.getParticipants().find(p => p.id === heartBeat1.participantId);
+        expect(participantToUpdate).toBe(undefined);
+    });
+    it('should change participant status for particpant when status is not disconnected', async () => {
+        const heartBeat1 = new ParticipantHeartbeat(
+            conferenceDetail.id,
+            conferenceDetail.participants[0].id,
+            HeartbeatHealth.Good,
+            'Chrome',
+            '80.0.3987.132'
+        );
+        const heartBeat2 = new ParticipantHeartbeat(
+            conferenceDetail.id,
+            conferenceDetail.participants[1].id,
+            HeartbeatHealth.Good,
+            'Chrome',
+            '80.0.3987.132'
+        );
+        const message = new ParticipantStatusMessage(conferenceDetail.participants[0].id, ParticipantStatus.Available);
+        component.participantsHeartBeat = [];
+        component.participantsHeartBeat.push(heartBeat1);
+        component.participantsHeartBeat.push(heartBeat2);
+        component.participants = conferenceDetail.participants;
+        component.handleParticipantStatusChange(message);
+        expect(component.participants).not.toBe(undefined);
+        expect(component.participants[0].status).toBe(ParticipantStatus.Available);
+        expect(component.participantsHeartBeat.length).toBe(2);
+    });
 
-  });
+    it('should add participant heartbeat to the list when heartbeat for participant does not exist previously', async () => {
+        const heartBeat1 = new ParticipantHeartbeat(
+            component.conferences[0].id,
+            component.conferences[0].getParticipants()[0].id,
+            HeartbeatHealth.Good,
+            'Chrome',
+            '80.0.3987.132'
+        );
+        const heartBeat2 = new ParticipantHeartbeat(
+            component.conferences[0].id,
+            component.conferences[0].getParticipants()[1].id,
+            HeartbeatHealth.Good,
+            'Chrome',
+            '80.0.3987.132'
+        );
+        component.participantsHeartBeat = [];
+        component.participantsHeartBeat.push(heartBeat1);
+        component.participantsHeartBeat.push(heartBeat2);
+        const participantsHeartbeatCurrentCount = component.participantsHeartBeat.length;
+        const heartBeat3 = new ParticipantHeartbeat(
+            component.conferences[0].id,
+            component.conferences[0].getParticipants()[2].id,
+            HeartbeatHealth.Good,
+            'Chrome',
+            '80.0.3987.132'
+        );
+        component.addHeartBeatToTheList(heartBeat3);
+        expect(component.participantsHeartBeat.length).toBeGreaterThan(participantsHeartbeatCurrentCount);
+        expect(component.participantsHeartBeat).toContain(heartBeat3);
+    });
+    it('should update participant heartbeat in the list when heartbeat for participant does exist previously', async () => {
+        const heartBeat1 = new ParticipantHeartbeat(
+            component.conferences[0].id,
+            component.conferences[0].getParticipants()[0].id,
+            HeartbeatHealth.Good,
+            'Chrome',
+            '80.0.3987.132'
+        );
+        const heartBeat2 = new ParticipantHeartbeat(
+            component.conferences[0].id,
+            component.conferences[0].getParticipants()[1].id,
+            HeartbeatHealth.Good,
+            'Chrome',
+            '80.0.3987.132'
+        );
+        component.participantsHeartBeat = [];
+        component.participantsHeartBeat.push(heartBeat1);
+        component.participantsHeartBeat.push(heartBeat2);
+        const participantsHeartbeatCurrentCount = component.participantsHeartBeat.length;
+        const heartBeat3 = new ParticipantHeartbeat(
+            component.conferences[0].id,
+            component.conferences[0].getParticipants()[1].id,
+            HeartbeatHealth.Bad,
+            'Chrome',
+            '80.0.3987.132'
+        );
+        component.addHeartBeatToTheList(heartBeat3);
+        expect(component.participantsHeartBeat.length).toEqual(participantsHeartbeatCurrentCount);
+        expect(component.participantsHeartBeat).toContain(heartBeat3);
+    });
 });

@@ -2,7 +2,7 @@ import { async, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { UserProfileResponse, UserRole } from '../services/clients/api-client';
+import { UserProfileResponse, Role } from '../services/clients/api-client';
 import { ProfileService } from '../services/api/profile.service';
 import { SharedModule } from '../shared/shared.module';
 import { JudgeGuard } from './judge.guard';
@@ -31,7 +31,7 @@ describe('JudgeGuard', () => {
     });
 
     it('should not be able to activate component if role is not Judge', async(async () => {
-        const profile = new UserProfileResponse({ role: UserRole.VideoHearingsOfficer });
+        const profile = new UserProfileResponse({ role: Role.VideoHearingsOfficer });
         profileServiceSpy.getUserProfile.and.returnValue(profile);
         const result = await guard.canActivate(null, null);
         expect(result).toBeFalsy();
@@ -39,7 +39,7 @@ describe('JudgeGuard', () => {
     }));
 
     it('should be able to activate component if role is Judge', async(async () => {
-        const profile = new UserProfileResponse({ role: UserRole.Judge });
+        const profile = new UserProfileResponse({ role: Role.Judge });
         profileServiceSpy.getUserProfile.and.returnValue(profile);
         const result = await guard.canActivate(null, null);
         expect(result).toBeTruthy();

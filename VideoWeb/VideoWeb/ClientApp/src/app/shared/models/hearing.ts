@@ -1,4 +1,4 @@
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse, UserRole } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, ParticipantResponse, Role } from 'src/app/services/clients/api-client';
 import { HearingBase } from './hearing-base';
 import { Participant } from './participant';
 
@@ -22,7 +22,7 @@ export class Hearing extends HearingBase {
     }
 
     get judge(): Participant {
-        return this.participants.find(x => x.role === UserRole.Judge);
+        return this.participants.find(x => x.role === Role.Judge);
     }
 
     get caseType(): string {
@@ -68,6 +68,6 @@ export class Hearing extends HearingBase {
     }
 
     get hearingVenueName(): string {
-      return this.conference.hearing_venue_name;
+        return this.conference.hearing_venue_name;
     }
 }
