@@ -104,7 +104,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         public void StopEdgeChromiumServer(TestContext context)
         {
             var targetBrowser = GetTargetBrowser();
-            if (targetBrowser.Equals(TargetBrowser.EdgeChromium.ToString()))
+            if (targetBrowser.ToLower().Equals(TargetBrowser.EdgeChromium.ToString().ToLower()))
                 _browsers?[context.CurrentUser.Key].StopEdgeChromiumServer();
         }
 
