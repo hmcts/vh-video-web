@@ -121,7 +121,8 @@ namespace VideoWeb
                 NamingStrategy = new SnakeCaseNamingStrategy()
             };
 
-            services.AddSignalR()
+            var connectionStrings = container.GetService<ConnectionStrings>();
+            services.AddSignalR().AddAzureSignalR(connectionStrings.SignalR)
                 .AddNewtonsoftJsonProtocol(options =>
                 {
                     options.PayloadSerializerSettings.Formatting = Formatting.None;
