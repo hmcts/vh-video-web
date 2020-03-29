@@ -35,6 +35,9 @@
     <None Update="Data\TestData\DefaultData.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="msedgedriver.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="useraccounts.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -85,7 +88,7 @@
     <PackageReference Include="SpecFlow.NUnit" Version="3.1.89" />
     <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.1.89" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
-    <PackageReference Include="VH.AcceptanceTests.Common" Version="1.0.102" />
+    <PackageReference Include="VH.AcceptanceTests.Common" Version="1.0.111" />
   </ItemGroup>
 
   <ItemGroup>

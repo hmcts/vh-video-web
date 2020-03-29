@@ -98,5 +98,11 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
             DriverManager.KillAnyLocalDriverProcesses();
         }
+
+        [AfterScenario(Order = (int)HooksSequence.StopEdgeChromiumServer)]
+        public void StopEdgeChromiumServer(TestContext context)
+        {
+            _browsers?[context.CurrentUser.Key].StopEdgeChromiumServer();
+        }
     }
 }
