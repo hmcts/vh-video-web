@@ -3,6 +3,7 @@ using AcceptanceTests.Common.Configuration.Users;
 using AcceptanceTests.Common.Driver;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
+using AcceptanceTests.Common.Driver.Support;
 using AcceptanceTests.Common.PageObject.Pages;
 using BoDi;
 using FluentAssertions;
@@ -102,7 +103,14 @@ namespace VideoWeb.AcceptanceTests.Hooks
         [AfterScenario(Order = (int)HooksSequence.StopEdgeChromiumServer)]
         public void StopEdgeChromiumServer(TestContext context)
         {
-            _browsers?[context.CurrentUser.Key].StopEdgeChromiumServer();
+            var targetBrowser = GetTargetBrowser();
+            if (targetBrowser.Equals(TargetBrowser.EdgeChromium.ToString()))
+                _browsers?[context.CurrentUser.Key].StopEdgeChromiumServer();
+        }
+
+        private static string GetTargetBrowser()
+        {
+            return NUnit.Framework.TestContext.Parameters["TargetBrowser"] ?? "";
         }
     }
 }
