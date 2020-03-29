@@ -399,7 +399,8 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         const selectedAlerts = filterOptions.alerts.filter(x => x.Selected).map(x => x.BodyText);
 
         if (selectedStatuses.length > 0 || selectedLocations.length > 0 || selectedAlerts.length > 0) {
-            this.conferences = Object.assign(this.conferencesAll);
+            const clone = Object.assign(this.conferencesAll);
+            this.conferences = clone.map(c => new HearingSummary(c));
             if (selectedStatuses.length > 0) {
                 const conferencesAllExtended = this.setStatusDelayed(this.conferencesAll);
                 this.conferences = conferencesAllExtended
