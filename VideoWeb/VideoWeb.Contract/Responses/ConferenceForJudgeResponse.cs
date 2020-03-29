@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.Contract.Responses
 {
@@ -56,7 +57,7 @@ namespace VideoWeb.Contract.Responses
         /// <summary>
         /// The participant role in conference
         /// </summary>
-        public UserRole Role { get; set; }
+        public Role Role { get; set; }
         
         /// <summary>
         /// The representee (if participant is a representative)

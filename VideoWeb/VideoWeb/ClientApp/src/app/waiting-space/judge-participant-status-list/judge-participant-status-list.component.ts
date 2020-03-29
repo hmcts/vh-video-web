@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
-import { ConferenceResponse, ParticipantResponse, ParticipantStatus, UserRole } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { Hearing } from '../../shared/models/hearing';
 import { Participant } from '../../shared/models/participant';
 
@@ -42,7 +42,7 @@ export class JudgeParticipantStatusListComponent implements OnInit {
         }
 
         const patModel = new Participant(participant);
-        if (patModel.role === UserRole.Judge) {
+        if (patModel.role === Role.Judge) {
             return false;
         }
         if (patModel.base.username.toLocaleLowerCase().trim() === this.adalService.userInfo.userName.toLocaleLowerCase().trim()) {
@@ -52,11 +52,11 @@ export class JudgeParticipantStatusListComponent implements OnInit {
     }
 
     private filterNonJudgeParticipants(): void {
-        this.nonJudgeParticipants = this.conference.participants.filter(x => x.role !== UserRole.Judge);
+        this.nonJudgeParticipants = this.conference.participants.filter(x => x.role !== Role.Judge);
     }
 
     private filterJudge(): void {
-        this.judge = this.conference.participants.find(x => x.role === UserRole.Judge);
+        this.judge = this.conference.participants.find(x => x.role === Role.Judge);
     }
 
     getParticipantStatus(participant: ParticipantResponse): string {
@@ -103,12 +103,12 @@ export class JudgeParticipantStatusListComponent implements OnInit {
         const participant = this.conference.participants.find(
             x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase()
         );
-        return participant.role === UserRole.Judge;
+        return participant.role === Role.Judge;
     }
 
     private filterRepresentatives(): void {
-        this.representativeParticipants = this.conference.participants.filter(x => x.role === UserRole.Representative);
+        this.representativeParticipants = this.conference.participants.filter(x => x.role === Role.Representative);
         this.litigantInPerson = this.representativeParticipants.length === 0;
-        this.individualParticipants = this.conference.participants.filter(x => x.role === UserRole.Individual);
+        this.individualParticipants = this.conference.participants.filter(x => x.role === Role.Individual);
     }
 }

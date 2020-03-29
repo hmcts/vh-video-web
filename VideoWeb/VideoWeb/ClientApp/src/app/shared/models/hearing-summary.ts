@@ -3,7 +3,7 @@ import {
     ConferenceForVhOfficerResponse,
     ConferenceStatus,
     TaskUserResponse,
-    UserRole,
+    Role,
     ConferenceForJudgeResponse
 } from 'src/app/services/clients/api-client';
 import { HearingBase } from './hearing-base';
@@ -65,11 +65,11 @@ export class HearingSummary extends HearingBase {
     }
 
     get applicantRepresentative(): ParticipantSummary {
-        return this.participants.filter(x => x.role === UserRole.Representative)[0];
+        return this.participants.filter(x => x.role === Role.Representative)[0];
     }
 
     get defendantRepresentative(): ParticipantSummary {
-        return this.participants.filter(x => x.role === UserRole.Representative)[1];
+        return this.participants.filter(x => x.role === Role.Representative)[1];
     }
 
     get applicants(): ParticipantSummary[] {
@@ -97,7 +97,7 @@ export class HearingSummary extends HearingBase {
     }
 
     get judge(): ParticipantSummary {
-        return this.participants.find(x => x.role === UserRole.Judge);
+        return this.participants.find(x => x.role === Role.Judge);
     }
 
     get numberOfPendingTasks(): number {

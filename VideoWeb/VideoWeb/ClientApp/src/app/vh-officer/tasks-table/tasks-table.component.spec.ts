@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { configureTestSuite } from 'ng-bullet';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { TaskStatus, TaskResponse, TaskType, UserRole } from 'src/app/services/clients/api-client';
+import { TaskStatus, TaskResponse, TaskType, Role } from 'src/app/services/clients/api-client';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { TasksTestData } from 'src/app/testing/mocks/data/tasks-test-data';
@@ -73,7 +73,7 @@ describe('TasksTableComponent', () => {
     });
 
     it('should return username for judge tasks', () => {
-        const pat = component.conference.participants.find(x => x.role === UserRole.Judge);
+        const pat = component.conference.participants.find(x => x.role === Role.Judge);
         const task = new TaskResponse({
             type: TaskType.Judge,
             id: 1,

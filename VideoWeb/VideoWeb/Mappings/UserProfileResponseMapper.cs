@@ -1,4 +1,5 @@
 using System;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Services.User;
 
@@ -17,11 +18,11 @@ namespace VideoWeb.Mappings
 
             response.Role = userRole switch
             {
-                "VhOfficer" => UserRole.VideoHearingsOfficer,
-                "Representative" => UserRole.Representative,
-                "Individual" => UserRole.Individual,
-                "Judge" => UserRole.Judge,
-                "CaseAdmin" => UserRole.CaseAdmin,
+                "VhOfficer" => Role.VideoHearingsOfficer,
+                "Representative" => Role.Representative,
+                "Individual" => Role.Individual,
+                "Judge" => Role.Judge,
+                "CaseAdmin" => Role.CaseAdmin,
                 _ => throw new NotSupportedException($"Role {userRole} is not supported for this application")
             };
 

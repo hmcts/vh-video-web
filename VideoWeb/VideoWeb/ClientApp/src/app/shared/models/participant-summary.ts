@@ -1,4 +1,4 @@
-import { ParticipantForUserResponse, ParticipantStatus, UserRole, ParticipantForJudgeResponse } from 'src/app/services/clients/api-client';
+import { ParticipantForUserResponse, ParticipantStatus, Role, ParticipantForJudgeResponse } from 'src/app/services/clients/api-client';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 
 export class ParticipantSummary {
@@ -34,7 +34,7 @@ export class ParticipantSummary {
         this.participant.status = status;
     }
 
-    get role(): UserRole {
+    get role(): Role {
         return this.participant.role;
     }
 
@@ -51,7 +51,7 @@ export class ParticipantSummary {
     }
 
     get isJudge(): boolean {
-        return this.participant.role === UserRole.Judge;
+        return this.participant.role === Role.Judge;
     }
 
     get participantHertBeatHealth(): ParticipantHeartbeat {

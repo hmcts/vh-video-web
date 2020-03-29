@@ -8,7 +8,6 @@ using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
-using Role = VideoWeb.Common.Models.UserRole;
 
 namespace VideoWeb.UnitTests.Mappings
 {

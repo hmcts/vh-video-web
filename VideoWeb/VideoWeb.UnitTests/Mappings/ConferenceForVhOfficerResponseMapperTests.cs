@@ -26,7 +26,7 @@ namespace VideoWeb.UnitTests.Mappings
             const string vho1Username = "vho1@hmcts.net";
             const string vho2Username = "vho2@hmcts.net";
 
-            var conference = Builder<ConferenceSummaryResponse>.CreateNew().With(x => x.Participants = participants)
+            var conference = Builder<ConferenceForAdminResponse>.CreateNew().With(x => x.Participants = participants)
                 .Build();
 
             var messages = new List<InstantMessageResponse>
@@ -64,7 +64,7 @@ namespace VideoWeb.UnitTests.Mappings
 
             var judge = participants.Single(x => x.User_role == UserRole.Judge);
 
-            var conference = Builder<ConferenceSummaryResponse>.CreateNew().With(x => x.Participants = participants)
+            var conference = Builder<ConferenceForAdminResponse>.CreateNew().With(x => x.Participants = participants)
                 .Build();
 
             var messages = new List<InstantMessageResponse>
@@ -90,7 +90,7 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_map_all_properties()
         {
-            var conference = Builder<ConferenceSummaryResponse>.CreateNew()
+            var conference = Builder<ConferenceForAdminResponse>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
                 .With(x => x.Hearing_ref_id = Guid.NewGuid())
                 .Build();

@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { ConfigService } from 'src/app/services/api/config.service';
-import { ParticipantResponse, ParticipantStatus, UserRole } from 'src/app/services/clients/api-client';
+import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -71,7 +71,7 @@ describe('JudgeParticipantStatusListComponent', () => {
     });
 
     it('should not be able to call participant is user is judge', () => {
-        const judge = component.conference.participants.find(x => x.role === UserRole.Judge);
+        const judge = component.conference.participants.find(x => x.role === Role.Judge);
         adalService.userInfo.userName = judge.username;
         const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
         expect(component.canCallParticipant(participant)).toBeFalsy();

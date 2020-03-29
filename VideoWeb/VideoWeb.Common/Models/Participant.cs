@@ -6,12 +6,12 @@ namespace VideoWeb.Common.Models
     {
         public Guid Id { get; set; }
         public string Username { get; set; }
-        public UserRole Role { get; set; }
+        public Role Role { get; set; }
         public string DisplayName { get; set; }
 
         public bool IsJudge()
         {
-            return Role == UserRole.Judge;
+            return Role == Role.Judge;
         }
     }
 }

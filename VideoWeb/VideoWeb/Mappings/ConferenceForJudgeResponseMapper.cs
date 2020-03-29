@@ -1,14 +1,17 @@
 using System;
 using System.Linq;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Services.Video;
-using UserRole = VideoWeb.Contract.Responses.UserRole;
+using Conference = VideoWeb.Services.Video.ConferenceForJudgeResponse;
+using Participant = VideoWeb.Services.Video.ParticipantForJudgeResponse;
+using ConferenceForJudgeResponse = VideoWeb.Contract.Responses.ConferenceForJudgeResponse;
+using ParticipantForJudgeResponse = VideoWeb.Contract.Responses.ParticipantForJudgeResponse;
 
 namespace VideoWeb.Mappings
 {
     public static class ConferenceForJudgeResponseMapper
     {
-        public static ConferenceForJudgeResponse MapConferenceSummaryToModel(ConferenceSummaryResponse conference)
+        public static ConferenceForJudgeResponse MapConferenceSummaryToModel(Conference conference)
         {
             return new ConferenceForJudgeResponse
             {
@@ -24,17 +27,17 @@ namespace VideoWeb.Mappings
             };
         }
     }
-    
+
     public static class ParticipantForJudgeResponseMapper
     {
-        public static ParticipantForJudgeResponse MapParticipantSummaryToModel(ParticipantSummaryResponse participant)
+        public static ParticipantForJudgeResponse MapParticipantSummaryToModel(Participant participant)
         {
             return new ParticipantForJudgeResponse
             {
-                Role = Enum.Parse<UserRole>(participant.User_role.ToString()),
+                Role = Enum.Parse<Role>(participant.Role.ToString()),
                 DisplayName = participant.Display_name,
                 Representee = participant.Representee,
-                CaseTypeGroup = participant.Case_group
+                CaseTypeGroup = participant.Case_type_group
             };
         }
     }

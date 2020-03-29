@@ -4,13 +4,7 @@ import { configureTestSuite } from 'ng-bullet';
 import { of } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import {
-    ConferenceResponse,
-    ConferenceStatus,
-    ParticipantResponse,
-    ParticipantStatus,
-    UserRole
-} from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SharedModule } from 'src/app/shared/shared.module';
@@ -89,7 +83,7 @@ describe('IndividualParticipantStatusListComponent', () => {
     });
 
     it('should not be able to call participant is user is judge', () => {
-        const judge = component.conference.participants.find(x => x.role === UserRole.Judge);
+        const judge = component.conference.participants.find(x => x.role === Role.Judge);
         adalService.userInfo.userName = judge.username;
         const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
         expect(component.canCallParticipant(participant)).toBeFalsy();

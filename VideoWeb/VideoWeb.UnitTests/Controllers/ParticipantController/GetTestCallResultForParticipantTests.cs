@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
@@ -24,10 +25,14 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         private Mock<IVideoApiClient> _videoApiClientMock;
         private EventComponentHelper _eventComponentHelper;
         private Conference _testConference;
+        private MemoryCache _memoryCache;
+        private IConferenceCache _conferenceCache;
 
         [SetUp]
         public void Setup()
         {
+            _memoryCache = new MemoryCache(new MemoryCacheOptions());
+            _conferenceCache = new ConferenceCache(_memoryCache);
             _eventComponentHelper = new EventComponentHelper();
             _videoApiClientMock = new Mock<IVideoApiClient>();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
@@ -42,7 +47,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             };
 
             var eventHandlerFactory = new EventHandlerFactory(_eventComponentHelper.GetHandlers());
-            _controller = new ParticipantsController(_videoApiClientMock.Object, eventHandlerFactory)
+            _controller = new ParticipantsController(_videoApiClientMock.Object, eventHandlerFactory, _conferenceCache)
             {
                 ControllerContext = context
             };

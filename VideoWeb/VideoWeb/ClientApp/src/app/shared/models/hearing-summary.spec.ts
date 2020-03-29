@@ -1,6 +1,6 @@
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { HearingSummary } from './hearing-summary';
-import { UserRole } from 'src/app/services/clients/api-client';
+import { Role } from 'src/app/services/clients/api-client';
 import { ParticipantSummary } from './participant-summary';
 
 describe('HearingSummary', () => {
@@ -26,7 +26,7 @@ describe('HearingSummary', () => {
         const c = new ConferenceTestData().getConferenceFuture();
         const hearing = new HearingSummary(c);
         const appRep = hearing.applicantRepresentative;
-        expect(appRep.role).toBe(UserRole.Representative);
+        expect(appRep.role).toBe(Role.Representative);
     });
 
     it('should get applicants', () => {
@@ -41,7 +41,7 @@ describe('HearingSummary', () => {
         const c = new ConferenceTestData().getConferenceFuture();
         const hearing = new HearingSummary(c);
         const defRep = hearing.defendantRepresentative;
-        expect(defRep.role).toBe(UserRole.Representative);
+        expect(defRep.role).toBe(Role.Representative);
     });
 
     it('should get respondents', () => {
@@ -56,7 +56,7 @@ describe('HearingSummary', () => {
         const c = new ConferenceTestData().getConferenceFuture();
         const judge = new HearingSummary(c).judge;
         expect(judge).toBeDefined();
-        expect(judge.role).toBe(UserRole.Judge);
+        expect(judge.role).toBe(Role.Judge);
     });
 
     it('should return base participants', () => {

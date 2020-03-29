@@ -3,7 +3,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, ConferenceStatus, UserRole } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, Role } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -66,7 +66,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
     }
 
     async sanitiseIframeUrl(): Promise<void> {
-        const judge = this.conference.participants.find(x => x.role === UserRole.Judge);
+        const judge = this.conference.participants.find(x => x.role === Role.Judge);
         const encodedDisplayName = encodeURIComponent(judge.tiled_display_name);
 
         const preferredCam = await this.userMediaService.getPreferredCamera();
@@ -130,7 +130,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
 
     determineJudgeLocation() {
         const conferenceStatus = this.conference.status;
-        const judge = this.conference.participants.find(x => x.role === UserRole.Judge);
+        const judge = this.conference.participants.find(x => x.role === Role.Judge);
         const properties = {
             conferenceId: this.conference.id,
             user: judge.id

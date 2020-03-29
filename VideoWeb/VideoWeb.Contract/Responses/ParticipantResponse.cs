@@ -1,4 +1,5 @@
 using System;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.Contract.Responses
 {
@@ -45,7 +46,7 @@ namespace VideoWeb.Contract.Responses
         /// <summary>
         /// The participant's role
         /// </summary>
-        public UserRole Role { get; set; }
+        public Role Role { get; set; }
         
         /// <summary>
         /// The participant's status

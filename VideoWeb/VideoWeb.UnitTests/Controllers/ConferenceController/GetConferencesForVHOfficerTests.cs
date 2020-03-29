@@ -103,7 +103,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
             _videoApiClientMock
-                .Setup(x => x.GetConferencesTodayAsync())
+                .Setup(x => x.GetConferencesTodayForAdminAsync())
                 .ThrowsAsync(apiException);
 
             var result = await _controller.GetConferencesForVhOfficerAsync();
@@ -128,7 +128,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .TheRest().With(x => x.User_role = UserRole.Individual).Build().ToList();
 
 
-            var conferences = Builder<ConferenceSummaryResponse>.CreateListOfSize(10).All()
+            var conferences = Builder<ConferenceForAdminResponse>.CreateListOfSize(10).All()
                 .With(x => x.Participants = participants)
                 .With(x => x.Scheduled_date_time = DateTime.UtcNow.AddMinutes(-60))
                 .With(x => x.Scheduled_duration = 20)
@@ -152,7 +152,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
 
             _videoApiClientMock
-                .Setup(x => x.GetConferencesTodayAsync())
+                .Setup(x => x.GetConferencesTodayForAdminAsync())
                 .ReturnsAsync(conferences);
 
             var conferenceWithMessages = conferences.First();

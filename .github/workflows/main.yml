@@ -1,0 +1,18 @@
+name: Check PR title
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - edited
+      - synchronize
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: deepakputhraya/action-pr-title@master
+      with:
+        regex: '^VIH-[0-9]{4} [a-zA-Z0-9._\- ]+$' # Regex the title should match.
+        allowed_prefixes: 'VIH-' # title should start with the given prefix
+        prefix_case_sensitive: true # title prefix are case insensitive
