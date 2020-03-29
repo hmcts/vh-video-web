@@ -34,22 +34,7 @@ namespace VideoWeb.EventHub.Mappers
                 heartbeat.OutgoingVideoPercentageLostRecent
             }.Max();
 
-            var heartbeatHealth = HeartbeatHealth.None;
-            
-            if(max != -1 && max <=10m)
-            {
-                heartbeatHealth = HeartbeatHealth.Good;
-            }
-            else if(max>10 && max<=15)
-            {
-                heartbeatHealth = HeartbeatHealth.Poor;
-            }
-            else if(max>15)
-
-            {
-                heartbeatHealth = HeartbeatHealth.Bad;
-            }
-            return heartbeatHealth;
+            return max < 10m ? HeartbeatHealth.Good : max >= 15m ? HeartbeatHealth.Bad : HeartbeatHealth.Poor;
         }
     }
 }
