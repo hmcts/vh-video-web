@@ -22,7 +22,7 @@ export class DeviceTypeService {
   }
 
   isSupportedBrowser(): boolean {
-    const supportedBrowsers = ['Firefox', 'Safari', 'Chrome', 'MS-Edge'];
+    const supportedBrowsers = ['Firefox', 'Safari', 'Chrome', 'MS-Edge', 'Edg'];
     const browser = this.deviceDetectorService.browser;
     return supportedBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) > -1;
   }

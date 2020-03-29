@@ -11,6 +11,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         RemoveDataHooks = 7,
         SignOutHooks = 8,
         LogResultHooks = 9,
-        TearDownBrowserHooks = 10
+        TearDownBrowserHooks = 10,
+        StopEdgeChromiumServer = 11
     }
 }
