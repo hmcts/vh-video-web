@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using VideoWeb.Common.Models;
@@ -18,23 +17,7 @@ namespace VideoWeb.Common.Caching
 
         public async Task AddConferenceToCache(ConferenceDetailsResponse conferenceResponse)
         {
-            var participants = conferenceResponse
-                .Participants
-                .Select(participant => new Participant
-                {
-                    Id = participant.Id, 
-                    DisplayName = participant.Display_name, 
-                    Role = (Role) Enum.Parse(typeof(Role), participant.User_role.ToString()), 
-                    Username = participant.Username
-                })
-                .ToList();
-
-            var conference = new Conference
-            {
-                Id = conferenceResponse.Id,
-                HearingId = conferenceResponse.Hearing_id,
-                Participants = participants
-            };
+            var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse);
             
             await _memoryCache.GetOrCreateAsync(conference.Id, entry =>
             {
