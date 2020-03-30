@@ -4,10 +4,10 @@ using System.Linq;
 using System.Security.Claims;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Caching;
 using VideoWeb.Common.SignalR;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Mappers;
@@ -26,7 +26,7 @@ namespace VideoWeb.UnitTests.Hub
         protected Mock<IHubCallerClients<IEventHubClient>> EventHubClientMock;
         protected EventHub.Hub.EventHub Hub;
         protected ClaimsPrincipal Claims;
-        protected IMemoryCache MemoryCache;
+        protected Mock<IConferenceCache> ConferenceCacheMock;
         protected Mock<IHeartbeatRequestMapper> HeartbeatMapper;
 
         [SetUp]
@@ -48,9 +48,9 @@ namespace VideoWeb.UnitTests.Hub
             UserProfileServiceMock.Setup(x => x.GetObfuscatedUsernameAsync(It.IsAny<string>()))
                 .ReturnsAsync("o**** f*****");
 
-            MemoryCache = new MemoryCache(new MemoryCacheOptions());
+            ConferenceCacheMock = new Mock<IConferenceCache>();
             Hub = new EventHub.Hub.EventHub(UserProfileServiceMock.Object, VideoApiClientMock.Object,
-                LoggerMock.Object, MemoryCache, HeartbeatMapper.Object)
+                LoggerMock.Object, ConferenceCacheMock.Object, HeartbeatMapper.Object)
             {
                 Context = HubCallerContextMock.Object,
                 Groups = GroupManagerMock.Object,
