@@ -31,7 +31,7 @@
                   [ngClass]="{ 'has-messages': conference.numberOfUnreadMessages > 0, 'no-messages' : conference.numberOfUnreadMessages === 0}"
                   title="{{conference.numberOfPendingTasks}} Unread messages">
                   <span id="{{conference.id}}-unread-messages" class="notification-badge-counter"
-                    [ngClass]="{ 'has-messages': conference.numberOfUnreadMessages > 0, 'no-messages' : conference.numberOfUnreadMessages === 0}">{{ conference.numMessages }}</span>
+                    [ngClass]="{ 'has-messages': conference.numberOfUnreadMessages > 0, 'no-messages' : conference.numberOfUnreadMessages === 0}">{{ conference.numberOfUnreadMessages }}</span>
                 </div>
               </div>
 
