@@ -70,6 +70,8 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         [Then(@"the Clerk is on the Hearing Room page for (.*) minute")]
         [Then(@"the Clerk is on the Hearing Room page for (.*) minutes")]
+        [Then(@"the participant is on the Hearing Room page for (.*) minute")]
+        [Then(@"the participant is on the Hearing Room page for (.*) minutes")]
         public void ThenTheUserIsOnTheHearingRoomPageForMinutes(int minutes)
         {
             if (_c.VideoWebConfig.VhServices.RunningVideoWebLocally)

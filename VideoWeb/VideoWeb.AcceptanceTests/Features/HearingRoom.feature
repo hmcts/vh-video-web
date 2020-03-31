@@ -4,21 +4,8 @@ Feature: Hearing Room
 	As a registered user
 	I want to be able to access the video hearing room and interact with the controls
 
-@VIH-4610 @HearingTest
-Scenario: Clerk starts hearing
-	Given the Individual01 user has progressed to the Waiting Room page
-	And the Clerk user has progressed to the Waiting Room page for the existing hearing
-	Then the participant status for Individual01 is displayed as Connected
-	When the Clerk starts the hearing
-	Then the user is on the Countdown page
-	When the countdown finishes
-	Then the user is on the Hearing Room page
-	And the hearing status changed to InSession
-	And the hearing controls are visible
-	And the user can see themselves and toggle the view off and on
-
-@VIH-4615 @HearingTest
-Scenario: Clerk pauses hearing
+@VIH-4610 @VIH-4615 @HearingTest
+Scenario: Clerk pauses and closes hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
 	Then the participant status for Individual01 is displayed as Connected
@@ -40,21 +27,11 @@ Scenario: Clerk pauses hearing
 	Then the user is on the Hearing Room page
 	When in Individual01's browser
 	Then the participant is back in the hearing
-
-@VIH-4615 @HearingTest
-Scenario: Clerk closes hearing
-	Given the Individual01 user has progressed to the Waiting Room page
-	And the Clerk user has progressed to the Waiting Room page for the existing hearing
-	Then the participant status for Individual01 is displayed as Connected
-	When the Clerk starts the hearing
-	Then the user is on the Countdown page
-	When the countdown finishes
-	Then the Clerk is on the Hearing Room page for 10 seconds
-	When the Clerk clicks close
+  And the participant is on the Hearing Room page for 1 minute
+  When in the Clerks's browser
+  And the Clerk clicks close
 	Then the user is on the Hearing List page
 	And the hearing status changed to Closed
-	When in Individual01's browser
-	Then the participants waiting room displays the closed status
 
 @HearingTest
 Scenario: Two participants join hearing
@@ -68,6 +45,12 @@ Scenario: Two participants join hearing
 	And the Clerk can see the participants
 	And Individual01 can see the other participants
 	And Representative01 can see the other participants
+  When in the Clerks's browser
+  And the Clerk clicks close
+	Then the user is on the Hearing List page
+	And the hearing status changed to Closed
+	When in Individual01's browser
+	Then the participants waiting room displays the closed status
 
 @HearingTest
 Scenario: Four participants join hearing
@@ -86,3 +69,9 @@ Scenario: Four participants join hearing
 	And Representative01 can see the other participants
 	And Individual02 can see the other participants
 	And Representative02 can see the other participants
+  When in the Clerks's browser
+  And the Clerk clicks close
+	Then the user is on the Hearing List page
+	And the hearing status changed to Closed
+	When in Individual01's browser
+	Then the participants waiting room displays the closed status
