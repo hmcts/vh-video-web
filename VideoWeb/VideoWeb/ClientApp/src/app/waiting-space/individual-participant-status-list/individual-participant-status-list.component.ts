@@ -154,31 +154,32 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         return this.isParticipantAvailable(participant);
     }
 
-    begingCallWith(participant: ParticipantResponse): void {
-        if (this.canCallParticipant(participant)) {
-            this.displayModal(this.REQUEST_PC_MODAL);
-            const requestee = this.conference.participants.find(x => x.id === participant.id);
-            const requester = this.conference.participants.find(
-                x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase()
-            );
+    async begingCallWith(participant: ParticipantResponse): Promise<void> {
+        if (!this.canCallParticipant(participant)) {
+            return;
+        }
+        this.displayModal(this.REQUEST_PC_MODAL);
+        const requestee = this.conference.participants.find(x => x.id === participant.id);
+        const requester = this.conference.participants.find(
+            x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase()
+        );
 
-            this.consultationRequester = new Participant(requester);
-            this.consultationRequestee = new Participant(requestee);
-            this.logger.event(`${this.videoWebService.getObfuscatedName(requester.username)} requesting private consultation with
+        this.consultationRequester = new Participant(requester);
+        this.consultationRequestee = new Participant(requestee);
+        this.logger.event(`${this.videoWebService.getObfuscatedName(requester.username)} requesting private consultation with
         ${this.videoWebService.getObfuscatedName(requestee.username)}`);
-            this.logger.info(`Individual participant status list: Conference Id: ${this.conference.id}
+        this.logger.info(`Individual participant status list: Conference Id: ${this.conference.id}
         Participant ${requester.id}, ${this.videoWebService.getObfuscatedName(requester.first_name + ' ' + requester.last_name)}
         calling Participant ${requestee.id}, ${this.videoWebService.getObfuscatedName(requestee.first_name + ' ' + requestee.last_name)}}`);
 
-            this.consultationService.raiseConsultationRequest(this.conference, requester, requestee).subscribe(
-                () => {
-                    this.logger.info('Raised consultation request event');
-                    this.startCallRinging(true);
-                },
-                error => {
-                    this.logger.error('Failed to raise consultation request', error);
-                }
-            );
+        try {
+            console.log('boop1');
+            await this.consultationService.raiseConsultationRequest(this.conference, requester, requestee);
+            console.log('boop2');
+            this.logger.info('Raised consultation request event');
+            await this.startCallRinging(true);
+        } catch (error) {
+            this.logger.error('Failed to raise consultation request', error);
         }
     }
 
@@ -221,28 +222,29 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         this.stopCallRinging();
         this.logger.event(`${this.consultationRequestee.displayName} responded to consultation: ${answer}`);
         try {
-            await this.consultationService
-                .respondToConsultationRequest(this.conference, this.consultationRequester.base, this.consultationRequestee.base, consultationAnswer)
-                .toPromise();
+            await this.consultationService.respondToConsultationRequest(
+                this.conference,
+                this.consultationRequester.base,
+                this.consultationRequestee.base,
+                consultationAnswer
+            );
         } catch (error) {
             this.logger.error('Failed to respond to consultation request', error);
         }
     }
 
-    async acceptVhoConsultationRequest() {
+    async acceptVhoConsultationRequest(): Promise<void> {
         this.waitingForConsultationResponse = false;
         this.closeAllPCModals();
         this.stopCallRinging();
         this.logger.event(`${this.consultationRequestee.displayName} responded to vho consultation: ${ConsultationAnswer.Accepted}`);
         try {
-            await this.consultationService
-                .respondToAdminConsultationRequest(
-                    this.conference,
-                    this.consultationRequestee.base,
-                    ConsultationAnswer.Accepted,
-                    this.adminConsultationMessage.roomType
-                )
-                .toPromise();
+            await this.consultationService.respondToAdminConsultationRequest(
+                this.conference,
+                this.consultationRequestee.base,
+                ConsultationAnswer.Accepted,
+                this.adminConsultationMessage.roomType
+            );
         } catch (error) {
             this.logger.error('Failed to respond to admin consultation request', error);
         }
