@@ -31,19 +31,19 @@
                        [ngClass]="{ 'has-messages': conference.numberOfUnreadMessages > 0, 'no-messages' : conference.numberOfUnreadMessages === 0}"
                        title="{{conference.numberOfPendingTasks}} Unread messages">
                     <span id="{{conference.id}}-unread-messages" class="notification-badge-counter"
-                          [ngClass]="{ 'has-messages': conference.numberOfUnreadMessages > 0, 'no-messages' : conference.numberOfUnreadMessages === 0}">{{ conference.number_of_unread_messages }}</span>
+                          [ngClass]="{ 'has-messages': conference.numberOfUnreadMessages > 0, 'no-messages' : conference.numberOfUnreadMessages === 0}">{{ conference.numberOfUnreadMessages }}</span>
                   </div>
                 </div>
 
                 <div class="govuk-grid-column-one-half govuk-!-padding-top-3 right-side vh-col">
                   <div class="govuk-grid-row">
-                   
+
                       <span id="{{conference.id}}-status" class="govuk-!-padding-1 govuk-body-s" style="margin-top:5px;"
                             [ngClass]="{'conference-ready': isOnTime(conference), 'conference-delayed': isDelayed(conference),
                   'conference-suspended': isSuspended(conference), 'conference-paused': isPaused(conference),
                   'conference-in-session': isInSession(conference), 'conference-closed': isClosed(conference)}">{{ getConferenceStatusText(conference) }}</span>
-                    
-                   
+
+
                       <span class="govuk-!-padding-1 govuk-!-margin-left-2 report-conference govuk-body-s tooltip-wrapper"
                             (click)="copyToClipboard(conference);$event.stopPropagation()">
                         Copy UID
@@ -55,7 +55,7 @@
                           </div>
                         </div>
                       </span>
-                    
+
                   </div>
                 </div>
 
