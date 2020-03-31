@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;

@@ -56,6 +56,9 @@ namespace VideoWeb
             services.Configure<HearingServicesConfiguration>(options => Configuration.Bind("VhServices", options));
             var customTokenSettings = Configuration.GetSection("CustomToken").Get<CustomTokenSettings>();
             services.AddSingleton(customTokenSettings);
+
+            var connectionStrings = Configuration.GetSection("ConnectionStrings").Get<ConnectionStrings>();
+            services.AddSingleton(connectionStrings);
         }
 
         private void RegisterAuth(IServiceCollection serviceCollection)

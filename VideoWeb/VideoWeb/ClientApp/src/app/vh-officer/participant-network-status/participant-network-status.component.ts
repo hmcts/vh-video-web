@@ -32,7 +32,7 @@ export class ParticipantNetworkStatusComponent {
         return 'not-signed-in.png';
       }
     } else {
-      if (this.participant.participantHertBeatHealth.browserName.toLowerCase() === 'edge' || this.participant.participantHertBeatHealth.browserName.toLowerCase() === 'safari') {
+      if (this.participant.participantHertBeatHealth.browserName.toLowerCase() === 'ms-edge' || this.participant.participantHertBeatHealth.browserName.toLowerCase() === 'safari') {
         return 'incompatible-browser-signal.png';
       } else {
         if (this.participant.status === ParticipantStatus.Disconnected) {

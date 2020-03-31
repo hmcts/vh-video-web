@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
-using Microsoft.Extensions.Caching.Memory;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
@@ -25,7 +24,7 @@ namespace VideoWeb.UnitTests.Hub
                 .With(x => x.Id = conferenceId)
                 .With(x => x.Participants = participants)
                 .Build();
-            MemoryCache.Set(conferenceId, conference);
+            ConferenceCacheMock.Setup(x => x.GetConference(conferenceId)).Returns(conference);
             var message = "test message";
 
             var mockClient = new Mock<IEventHubClient>();
@@ -64,7 +63,7 @@ namespace VideoWeb.UnitTests.Hub
                 .With(x => x.Id = conferenceId)
                 .With(x => x.Participants = participants)
                 .Build();
-            MemoryCache.Set(conferenceId, conference);
+            ConferenceCacheMock.Setup(x => x.GetConference(conferenceId)).Returns(conference);
             var message = "test message";
 
             UserProfileServiceMock.Setup(x => x.IsVhOfficerAsync(It.IsAny<string>()))
@@ -97,7 +96,7 @@ namespace VideoWeb.UnitTests.Hub
                 .With(x => x.Id = conferenceId)
                 .With(x => x.Participants = participants)
                 .Build();
-            MemoryCache.Set(conferenceId, conference);
+            ConferenceCacheMock.Setup(x => x.GetConference(conferenceId)).Returns(conference);
             var message = "test message";
 
             var mockClient = new Mock<IEventHubClient>();

@@ -28,6 +28,7 @@ export class HeartbeatModelMapper {
   }
 
   private removePercent(statistic: string) {
-    return statistic.replace('%', '');
+    const loss = statistic ? statistic.replace('%', '').trim() : '';
+    return loss.length > 0 ? loss : '0';
   }
 }

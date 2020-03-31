@@ -9,10 +9,14 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <ContentWithTargetPath Include="Configuration\Environments\appsettings.aat.json" Condition="Exists('Configuration\Environments\appsettings.aat.json')">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>appsettings.aat.json</TargetPath>
-    </ContentWithTargetPath>
+      <ContentWithTargetPath Include="Configuration\Environments\appsettings.aat.json" Condition="Exists('Configuration\Environments\appsettings.aat.json')">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          <TargetPath>appsettings.aat.json</TargetPath>
+      </ContentWithTargetPath>
+      <ContentWithTargetPath Include="Configuration\Environments\appsettings.demo.json" Condition="Exists('Configuration\Environments\appsettings.demo.json')">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          <TargetPath>appsettings.demo.json</TargetPath>
+      </ContentWithTargetPath>
     <ContentWithTargetPath Include="Configuration\Environments\appsettings.dev.json" Condition="Exists('Configuration\Environments\appsettings.aat.json')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>appsettings.dev.json</TargetPath>
@@ -33,6 +37,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Data\TestData\DefaultData.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="msedgedriver.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="useraccounts.json">
@@ -85,7 +92,7 @@
     <PackageReference Include="SpecFlow.NUnit" Version="3.1.89" />
     <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.1.89" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
-    <PackageReference Include="VH.AcceptanceTests.Common" Version="1.0.102" />
+    <PackageReference Include="VH.AcceptanceTests.Common" Version="1.0.122" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,10 +4,10 @@ using System.Linq;
 using System.Security.Claims;
 using FizzWare.NBuilder;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Caching;
 using VideoWeb.Common.SignalR;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Mappers;
@@ -26,7 +26,7 @@ namespace VideoWeb.UnitTests.Hub
         protected Mock<IHubCallerClients<IEventHubClient>> EventHubClientMock;
         protected EventHub.Hub.EventHub Hub;
         protected ClaimsPrincipal Claims;
-        protected IMemoryCache MemoryCache;
+        protected Mock<IConferenceCache> ConferenceCacheMock;
         protected Mock<IHeartbeatRequestMapper> HeartbeatMapper;
 
         [SetUp]
@@ -48,9 +48,9 @@ namespace VideoWeb.UnitTests.Hub
             UserProfileServiceMock.Setup(x => x.GetObfuscatedUsernameAsync(It.IsAny<string>()))
                 .ReturnsAsync("o**** f*****");
 
-            MemoryCache = new MemoryCache(new MemoryCacheOptions());
+            ConferenceCacheMock = new Mock<IConferenceCache>();
             Hub = new EventHub.Hub.EventHub(UserProfileServiceMock.Object, VideoApiClientMock.Object,
-                LoggerMock.Object, MemoryCache, HeartbeatMapper.Object)
+                LoggerMock.Object, ConferenceCacheMock.Object, HeartbeatMapper.Object)
             {
                 Context = HubCallerContextMock.Object,
                 Groups = GroupManagerMock.Object,
@@ -58,16 +58,16 @@ namespace VideoWeb.UnitTests.Hub
             };
         }
 
-        protected List<ConferenceSummaryResponse> SetupAdminConferences(int numOfConferences)
+        protected List<ConferenceForAdminResponse> SetupAdminConferences(int numOfConferences)
         {
-            var conferences = Builder<ConferenceSummaryResponse>.CreateListOfSize(numOfConferences).All()
+            var conferences = Builder<ConferenceForAdminResponse>.CreateListOfSize(numOfConferences).All()
                 .With(x => x.Id = Guid.NewGuid())
                 .Build().ToList();
 
             UserProfileServiceMock.Setup(x => x.IsVhOfficerAsync(It.IsAny<string>()))
                 .ReturnsAsync(true);
 
-            VideoApiClientMock.Setup(x => x.GetConferencesTodayAsync()).ReturnsAsync(conferences);
+            VideoApiClientMock.Setup(x => x.GetConferencesTodayForAdminAsync()).ReturnsAsync(conferences);
 
             return conferences;
         }
@@ -81,7 +81,7 @@ namespace VideoWeb.UnitTests.Hub
                 .TheFirst(1).With(x => x.User_role = UserRole.Judge)
                 .Build().ToList();
 
-            var conferences = Builder<ConferenceSummaryResponse>.CreateListOfSize(numOfConferences).All()
+            var conferences = Builder<ConferenceForAdminResponse>.CreateListOfSize(numOfConferences).All()
                 .With(x => x.Id = Guid.NewGuid())
                 .TheFirst(numOfConferencesWithUser).With(x => x.Participants = participantsWithUser)
                 .TheRest().With(x => x.Participants = participantsWithoutUser)
@@ -90,7 +90,7 @@ namespace VideoWeb.UnitTests.Hub
             UserProfileServiceMock.Setup(x => x.IsVhOfficerAsync(It.IsAny<string>()))
                 .ReturnsAsync(false);
 
-            VideoApiClientMock.Setup(x => x.GetConferencesTodayAsync()).ReturnsAsync(conferences);
+            VideoApiClientMock.Setup(x => x.GetConferencesTodayForAdminAsync()).ReturnsAsync(conferences);
 
             return conferences
                 .Where(x => x.Participants.Any(p => p.Username == Claims.Identity.Name))

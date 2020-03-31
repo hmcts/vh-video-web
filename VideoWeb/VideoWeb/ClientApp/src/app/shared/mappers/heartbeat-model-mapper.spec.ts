@@ -46,4 +46,41 @@ describe('HeartbeatModelMapper', () => {
     expect(result.browserName).toBe(browserName);
     expect(result.browserVersion).toBe(browserVersion);
   }));
+  it('should map with no package loss values', inject([HeartbeatModelMapper], async (mapper: HeartbeatModelMapper) => {
+    const heartbeat: any = {
+      media_statistics: {
+        outgoing: {
+          audio: {}, video: {}
+        },
+        incoming: {
+          audio: {}, video: {}
+        }
+      }
+    };
+
+    heartbeat.media_statistics.outgoing.audio['percentage-lost'] = '';
+    heartbeat.media_statistics.outgoing.audio['percentage-lost-recent'] = '';
+    heartbeat.media_statistics.incoming.audio['percentage-lost'] = '';
+    heartbeat.media_statistics.incoming.audio['percentage-lost-recent'] = undefined;
+    heartbeat.media_statistics.outgoing.video['percentage-lost'] = null;
+    heartbeat.media_statistics.outgoing.video['percentage-lost-recent'] = ' ';
+    heartbeat.media_statistics.incoming.video['percentage-lost'] = '';
+    heartbeat.media_statistics.incoming.video['percentage-lost-recent'] = '%';
+
+    const browserName = 'chrome';
+    const browserVersion = 'v1.0.1';
+    const result = mapper.map(heartbeat, browserName, browserVersion);
+
+    expect(result).not.toBeNull();
+    expect(result.outgoingAudioPercentageLost).toBe('0');
+    expect(result.outgoingAudioPercentageLostRecent).toBe('0');
+    expect(result.incomingAudioPercentageLost).toBe('0');
+    expect(result.incomingAudioPercentageLostRecent).toBe('0');
+    expect(result.outgoingVideoPercentageLost).toBe('0');
+    expect(result.outgoingVideoPercentageLostRecent).toBe('0');
+    expect(result.incomingVideoPercentageLost).toBe('0');
+    expect(result.incomingVideoPercentageLostRecent).toBe('0');
+    expect(result.browserName).toBe(browserName);
+    expect(result.browserVersion).toBe(browserVersion);
+  }));
 });
