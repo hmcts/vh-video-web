@@ -214,14 +214,15 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         this.startCallRinging(false);
     }
 
-    async answerConsultationRequest(answer: ConsultationAnswer) {
+    async answerConsultationRequest(answer: string) {
+        const consultationAnswer = ConsultationAnswer[answer];
         this.waitingForConsultationResponse = false;
         this.closeAllPCModals();
         this.stopCallRinging();
         this.logger.event(`${this.consultationRequestee.displayName} responded to consultation: ${answer}`);
         try {
             await this.consultationService
-                .respondToConsultationRequest(this.conference, this.consultationRequester.base, this.consultationRequestee.base, answer)
+                .respondToConsultationRequest(this.conference, this.consultationRequester.base, this.consultationRequestee.base, consultationAnswer)
                 .toPromise();
         } catch (error) {
             this.logger.error('Failed to respond to consultation request', error);
