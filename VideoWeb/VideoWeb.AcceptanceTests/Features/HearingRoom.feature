@@ -4,7 +4,7 @@ Feature: Hearing Room
 	As a registered user
 	I want to be able to access the video hearing room and interact with the controls
 
-@VIH-4615 @VIH-4615 @HearingTest
+@VIH-4610 @VIH-4615 @HearingTest
 Scenario: Clerk pauses and closes hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
