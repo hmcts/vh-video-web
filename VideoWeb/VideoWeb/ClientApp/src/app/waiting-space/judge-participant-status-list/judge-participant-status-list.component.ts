@@ -1,8 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { ConferenceResponse, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
-import { Hearing } from '../../shared/models/hearing';
-import { Participant } from '../../shared/models/participant';
 
 @Component({
     selector: 'app-judge-participant-status-list',
@@ -33,22 +31,6 @@ export class JudgeParticipantStatusListComponent implements OnInit {
 
     getParticipantStatusText(participant: ParticipantResponse): string {
         return participant.status === ParticipantStatus.Available ? 'Available' : 'Unavailable';
-    }
-
-    canCallParticipant(participant: ParticipantResponse): boolean {
-        const hearing = new Hearing(this.conference);
-        if (hearing.isStarting() || hearing.isDelayed() || hearing.isSuspended()) {
-            return false;
-        }
-
-        const patModel = new Participant(participant);
-        if (patModel.role === Role.Judge) {
-            return false;
-        }
-        if (patModel.base.username.toLocaleLowerCase().trim() === this.adalService.userInfo.userName.toLocaleLowerCase().trim()) {
-            return false;
-        }
-        return false;
     }
 
     private filterNonJudgeParticipants(): void {

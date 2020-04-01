@@ -69,26 +69,4 @@ describe('JudgeParticipantStatusListComponent', () => {
     it('should return available text for when participant is available', () => {
         expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.Available }))).toBe('Available');
     });
-
-    it('should not be able to call participant is user is judge', () => {
-        const judge = component.conference.participants.find(x => x.role === Role.Judge);
-        adalService.userInfo.userName = judge.username;
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
-        expect(component.canCallParticipant(participant)).toBeFalsy();
-    });
-
-    it('should not be able to call an unavailable participant', () => {
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
-        expect(component.canCallParticipant(participant)).toBeFalsy();
-    });
-
-    it('should not be able to call self', () => {
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'chris.green@hearings.net' });
-        expect(component.canCallParticipant(participant)).toBeFalsy();
-    });
-
-    it('should not be able to call an available participant', () => {
-        const participant = new ParticipantResponse({ status: ParticipantStatus.Available, username: 'test@dot.com' });
-        expect(component.canCallParticipant(participant)).toBeFalsy();
-    });
 });
