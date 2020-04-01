@@ -69,4 +69,42 @@ describe('JudgeParticipantStatusListComponent', () => {
     it('should return available text for when participant is available', () => {
         expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.Available }))).toBe('Available');
     });
+
+    const participantStatusTestCases = [
+        { status: ParticipantStatus.Available, expected: 'connected' },
+        { status: ParticipantStatus.Disconnected, expected: 'disconnected' },
+        { status: ParticipantStatus.InConsultation, expected: 'in a consultation' },
+        { status: ParticipantStatus.InHearing, expected: 'connected' },
+        { status: ParticipantStatus.Joining, expected: 'joining' },
+        { status: ParticipantStatus.NotSignedIn, expected: 'not signed in' },
+        { status: ParticipantStatus.UnableToJoin, expected: 'unable to join' },
+        { status: ParticipantStatus.None, expected: 'not signed in' }
+    ];
+
+    participantStatusTestCases.forEach(test => {
+        it(`should return ${test.expected} when participant status is ${test.status}`, () => {
+            const pat = component.conference.participants[0];
+            pat.status = test.status;
+            expect(component.getParticipantStatus(pat)).toBe(test.expected);
+        });
+    });
+
+    const participantStatusCssTestCases = [
+        { status: ParticipantStatus.Available, expected: 'connected' },
+        { status: ParticipantStatus.Disconnected, expected: 'disconnected' },
+        { status: ParticipantStatus.InConsultation, expected: 'in_a_consultation' },
+        { status: ParticipantStatus.InHearing, expected: 'in_a_hearing' },
+        { status: ParticipantStatus.Joining, expected: 'joining' },
+        { status: ParticipantStatus.NotSignedIn, expected: 'not_signed_in' },
+        { status: ParticipantStatus.UnableToJoin, expected: 'unable_to_join' },
+        { status: ParticipantStatus.None, expected: 'not_signed_in' }
+    ];
+
+    participantStatusCssTestCases.forEach(test => {
+        it(`should return class ${test.expected} when participant status is ${test.status}`, () => {
+            const pat = component.conference.participants[0];
+            pat.status = test.status;
+            expect(component.getParticipantStatusCss(pat)).toBe(test.expected);
+        });
+    });
 });

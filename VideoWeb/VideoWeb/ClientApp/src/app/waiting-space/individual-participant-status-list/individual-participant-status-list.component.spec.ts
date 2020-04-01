@@ -177,11 +177,11 @@ describe('IndividualParticipantStatusListComponent', () => {
 
         expect(component.waitingForConsultationResponse).toBeFalsy();
         expect(consultationService.respondToConsultationRequest).toHaveBeenCalled();
-        // expect(consultationService.respondToConsultationRequest).toHaveBeenCalledWith(
-        //     conference,
-        //     component.consultationRequester,
-        //     component.consultationRequestee,
-        //     ConsultationAnswer.Accepted
-        // );
+        expect(consultationService.respondToConsultationRequest).toHaveBeenCalledWith(
+            conference,
+            component.consultationRequester.base,
+            component.consultationRequestee.base,
+            ConsultationAnswer.Accepted
+        );
     });
 });

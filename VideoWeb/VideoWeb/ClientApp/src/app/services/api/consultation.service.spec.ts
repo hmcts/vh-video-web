@@ -4,6 +4,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { SharedModule } from '../../shared/shared.module';
 import { ApiClient, ConsultationAnswer, ConsultationRequest, LeaveConsultationRequest } from '../clients/api-client';
 import { ConsultationService } from './consultation.service';
+import { of } from 'rxjs';
 
 describe('ConsultationService', () => {
     let apiClient: ApiClient;
@@ -23,7 +24,7 @@ describe('ConsultationService', () => {
     });
 
     it('should not have an answer when raising a request for consulation', inject([ConsultationService], (service: ConsultationService) => {
-        spyOn(apiClient, 'handleConsultationRequest');
+        spyOn(apiClient, 'handleConsultationRequest').and.returnValue(of());
         const conference = new ConferenceTestData().getConferenceDetailFuture();
         const requester = conference.participants[0];
         const requestee = conference.participants[1];
@@ -41,7 +42,7 @@ describe('ConsultationService', () => {
     it('should have an answer when responding to a request for consulation', inject(
         [ConsultationService],
         (service: ConsultationService) => {
-            spyOn(apiClient, 'handleConsultationRequest');
+            spyOn(apiClient, 'handleConsultationRequest').and.returnValue(of());
             const conference = new ConferenceTestData().getConferenceDetailFuture();
             const requester = conference.participants[0];
             const requestee = conference.participants[1];
@@ -59,7 +60,7 @@ describe('ConsultationService', () => {
     ));
 
     it('should leave a consultation', inject([ConsultationService], (service: ConsultationService) => {
-        spyOn(apiClient, 'leavePrivateConsultation');
+        spyOn(apiClient, 'leavePrivateConsultation').and.returnValue(of());
         const conference = new ConferenceTestData().getConferenceDetailFuture();
         const participant = conference.participants[0];
 
