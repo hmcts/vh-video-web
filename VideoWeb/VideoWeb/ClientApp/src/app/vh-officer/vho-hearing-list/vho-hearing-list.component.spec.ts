@@ -6,6 +6,7 @@ import { VhoHearingListComponent } from './vho-hearing-list.component';
 import { VhoParticipantNetworkStatusStubComponent } from '../../testing/stubs/vho-participant-network-status-stub';
 import { HearingSummary } from '../../shared/models/hearing-summary';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
+import { PerfectScrollbarStubComponent } from '../../testing/stubs/perfect-scrollbar-stub';
 
 describe('VhoHearingListComponent', () => {
   let component: VhoHearingListComponent;
@@ -13,7 +14,8 @@ describe('VhoHearingListComponent', () => {
 
   configureTestSuite(() => {
     TestBed.configureTestingModule({
-      declarations: [ VhoHearingListComponent, VhoParticipantNetworkStatusStubComponent ]
+      declarations: [VhoHearingListComponent, VhoParticipantNetworkStatusStubComponent,
+        PerfectScrollbarStubComponent]
     });
   });
 
@@ -90,5 +92,8 @@ describe('VhoHearingListComponent', () => {
     component.showParticipantGraph(param);
     expect(component.selectedParticipant.emit).toHaveBeenCalled();
     expect(component.selectedParticipant.emit).toHaveBeenCalledWith(param);
+  });
+  it('should set configuration for scrollbar to suppress scroll x', () => {
+    expect(component.scrollConfig.suppressScrollX).toBe(true);
   });
 });
