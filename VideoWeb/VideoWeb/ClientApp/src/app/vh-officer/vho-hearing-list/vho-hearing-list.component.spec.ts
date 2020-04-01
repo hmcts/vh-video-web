@@ -93,4 +93,7 @@ describe('VhoHearingListComponent', () => {
     expect(component.selectedParticipant.emit).toHaveBeenCalled();
     expect(component.selectedParticipant.emit).toHaveBeenCalledWith(param);
   });
+  it('should set configuration for scrollbar to suppress scroll x', () => {
+    expect(component.scrollConfig.suppressScrollX).toBe(true);
+  });
 });
