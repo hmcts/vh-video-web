@@ -70,25 +70,41 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.Available }))).toBe('Available');
     });
 
-    it('should not be able to call participant is user is judge', () => {
-        const judge = component.conference.participants.find(x => x.role === Role.Judge);
-        adalService.userInfo.userName = judge.username;
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
-        expect(component.canCallParticipant(participant)).toBeFalsy();
+    const participantStatusTestCases = [
+        { status: ParticipantStatus.Available, expected: 'connected' },
+        { status: ParticipantStatus.Disconnected, expected: 'disconnected' },
+        { status: ParticipantStatus.InConsultation, expected: 'in a consultation' },
+        { status: ParticipantStatus.InHearing, expected: 'connected' },
+        { status: ParticipantStatus.Joining, expected: 'joining' },
+        { status: ParticipantStatus.NotSignedIn, expected: 'not signed in' },
+        { status: ParticipantStatus.UnableToJoin, expected: 'unable to join' },
+        { status: ParticipantStatus.None, expected: 'not signed in' }
+    ];
+
+    participantStatusTestCases.forEach(test => {
+        it(`should return ${test.expected} when participant status is ${test.status}`, () => {
+            const pat = component.conference.participants[0];
+            pat.status = test.status;
+            expect(component.getParticipantStatus(pat)).toBe(test.expected);
+        });
     });
 
-    it('should not be able to call an unavailable participant', () => {
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
-        expect(component.canCallParticipant(participant)).toBeFalsy();
-    });
+    const participantStatusCssTestCases = [
+        { status: ParticipantStatus.Available, expected: 'connected' },
+        { status: ParticipantStatus.Disconnected, expected: 'disconnected' },
+        { status: ParticipantStatus.InConsultation, expected: 'in_a_consultation' },
+        { status: ParticipantStatus.InHearing, expected: 'in_a_hearing' },
+        { status: ParticipantStatus.Joining, expected: 'joining' },
+        { status: ParticipantStatus.NotSignedIn, expected: 'not_signed_in' },
+        { status: ParticipantStatus.UnableToJoin, expected: 'unable_to_join' },
+        { status: ParticipantStatus.None, expected: 'not_signed_in' }
+    ];
 
-    it('should not be able to call self', () => {
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'chris.green@hearings.net' });
-        expect(component.canCallParticipant(participant)).toBeFalsy();
-    });
-
-    it('should not be able to call an available participant', () => {
-        const participant = new ParticipantResponse({ status: ParticipantStatus.Available, username: 'test@dot.com' });
-        expect(component.canCallParticipant(participant)).toBeFalsy();
+    participantStatusCssTestCases.forEach(test => {
+        it(`should return class ${test.expected} when participant status is ${test.status}`, () => {
+            const pat = component.conference.participants[0];
+            pat.status = test.status;
+            expect(component.getParticipantStatusCss(pat)).toBe(test.expected);
+        });
     });
 });

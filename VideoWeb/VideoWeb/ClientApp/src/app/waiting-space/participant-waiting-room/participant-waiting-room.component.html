@@ -43,12 +43,12 @@
       <tbody class="govuk-table__body">
         <tr class="govuk-table__row">
           <td class="govuk-table__cell hearing-details-col1-width">
-            <strong>{{ hearing.conference.case_name }}</strong> ({{ hearing.conference.case_type }})
+            <strong>{{ hearing.caseName }}</strong> ({{ hearing.caseType }})
             <span>case number</span>:
-            <strong>{{ hearing.conference.case_number }}</strong>
+            <strong>{{ hearing.caseNumber}}</strong>
           </td>
           <td class="govuk-table__cell hearing-details-col2-width">
-            {{ hearing.conference.scheduled_date_time | date: 'dd MMMM	yyyy' }}
+            {{ hearing.scheduledStartTime| date: 'dd MMMM	yyyy' }}
             <span class="govuk-!-font-weight-bold">
               {{ hearing.scheduledStartTime | date: 'HH:mm' }} to
               {{ hearing.scheduledEndTime | date: 'HH:mm' }}

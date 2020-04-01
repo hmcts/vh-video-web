@@ -28,7 +28,7 @@ Scenario: Clerk pauses and closes hearing
 	When in Individual01's browser
 	Then the participant is back in the hearing
   And the participant is on the Hearing Room page for 1 minute
-  When in the Clerks's browser
+  When in the Clerk's browser
   And the Clerk clicks close
 	Then the user is on the Hearing List page
 	And the hearing status changed to Closed
@@ -45,7 +45,7 @@ Scenario: Two participants join hearing
 	And the Clerk can see the participants
 	And Individual01 can see the other participants
 	And Representative01 can see the other participants
-  When in the Clerks's browser
+  When in the Clerk's browser
   And the Clerk clicks close
 	Then the user is on the Hearing List page
 	And the hearing status changed to Closed
@@ -69,7 +69,7 @@ Scenario: Four participants join hearing
 	And Representative01 can see the other participants
 	And Individual02 can see the other participants
 	And Representative02 can see the other participants
-  When in the Clerks's browser
+  When in the Clerk's browser
   And the Clerk clicks close
 	Then the user is on the Hearing List page
 	And the hearing status changed to Closed

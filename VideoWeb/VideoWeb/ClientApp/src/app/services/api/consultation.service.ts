@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
 import {
+    AdminConsultationRequest,
     ApiClient,
     ConferenceResponse,
     ConsultationAnswer,
     ConsultationRequest,
-    ParticipantResponse,
     LeaveConsultationRequest,
-    AdminConsultationRequest,
+    ParticipantResponse,
     RoomType
 } from '../clients/api-client';
 
@@ -21,14 +20,16 @@ export class ConsultationService {
         conference: ConferenceResponse,
         requester: ParticipantResponse,
         requestee: ParticipantResponse
-    ): Observable<void> {
-        return this.apiClient.handleConsultationRequest(
-            new ConsultationRequest({
-                conference_id: conference.id,
-                requested_by: requester.id,
-                requested_for: requestee.id
-            })
-        );
+    ): Promise<void> {
+        return this.apiClient
+            .handleConsultationRequest(
+                new ConsultationRequest({
+                    conference_id: conference.id,
+                    requested_by: requester.id,
+                    requested_for: requestee.id
+                })
+            )
+            .toPromise();
     }
 
     respondToConsultationRequest(
@@ -36,24 +37,28 @@ export class ConsultationService {
         requester: ParticipantResponse,
         requestee: ParticipantResponse,
         answer: ConsultationAnswer
-    ): Observable<void> {
-        return this.apiClient.handleConsultationRequest(
-            new ConsultationRequest({
-                conference_id: conference.id,
-                requested_by: requester.id,
-                requested_for: requestee.id,
-                answer: answer
-            })
-        );
+    ): Promise<void> {
+        return this.apiClient
+            .handleConsultationRequest(
+                new ConsultationRequest({
+                    conference_id: conference.id,
+                    requested_by: requester.id,
+                    requested_for: requestee.id,
+                    answer: answer
+                })
+            )
+            .toPromise();
     }
 
-    leaveConsultation(conference: ConferenceResponse, participant: ParticipantResponse): Observable<void> {
-        return this.apiClient.leavePrivateConsultation(
-            new LeaveConsultationRequest({
-                conference_id: conference.id,
-                participant_id: participant.id
-            })
-        );
+    leaveConsultation(conference: ConferenceResponse, participant: ParticipantResponse): Promise<void> {
+        return this.apiClient
+            .leavePrivateConsultation(
+                new LeaveConsultationRequest({
+                    conference_id: conference.id,
+                    participant_id: participant.id
+                })
+            )
+            .toPromise();
     }
 
     respondToAdminConsultationRequest(
@@ -61,14 +66,16 @@ export class ConsultationService {
         participant: ParticipantResponse,
         answer: ConsultationAnswer,
         room: RoomType
-    ): Observable<void> {
-        return this.apiClient.respondToAdminConsultationRequest(
-            new AdminConsultationRequest({
-                conference_id: conference.id,
-                participant_id: participant.id,
-                answer: answer,
-                consultation_room: room
-            })
-        );
+    ): Promise<void> {
+        return this.apiClient
+            .respondToAdminConsultationRequest(
+                new AdminConsultationRequest({
+                    conference_id: conference.id,
+                    participant_id: participant.id,
+                    answer: answer,
+                    consultation_room: room
+                })
+            )
+            .toPromise();
     }
 }

@@ -4,7 +4,14 @@ import { configureTestSuite } from 'ng-bullet';
 import { of } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    ConferenceStatus,
+    ParticipantResponse,
+    ParticipantStatus,
+    Role,
+    ConsultationAnswer
+} from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SharedModule } from 'src/app/shared/shared.module';
@@ -14,16 +21,30 @@ import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { IndividualParticipantStatusListComponent } from './individual-participant-status-list.component';
+import { Participant } from 'src/app/shared/models/participant';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 
 describe('IndividualParticipantStatusListComponent', () => {
     let component: IndividualParticipantStatusListComponent;
     let fixture: ComponentFixture<IndividualParticipantStatusListComponent>;
     let adalService: MockAdalService;
     let eventService: MockEventsService;
-    let consultationService: ConsultationService;
     let conference: ConferenceResponse;
+    let consultationService: jasmine.SpyObj<ConsultationService>;
 
     configureTestSuite(() => {
+        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', [
+            'raiseConsultationRequest',
+            'respondToConsultationRequest',
+            'leaveConsultation',
+            'respondToAdminConsultationRequest'
+        ]);
+        consultationService.raiseConsultationRequest.and.callFake(() => Promise.resolve());
+        consultationService.respondToConsultationRequest.and.callFake(() => Promise.resolve());
+        consultationService.leaveConsultation.and.callFake(() => Promise.resolve());
+        consultationService.respondToAdminConsultationRequest.and.callFake(() => Promise.resolve());
+
         TestBed.configureTestingModule({
             imports: [SharedModule],
             declarations: [IndividualParticipantStatusListComponent],
@@ -31,7 +52,9 @@ describe('IndividualParticipantStatusListComponent', () => {
                 { provide: AdalService, useClass: MockAdalService },
                 { provide: ConfigService, useClass: MockConfigService },
                 { provide: EventsService, useClass: MockEventsService },
-                { provide: Logger, useClass: MockLogger }
+                { provide: Logger, useClass: MockLogger },
+                { provide: ConsultationService, useValue: consultationService },
+                { provide: VideoWebService, useClass: MockVideoWebService }
             ]
         });
         adalService = TestBed.get(AdalService);
@@ -41,7 +64,6 @@ describe('IndividualParticipantStatusListComponent', () => {
     beforeEach(() => {
         fixture = TestBed.createComponent(IndividualParticipantStatusListComponent);
         component = fixture.componentInstance;
-        consultationService = TestBed.get(ConsultationService);
         conference = new ConferenceTestData().getConferenceDetailFuture();
         component.conference = conference;
 
@@ -122,24 +144,44 @@ describe('IndividualParticipantStatusListComponent', () => {
         expect(component.canCallParticipant(participant)).toBeFalsy();
     });
 
+    it('should be able to call an available participant', () => {
+        const participant = new ParticipantResponse({ status: ParticipantStatus.Available, username: 'test@dot.com' });
+        expect(component.canCallParticipant(participant)).toBeTruthy();
+    });
+
     it('should not be able to begin call self', () => {
-        spyOn(consultationService, 'raiseConsultationRequest').and.callFake(() => of());
+        consultationService.raiseConsultationRequest.and.callFake(() => Promise.resolve());
         adalService.userInfo.userName = 'chris.green@hearings.net';
         const participant = conference.participants.find(x => x.username === adalService.userInfo.userName);
         component.begingCallWith(participant);
         expect(consultationService.raiseConsultationRequest).toHaveBeenCalledTimes(0);
     });
 
-    it('should be able to call an available participant', () => {
-        const participant = new ParticipantResponse({ status: ParticipantStatus.Available, username: 'test@dot.com' });
-        expect(component.canCallParticipant(participant)).toBeTruthy();
-    });
-
     it('should be able to begin call with another participant', () => {
-        spyOn(consultationService, 'raiseConsultationRequest').and.callFake(() => of());
+        spyOn(component, 'startCallRinging').and.callFake(() => Promise.resolve());
+
         const participant = conference.participants.find(x => x.username === 'james.green@hearings.net');
         participant.status = ParticipantStatus.Available;
         component.begingCallWith(participant);
         expect(consultationService.raiseConsultationRequest).toHaveBeenCalled();
+    });
+
+    it('should answer consultation request', async () => {
+        component.waitingForConsultationResponse = true;
+
+        component.consultationRequester = new Participant(conference.participants[0]);
+        component.consultationRequestee = new Participant(conference.participants[1]);
+        spyOn(component, 'stopCallRinging');
+
+        await component.answerConsultationRequest('Accepted');
+
+        expect(component.waitingForConsultationResponse).toBeFalsy();
+        expect(consultationService.respondToConsultationRequest).toHaveBeenCalled();
+        expect(consultationService.respondToConsultationRequest).toHaveBeenCalledWith(
+            conference,
+            component.consultationRequester.base,
+            component.consultationRequestee.base,
+            ConsultationAnswer.Accepted
+        );
     });
 });
