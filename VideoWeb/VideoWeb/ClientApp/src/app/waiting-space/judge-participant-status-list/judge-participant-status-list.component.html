@@ -39,12 +39,6 @@
           </label>
         </div>
 
-        <a *ngIf=" canCallParticipant(participant)" id="p-call-{{participant.id}}-btn" href="#"
-          class="govuk-link govuk-!-margin-bottom-0" href="javascript:void(0)"
-          (click)="begingCallWith(participant)">Speak
-          to this person now
-        </a>
-
         <hr />
       </div>
     </div>
@@ -77,12 +71,6 @@
             {{ getParticipantStatus(participant) }}
           </label>
         </div>
-
-        <a *ngIf=" canCallParticipant(participant)" id="p-call-{{participant.id}}-btn" href="#"
-          class="govuk-link govuk-!-margin-bottom-0" href="javascript:void(0)"
-          (click)="begingCallWith(participant)">Speak
-          to this person now
-        </a>
 
         <hr />
       </div>

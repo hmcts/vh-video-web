@@ -420,7 +420,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             `Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}. Participant ${this.participant.id} attempting to leave conference: ${this.conference.id}`
         );
         try {
-            await this.consultationService.leaveConsultation(this.conference, this.participant).toPromise();
+            await this.consultationService.leaveConsultation(this.conference, this.participant);
         } catch (error) {
             this.logger.error('Failed to leave private consultation', error);
         }

@@ -5,8 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
-using VideoWeb.Common.Models;
+using VideoWeb.Common.Caching;
 using VideoWeb.Common.SignalR;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Mappers;
@@ -24,15 +23,15 @@ namespace VideoWeb.EventHub.Hub
         private readonly IUserProfileService _userProfileService;
         private readonly ILogger<EventHub> _logger;
         private readonly IVideoApiClient _videoApiClient;
-        private readonly IMemoryCache _memoryCache;
+        private readonly IConferenceCache _conferenceCache;
         private readonly IHeartbeatRequestMapper _heartbeatRequestMapper;
 
         public EventHub(IUserProfileService userProfileService, IVideoApiClient videoApiClient, 
-            ILogger<EventHub> logger, IMemoryCache memoryCache, IHeartbeatRequestMapper heartbeatRequestMapper)
+            ILogger<EventHub> logger, IConferenceCache conferenceCache, IHeartbeatRequestMapper heartbeatRequestMapper)
         {
             _userProfileService = userProfileService;
             _logger = logger;
-            _memoryCache = memoryCache;
+            _conferenceCache = conferenceCache;
             _heartbeatRequestMapper = heartbeatRequestMapper;
             _videoApiClient = videoApiClient;
         }
@@ -157,7 +156,7 @@ namespace VideoWeb.EventHub.Hub
         private bool IsAllowedToSendMessage(Guid conferenceId, bool isAdmin)
         {
             if (isAdmin) return true;
-            var conference = _memoryCache.Get<Conference>(conferenceId);
+            var conference = _conferenceCache.GetConference(conferenceId);
             if (conference == null) throw new ConferenceNotFoundException(conferenceId);
 
             return conference.GetJudge().Username
