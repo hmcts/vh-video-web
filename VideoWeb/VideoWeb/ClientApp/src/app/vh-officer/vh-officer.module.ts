@@ -14,6 +14,11 @@ import { VhoChatComponent } from './vho-chat/vho-chat.component';
 import { ParticipantNetworkStatusComponent } from './participant-network-status/participant-network-status.component';
 import { ChartsModule } from 'ng2-charts';
 import { MonitoringGraphComponent } from '../vh-officer/monitoring-graph/monitoring-graph.component';
+import { PerfectScrollbarModule, PERFECT_SCROLLBAR_CONFIG, PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
+
+const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
+  suppressScrollX: true
+};
 
 @NgModule({
   declarations: [
@@ -32,10 +37,16 @@ import { MonitoringGraphComponent } from '../vh-officer/monitoring-graph/monitor
     SharedModule,
     ChartsModule,
     ClipboardModule,
-    VhOfficerRoutingModule
+    VhOfficerRoutingModule,
+    PerfectScrollbarModule
+
     ],
     providers: [
-        HearingsFilterOptionsService
+      HearingsFilterOptionsService,
+      {
+        provide: PERFECT_SCROLLBAR_CONFIG,
+        useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
+      },
     ],
     exports: [MonitoringGraphComponent]
 })

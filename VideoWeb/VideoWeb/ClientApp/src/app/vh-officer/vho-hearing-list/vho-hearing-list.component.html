@@ -1,28 +1,30 @@
 <div id="list-column" class="govuk-grid-column-one-half govuk-!-padding-0">
-  <dl id="conferences-list" class="govuk-summary-list">
-    <div class="govuk-grid-column-full govuk-!-padding-0"
-      [ngClass]="{ 'selected-conference': isCurrentConference(conference) }" *ngFor="let conference of conferences"
-      (click)="selectConference(conference)">
-      <dd id="{{conference.id}}-summary" class="govuk-summary-list__value govuk-!-padding-left-4">
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-three-quarters">
-            <div class="govuk-grid-row">
-              <div id="{{conference.id}}-time" class="govuk-grid-column-one-half">
-                {{conference.scheduledDateTime | date:'HH:mm' }}
+  <perfect-scrollbar style="position: relative; max-width:500px; max-height:1000px;">
+
+    <dl id="conferences-list" class="govuk-summary-list">
+      <div class="govuk-grid-column-full govuk-!-padding-0"
+           [ngClass]="{ 'selected-conference': isCurrentConference(conference) }" *ngFor="let conference of conferences"
+           (click)="selectConference(conference)">
+        <dd id="{{conference.id}}-summary" class="govuk-summary-list__value govuk-!-padding-left-4">
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-three-quarters">
+              <div class="govuk-grid-row">
+                <div id="{{conference.id}}-time" class="govuk-grid-column-one-half">
+                  {{conference.scheduledDateTime | date:'HH:mm' }}
+                </div>
+                <div id="{{conference.id}}-case-number" class="govuk-grid-column-one-half">
+                  {{conference.caseNumber}}
+                </div>
               </div>
-              <div id="{{conference.id}}-case-number" class="govuk-grid-column-one-half">
-                {{conference.caseNumber}}
+              <div class="govuk-grid-row">
+                <div id="{{conference.id}}-duration" class="govuk-grid-column-one-half">
+                  {{ getDuration(conference) }}
+                </div>
+                <div id="{{conference.id}}-case-name" class="govuk-grid-column-one-half">
+                  {{conference.caseName}}
+                </div>
               </div>
-            </div>
-            <div class="govuk-grid-row">
-              <div id="{{conference.id}}-duration" class="govuk-grid-column-one-half">
-                {{ getDuration(conference) }}
-              </div>
-              <div id="{{conference.id}}-case-name" class="govuk-grid-column-one-half">
-                {{conference.caseName}}
-              </div>
-            </div>
-            <div class="govuk-grid-row">
+              <div class="govuk-grid-row">
                 <div class="govuk-grid-column-one-half govuk-!-padding-top-3">
                   <span id="{{conference.id}}--pending-tasks" class="alert-badge has-alerts"
                         [ngClass]="{ 'has-alerts': conference.numberOfPendingTasks > 0, 'no-alerts': conference.numberOfPendingTasks === 0}"
@@ -37,38 +39,40 @@
 
                 <div class="govuk-grid-column-one-half govuk-!-padding-top-3 right-side vh-col">
                   <div class="govuk-grid-row">
-                   
-                      <span id="{{conference.id}}-status" class="govuk-!-padding-1 govuk-body-s" style="margin-top:5px;"
-                            [ngClass]="{'conference-ready': isOnTime(conference), 'conference-delayed': isDelayed(conference),
+
+                    <span id="{{conference.id}}-status" class="govuk-!-padding-1 govuk-body-s" style="margin-top:5px;"
+                          [ngClass]="{'conference-ready': isOnTime(conference), 'conference-delayed': isDelayed(conference),
                   'conference-suspended': isSuspended(conference), 'conference-paused': isPaused(conference),
                   'conference-in-session': isInSession(conference), 'conference-closed': isClosed(conference)}">{{ getConferenceStatusText(conference) }}</span>
-                    
-                   
-                      <span class="govuk-!-padding-1 govuk-!-margin-left-2 report-conference govuk-body-s tooltip-wrapper"
-                            (click)="copyToClipboard(conference);$event.stopPropagation()">
-                        Copy UID
-                        <div id="tooltip-1" class="tooltip">
-                          <div class="govuk-grid-row">
-                            <div class="govuk-grid-column-half">
-                              <p>Hearing UID copied to clipboard</p>
-                            </div>
+
+
+                    <span class="govuk-!-padding-1 govuk-!-margin-left-2 report-conference govuk-body-s tooltip-wrapper"
+                          (click)="copyToClipboard(conference);$event.stopPropagation()">
+                      Copy UID
+                      <div id="tooltip-1" class="tooltip">
+                        <div class="govuk-grid-row">
+                          <div class="govuk-grid-column-half">
+                            <p>Hearing UID copied to clipboard</p>
                           </div>
                         </div>
-                      </span>
-                    
+                      </div>
+                    </span>
+
                   </div>
                 </div>
 
               </div>
             </div>
-          <div class="govuk-grid-column-one-quarter">
+            <div class="govuk-grid-column-one-quarter">
               <div class="govuk-grid-column-one-half govuk-!-padding-top-3">
                 <app-participant-network-status *ngFor="let participant of getParticipantsForConference(conference)"
-                                              [participant]="participant" (showMonitorGraph)="showParticipantGraph({participant:participant, conferenceId:conference.id})"></app-participant-network-status>
-             </div>
+                                                [participant]="participant" (showMonitorGraph)="showParticipantGraph({participant:participant, conferenceId:conference.id})"></app-participant-network-status>
+              </div>
             </div>
           </div>
-      </dd>
-    </div>
-  </dl>
+        </dd>
+      </div>
+    </dl>
+    </perfect-scrollbar>
+
 </div>
