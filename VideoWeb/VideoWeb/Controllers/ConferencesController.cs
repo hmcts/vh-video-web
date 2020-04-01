@@ -126,8 +126,8 @@ namespace VideoWeb.Controllers
 
             try
             {
-                var conferences = await _videoApiClient.GetConferencesTodayAsync();
-                conferences = conferences.Where(ConferenceHelper.HasNotPassed).ToList();
+                var conferences = await _videoApiClient.GetConferencesTodayForAdminAsync();
+                conferences = conferences.Where(c => ConferenceHelper.HasNotPassed(c.Status, c.Closed_date_time)).ToList();
                 conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();
                 var tasks = conferences.Select(MapConferenceForVhoAsync).ToArray();
 
@@ -142,7 +142,7 @@ namespace VideoWeb.Controllers
         }
 
         private async Task<ConferenceForVhOfficerResponse> MapConferenceForVhoAsync(
-            ConferenceSummaryResponse conference)
+            ConferenceForAdminResponse conference)
         {
             if (!IsInStateToChat(conference))
             {
@@ -154,7 +154,7 @@ namespace VideoWeb.Controllers
             return ConferenceForVhOfficerResponseMapper.MapConferenceSummaryToResponseModel(conference, messages);
         }
 
-        private static bool IsInStateToChat(ConferenceSummaryResponse conference)
+        private static bool IsInStateToChat(ConferenceForAdminResponse conference)
         {
             return conference.Status == ConferenceState.NotStarted ||
                    conference.Status == ConferenceState.Paused ||
@@ -208,8 +208,7 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
 
-            var exceededTimeLimit = !ConferenceHelper.HasNotPassed(new ConferenceSummaryResponse
-                {Status = conference.Current_status, Closed_date_time = conference.Closed_date_time});
+            var exceededTimeLimit = !ConferenceHelper.HasNotPassed(conference.Current_status,conference.Closed_date_time);
             if (!isVhOfficer && (conference.Participants.All(x => x.Username.ToLower().Trim() != username) ||
                                  exceededTimeLimit))
             {

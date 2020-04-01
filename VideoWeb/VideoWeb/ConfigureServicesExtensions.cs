@@ -91,7 +91,7 @@ namespace VideoWeb
             services.AddScoped<ICustomJwtTokenProvider, CustomJwtTokenProvider>();
             services.AddScoped<IHashGenerator, HashGenerator>();
             services.AddScoped<IUserProfileService, AdUserProfileService>();
-            services.AddScoped<IConferenceCache, ConferenceCache>();
+            services.AddScoped<IConferenceCache, DistributedConferenceCache>();
             services.AddScoped<IMessageDecoder, MessageFromDecoder>();
             services.AddScoped<IHeartbeatRequestMapper, HeartbeatRequestMapper>();
 
@@ -121,7 +121,8 @@ namespace VideoWeb
                 NamingStrategy = new SnakeCaseNamingStrategy()
             };
 
-            services.AddSignalR()
+            var connectionStrings = container.GetService<ConnectionStrings>();
+            services.AddSignalR().AddAzureSignalR(connectionStrings.SignalR)
                 .AddNewtonsoftJsonProtocol(options =>
                 {
                     options.PayloadSerializerSettings.Formatting = Formatting.None;
@@ -132,6 +133,8 @@ namespace VideoWeb
                 })
                 .AddHubOptions<EventHub.Hub.EventHub>(options => { options.EnableDetailedErrors = true; });
 
+            services.AddStackExchangeRedisCache(options => { options.Configuration = connectionStrings.RedisCache; });
+            
             return services;
         }
 
