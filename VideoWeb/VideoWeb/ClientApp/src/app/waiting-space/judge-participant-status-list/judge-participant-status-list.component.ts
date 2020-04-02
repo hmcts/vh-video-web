@@ -29,10 +29,6 @@ export class JudgeParticipantStatusListComponent implements OnInit {
         return participant.status === ParticipantStatus.Available;
     }
 
-    getParticipantStatusText(participant: ParticipantResponse): string {
-        return participant.status === ParticipantStatus.Available ? 'Available' : 'Unavailable';
-    }
-
     private filterNonJudgeParticipants(): void {
         this.nonJudgeParticipants = this.conference.participants.filter(x => x.role !== Role.Judge);
     }
@@ -42,23 +38,7 @@ export class JudgeParticipantStatusListComponent implements OnInit {
     }
 
     getParticipantStatus(participant: ParticipantResponse): string {
-        if (participant.status === ParticipantStatus.Available) {
-            return 'connected';
-        } else if (participant.status === ParticipantStatus.Disconnected) {
-            return 'disconnected';
-        } else if (participant.status === ParticipantStatus.InConsultation) {
-            return 'in a consultation';
-        } else if (participant.status === ParticipantStatus.InHearing) {
-            return 'connected';
-        } else if (participant.status === ParticipantStatus.Joining) {
-            return 'joining';
-        } else if (participant.status === ParticipantStatus.NotSignedIn) {
-            return 'not signed in';
-        } else if (participant.status === ParticipantStatus.UnableToJoin) {
-            return 'unable to join';
-        } else if (participant.status === ParticipantStatus.None) {
-            return 'not signed in';
-        }
+        return participant.status === ParticipantStatus.Available ? 'Available' : 'Unavailable';
     }
 
     getParticipantStatusCss(participant: ParticipantResponse): string {
