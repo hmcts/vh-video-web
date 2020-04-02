@@ -19,7 +19,7 @@ namespace VideoWeb.AcceptanceTests.Builders
         {
             _request
                 .With(x => x.Representee = "")
-                .With(x => x.Solicitors_reference = "")
+                .With(x => x.Reference = "")
                 .With(x => x.Case_role_name = "Judge")
                 .With(x => x.Hearing_role_name = "Judge")
                 .With(x => x.Organisation_name = "");
@@ -34,7 +34,7 @@ namespace VideoWeb.AcceptanceTests.Builders
             _request
                 .With(x => x.Case_role_name = _user.CaseRoleName)
                 .With(x => x.Hearing_role_name = _user.HearingRoleName)
-                .With(x => x.Solicitors_reference = _user.SolicitorsReference)
+                .With(x => x.Reference = _user.Reference)
                 .With(x => x.Representee = "")
                 .With(x => x.Organisation_name = "")
                 .With(x => x.House_number = "102")
@@ -54,7 +54,7 @@ namespace VideoWeb.AcceptanceTests.Builders
                 .With(x => x.Case_role_name = _user.CaseRoleName)
                 .With(x => x.Hearing_role_name = _user.HearingRoleName)
                 .With(x => x.Representee = _user.Representee)
-                .With(x => x.Solicitors_reference = "")
+                .With(x => x.Reference = "")
                 .With(x => x.Organisation_name = "MoJ");
 
             _request = AddSharedProperties();
