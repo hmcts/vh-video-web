@@ -36,7 +36,7 @@ namespace VideoWeb.AcceptanceTests.Builders
             _request.Organisation_name = _participant.Organisation;
             _request.Postcode = _participant.Postcode;
             _request.Representee = _participant.Representee;
-            _request.Solicitors_reference = _participant.Solicitor_reference;
+            _request.Reference = _participant.Reference;
             _request.Street = _participant.Street;
             _request.Telephone_number = _participant.Telephone_number;
             _request.Title = $"{_appendWord}";
@@ -52,7 +52,7 @@ namespace VideoWeb.AcceptanceTests.Builders
             _request.Organisation_name = _participant.Organisation;
             _request.Postcode = _participant.Postcode;
             _request.Representee = _participant.Representee;
-            _request.Solicitors_reference = _participant.Solicitor_reference;
+            _request.Reference = _participant.Reference;
             _request.Street = _participant.Street;
             _request.Telephone_number = _participant.Telephone_number;
             _request.Title = "Mrs";
