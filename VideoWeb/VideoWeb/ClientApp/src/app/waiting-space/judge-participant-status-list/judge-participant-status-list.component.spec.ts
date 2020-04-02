@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { ConfigService } from 'src/app/services/api/config.service';
-import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -54,31 +54,15 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(component.isParticipantAvailable(availableParticipant)).toBeFalsy();
     });
 
-    it('should return unavailable text for all non-available statuses', () => {
-        expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.Disconnected }))).toBe('Unavailable');
-        expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.InConsultation }))).toBe(
-            'Unavailable'
-        );
-        expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.InHearing }))).toBe('Unavailable');
-        expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.Joining }))).toBe('Unavailable');
-        expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.NotSignedIn }))).toBe('Unavailable');
-        expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.UnableToJoin }))).toBe('Unavailable');
-        expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.None }))).toBe('Unavailable');
-    });
-
-    it('should return available text for when participant is available', () => {
-        expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.Available }))).toBe('Available');
-    });
-
     const participantStatusTestCases = [
-        { status: ParticipantStatus.Available, expected: 'connected' },
-        { status: ParticipantStatus.Disconnected, expected: 'disconnected' },
-        { status: ParticipantStatus.InConsultation, expected: 'in a consultation' },
-        { status: ParticipantStatus.InHearing, expected: 'connected' },
-        { status: ParticipantStatus.Joining, expected: 'joining' },
-        { status: ParticipantStatus.NotSignedIn, expected: 'not signed in' },
-        { status: ParticipantStatus.UnableToJoin, expected: 'unable to join' },
-        { status: ParticipantStatus.None, expected: 'not signed in' }
+        { status: ParticipantStatus.Available, expected: 'Available' },
+        { status: ParticipantStatus.Disconnected, expected: 'Unavailable' },
+        { status: ParticipantStatus.InConsultation, expected: 'Unavailable' },
+        { status: ParticipantStatus.InHearing, expected: 'Unavailable' },
+        { status: ParticipantStatus.Joining, expected: 'Unavailable' },
+        { status: ParticipantStatus.NotSignedIn, expected: 'Unavailable' },
+        { status: ParticipantStatus.UnableToJoin, expected: 'Unavailable' },
+        { status: ParticipantStatus.None, expected: 'Unavailable' }
     ];
 
     participantStatusTestCases.forEach(test => {

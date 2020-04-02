@@ -1,3 +1,4 @@
+using System;
 using AcceptanceTests.Common.PageObject.Helpers;
 using OpenQA.Selenium;
 
@@ -8,7 +9,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By HearingCaseDetails = By.XPath("//*[contains(@class,'hearing-details-col1-width')]");
         public static By HearingDate = By.XPath("//*[contains(@class,'hearing-details-col2-width')]");
         public static By ContactVhTeam = CommonLocators.ElementContainingText("Video hearings team");
-        public static By OtherParticipantsStatus(string displayName) => By.XPath($"//div[@class='govuk-grid-row']//strong[contains(text(), '{displayName}')]/../../div");
+        public static By OtherParticipantsStatus(Guid id) => By.Id($"p-{id:D}-status");
         public static By IndividualParticipantsList = By.XPath("//app-individual-participant-status-list/div//div[contains(@class,'govuk-grid-row')]//div[contains(@class,'govuk-grid-column')]");
         public static By ParticipantsList = By.XPath("//app-participant-status-list/div//div[contains(@class,'govuk-grid-row')]//div[contains(@class,'govuk-grid-column')]");
         public static By RowInformation(string id) => By.XPath($"//div[@id='{id}']/p");
