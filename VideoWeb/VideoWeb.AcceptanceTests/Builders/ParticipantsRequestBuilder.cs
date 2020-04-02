@@ -34,7 +34,7 @@ namespace VideoWeb.AcceptanceTests.Builders
             _request
                 .With(x => x.Case_role_name = _user.CaseRoleName)
                 .With(x => x.Hearing_role_name = _user.HearingRoleName)
-                .With(x => x.Reference = _user.SolicitorsReference)
+                .With(x => x.Reference = _user.Reference)
                 .With(x => x.Representee = "")
                 .With(x => x.Organisation_name = "")
                 .With(x => x.House_number = "102")
