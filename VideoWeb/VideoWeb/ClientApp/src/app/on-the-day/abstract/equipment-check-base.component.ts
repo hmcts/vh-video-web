@@ -73,7 +73,6 @@ export abstract class EquipmentCheckBaseComponent {
             await this.videoWebService.raiseSelfTestFailureEvent(
                 this.conferenceId,
                 new AddSelfTestFailureEventRequest({
-                    participant_id: this.participantId,
                     self_test_failure_reason: this.getFailureReason()
                 })
             );

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
@@ -17,10 +19,17 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
     {
         private VideoWeb.Controllers.MediaEventController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
+        private Mock<IConferenceCache> _conferenceCacheMock;
+        private Conference _testConference;
         
         [SetUp]
         public void Setup()
         {
+            _testConference = new EventComponentHelper().BuildConferenceForTest();
+            _testConference.Participants[0].Username = ClaimsPrincipalBuilder.Username;
+            
+            _conferenceCacheMock = new Mock<IConferenceCache>();
+            _conferenceCacheMock.Setup(x => x.GetConference(_testConference.Id)).Returns(_testConference);
             _videoApiClientMock = new Mock<IVideoApiClient>();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
@@ -31,10 +40,11 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 }
             };
 
-            _controller = new VideoWeb.Controllers.MediaEventController(_videoApiClientMock.Object)
-            {
-                ControllerContext = context
-            };
+            _controller =
+                new VideoWeb.Controllers.MediaEventController(_videoApiClientMock.Object, _conferenceCacheMock.Object)
+                {
+                    ControllerContext = context
+                };
         }
 
         [Test]
@@ -47,7 +57,6 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
             var conferenceId = Guid.NewGuid();
             var request = new AddSelfTestFailureEventRequest
             {
-                ParticipantId = Guid.NewGuid(),
                 SelfTestFailureReason = SelfTestFailureReason.BadScore
             };
             var result = await _controller.AddSelfTestFailureEventToConferenceAsync(conferenceId, request);
@@ -68,7 +77,6 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
             var conferenceId = Guid.NewGuid();
             var request = new AddSelfTestFailureEventRequest
             {
-                ParticipantId = Guid.NewGuid(),
                 SelfTestFailureReason = SelfTestFailureReason.BadScore
             };
             var result = await _controller.AddSelfTestFailureEventToConferenceAsync(conferenceId, request);
