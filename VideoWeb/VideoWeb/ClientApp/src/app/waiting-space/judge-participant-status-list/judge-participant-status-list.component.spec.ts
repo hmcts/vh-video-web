@@ -9,13 +9,20 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
+import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+
 import { JudgeParticipantStatusListComponent } from './judge-participant-status-list.component';
+import { VideoWebService } from '../../services/api/video-web.service';
+import { Logger } from '../../services/logging/logger-base';
 
 describe('JudgeParticipantStatusListComponent', () => {
     let component: JudgeParticipantStatusListComponent;
     let fixture: ComponentFixture<JudgeParticipantStatusListComponent>;
     let adalService: MockAdalService;
     let eventService: MockEventsService;
+    let videoWebService: MockVideoWebService;
+    let logger: MockLogger;
 
     configureTestSuite(() => {
         TestBed.configureTestingModule({
@@ -24,11 +31,15 @@ describe('JudgeParticipantStatusListComponent', () => {
             providers: [
                 { provide: AdalService, useClass: MockAdalService },
                 { provide: ConfigService, useClass: MockConfigService },
-                { provide: EventsService, useClass: MockEventsService }
+                { provide: EventsService, useClass: MockEventsService },
+                { provide: VideoWebService, useClass: MockVideoWebService },
+                { provide: Logger, useClass: MockLogger }
             ]
         });
         adalService = TestBed.get(AdalService);
         eventService = TestBed.get(EventsService);
+        videoWebService = TestBed.get(VideoWebService);
+        logger = TestBed.get(Logger);
     });
 
     beforeEach(() => {
@@ -53,6 +64,28 @@ describe('JudgeParticipantStatusListComponent', () => {
         const availableParticipant = component.conference.participants.find(x => x.status !== ParticipantStatus.Available);
         expect(component.isParticipantAvailable(availableParticipant)).toBeFalsy();
     });
+    it('should show input template for change judge display name', () => {
+      component.changeJudgeNameShow();
+      expect(component.showChangeJudgeDisplayName).toBe(true);
+      expect(component.newJudgeDisplayName).toBe(component.judge.display_name);
+    });
+    it('should hide input template for change judge display name', () => {
+      component.cancelJudgeDisplayName();
+      expect(component.showChangeJudgeDisplayName).toBe(false);
+    });
+    it('should update new judge display name with user input', () => {
+      const newName = 'new name';
+      component.onEnterJudgeDisplayName(newName);
+      expect(component.newJudgeDisplayName).toBe(newName);
+    });
+    it('should save new judge display name in database', () => {
+      const newName = 'new name';
+      component.onEnterJudgeDisplayName(newName);
+      component.saveJudgeDisplayName();
+      expect(component.judge.display_name).toBe(newName);
+      expect(component.showChangeJudgeDisplayName).toBe(false);
+    });
+
 
     const participantStatusTestCases = [
         { status: ParticipantStatus.Available, expected: 'Available' },

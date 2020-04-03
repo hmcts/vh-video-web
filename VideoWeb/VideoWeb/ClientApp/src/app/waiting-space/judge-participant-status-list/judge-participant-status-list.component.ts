@@ -42,7 +42,7 @@ export class JudgeParticipantStatusListComponent implements OnInit {
   }
 
   getParticipantStatus(participant: ParticipantResponse): string {
-        return participant.status === ParticipantStatus.Available ? 'Available' : 'Unavailable';
+    return participant.status === ParticipantStatus.Available ? 'Available' : 'Unavailable';
   }
 
   getParticipantStatusCss(participant: ParticipantResponse): string {
@@ -92,7 +92,7 @@ export class JudgeParticipantStatusListComponent implements OnInit {
     this.showChangeJudgeDisplayName = false;
     this.updateParticipant();
   }
-    
+
   cancelJudgeDisplayName() {
     this.showChangeJudgeDisplayName = false;
   }
@@ -104,11 +104,10 @@ export class JudgeParticipantStatusListComponent implements OnInit {
         display_name: this.judge.display_name,
         representee: this.judge.representee
       });
-    try {
-      console.log('Update Display Judge Name' + this.judge.display_name);
-      this.videoWebService.updateParticipantBookingDetails(this.conference.id, this.judge.id, updateParticipantRequest)
-    } catch (error) {
-      this.logger.error(`There was an error update judge display name ${this.judge.id}`, error);
-    }
+
+    this.videoWebService.updateParticipantBookingDetails(this.conference.id, this.judge.id, updateParticipantRequest)
+      .catch(error => {
+        this.logger.error(`There was an error update judge display name ${this.judge.id}`, error);
+      });
   }
 }

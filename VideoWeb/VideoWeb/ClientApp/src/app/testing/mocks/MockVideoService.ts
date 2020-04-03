@@ -106,6 +106,6 @@ export class MockVideoWebService implements IVideoWebApiService {
     }
 
     updateParticipantBookingDetails(conferenceId: string, participantId: string, updateParticipantRequest: UpdateParticipantRequest) {
-
+      return Promise.resolve();
     }
 }
