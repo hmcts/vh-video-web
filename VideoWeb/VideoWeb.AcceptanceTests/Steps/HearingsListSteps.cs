@@ -66,8 +66,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheParticipantCanSeeAListOfHearingsIncludingTheNewHearing()
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.HearingWithCaseNumber(_c.Test.Case.Number)).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantHearingDate(_c.Test.Case.Number)).Text.Should().Be($"{_c.Test.Hearing.Scheduled_date_time.ToString(DateFormats.HearingListPageDate)}");
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantHearingTime(_c.Test.Case.Number)).Text.Should().Be($"{_c.Test.Hearing.Scheduled_date_time.ToLocalTime():HH:mm}");
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantHearingDate(_c.Test.Case.Number)).Text.Should().Be($"{_c.TimeZone.Adjust(_c.Test.Hearing.Scheduled_date_time).ToString(DateFormats.HearingListPageDate)}");
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantHearingTime(_c.Test.Case.Number)).Text.Should().Be($"{_c.TimeZone.Adjust(_c.Test.Hearing.Scheduled_date_time):HH:mm}");
         }
 
         [Then(@"the user can see their details at the top of the hearing list")]
@@ -81,8 +81,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Clerk can see a list of hearings including the new hearing")]
         public void ThenTheClerkCanSeeAListOfHearingsIncludingTheNewHearing()
         {
-            var scheduledDateTime = _c.Test.Hearing.Scheduled_date_time;
-            scheduledDateTime = scheduledDateTime.ToLocalTime();
+            var scheduledDateTime = _c.TimeZone.Adjust(_c.Test.Hearing.Scheduled_date_time);
             var scheduledDuration = _c.Test.Hearing.Scheduled_duration;
 
             var rowData = new GetHearingRow()
@@ -137,7 +136,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             foreach (var conference in _c.Test.Conferences)
             {
-                if (conference.Scheduled_date_time.ToLocalTime().Day.Equals(DateTime.Now.ToLocalTime().Day))
+                if (_c.TimeZone.Adjust(conference.Scheduled_date_time).Day.Equals(DateTime.Now.ToLocalTime().Day))
                 {
                     _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsCaseName(conference.Id)).Displayed.Should().BeTrue();
                 }
