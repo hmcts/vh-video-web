@@ -2,16 +2,14 @@ import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { UserProfileResponse, Role } from 'src/app/services/clients/api-client';
+import { Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { BackNavigationStubComponent } from 'src/app/testing/stubs/back-navigation-stub';
@@ -44,7 +42,6 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
                         }
                     }
                 },
-                { provide: AdalService, useClass: MockAdalService },
                 { provide: VideoWebService, useClass: MockVideoWebService },
                 { provide: Logger, useClass: MockLogger },
                 { provide: ProfileService, useValue: profileServiceSpy }

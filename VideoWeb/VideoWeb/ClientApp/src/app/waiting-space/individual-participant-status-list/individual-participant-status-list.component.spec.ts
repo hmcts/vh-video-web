@@ -10,7 +10,8 @@ import {
     ParticipantResponse,
     ParticipantStatus,
     Role,
-    ConsultationAnswer
+    ConsultationAnswer,
+    RoomType
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -24,6 +25,7 @@ import { IndividualParticipantStatusListComponent } from './individual-participa
 import { Participant } from 'src/app/shared/models/participant';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
+import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
 
 describe('IndividualParticipantStatusListComponent', () => {
     let component: IndividualParticipantStatusListComponent;
@@ -176,12 +178,34 @@ describe('IndividualParticipantStatusListComponent', () => {
         await component.answerConsultationRequest('Accepted');
 
         expect(component.waitingForConsultationResponse).toBeFalsy();
-        expect(consultationService.respondToConsultationRequest).toHaveBeenCalled();
         expect(consultationService.respondToConsultationRequest).toHaveBeenCalledWith(
             conference,
             component.consultationRequester.base,
             component.consultationRequestee.base,
             ConsultationAnswer.Accepted
+        );
+    });
+
+    it('should respond to admin consultation with answer "Accepted"', async () => {
+        component.consultationRequestee = new Participant(conference.participants[1]);
+        const adminConsultationMessage = new AdminConsultationMessage(
+            conference.id,
+            RoomType.AdminRoom,
+            component.consultationRequestee.username,
+            null
+        );
+        component.waitingForConsultationResponse = true;
+        component.adminConsultationMessage = adminConsultationMessage;
+
+        spyOn(component, 'stopCallRinging');
+
+        await component.acceptVhoConsultationRequest();
+        expect(component.waitingForConsultationResponse).toBeFalsy();
+        expect(consultationService.respondToAdminConsultationRequest).toHaveBeenCalledWith(
+            conference,
+            component.consultationRequestee.base,
+            ConsultationAnswer.Accepted,
+            adminConsultationMessage.roomType
         );
     });
 });

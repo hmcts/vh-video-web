@@ -272,7 +272,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         }
 
         const request = new AddSelfTestFailureEventRequest({
-            participant_id: this.selfTestParticipantId,
             self_test_failure_reason: reason
         });
         if (this.conference && this.participant.role !== Role.Judge) {

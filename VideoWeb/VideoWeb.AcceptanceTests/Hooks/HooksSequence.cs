@@ -8,10 +8,11 @@ namespace VideoWeb.AcceptanceTests.Hooks
         HealthcheckHooks = 4,
         InitialiseBrowserHooks = 5,
         ConfigureDriverHooks = 6,
-        RemoveDataHooks = 7,
-        SignOutHooks = 8,
-        LogResultHooks = 9,
-        TearDownBrowserHooks = 10,
-        StopEdgeChromiumServer = 11
+        SetTimeZone = 7,
+        RemoveDataHooks = 8,
+        SignOutHooks = 9,
+        LogResultHooks = 10,
+        TearDownBrowserHooks = 11,
+        StopEdgeChromiumServer = 12,
     }
 }
