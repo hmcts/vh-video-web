@@ -88,5 +88,24 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
         }
+        
+        [Test]
+        public async Task should_call_api_when_cache_is_empty()
+        {
+            _conferenceCacheMock.SetupSequence(cache => cache.GetConference(_testConference.Id))
+                .Returns((Conference) null)
+                .Returns(_testConference);
+            _videoApiClientMock
+                .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
+                .Returns(Task.FromResult(default(object)));
+            
+            var conferenceId = _testConference.Id;
+            var request = new AddSelfTestFailureEventRequest
+            {
+                SelfTestFailureReason = SelfTestFailureReason.BadScore
+            };
+            await _controller.AddSelfTestFailureEventToConferenceAsync(conferenceId, request);
+            _videoApiClientMock.Verify(x => x.GetConferenceDetailsByIdAsync(_testConference.Id), Times.Once);
+        }
     }
 }
