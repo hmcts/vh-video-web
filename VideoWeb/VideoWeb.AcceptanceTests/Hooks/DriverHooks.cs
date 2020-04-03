@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using AcceptanceTests.Common.Configuration.Users;
+using AcceptanceTests.Common.Data.Time;
 using AcceptanceTests.Common.Driver;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
@@ -41,6 +42,12 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 scenarioContext.ScenarioInfo,
                 context.VideoWebConfig.TestConfig.TargetDevice,
                 context.VideoWebConfig.TestConfig.TargetBrowser);
+        }
+
+        [BeforeScenario(Order = (int)HooksSequence.SetTimeZone)]
+        public void SetTimeZone(TestContext context)
+        {
+            context.TimeZone = new TimeZone(context.VideoWebConfig.SauceLabsConfiguration.RunningOnSauceLabs(), context.VideoWebConfig.TestConfig.TargetBrowser);
         }
 
         [AfterScenario(Order = (int) HooksSequence.SignOutHooks)]
