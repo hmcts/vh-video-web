@@ -14,7 +14,8 @@ import {
     SelfTestPexipResponse,
     HearingVenueResponse,
     ParticipantHeartbeatResponse,
-    ConferenceForJudgeResponse
+    ConferenceForJudgeResponse,
+    UpdateParticipantRequest
 } from 'src/app/services/clients/api-client';
 import { Observable, of } from 'rxjs';
 import { ConferenceTestData } from './data/conference-test-data';
@@ -102,5 +103,9 @@ export class MockVideoWebService implements IVideoWebApiService {
 
     getParticipantHeartbeats(conferenceId: string, participantId: string): Promise<ParticipantHeartbeatResponse[]> {
         throw new Error('Method not implemented.');
+    }
+
+    updateParticipantBookingDetails(conferenceId: string, participantId: string, updateParticipantRequest: UpdateParticipantRequest) {
+
     }
 }

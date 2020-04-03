@@ -8,15 +8,32 @@
   <div id="p-row-{{judge.id}}" class="govuk-grid-row govuk-!-margin-bottom-1">
     <div class="govuk-!-margin-top-4">
       <div class="govuk-grid-column-two-thirds">
-        <div class="govuk-heading-m govuk-!-margin-bottom-0">Judge</div>
-        <p class="govuk-body-s govuk-!-margin-bottom-0"><strong>{{ judge.name }}</strong></p>
+        <div class="govuk-heading-m govuk-!-margin-bottom-0">
+          <span>Judge</span>
+          <span *ngIf="isUserJudge()"><a href="javascript:void(0);" (click)="changeJudgeNameShow()" class="govuk-body govuk-link vh-ml10">Edit</a></span>
+        </div>
+        <p class="govuk-body-s govuk-!-margin-bottom-0" *ngIf="!showChangeJudgeDisplayName"><strong>{{ judge.display_name }}</strong></p>
+
+        <div *ngIf="showChangeJudgeDisplayName">
+          <div class="govuk-form-group vh-mt10">
+            <input type="text" id="new-judge-name" #judgeInputName
+                   (blur)="onEnterJudgeDisplayName(judgeInputName.value)"
+                   value="{{newJudgeDisplayName}}" class="govuk-input govuk-input--width-20" />
+          </div>
+          <div class="vh-mt10">
+            <span><input type="button" id="editJudgeDisplayName" (click)="saveJudgeDisplayName()" value="Save" class="govuk-button" /></span>
+            <span><input type="button" id="cancelJudgeDisplayName" (click)="cancelJudgeDisplayName()" value="Cancel" class="govuk-button vh-ml10 hmcts-button--secondary" /></span>
+          </div>
+        </div>
+
       </div>
       <div class="govuk-grid-column-one-third">
         <img src="/assets/images/govuk-crest.png" height="50" width="50" class="govuk-header__logotype-crest"
-          alt="HM Courts &amp; Tribunals Service crest" />
+             alt="HM Courts &amp; Tribunals Service crest" />
       </div>
     </div>
   </div>
+
   <hr />
 
   <div *ngIf="litigantInPerson">

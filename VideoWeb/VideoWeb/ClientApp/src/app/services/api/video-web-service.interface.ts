@@ -13,7 +13,8 @@ import {
     ChatResponse,
     ConferenceForVhOfficerResponse,
     ParticipantHeartbeatResponse,
-    ConferenceForJudgeResponse
+    ConferenceForJudgeResponse,
+    UpdateParticipantRequest
 } from '../clients/api-client';
 import { Observable } from 'rxjs';
 export interface IVideoWebApiService {
@@ -36,4 +37,5 @@ export interface IVideoWebApiService {
     getHearingsVenue(): Promise<HearingVenueResponse[]>;
     getConferenceChatHistory(conferenceId: string): Promise<ChatResponse[]>;
     getParticipantHeartbeats(conferenceId: string, participantId: string): Promise<ParticipantHeartbeatResponse[]>;
+    updateParticipantBookingDetails(conferenceId: string, participantId: string, updateParticipantRequest: UpdateParticipantRequest) 
 }
