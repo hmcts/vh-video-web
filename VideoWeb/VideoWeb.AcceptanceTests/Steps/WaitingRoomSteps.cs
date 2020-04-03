@@ -118,12 +118,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the user can see other participants status")]
         public void ThenTheUserCanSeeOtherParticipantsStatus()
         {
-            foreach (var participant in _c.Test.ConferenceParticipants.Where(participant => participant.User_role == UserRole.Individual ||
-                                                                                            participant.User_role == UserRole.Representative))
+            var pats = _c.Test.ConferenceParticipants.Where(participant =>
+                participant.User_role == UserRole.Individual ||
+                participant.User_role == UserRole.Representative);
+            foreach (var participant in pats)
             {
                 _browsers[_c.CurrentUser.Key].Driver
-                    .WaitUntilVisible(WaitingRoomPage.OtherParticipantsStatus(participant.Id)).Text.Should()
-                    .BeEquivalentTo("Unavailable");
+                    .WaitUntilVisible(WaitingRoomPage.OtherParticipantsStatus(participant.Id)).Text.ToUpperInvariant().Should()
+                    .BeEquivalentTo("Not Signed In".ToUpperInvariant());
             }
         }
 

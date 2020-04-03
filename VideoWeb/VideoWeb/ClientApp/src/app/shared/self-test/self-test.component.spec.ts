@@ -102,7 +102,6 @@ describe('SelfTestComponent', () => {
         component.testCallResult = new TestCallScoreResponse({ passed: false, score: TestScore.Bad });
         await component.ngOnDestroy();
         const request = new AddSelfTestFailureEventRequest({
-            participant_id: component.participant.id,
             self_test_failure_reason: SelfTestFailureReason.BadScore
         });
         expect(videoWebService.raiseSelfTestFailureEvent).toHaveBeenCalledWith(component.conference.id, request);
@@ -113,7 +112,6 @@ describe('SelfTestComponent', () => {
         component.testCallResult = null;
         await component.ngOnDestroy();
         const request = new AddSelfTestFailureEventRequest({
-            participant_id: component.participant.id,
             self_test_failure_reason: SelfTestFailureReason.IncompleteTest
         });
         expect(videoWebService.raiseSelfTestFailureEvent).toHaveBeenCalledWith(component.conference.id, request);

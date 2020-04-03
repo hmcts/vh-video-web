@@ -237,7 +237,8 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         this.waitingForConsultationResponse = false;
         this.closeAllPCModals();
         this.stopCallRinging();
-        this.logger.event(`${this.consultationRequestee.displayName} responded to vho consultation: ${ConsultationAnswer.Accepted}`);
+        const displayName = this.videoWebService.getObfuscatedName(this.consultationRequestee.displayName);
+        this.logger.event(`${displayName} responded to vho consultation: ${ConsultationAnswer.Accepted}`);
         try {
             await this.consultationService.respondToAdminConsultationRequest(
                 this.conference,
