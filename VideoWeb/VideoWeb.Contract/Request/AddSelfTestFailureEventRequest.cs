@@ -1,12 +1,10 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Contract.Request
 {
     public class AddSelfTestFailureEventRequest
     {
-        public Guid ParticipantId { get; set; }
         public EventType EventType => EventType.SelfTestFailed;
         public SelfTestFailureReason SelfTestFailureReason { get; set; }
     }
