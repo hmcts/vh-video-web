@@ -8,7 +8,7 @@ variables:
     sonar.typescript.lcov.reportPaths=$(System.DefaultWorkingDirectory)/VideoWeb/VideoWeb/ClientApp/coverage/lcov.info
     sonar.typescript.exclusions=**/node_modules/**,**/typings.d.ts,**/main.ts,**/environments/environment*.ts,**/*routing.module.ts,**/api-client.ts
     sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)\Coverage\coverage.opencover.xml
-    sonar.coverage.exclusions= **/Testing.Common/**, VideoWeb/Views/*, VideoWeb/Pages/*, VideoWeb.AcceptanceTests/*, **/VideoWeb.Services/**, **/ClientApp/src/scripts/*.js, **/ClientApp/src/app/testing/**, **/ClientApp/src/app/vh-officer/helper.ts, **/ClientApp/src/app/services/events.service.ts, **/ClientApp/src/app/send-video-events/send-video-events.component.ts, **/ClientApp/src/app/services/api/video-web.service.ts
+    sonar.coverage.exclusions= **/Testing.Common/**, VideoWeb/Views/*, VideoWeb/Pages/*, VideoWeb.AcceptanceTests/*, **/VideoWeb.Services/**, **/ClientApp/src/scripts/*.js, **/ClientApp/src/app/testing/**, **/ClientApp/src/app/vh-officer/helper.ts, **/ClientApp/src/app/services/events.service.ts, **/ClientApp/src/app/send-video-events/send-video-events.component.ts, **/ClientApp/src/app/services/api/video-web.service.ts, **/ClientApp/src/app/waiting-space/analogue-clock/analogue-clock.component.ts
   integrationTestsAppSettingsTransform: '
     "AzureAd/TenantId":"$(tenantid)",
     "AzureAd/ClientId":"$(vh-video-web-appid)",
