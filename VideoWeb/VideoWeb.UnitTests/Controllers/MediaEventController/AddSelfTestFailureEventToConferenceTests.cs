@@ -1,4 +1,4 @@
-using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -21,17 +21,22 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
         private Mock<IVideoApiClient> _videoApiClientMock;
         private Mock<IConferenceCache> _conferenceCacheMock;
         private Conference _testConference;
+        private Participant _testParticipant;
         
         [SetUp]
         public void Setup()
         {
-            _testConference = new EventComponentHelper().BuildConferenceForTest();
-            _testConference.Participants[0].Username = ClaimsPrincipalBuilder.Username;
-            
             _conferenceCacheMock = new Mock<IConferenceCache>();
-            _conferenceCacheMock.Setup(x => x.GetConference(_testConference.Id)).Returns(_testConference);
             _videoApiClientMock = new Mock<IVideoApiClient>();
+            
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
+            
+            _testConference = new EventComponentHelper().BuildConferenceForTest();
+            _testParticipant = _testConference.Participants.First(x => !x.IsJudge());
+            _testParticipant.Username = ClaimsPrincipalBuilder.Username;
+
+            _conferenceCacheMock.Setup(x => x.GetConference(_testConference.Id)).Returns(_testConference);
+            
             var context = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext
@@ -54,7 +59,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .Returns(Task.FromResult(default(object)));
 
-            var conferenceId = Guid.NewGuid();
+            var conferenceId = _testConference.Id;
             var request = new AddSelfTestFailureEventRequest
             {
                 SelfTestFailureReason = SelfTestFailureReason.BadScore
@@ -74,7 +79,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
 
-            var conferenceId = Guid.NewGuid();
+            var conferenceId = _testConference.Id;
             var request = new AddSelfTestFailureEventRequest
             {
                 SelfTestFailureReason = SelfTestFailureReason.BadScore
