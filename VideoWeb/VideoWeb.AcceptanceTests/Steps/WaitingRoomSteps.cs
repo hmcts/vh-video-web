@@ -211,7 +211,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 _browsers[_c.CurrentUser.Key].ScrollTo(ClerkWaitingRoomPage.ParticipantStatus(user.Id));
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ParticipantStatus(user.Id)).Text.ToUpper().Trim()
-                    .Should().Be("CONNECTED");
+                    .Should().Be("AVAILABLE");
             }
         }
     }
