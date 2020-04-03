@@ -43,9 +43,9 @@ export class AnalogueClockComponent implements OnInit {
         this.updateClockUI(timeNow);
     }
     private updateClockUI(newTime: Date): void {
-        const hour_as_degree = ((newTime.getUTCHours() + newTime.getUTCMinutes() / 60) / 12) * 360;
-        const minute_as_degree = (newTime.getUTCMinutes() / 60) * 360;
-        const second_as_degree = ((newTime.getUTCSeconds() + newTime.getUTCMilliseconds() / 1000) / 60) * 360;
+        const hour_as_degree = ((newTime.getHours() + newTime.getHours() / 60) / 12) * 360;
+        const minute_as_degree = (newTime.getMinutes() / 60) * 360;
+        const second_as_degree = ((newTime.getSeconds() + newTime.getMilliseconds() / 1000) / 60) * 360;
         this.hourHand.style.transform = `rotate(${hour_as_degree}deg)`;
         this.minuteHand.style.transform = `rotate(${minute_as_degree}deg)`;
         this.secondHand.style.transform = `rotate(${second_as_degree}deg)`;

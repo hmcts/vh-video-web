@@ -55,15 +55,6 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(component.nonJudgeParticipants).toBeDefined();
     });
 
-    it('should return true when participant is available', () => {
-        const availableParticipant = component.conference.participants.find(x => x.status === ParticipantStatus.Available);
-        expect(component.isParticipantAvailable(availableParticipant)).toBeTruthy();
-    });
-
-    it('should return false when participant is not available', () => {
-        const availableParticipant = component.conference.participants.find(x => x.status !== ParticipantStatus.Available);
-        expect(component.isParticipantAvailable(availableParticipant)).toBeFalsy();
-    });
     it('should show input template for change judge display name', () => {
       component.changeJudgeNameShow();
       expect(component.showChangeJudgeDisplayName).toBe(true);
@@ -86,16 +77,15 @@ describe('JudgeParticipantStatusListComponent', () => {
       expect(component.showChangeJudgeDisplayName).toBe(false);
     });
 
-
     const participantStatusTestCases = [
-        { status: ParticipantStatus.Available, expected: 'Available' },
-        { status: ParticipantStatus.Disconnected, expected: 'Unavailable' },
-        { status: ParticipantStatus.InConsultation, expected: 'Unavailable' },
-        { status: ParticipantStatus.InHearing, expected: 'Unavailable' },
-        { status: ParticipantStatus.Joining, expected: 'Unavailable' },
-        { status: ParticipantStatus.NotSignedIn, expected: 'Unavailable' },
-        { status: ParticipantStatus.UnableToJoin, expected: 'Unavailable' },
-        { status: ParticipantStatus.None, expected: 'Unavailable' }
+        { status: ParticipantStatus.Available, expected: 'Connected' },
+        { status: ParticipantStatus.InConsultation, expected: 'In Consultation' },
+        { status: ParticipantStatus.InHearing, expected: 'Connected' },
+        { status: ParticipantStatus.Disconnected, expected: 'Disconnected' },
+        { status: ParticipantStatus.Joining, expected: 'Joining' },
+        { status: ParticipantStatus.NotSignedIn, expected: 'Not Signed In' },
+        { status: ParticipantStatus.UnableToJoin, expected: 'Unable To Join' },
+        { status: ParticipantStatus.None, expected: 'Not Signed In' }
     ];
 
     participantStatusTestCases.forEach(test => {
@@ -107,10 +97,10 @@ describe('JudgeParticipantStatusListComponent', () => {
     });
 
     const participantStatusCssTestCases = [
-        { status: ParticipantStatus.Available, expected: 'connected' },
+        { status: ParticipantStatus.Available, expected: 'available' },
         { status: ParticipantStatus.Disconnected, expected: 'disconnected' },
-        { status: ParticipantStatus.InConsultation, expected: 'in_a_consultation' },
-        { status: ParticipantStatus.InHearing, expected: 'in_a_hearing' },
+        { status: ParticipantStatus.InConsultation, expected: 'in_consultation' },
+        { status: ParticipantStatus.InHearing, expected: 'in_hearing' },
         { status: ParticipantStatus.Joining, expected: 'joining' },
         { status: ParticipantStatus.NotSignedIn, expected: 'not_signed_in' },
         { status: ParticipantStatus.UnableToJoin, expected: 'unable_to_join' },
