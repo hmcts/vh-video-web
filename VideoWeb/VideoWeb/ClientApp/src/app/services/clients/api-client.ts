@@ -2778,7 +2778,6 @@ export enum EventType {
 }
 
 export class AddMediaEventRequest implements IAddMediaEventRequest {
-    participant_id?: string;
     readonly event_type?: EventType;
 
     constructor(data?: IAddMediaEventRequest) {
@@ -2792,7 +2791,6 @@ export class AddMediaEventRequest implements IAddMediaEventRequest {
 
     init(_data?: any) {
         if (_data) {
-            this.participant_id = _data["participant_id"];
             (<any>this).event_type = _data["event_type"];
         }
     }
@@ -2806,14 +2804,12 @@ export class AddMediaEventRequest implements IAddMediaEventRequest {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["participant_id"] = this.participant_id;
         data["event_type"] = this.event_type;
         return data; 
     }
 }
 
 export interface IAddMediaEventRequest {
-    participant_id?: string;
     event_type?: EventType;
 }
 
@@ -2826,7 +2822,6 @@ export enum SelfTestFailureReason {
 }
 
 export class AddSelfTestFailureEventRequest implements IAddSelfTestFailureEventRequest {
-    participant_id?: string;
     readonly event_type?: EventType;
     self_test_failure_reason?: SelfTestFailureReason;
 
@@ -2841,7 +2836,6 @@ export class AddSelfTestFailureEventRequest implements IAddSelfTestFailureEventR
 
     init(_data?: any) {
         if (_data) {
-            this.participant_id = _data["participant_id"];
             (<any>this).event_type = _data["event_type"];
             this.self_test_failure_reason = _data["self_test_failure_reason"];
         }
@@ -2856,7 +2850,6 @@ export class AddSelfTestFailureEventRequest implements IAddSelfTestFailureEventR
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["participant_id"] = this.participant_id;
         data["event_type"] = this.event_type;
         data["self_test_failure_reason"] = this.self_test_failure_reason;
         return data; 
@@ -2864,7 +2857,6 @@ export class AddSelfTestFailureEventRequest implements IAddSelfTestFailureEventR
 }
 
 export interface IAddSelfTestFailureEventRequest {
-    participant_id?: string;
     event_type?: EventType;
     self_test_failure_reason?: SelfTestFailureReason;
 }

@@ -95,7 +95,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 this.isRepresentativeOrIndividual = true;
             }
         } catch (error) {
-            this.errorService.handleApiError(error);
+            this.errorService.goToUnauthorised();
         }
     }
 

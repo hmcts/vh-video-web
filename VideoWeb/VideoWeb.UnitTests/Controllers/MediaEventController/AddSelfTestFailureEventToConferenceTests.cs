@@ -1,4 +1,4 @@
-using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
@@ -17,12 +19,24 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
     {
         private VideoWeb.Controllers.MediaEventController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
+        private Mock<IConferenceCache> _conferenceCacheMock;
+        private Conference _testConference;
+        private Participant _testParticipant;
         
         [SetUp]
         public void Setup()
         {
+            _conferenceCacheMock = new Mock<IConferenceCache>();
             _videoApiClientMock = new Mock<IVideoApiClient>();
+            
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
+            
+            _testConference = new EventComponentHelper().BuildConferenceForTest();
+            _testParticipant = _testConference.Participants.First(x => !x.IsJudge());
+            _testParticipant.Username = ClaimsPrincipalBuilder.Username;
+
+            _conferenceCacheMock.Setup(x => x.GetConference(_testConference.Id)).Returns(_testConference);
+            
             var context = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext
@@ -31,10 +45,11 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 }
             };
 
-            _controller = new VideoWeb.Controllers.MediaEventController(_videoApiClientMock.Object)
-            {
-                ControllerContext = context
-            };
+            _controller =
+                new VideoWeb.Controllers.MediaEventController(_videoApiClientMock.Object, _conferenceCacheMock.Object)
+                {
+                    ControllerContext = context
+                };
         }
 
         [Test]
@@ -44,10 +59,9 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .Returns(Task.FromResult(default(object)));
 
-            var conferenceId = Guid.NewGuid();
+            var conferenceId = _testConference.Id;
             var request = new AddSelfTestFailureEventRequest
             {
-                ParticipantId = Guid.NewGuid(),
                 SelfTestFailureReason = SelfTestFailureReason.BadScore
             };
             var result = await _controller.AddSelfTestFailureEventToConferenceAsync(conferenceId, request);
@@ -65,15 +79,33 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
 
-            var conferenceId = Guid.NewGuid();
+            var conferenceId = _testConference.Id;
             var request = new AddSelfTestFailureEventRequest
             {
-                ParticipantId = Guid.NewGuid(),
                 SelfTestFailureReason = SelfTestFailureReason.BadScore
             };
             var result = await _controller.AddSelfTestFailureEventToConferenceAsync(conferenceId, request);
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
+        }
+        
+        [Test]
+        public async Task should_call_api_when_cache_is_empty()
+        {
+            _conferenceCacheMock.SetupSequence(cache => cache.GetConference(_testConference.Id))
+                .Returns((Conference) null)
+                .Returns(_testConference);
+            _videoApiClientMock
+                .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
+                .Returns(Task.FromResult(default(object)));
+            
+            var conferenceId = _testConference.Id;
+            var request = new AddSelfTestFailureEventRequest
+            {
+                SelfTestFailureReason = SelfTestFailureReason.BadScore
+            };
+            await _controller.AddSelfTestFailureEventToConferenceAsync(conferenceId, request);
+            _videoApiClientMock.Verify(x => x.GetConferenceDetailsByIdAsync(_testConference.Id), Times.Once);
         }
     }
 }
