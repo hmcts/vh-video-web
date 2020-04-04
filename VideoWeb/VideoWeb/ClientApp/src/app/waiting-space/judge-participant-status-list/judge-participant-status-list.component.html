@@ -72,11 +72,6 @@
           <p id="p-{{participant.id}}-name" class="govuk-heading-m govuk-!-margin-bottom-0">
             {{participant.name}}
           </p>
-          <p id="p-{{participant.id}}-role" class="govuk-body-m govuk-!-margin-bottom-1">
-            <strong>
-              {{ participant.role === 'Representative' ? 'Solicitor' : '' }}
-            </strong>
-          </p>
           <p id="p-{{participant.id}}-representee" *ngIf="participant.representee"
              class="govuk-body-m govuk-!-margin-bottom-1">
             Representing {{ participant.representee }}
