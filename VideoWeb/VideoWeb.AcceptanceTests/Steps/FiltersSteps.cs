@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using AcceptanceTests.Common.Driver.Browser;
 using TechTalk.SpecFlow;
