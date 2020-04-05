@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AcceptanceTests.Common.Configuration.Users;
@@ -18,6 +18,7 @@ namespace VideoWeb.AcceptanceTests.Builders
         private readonly List<UserAccount> _representatives;
         private readonly List<ParticipantRequest> _participants;
         private List<UserAccount> _userAccounts;
+        private string _venueName = "Birmingham Civil and Family Justice Centre";
 
         public HearingRequestBuilder()
         {
@@ -46,6 +47,12 @@ namespace VideoWeb.AcceptanceTests.Builders
             return this;
         }
 
+        public HearingRequestBuilder WithLocation(string venueName)
+        {
+            _venueName = venueName;
+            return this;
+        }
+        
         public BookNewHearingRequest Build()
         {
             _individuals.AddRange(UserManager.GetIndividualUsers(_userAccounts));
@@ -79,7 +86,7 @@ namespace VideoWeb.AcceptanceTests.Builders
             _request = Builder<BookNewHearingRequest>.CreateNew()
                 .With(x => x.Case_type_name = "Civil Money Claims")
                 .With(x => x.Hearing_type_name = "Application to Set Judgment Aside")
-                .With(x => x.Hearing_venue_name = "Birmingham Civil and Family Justice Centre")
+                .With(x => x.Hearing_venue_name = _venueName)
                 .With(x => x.Hearing_room_name = "Room 1")
                 .With(x => x.Other_information = "Other information")
                 .With(x => x.Scheduled_date_time = _scheduledTime)

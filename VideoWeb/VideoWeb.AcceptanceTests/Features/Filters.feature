@@ -1,18 +1,31 @@
 Feature: Filters
-	In order to avoid silly mistakes
-	As a math idiot
-	I want to be told the sum of two numbers
+	In order to make it easier to manage several hearings
+	As a Video Hearings Officer
+	I want to limit the number of displayed hearings
 
 @VIH-5503
 Scenario: VHO filters hearings by alert type
   Given I have a hearing
   And I have another hearing
-	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
   And the hearing has every type of alert
-	Then the Video Hearings Officer user should see a Suspended notification and a Suspended alert
-	When the user selects the Suspended alert
-	Then the Suspended checkbox is no longer enabled
-	And the Suspended alert should be updated with the details of the user that actioned the alert
+	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
+  When the user filters by alert with the options Disconnected,Self-test failed,Cam/mic blocked,Suspended
+  Then the hearings are filtered
 
 @VIH-5417
-Scenario: VHO Filters list of hearings on the day
+Scenario: VHO filters hearings by location
+  Given I have a hearing located in Birmingham Civil and Family Justice Centre
+  And I have another hearing located in Manchester Civil and Family Justice Centre
+	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
+  And the hearing has every type of alert
+  When the user filters by location with the options Manchester Civil and Family Justice Centre,Taylor House Tribunal Hearing Centre
+  Then the hearings are filtered
+
+@VIH-5417
+Scenario: VHO filters hearings by status
+  Given I have a hearing
+  And I have another hearing in -10 minutes time
+	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
+  And the hearing has every type of alert
+  When the user filters by status with the options In session,Paused,Suspended,Closed,Delayed
+  Then the hearings are filtered

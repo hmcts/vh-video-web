@@ -4,6 +4,6 @@
     <Parameter name="RunOnSauceLabs" value="false" />
     <Parameter name="TargetBrowser" value="Chrome"  />
     <Parameter name="TargetDevice" value="Desktop"  />
-    <Parameter name="TargetEnvironment" value="aat"  />
+    <Parameter name="TargetEnvironment" value=""  />
   </TestRunParameters>
 </RunSettings>

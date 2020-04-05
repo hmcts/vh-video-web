@@ -56,12 +56,6 @@ namespace VideoWeb.AcceptanceTests.Hooks
             context.TimeZone = new TimeZone(context.VideoWebConfig.SauceLabsConfiguration.RunningOnSauceLabs(), context.VideoWebConfig.TestConfig.TargetBrowser);
         }
 
-        [BeforeScenario(Order = (int)HooksSequence.SetTimeZone)]
-        public void SetTimeZone(TestContext context)
-        {
-            context.TimeZone = new TimeZone(context.VideoWebConfig.SauceLabsConfiguration.RunningOnSauceLabs(), context.VideoWebConfig.TestConfig.TargetBrowser);
-        }
-
         [AfterScenario(Order = (int) HooksSequence.SignOutHooks)]
         public void SignOutIfPossible(TestContext context)
         {
