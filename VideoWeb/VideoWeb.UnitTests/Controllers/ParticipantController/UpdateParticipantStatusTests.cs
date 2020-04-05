@@ -1,7 +1,5 @@
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -114,21 +112,6 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var result = await _controller.UpdateParticipantStatusAsync(conferenceId, request);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        }
-
-        private static ConferenceDetailsResponse CreateValidConferenceResponse()
-        {
-            var username = ClaimsPrincipalBuilder.Username;
-            var participants = Builder<ParticipantDetailsResponse>.CreateListOfSize(2).Build().ToList();
-            if (!string.IsNullOrWhiteSpace(username))
-            {
-                participants.First().Username = username;
-            }
-
-            var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-                .With(x => x.Participants = participants)
-                .Build();
-            return conference;
         }
     }
 }

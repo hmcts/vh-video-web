@@ -1,8 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { ConferenceResponse, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
-import { Hearing } from '../../shared/models/hearing';
-import { Participant } from '../../shared/models/participant';
 
 @Component({
     selector: 'app-judge-participant-status-list',
@@ -27,30 +25,6 @@ export class JudgeParticipantStatusListComponent implements OnInit {
         this.filterRepresentatives();
     }
 
-    isParticipantAvailable(participant: ParticipantResponse): boolean {
-        return participant.status === ParticipantStatus.Available;
-    }
-
-    getParticipantStatusText(participant: ParticipantResponse): string {
-        return participant.status === ParticipantStatus.Available ? 'Available' : 'Unavailable';
-    }
-
-    canCallParticipant(participant: ParticipantResponse): boolean {
-        const hearing = new Hearing(this.conference);
-        if (hearing.isStarting() || hearing.isDelayed() || hearing.isSuspended()) {
-            return false;
-        }
-
-        const patModel = new Participant(participant);
-        if (patModel.role === Role.Judge) {
-            return false;
-        }
-        if (patModel.base.username.toLocaleLowerCase().trim() === this.adalService.userInfo.userName.toLocaleLowerCase().trim()) {
-            return false;
-        }
-        return false;
-    }
-
     private filterNonJudgeParticipants(): void {
         this.nonJudgeParticipants = this.conference.participants.filter(x => x.role !== Role.Judge);
     }
@@ -60,43 +34,32 @@ export class JudgeParticipantStatusListComponent implements OnInit {
     }
 
     getParticipantStatus(participant: ParticipantResponse): string {
-        if (participant.status === ParticipantStatus.Available) {
-            return 'connected';
-        } else if (participant.status === ParticipantStatus.Disconnected) {
-            return 'disconnected';
-        } else if (participant.status === ParticipantStatus.InConsultation) {
-            return 'in a consultation';
-        } else if (participant.status === ParticipantStatus.InHearing) {
-            return 'connected';
-        } else if (participant.status === ParticipantStatus.Joining) {
-            return 'joining';
-        } else if (participant.status === ParticipantStatus.NotSignedIn) {
-            return 'not signed in';
-        } else if (participant.status === ParticipantStatus.UnableToJoin) {
-            return 'unable to join';
-        } else if (participant.status === ParticipantStatus.None) {
-            return 'not signed in';
+        if (participant.status === ParticipantStatus.None) {
+            return this.camelToSpaced(ParticipantStatus.NotSignedIn.toString());
         }
+        if (participant.status === ParticipantStatus.Available || participant.status === ParticipantStatus.InHearing) {
+            return 'Connected';
+        }
+        return this.camelToSpaced(participant.status.toString());
+    }
+
+    private camelToSpaced(word: string) {
+        return word.split(/(?=[A-Z])/).join(' ');
     }
 
     getParticipantStatusCss(participant: ParticipantResponse): string {
-        if (participant.status === ParticipantStatus.Available) {
-            return 'connected';
-        } else if (participant.status === ParticipantStatus.Disconnected) {
-            return 'disconnected';
-        } else if (participant.status === ParticipantStatus.InConsultation) {
-            return 'in_a_consultation';
-        } else if (participant.status === ParticipantStatus.InHearing) {
-            return 'in_a_hearing';
-        } else if (participant.status === ParticipantStatus.Joining) {
-            return 'joining';
-        } else if (participant.status === ParticipantStatus.NotSignedIn) {
-            return 'not_signed_in';
-        } else if (participant.status === ParticipantStatus.UnableToJoin) {
-            return 'unable_to_join';
-        } else if (participant.status === ParticipantStatus.None) {
-            return 'not_signed_in';
+        if (participant.status === ParticipantStatus.None) {
+            return this.camelToSnake(ParticipantStatus.NotSignedIn.toString());
+        } else {
+            return this.camelToSnake(participant.status.toString());
         }
+    }
+
+    private camelToSnake(word: string) {
+        return word
+            .split(/(?=[A-Z])/)
+            .join('_')
+            .toLowerCase();
     }
 
     isUserJudge(): boolean {

@@ -16,6 +16,7 @@ import { HeaderStubComponent } from './testing/stubs/header-stub';
 import { ProfileService } from './services/api/profile.service';
 import { BetaBannerStubComponent } from './testing/stubs/beta-banner-stub';
 import { LocationService } from './services/location.service';
+import { ErrorService } from './services/error.service';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -121,5 +122,14 @@ describe('AppComponent', () => {
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         await component.retrieveProfileRole();
         expect(component.isRepresentativeOrIndividual).toBeFalsy();
+    });
+
+    it('should send user to unauthorised page when profile cannot be found', async () => {
+        const errorService: ErrorService = TestBed.get(ErrorService);
+        spyOn(errorService, 'goToUnauthorised');
+        const error = { status: 401, isApiException: true };
+        profileServiceSpy.getUserProfile.and.returnValue(Promise.reject(error));
+        await component.retrieveProfileRole();
+        expect(errorService.goToUnauthorised).toHaveBeenCalled();
     });
 });

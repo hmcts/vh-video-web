@@ -1,15 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
-import { AddMediaEventRequest, ConferenceResponse, Role } from 'src/app/services/clients/api-client';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { PageUrls } from 'src/app/shared/page-url.constants';
-import 'webrtc-adapter';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { ProfileService } from 'src/app/services/api/profile.service';
-import { VhContactDetails } from 'src/app/shared/contact-information';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { AddMediaEventRequest, ConferenceResponse, Role } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { VhContactDetails } from 'src/app/shared/contact-information';
+import { PageUrls } from 'src/app/shared/page-url.constants';
+import 'webrtc-adapter';
 
 @Component({
     selector: 'app-switch-on-camera-microphone',
@@ -32,7 +31,6 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
         private router: Router,
         private route: ActivatedRoute,
         private videoWebService: VideoWebService,
-        private adalService: AdalService,
         private userMediaStreamService: UserMediaStreamService,
         private profileService: ProfileService,
         private errorService: ErrorService,
@@ -97,14 +95,8 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
     }
 
     async postPermissionDeniedAlert() {
-        const participant = this.conference.participants.find(
-            x => x.username.toLocaleLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase()
-        );
         try {
-            await this.videoWebService.raiseMediaEvent(
-                this.conference.id,
-                new AddMediaEventRequest({ participant_id: participant.id.toString() })
-            );
+            await this.videoWebService.raiseMediaEvent(this.conference.id, new AddMediaEventRequest());
         } catch (error) {
             this.logger.error('Failed to post media permission denied alert', error);
         }

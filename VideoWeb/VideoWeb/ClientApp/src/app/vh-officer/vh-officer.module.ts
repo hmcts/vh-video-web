@@ -14,6 +14,7 @@ import { VhoChatComponent } from './vho-chat/vho-chat.component';
 import { ParticipantNetworkStatusComponent } from './participant-network-status/participant-network-status.component';
 import { ChartsModule } from 'ng2-charts';
 import { MonitoringGraphComponent } from '../vh-officer/monitoring-graph/monitoring-graph.component';
+import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 
 @NgModule({
   declarations: [
@@ -32,10 +33,12 @@ import { MonitoringGraphComponent } from '../vh-officer/monitoring-graph/monitor
     SharedModule,
     ChartsModule,
     ClipboardModule,
-    VhOfficerRoutingModule
+    VhOfficerRoutingModule,
+    PerfectScrollbarModule
+
     ],
     providers: [
-        HearingsFilterOptionsService
+      HearingsFilterOptionsService,
     ],
     exports: [MonitoringGraphComponent]
 })

@@ -281,7 +281,8 @@
   </div>
 </div>
 
-<div data-sticky-element [ngClass]="{'govuk-sticky-element-footer': sFooter, 'govuk-sticky-element': !isFooter}" *ngIf="!isVisibleContents" id="sticky-element">
+<div data-sticky-element [ngClass]="{'govuk-sticky-element-footer': isFooter, 'govuk-sticky-element': !isFooter}"
+  *ngIf="!isVisibleContents" id="sticky-element">
   <a class="app-c-back-to-top dont-print" href="javascript:void(0)" (click)="goToDiv('accessContent')">
     <svg class="app-c-back-to-top__icon" xmlns="http://www.w3.org/2000/svg" width="13" height="17" viewbox="0 0 13 17">
       <path fill="currentColor" d="M6.5 0L0 6.5 1.4 8l4-4v12.7h2V4l4.3 4L13 6.4z"></path>
