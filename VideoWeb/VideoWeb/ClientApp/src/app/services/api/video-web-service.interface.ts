@@ -37,5 +37,5 @@ export interface IVideoWebApiService {
   getHearingsVenue(): Promise<HearingVenueResponse[]>;
   getConferenceChatHistory(conferenceId: string): Promise<ChatResponse[]>;
   getParticipantHeartbeats(conferenceId: string, participantId: string): Promise<ParticipantHeartbeatResponse[]>;
-  updateParticipantBookingDetails(conferenceId: string, participantId: string, updateParticipantRequest: UpdateParticipantRequest);
+  updateParticipantDetails(conferenceId: string, participantId: string, updateParticipantRequest: UpdateParticipantRequest);
 }

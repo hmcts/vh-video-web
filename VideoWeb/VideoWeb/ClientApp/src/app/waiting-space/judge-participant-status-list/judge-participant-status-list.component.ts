@@ -106,7 +106,7 @@ export class JudgeParticipantStatusListComponent implements OnInit {
         representee: this.judge.representee
       });
 
-    this.videoWebService.updateParticipantBookingDetails(this.conference.id, this.judge.id, updateParticipantRequest)
+    this.videoWebService.updateParticipantDetails(this.conference.id, this.judge.id, updateParticipantRequest)
       .catch(error => {
         this.logger.error(`There was an error update judge display name ${this.judge.id}`, error);
       });
