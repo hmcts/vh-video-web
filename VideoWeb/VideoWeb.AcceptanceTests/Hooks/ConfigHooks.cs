@@ -38,7 +38,8 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         private static bool RunOnSauceLabsFromLocal()
         {
-            return bool.Parse(NUnit.Framework.TestContext.Parameters["RunOnSauceLabs"] ?? "");
+            return NUnit.Framework.TestContext.Parameters["RunOnSauceLabs"] != null &&
+                   NUnit.Framework.TestContext.Parameters["RunOnSauceLabs"].Equals("true");
         }
 
         [BeforeScenario(Order = (int)HooksSequence.ConfigHooks)]

@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using AcceptanceTests.Common.Configuration.Users;
-using AcceptanceTests.Common.Data.Time;
 using AcceptanceTests.Common.Driver;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
