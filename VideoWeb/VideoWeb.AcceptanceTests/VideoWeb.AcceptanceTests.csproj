@@ -29,10 +29,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>appsettings.preview.json</TargetPath>
     </ContentWithTargetPath>
-      <ContentWithTargetPath Include="Configuration\Environments\appsettings.sandbox.json" Condition="Exists('Configuration\Environments\appsettings.sandbox.json')">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-          <TargetPath>appsettings.sandbox.json</TargetPath>
-      </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Configuration\Environments\appsettings.sandbox.json" Condition="Exists('Configuration\Environments\appsettings.sandbox.json')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>appsettings.sandbox.json</TargetPath>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Configuration\Environments\saucelabs.json" Condition="Exists('Configuration\Environments\saucelabs.json')">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <TargetPath>saucelabs.json</TargetPath>
+    </ContentWithTargetPath>
     <None Update="Data\TestData\CommonData.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -88,11 +92,11 @@
     <PackageReference Include="Selenium.WebDriver.GeckoDriver" Version="0.26.0" />
     <PackageReference Include="Selenium.WebDriver.IEDriver" Version="3.150.1" />
     <PackageReference Include="Selenium.WebDriver.MicrosoftDriver" Version="17.17134.0" />
-    <PackageReference Include="SpecFlow" Version="3.1.89" />
-    <PackageReference Include="SpecFlow.NUnit" Version="3.1.89" />
-    <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.1.89" />
+    <PackageReference Include="SpecFlow" Version="3.1.95" />
+    <PackageReference Include="SpecFlow.NUnit" Version="3.1.95" />
+    <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.1.95" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
-    <PackageReference Include="VH.AcceptanceTests.Common" Version="1.0.122" />
+    <PackageReference Include="VH.AcceptanceTests.Common" Version="1.0.132" />
   </ItemGroup>
 
   <ItemGroup>

@@ -32,6 +32,7 @@
     "@types/jquery": "^3.3.32",
     "@types/webrtc": "^0.0.26",
     "adal-angular4": "^3.0.16",
+    "appium-uiautomator2-driver": "^1.49.0",
     "applicationinsights-js": "^1.0.21",
     "aspnet-prerendering": "^3.0.1",
     "bootstrap": "^4.4.1",

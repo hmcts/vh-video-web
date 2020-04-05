@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using AcceptanceTests.Common.Configuration.Users;
 using AcceptanceTests.Common.Driver;
@@ -9,6 +10,7 @@ using BoDi;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
+using TimeZone = AcceptanceTests.Common.Data.Time.TimeZone;
 
 namespace VideoWeb.AcceptanceTests.Hooks
 {
@@ -36,11 +38,21 @@ namespace VideoWeb.AcceptanceTests.Hooks
             context.VideoWebConfig.TestConfig.TargetBrowser = DriverManager.GetTargetBrowser(NUnit.Framework.TestContext.Parameters["TargetBrowser"]);
             context.VideoWebConfig.TestConfig.TargetDevice = DriverManager.GetTargetDevice(NUnit.Framework.TestContext.Parameters["TargetDevice"]);
             DriverManager.KillAnyLocalDriverProcesses();
+            var options = new DriverOptions()
+            {
+                TargetBrowser = context.VideoWebConfig.TestConfig.TargetBrowser,
+                TargetDevice = context.VideoWebConfig.TestConfig.TargetDevice
+            };
             context.Driver = new DriverSetup(
                 context.VideoWebConfig.SauceLabsConfiguration, 
                 scenarioContext.ScenarioInfo,
-                context.VideoWebConfig.TestConfig.TargetDevice,
-                context.VideoWebConfig.TestConfig.TargetBrowser);
+                options);
+        }
+
+        [BeforeScenario(Order = (int)HooksSequence.SetTimeZone)]
+        public void SetTimeZone(TestContext context)
+        {
+            context.TimeZone = new TimeZone(context.VideoWebConfig.SauceLabsConfiguration.RunningOnSauceLabs(), context.VideoWebConfig.TestConfig.TargetBrowser);
         }
 
         [AfterScenario(Order = (int) HooksSequence.SignOutHooks)]
