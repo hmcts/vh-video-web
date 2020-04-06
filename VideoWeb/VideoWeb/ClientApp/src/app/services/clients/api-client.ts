@@ -1119,6 +1119,75 @@ export class ApiClient {
     }
 
     /**
+     * @param body (optional) 
+     * @return Success
+     */
+    updateParticipantDisplayName(conferenceId: string, participantId: string, body: UpdateParticipantRequest | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/conferences/{conferenceId}/participants/{participantId}/participantDisplayName";
+        if (conferenceId === undefined || conferenceId === null)
+            throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace("{conferenceId}", encodeURIComponent("" + conferenceId)); 
+        if (participantId === undefined || participantId === null)
+            throw new Error("The parameter 'participantId' must be defined.");
+        url_ = url_.replace("{participantId}", encodeURIComponent("" + participantId)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json", 
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateParticipantDisplayName(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateParticipantDisplayName(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdateParticipantDisplayName(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+            }));
+        } else if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("Unauthorized", status, _responseText, _headers);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
      * Get profile for logged in user
      * @return Success
      */
@@ -2778,7 +2847,6 @@ export enum EventType {
 }
 
 export class AddMediaEventRequest implements IAddMediaEventRequest {
-    participant_id?: string;
     readonly event_type?: EventType;
 
     constructor(data?: IAddMediaEventRequest) {
@@ -2792,7 +2860,6 @@ export class AddMediaEventRequest implements IAddMediaEventRequest {
 
     init(_data?: any) {
         if (_data) {
-            this.participant_id = _data["participant_id"];
             (<any>this).event_type = _data["event_type"];
         }
     }
@@ -2806,14 +2873,12 @@ export class AddMediaEventRequest implements IAddMediaEventRequest {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["participant_id"] = this.participant_id;
         data["event_type"] = this.event_type;
         return data; 
     }
 }
 
 export interface IAddMediaEventRequest {
-    participant_id?: string;
     event_type?: EventType;
 }
 
@@ -2826,7 +2891,6 @@ export enum SelfTestFailureReason {
 }
 
 export class AddSelfTestFailureEventRequest implements IAddSelfTestFailureEventRequest {
-    participant_id?: string;
     readonly event_type?: EventType;
     self_test_failure_reason?: SelfTestFailureReason;
 
@@ -2841,7 +2905,6 @@ export class AddSelfTestFailureEventRequest implements IAddSelfTestFailureEventR
 
     init(_data?: any) {
         if (_data) {
-            this.participant_id = _data["participant_id"];
             (<any>this).event_type = _data["event_type"];
             this.self_test_failure_reason = _data["self_test_failure_reason"];
         }
@@ -2856,7 +2919,6 @@ export class AddSelfTestFailureEventRequest implements IAddSelfTestFailureEventR
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["participant_id"] = this.participant_id;
         data["event_type"] = this.event_type;
         data["self_test_failure_reason"] = this.self_test_failure_reason;
         return data; 
@@ -2864,7 +2926,6 @@ export class AddSelfTestFailureEventRequest implements IAddSelfTestFailureEventR
 }
 
 export interface IAddSelfTestFailureEventRequest {
-    participant_id?: string;
     event_type?: EventType;
     self_test_failure_reason?: SelfTestFailureReason;
 }
@@ -2997,6 +3058,50 @@ export interface IParticipantHeartbeatResponse {
     browser_name?: string | undefined;
     browser_version?: string | undefined;
     timestamp?: Date;
+}
+
+export class UpdateParticipantRequest implements IUpdateParticipantRequest {
+    fullname!: string | undefined;
+    display_name!: string | undefined;
+    representee?: string | undefined;
+
+    constructor(data?: IUpdateParticipantRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.fullname = _data["fullname"];
+            this.display_name = _data["display_name"];
+            this.representee = _data["representee"];
+        }
+    }
+
+    static fromJS(data: any): UpdateParticipantRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateParticipantRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["fullname"] = this.fullname;
+        data["display_name"] = this.display_name;
+        data["representee"] = this.representee;
+        return data; 
+    }
+}
+
+export interface IUpdateParticipantRequest {
+    fullname: string | undefined;
+    display_name: string | undefined;
+    representee?: string | undefined;
 }
 
 export class UserProfileResponse implements IUserProfileResponse {

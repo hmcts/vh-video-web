@@ -9,6 +9,7 @@ namespace VideoWeb.AcceptanceTests.Data
 {
     public class Test
     {
+        public DateTime AlertTime { get; set; }
         public CaseResponse Case { get; set; }
         public CommonData CommonData { get; set; }
         public ConferenceDetailsResponse Conference { get; set; }
@@ -19,6 +20,7 @@ namespace VideoWeb.AcceptanceTests.Data
         public List<ParticipantResponse> HearingParticipants { get; set; }
         public Guid NewConferenceId { get; set; }
         public Guid NewHearingId { get; set; }
+        public ParticipantDetailsResponse Participant { get; set; }
         public bool SelfTestJourney { get; set; } = false;
         public DefaultData TestData { get; set; }
     }

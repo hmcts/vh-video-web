@@ -46,11 +46,12 @@ Scenario Outline: Video Hearings Officer receieves failed self test alert
 	Then the <Reason> checkbox is no longer enabled
 	And the <Reason> alert should be updated with the details of the user that actioned the alert
 	Examples:
-	| Reason						|
+	| Reason						            |
 	| Failed self-test (Camera)     |
 	| Failed self-test (Microphone) |
 	| Failed self-test (Video)      |
 	| Failed self-test (Bad Score)  |
+  | Failed self-test (Incomplete) |
 
 @VIH-4418
 Scenario: Video Hearings Officer does not receive disconnected alert when hearing is closed

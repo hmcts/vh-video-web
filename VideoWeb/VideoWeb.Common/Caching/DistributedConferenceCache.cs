@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
@@ -11,6 +12,11 @@ namespace VideoWeb.Common.Caching
     {
         private readonly IDistributedCache _distributedCache;
 
+        private static JsonSerializerSettings SerializerSettings => new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Objects, Formatting = Formatting.None
+        };
+
         public DistributedConferenceCache(IDistributedCache distributedCache)
         {
             _distributedCache = distributedCache;
@@ -19,10 +25,12 @@ namespace VideoWeb.Common.Caching
         public Task AddConferenceToCache(ConferenceDetailsResponse conferenceResponse)
         {
             var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse);
-            var serialisedConference = JsonConvert.SerializeObject(conference);
+            var serialisedConference = JsonConvert.SerializeObject(conference, SerializerSettings);
 
-            return _distributedCache.SetStringAsync(conference.Id.ToString(), serialisedConference,
-                new DistributedCacheEntryOptions()
+            var data = Encoding.UTF8.GetBytes(serialisedConference);
+
+            return _distributedCache.SetAsync(conference.Id.ToString(), data,
+                new DistributedCacheEntryOptions
                 {
                     SlidingExpiration = TimeSpan.FromHours(4)
                 });
@@ -31,9 +39,17 @@ namespace VideoWeb.Common.Caching
 
         public Conference GetConference(Guid id)
         {
-            var conferenceSerialised = _distributedCache.GetString(id.ToString());
-            var conference = JsonConvert.DeserializeObject<Conference>(conferenceSerialised);
-            return conference;
+            try
+            {
+                var data = _distributedCache.Get(id.ToString());
+                var conferenceSerialised = Encoding.UTF8.GetString(data);
+                var conference = JsonConvert.DeserializeObject<Conference>(conferenceSerialised, SerializerSettings);
+                return conference;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }

@@ -23,7 +23,7 @@
       "AlternativeEmail": "a42@a.com",
       "CaseRoleName": "Claimant",
       "HearingRoleName": "Claimant LIP",
-      "SolicitorsReference": "Automation01 Representative01"
+      "Reference": "Automation01 Representative01"
     },
     {
       "Role": "Individual",
@@ -33,7 +33,7 @@
       "AlternativeEmail": "a43@a.com",
       "CaseRoleName": "Defendant",
       "HearingRoleName": "Defendant LIP",
-      "SolicitorsReference": "Automation01 Representative02"
+      "Reference": "Automation01 Representative02"
     },
     {
       "Role": "Individual",
@@ -43,7 +43,7 @@
       "AlternativeEmail": "a44@a.com",
       "CaseRoleName": "Claimant",
       "HearingRoleName": "Claimant LIP",
-      "SolicitorsReference": "Automation01 Representative03"
+      "Reference": "Automation01 Representative03"
     },
     {
       "Role": "Individual",
@@ -53,7 +53,7 @@
       "AlternativeEmail": "a45@a.com",
       "CaseRoleName": "Defendant",
       "HearingRoleName": "Defendant LIP",
-      "SolicitorsReference": "Automation01 Representative04"
+      "Reference": "Automation01 Representative04"
     },
     {
       "Role": "Individual",
@@ -63,7 +63,7 @@
       "AlternativeEmail": "a52@a.com",
       "CaseRoleName": "Claimant",
       "HearingRoleName": "Claimant LIP",
-      "SolicitorsReference": "Automation01 Representative04"
+      "Reference": "Automation01 Representative04"
     },
     {
       "Role": "Clerk",
@@ -86,7 +86,7 @@
       "DisplayName": "Automation01 Representative01",
       "AlternativeEmail": "a48@a.com",
       "CaseRoleName": "Claimant",
-      "HearingRoleName": "Solicitor",
+      "HearingRoleName": "Representative",
       "Representee": "Automation01 Individual01"
     },
     {
@@ -96,7 +96,7 @@
       "DisplayName": "Automation01 Representative02",
       "AlternativeEmail": "a49@a.com",
       "CaseRoleName": "Defendant",
-      "HearingRoleName": "Solicitor",
+      "HearingRoleName": "Representative",
       "Representee": "Automation01 Individual02"
     },
     {
@@ -106,7 +106,7 @@
       "DisplayName": "Automation01 Representative03",
       "AlternativeEmail": "a50@a.com",
       "CaseRoleName": "Claimant",
-      "HearingRoleName": "Solicitor",
+      "HearingRoleName": "Representative",
       "Representee": "Automation01 Individual03"
     },
     {
@@ -116,7 +116,7 @@
       "DisplayName": "Automation01 Representative04",
       "AlternativeEmail": "a51@a.com",
       "CaseRoleName": "Defendant",
-      "HearingRoleName": "Solicitor",
+      "HearingRoleName": "Representative",
       "Representee": "Automation01 Individual04"
     },
     {
@@ -126,7 +126,7 @@
       "DisplayName": "Automation01 Representative05",
       "AlternativeEmail": "a53@a.com",
       "CaseRoleName": "Claimant",
-      "HearingRoleName": "Solicitor",
+      "HearingRoleName": "Representative",
       "Representee": "Automation01 Individual04"
     }
   ]
