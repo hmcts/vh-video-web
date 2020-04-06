@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using AcceptanceTests.Common.Configuration.Users;
 using AcceptanceTests.Common.Driver;
@@ -78,8 +79,15 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         private void SignOut(string key)
         {
-            _browsers[key].ClickLink(CommonPages.SignOutLink, 2);
-            _browsers[key].Driver.WaitUntilVisible(CommonPages.SignOutMessage).Displayed.Should().BeTrue();
+            try
+            {
+                _browsers[key].ClickLink(CommonPages.SignOutLink, 2);
+                _browsers[key].Driver.WaitUntilVisible(CommonPages.SignOutMessage).Displayed.Should().BeTrue();
+            }
+            catch
+            {
+                Console.WriteLine($"Attempted to sign out but link no longer visible");
+            }
         }
 
         [AfterScenario(Order = (int)HooksSequence.LogResultHooks)]
