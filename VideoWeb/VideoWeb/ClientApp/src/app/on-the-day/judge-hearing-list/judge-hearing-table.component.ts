@@ -28,11 +28,11 @@ export class JudgeHearingTableComponent implements OnInit {
     }
 
     getRepresentative(participants: ParticipantSummary[]): ParticipantSummary {
-        return participants.find(x => x.representee !== null);
+        return participants.find(x => x.representee !== null && x.representee.trim() !== '');
     }
 
     getIndividual(participants: ParticipantSummary[]): ParticipantSummary {
-        return participants.find(x => x.representee === null);
+        return participants.find(x => x.representee === null || x.representee.trim() === '');
     }
 
     signIntoConference(hearing: JudgeHearingSummary) {
