@@ -1,23 +1,41 @@
 <div>
+
+  <div id="p-row-{{judge.id}}" class="govuk-grid-row govuk-!-margin-bottom-1">
+    <div class="govuk-!-margin-top-4">
+      <div class="govuk-grid-column-one-third">
+        <img src="/assets/images/govuk-crest.png" height="50" width="50" class="govuk-header__logotype-crest"
+             alt="HM Courts &amp; Tribunals Service crest" />
+      </div>
+
+      <div class="govuk-grid-column-two-thirds">
+        <div class="govuk-heading-m govuk-!-margin-bottom-0">
+          <span>Judge</span>
+          <span *ngIf="isUserJudge()"><a href="javascript:void(0);" (click)="changeJudgeNameShow()" class="govuk-body govuk-link vh-ml10">Edit</a></span>
+        </div>
+        <p class="govuk-body-s govuk-!-margin-bottom-0" *ngIf="!showChangeJudgeDisplayName"><strong>{{ judge.display_name }}</strong></p>
+
+        <div *ngIf="showChangeJudgeDisplayName">
+          <div class="govuk-form-group vh-mt10">
+            <input type="text" id="new-judge-name" #judgeInputName
+                   (blur)="onEnterJudgeDisplayName(judgeInputName.value)"
+                   value="{{newJudgeDisplayName}}" class="govuk-input govuk-input--width-20" />
+          </div>
+          <div class="vh-mt10">
+            <span><input type="button" id="editJudgeDisplayName" (click)="saveJudgeDisplayName()" value="Save" class="govuk-button" /></span>
+            <span><input type="button" id="cancelJudgeDisplayName" (click)="cancelJudgeDisplayName()" value="Cancel" class="govuk-button vh-ml10 govuk-button--secondary" /></span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <hr />
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <h2 class="govuk-heading-m">Participants</h2>
     </div>
   </div>
-
-  <div id="p-row-{{judge.id}}" class="govuk-grid-row govuk-!-margin-bottom-1">
-    <div class="govuk-!-margin-top-4">
-      <div class="govuk-grid-column-two-thirds">
-        <div class="govuk-heading-m govuk-!-margin-bottom-0">Judge</div>
-        <p class="govuk-body-s govuk-!-margin-bottom-0"><strong>{{ judge.name }}</strong></p>
-      </div>
-      <div class="govuk-grid-column-one-third">
-        <img src="/assets/images/govuk-crest.png" height="50" width="50" class="govuk-header__logotype-crest"
-          alt="HM Courts &amp; Tribunals Service crest" />
-      </div>
-    </div>
-  </div>
-  <hr />
 
   <div *ngIf="litigantInPerson">
     <div *ngFor="let participant of individualParticipants" class="govuk-grid-row govuk-!-margin-bottom-1">
@@ -35,7 +53,7 @@
 
         <div class="govuk-body-s govuk-!-margin-bottom-3" *ngIf="isUserJudge()">
           <label id="p-{{participant.id}}-status"
-            class="govuk-body-s label-status label-status--{{getParticipantStatusCss(participant)}}">
+                 class="govuk-body-s label-status label-status--{{getParticipantStatusCss(participant)}}">
             {{ getParticipantStatus(participant) }}
           </label>
         </div>
@@ -55,7 +73,7 @@
             {{participant.name}}
           </p>
           <p id="p-{{participant.id}}-representee" *ngIf="participant.representee"
-            class="govuk-body-m govuk-!-margin-bottom-1">
+             class="govuk-body-m govuk-!-margin-bottom-1">
             Representing {{ participant.representee }}
           </p>
           <p id="p-{{participant.id}}-casetype" class="govuk-body-m govuk-!-margin-bottom-3">
@@ -65,7 +83,7 @@
 
         <div class="govuk-body-s govuk-!-margin-bottom-3" *ngIf="isUserJudge()">
           <label id="p-{{participant.id}}-status"
-            class="govuk-body-s label-status label-status--{{getParticipantStatusCss(participant)}}">
+                 class="govuk-body-s label-status label-status--{{getParticipantStatusCss(participant)}}">
             {{ getParticipantStatus(participant) }}
           </label>
         </div>
