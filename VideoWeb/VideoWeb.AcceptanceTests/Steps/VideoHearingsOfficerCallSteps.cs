@@ -31,7 +31,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the Video Hearings Officer starts a call with (.*)")]
         public void WhenTheVideoHearingsOfficerStartsACallWithIndividual(string user)
         {
-            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Conference.Id));
+            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.SwitchTo().Frame(AdminPanelPage.AdminIframeId);
             var participant = _c.Test.ConferenceParticipants.Find(x => x.Name.ToLower().Contains(user.ToLower()));
@@ -90,7 +90,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the option to call (.*) is not visible")]
         public void ThenTheOptionToCallIsNotVisible(string user)
         {
-            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Conference.Id));
+            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.SwitchTo().Frame(AdminPanelPage.AdminIframeId);
             var participant = _c.Test.ConferenceParticipants.Find(x => x.Name.ToLower().Contains(user.ToLower()));

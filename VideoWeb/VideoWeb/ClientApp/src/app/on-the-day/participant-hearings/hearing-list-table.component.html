@@ -10,21 +10,21 @@
     <tr *ngFor="let conference of conferences" id="judges-list" class="govuk-table__row">
 
       <td class="govuk-table__cell">
-        <p class="govuk-!-margin-0 govuk-!-padding-0">{{conference.scheduled_date_time | date:'dd MMM yyyy' }}</p>
-        <p class="govuk-!-margin-0 govuk-!-padding-0">{{conference.scheduled_date_time | date:'HH:mm' }}</p>
+        <p id="participant-scheduled-date-{{conference.id}}" class="govuk-!-margin-0 govuk-!-padding-0">{{conference.scheduled_date_time | date:'dd MMM yyyy' }}</p>
+        <p id="participant-scheduled-time-{{conference.id}}" class="govuk-!-margin-0 govuk-!-padding-0">{{conference.scheduled_date_time | date:'HH:mm' }}</p>
       </td>
       <td class="govuk-table__cell">
-        <p class="govuk-!-margin-0 govuk-!-padding-0">{{ conference.case_name }}</p>
-        <p class="govuk-!-margin-0 govuk-!-padding-0">Case number: <strong>{{conference.case_number}}</strong></p>
+        <p id="participant-case-name-{{conference.id}}" class="govuk-!-margin-0 govuk-!-padding-0">{{ conference.case_name }}</p>
+        <p id="participant-case-number-{{conference.id}}" class="govuk-!-margin-0 govuk-!-padding-0">Case number: <strong>{{conference.case_number}}</strong></p>
       </td>
       <td class="govuk-table__cell">
-        <button id="start-hearing-btn-{{conference.id}}" class="govuk-button" data-module="govuk-button" type="button"
+        <button id="sign-into-hearing-btn-{{conference.id}}" class="govuk-button" data-module="govuk-button" type="button"
           *ngIf="canStartHearing(conference)" (click)="signIntoConference(conference)" aria-label="Sign into hearing">
           Sign into hearing
         </button>
         <span *ngIf="!canStartHearing(conference)">
-          <p class="govuk-!-margin-0 govuk-!-padding-0">Sign in {{getSignInDate(conference) }}</p>
-          <p class="govuk-!-margin-0 govuk-!-padding-0">from {{getSignInTime(conference) | date:'HH:mm' }} </p>
+          <p id="participant-sign-in-date-{{conference.id}}" class="govuk-!-margin-0 govuk-!-padding-0">Sign in {{getSignInDate(conference) }}</p>
+          <p id="participant-sign-in-time-{{conference.id}}" class="govuk-!-margin-0 govuk-!-padding-0">from {{getSignInTime(conference) | date:'HH:mm' }} </p>
         </span>
       </td>
     </tr>

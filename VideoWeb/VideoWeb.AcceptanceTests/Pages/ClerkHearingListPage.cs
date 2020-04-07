@@ -1,22 +1,28 @@
-﻿using AcceptanceTests.Common.PageObject.Helpers;
+using System;
+using AcceptanceTests.Common.PageObject.Helpers;
 using OpenQA.Selenium;
 
 namespace VideoWeb.AcceptanceTests.Pages
 {
     public static class ClerkHearingListPage
     {
-        private static string ClerkHearingRow(string caseNumber) => $"//*[contains(text(),'{caseNumber}')]/ancestor::tr";
-        public static By ClerkHearingListTitle = CommonLocators.ElementContainingText("Video hearings for");
-        public static By ClerkHearingDate(string date) => CommonLocators.ElementContainingText(date);
-        public static By ClerkHearingTime(string caseNumber) => By.XPath($"{ClerkHearingRow(caseNumber)}//p[contains(text(),'-')]");
-        public static By ClerkHearingJudge(string caseNumber, string judgeName) => By.XPath($"{ClerkHearingRow(caseNumber)}//p[contains(text(),'{judgeName}')]");
-        public static By ClerkHearingCaseName(string caseNumber) => By.XPath($"(//*[contains(text(),'{caseNumber}')]/../../p)[1]");
-        public static By ClerkHearingCaseType(string caseNumber) => By.XPath($"(//*[contains(text(),'{caseNumber}')]/../../p)[2]");
-        public static By ClerkHearingRepresentatives(string caseNumber) => By.XPath($"{ClerkHearingRow(caseNumber)}//p[contains(text(),'Solicitor')]/span");
-        public static By ClerkHearingIndividuals(string caseNumber) => By.XPath($"{ClerkHearingRow(caseNumber)}//p[contains(text(),'for')]/span");
-        public static By StartHearingButton(string caseNumber) => By.XPath($"{ClerkHearingRow(caseNumber)}//button");
-        public static By ClerkContactUs = CommonLocators.ElementContainingText("Do you need help?");
-        public static By ClerkPhoneNumber = CommonLocators.ElementContainingText("0300 303 0655");
+        public static By NoHearingsWarningMessage = CommonLocators.ElementContainingText("You have no video hearings");
+        public static By HearingListTitle = CommonLocators.ElementContainingText("Video hearings for");
+        public static By Date(string date) => CommonLocators.ElementContainingText(date);
+        public static By Time(Guid conferenceId) => By.Id($"scheduled-datetime-{conferenceId:D}");
+        public static By Judge(Guid conferenceId) => By.Id($"judge-{conferenceId:D}");
+        public static By CaseName(Guid conferenceId) => By.Id($"case-name-{conferenceId:D}");
+        public static By CaseType(Guid conferenceId) => By.Id($"case-type-{conferenceId:D}");
+        public static By CaseNumber(Guid conferenceId) => By.Id($"case-number-{conferenceId:D}");
+        public static By ApplicantIndividualName(Guid conferenceId) => By.Id($"applicant-only-display-name-case-group-{conferenceId:D}");
+        public static By ApplicantRepresentativeName(Guid conferenceId) => By.Id($"applicant-rep-display-name-{conferenceId:D}");
+        public static By ApplicantRepresenteeName(Guid conferenceId) => By.Id($"applicant-rep-representee-{conferenceId:D}");
+        public static By RespondentIndividualName(Guid conferenceId) => By.Id($"respondent-only-display-name-case-group-{conferenceId:D}");
+        public static By RespondentRepresentativeName(Guid conferenceId) => By.Id($"respondent-rep-display-name-{conferenceId:D}");
+        public static By RespondentRepresenteeName(Guid conferenceId) => By.Id($"respondent-rep-representee-{conferenceId:D}");
+        public static By StartHearingButton(Guid conferenceId) => By.Id($"start-hearing-btn-{conferenceId:D}");
+        public static By ContactUs = CommonLocators.ElementContainingText("Do you need help?");
+        public static By PhoneNumber = CommonLocators.ElementContainingText("0300 303 0655");
         public static By CheckEquipmentButton = CommonLocators.ButtonWithInnerText("Check equipment");
     }
 }
