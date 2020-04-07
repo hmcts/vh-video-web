@@ -40,6 +40,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Given(@"I have a hearing in (.*) minutes time")]
+        [Given(@"I have another hearing in (.*) minutes time")]
         public void GivenIHaveAHearingAndAConferenceInMinutesTime(int minutes)
         {
             CheckThatTheHearingWillBeCreatedForToday(DateTime.Now.ToUniversalTime().AddMinutes(minutes));
@@ -57,12 +58,21 @@ namespace VideoWeb.AcceptanceTests.Steps
             GetTheNewConferenceDetails();
         }
 
-        public void GivenIHaveAHearing(int minutes = 0)
+        [Given(@"I have a hearing located in (.*)")]
+        [Given(@"I have another hearing located in (.*)")]
+        public void GivenIHaveAHearingInLocation(string location)
+        {
+            GivenIHaveAHearing(30, location);
+            GetTheNewConferenceDetails();
+        }
+
+        public void GivenIHaveAHearing(int minutes = 0, string location = "Birmingham Civil and Family Justice Centre")
         {
             var request = new HearingRequestBuilder()
                 .WithUserAccounts(_c.UserAccounts)
                 .WithScheduledTime(DateTime.Now.ToUniversalTime().AddMinutes(minutes))
                 .WithScheduledDuration(HearingDuration)
+                .WithLocation(location)
                 .Build();
 
             var hearingResponse = _c.Apis.BookingsApi.CreateHearing(request);

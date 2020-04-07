@@ -27,17 +27,13 @@ namespace VideoWeb.AcceptanceTests.Steps
     public sealed class HearingAlertsSteps
     {
         private const int Timeout = 10;
-        private const string ParticipantKey = "participant";
-        private const string AlertTimeKey = "alert time";
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _c;
-        private readonly ScenarioContext _scenarioContext;
 
-        public HearingAlertsSteps(Dictionary<string, UserBrowser> browsers, TestContext context, ScenarioContext scenarioContext)
+        public HearingAlertsSteps(Dictionary<string, UserBrowser> browsers, TestContext context)
         {
             _browsers = browsers;
             _c = context;
-            _scenarioContext = scenarioContext;
         }
 
         [When(@"a participant has chosen to block user media")]
@@ -103,15 +99,11 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private ParticipantDetailsResponse GetUserFromConferenceDetails(string userRole)
         {
-            var participantUser = userRole.ToLower().Equals("judge") || userRole.ToLower().Equals("clerk")
+            _c.Test.Participant = userRole.ToLower().Equals("judge") || userRole.ToLower().Equals("clerk")
                 ? _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(Role.Judge.ToString()))
                 : _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(Role.Individual.ToString()));
 
-            if (participantUser.Id == Guid.Empty)
-                throw new DataMisalignedException("Participant Id is not set");
-
-            _scenarioContext.Add(ParticipantKey, participantUser);
-            return participantUser;
+            return _c.Test.Participant;
         }
 
         [When(@"the user selects the (.*) alert")]
@@ -134,8 +126,6 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             var response = SendEventToVideoWeb(request);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-            _scenarioContext.Remove(ParticipantKey);
-            _scenarioContext.Remove(AlertTimeKey);
         }
 
         [Then(@"the Video Hearings Officer user should not see an alert")]
@@ -160,9 +150,9 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
 
             var alerts = GetAlerts();
-            var timeOfAlert = _scenarioContext.Get<DateTime>(AlertTimeKey).ToString(DateFormats.AlertMessageTimestamp);
-            var timeOfAlertMinusAMinute = _scenarioContext.Get<DateTime>(AlertTimeKey).AddMinutes(-1).ToString(DateFormats.AlertMessageTimestamp);
-            var timeOfAlertPlusAMinute = _scenarioContext.Get<DateTime>(AlertTimeKey).AddMinutes(1).ToString(DateFormats.AlertMessageTimestamp);
+            var timeOfAlert = _c.TimeZone.Adjust(_c.Test.AlertTime).ToString(DateFormats.AlertMessageTimestamp);
+            var timeOfAlertMinusAMinute = _c.TimeZone.Adjust(_c.Test.AlertTime).AddMinutes(-1).ToString(DateFormats.AlertMessageTimestamp);
+            var timeOfAlertPlusAMinute = _c.TimeZone.Adjust(_c.Test.AlertTime).AddMinutes(1).ToString(DateFormats.AlertMessageTimestamp);
 
             foreach (var alert in alerts)
             {
@@ -176,7 +166,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             if (alertType.ToLower().Contains("failed self-test") || alertType.ToLower().Equals("disconnected"))
             {
-                alerts.First(x => x.AlertType.ToLower().Contains(alertType.ToLower())).Username.Should().Be(_scenarioContext.Get<ParticipantDetailsResponse>(ParticipantKey).Name);
+                alerts.First(x => x.AlertType.ToLower().Contains(alertType.ToLower())).Username.Should().Be(_c.Test.Participant.Name);
             }
         }
 
@@ -253,13 +243,13 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private IRestResponse SendEventToVideoApi(CallbackEvent request)
         {
-            _scenarioContext.Add(AlertTimeKey, DateTime.Now);
+            _c.Test.AlertTime = _c.TimeZone.Adjust(DateTime.Now);
             return _c.Apis.VideoApi.SendEvent(request);
         }
 
         private IRestResponse SendEventToVideoWeb(CallbackEvent request)
         {
-            _scenarioContext.Add(AlertTimeKey, DateTime.Now);
+            _c.Test.AlertTime = _c.TimeZone.Adjust(DateTime.Now);
             _c.Tokens.CallbackBearerToken = GenerateTemporaryTokens.SetCustomJwTokenForCallback(_c.VideoWebConfig.VideoWebCustomTokenSettings);
             return new VideoWebApiManager(_c.VideoWebConfig.VhServices.VideoWebUrl, _c.Tokens.CallbackBearerToken).SendCallBackEvent(request);
         }

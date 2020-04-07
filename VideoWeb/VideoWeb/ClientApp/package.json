@@ -49,7 +49,7 @@
     "ngx-moment": "^3.5.0",
     "ngx-perfect-scrollbar": "^8.0.0",
     "rxjs": "^6.5.4",
-    "snyk": "^1.298.0",
+    "snyk": "^1.298.1",
     "webrtc-adapter": "^7.4.0",
     "zone.js": "~0.10.2"
   },

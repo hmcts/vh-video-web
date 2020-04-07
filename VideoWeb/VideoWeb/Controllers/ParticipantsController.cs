@@ -32,8 +32,8 @@ namespace VideoWeb.Controllers
 
         [HttpGet("{conferenceId}/participants/{participantId}/selftestresult")]
         [SwaggerOperation(OperationId = "GetTestCallResult")]
-        [ProducesResponseType(typeof(TestCallScoreResponse), (int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(TestCallScoreResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetTestCallResultForParticipantAsync(Guid conferenceId, Guid participantId)
         {
             try
@@ -52,7 +52,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> UpdateParticipantStatusAsync(Guid conferenceId, 
+        public async Task<IActionResult> UpdateParticipantStatusAsync(Guid conferenceId,
             UpdateParticipantStatusEventRequest updateParticipantStatusEventRequest)
         {
             var username = User.Identity.Name;
@@ -106,8 +106,8 @@ namespace VideoWeb.Controllers
 
         [HttpGet("independentselftestresult")]
         [SwaggerOperation(OperationId = "GetIndependentTestCallResult")]
-        [ProducesResponseType(typeof(TestCallScoreResponse), (int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(TestCallScoreResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetIndependentTestCallResultAsync(Guid participantId)
         {
             try
@@ -120,17 +120,17 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
-        
+
         [HttpGet("{conferenceId}/participant/{participantId}/heartbeatrecent")]
         [SwaggerOperation(OperationId = "GetHeartbeatDataForParticipant")]
-        [ProducesResponseType(typeof(ParticipantHeartbeatResponse[]), (int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ParticipantHeartbeatResponse[]), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetHeartbeatDataForParticipantAsync(Guid conferenceId, Guid participantId)
         {
             try
             {
                 var response = await _videoApiClient.GetHeartbeatDataForParticipantAsync(conferenceId, participantId);
-                
+
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -139,6 +139,28 @@ namespace VideoWeb.Controllers
             }
         }
 
-        
+        [HttpPost("{conferenceId}/participants/{participantId}/participantDisplayName")]
+        [SwaggerOperation(OperationId = "UpdateParticipantDisplayName")]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        public async Task<IActionResult> UpdateParticipantDisplayNameAsync(Guid conferenceId, Guid participantId, [FromBody] UpdateParticipantRequest participantRequest)
+        {
+            if (conferenceId == Guid.Empty || participantId == Guid.Empty)
+            {
+                return BadRequest($"Please provide a valid conference Id and participant Id");
+            }
+
+            try
+            {
+               await  _videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, participantRequest);
+            }
+            catch (VideoApiException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Response);
+            }
+
+            return NoContent();
+        }
+
     }
 }

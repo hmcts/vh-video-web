@@ -45,10 +45,8 @@
             <span *ngIf="getRepresentative(hearing.applicants)">
               <p class="govuk-!-margin-0 govuk-!-padding-0">
                 <span class="govuk-!-font-weight-bold">{{getRepresentative(hearing.applicants).displayName}}</span>
-                Solicitor
-              </p>
-              <p class="govuk-!-margin-0 govuk-!-padding-0">for <span class="govuk-!-font-weight-bold">
-                  {{getRepresentative(hearing.applicants).representee }}</span>
+                <span class="govuk-hint govuk-!-margin-0">Representing</span>
+                <span class="govuk-!-font-weight-bold">{{getRepresentative(hearing.applicants).representee}}</span>
               </p>
             </span>
             <span *ngIf="!getRepresentative(hearing.applicants) && getIndividual(hearing.applicants)">
@@ -61,10 +59,8 @@
             <span *ngIf="getRepresentative(hearing.respondents)">
               <p class="govuk-!-margin-0 govuk-!-margin-top-3 govuk-!-padding-0">
                 <span class="govuk-!-font-weight-bold">{{getRepresentative(hearing.respondents).displayName}}</span>
-                Solicitor
-              </p>
-              <p class="govuk-!-margin-0 govuk-!-padding-0">for <span class="govuk-!-font-weight-bold">
-                  {{getRepresentative(hearing.respondents).representee}}</span>
+                <span class="govuk-hint govuk-!-margin-0">Representing</span>
+                <span class="govuk-!-font-weight-bold">{{getRepresentative(hearing.respondents).representee}}</span>
               </p>
             </span>
             <span *ngIf="!getRepresentative(hearing.respondents) && getIndividual(hearing.respondents)">
@@ -88,7 +84,7 @@
             <div *ngIf="showConferenceStatus(hearing)" class="govuk-!-margin-top-3 govuk-!-margin-bottom-3">
               <span
                 class="govuk-!-padding-top-1 govuk-!-padding-bottom-1 govuk-!-padding-right-2 govuk-!-padding-left-2"
-                [ngClass]="{'conference-closed': hearing.isClosed(), 'conference-paused': hearing.isPaused(), 
+                [ngClass]="{'conference-closed': hearing.isClosed(), 'conference-paused': hearing.isPaused(),
               'conference-suspended': hearing.isSuspended()}">{{hearing.status}}</span>
             </div>
           </td>
