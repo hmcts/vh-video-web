@@ -106,7 +106,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenContactUsDetailsForTheClerkAreAvailable()
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkHearingListPage.ContactUs).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkHearingListPage.PhoneNumber).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkHearingListPage.PhoneNumber(_c.Test.CommonData.CommonOnScreenData.VhoPhone)).Displayed.Should().BeTrue();
         }
 
         [Then(@"the new hearing isn't available to join yet")]

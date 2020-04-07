@@ -22,7 +22,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By RespondentRepresenteeName(Guid conferenceId) => By.Id($"respondent-rep-representee-{conferenceId:D}");
         public static By StartHearingButton(Guid conferenceId) => By.Id($"start-hearing-btn-{conferenceId:D}");
         public static By ContactUs = CommonLocators.ElementContainingText("Do you need help?");
-        public static By PhoneNumber = CommonLocators.ElementContainingText("0300 303 0655");
+        public static By PhoneNumber(string phoneNumber) => CommonLocators.ElementContainingText(phoneNumber);
         public static By CheckEquipmentButton = CommonLocators.ButtonWithInnerText("Check equipment");
     }
 }
