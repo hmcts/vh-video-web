@@ -55,7 +55,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             var request = new UpdateBookingStatusRequest()
             {
                 Updated_by = UserManager.GetCaseAdminUser(_c.UserAccounts).Username,
-                Status = UpdateBookingStatus.Cancelled
+                Status = UpdateBookingStatus.Cancelled,
+                Cancel_reason = "Cancellation reason"
             };
 
             var response = _c.Apis.BookingsApi.UpdateHearingDetails(_c.Test.NewHearingId, request);

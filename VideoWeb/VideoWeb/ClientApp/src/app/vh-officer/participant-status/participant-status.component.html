@@ -4,8 +4,8 @@
 
 <div id="participant-status-list">
   <div *ngFor="let participant of _participants" class="govuk-grid-row">
-    <div id="p-row-{{participant.id}}" class="govuk-grid-column-one-half">
-      <div class="govuk-body-s tooltip-wrapper">
+    <div class="govuk-grid-column-one-half">
+      <div id="participant-contact-details-link-{{participant.id}}" class="govuk-body-s tooltip-wrapper">
         <ng-container *ngIf="participant.isJudge; else individualName">
           {{participant.displayName}}
         </ng-container>

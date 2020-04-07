@@ -132,7 +132,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheVideoHearingsOfficerUserShouldNotSeeAnAlert()
         {
             _browsers[_c.CurrentUser.Key].Refresh();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Conference.Id)).Click();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(AdminPanelPage.AlertsHeader).Should().BeTrue("Alerts box should not be visible.");
         }
 
@@ -142,11 +142,11 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Refresh();
             _browsers[_c.CurrentUser.Key].Driver.WaitForAngular();
             var alertCount =_browsers[_c.CurrentUser.Key].Driver
-                .WaitUntilElementExists(VhoHearingListPage.VideoHearingsOfficerNumberOfAlerts(_c.Test.Conference.Id))
+                .WaitUntilElementExists(VhoHearingListPage.NumberOfAlerts(_c.Test.Conference.Id))
                 .GetAttribute("data-badge");
             int.Parse(alertCount).Should().BePositive();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.HearingStatusBadge(_c.Test.Conference.Id)).Text.Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Conference.Id)).Click();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.StatusBadge(_c.Test.Conference.Id)).Text.Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
 
             var alerts = GetAlerts();
@@ -174,13 +174,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheCheckboxIsNoLongerEnabled(string alertType)
         {
             CheckboxShouldBeDisabled(alertType);
-        }
-
-        [Then(@"the Video Hearings Officer should only see (.*) hearing")]
-        [Then(@"the Video Hearings Officer should only see (.*) hearings")]
-        public void ThenTheVideoHearingsOfficerShouldOnlySeeHearing(int count)
-        {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(VhoHearingListPage.VhoHearingRows).Count.Should().Be(count);
         }
 
         [Then(@"the (.*) alert should be updated with the details of the user that actioned the alert")]

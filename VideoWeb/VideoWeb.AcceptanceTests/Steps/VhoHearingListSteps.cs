@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Permissions;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.Driver.Support;
@@ -8,6 +9,8 @@ using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.Services.Bookings;
+using VideoWeb.Services.Video;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -26,19 +29,20 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the VHO selects the hearing")]
         public void ProgressToNextPage()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Conference.Id)).Click();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
         }
 
         [Then(@"the VHO can see a list of hearings including the new hearing")]
         public void ThenTheVhoCanSeeAListOfHearingsIncludingTheNewHearing()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.HearingWithCaseNumber(_c.Test.Case.Number)).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(_c.Test.Conference.Id)).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.CaseNumber(_c.Test.Conference.Id)).Displayed.Should().BeTrue();
             var timespan = TimeSpan.FromMinutes(_c.Test.Hearing.Scheduled_duration);
             var listedFor = GetListedForTimeAsString(timespan);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerTime(_c.Test.Conference.Id)).Text.Trim()
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.HearingTime(_c.Test.Conference.Id)).Text.Trim()
                 .Should().Be($"{_c.TimeZone.Adjust(_c.Test.Hearing.Scheduled_date_time):HH:mm}");
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VideoHearingsOfficerListedFor(_c.Test.Conference.Id)).Text.Trim()
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.ListedFor(_c.Test.Conference.Id)).Text.Trim()
                 .Should().Be($"{listedFor}");
         }
 
@@ -52,18 +56,22 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheVhoShouldSeeTheParticipantContactDetails()
         {
             var hearingParticipants = _c.Test.HearingParticipants.FindAll(x => x.User_role_name.Equals("Individual") || x.User_role_name.Equals("Representative"));
-            var user = hearingParticipants.First().Last_name;
             var hearingParticipant = hearingParticipants.First();
-            var firstParticipantLink = _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantName(hearingParticipant.Last_name));
+            var conferenceParticipant = _c.Test.ConferenceParticipants.Find(x => x.Name.Contains(hearingParticipant.Last_name));
+            var firstParticipantLink = _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.ParticipantContactLink(conferenceParticipant.Id));
             firstParticipantLink.Displayed.Should().BeTrue();
             var action = new OpenQA.Selenium.Interactions.Actions(_browsers[_c.CurrentUser.Key].Driver.WrappedDriver);
             action.MoveToElement(firstParticipantLink).Perform();
             if (_c.VideoWebConfig.TestConfig.TargetBrowser == TargetBrowser.Safari) return; // Latest version of Safari Driver will not hover over the correct element
-            var conferenceParticipant = _c.Test.ConferenceParticipants.Find(x => x.Name.Contains(user));
-            var participantEmailAndRole = $"{conferenceParticipant.Name} ({conferenceParticipant.Case_type_group})";
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantContactDetails(user, participantEmailAndRole)).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantContactDetails(user, hearingParticipant.Contact_email)).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingListPage.ParticipantContactDetails(user, hearingParticipant.Telephone_number)).Displayed.Should().BeTrue();
+            TheToolTipDetailsAreDisplayed(conferenceParticipant, hearingParticipant);
+        }
+
+        private void TheToolTipDetailsAreDisplayed(ParticipantDetailsResponse participant, ParticipantResponse hearingParticipant)
+        {
+            var participantEmailAndRole = $"{participant.Name} ({participant.Case_type_group})";
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.ParticipantContactName(participant.Id)).Text.Trim().Should().Be(participantEmailAndRole);
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.ParticipantContactEmail(participant.Id)).Text.Trim().Should().Be(hearingParticipant.Contact_email);
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.ParticipantContactPhone(participant.Id)).Text.Trim().Should().Be(hearingParticipant.Telephone_number);
         }
 
         private static string GetListedForTimeAsString(TimeSpan timespan)

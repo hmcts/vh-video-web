@@ -1,14 +1,14 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
+  <div id="tooltip-name-case-group-{{participant.id}}" class="govuk-grid-column-full">
     <p>{{participant.fullName}} ({{participant.caseGroup}})</p>
   </div>
   <div class="govuk-grid-column-full" *ngIf="participant.isJudge">
     <p>{{venueName}}</p>
   </div>
   <div class="govuk-grid-column-full">
-    <a class="govuk-body-s govuk-link" href="mailto:{{participant.contactEmail}}">{{participant.contactEmail}}</a>
+    <a id="tooltip-email-{{participant.id}}" class="govuk-body-s govuk-link" href="mailto:{{participant.contactEmail}}">{{participant.contactEmail}}</a>
   </div>
   <div class="govuk-grid-column-full">
-    <a class="govuk-body-s govuk-link" href="tel:{{participant.contactTelephone}}">{{participant.contactTelephone}}</a>
+    <a id="tooltip-contact-phone-{{participant.id}}" class="govuk-body-s govuk-link" href="tel:{{participant.contactTelephone}}">{{participant.contactTelephone}}</a>
   </div>
 </div>
