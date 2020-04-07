@@ -24,20 +24,13 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            await PublishParticipantDisconnectMessage().ConfigureAwait(false);
-            if (SourceParticipant.IsJudge()) await PublishSuspendedEventMessage().ConfigureAwait(false);
+            await PublishParticipantDisconnectMessage();
         }
 
         private async Task PublishParticipantDisconnectMessage()
         {
             var participantState = ParticipantState.Disconnected;
             await PublishParticipantStatusMessage(participantState).ConfigureAwait(false);
-        }
-
-        private async Task PublishSuspendedEventMessage()
-        {
-            var conferenceState = ConferenceStatus.Suspended;
-            await PublishConferenceStatusMessage(conferenceState).ConfigureAwait(false);
         }
     }
 }
