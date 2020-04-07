@@ -25,7 +25,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         public ConfigHooks(TestContext context)
         {
-            _configRoot = ConfigurationManager.BuildConfig("CA353381-2F0D-47D7-A97B-79A30AFF8B86", GetTargetEnvironment());
+            _configRoot = ConfigurationManager.BuildConfig("CA353381-2F0D-47D7-A97B-79A30AFF8B86", GetTargetEnvironment(), RunOnSauceLabsFromLocal());
             context.VideoWebConfig = new VideoWebConfig();
             context.UserAccounts = new List<UserAccount>();
             context.Tokens = new VideoWebTokens();
@@ -34,6 +34,12 @@ namespace VideoWeb.AcceptanceTests.Hooks
         private static string GetTargetEnvironment()
         {
             return NUnit.Framework.TestContext.Parameters["TargetEnvironment"] ?? "";
+        }
+
+        private static bool RunOnSauceLabsFromLocal()
+        {
+            return NUnit.Framework.TestContext.Parameters["RunOnSauceLabs"] != null &&
+                   NUnit.Framework.TestContext.Parameters["RunOnSauceLabs"].Equals("true");
         }
 
         [BeforeScenario(Order = (int)HooksSequence.ConfigHooks)]
