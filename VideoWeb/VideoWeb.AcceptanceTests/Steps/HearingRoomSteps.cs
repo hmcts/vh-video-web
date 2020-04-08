@@ -50,6 +50,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the Clerk clicks close")]
         public void WhenTheUserClicksClose()
         {
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.JudgeIframe).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.SwitchTo().Frame(HearingRoomPage.JudgeIframeId);
             _browsers[_c.CurrentUser.Key].Click(HearingRoomPage.CloseButton);
             Thread.Sleep(TimeSpan.FromSeconds(PauseCloseTransferDuration));
         }
