@@ -51,14 +51,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user filters by status with the options (.*)")]
         public void VhoFilter(string options)
         {
-            _browsers[_c.CurrentUser.Key].Click(FiltersPage.FiltersButton);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(FiltersPage.FiltersPopup).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.FiltersButton);
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(FiltersPopupPage.FiltersPopup).Displayed.Should().BeTrue();
             foreach (var option in ConvertStringIntoArray(options))
             {
-                _browsers[_c.CurrentUser.Key].ClickCheckbox(FiltersPage.CheckBox(option));
+                _browsers[_c.CurrentUser.Key].ClickCheckbox(FiltersPopupPage.CheckBox(option));
             }
-            _browsers[_c.CurrentUser.Key].Click(FiltersPage.ApplyButton);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(FiltersPage.FiltersPopup).Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Click(FiltersPopupPage.ApplyButton);
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(FiltersPopupPage.FiltersPopup).Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Refresh();
         }
 
@@ -73,10 +73,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             var hearingThatShouldNotBeVisible = _c.Test.Conferences.First();
             var hearingThatShouldBeVisible = _c.Test.Conferences.Last();
             _browsers[_c.CurrentUser.Key].Driver
-                .WaitUntilVisible(VhoHearingListPage.VideoHearingsCaseName(hearingThatShouldBeVisible.Id))
+                .WaitUntilVisible(VhoHearingListPage.CaseName(hearingThatShouldBeVisible.Id))
                 .Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver
-                .WaitUntilElementNotVisible(VhoHearingListPage.VideoHearingsCaseName(hearingThatShouldNotBeVisible.Id))
+                .WaitUntilElementNotVisible(VhoHearingListPage.CaseName(hearingThatShouldNotBeVisible.Id))
                 .Should().BeTrue();
         }
     }

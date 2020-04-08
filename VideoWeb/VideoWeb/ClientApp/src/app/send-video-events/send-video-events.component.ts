@@ -48,17 +48,21 @@ export class SendVideoEventsComponent implements OnInit {
         });
     }
 
+   suspendHearing() {
+    const request = this.buildBasicEventRequest();
+    request.event_type = EventType.Suspend;
+    this.sendEvent(request);
+  }
+
     pauseHearing() {
         const request = this.buildBasicEventRequest();
         request.event_type = EventType.Pause;
-        request.participant_id = this.conference.participants.find(x => x.role === 'Judge').id;
         this.sendEvent(request);
     }
 
     endHearing() {
         const request = this.buildBasicEventRequest();
         request.event_type = EventType.Close;
-        request.participant_id = this.conference.participants.find(x => x.role === 'Judge').id;
         this.sendEvent(request);
     }
 

@@ -108,7 +108,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private void SelectTheHearing()
         {
-            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.VideoHearingsOfficerSelectHearingButton(_c.Test.Conference.Id));
+            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
         }
 
         private void SendNewMessage()

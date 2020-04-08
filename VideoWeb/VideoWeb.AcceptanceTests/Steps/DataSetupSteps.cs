@@ -5,12 +5,13 @@ using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Helpers;
 using AcceptanceTests.Common.Configuration.Users;
 using FluentAssertions;
+using NUnit.Framework;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Assertions;
 using VideoWeb.AcceptanceTests.Builders;
-using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
+using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -43,7 +44,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"I have another hearing in (.*) minutes time")]
         public void GivenIHaveAHearingAndAConferenceInMinutesTime(int minutes)
         {
-            CheckThatTheHearingWillBeCreatedForToday(DateTime.Now.ToUniversalTime().AddMinutes(minutes));
+            CheckThatTheHearingWillBeCreatedForToday(_c.TimeZone.Adjust(DateTime.Now.ToUniversalTime().AddMinutes(minutes)));
             GivenIHaveAHearing(minutes);
             GetTheNewConferenceDetails();
             _c.Test.DelayedStartTime = minutes;
@@ -70,7 +71,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var request = new HearingRequestBuilder()
                 .WithUserAccounts(_c.UserAccounts)
-                .WithScheduledTime(DateTime.Now.ToUniversalTime().AddMinutes(minutes))
+                .WithScheduledTime(_c.TimeZone.Adjust(DateTime.Now.ToUniversalTime().AddMinutes(minutes)))
                 .WithScheduledDuration(HearingDuration)
                 .WithLocation(location)
                 .Build();
@@ -85,10 +86,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             _c.Test.HearingParticipants = hearing.Participants;
         }
 
-        private static void CheckThatTheHearingWillBeCreatedForToday(DateTime dateTime)
+        private void CheckThatTheHearingWillBeCreatedForToday(DateTime dateTime)
         {
-            if (!DateTime.Today.Day.Equals(dateTime.Day))
-                throw new DataMisalignedException("Hearing will be created for tomorrow, and won't be visible in the UI.");
+            if (!_c.TimeZone.Adjust(DateTime.Today).Day.Equals(dateTime.Day))
+                Assert.Ignore($"Ignoring the test as the hearing will be created for tomorrow, and won't be visible in the UI.");
         }
 
         [Given(@"Get the new conference details")]
