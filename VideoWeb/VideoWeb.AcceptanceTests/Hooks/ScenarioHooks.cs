@@ -16,6 +16,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             {
                 if (tag.Equals("NotChrome") && browser == TargetBrowser.Chrome ||
                     tag.Equals("NotEdge") && browser == TargetBrowser.Edge ||
+                    tag.Equals("NotEdgeChromium") && browser == TargetBrowser.EdgeChromium ||
                     tag.Equals("NotFirefox") && browser == TargetBrowser.Firefox ||
                     tag.Equals("NotIE") && browser == TargetBrowser.Ie11 ||
                     tag.Equals("NotSafari") && browser == TargetBrowser.Safari)
