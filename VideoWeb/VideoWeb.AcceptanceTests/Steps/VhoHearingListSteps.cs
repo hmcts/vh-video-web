@@ -36,6 +36,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the VHO can see a list of hearings including the new hearing")]
         public void ThenTheVhoCanSeeAListOfHearingsIncludingTheNewHearing()
         {
+            _browsers[_c.CurrentUser.Key].ScrollTo(VhoHearingListPage.CaseName(_c.Test.Conference.Id));
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(_c.Test.Conference.Id)).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.CaseNumber(_c.Test.Conference.Id)).Displayed.Should().BeTrue();
             var timespan = TimeSpan.FromMinutes(_c.Test.Hearing.Scheduled_duration);
