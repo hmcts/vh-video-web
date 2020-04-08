@@ -20,7 +20,7 @@
     </div>
 
     <div class="govuk-grid-column-one-half">
-      <p class="govuk-body-s govuk-!-font-weight-bold" [ngClass]="getParticipantStatusClass(participant)">
+      <p id="participant-status-{{participant.id}}" class="govuk-body-s govuk-!-font-weight-bold" [ngClass]="getParticipantStatusClass(participant)">
         {{participant.isJudge ? participant.getStatusAsTextForJudge(_judgeStatuses) : participant.getStatusAsText()}}
       </p>
     </div>
