@@ -1,75 +1,78 @@
-import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ParticipantResponse, ParticipantStatus, Role, ParticipantResponseVho } from 'src/app/services/clients/api-client';
 import { ParticipantStatusReader } from './participant-status-reader';
 
 export class Participant {
-    private participant: ParticipantResponse;
+  private participant: ParticipantResponseVho;
 
-    constructor(participant: ParticipantResponse) {
-        if (!(participant instanceof ParticipantResponse)) {
-            throw new Error('Object not a ParticipantResponse');
-        }
-        this.participant = participant;
-    }
+  constructor(participant: ParticipantResponseVho) {
+    const isVhResponse = participant instanceof ParticipantResponseVho;
+    const isParticipantResponse = participant instanceof ParticipantResponse;
 
-    get base(): ParticipantResponse {
-        return this.participant;
+    if (!(isVhResponse || isParticipantResponse)) {
+      throw new Error('Object not a ParticipantResponseVho or ParticipantResponse');
     }
+    this.participant = participant;
+  }
 
-    get id(): string {
-        return this.participant.id;
-    }
+  get base(): ParticipantResponseVho {
+    return this.participant;
+  }
 
-    get fullName() {
-        return this.participant.name;
-    }
+  get id(): string {
+    return this.participant.id;
+  }
 
-    get caseGroup() {
-        return this.participant.case_type_group;
-    }
+  get fullName() {
+    return this.participant.name;
+  }
 
-    get contactEmail() {
-        return this.participant.contact_email;
-    }
+  get caseGroup() {
+    return this.participant.case_type_group;
+  }
 
-    get username() {
-        return this.participant.username;
-    }
+  get contactEmail() {
+    return this.participant.contact_email;
+  }
 
-    get contactTelephone() {
-        return this.participant.contact_telephone;
-    }
+  get username() {
+    return this.participant.username;
+  }
 
-    get initialedName(): string {
-        const initial = this.participant.first_name ? this.participant.first_name.substr(0, 1) : '';
-        const name = this.participant.last_name || '';
-        return `${initial} ${name}`;
-    }
+  get contactTelephone() {
+    return this.participant.contact_telephone;
+  }
 
-    get status(): ParticipantStatus {
-        return this.participant.status;
-    }
+  get initialedName(): string {
+    const initial = this.participant.first_name ? this.participant.first_name.substr(0, 1) : '';
+    const name = this.participant.last_name || '';
+    return `${initial} ${name}`;
+  }
 
-    get role(): Role {
-        return this.participant.role;
-    }
+  get status(): ParticipantStatus {
+    return this.participant.status;
+  }
 
-    get isJudge(): boolean {
-        return this.participant.role === Role.Judge;
-    }
+  get role(): Role {
+    return this.participant.role;
+  }
 
-    get displayName(): string {
-        return this.participant.display_name;
-    }
+  get isJudge(): boolean {
+    return this.participant.role === Role.Judge;
+  }
 
-    get representee(): string {
-        return this.participant.representee;
-    }
+  get displayName(): string {
+    return this.participant.display_name;
+  }
 
-    getStatusAsText(): string {
-        return new ParticipantStatusReader().getStatusAsText(this.participant.status);
-    }
+  get representee(): string {
+    return this.participant.representee;
+  }
 
-    getStatusAsTextForJudge(statuses: ParticipantStatus[]): string {
-        return new ParticipantStatusReader().getStatusAsTextForJudge(this.participant.status, statuses);
-    }
+  getStatusAsText(): string {
+    return new ParticipantStatusReader().getStatusAsText(this.participant.status);
+  }
+
+  getStatusAsTextForJudge(statuses: ParticipantStatus[]): string {
+    return new ParticipantStatusReader().getStatusAsTextForJudge(this.participant.status, statuses);
+  }
 }

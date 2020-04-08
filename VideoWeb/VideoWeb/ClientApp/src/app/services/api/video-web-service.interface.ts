@@ -13,14 +13,15 @@ import {
   ChatResponse,
   ConferenceForVhOfficerResponse,
   ParticipantHeartbeatResponse,
-  ConferenceForJudgeResponse,
-  UpdateParticipantRequest
+  ConferenceForJudgeResponse,  UpdateParticipantRequest,
+  ConferenceResponseVho
 } from '../clients/api-client';
 import { Observable } from 'rxjs';
 export interface IVideoWebApiService {
   getConferencesForJudge(): Observable<ConferenceForJudgeResponse[]>;
   getConferencesForIndividual(): Observable<ConferenceForIndividualResponse[]>;
   getConferencesForVHOfficer(): Observable<ConferenceForVhOfficerResponse[]>;
+  getConferenceByIdVHO(conferenceId: string): Promise<ConferenceResponseVho>;
   getConferenceById(conferenceId: string): Promise<ConferenceResponse>;
   sendEvent(request: ConferenceEventRequest): Promise<void>;
   raiseMediaEvent(conferenceId: string, addMediaEventRequest: AddMediaEventRequest): Promise<void>;

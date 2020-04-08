@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceForVhOfficerResponse,
-    ParticipantResponse,
+    ParticipantResponseVho,
     ParticipantStatus,
     TaskResponse,
     Role
@@ -43,7 +43,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     conferences: HearingSummary[];
     conferencesAll: ConferenceForVhOfficerResponse[];
     selectedHearing: Hearing;
-    participants: ParticipantResponse[];
+    participants: ParticipantResponseVho[];
     participantStatusModel: ParticipantStatusModel;
     selectedConferenceUrl: SafeResourceUrl;
 
@@ -257,7 +257,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
     async retrieveConferenceDetails(conferenceId: string) {
         try {
-            const data = await this.videoWebService.getConferenceById(conferenceId);
+            const data = await this.videoWebService.getConferenceByIdVHO(conferenceId);
             this.selectedHearing = new Hearing(data);
             this.participants = data.participants;
             this.sanitiseAndLoadIframe();
@@ -475,7 +475,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         return judgeStatuses;
     }
 
-    private findJudgeInAnotherHearing(participantsIn: ParticipantResponse[], selectedJudgeUserName: string): ParticipantStatus {
+    private findJudgeInAnotherHearing(participantsIn: ParticipantResponseVho[], selectedJudgeUserName: string): ParticipantStatus {
         const judgeStatusInAnotherHearings = participantsIn.filter(x => x.username === selectedJudgeUserName).map(x => x.status);
         return judgeStatusInAnotherHearings.length > 0 ? judgeStatusInAnotherHearings[0] : null;
     }

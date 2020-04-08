@@ -5,13 +5,13 @@ import {
     ConferenceResponse,
     ConferenceStatus,
     ParticipantForUserResponse,
-    ParticipantResponse,
     ParticipantStatus,
     SelfTestPexipResponse,
     TaskResponse,
     TaskType,
     TaskUserResponse,
-    Role
+    Role,    ParticipantResponseVho,
+    ConferenceResponseVho
 } from 'src/app/services/clients/api-client';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { AlertFilter, AlertsStatus, HearingsFilter, ListFilter, StatusFilter } from '../../../shared/models/hearings-filter';
@@ -131,24 +131,24 @@ export class ConferenceTestData {
         return testData;
     }
 
-    getConferenceDetailFuture(): ConferenceResponse {
+    getConferenceDetailFuture(): ConferenceResponseVho {
         const futureDate = new Date(new Date().toUTCString());
         futureDate.setUTCHours(futureDate.getUTCHours() + 26);
         return this.initConferenceDetails(futureDate);
     }
 
-    getConferenceDetailNow(): ConferenceResponse {
+    getConferenceDetailNow(): ConferenceResponseVho {
         const now = new Date(new Date().toUTCString());
         return this.initConferenceDetails(now);
     }
 
-    getConferenceDetailPast(): ConferenceResponse {
+    getConferenceDetailPast(): ConferenceResponseVho {
         const date = new Date(new Date().toUTCString());
         date.setUTCHours(date.getUTCHours() - 26);
         return this.initConferenceDetails(date);
     }
 
-    private initConferenceDetails(scheduledDateTime): ConferenceResponse {
+    private initConferenceDetails(scheduledDateTime): ConferenceResponseVho {
         const participants = this.getListOfParticipantDetails();
         const conference = new ConferenceResponse({
             id: '612AB52C-BDA5-4F4D-95B8-3F49065219A6',
@@ -159,7 +159,6 @@ export class ConferenceTestData {
             scheduled_duration: 45,
             status: ConferenceStatus.NotStarted,
             participants: participants,
-            admin_i_frame_uri: 'adminiframe@kinly..com',
             judge_i_frame_uri: 'judgeiframe@kinly..com',
             participant_uri: 'participant@kinly..com',
             pexip_node_uri: 'node@kinly..com',
@@ -227,9 +226,9 @@ export class ConferenceTestData {
         return participants;
     }
 
-    getListOfParticipantDetails(): ParticipantResponse[] {
-        const participants: ParticipantResponse[] = [];
-        const participant1 = new ParticipantResponse({
+    getListOfParticipantDetails(): ParticipantResponseVho[] {
+        const participants: ParticipantResponseVho[] = [];
+        const participant1 = new ParticipantResponseVho({
             id: '9F681318-4955-49AF-A887-DED64554429D',
             contact_email: 'chris@green.com',
             first_name: 'Chris',
@@ -244,7 +243,7 @@ export class ConferenceTestData {
             tiled_display_name: 'T1;Greeno;9F681318-4955-49AF-A887-DED64554429D'
         });
 
-        const participant2 = new ParticipantResponse({
+        const participant2 = new ParticipantResponseVho({
             id: '9F681318-4955-49AF-A887-DED64554429J',
             contact_email: 'james@green.com',
             first_name: 'James',
@@ -260,7 +259,7 @@ export class ConferenceTestData {
             tiled_display_name: 'T2;James Green;9F681318-4955-49AF-A887-DED64554429J'
         });
 
-        const participant3 = new ParticipantResponse({
+        const participant3 = new ParticipantResponseVho({
             id: '9F681318-4955-49AF-A887-DED64554429T',
             contact_email: 'judge@kinly.com',
             first_name: 'Jeff',

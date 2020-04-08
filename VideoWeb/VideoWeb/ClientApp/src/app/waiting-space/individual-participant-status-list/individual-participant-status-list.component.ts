@@ -169,8 +169,8 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         this.logger.event(`${this.videoWebService.getObfuscatedName(requester.username)} requesting private consultation with
         ${this.videoWebService.getObfuscatedName(requestee.username)}`);
         this.logger.info(`Individual participant status list: Conference Id: ${this.conference.id}
-        Participant ${requester.id}, ${this.videoWebService.getObfuscatedName(requester.first_name + ' ' + requester.last_name)}
-        calling Participant ${requestee.id}, ${this.videoWebService.getObfuscatedName(requestee.first_name + ' ' + requestee.last_name)}}`);
+        Participant ${requester.id}, ${this.videoWebService.getObfuscatedName(requester.name)}
+        calling Participant ${requestee.id}, ${this.videoWebService.getObfuscatedName(requestee.name)}`);
 
         try {
             console.log('boop1');

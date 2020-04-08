@@ -1,73 +1,77 @@
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse, Role } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, Role, ConferenceResponseVho, ParticipantResponseVho } from 'src/app/services/clients/api-client';
 import { HearingBase } from './hearing-base';
 import { Participant } from './participant';
 
 export class Hearing extends HearingBase {
-    private conference: ConferenceResponse;
-    private participants: Participant[];
+  private conference: ConferenceResponseVho;
+  private participants: Participant[];
 
-    constructor(conference: ConferenceResponse) {
-        super();
-        if (!(conference instanceof ConferenceResponse)) {
-            throw new Error('Object not a ConferenceResponse');
-        }
-        this.conference = conference;
-        if (conference.participants) {
-            this.participants = this.conference.participants.map(p => new Participant(p));
-        }
+  constructor(conference: ConferenceResponseVho) {
+    super();
+    const isVhResponse = conference instanceof ConferenceResponseVho;
+    const isParticipantResponse = conference instanceof ConferenceResponse;
+
+    if (!(isVhResponse || isParticipantResponse)) {
+      throw new Error('Object not a ConferenceResponse or ConferenceResponseVHO');
     }
 
-    get id(): string {
-        return this.conference.id;
+    this.conference = conference;
+    if (conference.participants) {
+      this.participants = this.conference.participants.map(p => new Participant(p));
     }
+  }
 
-    get judge(): Participant {
-        return this.participants.find(x => x.role === Role.Judge);
-    }
+  get id(): string {
+    return this.conference.id;
+  }
 
-    get caseType(): string {
-        return this.conference.case_type;
-    }
+  get judge(): Participant {
+    return this.participants.find(x => x.role === Role.Judge);
+  }
 
-    get caseNumber(): string {
-        return this.conference.case_number;
-    }
+  get caseType(): string {
+    return this.conference.case_type;
+  }
 
-    get caseName(): string {
-        return this.conference.case_name;
-    }
+  get caseNumber(): string {
+    return this.conference.case_number;
+  }
 
-    getConference(): ConferenceResponse {
-        return this.conference;
-    }
+  get caseName(): string {
+    return this.conference.case_name;
+  }
 
-    getParticipants(): ParticipantResponse[] {
-        return this.conference.participants;
-    }
+  getConference(): ConferenceResponseVho {
+    return this.conference;
+  }
 
-    get status(): ConferenceStatus {
-        return this.conference.status;
-    }
+  getParticipants(): ParticipantResponseVho[] {
+    return this.conference.participants;
+  }
 
-    get scheduledStartTime(): Date {
-        return new Date(this.conference.scheduled_date_time.getTime());
-    }
+  get status(): ConferenceStatus {
+    return this.conference.status;
+  }
 
-    get scheduledEndTime(): Date {
-        const endTime = new Date(this.conference.scheduled_date_time.getTime());
-        endTime.setUTCMinutes(endTime.getUTCMinutes() + this.conference.scheduled_duration);
-        return endTime;
-    }
+  get scheduledStartTime(): Date {
+    return new Date(this.conference.scheduled_date_time.getTime());
+  }
 
-    isPastClosedTime(): boolean {
-        return this.timeReader.isPastClosedTime(this.conference.closed_date_time, this.conference.status);
-    }
+  get scheduledEndTime(): Date {
+    const endTime = new Date(this.conference.scheduled_date_time.getTime());
+    endTime.setUTCMinutes(endTime.getUTCMinutes() + this.conference.scheduled_duration);
+    return endTime;
+  }
 
-    getParticipantByUsername(username: string) {
-        return this.participants.find(p => p.username.toLocaleLowerCase() === username.toLocaleLowerCase());
-    }
+  isPastClosedTime(): boolean {
+    return this.timeReader.isPastClosedTime(this.conference.closed_date_time, this.conference.status);
+  }
 
-    get hearingVenueName(): string {
-        return this.conference.hearing_venue_name;
-    }
+  getParticipantByUsername(username: string) {
+    return this.participants.find(p => p.username.toLocaleLowerCase() === username.toLocaleLowerCase());
+  }
+
+  get hearingVenueName(): string {
+    return this.conference.hearing_venue_name;
+  }
 }

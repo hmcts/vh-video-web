@@ -182,7 +182,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
                     x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
                 );
                 this.logger.info(`Participant waiting room : Conference Id: ${conferenceId} and participantId: ${this.participant.id},
-          participant name : ${this.videoWebService.getObfuscatedName(this.participant.first_name + ' ' + this.participant.last_name)}`);
+          participant name : ${this.videoWebService.getObfuscatedName(this.participant.name)}`);
             })
             .catch(error => {
                 this.logger.error(`There was an error getting a conference ${conferenceId}`, error);

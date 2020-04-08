@@ -225,6 +225,80 @@ export class ApiClient {
     }
 
     /**
+     * Get the details of a conference by id for VH officer
+     * @param conferenceId The unique id of the conference
+     * @return Success
+     */
+    getConferenceByIdVHO(conferenceId: string): Observable<ConferenceResponseVho> {
+        let url_ = this.baseUrl + "/conferences/{conferenceId}/vhofficer";
+        if (conferenceId === undefined || conferenceId === null)
+            throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace("{conferenceId}", encodeURIComponent("" + conferenceId)); 
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",			
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetConferenceByIdVHO(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetConferenceByIdVHO(<any>response_);
+                } catch (e) {
+                    return <Observable<ConferenceResponseVho>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ConferenceResponseVho>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetConferenceByIdVHO(response: HttpResponseBase): Observable<ConferenceResponseVho> {
+        const status = response.status;
+        const responseBlob = 
+            response instanceof HttpResponse ? response.body : 
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ConferenceResponseVho.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Not Found", status, _responseText, _headers, result404);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("Unauthorized", status, _responseText, _headers);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ConferenceResponseVho>(<any>null);
+    }
+
+    /**
      * Get the details of a conference by id
      * @param conferenceId The unique id of the conference
      * @return Success
@@ -2261,7 +2335,7 @@ export interface IConferenceForVhOfficerResponse {
 }
 
 /** Information about a participant in a conference */
-export class ParticipantResponse implements IParticipantResponse {
+export class ParticipantResponseVho implements IParticipantResponseVho {
     /** The participant id in a conference */
     id?: string;
     first_name?: string | undefined;
@@ -2282,7 +2356,7 @@ export class ParticipantResponse implements IParticipantResponse {
     /** The representee the participant is acting on behalf */
     representee?: string | undefined;
 
-    constructor(data?: IParticipantResponse) {
+    constructor(data?: IParticipantResponseVho) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -2309,9 +2383,9 @@ export class ParticipantResponse implements IParticipantResponse {
         }
     }
 
-    static fromJS(data: any): ParticipantResponse {
+    static fromJS(data: any): ParticipantResponseVho {
         data = typeof data === 'object' ? data : {};
-        let result = new ParticipantResponse();
+        let result = new ParticipantResponseVho();
         result.init(data);
         return result;
     }
@@ -2336,13 +2410,199 @@ export class ParticipantResponse implements IParticipantResponse {
 }
 
 /** Information about a participant in a conference */
-export interface IParticipantResponse {
+export interface IParticipantResponseVho {
     /** The participant id in a conference */
     id?: string;
     first_name?: string | undefined;
     last_name?: string | undefined;
     contact_email?: string | undefined;
     contact_telephone?: string | undefined;
+    /** The participant's full name */
+    name?: string | undefined;
+    /** The participant's username */
+    username?: string | undefined;
+    /** The participant's role */
+    role?: Role;
+    /** The participant's status */
+    status?: ParticipantStatus;
+    display_name?: string | undefined;
+    tiled_display_name?: string | undefined;
+    case_type_group?: string | undefined;
+    /** The representee the participant is acting on behalf */
+    representee?: string | undefined;
+}
+
+/** Detailed information about a conference for VHO officer */
+export class ConferenceResponseVho implements IConferenceResponseVho {
+    /** Conference ID */
+    id?: string;
+    scheduled_date_time?: Date;
+    scheduled_duration?: number;
+    case_type?: string | undefined;
+    case_number?: string | undefined;
+    case_name?: string | undefined;
+    /** The current conference Status */
+    status?: ConferenceStatus;
+    judge_i_frame_uri?: string | undefined;
+    admin_i_frame_uri?: string | undefined;
+    participant_uri?: string | undefined;
+    pexip_node_uri?: string | undefined;
+    /** The participants in the conference */
+    participants?: ParticipantResponseVho[] | undefined;
+    closed_date_time?: Date | undefined;
+    hearing_venue_name?: string | undefined;
+
+    constructor(data?: IConferenceResponseVho) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.scheduled_date_time = _data["scheduled_date_time"] ? new Date(_data["scheduled_date_time"].toString()) : <any>undefined;
+            this.scheduled_duration = _data["scheduled_duration"];
+            this.case_type = _data["case_type"];
+            this.case_number = _data["case_number"];
+            this.case_name = _data["case_name"];
+            this.status = _data["status"];
+            this.judge_i_frame_uri = _data["judge_i_frame_uri"];
+            this.admin_i_frame_uri = _data["admin_i_frame_uri"];
+            this.participant_uri = _data["participant_uri"];
+            this.pexip_node_uri = _data["pexip_node_uri"];
+            if (Array.isArray(_data["participants"])) {
+                this.participants = [] as any;
+                for (let item of _data["participants"])
+                    this.participants!.push(ParticipantResponseVho.fromJS(item));
+            }
+            this.closed_date_time = _data["closed_date_time"] ? new Date(_data["closed_date_time"].toString()) : <any>undefined;
+            this.hearing_venue_name = _data["hearing_venue_name"];
+        }
+    }
+
+    static fromJS(data: any): ConferenceResponseVho {
+        data = typeof data === 'object' ? data : {};
+        let result = new ConferenceResponseVho();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["scheduled_date_time"] = this.scheduled_date_time ? this.scheduled_date_time.toISOString() : <any>undefined;
+        data["scheduled_duration"] = this.scheduled_duration;
+        data["case_type"] = this.case_type;
+        data["case_number"] = this.case_number;
+        data["case_name"] = this.case_name;
+        data["status"] = this.status;
+        data["judge_i_frame_uri"] = this.judge_i_frame_uri;
+        data["admin_i_frame_uri"] = this.admin_i_frame_uri;
+        data["participant_uri"] = this.participant_uri;
+        data["pexip_node_uri"] = this.pexip_node_uri;
+        if (Array.isArray(this.participants)) {
+            data["participants"] = [];
+            for (let item of this.participants)
+                data["participants"].push(item.toJSON());
+        }
+        data["closed_date_time"] = this.closed_date_time ? this.closed_date_time.toISOString() : <any>undefined;
+        data["hearing_venue_name"] = this.hearing_venue_name;
+        return data; 
+    }
+}
+
+/** Detailed information about a conference for VHO officer */
+export interface IConferenceResponseVho {
+    /** Conference ID */
+    id?: string;
+    scheduled_date_time?: Date;
+    scheduled_duration?: number;
+    case_type?: string | undefined;
+    case_number?: string | undefined;
+    case_name?: string | undefined;
+    /** The current conference Status */
+    status?: ConferenceStatus;
+    judge_i_frame_uri?: string | undefined;
+    admin_i_frame_uri?: string | undefined;
+    participant_uri?: string | undefined;
+    pexip_node_uri?: string | undefined;
+    /** The participants in the conference */
+    participants?: ParticipantResponseVho[] | undefined;
+    closed_date_time?: Date | undefined;
+    hearing_venue_name?: string | undefined;
+}
+
+/** Information about a participant in a conference */
+export class ParticipantResponse implements IParticipantResponse {
+    /** The participant id in a conference */
+    id?: string;
+    /** The participant's full name */
+    name?: string | undefined;
+    /** The participant's username */
+    username?: string | undefined;
+    /** The participant's role */
+    role?: Role;
+    /** The participant's status */
+    status?: ParticipantStatus;
+    display_name?: string | undefined;
+    tiled_display_name?: string | undefined;
+    case_type_group?: string | undefined;
+    /** The representee the participant is acting on behalf */
+    representee?: string | undefined;
+
+    constructor(data?: IParticipantResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.username = _data["username"];
+            this.role = _data["role"];
+            this.status = _data["status"];
+            this.display_name = _data["display_name"];
+            this.tiled_display_name = _data["tiled_display_name"];
+            this.case_type_group = _data["case_type_group"];
+            this.representee = _data["representee"];
+        }
+    }
+
+    static fromJS(data: any): ParticipantResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new ParticipantResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["username"] = this.username;
+        data["role"] = this.role;
+        data["status"] = this.status;
+        data["display_name"] = this.display_name;
+        data["tiled_display_name"] = this.tiled_display_name;
+        data["case_type_group"] = this.case_type_group;
+        data["representee"] = this.representee;
+        return data; 
+    }
+}
+
+/** Information about a participant in a conference */
+export interface IParticipantResponse {
+    /** The participant id in a conference */
+    id?: string;
     /** The participant's full name */
     name?: string | undefined;
     /** The participant's username */
@@ -2370,7 +2630,6 @@ export class ConferenceResponse implements IConferenceResponse {
     /** The current conference Status */
     status?: ConferenceStatus;
     judge_i_frame_uri?: string | undefined;
-    admin_i_frame_uri?: string | undefined;
     participant_uri?: string | undefined;
     pexip_node_uri?: string | undefined;
     pexip_self_test_node_uri?: string | undefined;
@@ -2398,7 +2657,6 @@ export class ConferenceResponse implements IConferenceResponse {
             this.case_name = _data["case_name"];
             this.status = _data["status"];
             this.judge_i_frame_uri = _data["judge_i_frame_uri"];
-            this.admin_i_frame_uri = _data["admin_i_frame_uri"];
             this.participant_uri = _data["participant_uri"];
             this.pexip_node_uri = _data["pexip_node_uri"];
             this.pexip_self_test_node_uri = _data["pexip_self_test_node_uri"];
@@ -2429,7 +2687,6 @@ export class ConferenceResponse implements IConferenceResponse {
         data["case_name"] = this.case_name;
         data["status"] = this.status;
         data["judge_i_frame_uri"] = this.judge_i_frame_uri;
-        data["admin_i_frame_uri"] = this.admin_i_frame_uri;
         data["participant_uri"] = this.participant_uri;
         data["pexip_node_uri"] = this.pexip_node_uri;
         data["pexip_self_test_node_uri"] = this.pexip_self_test_node_uri;
@@ -2456,7 +2713,6 @@ export interface IConferenceResponse {
     /** The current conference Status */
     status?: ConferenceStatus;
     judge_i_frame_uri?: string | undefined;
-    admin_i_frame_uri?: string | undefined;
     participant_uri?: string | undefined;
     pexip_node_uri?: string | undefined;
     pexip_self_test_node_uri?: string | undefined;
