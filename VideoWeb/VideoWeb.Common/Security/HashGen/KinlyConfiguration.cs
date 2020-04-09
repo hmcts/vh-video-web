@@ -1,11 +1,11 @@
 ﻿namespace VideoWeb.Common.Security.HashGen
 {
-    public class CustomTokenSettings
+    public class KinlyConfiguration
     {
-        public string Secret { get; set; }
+        public string CallbackSecret { get; set; }
         public string Audience { get; set; }
         public string Issuer { get; set; }
-        public string ThirdPartySecret { get; set; }
+        public string ApiSecret { get; set; }
         public int ExpiresInMinutes { get; set; }
         public int HashExpiresInMinutes { get; set; }
     }

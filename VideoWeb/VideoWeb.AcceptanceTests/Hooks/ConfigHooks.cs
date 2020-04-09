@@ -65,7 +65,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         private void RegisterCustomTokenSecrets(TestContext context)
         {
-            context.VideoWebConfig.VideoWebCustomTokenSettings = Options.Create(_configRoot.GetSection("CustomToken").Get<CustomTokenSettings>()).Value;
+            context.VideoWebConfig.VideoWebKinlyConfiguration = Options.Create(_configRoot.GetSection("KinlyConfiguration").Get<KinlyConfiguration>()).Value;
         }
 
         private void RegisterTestUserSecrets(TestContext context)
@@ -139,7 +139,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 context.VideoWebConfig.AzureAdConfiguration, context.VideoWebConfig.AzureAdConfiguration.ClientId);
             context.Tokens.VideoWebBearerToken.Should().NotBeNullOrEmpty();
 
-            context.Tokens.CallbackBearerToken = GenerateTemporaryTokens.SetCustomJwTokenForCallback(context.VideoWebConfig.VideoWebCustomTokenSettings);
+            context.Tokens.CallbackBearerToken = GenerateTemporaryTokens.SetCustomJwTokenForCallback(context.VideoWebConfig.VideoWebKinlyConfiguration);
             context.Tokens.CallbackBearerToken.Should().NotBeNullOrEmpty();
         }
     }

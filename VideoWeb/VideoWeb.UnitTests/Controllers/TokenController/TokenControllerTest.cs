@@ -27,7 +27,7 @@ namespace VideoWeb.UnitTests.Controllers.TokenController
 
             _tokenController = new VideoWeb.Controllers.TokenController(hashGenerator.Object, 
                                                                         customJwtTokenProvider.Object, 
-                                                                        new CustomTokenSettings() { HashExpiresInMinutes = 30, ExpiresInMinutes = 20 });
+                                                                        new KinlyConfiguration() { HashExpiresInMinutes = 30, ExpiresInMinutes = 20 });
         }
     }
 }

@@ -243,7 +243,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private IRestResponse SendEventToVideoWeb(CallbackEvent request)
         {
             _c.Test.AlertTime = _c.TimeZone.Adjust(DateTime.Now);
-            _c.Tokens.CallbackBearerToken = GenerateTemporaryTokens.SetCustomJwTokenForCallback(_c.VideoWebConfig.VideoWebCustomTokenSettings);
+            _c.Tokens.CallbackBearerToken = GenerateTemporaryTokens.SetCustomJwTokenForCallback(_c.VideoWebConfig.VideoWebKinlyConfiguration);
             return new VideoWebApiManager(_c.VideoWebConfig.VhServices.VideoWebUrl, _c.Tokens.CallbackBearerToken).SendCallBackEvent(request);
         }
 

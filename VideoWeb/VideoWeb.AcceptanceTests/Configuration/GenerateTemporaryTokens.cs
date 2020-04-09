@@ -14,9 +14,9 @@ namespace VideoWeb.AcceptanceTests.Configuration
                 azureAdConfiguration.ClientId, azureAdConfiguration.ClientSecret, azureAdConfiguration.ClientId);
         }
 
-        public static string SetCustomJwTokenForCallback(CustomTokenSettings customTokenSettings)
+        public static string SetCustomJwTokenForCallback(KinlyConfiguration kinlyConfiguration)
         {
-            var generateTokenWithAsciiKey = new CustomJwtTokenProvider(customTokenSettings).GenerateTokenForCallbackEndpoint("VhVideoApi", TokenExpiresInMinutes);
+            var generateTokenWithAsciiKey = new CustomJwtTokenProvider(kinlyConfiguration).GenerateTokenForCallbackEndpoint("VhVideoApi", TokenExpiresInMinutes);
             return generateTokenWithAsciiKey;
         }
     }

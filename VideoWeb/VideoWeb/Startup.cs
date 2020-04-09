@@ -54,7 +54,7 @@ namespace VideoWeb
                 Configuration.Bind("ApplicationInsights", options.ApplicationInsights);
             });
             services.Configure<HearingServicesConfiguration>(options => Configuration.Bind("VhServices", options));
-            var customTokenSettings = Configuration.GetSection("CustomToken").Get<CustomTokenSettings>();
+            var customTokenSettings = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
             services.AddSingleton(customTokenSettings);
 
             var connectionStrings = Configuration.GetSection("ConnectionStrings").Get<ConnectionStrings>();
@@ -63,9 +63,9 @@ namespace VideoWeb
 
         private void RegisterAuth(IServiceCollection serviceCollection)
         {
-            var customTokenSettings = Configuration.GetSection("CustomToken").Get<CustomTokenSettings>();
+            var customTokenSettings = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
             var securitySettings = Configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
-            var securityKey = new ASCIIEncoding().GetBytes(customTokenSettings.ThirdPartySecret);
+            var securityKey = new ASCIIEncoding().GetBytes(customTokenSettings.ApiSecret);
             serviceCollection.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

@@ -6,7 +6,7 @@ namespace VideoWeb.AcceptanceTests.Configuration
     public class VideoWebConfig
     {
         public VideoWebSecurityConfiguration AzureAdConfiguration { get; set; }
-        public CustomTokenSettings VideoWebCustomTokenSettings { get; set; }
+        public KinlyConfiguration VideoWebKinlyConfiguration { get; set; }
         public VideoWebTestConfig TestConfig { get; set; }
         public VideoWebVhServicesConfig VhServices { get; set; }
         public SauceLabsSettingsConfig SauceLabsConfiguration { get; set; }

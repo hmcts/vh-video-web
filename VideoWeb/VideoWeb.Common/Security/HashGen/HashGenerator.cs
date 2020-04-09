@@ -11,11 +11,11 @@ namespace VideoWeb.Common.Security.HashGen
 
     public class HashGenerator : IHashGenerator
     {
-        private readonly CustomTokenSettings _customTokenSettings;
+        private readonly KinlyConfiguration _kinlyConfiguration;
 
-        public HashGenerator(CustomTokenSettings customTokenSettings)
+        public HashGenerator(KinlyConfiguration kinlyConfiguration)
         {
-            _customTokenSettings = customTokenSettings;
+            _kinlyConfiguration = kinlyConfiguration;
         }
 
         public string GenerateHash(string expiresOnUtc, string data)
@@ -23,7 +23,7 @@ namespace VideoWeb.Common.Security.HashGen
             var asciiEncoding = new ASCIIEncoding();
             var stringToHash = $"{expiresOnUtc}{data}";
 
-            var keyBytes = asciiEncoding.GetBytes(_customTokenSettings.Secret);
+            var keyBytes = asciiEncoding.GetBytes(_kinlyConfiguration.CallbackSecret);
             var messageBytes = asciiEncoding.GetBytes(stringToHash);
 
             using (var hmac = new HMACSHA256(keyBytes))
