@@ -1,25 +1,54 @@
 # Set variables once
 variables:
-  cleanChekout: 'true'
-  apiDirectory: 'VideoWeb/VideoWeb'
-  solutionType: angularDotNetCore # angularDotNetCore, dotNetCore
-  sonarCloudPrepareExtraProperties: |  
-    sonar.exclusions=**/node_modules/**,**/*.spec.ts, *.spec.ts, **/ClientApp/src/*, **/ClientApp/coverage/**/**, **/ConfigureServicesExtensions.cs, **/Startup.cs, **/Program.cs, **/Testing.Common/**, **/VideoWeb.UnitTests/**, **/VideoWeb.Common/**, **/VideoWeb/Swagger/**, **/VideoWeb/Extensions/**
-    sonar.typescript.lcov.reportPaths=$(System.DefaultWorkingDirectory)/VideoWeb/VideoWeb/ClientApp/coverage/lcov.info
-    sonar.typescript.exclusions=**/node_modules/**,**/typings.d.ts,**/main.ts,**/environments/environment*.ts,**/*routing.module.ts,**/api-client.ts
-    sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)\Coverage\coverage.opencover.xml
-    sonar.coverage.exclusions= **/Testing.Common/**, VideoWeb/Views/*, VideoWeb/Pages/*, VideoWeb.AcceptanceTests/*, **/VideoWeb.Services/**, **/ClientApp/src/scripts/*.js, **/ClientApp/src/app/testing/**, **/ClientApp/src/app/vh-officer/helper.ts, **/ClientApp/src/app/services/events.service.ts, **/ClientApp/src/app/send-video-events/send-video-events.component.ts, **/ClientApp/src/app/services/api/video-web.service.ts, **/ClientApp/src/app/waiting-space/analogue-clock/analogue-clock.component.ts
-  integrationTestsAppSettingsTransform: '
-    "AzureAd/TenantId":"$(tenantid)",
-    "AzureAd/ClientId":"$(vh-video-web-appid)",
-    "AzureAd/ClientSecret":"$(vh-video-web-key)",
-    "CustomToken/Secret":"$(hmac-secret-key)",
-    "CustomToken/ThirdPartySecret":"$(ThirdPartySecret)",
-    "ConnectionStrings/SignalR":"$(signalr-connection-str)"
-    '
-  keyVaultName: vhcoreinfrahtdev # Used to get secrets for integration tests
-  secretsFilter: 'tenantid,hmac-secret-key,vh-video-web-appid,vh-video-web-key,vh-video-web-identifieruris,vh-admin-web-appid,vh-admin-web-key,signalr-connection-str' # filters out secrets returned from key vault
-  coverletCoverageExclusions: '[VideoWeb]VideoWeb.ConfigureServicesExtensions,[VideoWeb]VideoWeb.Program,[VideoWeb]VideoWeb.Startup,[*]VideoWeb.Common.*,[*]VideoWeb.Extensions.*,[*]VideoWeb.Pages.*,[*]VideoWeb.Swagger.*,[*]VideoWeb.Views.*,[*]VideoWeb.UnitTests.*,[*]VideoWeb.Services.*,[*]Testing.Common.*'
+  - group: KinlyConfiguration
+
+  - name: SelfTestApiKey
+    value: $(SelfTestApiKey_test)
+  - name: KinlyApiKey
+    value: $(KinlyApiKey_test)
+  - name: CallbackKey
+    value: $(CallbackKey_test)
+      
+  - name: cleanCheckout
+    value: true
+  - name: apiDirectory
+    value: VideoWeb/VideoWeb
+  - name: solutionType
+    value: angularDotNetCore # angularDotNetCore, dotNetCore
+  - name: sonarCloudPrepareExtraProperties
+    value: |  
+      sonar.exclusions=**/node_modules/**,**/*.spec.ts, *.spec.ts, **/ClientApp/src/*, **/ClientApp/coverage/**/**, **/ConfigureServicesExtensions.cs, **/Startup.cs, **/Program.cs, **/Testing.Common/**, **/VideoWeb.UnitTests/**, **/VideoWeb.Common/**, **/VideoWeb/Swagger/**, **/VideoWeb/Extensions/**
+      sonar.typescript.lcov.reportPaths=$(System.DefaultWorkingDirectory)/VideoWeb/VideoWeb/ClientApp/coverage/lcov.info
+      sonar.typescript.exclusions=**/node_modules/**,**/typings.d.ts,**/main.ts,**/environments/environment*.ts,**/*routing.module.ts,**/api-client.ts
+      sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)\Coverage\coverage.opencover.xml
+      sonar.coverage.exclusions= **/Testing.Common/**, VideoWeb/Views/*, VideoWeb/Pages/*, VideoWeb.AcceptanceTests/*, **/VideoWeb.Services/**, **/ClientApp/src/scripts/*.js, **/ClientApp/src/app/testing/**, **/ClientApp/src/app/vh-officer/helper.ts, **/ClientApp/src/app/services/events.service.ts, **/ClientApp/src/app/send-video-events/send-video-events.component.ts, **/ClientApp/src/app/services/api/video-web.service.ts, **/ClientApp/src/app/waiting-space/analogue-clock/analogue-clock.component.ts
+  - name: integrationTestsAppSettingsTransform
+    value: '
+      "AzureAd/TenantId":"$(tenantid)",
+      "AzureAd/ClientId":"$(vh-video-web-appid)",
+      "AzureAd/ClientSecret":"$(vh-video-web-key)",
+      "ConnectionStrings/SignalR":"$(signalr-connection-str)",
+      "KinlyConfiguration/ApiSecret":"$(KinlyApiKey)",
+      "KinlyConfiguration/CallbackSecret":"$(CallbackKey)",
+      "KinlyConfiguration/SelfTestApiSecret":"$(SelfTestApiKey)"
+      '
+  - name: keyVaultName
+    value: vhcoreinfrahtdev # Used to get secrets for integration tests
+  - name: secretsFilter
+    value: 'tenantid,vh-video-web-appid,vh-video-web-key,vh-video-web-identifieruris,vh-admin-web-appid,vh-admin-web-key,signalr-connection-str' # filters out secrets returned from key vault
+  - name: coverletCoverageExclusions
+    value: '[VideoWeb]VideoWeb.ConfigureServicesExtensions,[VideoWeb]VideoWeb.Program,[VideoWeb]VideoWeb.Startup,[*]VideoWeb.Common.*,[*]VideoWeb.Extensions.*,[*]VideoWeb.Pages.*,[*]VideoWeb.Swagger.*,[*]VideoWeb.Views.*,[*]VideoWeb.UnitTests.*,[*]VideoWeb.Services.*,[*]Testing.Common.*'
+  - name: coverletCoverageExclusions
+    value: '[VideoWeb]VideoWeb.ConfigureServicesExtensions,[VideoWeb]VideoWeb.Program,[VideoWeb]VideoWeb.Startup,[*]VideoWeb.Common.*,[*]VideoWeb.Extensions.*,[*]VideoWeb.Pages.*,[*]VideoWeb.Swagger.*,[*]VideoWeb.Views.*,[*]VideoWeb.UnitTests.*,[*]VideoWeb.Services.*,[*]Testing.Common.*'
+  - name: coverletCoverageExclusions
+    value: '[VideoWeb]VideoWeb.ConfigureServicesExtensions,[VideoWeb]VideoWeb.Program,[VideoWeb]VideoWeb.Startup,[*]VideoWeb.Common.*,[*]VideoWeb.Extensions.*,[*]VideoWeb.Pages.*,[*]VideoWeb.Swagger.*,[*]VideoWeb.Views.*,[*]VideoWeb.UnitTests.*,[*]VideoWeb.Services.*,[*]Testing.Common.*'
+  - name: coverletCoverageExclusions
+    value: '[VideoWeb]VideoWeb.ConfigureServicesExtensions,[VideoWeb]VideoWeb.Program,[VideoWeb]VideoWeb.Startup,[*]VideoWeb.Common.*,[*]VideoWeb.Extensions.*,[*]VideoWeb.Pages.*,[*]VideoWeb.Swagger.*,[*]VideoWeb.Views.*,[*]VideoWeb.UnitTests.*,[*]VideoWeb.Services.*,[*]Testing.Common.*'
+  - name: coverletCoverageExclusions
+    value: '[VideoWeb]VideoWeb.ConfigureServicesExtensions,[VideoWeb]VideoWeb.Program,[VideoWeb]VideoWeb.Startup,[*]VideoWeb.Common.*,[*]VideoWeb.Extensions.*,[*]VideoWeb.Pages.*,[*]VideoWeb.Swagger.*,[*]VideoWeb.Views.*,[*]VideoWeb.UnitTests.*,[*]VideoWeb.Services.*,[*]Testing.Common.*'
+  - name: coverletCoverageExclusions
+    value: '[VideoWeb]VideoWeb.ConfigureServicesExtensions,[VideoWeb]VideoWeb.Program,[VideoWeb]VideoWeb.Startup,[*]VideoWeb.Common.*,[*]VideoWeb.Extensions.*,[*]VideoWeb.Pages.*,[*]VideoWeb.Swagger.*,[*]VideoWeb.Views.*,[*]VideoWeb.UnitTests.*,[*]VideoWeb.Services.*,[*]Testing.Common.*'
+
 # GitHub Repo that conatins build templates. Reference https://docs.microsoft.com/en-us/azure/devops/pipelines/process/templates?view=vsts#using-other-repositories
 resources:
   repositories:
