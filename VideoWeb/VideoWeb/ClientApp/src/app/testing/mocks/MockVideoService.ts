@@ -14,8 +14,8 @@ import {
     SelfTestPexipResponse,
     HearingVenueResponse,
     ParticipantHeartbeatResponse,
-    ConferenceForJudgeResponse,
-    UpdateParticipantRequest
+    ConferenceForJudgeResponse,    UpdateParticipantRequest,
+    ConferenceResponseVho
 } from 'src/app/services/clients/api-client';
 import { Observable, of } from 'rxjs';
 import { ConferenceTestData } from './data/conference-test-data';
@@ -65,6 +65,11 @@ export class MockVideoWebService implements IVideoWebApiService {
     getConferenceById(conferenceId: string): Promise<ConferenceResponse> {
         console.log(`using mock video web service: getConferenceById ${JSON.stringify(conferenceId)}`);
         return Promise.resolve(new ConferenceTestData().getConferenceDetailFuture());
+    }
+
+    getConferenceByIdVHO(conferenceId: string): Promise<ConferenceResponseVho> {
+      console.log(`using mock video web service: getConferenceById ${JSON.stringify(conferenceId)}`);
+      return Promise.resolve(new ConferenceTestData().getConferenceDetailFuture());
     }
 
     completeTask(conferenceId: string, taskId: number): Promise<TaskResponse> {

@@ -221,11 +221,11 @@ export class SelfTestComponent implements OnInit, OnDestroy {
                 this.logger.info(`Self test : ConferenceId : ${this.conference.id} | retrieveSelfTestScore for Participant Id : ${
                     this.participant.id
                 }
-          | Participant : ${this.videoWebService.getObfuscatedName(this.participant.first_name + ' ' + this.participant.last_name)}`);
+          | Participant : ${this.videoWebService.getObfuscatedName(this.participant.name)}`);
                 this.testCallResult = await this.videoWebService.getTestCallScore(this.conference.id, this.selfTestParticipantId);
             } else {
                 this.logger.info(`Self test : retrieveSelfTestScore for Participant Id : ${this.participant.id}
-          | Participant : ${this.videoWebService.getObfuscatedName(this.participant.first_name + ' ' + this.participant.last_name)}`);
+          | Participant : ${this.videoWebService.getObfuscatedName(this.participant.name)}`);
                 this.testCallResult = await this.videoWebService.getIndependentTestCallScore(this.selfTestParticipantId);
             }
 

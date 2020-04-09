@@ -53,143 +53,24 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 ControllerContext = context
             };
 
-            var userProfile = new UserProfile {User_role = "Individual"};
-            _userApiClientMock
-                .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(userProfile);
             _mockConferenceCache.Setup(x => x.AddConferenceToCache(It.IsAny<ConferenceDetailsResponse>()));
         }
 
+
         [Test]
-        public async Task Should_return_error_when_unable_to_retrieve_profile()
+        public async Task Should_return_ok_when_user_is_in_conference()
         {
-            var apiException = new UserApiException<ProblemDetails>("User not found", (int) HttpStatusCode.NotFound,
-                "User Not Found", null, default, null);
-            _userApiClientMock
-                .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
-                .ThrowsAsync(apiException);
 
             var conference = CreateValidConferenceResponse(null);
             _videoApiClientMock
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
 
-            var result = await _controller.GetConferenceByIdAsync(conference.Id);
-            var typedResult = result.Value;
-            typedResult.Should().BeNull();
-            var objectResult = (ObjectResult) result.Result;
-            objectResult.StatusCode.Should().Be(apiException.StatusCode);
-        }
-        
-        [Test]
-        public async Task Should_return_error_when_unable_to_retrieve_booking_participants()
-        {
-            var apiException = new BookingsApiException("Hearing does not exist", (int) HttpStatusCode.NotFound,
-                "Invalid Hearing Id", null, null);
-            _bookingsApiClientMock
-                .Setup(x => x.GetAllParticipantsInHearingAsync(It.IsAny<Guid>()))
-                .ThrowsAsync(apiException);
-
-            var conference = CreateValidConferenceResponse();
-            _videoApiClientMock
-                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(conference);
 
             var result = await _controller.GetConferenceByIdAsync(conference.Id);
-            var typedResult = result.Value;
-            typedResult.Should().BeNull();
-            var objectResult = (ObjectResult) result.Result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
-        }
-
-
-        [Test]
-        public async Task Should_return_ok_when_user_belongs_to_conference()
-        {
-            var conference = CreateValidConferenceResponse();
-            _videoApiClientMock
-                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(conference);
-
-            var bookingParticipants = CreateBookingParticipantResponses(conference.Participants);
-            _bookingsApiClientMock
-                .Setup(x => x.GetAllParticipantsInHearingAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(bookingParticipants);
-            
-            var result = await _controller.GetConferenceByIdAsync(conference.Id);
-            var typedResult = (OkObjectResult) result.Result;
-            typedResult.Should().NotBeNull();
-        }
-
-        [Test]
-        public async Task Should_return_error_when_booking_participants_are_missing()
-        {
-            var conference = CreateValidConferenceResponse();
-            _videoApiClientMock
-                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(conference);
-
-            var bookingParticipants = CreateBookingParticipantResponses(conference.Participants);
-            bookingParticipants[0].Id = Guid.NewGuid();
-            _bookingsApiClientMock
-                .Setup(x => x.GetAllParticipantsInHearingAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(bookingParticipants);
-            
-            var result = await _controller.GetConferenceByIdAsync(conference.Id);
-            
-            var typedResult = (ObjectResult) result.Result;
-            typedResult.StatusCode.Should().Be((int) HttpStatusCode.ExpectationFailed);
-            ((AggregateException) typedResult.Value).Message.Should()
-                .Contain("Unable to find a participant in bookings api with id ");
-        }
-
-        [Test]
-        public async Task Should_return_ok_when_user_is_an_admin()
-        {
-            var userProfile = new UserProfile { User_role = "VhOfficer" };
-            _userApiClientMock
-                .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(userProfile);
-
-            var conference = CreateValidConferenceResponse(null);
-            _videoApiClientMock
-                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(conference);
-
-            var bookingParticipants = CreateBookingParticipantResponses(conference.Participants);
-            _bookingsApiClientMock
-                .Setup(x => x.GetAllParticipantsInHearingAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(bookingParticipants);
-
-            var result = await _controller.GetConferenceByIdAsync(conference.Id);
-            var typedResult = (OkObjectResult)result.Result;
+            var typedResult = (UnauthorizedResult)result.Result;
             typedResult.Should().NotBeNull();
             _mockConferenceCache.Verify(x => x.AddConferenceToCache(new ConferenceDetailsResponse()), Times.Never);
-        }
-
-        [Test]
-        public async Task Should_return_ok_when_user_is_not_admin()
-        {
-            var userProfile = new UserProfile { User_role = "Individual", User_name= "john@doe.com" };
-            _userApiClientMock
-                .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(userProfile);
-         
-            var conference = CreateValidConferenceResponse(null);
-            conference.Participants[0].Username = "john@doe.com";
-            _videoApiClientMock
-                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(conference);
-
-            var bookingParticipants = CreateBookingParticipantResponses(conference.Participants);
-            _bookingsApiClientMock
-                .Setup(x => x.GetAllParticipantsInHearingAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(bookingParticipants);
-
-            var result = await _controller.GetConferenceByIdAsync(conference.Id);
-            var typedResult = (OkObjectResult)result.Result;
-            typedResult.Should().NotBeNull();
-            _mockConferenceCache.Verify(x => x.AddConferenceToCache(It.IsAny<ConferenceDetailsResponse>()), Times.Once());
         }
 
         [Test]
@@ -265,17 +146,5 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             return conference;
         }
 
-        private List<BookingParticipant> CreateBookingParticipantResponses(
-            List<ParticipantDetailsResponse> participantDetails)
-        {
-            var bookingParticipants = new List<BookingParticipant>();
-            foreach (var participantDetail in participantDetails)
-            {
-                var bp = Builder<BookingParticipant>.CreateNew().With(x => x.Id = participantDetail.Ref_id).Build();
-                bookingParticipants.Add(bp);
-            }
-
-            return bookingParticipants;
-        }
     }
 }

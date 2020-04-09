@@ -16,7 +16,8 @@ import {
   TaskResponse,
   TestCallScoreResponse,
   TokenResponse,
-  UpdateParticipantStatusEventRequest,  UpdateParticipantRequest
+  UpdateParticipantStatusEventRequest,  UpdateParticipantRequest,
+  ConferenceResponseVho
 } from '../clients/api-client';
 import { ConferenceLite } from '../models/conference-lite';
 import { SessionStorage } from '../session-storage';
@@ -43,6 +44,10 @@ export class VideoWebService implements IVideoWebApiService {
 
   getConferencesForVHOfficer(): Observable<ConferenceForVhOfficerResponse[]> {
     return this.apiClient.getConferencesForVhOfficer();
+  }
+
+  getConferenceByIdVHO(conferenceId: string): Promise<ConferenceResponseVho> {
+    return this.apiClient.getConferenceByIdVHO(conferenceId).toPromise();
   }
 
   getConferenceById(conferenceId: string): Promise<ConferenceResponse> {

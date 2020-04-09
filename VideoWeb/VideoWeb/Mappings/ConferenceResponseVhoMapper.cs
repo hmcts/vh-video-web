@@ -4,14 +4,15 @@ using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Services.Video;
+using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
 using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.Mappings
 {
-    public static class ConferenceResponseMapper
+    public static class ConferenceResponseVhoMapper
     {
-        public static ConferenceResponse MapConferenceDetailsToResponseModel(ConferenceDetailsResponse conference)
-        //    IEnumerable<BookingParticipant> bookingParticipants)
+        public static ConferenceResponseVho MapConferenceDetailsToResponseModel(ConferenceDetailsResponse conference,
+            IEnumerable<BookingParticipant> bookingParticipants)
         {
             if (!Enum.TryParse(conference.Current_status.ToString(), true, out ConferenceStatus status))
             {
@@ -22,10 +23,12 @@ namespace VideoWeb.Mappings
 
             var participants = conference.Participants
                 .OrderBy(x => x.Case_type_group)
-                .Select(x => ParticipantResponseMapper.MapParticipantToResponseModel(x))
+                .Select(x =>
+                    ParticipantResponseForVhoMapper
+                        .MapParticipantToResponseModel(x, bookingParticipants.SingleOrDefault(p => x.Ref_id == p.Id)))
                 .ToList();
 
-            var response = new ConferenceResponse
+            var response = new ConferenceResponseVho
             {
                 Id = conference.Id,
                 CaseName = conference.Case_name,
@@ -41,10 +44,10 @@ namespace VideoWeb.Mappings
 
             if (conference.Meeting_room == null) return response;
 
+            response.AdminIFrameUri = conference.Meeting_room.Admin_uri;
             response.JudgeIFrameUri = conference.Meeting_room.Judge_uri;
             response.ParticipantUri = conference.Meeting_room.Participant_uri;
             response.PexipNodeUri = conference.Meeting_room.Pexip_node;
-            response.PexipSelfTestNodeUri = conference.Meeting_room.Pexip_self_test_node;
 
             var tiledParticipants = conference.Participants.Where(x =>
                 x.User_role == UserRole.Individual || x.User_role == UserRole.Representative).ToList();
