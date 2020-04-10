@@ -63,9 +63,9 @@ namespace VideoWeb
 
         private void RegisterAuth(IServiceCollection serviceCollection)
         {
-            var customTokenSettings = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
+            var kinlyConfiguration = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
             var securitySettings = Configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
-            var securityKey = new ASCIIEncoding().GetBytes(customTokenSettings.ApiSecret);
+            var securityKey = Convert.FromBase64String(kinlyConfiguration.CallbackSecret);
             serviceCollection.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
