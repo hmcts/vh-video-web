@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -6,7 +7,7 @@ namespace VideoWeb.Common.Security.HashGen
 {
     public interface IHashGenerator
     {
-        string GenerateHash(string expiresOnUtc, string data);
+        string GenerateSelfTestTokenHash(string expiresOnUtc, string data);
     }
 
     public class HashGenerator : IHashGenerator
@@ -18,19 +19,17 @@ namespace VideoWeb.Common.Security.HashGen
             _kinlyConfiguration = kinlyConfiguration;
         }
 
-        public string GenerateHash(string expiresOnUtc, string data)
+        public string GenerateSelfTestTokenHash(string expiresOnUtc, string data)
         {
             var asciiEncoding = new ASCIIEncoding();
             var stringToHash = $"{expiresOnUtc}{data}";
 
-            var keyBytes = asciiEncoding.GetBytes(_kinlyConfiguration.SelfTestApiSecret);
+            var keyBytes = Convert.FromBase64String(_kinlyConfiguration.SelfTestApiSecret);
             var messageBytes = asciiEncoding.GetBytes(stringToHash);
 
-            using (var hmac = new HMACSHA256(keyBytes))
-            {
-                var computedHash = hmac.ComputeHash(messageBytes);
-                return ByteToString(computedHash);
-            }
+            using var hmac = new HMACSHA512(keyBytes);
+            var computedHash = hmac.ComputeHash(messageBytes);
+            return ByteToString(computedHash);
         }
 
         public static string ByteToString(byte[] buffer)

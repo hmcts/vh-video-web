@@ -14,7 +14,7 @@ namespace VideoWeb.UnitTests
         {
             _kinlyConfiguration = new KinlyConfiguration
             {
-                CallbackSecret = "W2gEmBn2H7b2FCMIQl6l9rggbJU1qR7luIeAf1uuaY+ik6TP5rN0NEsPVg0TGkroiel0SoCQT7w3cbk7hFrBtA=="
+                SelfTestApiSecret = "W2gEmBn2H7b2FCMIQl6l9rggbJU1qR7luIeAf1uuaY+ik6TP5rN0NEsPVg0TGkroiel0SoCQT7w3cbk7hFrBtA=="
             };
         }
 
@@ -23,7 +23,7 @@ namespace VideoWeb.UnitTests
         {
             var hashGenerator = new HashGenerator(_kinlyConfiguration);
             var id = Guid.NewGuid().ToString();
-            var computedHash = hashGenerator.GenerateHash(GetExpiryOn(), id);
+            var computedHash = hashGenerator.GenerateSelfTestTokenHash(GetExpiryOn(), id);
             computedHash.Should().NotBeNullOrEmpty();
         }
 
@@ -32,10 +32,10 @@ namespace VideoWeb.UnitTests
         {
             var hashGenerator = new HashGenerator(_kinlyConfiguration);
             var id = Guid.NewGuid().ToString();
-            var computedHash = hashGenerator.GenerateHash(GetExpiryOn(), id);
+            var computedHash = hashGenerator.GenerateSelfTestTokenHash(GetExpiryOn(), id);
 
             var id2 = Guid.NewGuid().ToString();
-            var reComputedHash = hashGenerator.GenerateHash(GetExpiryOn(), id2);
+            var reComputedHash = hashGenerator.GenerateSelfTestTokenHash(GetExpiryOn(), id2);
             reComputedHash.Should().NotBe(computedHash);
         }
 

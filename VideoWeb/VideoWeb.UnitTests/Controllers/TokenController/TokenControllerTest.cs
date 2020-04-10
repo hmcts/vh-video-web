@@ -22,7 +22,7 @@ namespace VideoWeb.UnitTests.Controllers.TokenController
             customJwtTokenProvider = new Mock<ICustomJwtTokenProvider>();
             participantId = Guid.NewGuid();
             token = "TestToken";
-            hashGenerator.Setup(h => h.GenerateHash(It.IsAny<string>(), It.IsAny<string>())).Returns(token);
+            hashGenerator.Setup(h => h.GenerateSelfTestTokenHash(It.IsAny<string>(), It.IsAny<string>())).Returns(token);
             customJwtTokenProvider.Setup(v => v.GenerateToken(It.IsAny<string>(), It.IsAny<int>())).Returns(token);
 
             _tokenController = new VideoWeb.Controllers.TokenController(hashGenerator.Object, 

@@ -1584,8 +1584,8 @@ export class ApiClient {
     /**
      * @return Success
      */
-    getToken(participantId: string): Observable<TokenResponse> {
-        let url_ = this.baseUrl + "/participants/{participantId}/token";
+    getSelfTestToken(participantId: string): Observable<TokenResponse> {
+        let url_ = this.baseUrl + "/participants/{participantId}/selftesttoken";
         if (participantId === undefined || participantId === null)
             throw new Error("The parameter 'participantId' must be defined.");
         url_ = url_.replace("{participantId}", encodeURIComponent("" + participantId)); 
@@ -1600,11 +1600,11 @@ export class ApiClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetToken(response_);
+            return this.processGetSelfTestToken(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetToken(<any>response_);
+                    return this.processGetSelfTestToken(<any>response_);
                 } catch (e) {
                     return <Observable<TokenResponse>><any>_observableThrow(e);
                 }
@@ -1613,7 +1613,7 @@ export class ApiClient {
         }));
     }
 
-    protected processGetToken(response: HttpResponseBase): Observable<TokenResponse> {
+    protected processGetSelfTestToken(response: HttpResponseBase): Observable<TokenResponse> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 

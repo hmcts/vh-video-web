@@ -100,7 +100,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.logger.debug('setting up pexip client and call');
         this.setupPexipClient();
         try {
-            this.token = await this.videoWebService.getToken(this.selfTestParticipantId);
+            this.token = await this.videoWebService.getSelfTestToken(this.selfTestParticipantId);
             this.logger.debug('retrieved token for self test');
             this.call();
         } catch (error) {
@@ -154,26 +154,26 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         const self = this;
         this.pexipAPI = new PexRTC();
         this.updatePexipAudioVideoSource();
-        this.pexipAPI.onSetup = function(stream, pin_status, conference_extension) {
+        this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
             self.logger.info('running pexip test call setup');
             self.outgoingStream = stream;
             this.connect('0000', null);
         };
 
-        this.pexipAPI.onConnect = function(stream) {
+        this.pexipAPI.onConnect = function (stream) {
             self.logger.info('successfully connected');
             self.incomingStream = stream;
             self.displayFeed = true;
             self.testStarted.emit();
         };
 
-        this.pexipAPI.onError = function(reason) {
+        this.pexipAPI.onError = function (reason) {
             self.displayFeed = false;
             self.logger.error('Error from pexip. Reason : ' + reason, reason);
             self.errorService.goToServiceError();
         };
 
-        this.pexipAPI.onDisconnect = function(reason) {
+        this.pexipAPI.onDisconnect = function (reason) {
             self.displayFeed = false;
             self.logger.info('Disconnected from pexip. Reason : ' + reason);
             if (reason === 'Conference terminated by another participant') {

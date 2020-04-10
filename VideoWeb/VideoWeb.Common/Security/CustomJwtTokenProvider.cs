@@ -43,7 +43,7 @@ namespace VideoWeb.Common.Security
                 NotBefore = DateTime.UtcNow.AddMinutes(-1),
                 Issuer = _kinlyConfiguration.Issuer,
                 Expires = DateTime.UtcNow.AddMinutes(expiresInMinutes + 1),
-                SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512)
             };
 
             var handler = new JwtSecurityTokenHandler();

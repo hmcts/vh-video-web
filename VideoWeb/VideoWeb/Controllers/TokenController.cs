@@ -27,11 +27,11 @@ namespace VideoWeb.Controllers
             _kinlyConfiguration = kinlyConfiguration;
         }
 
-        [HttpGet("{participantId}/token")]
-        [SwaggerOperation(OperationId = "GetToken")]
+        [HttpGet("{participantId}/selftesttoken")]
+        [SwaggerOperation(OperationId = "GetSelfTestToken")]
         [ProducesResponseType(typeof(TokenResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public IActionResult GetToken(Guid participantId)
+        public IActionResult GetSelfTestToken(Guid participantId)
         {
             if (participantId == Guid.Empty)
             {
@@ -40,7 +40,7 @@ namespace VideoWeb.Controllers
             }
 
             var expiresOn = DateTime.UtcNow.AddMinutes(_kinlyConfiguration.HashExpiresInMinutes).ToUniversalTime().ToString("dd.MM.yyyy-H:mmZ");
-            var token = _hashGenerator.GenerateHash(expiresOn, participantId.ToString());
+            var token = _hashGenerator.GenerateSelfTestTokenHash(expiresOn, participantId.ToString());
             var tokenResponse = new TokenResponse {ExpiresOn = expiresOn, Token = token};
             return Ok(tokenResponse);
         }
