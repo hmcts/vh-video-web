@@ -25,28 +25,26 @@
     this.lookbackPeriodMS = 60000;
     this.lookbackSlices = (this.lookbackPeriodMS / this.interval) + 1;
     this.lookbackValues = {
-      outgoing:
-        {
-          audio: {
-            packetsSent: [0],
-            packetsLost: [0],
-          },
-          video: {
-            packetsSent: [0],
-            packetsLost: [0],
-          }
+      outgoing: {
+        audio: {
+          packetsSent: [0],
+          packetsLost: [0],
         },
-      incoming:
-        {
-          audio: {
-            packetsSent: [0],
-            packetsLost: [0],
-          },
-          video: {
-            packetsSent: [0],
-            packetsLost: [0],
-          }
+        video: {
+          packetsSent: [0],
+          packetsLost: [0],
         }
+      },
+      incoming: {
+        audio: {
+          packetsSent: [0],
+          packetsLost: [0],
+        },
+        video: {
+          packetsSent: [0],
+          packetsLost: [0],
+        }
+      }
     };
     this.timer = null;
     this.postponer = null;
@@ -173,10 +171,7 @@
     }
 
     fetch(url, request)
-      .then(function (response) {
-          console.log(response.json());
-        }
-      );
+      .then(function (response) {});
   };
 
   HeartbeatFactory.prototype.beat = function () {
@@ -232,12 +227,12 @@
     return randomString;
   }
 
-  function generateUUIDv4(){
+  function generateUUIDv4() {
     var dt = new Date().getTime();
-    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      var r = (dt + Math.random()*16)%16 | 0;
-      dt = Math.floor(dt/16);
-      return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+      var r = (dt + Math.random() * 16) % 16 | 0;
+      dt = Math.floor(dt / 16);
+      return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
     });
     return uuid;
   }

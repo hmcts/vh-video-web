@@ -30,7 +30,7 @@ namespace VideoWeb.Common.Security
 
         public string GenerateToken(string claims, int expiresInMinutes)
         {
-            var key = Convert.FromBase64String(_kinlyConfiguration.SelfTestApiSecret);
+            var key = Convert.FromBase64String(_kinlyConfiguration.ApiSecret);
             return BuildToken(claims, expiresInMinutes, key);
         }
 
