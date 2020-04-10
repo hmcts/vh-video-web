@@ -23,7 +23,7 @@ namespace VideoWeb.Common.Security.HashGen
             var asciiEncoding = new ASCIIEncoding();
             var stringToHash = $"{expiresOnUtc}{data}";
 
-            var keyBytes = asciiEncoding.GetBytes(_kinlyConfiguration.CallbackSecret);
+            var keyBytes = asciiEncoding.GetBytes(_kinlyConfiguration.SelfTestApiSecret);
             var messageBytes = asciiEncoding.GetBytes(stringToHash);
 
             using (var hmac = new HMACSHA256(keyBytes))

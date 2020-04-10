@@ -24,13 +24,13 @@ namespace VideoWeb.Common.Security
 
         public string GenerateTokenForCallbackEndpoint(string claims, int expiresInMinutes)
         {
-            var key = new ASCIIEncoding().GetBytes(_kinlyConfiguration.ApiSecret);
+            var key = new ASCIIEncoding().GetBytes(_kinlyConfiguration.CallbackSecret);
             return BuildToken(claims, expiresInMinutes, key);
         }
 
         public string GenerateToken(string claims, int expiresInMinutes)
         {
-            var key = Convert.FromBase64String(_kinlyConfiguration.ApiSecret);
+            var key = Convert.FromBase64String(_kinlyConfiguration.SelfTestApiSecret);
             return BuildToken(claims, expiresInMinutes, key);
         }
 
