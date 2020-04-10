@@ -11,7 +11,7 @@ namespace VideoWeb.UnitTests.Controllers.TokenController
         [Test]
         public void should_return_ok_token_response()
         { 
-            var result = _tokenController.GetToken(participantId);
+            var result = _tokenController.GetSelfTestToken(participantId);
 
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
@@ -19,7 +19,7 @@ namespace VideoWeb.UnitTests.Controllers.TokenController
             tokenResponse.Token.Should().Be(token);
             tokenResponse.ExpiresOn.Length.Should().BeGreaterOrEqualTo(15);
             tokenResponse.ExpiresOn.Length.Should().BeLessOrEqualTo(17);
-            hashGenerator.Verify(h => h.GenerateHash(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            hashGenerator.Verify(h => h.GenerateSelfTestTokenHash(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
     }
 }

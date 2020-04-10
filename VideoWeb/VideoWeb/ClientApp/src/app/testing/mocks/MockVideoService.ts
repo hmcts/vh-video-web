@@ -14,7 +14,8 @@ import {
     SelfTestPexipResponse,
     HearingVenueResponse,
     ParticipantHeartbeatResponse,
-    ConferenceForJudgeResponse,    UpdateParticipantRequest,
+    ConferenceForJudgeResponse,
+    UpdateParticipantRequest,
     ConferenceResponseVho
 } from 'src/app/services/clients/api-client';
 import { Observable, of } from 'rxjs';
@@ -68,8 +69,8 @@ export class MockVideoWebService implements IVideoWebApiService {
     }
 
     getConferenceByIdVHO(conferenceId: string): Promise<ConferenceResponseVho> {
-      console.log(`using mock video web service: getConferenceById ${JSON.stringify(conferenceId)}`);
-      return Promise.resolve(new ConferenceTestData().getConferenceDetailFuture());
+        console.log(`using mock video web service: getConferenceById ${JSON.stringify(conferenceId)}`);
+        return Promise.resolve(new ConferenceTestData().getConferenceDetailFuture());
     }
 
     completeTask(conferenceId: string, taskId: number): Promise<TaskResponse> {
@@ -92,7 +93,7 @@ export class MockVideoWebService implements IVideoWebApiService {
         return Promise.resolve();
     }
 
-    getToken(participantId: string): Promise<TokenResponse> {
+    getSelfTestToken(participantId: string): Promise<TokenResponse> {
         console.log('using mock get token');
         const token = new TokenResponse({
             expires_on: new Date().toDateString(),
@@ -111,6 +112,6 @@ export class MockVideoWebService implements IVideoWebApiService {
     }
 
     updateParticipantDetails(conferenceId: string, participantId: string, updateParticipantRequest: UpdateParticipantRequest) {
-      return Promise.resolve();
+        return Promise.resolve();
     }
 }

@@ -16,22 +16,22 @@ namespace VideoWeb.Controllers
     {
         private readonly IHashGenerator _hashGenerator;
         private readonly ICustomJwtTokenProvider _customJwtTokenProvider;
-        private readonly CustomTokenSettings _customTokenSettings;
+        private readonly KinlyConfiguration _kinlyConfiguration;
 
         public TokenController(IHashGenerator hashGenerator, 
             ICustomJwtTokenProvider customJwtTokenProvider,
-            CustomTokenSettings customTokenSettings)
+            KinlyConfiguration kinlyConfiguration)
         {
             _hashGenerator = hashGenerator;
             _customJwtTokenProvider = customJwtTokenProvider;
-            _customTokenSettings = customTokenSettings;
+            _kinlyConfiguration = kinlyConfiguration;
         }
 
-        [HttpGet("{participantId}/token")]
-        [SwaggerOperation(OperationId = "GetToken")]
+        [HttpGet("{participantId}/selftesttoken")]
+        [SwaggerOperation(OperationId = "GetSelfTestToken")]
         [ProducesResponseType(typeof(TokenResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public IActionResult GetToken(Guid participantId)
+        public IActionResult GetSelfTestToken(Guid participantId)
         {
             if (participantId == Guid.Empty)
             {
@@ -39,8 +39,8 @@ namespace VideoWeb.Controllers
                 return BadRequest(ModelState);
             }
 
-            var expiresOn = DateTime.UtcNow.AddMinutes(_customTokenSettings.HashExpiresInMinutes).ToUniversalTime().ToString("dd.MM.yyyy-H:mmZ");
-            var token = _hashGenerator.GenerateHash(expiresOn, participantId.ToString());
+            var expiresOn = DateTime.UtcNow.AddMinutes(_kinlyConfiguration.HashExpiresInMinutes).ToUniversalTime().ToString("dd.MM.yyyy-H:mmZ");
+            var token = _hashGenerator.GenerateSelfTestTokenHash(expiresOn, participantId.ToString());
             var tokenResponse = new TokenResponse {ExpiresOn = expiresOn, Token = token};
             return Ok(tokenResponse);
         }
@@ -57,8 +57,8 @@ namespace VideoWeb.Controllers
                 return BadRequest(ModelState);
             }
 
-            var expiresOn = DateTime.UtcNow.AddMinutes(_customTokenSettings.ExpiresInMinutes).ToUniversalTime().ToString(CultureInfo.InvariantCulture);
-            var token = _customJwtTokenProvider.GenerateToken(participantId.ToString(), _customTokenSettings.ExpiresInMinutes);
+            var expiresOn = DateTime.UtcNow.AddMinutes(_kinlyConfiguration.ExpiresInMinutes).ToUniversalTime().ToString(CultureInfo.InvariantCulture);
+            var token = _customJwtTokenProvider.GenerateToken(participantId.ToString(), _kinlyConfiguration.ExpiresInMinutes);
             var tokenResponse = new TokenResponse {ExpiresOn = expiresOn, Token = token}; 
             return Ok(tokenResponse);
         }

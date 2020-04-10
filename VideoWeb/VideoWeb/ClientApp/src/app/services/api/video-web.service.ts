@@ -1,130 +1,135 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
-  AddMediaEventRequest,
-  AddSelfTestFailureEventRequest,
-  ApiClient,
-  ChatResponse,
-  ConferenceEventRequest,
-  ConferenceForJudgeResponse,
-  ConferenceForIndividualResponse,
-  ConferenceForVhOfficerResponse,
-  ConferenceResponse,
-  HearingVenueResponse,
-  ParticipantHeartbeatResponse,
-  SelfTestPexipResponse,
-  TaskResponse,
-  TestCallScoreResponse,
-  TokenResponse,
-  UpdateParticipantStatusEventRequest,  UpdateParticipantRequest,
-  ConferenceResponseVho
+    AddMediaEventRequest,
+    AddSelfTestFailureEventRequest,
+    ApiClient,
+    ChatResponse,
+    ConferenceEventRequest,
+    ConferenceForJudgeResponse,
+    ConferenceForIndividualResponse,
+    ConferenceForVhOfficerResponse,
+    ConferenceResponse,
+    HearingVenueResponse,
+    ParticipantHeartbeatResponse,
+    SelfTestPexipResponse,
+    TaskResponse,
+    TestCallScoreResponse,
+    TokenResponse,
+    UpdateParticipantStatusEventRequest,
+    UpdateParticipantRequest,
+    ConferenceResponseVho
 } from '../clients/api-client';
 import { ConferenceLite } from '../models/conference-lite';
 import { SessionStorage } from '../session-storage';
 import { IVideoWebApiService } from './video-web-service.interface';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class VideoWebService implements IVideoWebApiService {
-  readonly ACTIVE_CONFERENCE_KEY = 'vh.active.conference';
-  private readonly activeConferencesCache: SessionStorage<ConferenceLite>;
+    readonly ACTIVE_CONFERENCE_KEY = 'vh.active.conference';
+    private readonly activeConferencesCache: SessionStorage<ConferenceLite>;
 
-  constructor(private apiClient: ApiClient) {
-    this.activeConferencesCache = new SessionStorage<ConferenceLite>(this.ACTIVE_CONFERENCE_KEY);
-  }
+    constructor(private apiClient: ApiClient) {
+        this.activeConferencesCache = new SessionStorage<ConferenceLite>(this.ACTIVE_CONFERENCE_KEY);
+    }
 
-  getConferencesForJudge(): Observable<ConferenceForJudgeResponse[]> {
-    return this.apiClient.getConferencesForJudge();
-  }
+    getConferencesForJudge(): Observable<ConferenceForJudgeResponse[]> {
+        return this.apiClient.getConferencesForJudge();
+    }
 
-  getConferencesForIndividual(): Observable<ConferenceForIndividualResponse[]> {
-    return this.apiClient.getConferencesForIndividual();
-  }
+    getConferencesForIndividual(): Observable<ConferenceForIndividualResponse[]> {
+        return this.apiClient.getConferencesForIndividual();
+    }
 
-  getConferencesForVHOfficer(): Observable<ConferenceForVhOfficerResponse[]> {
-    return this.apiClient.getConferencesForVhOfficer();
-  }
+    getConferencesForVHOfficer(): Observable<ConferenceForVhOfficerResponse[]> {
+        return this.apiClient.getConferencesForVhOfficer();
+    }
 
-  getConferenceByIdVHO(conferenceId: string): Promise<ConferenceResponseVho> {
-    return this.apiClient.getConferenceByIdVHO(conferenceId).toPromise();
-  }
+    getConferenceByIdVHO(conferenceId: string): Promise<ConferenceResponseVho> {
+        return this.apiClient.getConferenceByIdVHO(conferenceId).toPromise();
+    }
 
-  getConferenceById(conferenceId: string): Promise<ConferenceResponse> {
-    return this.apiClient.getConferenceById(conferenceId).toPromise();
-  }
+    getConferenceById(conferenceId: string): Promise<ConferenceResponse> {
+        return this.apiClient.getConferenceById(conferenceId).toPromise();
+    }
 
-  sendEvent(request: ConferenceEventRequest): Promise<void> {
-    return this.apiClient.sendEvent(request).toPromise();
-  }
+    sendEvent(request: ConferenceEventRequest): Promise<void> {
+        return this.apiClient.sendEvent(request).toPromise();
+    }
 
-  raiseMediaEvent(conferenceId: string, addMediaEventRequest: AddMediaEventRequest): Promise<void> {
-    return this.apiClient.addMediaEventToConference(conferenceId, addMediaEventRequest).toPromise();
-  }
+    raiseMediaEvent(conferenceId: string, addMediaEventRequest: AddMediaEventRequest): Promise<void> {
+        return this.apiClient.addMediaEventToConference(conferenceId, addMediaEventRequest).toPromise();
+    }
 
-  getTasksForConference(conferenceId: string): Promise<TaskResponse[]> {
-    return this.apiClient.getTasks(conferenceId).toPromise();
-  }
+    getTasksForConference(conferenceId: string): Promise<TaskResponse[]> {
+        return this.apiClient.getTasks(conferenceId).toPromise();
+    }
 
-  completeTask(conferenceId: string, taskId: number): Promise<TaskResponse> {
-    return this.apiClient.completeTask(conferenceId, taskId).toPromise();
-  }
+    completeTask(conferenceId: string, taskId: number): Promise<TaskResponse> {
+        return this.apiClient.completeTask(conferenceId, taskId).toPromise();
+    }
 
-  getTestCallScore(conferenceId: string, participantId: string): Promise<TestCallScoreResponse> {
-    return this.apiClient.getTestCallResult(conferenceId, participantId).toPromise();
-  }
+    getTestCallScore(conferenceId: string, participantId: string): Promise<TestCallScoreResponse> {
+        return this.apiClient.getTestCallResult(conferenceId, participantId).toPromise();
+    }
 
-  getIndependentTestCallScore(participantId: string): Promise<TestCallScoreResponse> {
-    return this.apiClient.getIndependentTestCallResult(participantId).toPromise();
-  }
+    getIndependentTestCallScore(participantId: string): Promise<TestCallScoreResponse> {
+        return this.apiClient.getIndependentTestCallResult(participantId).toPromise();
+    }
 
-  getToken(participantId: string): Promise<TokenResponse> {
-    return this.apiClient.getToken(participantId).toPromise();
-  }
+    getSelfTestToken(participantId: string): Promise<TokenResponse> {
+        return this.apiClient.getSelfTestToken(participantId).toPromise();
+    }
 
-  getJwToken(participantId: string): Promise<TokenResponse> {
-    return this.apiClient.getJwtoken(participantId).toPromise();
-  }
+    getJwToken(participantId: string): Promise<TokenResponse> {
+        return this.apiClient.getJwtoken(participantId).toPromise();
+    }
 
-  raiseParticipantEvent(conferenceId: string, updateParticipantStatusEventRequest: UpdateParticipantStatusEventRequest): Promise<void> {
-    return this.apiClient.updateParticipantStatus(conferenceId, updateParticipantStatusEventRequest).toPromise();
-  }
+    raiseParticipantEvent(conferenceId: string, updateParticipantStatusEventRequest: UpdateParticipantStatusEventRequest): Promise<void> {
+        return this.apiClient.updateParticipantStatus(conferenceId, updateParticipantStatusEventRequest).toPromise();
+    }
 
-  raiseSelfTestFailureEvent(conferenceId: string, addSelfTestFailureEventRequest: AddSelfTestFailureEventRequest): Promise<void> {
-    return this.apiClient.addSelfTestFailureEventToConference(conferenceId, addSelfTestFailureEventRequest).toPromise();
-  }
+    raiseSelfTestFailureEvent(conferenceId: string, addSelfTestFailureEventRequest: AddSelfTestFailureEventRequest): Promise<void> {
+        return this.apiClient.addSelfTestFailureEventToConference(conferenceId, addSelfTestFailureEventRequest).toPromise();
+    }
 
-  getPexipConfig(): Promise<SelfTestPexipResponse> {
-    return this.apiClient.getPexipConfig().toPromise();
-  }
+    getPexipConfig(): Promise<SelfTestPexipResponse> {
+        return this.apiClient.getPexipConfig().toPromise();
+    }
 
-  getObfuscatedName(displayName: string): string {
-    return displayName.replace(/(?!\b)\w/g, '*');
-  }
+    getObfuscatedName(displayName: string): string {
+        return displayName.replace(/(?!\b)\w/g, '*');
+    }
 
-  getHearingsVenue(): Promise<HearingVenueResponse[]> {
-    return this.apiClient.getHearingsVenues().toPromise();
-  }
+    getHearingsVenue(): Promise<HearingVenueResponse[]> {
+        return this.apiClient.getHearingsVenues().toPromise();
+    }
 
-  getConferenceChatHistory(conferenceId: string): Promise<ChatResponse[]> {
-    return this.apiClient.getConferenceInstantMessageHistory(conferenceId).toPromise();
-  }
+    getConferenceChatHistory(conferenceId: string): Promise<ChatResponse[]> {
+        return this.apiClient.getConferenceInstantMessageHistory(conferenceId).toPromise();
+    }
 
-  getParticipantHeartbeats(conferenceId: string, participantId: string): Promise<ParticipantHeartbeatResponse[]> {
-    return this.apiClient.getHeartbeatDataForParticipant(conferenceId, participantId).toPromise();
-  }
+    getParticipantHeartbeats(conferenceId: string, participantId: string): Promise<ParticipantHeartbeatResponse[]> {
+        return this.apiClient.getHeartbeatDataForParticipant(conferenceId, participantId).toPromise();
+    }
 
-  setActiveIndividualConference(conference: ConferenceForIndividualResponse) {
-    const conf = new ConferenceLite(conference.id, conference.case_number);
-    this.activeConferencesCache.clear();
-    this.activeConferencesCache.set(conf);
-  }
+    setActiveIndividualConference(conference: ConferenceForIndividualResponse) {
+        const conf = new ConferenceLite(conference.id, conference.case_number);
+        this.activeConferencesCache.clear();
+        this.activeConferencesCache.set(conf);
+    }
 
-  getActiveIndividualConference(): ConferenceLite {
-    return this.activeConferencesCache.get();
-  }
+    getActiveIndividualConference(): ConferenceLite {
+        return this.activeConferencesCache.get();
+    }
 
-  updateParticipantDetails(conferenceId: string, participantId: string, updateParticipantRequest: UpdateParticipantRequest): Promise<void> {
-    return this.apiClient.updateParticipantDisplayName(conferenceId, participantId, updateParticipantRequest).toPromise();
-  }
+    updateParticipantDetails(
+        conferenceId: string,
+        participantId: string,
+        updateParticipantRequest: UpdateParticipantRequest
+    ): Promise<void> {
+        return this.apiClient.updateParticipantDisplayName(conferenceId, participantId, updateParticipantRequest).toPromise();
+    }
 }

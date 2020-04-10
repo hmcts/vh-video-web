@@ -8,7 +8,6 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.Common.Models;
 using ParticipantResponse = VideoWeb.Services.Bookings.ParticipantResponse;
 using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
 

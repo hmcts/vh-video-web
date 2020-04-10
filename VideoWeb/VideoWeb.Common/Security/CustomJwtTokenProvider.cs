@@ -15,22 +15,22 @@ namespace VideoWeb.Common.Security
 
     public class CustomJwtTokenProvider : ICustomJwtTokenProvider
     {
-        private readonly CustomTokenSettings _customTokenSettings;
+        private readonly KinlyConfiguration _kinlyConfiguration;
 
-        public CustomJwtTokenProvider(CustomTokenSettings customTokenSettings)
+        public CustomJwtTokenProvider(KinlyConfiguration kinlyConfiguration)
         {
-            _customTokenSettings = customTokenSettings;
+            _kinlyConfiguration = kinlyConfiguration;
         }
 
         public string GenerateTokenForCallbackEndpoint(string claims, int expiresInMinutes)
         {
-            var key = new ASCIIEncoding().GetBytes(_customTokenSettings.ThirdPartySecret);
+            var key = new ASCIIEncoding().GetBytes(_kinlyConfiguration.CallbackSecret);
             return BuildToken(claims, expiresInMinutes, key);
         }
 
         public string GenerateToken(string claims, int expiresInMinutes)
         {
-            var key = Convert.FromBase64String(_customTokenSettings.Secret);
+            var key = Convert.FromBase64String(_kinlyConfiguration.ApiSecret);
             return BuildToken(claims, expiresInMinutes, key);
         }
 
@@ -41,9 +41,9 @@ namespace VideoWeb.Common.Security
             {
                 Subject = new ClaimsIdentity(new[] {new Claim(ClaimTypes.Name, claims)}),
                 NotBefore = DateTime.UtcNow.AddMinutes(-1),
-                Issuer = _customTokenSettings.Issuer,
+                Issuer = _kinlyConfiguration.Issuer,
                 Expires = DateTime.UtcNow.AddMinutes(expiresInMinutes + 1),
-                SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512)
             };
 
             var handler = new JwtSecurityTokenHandler();

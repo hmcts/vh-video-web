@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -6,24 +7,24 @@ namespace VideoWeb.Common.Security.HashGen
 {
     public interface IHashGenerator
     {
-        string GenerateHash(string expiresOnUtc, string data);
+        string GenerateSelfTestTokenHash(string expiresOnUtc, string data);
     }
 
     public class HashGenerator : IHashGenerator
     {
-        private readonly CustomTokenSettings _customTokenSettings;
+        private readonly KinlyConfiguration _kinlyConfiguration;
 
-        public HashGenerator(CustomTokenSettings customTokenSettings)
+        public HashGenerator(KinlyConfiguration kinlyConfiguration)
         {
-            _customTokenSettings = customTokenSettings;
+            _kinlyConfiguration = kinlyConfiguration;
         }
 
-        public string GenerateHash(string expiresOnUtc, string data)
+        public string GenerateSelfTestTokenHash(string expiresOnUtc, string data)
         {
             var asciiEncoding = new ASCIIEncoding();
             var stringToHash = $"{expiresOnUtc}{data}";
 
-            var keyBytes = asciiEncoding.GetBytes(_customTokenSettings.Secret);
+            var keyBytes = asciiEncoding.GetBytes(_kinlyConfiguration.SelfTestApiSecret);
             var messageBytes = asciiEncoding.GetBytes(stringToHash);
 
             using (var hmac = new HMACSHA256(keyBytes))
