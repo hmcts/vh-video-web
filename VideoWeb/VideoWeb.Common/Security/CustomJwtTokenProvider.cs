@@ -24,7 +24,7 @@ namespace VideoWeb.Common.Security
 
         public string GenerateTokenForCallbackEndpoint(string claims, int expiresInMinutes)
         {
-            var key = new ASCIIEncoding().GetBytes(_kinlyConfiguration.CallbackSecret);
+            var key = Convert.FromBase64String(_kinlyConfiguration.CallbackSecret);
             return BuildToken(claims, expiresInMinutes, key);
         }
 
