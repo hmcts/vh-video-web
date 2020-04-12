@@ -38,8 +38,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {"In Session", new InSessionStrategy()},
                 {"Paused", new PausedStrategy()},
                 {"Suspended", new SuspendedStrategy()},
-                {"Closed", new ClosedStrategy()},
-                {"Closed more than 30 minutes ago", new ClosedMoreThan30MinsStrategy() }
+                {"Closed", new ClosedStrategy()}
             };
             actions[status].Execute(_c, GetJudgeParticipantId());
         }

@@ -77,20 +77,19 @@ Scenario: Video Hearings Officer can see all hearings for today only
 Scenario: Clerk cannot access Closed hearing
 	Given I have a hearing
 	And the hearing status changes to Closed
-  And the Clerk user has progressed to the Hearings List page for the existing hearing
+  And the Clerk user has progressed to the Hearing List page for the existing hearing
   Then the hearing status should be displayed as Closed on the hearing list page
   And the Clerk is unable to access the Waiting Room
 
 Scenario: Participant can access Closed hearing within 30 minutes
 	Given I have a hearing
 	And the hearing status changes to Closed
-  And the Indiviudal user has progressed to the Hearings List page for the existing hearing
-  Then the hearing status should be displayed as Closed on the hearing list page
-  And the participant is able to access the Waiting Room
+  And the Individual user has progressed to the Hearing List page for the existing hearing
+  Then the participant is able to access the hearing
 
 Scenario: Participant cannot access Closed hearing after 30 minutes
-	Given I have a hearing in -31 minutes time
-	And the hearing status changes to Closed more than 30 minutes ago
-  And the Clerk user has progressed to the Hearings List page for the existing hearing
+	Given I have a hearing in -32 minutes time
+	And the hearing was closed more than 30 minutes ago
+  And the Individual user has progressed to the Hearing List page for the existing hearing
   Then the hearing status should be displayed as Closed on the hearing list page
-  And the participant is unable to access the Waiting Room
+  And the participant is unable to access the hearing
