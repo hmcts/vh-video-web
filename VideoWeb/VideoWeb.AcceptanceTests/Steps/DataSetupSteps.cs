@@ -11,6 +11,8 @@ using VideoWeb.AcceptanceTests.Assertions;
 using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
+using EventType = VideoWeb.EventHub.Enums.EventType;
+using RoomType = VideoWeb.EventHub.Enums.RoomType;
 using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
 
 namespace VideoWeb.AcceptanceTests.Steps
@@ -44,7 +46,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"I have another hearing in (.*) minutes time")]
         public void GivenIHaveAHearingAndAConferenceInMinutesTime(int minutes)
         {
-            CheckThatTheHearingWillBeCreatedForToday(_c.TimeZone.Adjust(DateTime.Now.ToUniversalTime().AddMinutes(minutes)));
+            CheckThatTheHearingWillBeCreatedForToday(_c.TimeZone.AdjustForVideoWeb(DateTime.Now.ToUniversalTime().AddMinutes(minutes)));
             GivenIHaveAHearing(minutes);
             GetTheNewConferenceDetails();
             _c.Test.DelayedStartTime = minutes;
@@ -71,7 +73,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var request = new HearingRequestBuilder()
                 .WithUserAccounts(_c.UserAccounts)
-                .WithScheduledTime(_c.TimeZone.Adjust(DateTime.Now.ToUniversalTime().AddMinutes(minutes)))
+                .WithScheduledTime(_c.TimeZone.AdjustForVideoWeb(DateTime.Now.ToUniversalTime().AddMinutes(minutes)))
                 .WithScheduledDuration(HearingDuration)
                 .WithLocation(location)
                 .Build();
@@ -88,7 +90,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private void CheckThatTheHearingWillBeCreatedForToday(DateTime dateTime)
         {
-            if (!_c.TimeZone.Adjust(DateTime.Today).Day.Equals(dateTime.Day))
+            if (!_c.TimeZone.AdjustForVideoWeb(DateTime.Now).Day.Equals(dateTime.Day))
                 Assert.Ignore($"Ignoring the test as the hearing will be created for tomorrow, and won't be visible in the UI.");
         }
 
@@ -113,6 +115,22 @@ namespace VideoWeb.AcceptanceTests.Steps
             _c.Test.Conferences.Add(conference);
             _c.Test.NewConferenceId = conference.Id;
             _c.Test.ConferenceParticipants = conference.Participants;
+        }
+
+        [Given(@"the hearing was closed more than 30 minutes ago")]
+        public void GivenTheHearingWasClosedMoreThanMinutesAgo()
+        {
+            var id = _c.Test.ConferenceParticipants.Find(x => x.User_role.Equals(UserRole.Judge)).Id;
+            var request = new CallbackEventRequestBuilder()
+                .WithConferenceId(_c.Test.NewConferenceId)
+                .WithParticipantId(id)
+                .WithEventType(EventType.Close)
+                .FromRoomType(RoomType.HearingRoom)
+                .WithTimestamp(_c.TimeZone.AdjustForVideoWeb(DateTime.Now.AddMinutes(-31)))
+                .Build();
+
+            var response = _c.Apis.VideoWebApi.SendCallBackEvent(request);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
     }
 }
