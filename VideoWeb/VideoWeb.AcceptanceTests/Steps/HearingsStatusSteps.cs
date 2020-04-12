@@ -29,7 +29,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         [Given(@"the hearing status changes to (.*)")]
         [When(@"the hearing status changes to (.*)")]
-        public void WhenTheHearingStatusChangesTooNotStarted(string status)
+        public void TheHearingStatusChanges(string status)
         {
             var actions = new Dictionary<string, IHearingStatusStrategies>
             {
@@ -38,7 +38,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {"In Session", new InSessionStrategy()},
                 {"Paused", new PausedStrategy()},
                 {"Suspended", new SuspendedStrategy()},
-                {"Closed", new ClosedStrategy()}
+                {"Closed", new ClosedStrategy()},
+                {"Closed more than 30 minutes ago", new ClosedMoreThan30MinsStrategy() }
             };
             actions[status].Execute(_c, GetJudgeParticipantId());
         }

@@ -56,6 +56,31 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkHearingListPage.NoHearingsWarningMessage).Displayed.Should().BeTrue();
         }
 
+        [Then(@"the hearing status should be displayed as Closed on the hearing list page")]
+        public void ThenTheHearingStatusShouldBeDisplayedAsClosedOnTheHearingListPage()
+        {
+            ScenarioContext.Current.Pending();
+        }
+
+        [Then(@"the Clerk is unable to access the Waiting Room")]
+        public void ThenTheClerkIsUnableToAccessTheWaitingRoom()
+        {
+            ScenarioContext.Current.Pending();
+        }
+
+        [Then(@"the participant is able to access the Waiting Room")]
+        public void ThenTheParticipantIsAbleToAccessTheWaitingRoom()
+        {
+            ScenarioContext.Current.Pending();
+        }
+
+        [Then(@"the participant is unable to access the Waiting Room")]
+        public void ThenTheParticipantIsUnableToAccessTheWaitingRoom()
+        {
+            ScenarioContext.Current.Pending();
+        }
+
+
         [Then(@"a warning message appears indicating the participant has no hearings scheduled")]
         public void ThenAWarningMessageAppearsIndicatingTheParticipantHasNoHearingsScheduled()
         {
@@ -143,7 +168,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             foreach (var conference in _c.Test.Conferences)
             {
-                if (_c.TimeZone.Adjust(conference.Scheduled_date_time).Day.Equals(DateTime.Now.ToLocalTime().Day))
+                if (_c.TimeZone.Adjust(conference.Scheduled_date_time).Day.Equals(_c.TimeZone.Adjust(DateTime.Now).Day))
                 {
                     _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(conference.Id)).Displayed.Should().BeTrue();
                 }
