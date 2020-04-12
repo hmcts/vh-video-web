@@ -150,9 +150,9 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
 
             var alerts = GetAlerts();
-            var timeOfAlert = _c.TimeZone.Adjust(_c.Test.AlertTime).ToString(DateFormats.AlertMessageTimestamp);
-            var timeOfAlertMinusAMinute = _c.TimeZone.Adjust(_c.Test.AlertTime).AddMinutes(-1).ToString(DateFormats.AlertMessageTimestamp);
-            var timeOfAlertPlusAMinute = _c.TimeZone.Adjust(_c.Test.AlertTime).AddMinutes(1).ToString(DateFormats.AlertMessageTimestamp);
+            var timeOfAlert = _c.TimeZone.AdjustForVideoWeb(_c.Test.AlertTime).ToString(DateFormats.AlertMessageTimestamp);
+            var timeOfAlertMinusAMinute = _c.TimeZone.AdjustForVideoWeb(_c.Test.AlertTime).AddMinutes(-1).ToString(DateFormats.AlertMessageTimestamp);
+            var timeOfAlertPlusAMinute = _c.TimeZone.AdjustForVideoWeb(_c.Test.AlertTime).AddMinutes(1).ToString(DateFormats.AlertMessageTimestamp);
 
             foreach (var alert in alerts)
             {
@@ -181,9 +181,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var alerts = GetAlerts();
             var alert = alerts.First(x => x.AlertType.ToLower().Contains(alertType.ToLower()));
-            var time = DateTime.Now.ToString(DateFormats.AlertMessageTimestamp);
-            var timeMinusAMinute = DateTime.Now.AddMinutes(-1).ToString(DateFormats.AlertMessageTimestamp);
-            var timePlusAMinute = DateTime.Now.AddMinutes(1).ToString(DateFormats.AlertMessageTimestamp);
+            var time = _c.TimeZone.Adjust(DateTime.Now).ToString(DateFormats.AlertMessageTimestamp);
+            var timeMinusAMinute = _c.TimeZone.Adjust(DateTime.Now).AddMinutes(-1).ToString(DateFormats.AlertMessageTimestamp);
+            var timePlusAMinute = _c.TimeZone.Adjust(DateTime.Now).AddMinutes(1).ToString(DateFormats.AlertMessageTimestamp);
             alert.ActionedAt.Should().Match<string>(t => t.Equals(time) || t.Equals(timeMinusAMinute) || t.Equals(timePlusAMinute));
             alert.ActionedBy.Should().Be(_c.CurrentUser.Username.ToLower());
         }

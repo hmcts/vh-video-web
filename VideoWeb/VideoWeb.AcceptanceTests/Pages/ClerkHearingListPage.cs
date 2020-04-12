@@ -14,6 +14,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By CaseName(Guid conferenceId) => By.Id($"case-name-{conferenceId:D}");
         public static By CaseType(Guid conferenceId) => By.Id($"case-type-{conferenceId:D}");
         public static By CaseNumber(Guid conferenceId) => By.Id($"case-number-{conferenceId:D}");
+        public static By Status(Guid conferenceId) => By.Id($"hearing-status-{conferenceId:D}");
         public static By ApplicantIndividualName(Guid conferenceId) => By.Id($"applicant-only-display-name-case-group-{conferenceId:D}");
         public static By ApplicantRepresentativeName(Guid conferenceId) => By.Id($"applicant-rep-display-name-{conferenceId:D}");
         public static By ApplicantRepresenteeName(Guid conferenceId) => By.Id($"applicant-rep-representee-{conferenceId:D}");

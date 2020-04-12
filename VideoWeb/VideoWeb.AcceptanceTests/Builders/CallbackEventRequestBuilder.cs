@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using FizzWare.NBuilder;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Models;
@@ -60,6 +60,12 @@ namespace VideoWeb.AcceptanceTests.Builders
         public CallbackEventRequestBuilder WithReason(string reason)
         {
             _request.With(x => x.Reason = reason);
+            return this;
+        }
+
+        public CallbackEventRequestBuilder WithTimestamp(DateTime time)
+        {
+            _request.With(x => x.TimeStampUtc = time);
             return this;
         }
 

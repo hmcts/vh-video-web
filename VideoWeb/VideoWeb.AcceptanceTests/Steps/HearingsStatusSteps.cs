@@ -29,7 +29,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         [Given(@"the hearing status changes to (.*)")]
         [When(@"the hearing status changes to (.*)")]
-        public void WhenTheHearingStatusChangesTooNotStarted(string status)
+        public void TheHearingStatusChanges(string status)
         {
             var actions = new Dictionary<string, IHearingStatusStrategies>
             {

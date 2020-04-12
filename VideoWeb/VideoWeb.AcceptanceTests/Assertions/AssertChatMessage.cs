@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using VideoWeb.AcceptanceTests.Helpers;
+using TimeZone = AcceptanceTests.Common.Data.Time.TimeZone;
 
 namespace VideoWeb.AcceptanceTests.Assertions
 {
     public static class AssertChatMessage
     {
-        public static void Assert(ChatMessage expected, ChatMessage actual)
+        public static void Assert(ChatMessage expected, ChatMessage actual, TimeZone timeZone)
         {
             actual.Message.Should().Be(expected.Message);
             actual.Sender.Should().Be(expected.Sender);
-            var aMinuteAgo = DateTime.Now.ToLocalTime().AddMinutes(-1).ToShortTimeString();
+            var aMinuteAgo = timeZone.Adjust(DateTime.Now).AddMinutes(-1).ToShortTimeString();
             actual.Time.Should().BeOneOf(aMinuteAgo, expected.Time);
         }
 
