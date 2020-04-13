@@ -124,7 +124,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             foreach (var participant in pats)
             {
                 _browsers[_c.CurrentUser.Key].Driver
-                    .WaitUntilVisible(WaitingRoomPage.OtherParticipantsStatus(participant.Id)).Text.ToUpperInvariant().Should()
+                    .WaitUntilVisible(WaitingRoomPage.OtherParticipantsStatus(participant.Id)).Text.Trim().ToUpperInvariant().Should()
                     .BeEquivalentTo("Not Signed In".ToUpperInvariant());
             }
         }
