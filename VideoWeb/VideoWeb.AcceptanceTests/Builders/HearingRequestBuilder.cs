@@ -11,7 +11,7 @@ namespace VideoWeb.AcceptanceTests.Builders
     internal class HearingRequestBuilder
     {
         private BookNewHearingRequest _request;
-        private DateTime _scheduledTime = DateTime.Today.ToUniversalTime().AddDays(1).AddMinutes(-1);
+        private DateTime _scheduledTime;
         private int _scheduledDuration = 5;
         private readonly Random _fromRandomNumber;
         private readonly List<UserAccount> _individuals;

@@ -70,7 +70,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserSteps.GivenInTheUsersBrowser(user);
             var chatMessages = new GetChatMessages(_browsers[_c.CurrentUser.Key]).WaitFor(_messages.Count).Fetch();
             chatMessages.Count.Should().BePositive();
-            AssertChatMessage.Assert(_messages.Last(), chatMessages.Last());
+            AssertChatMessage.Assert(_messages.Last(), chatMessages.Last(), _c.TimeZone);
         }
 
         [Then(@"the Clerk can see the notification for the message")]
@@ -85,8 +85,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheVideoHearingsOfficerCanSeeTheNotificationForTheMessage()
         {
             _browserSteps.GivenInTheUsersBrowser("Video Hearings Officer");
-            SelectTheHearing();
             NotificationAppears(1).Should().BeTrue();
+            SelectTheHearing();
         }
 
         [When(@"the participants send (.*) messages to each other")]
@@ -118,7 +118,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 Message = Faker.Company.BS(),
                 Sender = sender,
-                Time = DateTime.Now.ToLocalTime().ToShortTimeString()
+                Time = _c.TimeZone.Adjust(DateTime.Now).ToShortTimeString()
             });
             _browsers[_c.CurrentUser.Key].Click(InstantMessagePage.SendNewMessageTextBox);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(InstantMessagePage.SendNewMessageTextBox).SendKeys(_messages.Last().Message);

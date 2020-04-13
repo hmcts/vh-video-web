@@ -53,6 +53,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.FiltersButton);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(FiltersPopupPage.FiltersPopup).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].ClickLink(FiltersPopupPage.ClearFiltersLink);
             foreach (var option in ConvertStringIntoArray(options))
             {
                 _browsers[_c.CurrentUser.Key].ClickCheckbox(FiltersPopupPage.CheckBox(option));
@@ -72,12 +73,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var hearingThatShouldNotBeVisible = _c.Test.Conferences.First();
             var hearingThatShouldBeVisible = _c.Test.Conferences.Last();
-            _browsers[_c.CurrentUser.Key].Driver
-                .WaitUntilVisible(VhoHearingListPage.CaseName(hearingThatShouldBeVisible.Id))
-                .Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver
-                .WaitUntilElementNotVisible(VhoHearingListPage.CaseName(hearingThatShouldNotBeVisible.Id))
-                .Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(hearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(VhoHearingListPage.CaseName(hearingThatShouldNotBeVisible.Id)).Should().BeTrue();
         }
     }
 }

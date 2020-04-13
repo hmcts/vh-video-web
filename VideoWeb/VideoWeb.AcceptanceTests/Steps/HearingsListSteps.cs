@@ -56,6 +56,31 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkHearingListPage.NoHearingsWarningMessage).Displayed.Should().BeTrue();
         }
 
+        [Then(@"the hearing status should be displayed as Closed on the hearing list page")]
+        public void ThenTheHearingStatusShouldBeDisplayedAsClosedOnTheHearingListPage()
+        {
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkHearingListPage.Status(_c.Test.Conference.Id)).Text.Trim().Should().Be("Closed");
+        }
+
+        [Then(@"the Clerk is unable to access the Waiting Room")]
+        public void ThenTheClerkIsUnableToAccessTheWaitingRoom()
+        {
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(ClerkHearingListPage.StartHearingButton(_c.Test.Conference.Id)).Should().BeTrue();
+        }
+
+        [Then(@"the participant is able to access the hearing")]
+        public void ThenTheParticipantIsAbleToAccessTheWaitingRoom()
+        {
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ParticipantHearingListPage.SignInButton(_c.Test.Conference.Id)).Click();
+            _browsers[_c.CurrentUser.Key].Retry(() => _browsers[_c.CurrentUser.Key].Driver.Url.Trim().Should().Contain(Page.Introduction.Url),2);
+        }
+
+        [Then(@"the participant is unable to access the hearing")]
+        public void ThenTheParticipantIsUnableToAccessTheWaitingRoom()
+        {
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(ParticipantHearingListPage.SignInButton(_c.Test.Conference.Id)).Should().BeTrue();
+        }
+
         [Then(@"a warning message appears indicating the participant has no hearings scheduled")]
         public void ThenAWarningMessageAppearsIndicatingTheParticipantHasNoHearingsScheduled()
         {
@@ -143,7 +168,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             foreach (var conference in _c.Test.Conferences)
             {
-                if (_c.TimeZone.Adjust(conference.Scheduled_date_time).Day.Equals(DateTime.Now.ToLocalTime().Day))
+                if (_c.TimeZone.Adjust(conference.Scheduled_date_time).Day.Equals(_c.TimeZone.Adjust(DateTime.Now).Day))
                 {
                     _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(conference.Id)).Displayed.Should().BeTrue();
                 }

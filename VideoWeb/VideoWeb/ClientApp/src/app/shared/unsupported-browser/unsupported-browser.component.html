@@ -9,15 +9,13 @@
       <ul class="govuk-list">
         <li *ngFor="let browser of supportedBrowsers">
           <div class="govuk-grid-column-full">
-            <div class="govuk-grid-column-one-quarter">
-              <div class="govuk-grid-row" style="width: 120px">
-                <div class="govuk-grid-column-one-half">
-                  <img src="{{browser.iconPath}}" height="48" width="48" class="govuk-!-margin-right-2"
-                    alt="{{browser.name}} browser logo" />
-                </div>
-                <div class="govuk-grid-column-one-half">
-                  <p>{{browser.name}}</p>
-                </div>
+            <div class="govuk-grid-row">
+              <div class="govuk-grid-column-one-quarter" style="padding: 5px; width: 6%">
+                <img src="{{browser.iconPath}}" height="48" width="48" class="govuk-!-margin-right-2"
+                     alt="{{browser.name}} browser logo" />
+              </div>
+              <div class="govuk-grid-column-three-quarters" style="padding-top: 15px;">
+                <p>{{browser.name}}</p>
               </div>
             </div>
           </div>
