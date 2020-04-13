@@ -11,7 +11,6 @@ namespace VideoWeb.Mappings
     public static class ConferenceResponseMapper
     {
         public static ConferenceResponse MapConferenceDetailsToResponseModel(ConferenceDetailsResponse conference)
-        //    IEnumerable<BookingParticipant> bookingParticipants)
         {
             if (!Enum.TryParse(conference.Current_status.ToString(), true, out ConferenceStatus status))
             {
