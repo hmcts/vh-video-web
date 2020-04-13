@@ -47,8 +47,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browserSteps.GivenInTheUsersBrowser(user);
             Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitToCallAndAnswer));
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.IncomingCallMessage).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Click(AdminPanelPage.AcceptPrivateCall);
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(PrivateCallPopupPage.VhoIncomingCallMessage).Text.Should().Contain("Video Hearings Team");
+            _browsers[_c.CurrentUser.Key].Click(PrivateCallPopupPage.AcceptPrivateCall);
         }
 
         [When(@"the (.*) ends the call")]
@@ -74,7 +74,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheIndividualCanNoLongerSeeTheAlert(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(AdminPanelPage.IncomingCallMessage);
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(PrivateCallPopupPage.IncomingCallMessage);
         }
 
         [Then(@"the admin self view can be open and closed")]

@@ -19,13 +19,10 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By ParticipantStatus(Guid participantId) => By.Id($"participant-status-{participantId}");
         public static By ParticipantInIframe(string displayName) => By.XPath($"//b[contains(text(),'{displayName}')]");
         public static By VhoPrivateConsultationLink(Guid participantId) => By.XPath($"//a[contains(@href,'{participantId}') and @aria-label='Private consultation']");
-        public static By IncomingCallMessage = CommonLocators.ElementContainingText("Incoming call from Video Hearings Team");
-        public static By AcceptPrivateCall = CommonLocators.ButtonWithInnerText("Accept call");
         public static By IncomingVideo = By.Id("incomingVideo");
         public static By IncomingFeed = By.Id("incomingFeedPrivate");
         public static By SelfViewVideo = By.Id("selfviewVideo");
         public static By SelfViewButton = By.Id("selfViewButton");
-        public static By MuteButton = By.Id("muteButton");
         public static By CloseButton = By.Id("closeButton");
     }
 }

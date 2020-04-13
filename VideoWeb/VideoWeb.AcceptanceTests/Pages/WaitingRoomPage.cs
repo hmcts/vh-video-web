@@ -24,17 +24,10 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By TimePanel = By.XPath("(//div[contains(@class,'govuk-panel')])[1]");
         public static By PausedTitle = CommonLocators.ElementContainingText("Your video hearing is paused");
         public static By ClosedTitle = CommonLocators.ElementContainingText("Your video hearing is closed");
-        public static By PrivateConsultationLink(string participantId) => By.XPath($"//div[@id='p-row-{participantId}']/a");
-        public static By OutgoingCallMessage = CommonLocators.ElementContainingText("Your contact request has been sent to");
-        public static By IncomingCallMessage = CommonLocators.ElementContainingText("Incoming call");       
         public static By Frame = By.XPath("//app-participant-waiting-room");
         public static By IncomingPrivateConsultationFeed = By.Id("incomingFeedPrivate");
         public static By SelfViewButton = By.Id("outgoingFeedButton");
         public static By SelfViewVideo = By.Id("outgoingFeedVideo");
-        public static By ClosePrivateConsultationButton = By.Id("close-pc-btn");
-        public static By CallRejectedMessage = CommonLocators.ElementContainingText("Your call request has not been accepted");
-        public static By CallRejectedCloseButton = By.Id("close-pc-rejection-btn");
-        public static By AcceptPrivateCall = CommonLocators.ButtonWithInnerText("Accept call");
-        public static By RejectPrivateCall = CommonLocators.ButtonWithInnerText("Reject call");
+        public static By PrivateConsultationLink(string participantId) => By.XPath($"//div[@id='p-row-{participantId}']/a");
     }
 }
