@@ -72,7 +72,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheParticipantIsAbleToAccessTheWaitingRoom()
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ParticipantHearingListPage.SignInButton(_c.Test.Conference.Id)).Click();
-            _browsers[_c.CurrentUser.Key].PageUrl(Page.Introduction.Url);
+            _browsers[_c.CurrentUser.Key].Retry(() => _browsers[_c.CurrentUser.Key].Driver.Url.Trim().Should().Contain(Page.Introduction.Url),2);
         }
 
         [Then(@"the participant is unable to access the hearing")]
