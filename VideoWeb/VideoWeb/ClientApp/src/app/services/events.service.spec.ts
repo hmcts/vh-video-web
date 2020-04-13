@@ -27,16 +27,6 @@ describe('EventsService', () => {
         expect(service.connectionStarted).toBeTruthy();
         expect(service.attemptingConnection).toBeFalsy();
     }));
-
-    it('should attempt reconnection if rejected', inject([EventsService], async (service: EventsService) => {
-        service.waitTimeBase = 100;
-        spyOn(service.connection, 'start').and.callFake(() => Promise.reject('could not find eventhub'));
-        await service.start();
-        expect(service.reconnectionAttempt).toBeGreaterThan(0);
-        expect(service.connectionStarted).toBeFalsy();
-        expect(service.attemptingConnection).toBeFalsy();
-    }));
-
     it('should not start if connected', inject([EventsService], (service: EventsService) => {
         spyOn(service.connection, 'start').and.callFake(() => {
             service.connectionStarted = true;
@@ -46,7 +36,6 @@ describe('EventsService', () => {
         service.start();
         expect(service.connection.start).toHaveBeenCalledTimes(1);
     }));
-
     it('should stop', inject([EventsService], (service: EventsService) => {
         spyOn(service.connection, 'stop').and.callFake(() => Promise.resolve(true));
         service.stop();
