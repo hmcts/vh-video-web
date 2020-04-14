@@ -40,7 +40,7 @@
     "core-js": "^3.6.4",
     "govuk-frontend": "^3.5.0",
     "guid-typescript": "^1.0.9",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "moment": "^2.24.0",
     "ng-bullet": "^1.0.3",
     "ng2-charts": "^2.3.0",
