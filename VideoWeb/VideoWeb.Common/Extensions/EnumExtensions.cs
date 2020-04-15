@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Reflection;
 using System.Runtime.Serialization;
 
 namespace VideoWeb.Common.Extensions
@@ -8,30 +7,22 @@ namespace VideoWeb.Common.Extensions
     {
         public static string EnumDataMemberAttr<T>(this T source)
         {
-            FieldInfo fi = source.GetType().GetField(source.ToString());
+            var fi = source.GetType().GetField(source.ToString());
 
-            EnumMemberAttribute[] attributes = (EnumMemberAttribute[]) fi.GetCustomAttributes(
+            var attributes = (EnumMemberAttribute[]) fi.GetCustomAttributes(
                 typeof(EnumMemberAttribute), false);
 
-            if (attributes != null && attributes.Length > 0)
-            {
-                return attributes[0].Value;
-            }
-            else
-            {
-                return source.ToString();
-            }
+            return attributes.Length > 0 ? attributes[0].Value : source.ToString();
         }
         
         public static string DescriptionAttr<T>(this T source)
         {
-            FieldInfo fi = source.GetType().GetField(source.ToString());
+            var fi = source.GetType().GetField(source.ToString());
 
-            DescriptionAttribute[] attributes = (DescriptionAttribute[])fi.GetCustomAttributes(
+            var attributes = (DescriptionAttribute[])fi.GetCustomAttributes(
                 typeof(DescriptionAttribute), false);
 
-            if (attributes != null && attributes.Length > 0) return attributes[0].Description;
-            else return source.ToString();
+            return attributes.Length > 0 ? attributes[0].Description : source.ToString();
         }
     }
 }

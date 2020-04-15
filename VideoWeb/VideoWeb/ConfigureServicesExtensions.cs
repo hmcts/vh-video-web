@@ -94,7 +94,7 @@ namespace VideoWeb
             services.AddScoped<IConferenceCache, DistributedConferenceCache>();
             services.AddScoped<IMessageDecoder, MessageFromDecoder>();
             services.AddScoped<IHeartbeatRequestMapper, HeartbeatRequestMapper>();
-            services.AddSingleton<IUserCache, DictionaryUserCache>();
+            services.AddSingleton<IUserCache, DistributedUserCache>();
             services.AddScoped<ICachedUserClaimBuilder, CachedUserClaimBuilder>();
 
             var container = services.BuildServiceProvider();

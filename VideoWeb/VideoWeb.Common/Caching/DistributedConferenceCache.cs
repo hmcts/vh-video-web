@@ -12,8 +12,6 @@ namespace VideoWeb.Common.Caching
     {
         private readonly IDistributedCache _distributedCache;
 
-       
-
         public DistributedConferenceCache(IDistributedCache distributedCache)
         {
             _distributedCache = distributedCache;

@@ -3,7 +3,7 @@ import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { InstantMessage } from 'src/app/services/models/instant-message';
@@ -71,9 +71,17 @@ export abstract class ChatBaseComponent {
         if (participant) {
             return participant.displayName;
         } else {
-            const profile = await this.profileService.getProfileByUsername(username);
+            const profile = await this.getProfileForUser(username);
             return profile.first_name;
         }
+    }
+
+    private async getProfileForUser(username: string): Promise<UserProfileResponse> {
+        const profile = this.profileService.checkCacheForProfileByUsername(username);
+        if (profile) {
+            return profile;
+        }
+        return await this.profileService.getProfileByUsername(username);
     }
 
     handleIncomingOtherMessage() {}

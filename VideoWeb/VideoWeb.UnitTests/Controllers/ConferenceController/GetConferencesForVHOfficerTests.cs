@@ -31,7 +31,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         private Mock<IBookingsApiClient> _bookingsApiClientMock;
         private Mock<ILogger<ConferencesController>> _mockLogger;
         private Mock<IConferenceCache> _mockConferenceCache;
-        private ClaimsPrincipal _claimsPrincipal;
 
         [SetUp]
         public void Setup()
