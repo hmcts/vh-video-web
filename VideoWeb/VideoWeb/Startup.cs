@@ -204,12 +204,16 @@ namespace VideoWeb
         
         private static async Task OnTokenValidated(TokenValidatedContext ctx)
         {
-            if (ctx.SecurityToken is JwtSecurityToken jwtToken)
+            if (ctx.SecurityToken is JwtSecurityToken jwtToken )
             {
+                var claimsIdentity = ctx.Principal.Identity as ClaimsIdentity;
+                if (!claimsIdentity.HasClaim(c => c.Type == ClaimTypes.Name))
+                {
+                    return;
+                }
                 var cachedUserClaimBuilder = ctx.HttpContext.RequestServices.GetService<ICachedUserClaimBuilder>();
                 var userProfileClaims = await cachedUserClaimBuilder.BuildAsync(ctx.Principal.Identity.Name, jwtToken.RawData);
-                var claimsIdentity = ctx.Principal.Identity as ClaimsIdentity;
-
+                
                 claimsIdentity?.AddClaims(userProfileClaims);
             }
         }
