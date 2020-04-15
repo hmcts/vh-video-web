@@ -8,7 +8,7 @@ Scenario: Start a private consultation
 	Given the Individual01 user has progressed to the Waiting Room page with a hearing in 10 minutes time
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
 	When the user starts a private consultation with Individual01
-	And Individual01 accepts the private consultation
+	And Individual01 accepts the private consultation from Mrs Automation01 Representative01
 	Then Representative01 can see the other participant
 	And the self view can be open and closed
 	When a participant closes the private consultation
