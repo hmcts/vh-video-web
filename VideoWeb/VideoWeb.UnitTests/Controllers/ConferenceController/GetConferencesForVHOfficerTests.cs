@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Faker;
 using FizzWare.NBuilder;
@@ -12,10 +13,10 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Services.Bookings;
-using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
@@ -27,34 +28,21 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
     {
         private ConferencesController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
-        private Mock<IUserApiClient> _userApiClientMock;
         private Mock<IBookingsApiClient> _bookingsApiClientMock;
         private Mock<ILogger<ConferencesController>> _mockLogger;
         private Mock<IConferenceCache> _mockConferenceCache;
+        private ClaimsPrincipal _claimsPrincipal;
 
         [SetUp]
         public void Setup()
         {
             _videoApiClientMock = new Mock<IVideoApiClient>();
-            _userApiClientMock = new Mock<IUserApiClient>();
             _bookingsApiClientMock = new Mock<IBookingsApiClient>();
             _mockLogger = new Mock<ILogger<ConferencesController>>();
             _mockConferenceCache = new Mock<IConferenceCache>();
 
-            var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
-            var context = new ControllerContext
-            {
-                HttpContext = new DefaultHttpContext
-                {
-                    User = claimsPrincipal
-                }
-            };
-
-            _controller = new ConferencesController(_videoApiClientMock.Object, _userApiClientMock.Object,
-                _bookingsApiClientMock.Object, _mockLogger.Object, _mockConferenceCache.Object)
-            {
-                ControllerContext = context
-            };
+            var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(Role.VideoHearingsOfficer).Build();
+            _controller = SetupControllerWithClaims(claimsPrincipal);
 
             _mockConferenceCache.Setup(x => x.AddConferenceToCache(It.IsAny<ConferenceDetailsResponse>()));
         }
@@ -62,12 +50,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         [Test]
         public async Task Should_return_unauthorised_when_not_a_vh_officer()
         {
-            var userProfile = new UserProfile {User_role = "Judge"};
-            _userApiClientMock
-                .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(userProfile);
-
-
+            var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(Role.Individual).Build();
+            _controller = SetupControllerWithClaims(claimsPrincipal);
             var result = await _controller.GetConferencesForVhOfficerAsync();
 
             var typedResult = (UnauthorizedObjectResult) result.Result;
@@ -76,29 +60,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         }
 
         [Test]
-        public async Task Should_forward_error_when_user_api_returns_error()
-        {
-            var apiException = new UserApiException<ProblemDetails>("Internal Server Error",
-                (int) HttpStatusCode.InternalServerError,
-                "Stacktrace goes here", null, default, null);
-            _userApiClientMock
-                .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
-                .ThrowsAsync(apiException);
-
-            var result = await _controller.GetConferencesForVhOfficerAsync();
-
-            var typedResult = (ObjectResult) result.Result;
-            typedResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
-        }
-
-        [Test]
         public async Task Should_forward_error_when_video_api_returns_error()
         {
-            var userProfile = new UserProfile {User_role = "VhOfficer"};
-            _userApiClientMock
-                .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(userProfile);
-
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
                 (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
@@ -116,11 +79,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         [Test]
         public async Task Should_return_ok_with_list_of_conferences()
         {
-            var userProfile = new UserProfile {User_role = "VhOfficer"};
-            _userApiClientMock
-                .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(userProfile);
-
             var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(4)
                 .All()
                 .With(x => x.Username = Internet.Email())
@@ -197,6 +155,23 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             // paused hearings in sessions cannot chat, no need to get history
             _videoApiClientMock.Verify(x => x.GetInstantMessageHistoryAsync(conferences.Last().Id), Times.Never);
+        }
+        
+        private ConferencesController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)
+        {
+            var context = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = claimsPrincipal
+                }
+            };
+
+            return new ConferencesController(_videoApiClientMock.Object, _bookingsApiClientMock.Object,
+                _mockLogger.Object, _mockConferenceCache.Object)
+            {
+                ControllerContext = context
+            };
         }
 
     }

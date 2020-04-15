@@ -7,6 +7,7 @@ using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Hub;
+using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Hub
 {
@@ -66,8 +67,8 @@ namespace VideoWeb.UnitTests.Hub
             ConferenceCacheMock.Setup(x => x.GetConference(conferenceId)).Returns(conference);
             var message = "test message";
 
-            UserProfileServiceMock.Setup(x => x.IsVhOfficerAsync(It.IsAny<string>()))
-                .ReturnsAsync(true);
+            Claims = new ClaimsPrincipalBuilder().WithRole(Role.VideoHearingsOfficer).Build();
+            HubCallerContextMock.Setup(x => x.User).Returns(Claims);
 
             var mockClient = new Mock<IEventHubClient>();
             EventHubClientMock.Setup(x => x.Group(conferenceId.ToString())).Returns(mockClient.Object);

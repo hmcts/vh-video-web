@@ -31,7 +31,7 @@ export abstract class ChatBaseComponent {
     setupChatSubscription(): Subscription {
         this.logger.debug('[ChatHub] Subscribing to chat messages');
         const sub = this.eventService.getChatMessage().subscribe({
-            next: async message => {
+            next: async (message) => {
                 await this.handleIncomingMessage(message);
             }
         });
@@ -47,11 +47,10 @@ export abstract class ChatBaseComponent {
         }
 
         // ignore if already received message
-        if (this.messages.findIndex(m => m.id === message.id) > -1) {
+        if (this.messages.findIndex((m) => m.id === message.id) > -1) {
             this.logger.debug(`[ChatHub] message already been processed ${JSON.stringify(message)}`);
             return;
         }
-        this.messages.push(message);
 
         const from = message.from.toUpperCase();
         const username = this.adalService.userInfo.userName.toUpperCase();
@@ -63,6 +62,8 @@ export abstract class ChatBaseComponent {
             message.is_user = false;
             this.handleIncomingOtherMessage();
         }
+
+        this.messages.push(message);
     }
 
     async assignMessageFrom(username: string): Promise<string> {
@@ -78,7 +79,7 @@ export abstract class ChatBaseComponent {
     handleIncomingOtherMessage() {}
 
     async retrieveChatForConference(): Promise<InstantMessage[]> {
-        this.messages = (await this.videoWebService.getConferenceChatHistory(this._hearing.id)).map(m => {
+        this.messages = (await this.videoWebService.getConferenceChatHistory(this._hearing.id)).map((m) => {
             const im = new InstantMessage(m);
             im.conferenceId = this._hearing.id;
             return im;

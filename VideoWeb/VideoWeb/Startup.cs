@@ -1,5 +1,6 @@
 using System;
-using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using VideoWeb.Common.Configuration;
+using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Extensions;
 
@@ -80,6 +82,7 @@ namespace VideoWeb
                     options.TokenValidationParameters.ValidateLifetime = true;
                     options.Audience = securitySettings.ClientId;
                     options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
+                    options.Events = new JwtBearerEvents {OnTokenValidated = OnTokenValidated};
                 }).AddJwtBearer("EventHubUser", options =>
                 {
                     options.Events = new JwtBearerEvents
@@ -96,7 +99,8 @@ namespace VideoWeb
                             }
 
                             return Task.CompletedTask;
-                        }
+                        },
+                        OnTokenValidated = OnTokenValidated
                     };
                     options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}";
                     options.TokenValidationParameters = new TokenValidationParameters()
@@ -196,6 +200,18 @@ namespace VideoWeb
         {
             options.Filters.Add(new AuthorizeFilter(new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser().Build()));
+        }
+        
+        private static async Task OnTokenValidated(TokenValidatedContext ctx)
+        {
+            if (ctx.SecurityToken is JwtSecurityToken jwtToken)
+            {
+                var cachedUserClaimBuilder = ctx.HttpContext.RequestServices.GetService<ICachedUserClaimBuilder>();
+                var userProfileClaims = await cachedUserClaimBuilder.BuildAsync(ctx.Principal.Identity.Name, jwtToken.RawData);
+                var claimsIdentity = ctx.Principal.Identity as ClaimsIdentity;
+
+                claimsIdentity?.AddClaims(userProfileClaims);
+            }
         }
     }
 }

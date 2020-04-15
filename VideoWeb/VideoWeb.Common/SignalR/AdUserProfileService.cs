@@ -5,8 +5,8 @@ namespace VideoWeb.Common.SignalR
 {
     public interface IUserProfileService
     {
-        Task<bool> IsVhOfficerAsync(string username);
         Task<string> GetObfuscatedUsernameAsync(string username);
+        // Task<UserProfile> GetUserAsync(string userName);
     }
 
     public class AdUserProfileService : IUserProfileService
@@ -16,19 +16,6 @@ namespace VideoWeb.Common.SignalR
         public AdUserProfileService(IUserApiClient userApiClient)
         {
             _userApiClient = userApiClient;
-        }
-
-        public async Task<bool> IsVhOfficerAsync(string username)
-        {
-            try
-            {
-                var profile = await _userApiClient.GetUserByAdUserNameAsync(username);
-                return profile.User_role == "VhOfficer";
-            }
-            catch (UserApiException)
-            {
-                return false;
-            }
         }
 
         public async Task<string> GetObfuscatedUsernameAsync(string username)
@@ -44,6 +31,14 @@ namespace VideoWeb.Common.SignalR
             {
                 return string.Empty;
             }
+        }
+
+        public async Task<UserProfile> GetUserAsync(string username)
+        {
+            var usernameClean = username.ToLower().Trim();
+            var profile = await _userApiClient.GetUserByAdUserNameAsync(usernameClean);
+
+            return profile;
         }
     }
 }
