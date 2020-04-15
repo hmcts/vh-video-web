@@ -5,6 +5,7 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.User;
@@ -17,12 +18,14 @@ namespace VideoWeb.UnitTests.Mappings
     {
         private Mock<IUserApiClient> _userApiClientMock;
         private MessageFromDecoder _decoder;
+        private DictionaryUserCache _userCache;
 
         [SetUp]
         public void Setup()
         {
+            _userCache = new DictionaryUserCache();
             _userApiClientMock = new Mock<IUserApiClient>();
-            _decoder = new MessageFromDecoder(_userApiClientMock.Object);
+            _decoder = new MessageFromDecoder(_userApiClientMock.Object, _userCache);
         }
 
         [Test]
@@ -106,7 +109,7 @@ namespace VideoWeb.UnitTests.Mappings
             var conference = Builder<Conference>.CreateNew()
                 .With(x => x.Participants = participants)
                 .Build();
-            
+
             return conference;
         }
     }

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -13,7 +12,6 @@ using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Controllers;
 using VideoWeb.Services.Bookings;
-using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
@@ -25,7 +23,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
     {
         private ConferencesController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
-        private Mock<IUserApiClient> _userApiClientMock;
         private Mock<IBookingsApiClient> _bookingsApiClientMock;
         private Mock<ILogger<ConferencesController>> _mockLogger;
         private Mock<IConferenceCache> _mockConferenceCache;
@@ -34,7 +31,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public void Setup()
         {
             _videoApiClientMock = new Mock<IVideoApiClient>();
-            _userApiClientMock = new Mock<IUserApiClient>();
             _bookingsApiClientMock = new Mock<IBookingsApiClient>();
             _mockLogger = new Mock<ILogger<ConferencesController>>(MockBehavior.Loose);
             _mockConferenceCache = new Mock<IConferenceCache>();
@@ -47,8 +43,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 }
             };
 
-            _controller = new ConferencesController(_videoApiClientMock.Object, _userApiClientMock.Object,
-                _bookingsApiClientMock.Object, _mockLogger.Object, _mockConferenceCache.Object)
+            _controller = new ConferencesController(_videoApiClientMock.Object, _bookingsApiClientMock.Object,
+                _mockLogger.Object, _mockConferenceCache.Object)
             {
                 ControllerContext = context
             };
@@ -60,12 +56,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         [Test]
         public async Task Should_return_ok_when_user_is_in_conference()
         {
-
             var conference = CreateValidConferenceResponse(null);
             _videoApiClientMock
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
-
 
             var result = await _controller.GetConferenceByIdAsync(conference.Id);
             var typedResult = (UnauthorizedResult)result.Result;
