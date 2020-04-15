@@ -62,24 +62,13 @@ export class EventsService {
             this.connection.onreconnected(() => this.onEventHubReconnected());
             this.connection.onclose(error => this.onEventHubErrorOrClose(error));
             this.registerHandlers();
-          },
-          async rejectReason => {
-            this.attemptingConnection = false;
-            this.onEventHubErrorOrClose(rejectReason);
-            if (this.reconnectionAttempt < 6) {
-              const waitTime = this.reconnectionAttempt * this.waitTimeBase;
-              this.logger.info(`Waiting ${waitTime / 1000} seconds before attempting to reconnect to EventHub`);
-              await this.delay(waitTime);
-              this.logger.info(`Attempting to reconnect to EventHub: attempt #${this.reconnectionAttempt}`);
-              this.start();
-            } else {
-              this.logger.info(`Exceeded reconnection attempts to EventHub - attempt #${this.reconnectionAttempt}`);
-            }
           }
         )
-        .catch(err => {
+        .catch(async err => {
           this.logger.error('Failed to connect to EventHub', err);
           this.onEventHubErrorOrClose(err);
+          await this.delay(5000);
+          this.start();
         });
     }
   }
