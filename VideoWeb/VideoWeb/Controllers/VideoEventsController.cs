@@ -59,14 +59,14 @@ namespace VideoWeb.Controllers
                     }
                 }
 
-                var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
-                await handler.HandleAsync(callbackEvent);
-
                 if (callbackEvent.EventType != EventType.VhoCall)
                 {
                     _logger.LogTrace($"Raising video event: ConferenceId: {request.Conference_id}, EventType: {request.Event_type}");
                     await _videoApiClient.RaiseVideoEventAsync(request);
                 }
+
+                var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
+                await handler.HandleAsync(callbackEvent);
 
                 return NoContent();
             }
