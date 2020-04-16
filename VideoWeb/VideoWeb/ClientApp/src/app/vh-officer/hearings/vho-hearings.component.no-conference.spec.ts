@@ -20,6 +20,7 @@ import { VhoParticipantStatusStubComponent } from 'src/app/testing/stubs/vho-par
 import { VhoHearingsFilterStubComponent } from '../../testing/stubs/vho-hearings-filter-stub';
 import { VhoMonitoringGraphStubComponent } from '../../testing/stubs/vho-monitoring-graph-stub';
 import { VhoHearingsComponent } from './vho-hearings.component';
+import { VenueSelectionStubComponent } from 'src/app/testing/stubs/VenueSelectionStubComponent';
 
 describe('VhoHearingsComponent when conference retrieval fails', () => {
     let component: VhoHearingsComponent;
@@ -42,7 +43,8 @@ describe('VhoHearingsComponent when conference retrieval fails', () => {
                 VhoParticipantStatusStubComponent,
                 VhoHearingsFilterStubComponent,
                 VhoChatStubComponent,
-                VhoMonitoringGraphStubComponent
+                VhoMonitoringGraphStubComponent,
+                VenueSelectionStubComponent
             ],
             providers: [
                 { provide: VideoWebService, useValue: videoWebServiceSpy },

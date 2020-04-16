@@ -35,6 +35,7 @@ import { VhoParticipantNetworkStatusStubComponent } from '../../testing/stubs/vh
 import { VhoHearingsComponent } from './vho-hearings.component';
 import { ParticipantHeartbeat, HeartbeatHealth } from '../../services/models/participant-heartbeat';
 import { ParticipantStatusMessage } from '../../services/models/participant-status-message';
+import { VenueSelectionStubComponent } from 'src/app/testing/stubs/VenueSelectionStubComponent';
 
 describe('VhoHearingsComponent', () => {
     let component: VhoHearingsComponent;
@@ -66,7 +67,8 @@ describe('VhoHearingsComponent', () => {
                 VhoHearingsFilterStubComponent,
                 VhoChatStubComponent,
                 VhoParticipantNetworkStatusStubComponent,
-                VhoMonitoringGraphStubComponent
+                VhoMonitoringGraphStubComponent,
+                VenueSelectionStubComponent
             ],
             providers: [
                 { provide: VideoWebService, useValue: videoWebServiceSpy },
@@ -83,6 +85,7 @@ describe('VhoHearingsComponent', () => {
         errorService = TestBed.get(ErrorService);
         fixture = TestBed.createComponent(VhoHearingsComponent);
         component = fixture.componentInstance;
+        component.getConferenceForSelectedAllocations();
         fixture.detectChanges();
     });
 
@@ -142,7 +145,7 @@ describe('VhoHearingsComponent', () => {
         const currentConference = conferenceDetail;
         component.selectedHearing = new Hearing(currentConference);
         component.participants = currentConference.participants;
-        component.participants.forEach(x => {
+        component.participants.forEach((x) => {
             if (x.role === Role.Judge) {
                 x.username = 'changeName@email.com';
             }
@@ -256,15 +259,15 @@ describe('VhoHearingsComponent', () => {
             '80.0.3987.132'
         );
         component.handleHeartbeat(heartBeat1);
-        const conferenceToUpdate = component.conferences.find(x => x.id === heartBeat1.conferenceId);
+        const conferenceToUpdate = component.conferences.find((x) => x.id === heartBeat1.conferenceId);
         expect(conferenceToUpdate).toBe(undefined);
     });
     it('should not update hearbeat when no matching participant', async () => {
         const conference = component.conferences[0];
         const heartBeat1 = new ParticipantHeartbeat(conference.id, '0000-0000-0000-0000', HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
         component.handleHeartbeat(heartBeat1);
-        const conferenceToUpdate = component.conferences.find(x => x.id === heartBeat1.conferenceId);
-        const participantToUpdate = conferenceToUpdate.getParticipants().find(p => p.id === heartBeat1.participantId);
+        const conferenceToUpdate = component.conferences.find((x) => x.id === heartBeat1.conferenceId);
+        const participantToUpdate = conferenceToUpdate.getParticipants().find((p) => p.id === heartBeat1.participantId);
         expect(participantToUpdate).toBe(undefined);
     });
     it('should change participant status for particpant when status is not disconnected', async () => {

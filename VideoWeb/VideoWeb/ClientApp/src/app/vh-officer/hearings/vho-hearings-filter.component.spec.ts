@@ -23,6 +23,7 @@ import { VhoParticipantStatusStubComponent } from 'src/app/testing/stubs/vho-par
 import { ParticipantHeartbeatResponse } from '../../services/clients/api-client';
 import { VhoHearingsFilterStubComponent } from '../../testing/stubs/vho-hearings-filter-stub';
 import { VhoHearingsComponent } from './vho-hearings.component';
+import { VenueSelectionStubComponent } from 'src/app/testing/stubs/VenueSelectionStubComponent';
 
 describe('VhoHearingsComponent Filter', () => {
     let component: VhoHearingsComponent;
@@ -54,7 +55,8 @@ describe('VhoHearingsComponent Filter', () => {
                 VhoParticipantStatusStubComponent,
                 VhoHearingsFilterStubComponent,
                 VhoChatStubComponent,
-                VhoMonitoringGraphStubComponent
+                VhoMonitoringGraphStubComponent,
+                VenueSelectionStubComponent
             ],
             providers: [
                 { provide: VideoWebService, useValue: videoWebServiceSpy },
@@ -72,7 +74,7 @@ describe('VhoHearingsComponent Filter', () => {
         fixture = TestBed.createComponent(VhoHearingsComponent);
         component = fixture.componentInstance;
         component.conferencesAll = conferences;
-        component.conferences = component.conferencesAll.map(c => new HearingSummary(c));
+        component.conferences = component.conferencesAll.map((c) => new HearingSummary(c));
     });
 
     it('should apply filter with selected all to conferences records', () => {
@@ -95,16 +97,16 @@ describe('VhoHearingsComponent Filter', () => {
 
     it('should apply filter with selected alerts records', () => {
         expect(component.conferences.length).toBe(3);
-        filter.locations.forEach(x => (x.Selected = false));
-        filter.statuses.forEach(x => (x.Selected = false));
+        filter.locations.forEach((x) => (x.Selected = false));
+        filter.statuses.forEach((x) => (x.Selected = false));
         filter.alerts[1].Selected = true;
         const expectedAlerts1 = filter.alerts[1].BodyText;
         component.activateFilterOptions(filter);
 
         expect(component.conferences.length).toBe(2);
-        const filtered1 = component.conferences[0].tasks.filter(x => x.body.includes(expectedAlerts1)).length > 0;
+        const filtered1 = component.conferences[0].tasks.filter((x) => x.body.includes(expectedAlerts1)).length > 0;
         expect(filtered1).toBe(true);
-        const filtered2 = component.conferences[1].tasks.filter(x => x.body.includes(expectedAlerts1)).length > 0;
+        const filtered2 = component.conferences[1].tasks.filter((x) => x.body.includes(expectedAlerts1)).length > 0;
         expect(filtered2).toBe(true);
     });
     it('should close monitoring graph for selected participant', () => {

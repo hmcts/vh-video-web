@@ -52,7 +52,8 @@ export class AppComponent implements OnInit, OnDestroy {
             tenant: clientSettings.tenant_id,
             clientId: clientSettings.client_id,
             postLogoutRedirectUri: clientSettings.post_logout_redirect_uri,
-            redirectUri: clientSettings.redirect_uri
+            redirectUri: clientSettings.redirect_uri,
+            cacheLocation: 'sessionStorage'
         };
         this.adalService.init(config);
     }
@@ -114,7 +115,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.subscriptions.add(
             this.router.events
                 .pipe(
-                    filter(event => event instanceof NavigationEnd),
+                    filter((event) => event instanceof NavigationEnd),
                     map(() => {
                         let child = this.activatedRoute.firstChild;
                         while (child.firstChild) {

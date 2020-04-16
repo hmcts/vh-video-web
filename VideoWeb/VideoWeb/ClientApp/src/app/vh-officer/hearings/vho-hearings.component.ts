@@ -7,8 +7,9 @@ import {
     ConferenceForVhOfficerResponse,
     ParticipantResponseVho,
     ParticipantStatus,
+    Role,
     TaskResponse,
-    Role
+    HearingVenueResponse
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -16,17 +17,17 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { Participant } from 'src/app/shared/models/participant';
 import { ParticipantStatusModel } from 'src/app/shared/models/participants-status-model';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
+import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { SessionStorage } from '../../services/session-storage';
 import { ConferenceForUser, ExtendedConferenceStatus, HearingsFilter } from '../../shared/models/hearings-filter';
-import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
-import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
-import { HearingSummary } from 'src/app/shared/models/hearing-summary';
-import { ParticipantGraphInfo } from '../services/models/participant-graph-info';
-import { PackageLost } from '../services/models/package-lost';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
+import { PackageLost } from '../services/models/package-lost';
+import { ParticipantGraphInfo } from '../services/models/participant-graph-info';
+import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
 
 @Component({
     selector: 'app-vho-hearings',
@@ -64,6 +65,8 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     $conferenceList: VhoHearingListComponent;
     participantsHeartBeat: ParticipantHeartbeat[] = [];
 
+    venueAllocations: string[];
+
     @HostListener('window:resize', [])
     onResize() {
         this.updateWidthForAdminFrame();
@@ -76,7 +79,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         private eventService: EventsService,
         private logger: Logger
     ) {
-        this.loadingData = true;
+        this.loadingData = false;
         this.adminFrameWidth = 0;
         this.adminFrameHeight = this.getHeightForFrame();
         this.hearingsFilterStorage = new SessionStorage(this.HEARINGS_FITER_KEY);
@@ -85,10 +88,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.logger.info('Loading VH Officer Dashboard');
         this.setupEventHubSubscribers();
-        this.retrieveHearingsForVhOfficer();
-        this.interval = setInterval(() => {
-            this.retrieveHearingsForVhOfficer();
-        }, 30000);
     }
 
     @HostListener('window:beforeunload')
@@ -101,6 +100,15 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         if (this.eventHubSubscriptions) {
             this.eventHubSubscriptions.unsubscribe();
         }
+    }
+
+    getConferenceForSelectedAllocations(selectedAllocations: HearingVenueResponse[]) {
+        this.venueAllocations = selectedAllocations.map((v) => v.name);
+        this.retrieveHearingsForVhOfficer();
+        clearInterval(this.interval);
+        this.interval = setInterval(() => {
+            this.retrieveHearingsForVhOfficer();
+        }, 30000);
     }
 
     private setupEventHubSubscribers() {
@@ -188,7 +196,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     }
 
     retrieveHearingsForVhOfficer() {
-        this.conferencesSubscription = this.videoWebService.getConferencesForVHOfficer([]).subscribe(
+        this.conferencesSubscription = this.videoWebService.getConferencesForVHOfficer(this.venueAllocations).subscribe(
             (data: ConferenceForVhOfficerResponse[]) => {
                 this.logger.debug('Successfully retrieved hearings for VHO');
                 this.loadingData = false;

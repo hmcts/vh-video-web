@@ -9,8 +9,8 @@ import { FooterStubComponent } from './stubs/footer-stub';
 import { HeaderStubComponent } from './stubs/header-stub';
 import { HearingListTableStubComponent } from './stubs/hearing-list-table-stub';
 import {
-  JudgeParticipantStatusListStubComponent,
-  IndividualParticipantStatusListStubComponent
+    JudgeParticipantStatusListStubComponent,
+    IndividualParticipantStatusListStubComponent
 } from './stubs/participant-status-list-stub';
 import { JudgeHearingTableStubComponent } from './stubs/judge-hearing-list-table-stub';
 import { AnalogueClockStubComponent } from './stubs/analogue-clock-stub';
@@ -31,40 +31,42 @@ import { ChatInputBoxStubComponent } from './stubs/chat-input-box-stub.component
 import { VhoParticipantNetworkStatusStubComponent } from './stubs/vho-participant-network-status-stub';
 import { VhoMonitoringGraphStubComponent } from './stubs/vho-monitoring-graph-stub';
 import { PerfectScrollbarStubComponent } from './stubs/perfect-scrollbar-stub';
+import { VenueSelectionStubComponent } from './stubs/VenueSelectionStubComponent';
 
 @NgModule({
-  imports: [CommonModule],
-  declarations: [
-    BreadcrumbStubComponent,
-    CancelPopupStubComponent,
-    ConfirmationPopupStubComponent,
-    ContactUsStubComponent,
-    DashboardStubComponent,
-    FooterStubComponent,
-    HeaderStubComponent,
-    HearingListTableStubComponent,
-    JudgeParticipantStatusListStubComponent,
-    JudgeHearingTableStubComponent,
-    ContactUsFoldingStubComponent,
-    AnalogueClockStubComponent,
-    TasksTableStubComponent,
-    VhoHearingListStubComponent,
-    MicVisualiserStubComponent,
-    VhoParticipantStatusStubComponent,
-    VhoParticipantNetworkStatusStubComponent,
-    SelfTestStubComponent,
-    SelectMediaDevicesStubComponent,
-    IndividualParticipantStatusListStubComponent,
-    IndividualConsultationControlsStubComponent,
-    BetaBannerStubComponent,
-    BackNavigationStubComponent,
-    UnsupportedBrowserStubComponent,
-    VhoHearingsFilterStubComponent,
-    VhoChatStubComponent,
-    JudgeChatStubComponent,
-    ChatInputBoxStubComponent,
-    VhoMonitoringGraphStubComponent,
-    PerfectScrollbarStubComponent
-  ]
+    imports: [CommonModule],
+    declarations: [
+        BreadcrumbStubComponent,
+        CancelPopupStubComponent,
+        ConfirmationPopupStubComponent,
+        ContactUsStubComponent,
+        DashboardStubComponent,
+        FooterStubComponent,
+        HeaderStubComponent,
+        HearingListTableStubComponent,
+        JudgeParticipantStatusListStubComponent,
+        JudgeHearingTableStubComponent,
+        ContactUsFoldingStubComponent,
+        AnalogueClockStubComponent,
+        TasksTableStubComponent,
+        VhoHearingListStubComponent,
+        MicVisualiserStubComponent,
+        VhoParticipantStatusStubComponent,
+        VhoParticipantNetworkStatusStubComponent,
+        SelfTestStubComponent,
+        SelectMediaDevicesStubComponent,
+        IndividualParticipantStatusListStubComponent,
+        IndividualConsultationControlsStubComponent,
+        BetaBannerStubComponent,
+        BackNavigationStubComponent,
+        UnsupportedBrowserStubComponent,
+        VhoHearingsFilterStubComponent,
+        VhoChatStubComponent,
+        JudgeChatStubComponent,
+        ChatInputBoxStubComponent,
+        VhoMonitoringGraphStubComponent,
+        PerfectScrollbarStubComponent,
+        VenueSelectionStubComponent
+    ]
 })
-export class TestingModule { }
+export class TestingModule {}
