@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import * as moment from 'moment';
-import { ConferenceForIndividualResponse } from 'src/app/services/clients/api-client';
+import { ConferenceForIndividualResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
 
 @Component({
     selector: 'app-hearing-list-table',
@@ -38,5 +38,9 @@ export class HearingListTableComponent {
         const currentDateTime = new Date(new Date().getTime());
         const difference = moment(conference.scheduled_date_time).diff(moment(currentDateTime), 'minutes');
         return difference < 30;
+    }
+
+    isConferenceClosed(conference: ConferenceForIndividualResponse) {
+      return conference.status === ConferenceStatus.Closed;
     }
 }

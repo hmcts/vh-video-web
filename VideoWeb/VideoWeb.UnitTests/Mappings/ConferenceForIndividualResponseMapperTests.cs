@@ -38,6 +38,8 @@ namespace VideoWeb.UnitTests.Mappings
             response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);
             response.CaseNumber.Should().Be(conference.Case_number);
             response.CaseName.Should().Be(conference.Case_name);
+            response.State.Should().Be(conference.State);
+            response.ClosedDateTime.Should().Be(conference.Closed_date_time);
         }
     }
 }

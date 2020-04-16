@@ -11,7 +11,8 @@ import {
     TaskType,
     TaskUserResponse,
     Role,    ParticipantResponseVho,
-    ConferenceResponseVho
+    ConferenceResponseVho,
+    ConferenceForIndividualResponse
 } from 'src/app/services/clients/api-client';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { AlertFilter, AlertsStatus, HearingsFilter, ListFilter, StatusFilter } from '../../../shared/models/hearings-filter';
@@ -368,5 +369,19 @@ export class ConferenceTestData {
             m.is_user = m.from.toLocaleLowerCase() === loggedInUser.toLocaleLowerCase();
         });
         return messages;
+    }
+
+    getConferenceClosed30Minutesago(): ConferenceForIndividualResponse {
+      const pastDate = new Date(new Date().getTime());
+      pastDate.setUTCHours(pastDate.getUTCMinutes() - 31);
+      const conference = new ConferenceForIndividualResponse({
+        id: '58CB20C7-377D-4581-8069-3776F583684B',
+        case_name: 'BW V BP',
+        case_number: 'ABC1234',
+        scheduled_date_time: pastDate,
+        status: ConferenceStatus.Closed,
+        closed_date_time: pastDate
+      });
+      return conference;
     }
 }

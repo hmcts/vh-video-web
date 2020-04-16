@@ -3722,6 +3722,9 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonProperty("hearing_venue_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Hearing_venue_name { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("audio_recording_required", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool Audio_recording_required { get; set; }
+    
     
     }
     
@@ -3985,6 +3988,14 @@ namespace VideoWeb.Services.Video
     
         [Newtonsoft.Json.JsonProperty("case_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Case_name { get; set; }
+    
+        /// <summary>The current conference status</summary>
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public ConferenceState Status { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("closed_date_time", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Closed_date_time { get; set; }
     
     
     }
