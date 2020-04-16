@@ -76,7 +76,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                await _videoApiClient.GetConferencesTodayForAdminAsync();
+                await _videoApiClient.GetExpiredOpenConferencesAsync();
             }
             catch (Exception ex)
             {

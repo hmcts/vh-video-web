@@ -43,8 +43,8 @@ export class VideoWebService implements IVideoWebApiService {
         return this.apiClient.getConferencesForIndividual();
     }
 
-    getConferencesForVHOfficer(): Observable<ConferenceForVhOfficerResponse[]> {
-        return this.apiClient.getConferencesForVhOfficer();
+    getConferencesForVHOfficer(venueNames: string[]): Observable<ConferenceForVhOfficerResponse[]> {
+        return this.apiClient.getConferencesForVhOfficer(venueNames);
     }
 
     getConferenceByIdVHO(conferenceId: string): Promise<ConferenceResponseVho> {
@@ -103,8 +103,8 @@ export class VideoWebService implements IVideoWebApiService {
         return displayName.replace(/(?!\b)\w/g, '*');
     }
 
-    getHearingsVenue(): Promise<HearingVenueResponse[]> {
-        return this.apiClient.getHearingsVenues().toPromise();
+    getHearingVenues(): Promise<HearingVenueResponse[]> {
+        return this.apiClient.getHearingVenues().toPromise();
     }
 
     getConferenceChatHistory(conferenceId: string): Promise<ChatResponse[]> {

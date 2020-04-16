@@ -21,7 +21,7 @@ import { Observable } from 'rxjs';
 export interface IVideoWebApiService {
     getConferencesForJudge(): Observable<ConferenceForJudgeResponse[]>;
     getConferencesForIndividual(): Observable<ConferenceForIndividualResponse[]>;
-    getConferencesForVHOfficer(): Observable<ConferenceForVhOfficerResponse[]>;
+    getConferencesForVHOfficer(venueNames: string[]): Observable<ConferenceForVhOfficerResponse[]>;
     getConferenceByIdVHO(conferenceId: string): Promise<ConferenceResponseVho>;
     getConferenceById(conferenceId: string): Promise<ConferenceResponse>;
     sendEvent(request: ConferenceEventRequest): Promise<void>;
@@ -36,7 +36,7 @@ export interface IVideoWebApiService {
     raiseSelfTestFailureEvent(conferenceId: string, addSelfTestFailureEventRequest: AddSelfTestFailureEventRequest): Promise<void>;
     getPexipConfig(): Promise<SelfTestPexipResponse>;
     getObfuscatedName(displayName: string): string;
-    getHearingsVenue(): Promise<HearingVenueResponse[]>;
+    getHearingVenues(): Promise<HearingVenueResponse[]>;
     getConferenceChatHistory(conferenceId: string): Promise<ChatResponse[]>;
     getParticipantHeartbeats(conferenceId: string, participantId: string): Promise<ParticipantHeartbeatResponse[]>;
     updateParticipantDetails(conferenceId: string, participantId: string, updateParticipantRequest: UpdateParticipantRequest);
