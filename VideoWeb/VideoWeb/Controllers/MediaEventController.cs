@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Caching;
+using VideoWeb.Common.Extensions;
 using VideoWeb.Contract.Request;
-using VideoWeb.Extensions;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Controllers

@@ -52,7 +52,7 @@ export class MockVideoWebService implements IVideoWebApiService {
     getObfuscatedName(displayName: string): string {
         return displayName.replace(/(?!\b)\w/g, '*');
     }
-    getHearingsVenue(): Promise<HearingVenueResponse[]> {
+    getHearingVenues(): Promise<HearingVenueResponse[]> {
         throw new Error('Method not implemented.');
     }
     getConferencesForJudge(): Observable<ConferenceForJudgeResponse[]> {

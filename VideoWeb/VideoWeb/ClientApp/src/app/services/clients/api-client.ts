@@ -235,10 +235,15 @@ export class ApiClient {
 
     /**
      * Get conferences for user
+     * @param venueNames (optional) 
      * @return Success
      */
-    getConferencesForVhOfficer(): Observable<ConferenceForVhOfficerResponse[]> {
-        let url_ = this.baseUrl + "/conferences/vhofficer";
+    getConferencesForVhOfficer(venueNames: string[] | undefined): Observable<ConferenceForVhOfficerResponse[]> {
+        let url_ = this.baseUrl + "/conferences/vhofficer?";
+        if (venueNames === null)
+            throw new Error("The parameter 'venueNames' cannot be null.");
+        else if (venueNames !== undefined)
+            venueNames && venueNames.forEach(item => { url_ += "VenueNames=" + encodeURIComponent("" + item) + "&"; });
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -1787,8 +1792,8 @@ export class ApiClient {
      * Get hearings venues
      * @return Success
      */
-    getHearingsVenues(): Observable<HearingVenueResponse[]> {
-        let url_ = this.baseUrl + "/hearings-venues";
+    getHearingVenues(): Observable<HearingVenueResponse[]> {
+        let url_ = this.baseUrl + "/hearing-venues";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -1800,11 +1805,11 @@ export class ApiClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetHearingsVenues(response_);
+            return this.processGetHearingVenues(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetHearingsVenues(<any>response_);
+                    return this.processGetHearingVenues(<any>response_);
                 } catch (e) {
                     return <Observable<HearingVenueResponse[]>><any>_observableThrow(e);
                 }
@@ -1813,7 +1818,7 @@ export class ApiClient {
         }));
     }
 
-    protected processGetHearingsVenues(response: HttpResponseBase): Observable<HearingVenueResponse[]> {
+    protected processGetHearingVenues(response: HttpResponseBase): Observable<HearingVenueResponse[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 

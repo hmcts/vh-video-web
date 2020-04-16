@@ -96,18 +96,18 @@ namespace VideoWeb.Services.Video
         /// <summary>Get todays conferences</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForAdminResponse>> GetConferencesTodayForAdminAsync();
+        System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForAdminResponse>> GetConferencesTodayForAdminAsync(System.Collections.Generic.IEnumerable<string> venueNames);
     
         /// <summary>Get todays conferences</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Collections.Generic.List<ConferenceForAdminResponse> GetConferencesTodayForAdmin();
+        System.Collections.Generic.List<ConferenceForAdminResponse> GetConferencesTodayForAdmin(System.Collections.Generic.IEnumerable<string> venueNames);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get todays conferences</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForAdminResponse>> GetConferencesTodayForAdminAsync(System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForAdminResponse>> GetConferencesTodayForAdminAsync(System.Collections.Generic.IEnumerable<string> venueNames, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get all conferences for a judge</summary>
         /// <param name="username">judge username</param>
@@ -993,27 +993,32 @@ namespace VideoWeb.Services.Video
         /// <summary>Get todays conferences</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForAdminResponse>> GetConferencesTodayForAdminAsync()
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForAdminResponse>> GetConferencesTodayForAdminAsync(System.Collections.Generic.IEnumerable<string> venueNames)
         {
-            return GetConferencesTodayForAdminAsync(System.Threading.CancellationToken.None);
+            return GetConferencesTodayForAdminAsync(venueNames, System.Threading.CancellationToken.None);
         }
     
         /// <summary>Get todays conferences</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public System.Collections.Generic.List<ConferenceForAdminResponse> GetConferencesTodayForAdmin()
+        public System.Collections.Generic.List<ConferenceForAdminResponse> GetConferencesTodayForAdmin(System.Collections.Generic.IEnumerable<string> venueNames)
         {
-            return System.Threading.Tasks.Task.Run(async () => await GetConferencesTodayForAdminAsync(System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+            return System.Threading.Tasks.Task.Run(async () => await GetConferencesTodayForAdminAsync(venueNames, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get todays conferences</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForAdminResponse>> GetConferencesTodayForAdminAsync(System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForAdminResponse>> GetConferencesTodayForAdminAsync(System.Collections.Generic.IEnumerable<string> venueNames, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/today/vho");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/today/vho?");
+            if (venueNames != null) 
+            {
+                foreach (var item_ in venueNames) { urlBuilder_.Append(System.Uri.EscapeDataString("VenueNames") + "=").Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append("&"); }
+            }
+            urlBuilder_.Length--;
     
             var client_ = _httpClient;
             try
@@ -3722,6 +3727,9 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonProperty("hearing_venue_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Hearing_venue_name { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("audio_recording_required", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool Audio_recording_required { get; set; }
+    
     
     }
     
@@ -3985,6 +3993,14 @@ namespace VideoWeb.Services.Video
     
         [Newtonsoft.Json.JsonProperty("case_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Case_name { get; set; }
+    
+        /// <summary>The current conference status</summary>
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public ConferenceState Status { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("closed_date_time", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Closed_date_time { get; set; }
     
     
     }

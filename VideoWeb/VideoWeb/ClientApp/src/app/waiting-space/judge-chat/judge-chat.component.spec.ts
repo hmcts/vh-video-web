@@ -100,6 +100,15 @@ describe('JudgeChatComponent', () => {
         expect(from).toBe(expectedFirstName);
     });
 
+    it('should call api when local cache does not have user profile', async () => {
+        await fixture.whenStable();
+        const username = 'vhofficer.hearings.net';
+        spyOn(profileService, 'checkCacheForProfileByUsername').and.returnValue(null);
+        const expectedFirstName = profileService.mockProfile.first_name;
+        const from = await component.assignMessageFrom(username);
+        expect(from).toBe(expectedFirstName);
+    });
+
     it('should reset unread counter to number of messages since judge replied', () => {
         const messages = new ConferenceTestData().getChatHistory(judgeUsername, conference.id);
         const count = component.getCountSinceUsersLastMessage(messages);
@@ -135,7 +144,7 @@ describe('JudgeChatComponent', () => {
 
     it('should map to InstantMessage', async () => {
         const messages = await component.retrieveChatForConference();
-        const messagesWithId = messages.filter(x => x.id);
+        const messagesWithId = messages.filter((x) => x.id);
         expect(messagesWithId.length).toBe(messages.length);
     });
 

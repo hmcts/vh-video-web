@@ -10,7 +10,7 @@ namespace VideoWeb.Controllers
 {
     [Produces("application/json")]
     [ApiController]
-    [Route("hearings-venues")]
+    [Route("hearing-venues")]
     public class VenuesController : Controller
     {
         private readonly IBookingsApiClient _bookingsApiClient;
@@ -29,10 +29,10 @@ namespace VideoWeb.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(List<HearingVenueResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [SwaggerOperation(OperationId = "GetHearingsVenues")]
-        public async Task<ActionResult<List<HearingVenueResponse>>> GetHearingsVenuesAsync()
+        [SwaggerOperation(OperationId = "GetHearingVenues")]
+        public async Task<ActionResult<List<HearingVenueResponse>>> GetHearingVenuesAsync()
         {
-            _logger.LogDebug("GetHearingsVenues");
+            _logger.LogDebug("GetHearingVenues");
             try
             {
                 var venues = await _bookingsApiClient.GetHearingVenuesAsync();

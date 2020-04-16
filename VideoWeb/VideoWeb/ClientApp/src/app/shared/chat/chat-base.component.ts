@@ -3,7 +3,7 @@ import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { InstantMessage } from 'src/app/services/models/instant-message';
@@ -31,7 +31,7 @@ export abstract class ChatBaseComponent {
     setupChatSubscription(): Subscription {
         this.logger.debug('[ChatHub] Subscribing to chat messages');
         const sub = this.eventService.getChatMessage().subscribe({
-            next: async message => {
+            next: async (message) => {
                 await this.handleIncomingMessage(message);
             }
         });
@@ -47,11 +47,10 @@ export abstract class ChatBaseComponent {
         }
 
         // ignore if already received message
-        if (this.messages.findIndex(m => m.id === message.id) > -1) {
+        if (this.messages.findIndex((m) => m.id === message.id) > -1) {
             this.logger.debug(`[ChatHub] message already been processed ${JSON.stringify(message)}`);
             return;
         }
-        this.messages.push(message);
 
         const from = message.from.toUpperCase();
         const username = this.adalService.userInfo.userName.toUpperCase();
@@ -63,6 +62,8 @@ export abstract class ChatBaseComponent {
             message.is_user = false;
             this.handleIncomingOtherMessage();
         }
+
+        this.messages.push(message);
     }
 
     async assignMessageFrom(username: string): Promise<string> {
@@ -70,15 +71,23 @@ export abstract class ChatBaseComponent {
         if (participant) {
             return participant.displayName;
         } else {
-            const profile = await this.profileService.getProfileByUsername(username);
+            const profile = await this.getProfileForUser(username);
             return profile.first_name;
         }
+    }
+
+    private async getProfileForUser(username: string): Promise<UserProfileResponse> {
+        const profile = this.profileService.checkCacheForProfileByUsername(username);
+        if (profile) {
+            return profile;
+        }
+        return await this.profileService.getProfileByUsername(username);
     }
 
     handleIncomingOtherMessage() {}
 
     async retrieveChatForConference(): Promise<InstantMessage[]> {
-        this.messages = (await this.videoWebService.getConferenceChatHistory(this._hearing.id)).map(m => {
+        this.messages = (await this.videoWebService.getConferenceChatHistory(this._hearing.id)).map((m) => {
             const im = new InstantMessage(m);
             im.conferenceId = this._hearing.id;
             return im;

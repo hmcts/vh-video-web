@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VideoWeb.Common.Caching;
+using VideoWeb.Common.Extensions;
+using VideoWeb.Common.Models;
 using VideoWeb.Common.SignalR;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Mappers;
@@ -40,7 +42,7 @@ namespace VideoWeb.EventHub.Hub
         {
             var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name);
             _logger.LogTrace($"Connected to event hub server-side: {userName} ");
-            var isAdmin = await IsVhOfficerAsync(Context.User.Identity.Name);
+            var isAdmin = IsVhOfficerAsync();
 
             await AddUserToUserGroup(isAdmin);
             await AddUserToConferenceGroups(isAdmin);
@@ -80,7 +82,7 @@ namespace VideoWeb.EventHub.Hub
                 _logger.LogCritical(exception, $"Disconnected from chat hub server-side: {userName} ");
             }
 
-            var isAdmin = await IsVhOfficerAsync(Context.User.Identity.Name);
+            var isAdmin = IsVhOfficerAsync();
             await RemoveUserFromUserGroup(isAdmin);
             await RemoveUserFromConferenceGroups(isAdmin);
 
@@ -109,7 +111,7 @@ namespace VideoWeb.EventHub.Hub
 
         private async Task<IEnumerable<ConferenceForAdminResponse>> GetConferencesForUser(bool isAdmin)
         {
-            var conferences = await _videoApiClient.GetConferencesTodayForAdminAsync();
+            var conferences = await _videoApiClient.GetConferencesTodayForAdminAsync(null);
             if (isAdmin)
             {
                 return conferences;
@@ -121,9 +123,9 @@ namespace VideoWeb.EventHub.Hub
                          && p.Username.Equals(Context.UserIdentifier, StringComparison.InvariantCultureIgnoreCase)));
         }
 
-        private async Task<bool> IsVhOfficerAsync(string username)
+        private bool IsVhOfficerAsync()
         {
-            return await _userProfileService.IsVhOfficerAsync(username);
+            return Context.User.IsInRole(Role.VideoHearingsOfficer.DescriptionAttr());
         }
 
         private async Task<string> GetObfuscatedUsernameAsync(string username)
@@ -133,7 +135,7 @@ namespace VideoWeb.EventHub.Hub
 
         public async Task SendMessage(Guid conferenceId, string message)
         {
-            var isAdmin = await IsVhOfficerAsync(Context.User.Identity.Name);
+            var isAdmin = IsVhOfficerAsync();
             var isAllowed = IsAllowedToSendMessage(conferenceId, isAdmin);
             if (!isAllowed) return;
             var from = Context.User.Identity.Name;

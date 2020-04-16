@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.Common.SignalR;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Mappers;
@@ -64,10 +65,10 @@ namespace VideoWeb.UnitTests.Hub
                 .With(x => x.Id = Guid.NewGuid())
                 .Build().ToList();
 
-            UserProfileServiceMock.Setup(x => x.IsVhOfficerAsync(It.IsAny<string>()))
-                .ReturnsAsync(true);
+            Claims = new ClaimsPrincipalBuilder().WithRole(Role.VideoHearingsOfficer).Build();
+            HubCallerContextMock.Setup(x => x.User).Returns(Claims);
 
-            VideoApiClientMock.Setup(x => x.GetConferencesTodayForAdminAsync()).ReturnsAsync(conferences);
+            VideoApiClientMock.Setup(x => x.GetConferencesTodayForAdminAsync(It.IsAny<IEnumerable<string>>())).ReturnsAsync(conferences);
 
             return conferences;
         }
@@ -87,10 +88,11 @@ namespace VideoWeb.UnitTests.Hub
                 .TheRest().With(x => x.Participants = participantsWithoutUser)
                 .Build().ToList();
 
-            UserProfileServiceMock.Setup(x => x.IsVhOfficerAsync(It.IsAny<string>()))
-                .ReturnsAsync(false);
+            Claims = new ClaimsPrincipalBuilder().WithRole(Role.Judge).Build();
+            HubCallerContextMock.Setup(x => x.User).Returns(Claims);
 
-            VideoApiClientMock.Setup(x => x.GetConferencesTodayForAdminAsync()).ReturnsAsync(conferences);
+            VideoApiClientMock.Setup(x => x.GetConferencesTodayForAdminAsync(It.IsAny<IEnumerable<string>>()))
+                .ReturnsAsync(conferences);
 
             return conferences
                 .Where(x => x.Participants.Any(p => p.Username == Claims.Identity.Name))

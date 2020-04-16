@@ -42,7 +42,7 @@ export class HearingsFilterOptionsService {
     }
 
     private async setLocations() {
-        const locations = await this.videoWebService.getHearingsVenue();
+        const locations = await this.videoWebService.getHearingVenues();
         this.addLocations(locations);
     }
 
@@ -57,7 +57,7 @@ export class HearingsFilterOptionsService {
     }
 
     private addStatuses(hearingsStatuses: ConferenceStatus[]) {
-        hearingsStatuses.forEach(conferenceStatus => {
+        hearingsStatuses.forEach((conferenceStatus) => {
             const description = this.setHearingsStatuses(conferenceStatus);
             const itemStatus = new StatusFilter(description, conferenceStatus, false);
             this.hearingsFilter.statuses.push(itemStatus);
@@ -66,14 +66,14 @@ export class HearingsFilterOptionsService {
     }
 
     private addLocations(locations: HearingVenueResponse[]) {
-        locations.forEach(location => {
+        locations.forEach((location) => {
             const itemLocation = new ListFilter(location.name, false);
             this.hearingsFilter.locations.push(itemLocation);
         });
     }
 
     private addAlerts(alerts: AlertsStatus[]) {
-        alerts.forEach(alert => {
+        alerts.forEach((alert) => {
             const itemAlert = this.setAlertStatuses(alert);
             this.hearingsFilter.alerts.push(itemAlert);
         });
@@ -135,7 +135,7 @@ export class HearingsFilterOptionsService {
 
     private count(options: ListFilter[]) {
         let countOptions = 0;
-        options.forEach(x => {
+        options.forEach((x) => {
             if (x.Selected) {
                 countOptions++;
             }
