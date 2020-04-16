@@ -52,12 +52,26 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [When(@"the judge has disconnected from the hearing")]
-        public void WhenTheJudgeHasSuspendedTheHearing()
+        public void WhenTheJudgeHasDisconnectedFromTheHearing()
         {
             var request = new CallbackEventRequestBuilder()
                 .WithConferenceId(_c.Test.NewConferenceId)
                 .WithParticipantId(GetClerkParticipantId())
                 .WithEventType(EventType.Disconnected)
+                .WithRoomType(RoomType.HearingRoom)
+                .Build();
+
+            var response = SendEventToVideoWeb(request);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        }
+
+        [When(@"the hearing is suspended")]
+        public void WhenTheTheHearingIsSuspended()
+        {
+            var request = new CallbackEventRequestBuilder()
+                .WithConferenceId(_c.Test.NewConferenceId)
+                .WithParticipantId(GetClerkParticipantId())
+                .WithEventType(EventType.Suspend)
                 .WithRoomType(RoomType.HearingRoom)
                 .Build();
 
