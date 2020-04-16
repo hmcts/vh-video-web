@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using FluentAssertions;
 using VideoWeb.AcceptanceTests.Builders;
@@ -14,7 +14,7 @@ namespace VideoWeb.AcceptanceTests.Strategies.HearingStatus
             var request = new CallbackEventRequestBuilder()
                 .WithConferenceId(context.Test.NewConferenceId)
                 .WithParticipantId(participantId)
-                .WithEventType(EventType.Disconnected)
+                .WithEventType(EventType.Suspend)
                 .FromRoomType(RoomType.HearingRoom)
                 .Build();
 
