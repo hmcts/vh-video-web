@@ -15,4 +15,8 @@ export class MockProfileService {
     async getProfileByUsername(username: string): Promise<UserProfileResponse> {
         return this.mockProfile;
     }
+
+    checkCacheForProfileByUsername(username: string): UserProfileResponse {
+        return this.mockProfile;
+    }
 }

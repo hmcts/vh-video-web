@@ -6,6 +6,7 @@ import { ApiClient, UserProfileResponse } from '../clients/api-client';
 })
 export class ProfileService {
     profile: UserProfileResponse;
+    profiles: Record<string, UserProfileResponse> = {};
 
     constructor(private apiClient: ApiClient) {}
 
@@ -17,7 +18,15 @@ export class ProfileService {
     }
 
     async getProfileByUsername(username: string): Promise<UserProfileResponse> {
-        return await this.apiClient.getProfileByUsername(username).toPromise();
+        const profile = await this.apiClient.getProfileByUsername(username).toPromise();
+        if (!this.profiles[username]) {
+            this.profiles[username] = profile;
+        }
+        return profile;
+    }
+
+    checkCacheForProfileByUsername(username: string): UserProfileResponse {
+        return this.profiles[username];
     }
 
     clearUserProfile(): void {

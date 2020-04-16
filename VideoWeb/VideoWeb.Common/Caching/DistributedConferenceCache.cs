@@ -12,11 +12,6 @@ namespace VideoWeb.Common.Caching
     {
         private readonly IDistributedCache _distributedCache;
 
-        private static JsonSerializerSettings SerializerSettings => new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.Objects, Formatting = Formatting.None
-        };
-
         public DistributedConferenceCache(IDistributedCache distributedCache)
         {
             _distributedCache = distributedCache;
@@ -25,7 +20,7 @@ namespace VideoWeb.Common.Caching
         public Task AddConferenceToCache(ConferenceDetailsResponse conferenceResponse)
         {
             var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse);
-            var serialisedConference = JsonConvert.SerializeObject(conference, SerializerSettings);
+            var serialisedConference = JsonConvert.SerializeObject(conference, CachingHelper.SerializerSettings);
 
             var data = Encoding.UTF8.GetBytes(serialisedConference);
 
@@ -43,7 +38,7 @@ namespace VideoWeb.Common.Caching
             {
                 var data = _distributedCache.Get(id.ToString());
                 var conferenceSerialised = Encoding.UTF8.GetString(data);
-                var conference = JsonConvert.DeserializeObject<Conference>(conferenceSerialised, SerializerSettings);
+                var conference = JsonConvert.DeserializeObject<Conference>(conferenceSerialised, CachingHelper.SerializerSettings);
                 return conference;
             }
             catch (Exception)

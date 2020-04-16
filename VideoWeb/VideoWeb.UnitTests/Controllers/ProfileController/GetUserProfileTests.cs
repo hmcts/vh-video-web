@@ -1,11 +1,13 @@
 using System.Net;
-using System.Threading.Tasks;
+using System.Security.Claims;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoWeb.Services.User;
 using VideoWeb.UnitTests.Builders;
@@ -24,7 +26,47 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
         {
             _userApiClientMock = new Mock<IUserApiClient>();
             _mockLogger = new Mock<ILogger<ProfilesController>>();
-            var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
+            var claimsPrincipal = new ClaimsPrincipalBuilder()
+                .WithRole(Role.Judge)
+                .WithClaim(ClaimTypes.GivenName, "John")
+                .WithClaim(ClaimTypes.Surname, "Doe")
+                .WithClaim(ClaimTypes.Name, "John D")
+                .Build();
+            _controller = SetupControllerWithClaims(claimsPrincipal);
+        }
+
+        [Test]
+        public void Should_return_ok_code_when_user_profile_found()
+        {
+            var result = _controller.GetUserProfile();
+            var typedResult = (OkObjectResult) result;
+            typedResult.Should().NotBeNull();
+        }
+
+        [Test]
+        public void Should_return_401_when_exception_thrown()
+        {
+            // missing claim will throw an exception
+            var claimsPrincipal = new ClaimsPrincipalBuilder()
+                .WithClaim(ClaimTypes.GivenName, "John")
+                .WithClaim(ClaimTypes.Surname, "Doe")
+                .Build();
+            _controller = SetupControllerWithClaims(claimsPrincipal);
+            var apiException = new UserApiException<ProblemDetails>("Internal Server Error",
+                (int) HttpStatusCode.InternalServerError,
+                "Stacktrace goes here", null, default, null);
+            _userApiClientMock
+                .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
+                .ThrowsAsync(apiException);
+
+            var result = _controller.GetUserProfile();
+            var typedResult = (ObjectResult) result;
+            typedResult.StatusCode.Should().Be((int) HttpStatusCode.Unauthorized);
+
+        }
+
+        private ProfilesController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)
+        {
             var context = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext
@@ -33,51 +75,10 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
                 }
             };
 
-            _controller = new ProfilesController(_userApiClientMock.Object, _mockLogger.Object)
+            return new ProfilesController(_userApiClientMock.Object, _mockLogger.Object, new DictionaryUserCache())
             {
                 ControllerContext = context
             };
         }
-        
-        [Test]
-        public async Task Should_return_ok_code_when_user_profile_found()
-        {
-            var userProfile = new UserProfile() {User_role = "Judge"};
-            _userApiClientMock
-                .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(userProfile);
-
-            var result = await _controller.GetUserProfileAsync();
-            var typedResult = (OkObjectResult) result;
-            typedResult.Should().NotBeNull();
-        }
-        
-        [Test]
-        public async Task Should_return_not_found_code_when_user_profile_is_not_found()
-        {
-            var apiException = new UserApiException<ProblemDetails>("User not found", (int) HttpStatusCode.NotFound,
-                "User Not Found", null, default, null);
-            _userApiClientMock
-                .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
-                .ThrowsAsync(apiException);
-
-            var result = await _controller.GetUserProfileAsync();
-            var typedResult = (ObjectResult) result;
-            typedResult.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
-        }
-        
-        [Test]
-        public async Task Should_return_exception()
-        {
-            var apiException = new UserApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
-                "Stacktrace goes here", null, default, null);
-            _userApiClientMock
-                .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
-                .ThrowsAsync(apiException);
-
-            var result = await _controller.GetUserProfileAsync();
-            var typedResult = (ObjectResult)result;
-            typedResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
-        } 
     }
 }
