@@ -4,7 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { configureTestSuite } from 'ng-bullet';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, ParticipantStatus, AudioRecordingStopResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { JudgeEventService } from 'src/app/services/judge-event.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -19,6 +19,7 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { JudgeChatStubComponent } from 'src/app/testing/stubs/judge-chat-stub.component';
 import { JudgeParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
 import { JudgeWaitingRoomComponent } from './judge-waiting-room.component';
+import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
@@ -29,13 +30,17 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     let conference: ConferenceResponse;
     let eventService: MockEventsService;
     let judgeEventServiceSpy: jasmine.SpyObj<JudgeEventService>;
+    let audioRecordingServiceSpy: jasmine.SpyObj<AudioRecordingService>;
 
     configureTestSuite(() => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'raiseParticipantEvent']);
         videoWebServiceSpy.getConferenceById.and.returnValue(conference);
         videoWebServiceSpy.raiseParticipantEvent.and.returnValue(Promise.resolve());
-
+        audioRecordingServiceSpy = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['stopAudioRecording']);
+        const audioResponse = new AudioRecordingStopResponse();
+        audioResponse.success = true;
+        audioRecordingServiceSpy.stopAudioRecording.and.returnValue(audioResponse);
         judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService', [
             'raiseJudgeAvailableEvent',
             'raiseJudgeUnavailableEvent'
@@ -57,7 +62,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 { provide: ConfigService, useClass: MockConfigService },
                 { provide: EventsService, useClass: MockEventsService },
                 { provide: Logger, useClass: MockLogger },
-                { provide: JudgeEventService, useValue: judgeEventServiceSpy }
+                { provide: JudgeEventService, useValue: judgeEventServiceSpy },
+                { provide: AudioRecordingService, useValue: audioRecordingServiceSpy }
             ]
         });
     });
@@ -238,5 +244,11 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         eventService.participantStatusSubject.next(message);
 
         expect(component.conference.participants[0].status).toBe(message.status);
+    });
+    it('should stop audio recording', () => {
+      component.conference.audio_recording_required = true;
+      component.conference.hearing_ref_id = '1234567';
+      component.stopAudioRecording();
+      expect(audioRecordingServiceSpy.stopAudioRecording).toHaveBeenCalled();
     });
 });

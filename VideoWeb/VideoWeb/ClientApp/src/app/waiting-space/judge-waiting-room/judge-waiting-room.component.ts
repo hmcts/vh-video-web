@@ -10,6 +10,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { PageUrls } from 'src/app/shared/page-url.constants';
+import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -30,7 +31,8 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
         private eventService: EventsService,
         private errorService: ErrorService,
         private logger: Logger,
-        private judgeEventService: JudgeEventService
+        private judgeEventService: JudgeEventService,
+        private audioRecordingService: AudioRecordingService
     ) {
         this.loadingData = true;
     }
@@ -156,7 +158,10 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     handleHearingStatusChange(status: ConferenceStatus) {
-        this.conference.status = status;
+      this.conference.status = status;
+      if (this.conference.status === ConferenceStatus.Closed) {
+        this.stopAudioRecording();
+      }
     }
 
     checkEquipment() {
@@ -169,5 +174,20 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
 
     hearingPaused(): boolean {
         return this.conference.status === ConferenceStatus.Paused;
+  }
+
+  async stopAudioRecording() {
+    if (this.conference.audio_recording_required) {
+      const message = `Case number: ${this.conference.case_number}, Hearing Id: ${this.conference.hearing_ref_id}`;
+      try {
+        const response = await this.audioRecordingService.stopAudioRecording(this.conference.case_number, this.conference.hearing_ref_id);
+        if (!response.success) {
+          this.logger.info(`[Judge WR] - not successful to stop audio recording for ${message}`);
+        }
+      } catch (error) {
+      
+        this.logger.error(`[Judge WR] - failed to stop audio recording for ${message}`, error);
+      }
     }
+  }
 }
