@@ -5,8 +5,8 @@ import { HearingsFilterOptionsService } from './hearings-filter-options.service'
 describe('HearingFilterOptionsService', () => {
     const venueList = [new HearingVenueResponse({ id: 1, name: 'Birmingham' })];
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getHearingsVenue']);
-    videoWebServiceSpy.getHearingsVenue.and.returnValue(Promise.resolve(venueList));
+    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getHearingVenues']);
+    videoWebServiceSpy.getHearingVenues.and.returnValue(Promise.resolve(venueList));
 
     const component = new HearingsFilterOptionsService(videoWebServiceSpy);
 
@@ -19,8 +19,8 @@ describe('HearingFilterOptionsService', () => {
     });
     it('should count selected filter options', async () => {
         const filter = await component.getFilter();
-        filter.statuses.forEach(x => (x.Selected = true));
-        filter.alerts.forEach(x => (x.Selected = true));
+        filter.statuses.forEach((x) => (x.Selected = true));
+        filter.alerts.forEach((x) => (x.Selected = true));
         const count = component.countOptions(filter);
 
         // we know statuses otions 6, alerts options 4, number the locations options is dynamic

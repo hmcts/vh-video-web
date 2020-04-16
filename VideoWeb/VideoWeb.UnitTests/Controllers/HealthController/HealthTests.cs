@@ -79,7 +79,7 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
                 "Please provide a valid conference Id", null, default(ProblemDetails), null);
 
             _videoApiClientMock
-                .Setup(x => x.GetConferencesTodayForAdminAsync())
+                .Setup(x => x.GetExpiredOpenConferencesAsync())
                 .ThrowsAsync(exception);
 
             var result = await _controller.HealthAsync();
@@ -97,7 +97,7 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
                 "Invalid Client ID", null, default, null);
 
             _videoApiClientMock
-                .Setup(x => x.GetConferencesTodayForAdminAsync())
+                .Setup(x => x.GetExpiredOpenConferencesAsync())
                 .ThrowsAsync(exception);
 
             var result = await _controller.HealthAsync();
