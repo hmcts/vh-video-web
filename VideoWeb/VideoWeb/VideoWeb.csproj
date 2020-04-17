@@ -55,6 +55,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="ClientApp\src\app\security\file.ts" />
       <None Remove="ClientApp\src\app\vh-officer\participant-network-status\participant-network-status.component.spec.ts" />
     </ItemGroup>
 

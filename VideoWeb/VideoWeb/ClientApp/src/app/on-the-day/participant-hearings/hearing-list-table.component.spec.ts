@@ -70,9 +70,4 @@ describe('HearingListTableComponent', () => {
         component.signIntoConference(conference);
         expect(component.selectedConference.emit).toHaveBeenCalledWith(conference);
     });
-
-    it('should show closed for a hearing that has been closed for over 30 minutes', () => {
-      const conference = new ConferenceTestData().getConferenceClosed30Minutesago();
-      expect(component.isConferenceClosed(conference)).toBeTruthy();
-    });
 });

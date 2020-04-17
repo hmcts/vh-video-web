@@ -83,6 +83,7 @@ namespace VideoWeb.Controllers
             {
                 var username = User.Identity.Name;
                 var conferencesForIndividual = await _videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username);
+                conferencesForIndividual = conferencesForIndividual.Where(c => ConferenceHelper.HasNotPassed(c.Status, c.Closed_date_time)).ToList();
                 var response = conferencesForIndividual
                     .Select(ConferenceForIndividualResponseMapper.MapConferenceSummaryToModel).ToList();
                 return Ok(response);
