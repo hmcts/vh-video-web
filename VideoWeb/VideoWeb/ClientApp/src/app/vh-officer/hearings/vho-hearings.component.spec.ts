@@ -88,6 +88,10 @@ describe('VhoHearingsComponent', () => {
         component.conferencesAll = conferences;
     });
 
+    afterAll(() => {
+        component.ngOnDestroy();
+    });
+
     it('should retrieve conference and sanitise iframe uri', () => {
         component.conferences = hearings;
         spyOn(component, 'updateWidthForAdminFrame');
@@ -482,5 +486,21 @@ describe('VhoHearingsComponent', () => {
         component.displayFilter = false;
         component.showFilter();
         expect(component.displayFilter).toBeTruthy();
+    });
+
+    it('should reset unread message counter when admin has answered', () => {
+        component.conferences[0].numberOfUnreadMessages = 10;
+
+        mockEventService.adminAnsweredChatSubject.next(component.conferences[0].id);
+
+        expect(component.conferences[0].numberOfUnreadMessages).toBe(0);
+    });
+
+    it('should not reset unread message counter when conference id does not exist', () => {
+        component.conferences[0].numberOfUnreadMessages = 10;
+
+        mockEventService.adminAnsweredChatSubject.next(Guid.create().toString());
+
+        expect(component.conferences[0].numberOfUnreadMessages).toBe(10);
     });
 });
