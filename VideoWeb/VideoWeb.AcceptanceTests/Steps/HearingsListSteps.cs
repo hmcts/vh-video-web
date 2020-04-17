@@ -75,12 +75,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Retry(() => _browsers[_c.CurrentUser.Key].Driver.Url.Trim().Should().Contain(Page.Introduction.Url),2);
         }
 
-        [Then(@"the participant is not able to access the hearing")]
-        public void ThenTheParticipantIsNotAbleToAccessTheHearing()
-        {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(ParticipantHearingListPage.SignInButton(_c.Test.Conference.Id));
-        }
-
         [Then(@"the participant is unable to access the hearing")]
         public void ThenTheParticipantIsUnableToAccessTheWaitingRoom()
         {
