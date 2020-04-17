@@ -10,6 +10,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Extensions;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
 using VideoWeb.Mappings;
@@ -104,7 +105,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(List<ConferenceForVhOfficerResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.Unauthorized)]
         [SwaggerOperation(OperationId = "GetConferencesForVhOfficer")]
-        public async Task<ActionResult<List<ConferenceForVhOfficerResponse>>> GetConferencesForVhOfficerAsync()
+        public async Task<ActionResult<List<ConferenceForVhOfficerResponse>>> GetConferencesForVhOfficerAsync([FromQuery]VhoConferenceFilterQuery query)
         {
             _logger.LogDebug("GetConferencesForVhOfficer");
             var username = User.Identity.Name.ToLower().Trim();
@@ -116,7 +117,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                var conferences = await _videoApiClient.GetConferencesTodayForAdminAsync();
+                var conferences = await _videoApiClient.GetConferencesTodayForAdminAsync(query.VenueNames);
                 conferences = conferences.Where(c => ConferenceHelper.HasNotPassed(c.Status, c.Closed_date_time))
                     .ToList();
                 conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();
@@ -135,7 +136,7 @@ namespace VideoWeb.Controllers
         private async Task<ConferenceForVhOfficerResponse> MapConferenceForVhoAsync(
             ConferenceForAdminResponse conference)
         {
-            if (!IsInStateToChat(conference))
+            if (!conference.IsInStateToChat())
             {
                 return ConferenceForVhOfficerResponseMapper.MapConferenceSummaryToResponseModel(conference, null);
             }
@@ -143,13 +144,6 @@ namespace VideoWeb.Controllers
             var messages = await _videoApiClient.GetInstantMessageHistoryAsync(conference.Id);
 
             return ConferenceForVhOfficerResponseMapper.MapConferenceSummaryToResponseModel(conference, messages);
-        }
-
-        private static bool IsInStateToChat(ConferenceForAdminResponse conference)
-        {
-            return conference.Status == ConferenceState.NotStarted ||
-                   conference.Status == ConferenceState.Paused ||
-                   conference.Status == ConferenceState.Suspended;
         }
 
 

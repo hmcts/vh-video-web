@@ -14,6 +14,7 @@ using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Services.Bookings;
@@ -51,7 +52,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         {
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(Role.Individual).Build();
             _controller = SetupControllerWithClaims(claimsPrincipal);
-            var result = await _controller.GetConferencesForVhOfficerAsync();
+            var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery());
 
             var typedResult = (UnauthorizedObjectResult) result.Result;
             typedResult.Should().NotBeNull();
@@ -65,10 +66,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
             _videoApiClientMock
-                .Setup(x => x.GetConferencesTodayForAdminAsync())
+                .Setup(x => x.GetConferencesTodayForAdminAsync(It.IsAny<IEnumerable<string>>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferencesForVhOfficerAsync();
+            var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery());
 
             var typedResult = (ObjectResult) result.Result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
@@ -109,7 +110,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
 
             _videoApiClientMock
-                .Setup(x => x.GetConferencesTodayForAdminAsync())
+                .Setup(x => x.GetConferencesTodayForAdminAsync(It.IsAny<IEnumerable<string>>()))
                 .ReturnsAsync(conferences);
 
             var conferenceWithMessages = conferences.First();
@@ -137,7 +138,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             _videoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceWithMessages.Id))
                 .ReturnsAsync(messages);
 
-            var result = await _controller.GetConferencesForVhOfficerAsync();
+            var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery());
 
             var typedResult = (OkObjectResult) result.Result;
             typedResult.Should().NotBeNull();
@@ -155,7 +156,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             // paused hearings in sessions cannot chat, no need to get history
             _videoApiClientMock.Verify(x => x.GetInstantMessageHistoryAsync(conferences.Last().Id), Times.Never);
         }
-        
+
         private ConferencesController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)
         {
             var context = new ControllerContext
