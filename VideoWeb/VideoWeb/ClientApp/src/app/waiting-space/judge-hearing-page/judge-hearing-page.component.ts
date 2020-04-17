@@ -9,6 +9,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { PageUrls } from 'src/app/shared/page-url.constants';
+import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 
 @Component({
     selector: 'app-judge-hearing-page',
@@ -32,7 +33,8 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
         public sanitizer: DomSanitizer,
         private errorService: ErrorService,
         private userMediaService: UserMediaService,
-        private logger: Logger
+        private logger: Logger,
+        private audioRecordingService: AudioRecordingService
     ) {
         this.loadingData = true;
     }
@@ -137,8 +139,9 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
         };
 
         if (conferenceStatus === ConferenceStatus.Closed) {
-            this.logger.event(`Conference closed, navigating back to hearing list`, properties);
-            return this.router.navigate([PageUrls.JudgeHearingList]);
+          this.stopAudioRecording();
+          this.logger.event(`Conference closed, navigating back to hearing list`, properties);
+          return this.router.navigate([PageUrls.JudgeHearingList]);
         }
 
         if (conferenceStatus === ConferenceStatus.Paused || conferenceStatus === ConferenceStatus.Suspended) {
@@ -157,5 +160,24 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
             this.logger.warn(`Uri ${src} is not recogised`);
             this.router.navigate([PageUrls.JudgeHearingList]);
         }
+  }
+
+  async stopAudioRecording() {
+    if (this.conference.audio_recording_required) {
+
+      const message = `Case number: ${this.conference.case_number}, Hearing Id: ${this.conference.hearing_ref_id}`;
+      try {
+        const response = await this.audioRecordingService.stopAudioRecording(this.conference.case_number, this.conference.hearing_ref_id);
+        if (!response.success) {
+          this.logger.event(`[Judge WR] - not successful to stop audio recording for ${message}`);
+        }
+        else {
+          this.logger.event(`[Judge WR] - successful to stop audio recording for ${message}`);
+        }
+      } catch (error) {
+
+        this.logger.error(`[Judge WR] - failed to stop audio recording for ${message}`, error);
+      }
     }
+  }
 }
