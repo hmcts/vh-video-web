@@ -471,4 +471,16 @@ describe('VhoHearingsComponent', () => {
         expect(result[0].StatusExtended).toBe(ExtendedConferenceStatus.Delayed);
         expect(result[1].StatusExtended).toBe(ConferenceStatus.NotStarted);
     });
+
+    it('should not show filter', () => {
+        component.displayFilter = true;
+        component.showFilter();
+        expect(component.displayFilter).toBeFalsy();
+    });
+
+    it('should show filter', () => {
+        component.displayFilter = false;
+        component.showFilter();
+        expect(component.displayFilter).toBeTruthy();
+    });
 });
