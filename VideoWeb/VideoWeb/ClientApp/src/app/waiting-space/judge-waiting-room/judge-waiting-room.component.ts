@@ -170,5 +170,4 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
     hearingPaused(): boolean {
         return this.conference.status === ConferenceStatus.Paused;
   }
-  
 }
