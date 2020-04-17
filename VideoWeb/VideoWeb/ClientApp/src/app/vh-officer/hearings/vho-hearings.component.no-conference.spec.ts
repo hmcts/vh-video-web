@@ -1,75 +1,45 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { AdalService } from 'adal-angular4';
-import { configureTestSuite } from 'ng-bullet';
+import { fakeAsync, tick } from '@angular/core/testing';
+import { DomSanitizer } from '@angular/platform-browser';
 import { throwError } from 'rxjs';
-import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
-import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
-import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { TasksTableStubComponent } from 'src/app/testing/stubs/task-table-stub';
-import { VhoChatStubComponent } from 'src/app/testing/stubs/vho-chat-stub';
-import { VhoHearingListStubComponent } from 'src/app/testing/stubs/vho-hearing-list-stub';
-import { VhoParticipantStatusStubComponent } from 'src/app/testing/stubs/vho-participant-status-stub';
-import { VhoHearingsFilterStubComponent } from '../../testing/stubs/vho-hearings-filter-stub';
-import { VhoMonitoringGraphStubComponent } from '../../testing/stubs/vho-monitoring-graph-stub';
 import { VhoHearingsComponent } from './vho-hearings.component';
-import { VenueSelectionStubComponent } from 'src/app/testing/stubs/VenueSelectionStubComponent';
 
 describe('VhoHearingsComponent when conference retrieval fails', () => {
     let component: VhoHearingsComponent;
-    let fixture: ComponentFixture<VhoHearingsComponent>;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    const mockEventsService = new MockEventsService();
+    let eventsService: jasmine.SpyObj<EventsService>;
+    let domSanitizerSpy: jasmine.SpyObj<DomSanitizer>;
+    const logger: Logger = new MockLogger();
     let adalService: MockAdalService;
-    let errorService: ErrorService;
+    let errorService: jasmine.SpyObj<ErrorService>;
 
-    configureTestSuite(() => {
+    beforeAll(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForVHOfficer']);
-        videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(throwError({ status: 404, isApiException: true }));
-
-        TestBed.configureTestingModule({
-            imports: [SharedModule, RouterTestingModule],
-            declarations: [
-                VhoHearingsComponent,
-                TasksTableStubComponent,
-                VhoHearingListStubComponent,
-                VhoParticipantStatusStubComponent,
-                VhoHearingsFilterStubComponent,
-                VhoChatStubComponent,
-                VhoMonitoringGraphStubComponent,
-                VenueSelectionStubComponent
-            ],
-            providers: [
-                { provide: VideoWebService, useValue: videoWebServiceSpy },
-                { provide: AdalService, useClass: MockAdalService },
-                { provide: EventsService, useValue: mockEventsService },
-                { provide: ConfigService, useClass: MockConfigService },
-                { provide: Logger, useClass: MockLogger }
-            ]
-        });
+        domSanitizerSpy = jasmine.createSpyObj<DomSanitizer>('DomSanitizer', ['bypassSecurityTrustResourceUrl']);
+        eventsService = jasmine.createSpyObj<EventsService>('EventsService', ['start']);
+        adalService = new MockAdalService();
+        errorService = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError']);
     });
 
     beforeEach(() => {
-        adalService = TestBed.get(AdalService);
-        errorService = TestBed.get(ErrorService);
-        fixture = TestBed.createComponent(VhoHearingsComponent);
-        component = fixture.componentInstance;
+        component = new VhoHearingsComponent(videoWebServiceSpy, domSanitizerSpy, errorService, eventsService, logger);
+        component.conferences = null;
+        component.conferencesAll = null;
         component.selectedHearing = null;
     });
 
-    it('should handle api error when retrieving conference fails', async () => {
-        spyOn(errorService, 'handleApiError').and.callFake(() => {
+    it('should handle api error when retrieving conference fails', fakeAsync(() => {
+        videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(throwError({ status: 404, isApiException: true }));
+        errorService.handleApiError.and.callFake(() => {
             Promise.resolve(true);
         });
+        tick();
         component.retrieveHearingsForVhOfficer();
-        await fixture.whenStable();
         expect(errorService.handleApiError).toHaveBeenCalledTimes(1);
-    });
+    }));
 });
