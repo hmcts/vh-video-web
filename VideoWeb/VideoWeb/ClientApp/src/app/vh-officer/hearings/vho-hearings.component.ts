@@ -65,7 +65,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     $conferenceList: VhoHearingListComponent;
     participantsHeartBeat: ParticipantHeartbeat[] = [];
 
-    venueAllocations: string[];
+    venueAllocations: string[] = [];
 
     @HostListener('window:resize', [])
     onResize() {
@@ -109,6 +109,10 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.interval = setInterval(() => {
             this.retrieveHearingsForVhOfficer();
         }, 30000);
+    }
+
+    get allocationSelected(): boolean {
+        return this.venueAllocations.length > 0;
     }
 
     private setupEventHubSubscribers() {

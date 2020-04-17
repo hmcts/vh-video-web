@@ -1,0 +1,7 @@
+@import '~govuk-frontend/govuk/core/all';
+@import '~govuk-frontend/govuk/components/all';
+
+ng-multiselect-dropdown {
+    @extend .govuk-body;
+    @extend .govuk-input--width-10;
+}

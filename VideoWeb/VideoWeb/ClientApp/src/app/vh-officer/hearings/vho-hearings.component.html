@@ -1,11 +1,13 @@
 <div class="govuk-grid-row">
-  <div><span *ngIf="!loadingData && hasHearings()" id="filterButton"
+  <div>
+    <span *ngIf="hasHearings()" id="filterButton"
       class="govuk-!-padding-1 govuk-!-margin-left-2 report-conference govuk-body" (click)="showFilter()">
       Filter {{filterOptionsCount > 0 ? '('+ filterOptionsCount +')' : ''}}
       <i [ngClass]="{'triangle-up':!displayFilter, 'triangle-down': displayFilter}"></i>
-    </span></div>
+    </span>
+  </div>
 
-  <div *ngIf="!displayFilter">
+  <div [ngClass]="{'thin-allocation': hasHearings(), 'hide-allocation': displayFilter}" class="govuk-grid-row">
     <app-venue-selection (selectedAllocations)="getConferenceForSelectedAllocations($event)"></app-venue-selection>
   </div>
 
@@ -17,13 +19,11 @@
   </div>
 </div>
 
-
-
 <div *ngIf="loadingData">
   <p class="govuk-body">Loading please wait...</p>
 </div>
 
-<div *ngIf="!loadingData && hasHearings()" class="govuk-grid-row">
+<div *ngIf="hasHearings()" class="govuk-grid-row">
 
   <app-vho-hearing-list #conferenceList [conferences]="conferences" (selectedConference)="onConferenceSelected($event)"
     (selectedParticipant)="onParticipantSelected($event)">
@@ -54,7 +54,7 @@
 
 </div>
 
-<div *ngIf="!loadingData && !hasHearings()">
+<div *ngIf="allocationSelected && !hasHearings()">
   <h1 class="govuk-heading-xl">Video hearings</h1>
   <h3 class="govuk-heading-m"> You have no video hearings</h3>
 </div>

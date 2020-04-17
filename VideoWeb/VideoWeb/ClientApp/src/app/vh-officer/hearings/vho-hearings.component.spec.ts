@@ -85,7 +85,7 @@ describe('VhoHearingsComponent', () => {
         errorService = TestBed.get(ErrorService);
         fixture = TestBed.createComponent(VhoHearingsComponent);
         component = fixture.componentInstance;
-        component.getConferenceForSelectedAllocations();
+        component.getConferenceForSelectedAllocations([]);
         fixture.detectChanges();
     });
 
@@ -355,5 +355,21 @@ describe('VhoHearingsComponent', () => {
         component.addHeartBeatToTheList(heartBeat3);
         expect(component.participantsHeartBeat.length).toEqual(participantsHeartbeatCurrentCount);
         expect(component.participantsHeartBeat).toContain(heartBeat3);
+    });
+
+    it('should return false when no allocations are selected', () => {
+        component.venueAllocations = [];
+        expect(component.allocationSelected).toBeFalsy();
+    });
+
+    it('should return true when allocations are selected', () => {
+        component.venueAllocations = ['venue1'];
+        expect(component.allocationSelected).toBeTruthy();
+    });
+
+    it('should return true when conference is selected', () => {
+        const conference = new ConferenceTestData().getConferenceDetailNow();
+        component.selectedHearing = new Hearing(conference);
+        expect(component.isHearingSelected).toBeTruthy();
     });
 });

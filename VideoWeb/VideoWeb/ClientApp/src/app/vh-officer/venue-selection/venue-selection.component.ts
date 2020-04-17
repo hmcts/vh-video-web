@@ -15,9 +15,11 @@ export class VenueSelectionComponent implements OnInit {
 
     dropdownSettings: IDropdownSettings;
 
-    constructor(private videoWebService: VideoWebService) {}
+    constructor(private videoWebService: VideoWebService) {
+        this.selectedVenues = [];
+    }
 
-    ngOnInit() {
+    async ngOnInit() {
         this.videoWebService.getHearingVenues().then((response) => (this.venues = response));
         this.initDropDown();
     }
@@ -28,26 +30,27 @@ export class VenueSelectionComponent implements OnInit {
             idField: 'id',
             textField: 'name',
             selectAllText: 'Select All',
-            unSelectAllText: 'UnSelect All',
-            itemsShowLimit: 3,
+            unSelectAllText: 'Unselect All',
+            itemsShowLimit: 1,
             allowSearchFilter: true
         };
     }
 
     publishSelection() {
-        console.log(this.selectedVenues);
-        this.selectedAllocations.emit(this.selectedVenues);
-    }
-
-    onItemSelect(item: HearingVenueResponse) {
-        const existingVenue = this.selectedVenues.find((x) => x.id === item.id);
-        if (!existingVenue) {
-            this.selectedVenues.push(this.venues.find((x) => x.id === item.id));
+        if (this.selectedVenues && this.selectedVenues.length > 0) {
+            this.selectedAllocations.emit(this.selectedVenues);
         }
     }
 
-    onItemDeSelect(item: HearingVenueResponse) {
-        this.selectedVenues.filter((x) => x.id !== item.id);
+    onItemSelect(venue: HearingVenueResponse) {
+        const existingVenue = this.selectedVenues.find((x) => x.id === venue.id);
+        if (!existingVenue) {
+            this.selectedVenues.push(this.venues.find((x) => x.id === venue.id));
+        }
+    }
+
+    onItemDeselect(venue: HearingVenueResponse) {
+        this.selectedVenues = this.selectedVenues.filter((x) => x.id !== venue.id);
     }
 
     onSelectAll() {

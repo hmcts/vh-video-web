@@ -1,6 +1,6 @@
-<div class="govuk-!-margin-bottom-2 govuk-!-margin-top-2 govuk-!-margin-left-2 govuk-!-padding-top-2">
-  <ng-multiselect-dropdown [placeholder]="'Choose venues'" [data]="venues" [(ngModel)]="selectedVenues"
-    [settings]="dropdownSettings" (onSelect)="onItemSelect($event)" (onDeSelect)="onItemDeSelect($event)"
+<div class="govuk-!-margin-bottom-2 govuk-!-margin-top-2 govuk-!-margin-left-6 govuk-!-margin-right-9">
+  <ng-multiselect-dropdown class="" [placeholder]="'Choose venues'" [data]="venues" [(ngModel)]="selectedVenues"
+    [settings]="dropdownSettings" (onSelect)="onItemSelect($event)" (onDeSelect)="onItemDeselect($event)"
     (onSelectAll)="onSelectAll()" (onDropDownClose)="publishSelection()">
   </ng-multiselect-dropdown>
 </div>
