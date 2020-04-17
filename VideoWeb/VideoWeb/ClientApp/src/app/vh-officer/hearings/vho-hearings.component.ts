@@ -340,7 +340,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
         const conference = this.conferences.find((c) => c.id === message.conferenceId);
         if (!conference) {
-            return;
+            return false;
         }
         conference.status = message.status;
         if (this.isCurrentConference(new ConferenceForVhOfficerResponse({ id: message.conferenceId }))) {
@@ -448,7 +448,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         return result;
     }
 
-    setStatusDelayed(data: ConferenceForVhOfficerResponse[]) {
+    setStatusDelayed(data: ConferenceForVhOfficerResponse[]): ConferenceForUser[] {
         const conferences = data.map((x) => {
             const hearing = new HearingSummary(x);
             const item = new ConferenceForUser(x);

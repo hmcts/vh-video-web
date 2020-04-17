@@ -1,95 +1,95 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { AdalService } from 'adal-angular4';
-import { configureTestSuite } from 'ng-bullet';
+import { DomSanitizer } from '@angular/platform-browser';
 import { of } from 'rxjs';
-import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceForVhOfficerResponse,
     ConferenceResponse,
+    ConferenceStatus,
     ParticipantForUserResponse,
     ParticipantHeartbeatResponse,
     ParticipantStatus,
-    Role
+    Role,
+    ConferenceResponseVho
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { ParticipantSummary } from 'src/app/shared/models/participant-summary';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
-import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { TasksTableStubComponent } from 'src/app/testing/stubs/task-table-stub';
-import { VhoChatStubComponent } from 'src/app/testing/stubs/vho-chat-stub';
-import { VhoHearingListStubComponent } from 'src/app/testing/stubs/vho-hearing-list-stub';
-import { VhoParticipantStatusStubComponent } from 'src/app/testing/stubs/vho-participant-status-stub';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
-import { VhoHearingsFilterStubComponent } from '../../testing/stubs/vho-hearings-filter-stub';
-import { VhoMonitoringGraphStubComponent } from '../../testing/stubs/vho-monitoring-graph-stub';
-import { VhoParticipantNetworkStatusStubComponent } from '../../testing/stubs/vho-participant-network-status-stub';
-import { VhoHearingsComponent } from './vho-hearings.component';
-import { ParticipantHeartbeat, HeartbeatHealth } from '../../services/models/participant-heartbeat';
+import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { ParticipantStatusMessage } from '../../services/models/participant-status-message';
-import { VenueSelectionStubComponent } from 'src/app/testing/stubs/VenueSelectionStubComponent';
+import { VhoHearingsComponent } from './vho-hearings.component';
+import { Guid } from 'guid-typescript';
+import { ExtendedConferenceStatus } from 'src/app/shared/models/hearings-filter';
 
 describe('VhoHearingsComponent', () => {
     let component: VhoHearingsComponent;
-    let fixture: ComponentFixture<VhoHearingsComponent>;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+    let eventsService: jasmine.SpyObj<EventsService>;
+    let domSanitizerSpy: jasmine.SpyObj<DomSanitizer>;
+    const logger: Logger = new MockLogger();
     let adalService: MockAdalService;
     const conferences = new ConferenceTestData().getVhoTestData();
-    let errorService: ErrorService;
+    const hearings = conferences.map((c) => new HearingSummary(c));
+    let errorService: jasmine.SpyObj<ErrorService>;
+
+    const mockEventService = new MockEventsService();
 
     const conferenceDetail = new ConferenceTestData().getConferenceDetailFuture();
 
-    configureTestSuite(() => {
+    beforeAll(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getConferencesForVHOfficer',
             'getConferenceById',
             'getTasksForConference',
             'getParticipantHeartbeats'
         ]);
-        videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(of(conferences));
-        videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(conferenceDetail));
-        videoWebServiceSpy.getTasksForConference.and.returnValue(Promise.resolve(new ConferenceTestData().getTasksForConference()));
-        TestBed.configureTestingModule({
-            imports: [SharedModule, RouterTestingModule],
-            declarations: [
-                VhoHearingsComponent,
-                TasksTableStubComponent,
-                VhoHearingListStubComponent,
-                VhoParticipantStatusStubComponent,
-                VhoHearingsFilterStubComponent,
-                VhoChatStubComponent,
-                VhoParticipantNetworkStatusStubComponent,
-                VhoMonitoringGraphStubComponent,
-                VenueSelectionStubComponent
-            ],
-            providers: [
-                { provide: VideoWebService, useValue: videoWebServiceSpy },
-                { provide: AdalService, useClass: MockAdalService },
-                { provide: EventsService, useClass: MockEventsService },
-                { provide: ConfigService, useClass: MockConfigService },
-                { provide: Logger, useClass: MockLogger }
-            ]
-        });
+        domSanitizerSpy = jasmine.createSpyObj<DomSanitizer>('DomSanitizer', ['bypassSecurityTrustResourceUrl']);
+        domSanitizerSpy.bypassSecurityTrustResourceUrl.and.returnValue('test-url');
+
+        eventsService = jasmine.createSpyObj<EventsService>('EventsService', [
+            'start',
+            'getHearingStatusMessage',
+            'getParticipantStatusMessage',
+            'getServiceDisconnected',
+            'getServiceReconnected',
+            'getAdminAnsweredChat',
+            'getHeartbeat'
+        ]);
+        eventsService.getHearingStatusMessage.and.returnValue(mockEventService.hearingStatusSubject.asObservable());
+        eventsService.getParticipantStatusMessage.and.returnValue(mockEventService.participantStatusSubject.asObservable());
+        eventsService.getServiceDisconnected.and.returnValue(mockEventService.eventHubDisconnectSubject.asObservable());
+        eventsService.getServiceReconnected.and.returnValue(mockEventService.eventHubReconnectSubject.asObservable());
+        eventsService.getAdminAnsweredChat.and.returnValue(mockEventService.adminAnsweredChatSubject.asObservable());
+        eventsService.getHeartbeat.and.returnValue(mockEventService.hearingStatusSubject.asObservable());
+
+        adalService = new MockAdalService();
+        errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
+            'goToServiceError',
+            'handleApiError',
+            'returnHomeIfUnauthorised'
+        ]);
     });
 
     beforeEach(() => {
-        adalService = TestBed.get(AdalService);
-        errorService = TestBed.get(ErrorService);
-        fixture = TestBed.createComponent(VhoHearingsComponent);
-        component = fixture.componentInstance;
-        component.getConferenceForSelectedAllocations([]);
-        fixture.detectChanges();
+        videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(of(conferences));
+        videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(conferenceDetail));
+        videoWebServiceSpy.getTasksForConference.and.returnValue(Promise.resolve(new ConferenceTestData().getTasksForConference()));
+
+        component = new VhoHearingsComponent(videoWebServiceSpy, domSanitizerSpy, errorService, eventsService, logger);
+        component.conferences = hearings;
+        component.conferencesAll = conferences;
     });
 
     it('should retrieve conference and sanitise iframe uri', () => {
+        component.conferences = hearings;
         spyOn(component, 'updateWidthForAdminFrame');
         spyOn(component, 'getHeightForFrame').and.returnValue(600);
 
@@ -119,6 +119,14 @@ describe('VhoHearingsComponent', () => {
         component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
         await component.getTasksForConference(currentConference.id);
         expect(component.tasks.length > 0).toBeTruthy();
+    });
+
+    it('should handle error when get tasks fails', async () => {
+        const error = { error: 'unable to reach api' };
+        videoWebServiceSpy.getTasksForConference.and.callFake(() => Promise.reject(error));
+        const currentConference = conferences[0];
+        await component.getTasksForConference(currentConference.id);
+        expect(errorService.handleApiError).toHaveBeenCalledWith(error);
     });
 
     it('should update number of pending tasks on task completed', () => {
@@ -209,7 +217,7 @@ describe('VhoHearingsComponent', () => {
         expect(component.conferences[0].getParticipants()[0].participantHertBeatHealth).toBe(heartBeat);
     });
 
-    it('should change participant status for particpant when status is disconnected', async () => {
+    it('should change participant status for particpant when status is disconnected', () => {
         const heartBeat1 = new ParticipantHeartbeat(
             conferenceDetail.id,
             conferenceDetail.participants[0].id,
@@ -234,6 +242,7 @@ describe('VhoHearingsComponent', () => {
         expect(component.participants[0].status).toBe(ParticipantStatus.Disconnected);
         expect(component.participantsHeartBeat).not.toContain(heartBeat1);
     });
+
     it('should change participant status for particpant', async () => {
         const heartBeat = new ParticipantHeartbeat(
             conferences[0].id,
@@ -250,6 +259,7 @@ describe('VhoHearingsComponent', () => {
         expect(component.participantsHeartBeat).not.toBe(undefined);
         expect(component.participantsHeartBeat.length).toBeGreaterThan(0);
     });
+
     it('should not update hearbeat when no matching conference', async () => {
         const heartBeat1 = new ParticipantHeartbeat(
             '0000-0000-0000-0000',
@@ -262,6 +272,7 @@ describe('VhoHearingsComponent', () => {
         const conferenceToUpdate = component.conferences.find((x) => x.id === heartBeat1.conferenceId);
         expect(conferenceToUpdate).toBe(undefined);
     });
+
     it('should not update hearbeat when no matching participant', async () => {
         const conference = component.conferences[0];
         const heartBeat1 = new ParticipantHeartbeat(conference.id, '0000-0000-0000-0000', HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
@@ -270,6 +281,7 @@ describe('VhoHearingsComponent', () => {
         const participantToUpdate = conferenceToUpdate.getParticipants().find((p) => p.id === heartBeat1.participantId);
         expect(participantToUpdate).toBe(undefined);
     });
+
     it('should change participant status for particpant when status is not disconnected', async () => {
         const heartBeat1 = new ParticipantHeartbeat(
             conferenceDetail.id,
@@ -326,6 +338,7 @@ describe('VhoHearingsComponent', () => {
         expect(component.participantsHeartBeat.length).toBeGreaterThan(participantsHeartbeatCurrentCount);
         expect(component.participantsHeartBeat).toContain(heartBeat3);
     });
+
     it('should update participant heartbeat in the list when heartbeat for participant does exist previously', async () => {
         const heartBeat1 = new ParticipantHeartbeat(
             component.conferences[0].id,
@@ -371,5 +384,91 @@ describe('VhoHearingsComponent', () => {
         const conference = new ConferenceTestData().getConferenceDetailNow();
         component.selectedHearing = new Hearing(conference);
         expect(component.isHearingSelected).toBeTruthy();
+    });
+
+    it('should update hearing status when conference status message is received', () => {
+        component.ngOnInit();
+        component.conferences[0].status = ConferenceStatus.InSession;
+        const message = new ConferenceStatusMessage(conferences[0].id, ConferenceStatus.Paused);
+
+        mockEventService.hearingStatusSubject.next(message);
+
+        expect(component.conferences[0].status).toBe(message.status);
+    });
+
+    it('should selected hearing status when conference status message is received for currently selected conference', () => {
+        component.ngOnInit();
+        const clone: ConferenceResponseVho = Object.assign(conferenceDetail);
+        component.selectedHearing = new Hearing(clone);
+        component.selectedHearing.getConference().status = ConferenceStatus.InSession;
+        const message = new ConferenceStatusMessage(component.selectedHearing.id, ConferenceStatus.Paused);
+
+        mockEventService.hearingStatusSubject.next(message);
+
+        expect(component.selectedHearing.status).toBe(message.status);
+    });
+
+    it('should not update conference status message is received for a conference not in list', () => {
+        const message = new ConferenceStatusMessage(Guid.create().toString(), ConferenceStatus.Paused);
+        expect(component.handleConferenceStatusChange(message)).toBeFalsy();
+    });
+
+    it('should not update participant status when conference is not selected', () => {
+        spyOn(component, 'getJudgeStatusDetails');
+        component.ngOnInit();
+        const participant = conferences[0].participants.find((x) => x.role === Role.Judge);
+        component.conferencesAll[0].participants[0].status = ParticipantStatus.Joining;
+        const message = new ParticipantStatusMessage(participant.id, ParticipantStatus.Available);
+
+        mockEventService.participantStatusSubject.next(message);
+
+        expect(component.getJudgeStatusDetails).toHaveBeenCalledTimes(0);
+    });
+
+    it('should not update participant status when participant message is received for a difference conference', () => {
+        spyOn(component, 'getJudgeStatusDetails');
+        component.ngOnInit();
+        component.participants = conferenceDetail.participants;
+        const participant = conferences[2].participants.find((x) => x.role === Role.Judge);
+        component.participants[0].status = ParticipantStatus.Joining;
+        const message = new ParticipantStatusMessage(participant.id, ParticipantStatus.Available);
+
+        mockEventService.participantStatusSubject.next(message);
+
+        expect(component.getJudgeStatusDetails).toHaveBeenCalledTimes(0);
+    });
+
+    it('should update participant status when conference participant message is received', () => {
+        component.ngOnInit();
+        component.participants = conferenceDetail.participants;
+        const participant = conferenceDetail.participants[0];
+        component.participants[0].status = ParticipantStatus.Joining;
+        const message = new ParticipantStatusMessage(participant.id, ParticipantStatus.Available);
+
+        mockEventService.participantStatusSubject.next(message);
+
+        expect(component.participants[0].status).toBe(message.status);
+    });
+
+    it('should get judge status participant message is received and participant is judge', () => {
+        spyOn(component, 'getJudgeStatusDetails');
+        component.ngOnInit();
+        component.participants = conferenceDetail.participants;
+        const participant = conferenceDetail.participants.find((x) => x.role === Role.Judge);
+        const message = new ParticipantStatusMessage(participant.id, ParticipantStatus.Available);
+
+        mockEventService.participantStatusSubject.next(message);
+
+        expect(component.getJudgeStatusDetails).toHaveBeenCalledTimes(1);
+    });
+
+    it('should update status to "delayed" when hearing is 10 minutes beyond scheduled start time', () => {
+        const delayedConference = new ConferenceTestData().getConferencePast();
+        const futureConference = new ConferenceTestData().getConferenceFuture();
+        delayedConference.status = ConferenceStatus.NotStarted;
+        futureConference.status = ConferenceStatus.NotStarted;
+        const result = component.setStatusDelayed([delayedConference, futureConference]);
+        expect(result[0].StatusExtended).toBe(ExtendedConferenceStatus.Delayed);
+        expect(result[1].StatusExtended).toBe(ConferenceStatus.NotStarted);
     });
 });
