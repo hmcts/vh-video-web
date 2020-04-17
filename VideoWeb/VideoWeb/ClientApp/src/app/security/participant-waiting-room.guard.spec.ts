@@ -7,6 +7,8 @@ import { Logger } from '../services/logging/logger-base';
 import { SharedModule } from '../shared/shared.module';
 import { MockLogger } from '../testing/mocks/MockLogger';
 import { ParticipantWaitingRoomGuard } from './participant-waiting-room.guard';
+import * as moment from 'moment';
+import { ConferenceTestData } from '../testing/mocks/data/conference-test-data';
 
 describe('ParticipantWaitingRoomGuard', () => {
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
@@ -42,12 +44,14 @@ describe('ParticipantWaitingRoomGuard', () => {
     }));
 
     it('should not be able to activate component when conference closed', async () => {
-        const response = new ConferenceResponse({ status: ConferenceStatus.Closed });
+        const date = new Date(new Date().toUTCString());
+        date.setUTCMinutes(date.getUTCMinutes() - 32);
+        const response = new ConferenceResponse({ status: ConferenceStatus.Closed, closed_date_time: date });
         videoWebServiceSpy.getConferenceById.and.returnValue(response);
         const result = await guard.canActivate(activateRoute);
 
         expect(result).toBeFalsy();
-        expect(router.navigate).toHaveBeenCalledWith(['home']);
+        expect(router.navigate).toHaveBeenCalledWith(['participant/hearing-list']);
     });
 
     it('should not be able to activate component if conferenceId null', async(async () => {

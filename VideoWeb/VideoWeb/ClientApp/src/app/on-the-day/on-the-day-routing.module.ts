@@ -31,7 +31,7 @@ export const routes: Routes = [
     {
         path: `${PageUrls.ParticipantHearingList}`,
         component: ParticipantHearingsComponent,
-        canActivate: [ParticipantGuard, ParticipantWaitingRoomGuard],
+        canActivate: [ParticipantGuard],
         data: { title: 'Hearing list' }
     },
     { path: `${PageUrls.Declaration}/:conferenceId`, component: DeclarationComponent, data: { title: 'Declaration' } },
