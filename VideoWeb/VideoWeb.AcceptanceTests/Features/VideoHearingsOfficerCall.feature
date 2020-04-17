@@ -42,3 +42,6 @@ Scenario: Video Hearings Officer cannot call users in a hearing
 	When the countdown finishes
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
 	Then the option to call Individual01 is not visible
+  When in the Clerk's browser
+  And the Clerk clicks close
+	Then the user is on the Hearing List page
