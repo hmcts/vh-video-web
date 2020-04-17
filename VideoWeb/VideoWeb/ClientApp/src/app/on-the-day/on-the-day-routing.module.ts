@@ -19,7 +19,6 @@ import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone
 import { VideoCheckComponent } from './video-check/video-check.component';
 import { JudgeSelfTestComponent } from './judge-self-test/judge-self-test.component';
 import { IndependentSelfTestComponent } from './independent-self-test/independent-self-test.component';
-import { ParticipantWaitingRoomGuard } from '../security/participant-waiting-room.guard';
 
 export const routes: Routes = [
     {
