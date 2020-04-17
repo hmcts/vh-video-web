@@ -59,7 +59,6 @@ Scenario: Four participants join hearing
 	And the Individual02 user has progressed to the Waiting Room page for the existing hearing
 	And the Representative02 user has progressed to the Waiting Room page for the existing hearing
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
-	And all the participants refresh their browsers
 	When the Clerk starts the hearing
 	Then the user is on the Countdown page
 	When the countdown finishes

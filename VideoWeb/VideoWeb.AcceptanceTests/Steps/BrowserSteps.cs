@@ -55,6 +55,8 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private void SwitchCurrentUser(string user)
         {
+            _c.Test.JudgeInIframe = false;
+
             if (_c.CurrentUser != null)
                 _browsers[_c.CurrentUser.Key].LastWindowName = _browsers[_c.CurrentUser.Key].Driver.WrappedDriver.WindowHandles.Last();
 

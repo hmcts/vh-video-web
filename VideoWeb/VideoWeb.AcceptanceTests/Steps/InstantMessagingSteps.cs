@@ -15,7 +15,7 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public class InstantMessagingSteps
     {
-        private const int Timeout = 30;
+        private const int Timeout = 90;
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly BrowserSteps _browserSteps;
