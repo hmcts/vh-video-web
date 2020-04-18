@@ -86,10 +86,3 @@ Scenario: Participant can access Closed hearing within 30 minutes
 	And the hearing status changes to Closed
   And the Individual user has progressed to the Hearing List page for the existing hearing
   Then the participant is able to access the hearing
-
-Scenario: Participant cannot access Closed hearing after 30 minutes
-	Given I have a hearing in -32 minutes time
-	And the hearing was closed more than 30 minutes ago
-  And the Individual user has progressed to the Hearing List page for the existing hearing
-  Then the hearing status should be displayed as Closed on the hearing list page
-  And the participant is unable to access the hearing
