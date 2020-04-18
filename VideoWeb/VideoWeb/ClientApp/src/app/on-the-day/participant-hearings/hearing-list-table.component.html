@@ -19,7 +19,7 @@
       </td>
       <td class="govuk-table__cell">
         <button id="sign-into-hearing-btn-{{conference.id}}" class="govuk-button" data-module="govuk-button" type="button"
-          *ngIf="canStartHearing(conference)" (click)="signIntoConference(conference)" aria-label="Sign into hearing">
+                *ngIf="canStartHearing(conference)" (click)="signIntoConference(conference)" aria-label="Sign into hearing">
           Sign into hearing
         </button>
         <span *ngIf="!canStartHearing(conference)">

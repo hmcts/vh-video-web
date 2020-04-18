@@ -116,21 +116,5 @@ namespace VideoWeb.AcceptanceTests.Steps
             _c.Test.NewConferenceId = conference.Id;
             _c.Test.ConferenceParticipants = conference.Participants;
         }
-
-        [Given(@"the hearing was closed more than 30 minutes ago")]
-        public void GivenTheHearingWasClosedMoreThanMinutesAgo()
-        {
-            var id = _c.Test.ConferenceParticipants.Find(x => x.User_role.Equals(UserRole.Judge)).Id;
-            var request = new CallbackEventRequestBuilder()
-                .WithConferenceId(_c.Test.NewConferenceId)
-                .WithParticipantId(id)
-                .WithEventType(EventType.Close)
-                .FromRoomType(RoomType.HearingRoom)
-                .WithTimestamp(_c.TimeZone.AdjustForVideoWeb(DateTime.Now.AddMinutes(-31)))
-                .Build();
-
-            var response = _c.Apis.VideoWebApi.SendCallBackEvent(request);
-            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-        }
     }
 }

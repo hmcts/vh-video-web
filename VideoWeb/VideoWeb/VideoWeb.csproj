@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -53,10 +53,6 @@
         <Content Remove="$(SpaRoot)**" />
         <None Remove="$(SpaRoot)**" />
         <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Remove="ClientApp\src\app\vh-officer\participant-network-status\participant-network-status.component.spec.ts" />
     </ItemGroup>
 
     <ItemGroup>
