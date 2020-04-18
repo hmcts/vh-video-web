@@ -13,8 +13,9 @@ namespace VideoWeb.AcceptanceTests.Assertions
         {
             actual.Message.Should().Be(expected.Message);
             actual.Sender.Should().Be(expected.Sender);
-            var aMinuteAgo = timeZone.Adjust(DateTime.Now).AddMinutes(-1).ToShortTimeString();
-            actual.Time.Should().BeOneOf(aMinuteAgo, expected.Time);
+            var oneMinuteBefore = timeZone.Adjust(DateTime.Now).AddMinutes(-1).ToShortTimeString();
+            var oneMinuteAfter = timeZone.Adjust(DateTime.Now).AddMinutes(1).ToShortTimeString();
+            actual.Time.Should().BeOneOf(oneMinuteBefore, expected.Time, oneMinuteAfter);
         }
 
         public static void AssertAll(List<ChatMessage> expected, List<ChatMessage> actual)

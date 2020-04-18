@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
+using AcceptanceTests.Common.Driver.Support;
 using AcceptanceTests.Common.Test.Helpers;
 using FluentAssertions;
 using TechTalk.SpecFlow;
@@ -40,7 +41,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the Clerk clicks pause")]
         public void WhenTheUserClicksPause()
         {
-            SwitchToTheJudgeIFrame();
+            if (_c.VideoWebConfig.TestConfig.TargetBrowser != TargetBrowser.Firefox &&
+                _c.VideoWebConfig.TestConfig.TargetBrowser != TargetBrowser.MacFirefox)
+            {
+                SwitchToTheJudgeIFrame();
+            }
+
             _browsers[_c.CurrentUser.Key].Click(HearingRoomPage.PauseButton);
             Thread.Sleep(TimeSpan.FromSeconds(PauseCloseTransferDuration));
             _c.Test.JudgeInIframe = false;
@@ -49,7 +55,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the Clerk clicks close")]
         public void WhenTheUserClicksClose()
         {
-            SwitchToTheJudgeIFrame();
+            if (_c.VideoWebConfig.TestConfig.TargetBrowser != TargetBrowser.Firefox &&
+                _c.VideoWebConfig.TestConfig.TargetBrowser != TargetBrowser.MacFirefox)
+            {
+                SwitchToTheJudgeIFrame();
+            }
+            
             _browsers[_c.CurrentUser.Key].Click(HearingRoomPage.CloseButton);
             Thread.Sleep(TimeSpan.FromSeconds(PauseCloseTransferDuration));
             _c.Test.JudgeInIframe = false;
