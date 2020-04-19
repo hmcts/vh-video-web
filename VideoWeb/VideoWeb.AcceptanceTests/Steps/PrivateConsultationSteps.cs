@@ -15,7 +15,7 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public class PrivateConsultationSteps
     {
-        private const int SecondsWaitToCallAndAnswer = 3;
+        private const int SecondsWaitToCallAndAnswer = 15;
         private const int ExtraTimeToConnectTheParticipantsInSaucelabs = 300;
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _c;

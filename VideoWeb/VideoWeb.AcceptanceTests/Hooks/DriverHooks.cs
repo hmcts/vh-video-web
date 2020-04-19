@@ -40,6 +40,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             DriverManager.KillAnyLocalDriverProcesses();
             var options = new DriverOptions()
             {
+                EnableLogging = true,
                 TargetBrowser = context.VideoWebConfig.TestConfig.TargetBrowser,
                 TargetDevice = context.VideoWebConfig.TestConfig.TargetDevice
             };

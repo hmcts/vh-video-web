@@ -29,7 +29,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void GivenTheHearingHasEveryTypeOfAlert()
         {
             var participant = GetUserFromConferenceDetails("Individual");
-            _alertsSteps.WhenTheJudgeHasSuspendedTheHearing();
+            _alertsSteps.WhenTheTheHearingIsSuspended();
             _alertsSteps.WhenAParticipantHasDisconnectedFromTheHearing(participant.Id.ToString(), RoomType.WaitingRoom);
             _alertsSteps.WhenAParticipantHasChosenToBlockUserMedia();
             _alertsSteps.WhenAParticipantHasFailedTheSelfTestWithReason("Failed self-test (Camera)");
