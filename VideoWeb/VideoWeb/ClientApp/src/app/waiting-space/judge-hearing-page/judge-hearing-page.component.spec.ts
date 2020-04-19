@@ -4,7 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, ConferenceStatus, AudioRecordingStopResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -31,11 +31,9 @@ describe('JudgeHearingPageComponent when conference in session', () => {
 
     configureTestSuite(() => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
-        const audioResponse = new AudioRecordingStopResponse();
-        audioResponse.success = true;
 
         audioRecordingServiceSpy = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['stopAudioRecording']);
-        audioRecordingServiceSpy.stopAudioRecording.and.returnValue(audioResponse);
+        audioRecordingServiceSpy.stopAudioRecording.and.callThrough();
 
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],
