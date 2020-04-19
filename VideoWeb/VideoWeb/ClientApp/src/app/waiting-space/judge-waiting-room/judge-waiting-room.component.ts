@@ -30,7 +30,7 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
         private eventService: EventsService,
         private errorService: ErrorService,
         private logger: Logger,
-        private judgeEventService: JudgeEventService
+        private judgeEventService: JudgeEventService,
     ) {
         this.loadingData = true;
     }
@@ -142,9 +142,11 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): any {
-        const participant = this.conference.participants.find(p => p.id === message.participantId);
-        const status = message.status;
+      const status = message.status;
+      const participant = this.conference.participants.find(p => p.id === message.participantId);
+      if (participant) {
         participant.status = status;
+      }
 
         const judgeDisconnected = this.hearing.judge.id === message.participantId && message.status === ParticipantStatus.Disconnected;
         if (
@@ -156,7 +158,7 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     handleHearingStatusChange(status: ConferenceStatus) {
-        this.conference.status = status;
+      this.conference.status = status;
     }
 
     checkEquipment() {
@@ -169,5 +171,5 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
 
     hearingPaused(): boolean {
         return this.conference.status === ConferenceStatus.Paused;
-    }
+  }
 }

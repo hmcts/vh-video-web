@@ -77,5 +77,15 @@ namespace VideoWeb.Contract.Responses
         /// The name of venue
         /// </summary>
         public string HearingVenueName { get; set; }
+
+        /// <summary>
+        /// The options indicated hearing audio recording
+        /// </summary>
+        public bool AudioRecordingRequired { get; set; }
+
+        /// <summary>
+        /// The hearing Id
+        /// </summary>
+        public Guid HearingRefId { get; set; }
     }
 }
