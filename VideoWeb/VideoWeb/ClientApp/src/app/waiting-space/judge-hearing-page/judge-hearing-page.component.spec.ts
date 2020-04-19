@@ -16,6 +16,7 @@ import { MockEventsNonHttpService, MockEventsService } from 'src/app/testing/moc
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { JudgeHearingPageComponent } from './judge-hearing-page.component';
+import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 
 describe('JudgeHearingPageComponent when conference in session', () => {
     let component: JudgeHearingPageComponent;
@@ -26,9 +27,13 @@ describe('JudgeHearingPageComponent when conference in session', () => {
     let adalService: MockAdalService;
     let eventService: MockEventsNonHttpService;
     let errorService: ErrorService;
+    let audioRecordingServiceSpy: jasmine.SpyObj<AudioRecordingService>;
 
     configureTestSuite(() => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
+
+        audioRecordingServiceSpy = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['stopAudioRecording']);
+        audioRecordingServiceSpy.stopAudioRecording.and.callThrough();
 
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],
@@ -45,7 +50,9 @@ describe('JudgeHearingPageComponent when conference in session', () => {
                 { provide: VideoWebService, useValue: videoWebServiceMock },
                 { provide: AdalService, useClass: MockAdalService },
                 { provide: EventsService, useClass: MockEventsService },
-                { provide: Logger, useClass: MockLogger }
+                { provide: Logger, useClass: MockLogger },
+                { provide: AudioRecordingService, useValue: audioRecordingServiceSpy }
+
             ]
         });
     });
@@ -137,5 +144,11 @@ describe('JudgeHearingPageComponent when conference in session', () => {
         expect(component.conference).toBeUndefined();
         expect(errorService.returnHomeIfUnauthorised).toBeTruthy();
         expect(errorService.handleApiError).toHaveBeenCalledTimes(0);
+    });
+    it('should stop audio recording', () => {
+      component.conference.audio_recording_required = true;
+      component.conference.hearing_ref_id = '1234567';
+      component.stopAudioRecording();
+      expect(audioRecordingServiceSpy.stopAudioRecording).toHaveBeenCalled();
     });
 });
