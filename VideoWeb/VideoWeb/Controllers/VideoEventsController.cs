@@ -54,7 +54,7 @@ namespace VideoWeb.Controllers
                     }
                     catch (VideoApiException e)
                     {
-                        _logger.LogError($"ConferenceId: {request.Conference_id}, ErrorCode: {e.StatusCode}");
+                        _logger.LogError(e, $"ConferenceId: {request.Conference_id}, ErrorCode: {e.StatusCode}");
                         return StatusCode(e.StatusCode, e.Response);
                     }
                 }
@@ -72,7 +72,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError($"ConferenceId: {request.Conference_id}, ErrorCode: {e.StatusCode}");
+                _logger.LogError(e, $"ConferenceId: {request.Conference_id}, ErrorCode: {e.StatusCode}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
