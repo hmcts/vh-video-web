@@ -28,45 +28,37 @@ export class ApiClient {
     }
 
     /**
-     * @param caseNumber (optional) 
-     * @param hearingRefId (optional) 
      * @return Success
      */
-    stopAudioRecording(caseNumber: string | undefined, hearingRefId: string | undefined): Observable<AudioRecordingStopResponse> {
-        let url_ = this.baseUrl + "/audiorecording?";
-        if (caseNumber === null)
-            throw new Error("The parameter 'caseNumber' cannot be null.");
-        else if (caseNumber !== undefined)
-            url_ += "CaseNumber=" + encodeURIComponent("" + caseNumber) + "&"; 
-        if (hearingRefId === null)
-            throw new Error("The parameter 'hearingRefId' cannot be null.");
-        else if (hearingRefId !== undefined)
-            url_ += "HearingRefId=" + encodeURIComponent("" + hearingRefId) + "&"; 
+    stopAudioRecording(hearingId: string): Observable<void> {
+        let url_ = this.baseUrl + "/conferences/audiostreams/{hearingId}";
+        if (hearingId === undefined || hearingId === null)
+            throw new Error("The parameter 'hearingId' must be defined.");
+        url_ = url_.replace("{hearingId}", encodeURIComponent("" + hearingId)); 
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
             observe: "response",
             responseType: "blob",			
             headers: new HttpHeaders({
-                "Accept": "application/json"
             })
         };
 
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
             return this.processStopAudioRecording(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
                     return this.processStopAudioRecording(<any>response_);
                 } catch (e) {
-                    return <Observable<AudioRecordingStopResponse>><any>_observableThrow(e);
+                    return <Observable<void>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<AudioRecordingStopResponse>><any>_observableThrow(response_);
+                return <Observable<void>><any>_observableThrow(response_);
         }));
     }
 
-    protected processStopAudioRecording(response: HttpResponseBase): Observable<AudioRecordingStopResponse> {
+    protected processStopAudioRecording(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -75,10 +67,7 @@ export class ApiClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = AudioRecordingStopResponse.fromJS(resultData200);
-            return _observableOf(result200);
+            return _observableOf<void>(<any>null);
             }));
         } else if (status === 400) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
@@ -96,7 +85,7 @@ export class ApiClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<AudioRecordingStopResponse>(<any>null);
+        return _observableOf<void>(<any>null);
     }
 
     /**
@@ -1917,46 +1906,6 @@ export class ApiClient {
         }
         return _observableOf<void>(<any>null);
     }
-}
-
-export class AudioRecordingStopResponse implements IAudioRecordingStopResponse {
-    success?: boolean;
-    message?: string | undefined;
-
-    constructor(data?: IAudioRecordingStopResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.success = _data["success"];
-            this.message = _data["message"];
-        }
-    }
-
-    static fromJS(data: any): AudioRecordingStopResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new AudioRecordingStopResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["success"] = this.success;
-        data["message"] = this.message;
-        return data; 
-    }
-}
-
-export interface IAudioRecordingStopResponse {
-    success?: boolean;
-    message?: string | undefined;
 }
 
 export class ProblemDetails implements IProblemDetails {

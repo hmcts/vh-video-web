@@ -165,17 +165,12 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
   async stopAudioRecording() {
     if (this.conference.audio_recording_required) {
 
-      const message = `Case number: ${this.conference.case_number}, Hearing Id: ${this.conference.hearing_ref_id}`;
-      try {
-        const response = await this.audioRecordingService.stopAudioRecording(this.conference.case_number, this.conference.hearing_ref_id);
-        if (!response.success) {
-          this.logger.event(`[Judge WR] - not successful to stop audio recording for ${message}`);
-        } else {
-          this.logger.event(`[Judge WR] - successful to stop audio recording for ${message}`);
-        }
-      } catch (error) {
+      this.logger.event(`[Judge WR] - stop audio recording for hearing ${this.conference.hearing_ref_id}`);
 
-        this.logger.error(`[Judge WR] - failed to stop audio recording for ${message}`, error);
+      try {
+        await this.audioRecordingService.stopAudioRecording(this.conference.hearing_ref_id);
+      } catch (error) {
+        this.logger.error(`[Judge WR] - failed to stop audio recording for hearing ${this.conference.hearing_ref_id}`, error);
       }
     }
   }

@@ -1,21 +1,16 @@
-using System;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
-using VideoWeb.Common.Caching;
-using VideoWeb.Contract.Request;
-using VideoWeb.Contract.Responses;
-using VideoWeb.Extensions;
+using System;
+using System.Net;
+using System.Threading.Tasks;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Controllers
 {
     [Produces("application/json")]
     [ApiController]
-    [Route("audiorecording")]
+    [Route("conferences")]
     public class AudioRecordingController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
@@ -28,24 +23,23 @@ namespace VideoWeb.Controllers
 
         }
 
-        [HttpPost]
+        [HttpDelete("audiostreams/{hearingId}")]
         [SwaggerOperation(OperationId = "StopAudioRecording")]
-        [ProducesResponseType(typeof(AudioRecordingStopResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<ActionResult<AudioRecordingStopResponse>> StopAudioRecordingAsync(string CaseNumber, Guid HearingRefId )
+        public async Task<ActionResult> StopAudioRecordingAsync(Guid hearingId)
         {
             _logger.LogDebug("StopAudioRecording");
 
             try
             {
-                // var response = await _videoApiClient.StopAudioRecording(applicationId);
+                await _videoApiClient.DeleteAudioStreamAsync(hearingId);
 
-                var response = new AudioRecordingStopResponse { Success = true, Message = $"Recording {CaseNumber}_{HearingRefId} stopped"};
-               return Ok(response);
+                return Ok();
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to stop audio recording for hearingId: {HearingRefId}");
+                _logger.LogError(e, $"Unable to stop audio recording for hearingId: {hearingId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }

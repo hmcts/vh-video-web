@@ -1,15 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Contract.Responses;
+using System;
+using System.Net;
+using System.Threading.Tasks;
 using VideoWeb.Controllers;
-using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.UnitTests.Controllers
@@ -31,14 +28,27 @@ namespace VideoWeb.UnitTests.Controllers
         [Test]
         public async Task Should_return_success_true_of_stopping_audio_recording_with_status_ok()
         {
-            var audioRecordingStopResponse = new AudioRecordingStopResponse { Success = true};
 
-          //  _videoApiClientMock.Setup(x => x.stopAudioREcordingAsync()).ReturnsAsync(audioRecordingStopResponse);
-            var result = await _controller.StopAudioRecordingAsync("case number1",Guid.NewGuid());
-            var typedResult = (OkObjectResult)result.Result;
+           _videoApiClientMock.Setup(x => x.DeleteAudioStreamAsync(It.IsAny<Guid>())).Returns(Task.CompletedTask);
+
+            var result = await _controller.StopAudioRecordingAsync(Guid.NewGuid());
+            var typedResult = (OkResult)result;
             typedResult.Should().NotBeNull();
-            var response = typedResult.Value;
-            response.Should().NotBeNull();
+            typedResult.StatusCode.Should().Be(200);
+        }
+
+
+        [Test]
+        public async Task Should_throw_exception_stopping_audio_recording()
+        {
+            var videoException = new VideoApiException("Error to stop audio", (int)HttpStatusCode.Conflict, "Error", null, null);
+
+            _videoApiClientMock.Setup(x => x.DeleteAudioStreamAsync(It.IsAny<Guid>())).ThrowsAsync(videoException);
+
+            var result = await _controller.StopAudioRecordingAsync(Guid.NewGuid());
+            var typedResult = (ObjectResult)result;
+            typedResult.Should().NotBeNull();
+            typedResult.StatusCode.Should().Be(409);
         }
     }
 }

@@ -142,9 +142,11 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): any {
-        const participant = this.conference.participants.find(p => p.id === message.participantId);
-        const status = message.status;
+      const status = message.status;
+      const participant = this.conference.participants.find(p => p.id === message.participantId);
+      if (participant) {
         participant.status = status;
+      }
 
         const judgeDisconnected = this.hearing.judge.id === message.participantId && message.status === ParticipantStatus.Disconnected;
         if (
