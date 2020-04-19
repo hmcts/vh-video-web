@@ -35,7 +35,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'raiseParticipantEvent']);
         videoWebServiceSpy.getConferenceById.and.returnValue(conference);
         videoWebServiceSpy.raiseParticipantEvent.and.returnValue(Promise.resolve());
-
         judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService', [
             'raiseJudgeAvailableEvent',
             'raiseJudgeUnavailableEvent'
@@ -57,7 +56,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 { provide: ConfigService, useClass: MockConfigService },
                 { provide: EventsService, useClass: MockEventsService },
                 { provide: Logger, useClass: MockLogger },
-                { provide: JudgeEventService, useValue: judgeEventServiceSpy }
+                { provide: JudgeEventService, useValue: judgeEventServiceSpy },
             ]
         });
     });
