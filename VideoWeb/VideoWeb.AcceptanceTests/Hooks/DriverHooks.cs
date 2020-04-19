@@ -38,8 +38,10 @@ namespace VideoWeb.AcceptanceTests.Hooks
             context.VideoWebConfig.TestConfig.TargetBrowser = DriverManager.GetTargetBrowser(NUnit.Framework.TestContext.Parameters["TargetBrowser"]);
             context.VideoWebConfig.TestConfig.TargetDevice = DriverManager.GetTargetDevice(NUnit.Framework.TestContext.Parameters["TargetDevice"]);
             DriverManager.KillAnyLocalDriverProcesses();
+            var versions = new BrowserVersions {Chrome = SetChromeVersion(), ChromeMac = SetChromeVersion()};
             var options = new DriverOptions()
             {
+                BrowserVersions = versions,
                 EnableLogging = true,
                 TargetBrowser = context.VideoWebConfig.TestConfig.TargetBrowser,
                 TargetDevice = context.VideoWebConfig.TestConfig.TargetDevice
@@ -48,6 +50,11 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 context.VideoWebConfig.SauceLabsConfiguration, 
                 scenarioContext.ScenarioInfo,
                 options);
+        }
+
+        private static string SetChromeVersion()
+        {
+            return NUnit.Framework.TestContext.Parameters["ChromeVersion"] ?? "latest";
         }
 
         [BeforeScenario(Order = (int)HooksSequence.SetTimeZone)]
