@@ -111,7 +111,7 @@ namespace VideoWeb.Controllers
             var username = User.Identity.Name.ToLower().Trim();
             if (!User.IsInRole(Role.VideoHearingsOfficer.EnumDataMemberAttr()))
             {
-                _logger.LogError($"Failed to get conferences for today: {username} is not a VH officer");
+                _logger.LogWarning($"Failed to get conferences for today: {username} is not a VH officer");
                 return Unauthorized("User must be a VH Officer");
             }
 
@@ -162,7 +162,7 @@ namespace VideoWeb.Controllers
             _logger.LogDebug("GetConferenceById");
             if (conferenceId == Guid.Empty)
             {
-                _logger.LogError("Unable to get conference when id is not provided");
+                _logger.LogWarning("Unable to get conference when id is not provided");
                 ModelState.AddModelError(nameof(conferenceId), $"Please provide a valid {nameof(conferenceId)}");
                 return BadRequest(ModelState);
             }
@@ -172,7 +172,7 @@ namespace VideoWeb.Controllers
             _logger.LogTrace("Checking to see if user is a VH Officer");
             if (!User.IsInRole(Role.VideoHearingsOfficer.EnumDataMemberAttr()))
             {
-                _logger.LogError($"Failed to get conference: ${conferenceId}, {username} is not a VH officer");
+                _logger.LogWarning($"Failed to get conference: ${conferenceId}, {username} is not a VH officer");
                 return Unauthorized("User must be a VH Officer");
             }
 
@@ -257,7 +257,7 @@ namespace VideoWeb.Controllers
             _logger.LogDebug("GetConferenceById");
             if (conferenceId == Guid.Empty)
             {
-                _logger.LogError("Unable to get conference when id is not provided");
+                _logger.LogWarning("Unable to get conference when id is not provided");
                 ModelState.AddModelError(nameof(conferenceId), $"Please provide a valid {nameof(conferenceId)}");
                 return BadRequest(ModelState);
             }

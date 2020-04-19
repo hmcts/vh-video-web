@@ -180,7 +180,7 @@ namespace VideoWeb.EventHub.Hub
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error occured when sending heartbeat", ex);
+                _logger.LogError(ex, "Error occured when sending heartbeat");
             }
         }
     }
