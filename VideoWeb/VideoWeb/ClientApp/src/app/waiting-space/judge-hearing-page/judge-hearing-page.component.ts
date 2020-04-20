@@ -94,7 +94,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
     this.selectedHearingUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.judgeUri);
 
     const iFrameElem = <HTMLIFrameElement>document.getElementById('judgeIframe');
-    iFrameElem.setAttribute("allow", this.allowPermissions);
+    iFrameElem.setAttribute('allow', this.allowPermissions);
   }
 
   private setupSubscribers() {
