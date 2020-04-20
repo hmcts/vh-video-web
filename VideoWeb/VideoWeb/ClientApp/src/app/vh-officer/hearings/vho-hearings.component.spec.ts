@@ -1,15 +1,16 @@
 import { DomSanitizer } from '@angular/platform-browser';
+import { Guid } from 'guid-typescript';
 import { of } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceForVhOfficerResponse,
     ConferenceResponse,
+    ConferenceResponseVho,
     ConferenceStatus,
     ParticipantForUserResponse,
     ParticipantHeartbeatResponse,
     ParticipantStatus,
-    Role,
-    ConferenceResponseVho
+    Role
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -17,17 +18,15 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
+import { ExtendedConferenceStatus } from 'src/app/shared/models/hearings-filter';
 import { ParticipantSummary } from 'src/app/shared/models/participant-summary';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { ParticipantStatusMessage } from '../../services/models/participant-status-message';
 import { VhoHearingsComponent } from './vho-hearings.component';
-import { Guid } from 'guid-typescript';
-import { ExtendedConferenceStatus } from 'src/app/shared/models/hearings-filter';
 
 describe('VhoHearingsComponent', () => {
     let component: VhoHearingsComponent;
@@ -35,7 +34,6 @@ describe('VhoHearingsComponent', () => {
     let eventsService: jasmine.SpyObj<EventsService>;
     let domSanitizerSpy: jasmine.SpyObj<DomSanitizer>;
     const logger: Logger = new MockLogger();
-    let adalService: MockAdalService;
     const conferences = new ConferenceTestData().getVhoTestData();
     const hearings = conferences.map((c) => new HearingSummary(c));
     let errorService: jasmine.SpyObj<ErrorService>;
@@ -70,7 +68,6 @@ describe('VhoHearingsComponent', () => {
         eventsService.getAdminAnsweredChat.and.returnValue(mockEventService.adminAnsweredChatSubject.asObservable());
         eventsService.getHeartbeat.and.returnValue(mockEventService.hearingStatusSubject.asObservable());
 
-        adalService = new MockAdalService();
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
             'goToServiceError',
             'handleApiError',

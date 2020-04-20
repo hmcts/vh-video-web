@@ -1,52 +1,48 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AdalService } from 'adal-angular4';
 import { Guid } from 'guid-typescript';
-import { configureTestSuite } from 'ng-bullet';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { ConferenceResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
-import { Logger } from 'src/app/services/logging/logger-base';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
-import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { MockProfileService } from 'src/app/testing/mocks/MockProfileService';
-import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
-import { ChatInputBoxStubComponent } from 'src/app/testing/stubs/chat-input-box-stub.component';
 import { VhoChatComponent } from './vho-chat.component';
+import { MockProfileService } from 'src/app/testing/mocks/MockProfileService';
 
 describe('VhoChatComponent', () => {
     let component: VhoChatComponent;
-    let fixture: ComponentFixture<VhoChatComponent>;
-    let eventService: MockEventsService;
-    let adalService: MockAdalService;
-    let profileService: MockProfileService;
-    const conference = new ConferenceTestData().getConferenceDetailFuture();
+    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+    let eventsServiceSpy: jasmine.SpyObj<EventsService>;
+    let profileServiceSpy: jasmine.SpyObj<ProfileService>;
+    const mockProfileService = new MockProfileService();
+    const mockAdalService = new MockAdalService();
+    let adalService;
+    let conference: ConferenceResponse;
 
-    configureTestSuite(() => {
-        TestBed.configureTestingModule({
-            declarations: [VhoChatComponent, ChatInputBoxStubComponent],
-            providers: [
-                { provide: AdalService, useClass: MockAdalService },
-                { provide: VideoWebService, useClass: MockVideoWebService },
-                { provide: ProfileService, useClass: MockProfileService },
-                { provide: Logger, useClass: MockLogger },
-                { provide: EventsService, useValue: new MockEventsService() }
-            ]
-        }).compileComponents();
+    beforeAll(() => {
+        adalService = mockAdalService;
+        conference = new ConferenceTestData().getConferenceDetailFuture();
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceChatHistory']);
+        eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', ['sendMessage']);
+        profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', [
+            'checkCacheForProfileByUsername',
+            'getProfileByUsername'
+        ]);
     });
 
     beforeEach(() => {
-        eventService = TestBed.get(EventsService);
-        adalService = TestBed.get(AdalService);
-        profileService = TestBed.get(ProfileService);
-        fixture = TestBed.createComponent(VhoChatComponent);
-        component = fixture.componentInstance;
+        const chatHistory = new ConferenceTestData().getChatHistory(mockAdalService.userInfo.userName, conference.id);
+
+        profileServiceSpy.checkCacheForProfileByUsername.and.callFake(() => null);
+        profileServiceSpy.getProfileByUsername.and.returnValue(Promise.resolve(mockProfileService.mockProfile));
+        videoWebServiceSpy.getConferenceChatHistory.and.returnValue(Promise.resolve(chatHistory));
+
+        component = new VhoChatComponent(videoWebServiceSpy, profileServiceSpy, eventsServiceSpy, new MockLogger(), adalService);
+
         component.conference = conference;
         component.messages = new ConferenceTestData().getChatHistory('vho.user@hearings.net', conference.id);
         spyOn(component, 'updateDivWidthForSection').and.callFake(() => {});
-        fixture.detectChanges();
     });
 
     it('should create', () => {
@@ -87,17 +83,15 @@ describe('VhoChatComponent', () => {
     });
 
     it('should get first name when message from user not in conference', async () => {
-        await fixture.whenStable();
         const username = 'vhofficer.hearings.net';
-        const expectedFirstName = profileService.mockProfile.first_name;
+        const expectedFirstName = mockProfileService.mockProfile.first_name;
         const from = await component.assignMessageFrom(username);
         expect(from).toBe(expectedFirstName);
     });
 
     it('should send message to hub', () => {
-        spyOn(eventService, 'sendMessage');
         const message = 'test';
         component.sendMessage(message);
-        expect(eventService.sendMessage).toHaveBeenCalledWith(conference.id, message);
+        expect(eventsServiceSpy.sendMessage).toHaveBeenCalledWith(conference.id, message);
     });
 });

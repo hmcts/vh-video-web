@@ -5,7 +5,6 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { VhoHearingsComponent } from './vho-hearings.component';
 
@@ -15,7 +14,6 @@ describe('VhoHearingsComponent Filter', () => {
     let eventsService: jasmine.SpyObj<EventsService>;
     let domSanitizerSpy: jasmine.SpyObj<DomSanitizer>;
     const logger: Logger = new MockLogger();
-    let adalService: MockAdalService;
     const conferences = new ConferenceTestData().getTestDataForFilter();
     const filter = new ConferenceTestData().getHearingsFilter();
     const hearings = conferences.map((c) => new HearingSummary(c));
@@ -26,7 +24,7 @@ describe('VhoHearingsComponent Filter', () => {
         domSanitizerSpy = jasmine.createSpyObj<DomSanitizer>('DomSanitizer', ['bypassSecurityTrustResourceUrl']);
 
         eventsService = jasmine.createSpyObj<EventsService>('EventsService', ['start']);
-        adalService = new MockAdalService();
+
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
             'goToServiceError',
             'handleApiError',

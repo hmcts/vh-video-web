@@ -5,7 +5,6 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { VhoHearingsComponent } from './vho-hearings.component';
 
@@ -15,14 +14,12 @@ describe('VhoHearingsComponent when conference retrieval fails', () => {
     let eventsService: jasmine.SpyObj<EventsService>;
     let domSanitizerSpy: jasmine.SpyObj<DomSanitizer>;
     const logger: Logger = new MockLogger();
-    let adalService: MockAdalService;
     let errorService: jasmine.SpyObj<ErrorService>;
 
     beforeAll(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForVHOfficer']);
         domSanitizerSpy = jasmine.createSpyObj<DomSanitizer>('DomSanitizer', ['bypassSecurityTrustResourceUrl']);
         eventsService = jasmine.createSpyObj<EventsService>('EventsService', ['start']);
-        adalService = new MockAdalService();
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError']);
     });
 
