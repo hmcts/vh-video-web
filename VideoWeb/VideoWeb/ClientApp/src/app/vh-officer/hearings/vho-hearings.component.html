@@ -1,19 +1,27 @@
-<div class="govuk-grid-row">
-  <div>
-    <span *ngIf="hasHearings()" id="filterButton"
-      class="govuk-!-padding-1 govuk-!-margin-left-2 report-conference govuk-body" (click)="showFilter()">
-      Filter {{filterOptionsCount > 0 ? '('+ filterOptionsCount +')' : ''}}
-      <i [ngClass]="{'triangle-up':!displayFilter, 'triangle-down': displayFilter}"></i>
-    </span>
-  </div>
+<div id="vho-top-row" class="govuk-grid-row filter-row">
 
-  <div [ngClass]="{'thin-allocation': hasHearings(), 'hide-allocation': displayFilter}" class="govuk-grid-row">
-    <app-venue-selection (selectedAllocations)="getConferenceForSelectedAllocations($event)"></app-venue-selection>
-  </div>
 
+  <div *ngIf="hasHearings()" id="filterButton"
+    class="govuk-!-padding-1 govuk-!-margin-left-2 report-conference govuk-body filter-drop" (click)="showFilter()">
+    Filter {{filterOptionsCount > 0 ? '('+ filterOptionsCount +')' : ''}}
+    <i [ngClass]="{'triangle-up':!displayFilter, 'triangle-down': displayFilter}"></i>
+  </div>
+  <div *ngIf="hasHearings()" class="govuk-grid-column-one-half vh-mt20">
+    <input type="button" value="Change venues" (click)="goBackToVenueSelection()" id="change-venue-allocation-btn"
+      class="govuk-button" />
+  </div>
 </div>
+
+<div>
+  <div *ngIf="!hasHearings()" [ngClass]="{'thin-allocation': hasHearings()}"
+    class="govuk-!-margin-left-3 govuk-!-margin-right-9">
+    <app-venue-selection (selectedAllocations)=" getConferenceForSelectedAllocations($event)">
+    </app-venue-selection>
+  </div>
+</div>
+
 <div *ngIf="displayFilter" class="connected vh-top">
-  <div class=" govuk-grid-row">
+  <div class="govuk-grid-row">
     <app-vho-hearings-filter (fiterOptionsEvent)="applyFilters($event)">
     </app-vho-hearings-filter>
   </div>
@@ -54,7 +62,7 @@
 
 </div>
 
-<div *ngIf="allocationSelected && !hasHearings()">
+<div *ngIf="!hasHearings()">
   <h1 class="govuk-heading-xl">Video hearings</h1>
   <h3 class="govuk-heading-m"> You have no video hearings</h3>
 </div>

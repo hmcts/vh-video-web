@@ -17,6 +17,158 @@ namespace VideoWeb.Services.Video
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "13.2.2.0 (NJsonSchema v10.1.4.0 (Newtonsoft.Json v12.0.0.0))")]
     public partial interface IVideoApiClient
     {
+        /// <summary>Gets the audio application info for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task GetAudioApplicationAsync(System.Guid hearingId);
+    
+        /// <summary>Gets the audio application info for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        void GetAudioApplication(System.Guid hearingId);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Gets the audio application info for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task GetAudioApplicationAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
+    
+        /// <summary>Creates the audio application for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task CreateAudioApplicationAsync(System.Guid hearingId);
+    
+        /// <summary>Creates the audio application for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        void CreateAudioApplication(System.Guid hearingId);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Creates the audio application for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task CreateAudioApplicationAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
+    
+        /// <summary>Deletes the audio application for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task DeleteAudioApplicationAsync(System.Guid hearingId);
+    
+        /// <summary>Deletes the audio application for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        void DeleteAudioApplication(System.Guid hearingId);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Deletes the audio application for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task DeleteAudioApplicationAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
+    
+        /// <summary>Creates the audio application and associated stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task CreateAudioApplicationWithStreamAsync(System.Guid hearingId);
+    
+        /// <summary>Creates the audio application and associated stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        void CreateAudioApplicationWithStream(System.Guid hearingId);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Creates the audio application and associated stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task CreateAudioApplicationWithStreamAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
+    
+        /// <summary>Gets the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task GetAudioStreamInfoAsync(System.Guid hearingId);
+    
+        /// <summary>Gets the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        void GetAudioStreamInfo(System.Guid hearingId);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Gets the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task GetAudioStreamInfoAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
+    
+        /// <summary>Creates the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task CreateAudioStreamAsync(System.Guid hearingId);
+    
+        /// <summary>Creates the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        void CreateAudioStream(System.Guid hearingId);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Creates the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task CreateAudioStreamAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
+    
+        /// <summary>Deletes the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task DeleteAudioStreamAsync(System.Guid hearingId);
+    
+        /// <summary>Deletes the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        void DeleteAudioStream(System.Guid hearingId);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Deletes the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task DeleteAudioStreamAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
+    
+        /// <summary>Gets the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task GetAudioStreamMonitoringInfoAsync(System.Guid hearingId);
+    
+        /// <summary>Gets the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        void GetAudioStreamMonitoringInfo(System.Guid hearingId);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Gets the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task GetAudioStreamMonitoringInfoAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
+    
         /// <summary>Request to book a conference</summary>
         /// <param name="body">Details of a conference</param>
         /// <returns>Success</returns>
@@ -603,6 +755,799 @@ namespace VideoWeb.Services.Video
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, string url);
         partial void PrepareRequest(System.Net.Http.HttpClient client, System.Net.Http.HttpRequestMessage request, System.Text.StringBuilder urlBuilder);
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
+    
+        /// <summary>Gets the audio application info for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task GetAudioApplicationAsync(System.Guid hearingId)
+        {
+            return GetAudioApplicationAsync(hearingId, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Gets the audio application info for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public void GetAudioApplication(System.Guid hearingId)
+        {
+            System.Threading.Tasks.Task.Run(async () => await GetAudioApplicationAsync(hearingId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Gets the audio application info for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task GetAudioApplicationAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
+        {
+            if (hearingId == null)
+                throw new System.ArgumentNullException("hearingId");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/audioapplications/{hearingId}");
+            urlBuilder_.Replace("{hearingId}", System.Uri.EscapeDataString(ConvertToString(hearingId, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == "404") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Not Found", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new VideoApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new VideoApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Creates the audio application for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task CreateAudioApplicationAsync(System.Guid hearingId)
+        {
+            return CreateAudioApplicationAsync(hearingId, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Creates the audio application for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public void CreateAudioApplication(System.Guid hearingId)
+        {
+            System.Threading.Tasks.Task.Run(async () => await CreateAudioApplicationAsync(hearingId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Creates the audio application for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task CreateAudioApplicationAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
+        {
+            if (hearingId == null)
+                throw new System.ArgumentNullException("hearingId");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/audioapplications/{hearingId}");
+            urlBuilder_.Replace("{hearingId}", System.Uri.EscapeDataString(ConvertToString(hearingId, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
+                    request_.Method = new System.Net.Http.HttpMethod("POST");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == "400") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Bad Request", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "402") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Client Error", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "404") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Not Found", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "409") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Conflict", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new VideoApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new VideoApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Deletes the audio application for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task DeleteAudioApplicationAsync(System.Guid hearingId)
+        {
+            return DeleteAudioApplicationAsync(hearingId, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Deletes the audio application for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public void DeleteAudioApplication(System.Guid hearingId)
+        {
+            System.Threading.Tasks.Task.Run(async () => await DeleteAudioApplicationAsync(hearingId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Deletes the audio application for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task DeleteAudioApplicationAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
+        {
+            if (hearingId == null)
+                throw new System.ArgumentNullException("hearingId");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/audioapplications/{hearingId}");
+            urlBuilder_.Replace("{hearingId}", System.Uri.EscapeDataString(ConvertToString(hearingId, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("DELETE");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "204") 
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == "404") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Not Found", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new VideoApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new VideoApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Creates the audio application and associated stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task CreateAudioApplicationWithStreamAsync(System.Guid hearingId)
+        {
+            return CreateAudioApplicationWithStreamAsync(hearingId, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Creates the audio application and associated stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public void CreateAudioApplicationWithStream(System.Guid hearingId)
+        {
+            System.Threading.Tasks.Task.Run(async () => await CreateAudioApplicationWithStreamAsync(hearingId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Creates the audio application and associated stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task CreateAudioApplicationWithStreamAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
+        {
+            if (hearingId == null)
+                throw new System.ArgumentNullException("hearingId");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/audioapplications/audiostream/{hearingId}");
+            urlBuilder_.Replace("{hearingId}", System.Uri.EscapeDataString(ConvertToString(hearingId, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
+                    request_.Method = new System.Net.Http.HttpMethod("POST");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == "400") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Bad Request", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "402") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Client Error", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "404") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Not Found", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "409") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Conflict", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new VideoApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new VideoApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Gets the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task GetAudioStreamInfoAsync(System.Guid hearingId)
+        {
+            return GetAudioStreamInfoAsync(hearingId, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Gets the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public void GetAudioStreamInfo(System.Guid hearingId)
+        {
+            System.Threading.Tasks.Task.Run(async () => await GetAudioStreamInfoAsync(hearingId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Gets the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task GetAudioStreamInfoAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
+        {
+            if (hearingId == null)
+                throw new System.ArgumentNullException("hearingId");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/audiostreams/{hearingId}");
+            urlBuilder_.Replace("{hearingId}", System.Uri.EscapeDataString(ConvertToString(hearingId, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == "404") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Not Found", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new VideoApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new VideoApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Creates the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task CreateAudioStreamAsync(System.Guid hearingId)
+        {
+            return CreateAudioStreamAsync(hearingId, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Creates the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public void CreateAudioStream(System.Guid hearingId)
+        {
+            System.Threading.Tasks.Task.Run(async () => await CreateAudioStreamAsync(hearingId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Creates the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task CreateAudioStreamAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
+        {
+            if (hearingId == null)
+                throw new System.ArgumentNullException("hearingId");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/audiostreams/{hearingId}");
+            urlBuilder_.Replace("{hearingId}", System.Uri.EscapeDataString(ConvertToString(hearingId, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
+                    request_.Method = new System.Net.Http.HttpMethod("POST");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == "400") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Bad Request", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "402") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Client Error", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "404") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Not Found", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "409") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Conflict", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new VideoApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new VideoApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Deletes the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task DeleteAudioStreamAsync(System.Guid hearingId)
+        {
+            return DeleteAudioStreamAsync(hearingId, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Deletes the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public void DeleteAudioStream(System.Guid hearingId)
+        {
+            System.Threading.Tasks.Task.Run(async () => await DeleteAudioStreamAsync(hearingId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Deletes the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task DeleteAudioStreamAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
+        {
+            if (hearingId == null)
+                throw new System.ArgumentNullException("hearingId");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/audiostreams/{hearingId}");
+            urlBuilder_.Replace("{hearingId}", System.Uri.EscapeDataString(ConvertToString(hearingId, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("DELETE");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == "404") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Not Found", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new VideoApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new VideoApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Gets the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task GetAudioStreamMonitoringInfoAsync(System.Guid hearingId)
+        {
+            return GetAudioStreamMonitoringInfoAsync(hearingId, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Gets the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public void GetAudioStreamMonitoringInfo(System.Guid hearingId)
+        {
+            System.Threading.Tasks.Task.Run(async () => await GetAudioStreamMonitoringInfoAsync(hearingId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Gets the audio stream for the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task GetAudioStreamMonitoringInfoAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
+        {
+            if (hearingId == null)
+                throw new System.ArgumentNullException("hearingId");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/audiostreams/{hearingId}/monitoring");
+            urlBuilder_.Replace("{hearingId}", System.Uri.EscapeDataString(ConvertToString(hearingId, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == "404") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Not Found", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new VideoApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new VideoApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
     
         /// <summary>Request to book a conference</summary>
         /// <param name="body">Details of a conference</param>
@@ -3488,6 +4433,30 @@ namespace VideoWeb.Services.Video
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class ProblemDetails 
+    {
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Type { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Title { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int? Status { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("detail", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Detail { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("instance", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Instance { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("extensions", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.Dictionary<string, object> Extensions { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
     public enum UserRole
     {
         [System.Runtime.Serialization.EnumMember(Value = @"None")]
@@ -3729,30 +4698,6 @@ namespace VideoWeb.Services.Video
     
         [Newtonsoft.Json.JsonProperty("audio_recording_required", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool Audio_recording_required { get; set; }
-    
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
-    public partial class ProblemDetails 
-    {
-        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Type { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Title { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public int? Status { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("detail", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Detail { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("instance", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Instance { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("extensions", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.Dictionary<string, object> Extensions { get; set; }
     
     
     }

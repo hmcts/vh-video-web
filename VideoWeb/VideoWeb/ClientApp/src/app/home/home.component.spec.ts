@@ -45,10 +45,10 @@ describe('HomeComponent', () => {
         expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeHearingList]);
     });
 
-    it('should go to admin hearing list', () => {
+    it('should go to admin venue list', () => {
         const profile = new UserProfileResponse({ role: Role.VideoHearingsOfficer });
         component.navigateToHearingList(profile);
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.AdminHearingList]);
+        expect(router.navigate).toHaveBeenCalledWith([PageUrls.AdminVenueList]);
     });
 
     it('should go to participant hearing list', () => {

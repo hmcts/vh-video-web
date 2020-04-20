@@ -28,6 +28,9 @@ import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { PackageLost } from '../services/models/package-lost';
 import { ParticipantGraphInfo } from '../services/models/participant-graph-info';
 import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
+import { VhoStorageKeys } from '../services/models/session-keys';
+import { Router } from '@angular/router';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
     selector: 'app-vho-hearings',
@@ -55,7 +58,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     displayFilter = false;
     filterOptionsCount = 0;
     private readonly hearingsFilterStorage: SessionStorage<HearingsFilter>;
-    readonly HEARINGS_FITER_KEY = 'vho.hearings.filter';
+    private readonly venueAllocationStorage: SessionStorage<HearingVenueResponse[]>;
 
     displayGraph = false;
     packageLostArray: PackageLost[];
@@ -77,17 +80,20 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         public sanitizer: DomSanitizer,
         private errorService: ErrorService,
         private eventService: EventsService,
-        private logger: Logger
+        private logger: Logger,
+        private router: Router
     ) {
         this.loadingData = false;
         this.adminFrameWidth = 0;
         this.adminFrameHeight = this.getHeightForFrame();
-        this.hearingsFilterStorage = new SessionStorage(this.HEARINGS_FITER_KEY);
+        this.hearingsFilterStorage = new SessionStorage(VhoStorageKeys.HEARINGS_FITER_KEY);
+        this.venueAllocationStorage = new SessionStorage(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
     }
 
     ngOnInit() {
         this.logger.info('Loading VH Officer Dashboard');
         this.setupEventHubSubscribers();
+        this.getConferenceForSelectedAllocations();
     }
 
     @HostListener('window:beforeunload')
@@ -102,17 +108,14 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         }
     }
 
-    getConferenceForSelectedAllocations(selectedAllocations: HearingVenueResponse[]) {
-        this.venueAllocations = selectedAllocations.map((v) => v.name);
+    getConferenceForSelectedAllocations() {
+        const venues = this.venueAllocationStorage.get();
+        this.venueAllocations = venues.map((v) => v.name);
         this.retrieveHearingsForVhOfficer();
         clearInterval(this.interval);
         this.interval = setInterval(() => {
             this.retrieveHearingsForVhOfficer();
         }, 30000);
-    }
-
-    get allocationSelected(): boolean {
-        return this.venueAllocations.length > 0;
     }
 
     private setupEventHubSubscribers() {
@@ -527,5 +530,9 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         } else {
             this.participantsHeartBeat.push(heartbeat);
         }
+    }
+
+    goBackToVenueSelection() {
+        this.router.navigateByUrl(PageUrls.AdminVenueList);
     }
 }

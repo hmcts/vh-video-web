@@ -22,8 +22,8 @@ export class HomeComponent implements OnInit {
         if (this.deviceTypeService.isDesktop()) {
             this.profileService
                 .getUserProfile()
-                .then(profile => this.navigateToHearingList(profile))
-                .catch(error => this.errorService.handleApiError(error));
+                .then((profile) => this.navigateToHearingList(profile))
+                .catch((error) => this.errorService.handleApiError(error));
         } else {
             this.router.navigate([PageUrls.SignonAComputer]);
         }
@@ -33,7 +33,8 @@ export class HomeComponent implements OnInit {
         if (userProfile.role === Role.Judge) {
             this.router.navigate([PageUrls.JudgeHearingList]);
         } else if (userProfile.role === Role.VideoHearingsOfficer) {
-            this.router.navigate([PageUrls.AdminHearingList]);
+            console.log('vho');
+            this.router.navigate([PageUrls.AdminVenueList]);
         } else if (userProfile.role === Role.Representative || userProfile.role === Role.Individual) {
             this.router.navigate([PageUrls.ParticipantHearingList]);
         } else {

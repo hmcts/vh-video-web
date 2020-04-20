@@ -1,5 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
-import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { Router, ActivatedRoute, NavigationEnd, Route } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { ConfigService } from './services/api/config.service';
 import { DeviceTypeService } from './services/device-type.service';
@@ -41,9 +41,21 @@ export class AppComponent implements OnInit, OnDestroy {
         private activatedRoute: ActivatedRoute,
         private locationService: LocationService
     ) {
+        this.printpath('', this.router.config);
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
         this.initAuthentication();
+    }
+
+    printpath(parent: String, config: Route[]) {
+        for (let i = 0; i < config.length; i++) {
+            const route = config[i];
+            console.log(parent + '/' + route.path);
+            if (route.children) {
+                const currentPath = route.path ? parent + '/' + route.path : parent;
+                this.printpath(currentPath, route.children);
+            }
+        }
     }
 
     private initAuthentication() {

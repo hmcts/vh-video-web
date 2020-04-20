@@ -17,6 +17,7 @@ import { MonitoringGraphComponent } from '../vh-officer/monitoring-graph/monitor
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { VenueSelectionComponent } from './venue-selection/venue-selection.component';
+import { VenueListComponent } from './venue-list/venue-list.component';
 
 @NgModule({
     declarations: [
@@ -29,7 +30,8 @@ import { VenueSelectionComponent } from './venue-selection/venue-selection.compo
         VhoChatComponent,
         ParticipantNetworkStatusComponent,
         MonitoringGraphComponent,
-        VenueSelectionComponent
+        VenueSelectionComponent,
+        VenueListComponent
     ],
     imports: [
         CommonModule,
