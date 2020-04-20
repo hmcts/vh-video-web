@@ -1,3 +1,4 @@
+import { fakeAsync, tick, flush, flushMicrotasks } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -6,9 +7,10 @@ import { EventsService } from 'src/app/services/events.service';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
+import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { VhoChatComponent } from './vho-chat.component';
 import { MockProfileService } from 'src/app/testing/mocks/MockProfileService';
+import { VhoChatComponent } from './vho-chat.component';
 
 describe('VhoChatComponent', () => {
     let component: VhoChatComponent;
@@ -17,6 +19,7 @@ describe('VhoChatComponent', () => {
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
     const mockProfileService = new MockProfileService();
     const mockAdalService = new MockAdalService();
+    const mockEventsService = new MockEventsService();
     let adalService;
     let conference: ConferenceResponse;
 
@@ -24,11 +27,15 @@ describe('VhoChatComponent', () => {
         adalService = mockAdalService;
         conference = new ConferenceTestData().getConferenceDetailFuture();
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceChatHistory']);
-        eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', ['sendMessage']);
+        eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', ['start', 'getChatMessage', 'sendMessage']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', [
             'checkCacheForProfileByUsername',
             'getProfileByUsername'
         ]);
+    });
+
+    afterAll(() => {
+        component.ngOnDestroy();
     });
 
     beforeEach(() => {
@@ -38,18 +45,45 @@ describe('VhoChatComponent', () => {
         profileServiceSpy.getProfileByUsername.and.returnValue(Promise.resolve(mockProfileService.mockProfile));
         videoWebServiceSpy.getConferenceChatHistory.and.returnValue(Promise.resolve(chatHistory));
 
+        eventsServiceSpy.getChatMessage.and.returnValue(mockEventsService.messageSubject.asObservable());
+
         component = new VhoChatComponent(videoWebServiceSpy, profileServiceSpy, eventsServiceSpy, new MockLogger(), adalService);
 
         component.conference = conference;
         component.messages = new ConferenceTestData().getChatHistory('vho.user@hearings.net', conference.id);
-        spyOn(component, 'updateDivWidthForSection').and.callFake(() => {});
+        spyOn(component, 'updateDivWidthForSection').and.callFake(() => {
+            component.sectionDivWidth = 100;
+        });
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+    it('should get chat history and subscribe', fakeAsync(() => {
+        component.ngOnInit();
+        tick();
+        expect(component.sectionDivWidth).toBe(100);
+        expect(component.newMessageBody).toBeDefined();
+        expect(component.newMessageBody.pristine).toBeTruthy();
+        expect(component.loading).toBeFalsy();
+        expect(component.messages.length).toBeGreaterThan(0);
+    }));
 
-    it('should set from to "You" whem message is from current user', () => {
+    it('should handle message when received', fakeAsync(() => {
+        component.setupChatSubscription();
+        spyOn(component, 'handleIncomingMessage');
+        const username = conference.participants[0].username;
+        adalService.userInfo.userName = username;
+        const instantMessage = new InstantMessage({
+            conferenceId: conference.id,
+            id: Guid.create().toString(),
+            from: username,
+            message: 'test message',
+            timestamp: new Date()
+        });
+        mockEventsService.messageSubject.next(instantMessage);
+        flushMicrotasks();
+        expect(component.handleIncomingMessage).toHaveBeenCalledWith(instantMessage);
+    }));
+
+    it('should set from to "You" whem message is from current user', async () => {
         const username = conference.participants[0].username;
         adalService.userInfo.userName = username;
         const instantMessage = new InstantMessage({
@@ -60,7 +94,7 @@ describe('VhoChatComponent', () => {
             timestamp: new Date()
         });
         const messageCount = component.messages.length;
-        component.handleIncomingMessage(instantMessage);
+        await component.handleIncomingMessage(instantMessage);
         expect(instantMessage.is_user).toBeTruthy();
         expect(component.messages.length).toBeGreaterThan(messageCount);
     });
