@@ -14,13 +14,13 @@ import { VhoStorageKeys } from '../services/models/session-keys';
 })
 export class VenueListComponent implements OnInit {
     private readonly venueAllocationStorage: SessionStorage<HearingVenueResponse[]>;
-    private venues: HearingVenueResponse[];
+    venues: HearingVenueResponse[];
     selectedVenues: HearingVenueResponse[];
     dropdownSettings: IDropdownSettings;
 
     constructor(private videoWebService: VideoWebService, private router: Router) {
         this.selectedVenues = [];
-        this.venueAllocationStorage = new SessionStorage(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
+        this.venueAllocationStorage = new SessionStorage<HearingVenueResponse[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
     }
 
     async ngOnInit() {
@@ -64,13 +64,12 @@ export class VenueListComponent implements OnInit {
     }
 
     updateSelection() {
-        console.log(this.selectedVenues);
         if (this.selectedVenues && this.selectedVenues.length > 0) {
             this.venueAllocationStorage.set(this.selectedVenues);
         }
     }
 
     goToHearingList() {
-        this.router.navigate([PageUrls.AdminHearingList]);
+        this.router.navigateByUrl(PageUrls.AdminHearingList);
     }
 }

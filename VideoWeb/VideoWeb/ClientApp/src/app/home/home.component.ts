@@ -33,7 +33,6 @@ export class HomeComponent implements OnInit {
         if (userProfile.role === Role.Judge) {
             this.router.navigate([PageUrls.JudgeHearingList]);
         } else if (userProfile.role === Role.VideoHearingsOfficer) {
-            console.log('vho');
             this.router.navigate([PageUrls.AdminVenueList]);
         } else if (userProfile.role === Role.Representative || userProfile.role === Role.Individual) {
             this.router.navigate([PageUrls.ParticipantHearingList]);

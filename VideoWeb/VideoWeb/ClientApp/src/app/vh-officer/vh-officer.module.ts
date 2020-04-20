@@ -16,7 +16,6 @@ import { ChartsModule } from 'ng2-charts';
 import { MonitoringGraphComponent } from '../vh-officer/monitoring-graph/monitoring-graph.component';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
-import { VenueSelectionComponent } from './venue-selection/venue-selection.component';
 import { VenueListComponent } from './venue-list/venue-list.component';
 
 @NgModule({
@@ -30,7 +29,6 @@ import { VenueListComponent } from './venue-list/venue-list.component';
         VhoChatComponent,
         ParticipantNetworkStatusComponent,
         MonitoringGraphComponent,
-        VenueSelectionComponent,
         VenueListComponent
     ],
     imports: [

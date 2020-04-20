@@ -31,7 +31,6 @@ import { ChatInputBoxStubComponent } from './stubs/chat-input-box-stub.component
 import { VhoParticipantNetworkStatusStubComponent } from './stubs/vho-participant-network-status-stub';
 import { VhoMonitoringGraphStubComponent } from './stubs/vho-monitoring-graph-stub';
 import { PerfectScrollbarStubComponent } from './stubs/perfect-scrollbar-stub';
-import { VenueSelectionStubComponent } from './stubs/VenueSelectionStubComponent';
 
 @NgModule({
     imports: [CommonModule],
@@ -65,8 +64,7 @@ import { VenueSelectionStubComponent } from './stubs/VenueSelectionStubComponent
         JudgeChatStubComponent,
         ChatInputBoxStubComponent,
         VhoMonitoringGraphStubComponent,
-        PerfectScrollbarStubComponent,
-        VenueSelectionStubComponent
+        PerfectScrollbarStubComponent
     ]
 })
 export class TestingModule {}

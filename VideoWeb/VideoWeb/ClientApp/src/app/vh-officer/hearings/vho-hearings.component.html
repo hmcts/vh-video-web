@@ -12,14 +12,6 @@
   </div>
 </div>
 
-<div>
-  <div *ngIf="!hasHearings()" [ngClass]="{'thin-allocation': hasHearings()}"
-    class="govuk-!-margin-left-3 govuk-!-margin-right-9">
-    <app-venue-selection (selectedAllocations)=" getConferenceForSelectedAllocations($event)">
-    </app-venue-selection>
-  </div>
-</div>
-
 <div *ngIf="displayFilter" class="connected vh-top">
   <div class="govuk-grid-row">
     <app-vho-hearings-filter (fiterOptionsEvent)="applyFilters($event)">

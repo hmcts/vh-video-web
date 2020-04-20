@@ -27,6 +27,9 @@ import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { ParticipantStatusMessage } from '../../services/models/participant-status-message';
 import { VhoHearingsComponent } from './vho-hearings.component';
+import { Router } from '@angular/router';
+import { TestFixtureHelper } from 'src/app/testing/Helper/test-fixture-helper';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 
 describe('VhoHearingsComponent', () => {
     let component: VhoHearingsComponent;
@@ -37,12 +40,16 @@ describe('VhoHearingsComponent', () => {
     const conferences = new ConferenceTestData().getVhoTestData();
     const hearings = conferences.map((c) => new HearingSummary(c));
     let errorService: jasmine.SpyObj<ErrorService>;
+    let router: jasmine.SpyObj<Router>;
 
     const mockEventService = new MockEventsService();
 
     const conferenceDetail = new ConferenceTestData().getConferenceDetailFuture();
 
     beforeAll(() => {
+        TestFixtureHelper.setupVenues();
+        router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
+
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getConferencesForVHOfficer',
             'getConferenceById',
@@ -80,13 +87,14 @@ describe('VhoHearingsComponent', () => {
         videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(conferenceDetail));
         videoWebServiceSpy.getTasksForConference.and.returnValue(Promise.resolve(new ConferenceTestData().getTasksForConference()));
 
-        component = new VhoHearingsComponent(videoWebServiceSpy, domSanitizerSpy, errorService, eventsService, logger);
+        component = new VhoHearingsComponent(videoWebServiceSpy, domSanitizerSpy, errorService, eventsService, logger, router);
         component.conferences = hearings;
         component.conferencesAll = conferences;
     });
 
     afterAll(() => {
         component.ngOnDestroy();
+        TestFixtureHelper.clearVenues();
     });
 
     it('should retrieve conference and sanitise iframe uri', () => {
@@ -371,16 +379,6 @@ describe('VhoHearingsComponent', () => {
         expect(component.participantsHeartBeat).toContain(heartBeat3);
     });
 
-    it('should return false when no allocations are selected', () => {
-        component.venueAllocations = [];
-        expect(component.allocationSelected).toBeFalsy();
-    });
-
-    it('should return true when allocations are selected', () => {
-        component.venueAllocations = ['venue1'];
-        expect(component.allocationSelected).toBeTruthy();
-    });
-
     it('should return true when conference is selected', () => {
         const conference = new ConferenceTestData().getConferenceDetailNow();
         component.selectedHearing = new Hearing(conference);
@@ -499,5 +497,10 @@ describe('VhoHearingsComponent', () => {
         mockEventService.adminAnsweredChatSubject.next(Guid.create().toString());
 
         expect(component.conferences[0].numberOfUnreadMessages).toBe(10);
+    });
+
+    it('should go back to venue list selection page', () => {
+        component.goBackToVenueSelection();
+        expect(router.navigateByUrl).toHaveBeenCalledWith(PageUrls.AdminVenueList);
     });
 });

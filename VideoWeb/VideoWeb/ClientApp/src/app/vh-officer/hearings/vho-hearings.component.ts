@@ -86,8 +86,8 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.loadingData = false;
         this.adminFrameWidth = 0;
         this.adminFrameHeight = this.getHeightForFrame();
-        this.hearingsFilterStorage = new SessionStorage(VhoStorageKeys.HEARINGS_FITER_KEY);
-        this.venueAllocationStorage = new SessionStorage(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
+        this.hearingsFilterStorage = new SessionStorage<HearingsFilter>(VhoStorageKeys.HEARINGS_FITER_KEY);
+        this.venueAllocationStorage = new SessionStorage<HearingVenueResponse[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
     }
 
     ngOnInit() {
@@ -98,6 +98,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
+        this.enableFullScreen(false);
         this.logger.debug('Clearing intervals and subscriptions for VH Officer');
         clearInterval(this.interval);
         if (this.conferencesSubscription) {
@@ -109,13 +110,17 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     }
 
     getConferenceForSelectedAllocations() {
-        const venues = this.venueAllocationStorage.get();
-        this.venueAllocations = venues.map((v) => v.name);
+        this.loadVenueSelection();
         this.retrieveHearingsForVhOfficer();
         clearInterval(this.interval);
         this.interval = setInterval(() => {
             this.retrieveHearingsForVhOfficer();
         }, 30000);
+    }
+
+    loadVenueSelection(): void {
+        const venues = this.venueAllocationStorage.get();
+        this.venueAllocations = venues.map((v) => v.name);
     }
 
     private setupEventHubSubscribers() {
@@ -206,7 +211,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.conferencesSubscription = this.videoWebService.getConferencesForVHOfficer(this.venueAllocations).subscribe(
             (data: ConferenceForVhOfficerResponse[]) => {
                 this.logger.debug('Successfully retrieved hearings for VHO');
-                this.loadingData = false;
                 this.conferences = data.map((c) => new HearingSummary(c));
                 this.conferencesAll = data;
                 if (this.participantsHeartBeat !== undefined && this.participantsHeartBeat.length > 0) {
@@ -227,6 +231,8 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
                     this.logger.debug(`Retrieving tasks for conference ${this.selectedHearing.id}`);
                     this.getTasksForConference(this.selectedHearing.getConference().id);
                 }
+
+                this.loadingData = false;
             },
             (error) => {
                 this.logger.error('There was an error setting up VH Officer dashboard', error);

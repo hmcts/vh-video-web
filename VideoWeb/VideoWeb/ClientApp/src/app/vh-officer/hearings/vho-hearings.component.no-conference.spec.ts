@@ -7,6 +7,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { VhoHearingsComponent } from './vho-hearings.component';
+import { Router } from '@angular/router';
 
 describe('VhoHearingsComponent when conference retrieval fails', () => {
     let component: VhoHearingsComponent;
@@ -16,7 +17,10 @@ describe('VhoHearingsComponent when conference retrieval fails', () => {
     const logger: Logger = new MockLogger();
     let errorService: jasmine.SpyObj<ErrorService>;
 
+    let router: jasmine.SpyObj<Router>;
+
     beforeAll(() => {
+        router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForVHOfficer']);
         domSanitizerSpy = jasmine.createSpyObj<DomSanitizer>('DomSanitizer', ['bypassSecurityTrustResourceUrl']);
         eventsService = jasmine.createSpyObj<EventsService>('EventsService', ['start']);
@@ -24,7 +28,7 @@ describe('VhoHearingsComponent when conference retrieval fails', () => {
     });
 
     beforeEach(() => {
-        component = new VhoHearingsComponent(videoWebServiceSpy, domSanitizerSpy, errorService, eventsService, logger);
+        component = new VhoHearingsComponent(videoWebServiceSpy, domSanitizerSpy, errorService, eventsService, logger, router);
         component.conferences = null;
         component.conferencesAll = null;
         component.selectedHearing = null;

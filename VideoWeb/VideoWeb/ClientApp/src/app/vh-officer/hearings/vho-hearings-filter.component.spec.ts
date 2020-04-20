@@ -7,6 +7,11 @@ import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { VhoHearingsComponent } from './vho-hearings.component';
+import { Router } from '@angular/router';
+import { SessionStorage } from 'src/app/services/session-storage';
+import { VhoStorageKeys } from '../services/models/session-keys';
+import { HearingVenueResponse } from 'src/app/services/clients/api-client';
+import { TestFixtureHelper } from 'src/app/testing/Helper/test-fixture-helper';
 
 describe('VhoHearingsComponent Filter', () => {
     let component: VhoHearingsComponent;
@@ -18,8 +23,11 @@ describe('VhoHearingsComponent Filter', () => {
     const filter = new ConferenceTestData().getHearingsFilter();
     const hearings = conferences.map((c) => new HearingSummary(c));
     let errorService: jasmine.SpyObj<ErrorService>;
+    let router: jasmine.SpyObj<Router>;
 
     beforeAll(() => {
+        TestFixtureHelper.setupVenues();
+        router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForVHOfficer']);
         domSanitizerSpy = jasmine.createSpyObj<DomSanitizer>('DomSanitizer', ['bypassSecurityTrustResourceUrl']);
 
@@ -33,9 +41,13 @@ describe('VhoHearingsComponent Filter', () => {
     });
 
     beforeEach(() => {
-        component = new VhoHearingsComponent(videoWebServiceSpy, domSanitizerSpy, errorService, eventsService, logger);
+        component = new VhoHearingsComponent(videoWebServiceSpy, domSanitizerSpy, errorService, eventsService, logger, router);
         component.conferences = hearings;
         component.conferencesAll = conferences;
+    });
+
+    afterAll(() => {
+        TestFixtureHelper.clearVenues();
     });
 
     it('should apply filter with selected all to conferences records', () => {
