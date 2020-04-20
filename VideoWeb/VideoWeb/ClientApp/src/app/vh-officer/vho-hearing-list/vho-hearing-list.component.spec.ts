@@ -1,13 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { configureTestSuite } from 'ng-bullet';
+import { ClipboardService } from 'ngx-clipboard';
 import { ConferenceStatus, ParticipantForUserResponse } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { VhoHearingListComponent } from './vho-hearing-list.component';
-import { VhoParticipantNetworkStatusStubComponent } from '../../testing/stubs/vho-participant-network-status-stub';
 import { HearingSummary } from '../../shared/models/hearing-summary';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
-import { PerfectScrollbarStubComponent } from '../../testing/stubs/perfect-scrollbar-stub';
-import { ClipboardService } from 'ngx-clipboard';
+import { VhoHearingListComponent } from './vho-hearing-list.component';
 
 describe('VhoHearingListComponent', () => {
     let component: VhoHearingListComponent;
@@ -122,7 +118,6 @@ describe('VhoHearingListComponent', () => {
         const conference = new ConferenceTestData().getConferenceNow();
         conference.status = ConferenceStatus.NotStarted;
         const hearing = new HearingSummary(conference);
-        console.log(hearing);
         expect(component.isDelayed(hearing)).toBeFalsy();
     });
 
