@@ -8,11 +8,10 @@ describe('HearingFilterOptionsService', () => {
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getHearingVenues']);
     videoWebServiceSpy.getHearingVenues.and.returnValue(Promise.resolve(venueList));
 
-    const component = new HearingsFilterOptionsService(videoWebServiceSpy);
+    const component = new HearingsFilterOptionsService();
 
     it('should get hearings filter object with number selected options 0', async () => {
         const filter = await component.getFilter();
-        expect(filter.locations.length).toBeGreaterThan(0);
         expect(filter.alerts.length).toBe(4);
         expect(filter.statuses.length).toBe(6);
         expect(filter.numberFilterOptions).toBe(0);

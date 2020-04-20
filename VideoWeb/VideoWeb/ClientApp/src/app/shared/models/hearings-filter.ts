@@ -49,7 +49,6 @@ export class ConferenceForUser extends ConferenceForVhOfficerResponse {
 
 export class HearingsFilter {
     statuses: StatusFilter[] = [];
-    locations: ListFilter[] = [];
     alerts: AlertFilter[] = [];
     numberFilterOptions = 0;
 }

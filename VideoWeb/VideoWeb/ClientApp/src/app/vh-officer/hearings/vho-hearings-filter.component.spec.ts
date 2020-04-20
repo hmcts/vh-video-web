@@ -1,17 +1,14 @@
 import { DomSanitizer } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
+import { TestFixtureHelper } from 'src/app/testing/Helper/test-fixture-helper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { VhoHearingsComponent } from './vho-hearings.component';
-import { Router } from '@angular/router';
-import { SessionStorage } from 'src/app/services/session-storage';
-import { VhoStorageKeys } from '../services/models/session-keys';
-import { HearingVenueResponse } from 'src/app/services/clients/api-client';
-import { TestFixtureHelper } from 'src/app/testing/Helper/test-fixture-helper';
 
 describe('VhoHearingsComponent Filter', () => {
     let component: VhoHearingsComponent;
@@ -58,19 +55,15 @@ describe('VhoHearingsComponent Filter', () => {
 
     it('should apply filter with selected status and location to conferences records', () => {
         expect(component.conferences.length).toBe(3);
-        filter.locations[1].Selected = true;
         filter.statuses[0].Selected = true;
         component.activateFilterOptions(filter);
         expect(component.conferences.length).toBe(2);
-        expect(component.conferences[0].hearingVenueName).toBe(filter.locations[1].Description);
-        expect(component.conferences[1].hearingVenueName).toBe(filter.locations[1].Description);
         expect(component.conferences[0].status).toBe(filter.statuses[0].Status);
         expect(component.conferences[1].status).toBe(filter.statuses[0].Status);
     });
 
     it('should apply filter with selected alerts records', () => {
         expect(component.conferences.length).toBe(3);
-        filter.locations.forEach((x) => (x.Selected = false));
         filter.statuses.forEach((x) => (x.Selected = false));
         filter.alerts[1].Selected = true;
         const expectedAlerts1 = filter.alerts[1].BodyText;

@@ -416,10 +416,9 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.filterOptionsCount = filterOptions.numberFilterOptions;
 
         const selectedStatuses = filterOptions.statuses.filter((x) => x.Selected).map((x) => x.Status);
-        const selectedLocations = filterOptions.locations.filter((x) => x.Selected).map((x) => x.Description);
         const selectedAlerts = filterOptions.alerts.filter((x) => x.Selected).map((x) => x.BodyText);
 
-        if (selectedStatuses.length > 0 || selectedLocations.length > 0 || selectedAlerts.length > 0) {
+        if (selectedStatuses.length > 0 || selectedAlerts.length > 0) {
             const clone = Object.assign(this.conferencesAll);
             this.conferences = clone.map((c) => new HearingSummary(c));
             if (selectedStatuses.length > 0) {
@@ -428,9 +427,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
                     .filter((x) => selectedStatuses.includes(x.StatusExtended))
                     .map((c) => new HearingSummary(c));
             }
-            if (selectedLocations.length > 0) {
-                this.conferences = this.conferences.filter((x) => selectedLocations.includes(x.hearingVenueName));
-            }
+
             if (selectedAlerts.length > 0) {
                 this.conferences = this.conferences.filter((x) => this.findSelectedAlert(x.tasks, selectedAlerts));
             }
