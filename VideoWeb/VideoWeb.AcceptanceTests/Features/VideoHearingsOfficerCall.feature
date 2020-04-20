@@ -3,7 +3,7 @@ Feature: Video Hearings Officer Call
 	As a VHO
 	I want to be able to call a participant
 
-@VIH-4611 @VIH-4613 @VIH-4730 @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari 
+@VIH-4611 @VIH-4613 @VIH-4730 @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari @Smoketest-Extended
 Scenario: Video Hearings Officer Call
 	Given the Individual01 user has progressed to the Waiting Room page with a hearing in 10 minutes time
 	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing

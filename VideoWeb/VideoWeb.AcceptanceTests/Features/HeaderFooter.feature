@@ -1,4 +1,4 @@
-﻿Feature: Header and Footer
+Feature: Header and Footer
 	In order to access common external pages across all pages
 	As a registered user
 	I want to be able to see and access external pages from the header and footer
@@ -36,7 +36,7 @@ Scenario: Clerk accessibility statement
 	When the user clicks the Accessibility link
 	Then the user is on the Accessibility page 
 
-@VIH-5023	
+@VIH-5023	 @Smoketest-Extended
 Scenario: Participant accessibility statement
 	Given the Participant user has progressed to the Hearing List page
 	When the user clicks the Accessibility link
