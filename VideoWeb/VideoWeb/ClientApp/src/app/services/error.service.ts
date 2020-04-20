@@ -56,8 +56,12 @@ export class ErrorService {
     }
 
     goToServiceError(message: string) {
+        this.saveToSession(message);
+        this.router.navigate([PageUrls.ServiceError]);
+    }
+
+    private saveToSession(message: string): void {
         this.errorMessage.clear();
         this.errorMessage.set(message);
-        this.router.navigate([PageUrls.ServiceError]);
     }
 }

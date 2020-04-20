@@ -1,4 +1,4 @@
-import { Component, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnDestroy, HostListener, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -8,7 +8,7 @@ import { SessionStorage } from 'src/app/services/session-storage';
     selector: 'app-error',
     templateUrl: './error.component.html'
 })
-export class ErrorComponent implements OnDestroy {
+export class ErrorComponent implements OnInit, OnDestroy {
     returnTimeout: NodeJS.Timer;
     subscription: Subscription;
 
@@ -33,9 +33,10 @@ export class ErrorComponent implements OnDestroy {
                 this.startGoBackTimer();
             }
         });
-        this.errorMessage = new SessionStorage<string>(this.ERROR_MESSAGE_KEY);
-        this.errorMessageText = this.errorMessage.get();
-        this.connectionError = this.errorMessageText !== null;
+    }
+
+    ngOnInit(): void {
+        this.connectionError = this.getErrorMessage();
     }
 
     private goBack(): void {
@@ -48,13 +49,19 @@ export class ErrorComponent implements OnDestroy {
         }, this.CALL_TIMEOUT);
     }
 
-    reconnect(): void {
-        this.location.back();
-    }
-
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
         clearTimeout(this.returnTimeout);
         this.subscription.unsubscribe();
+    }
+
+    private getErrorMessage(): boolean {
+        this.errorMessage = new SessionStorage<string>(this.ERROR_MESSAGE_KEY);
+        this.errorMessageText = this.errorMessage.get();
+        return this.errorMessageText !== null;
+    }
+
+    reconnect(): void {
+        this.location.back();
     }
 }
