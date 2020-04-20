@@ -9,6 +9,7 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Faker.NETCore" Version="1.0.2" />
         <PackageReference Include="FluentAssertions" Version="5.10.3" />
         <PackageReference Include="Microsoft.TestPlatform" Version="16.5.0" />
         <PackageReference Include="Moq" Version="4.13.1" />
@@ -18,7 +19,6 @@
         <PackageReference Include="NBuilder" Version="6.1.0" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\VideoWeb.AcceptanceTests\VideoWeb.AcceptanceTests.csproj" />
       <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />
       <ProjectReference Include="..\VideoWeb\VideoWeb.csproj" />
     </ItemGroup>

@@ -23,7 +23,7 @@ namespace VideoWeb.UnitTests
         }
 
         [Test]
-        public void should_return_conference_when_cache_contains_key()
+        public void Should_return_conference_when_cache_contains_key()
         {
             var conferenceResponse = CreateConferenceResponse();
             var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse);
@@ -38,7 +38,7 @@ namespace VideoWeb.UnitTests
         }
         
         [Test]
-        public void should_return_null_when_cache_contains_unexpected_data()
+        public void Should_return_null_when_cache_contains_unexpected_data()
         {
             var conferenceResponse = CreateConferenceResponse();
             var serialisedConference = JsonConvert.SerializeObject(conferenceResponse, SerializerSettings);
@@ -53,7 +53,7 @@ namespace VideoWeb.UnitTests
         }
 
         [Test]
-        public void should_return_null_when_cache_is_empty()
+        public void Should_return_null_when_cache_is_empty()
         {
             var conferenceId = Guid.NewGuid();
             _distributedCacheMock.Setup(x => x.Get(It.IsAny<string>())).Returns((byte[]) null);

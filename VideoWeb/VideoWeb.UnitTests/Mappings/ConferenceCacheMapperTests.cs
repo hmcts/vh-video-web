@@ -13,7 +13,7 @@ namespace VideoWeb.UnitTests.Mappings
     public class ConferenceCacheMapperTests
     {
         [Test]
-        public void should_map_all_properties()
+        public void Should_map_all_properties()
         {
             var conference = BuildConferenceDetailsResponse();
             var response = ConferenceCacheMapper.MapConferenceToCacheModel(conference);

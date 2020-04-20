@@ -9,7 +9,7 @@ namespace VideoWeb.UnitTests.Hub
     public class DisconnectionTests : EventHubBaseTests
     {
         [Test]
-        public async Task should_unsubscribe_admin_from_all_conferences()
+        public async Task Should_unsubscribe_admin_from_all_conferences()
         {
             var numOfConferences = 10;
             var conferences = SetupAdminConferences(numOfConferences);
@@ -23,7 +23,7 @@ namespace VideoWeb.UnitTests.Hub
         }
         
         [Test]
-        public async Task should_unsubscribe_judge_from_conferences_they_are_assigned_to()
+        public async Task Should_unsubscribe_judge_from_conferences_they_are_assigned_to()
         {
             const int numOfConferences = 10;
             const int numOfConferencesWithUser = 2;
@@ -37,7 +37,7 @@ namespace VideoWeb.UnitTests.Hub
         }
 
         [Test]
-        public async Task should_log_critical_when_exception_on_disconnect()
+        public async Task Should_log_critical_when_exception_on_disconnect()
         {
             const int numOfConferences = 10;
             const int numOfConferencesWithUser = 2;
@@ -52,7 +52,7 @@ namespace VideoWeb.UnitTests.Hub
         }
         
         [Test]
-        public async Task should_unsubscribe_user_from_own_user_group()
+        public async Task Should_unsubscribe_user_from_own_user_group()
         {
             const int numOfConferences = 10;
             const int numOfConferencesWithUser = 2;
