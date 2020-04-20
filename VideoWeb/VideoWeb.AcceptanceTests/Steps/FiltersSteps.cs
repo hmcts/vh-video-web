@@ -18,11 +18,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly TestContext _c;
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly HearingAlertsSteps _alertsSteps;
-        public FiltersSteps(TestContext c, HearingAlertsSteps alertsSteps, Dictionary<string, UserBrowser> browsers)
+        private readonly VhoHearingListSteps _vhoHearingListSteps;
+        public FiltersSteps(TestContext c, HearingAlertsSteps alertsSteps, Dictionary<string, UserBrowser> browsers, VhoHearingListSteps vhoHearingListSteps)
         {
             _c = c;
             _alertsSteps = alertsSteps;
             _browsers = browsers;
+            _vhoHearingListSteps = vhoHearingListSteps;
         }
 
         [Given(@"the hearing has every type of alert")]
@@ -51,6 +53,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user filters by status with the options (.*)")]
         public void VhoFilter(string options)
         {
+            _vhoHearingListSteps.SelectVenues();
             _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.FiltersButton);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(FiltersPopupPage.FiltersPopup).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].ClickLink(FiltersPopupPage.ClearFiltersLink);

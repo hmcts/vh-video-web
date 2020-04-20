@@ -15,7 +15,7 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public class InstantMessagingSteps
     {
-        private const int Timeout = 90;
+        private const int Timeout = 60;
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly BrowserSteps _browserSteps;
@@ -85,7 +85,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheVideoHearingsOfficerCanSeeTheNotificationForTheMessage()
         {
             _browserSteps.GivenInTheUsersBrowser("Video Hearings Officer");
-            NotificationAppears(1).Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Refresh();
+            NotificationAppears(1).Should().BeTrue("Notification appeared");
             SelectTheHearing();
         }
 
@@ -129,7 +130,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browserSteps.GivenInTheUsersBrowser(user);
             var chatMessages = new GetChatMessages(_browsers[_c.CurrentUser.Key]).WaitFor(_messages.Count).Fetch();
-            chatMessages.Count.Should().Equals(_messages.Count);
+            chatMessages.Count.Should().Be(_messages.Count);
             AssertChatMessage.AssertAll(_messages, chatMessages);
         }
 
