@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using AcceptanceTests.Common.Api.Hearings;
@@ -11,8 +12,6 @@ using VideoWeb.AcceptanceTests.Assertions;
 using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
-using EventType = VideoWeb.EventHub.Enums.EventType;
-using RoomType = VideoWeb.EventHub.Enums.RoomType;
 using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
 
 namespace VideoWeb.AcceptanceTests.Steps
@@ -106,8 +105,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             var response = _c.Apis.BookingsApi.ConfirmHearingToCreateConference(_c.Test.NewHearingId, updateRequest);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-            var videoApiManager = new VideoApiManager(_c.VideoWebConfig.VhServices.VideoApiUrl, _c.Tokens.VideoApiBearerToken);
-            response = videoApiManager.PollForConferenceResponse(_c.Test.NewHearingId);
+            response = _c.Apis.VideoApi.PollForConferenceResponse(_c.Test.NewHearingId);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
             AssertConferenceDetailsResponse.ForConference(conference);

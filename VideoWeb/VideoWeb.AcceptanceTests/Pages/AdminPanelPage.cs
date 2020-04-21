@@ -17,10 +17,10 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By SelfViewVideo = By.Id("selfviewVideo");
         public static By SelfViewButton = By.Id("selfViewButton");
         public static By CloseButton = By.Id("closeButton");
-        public static By TaskActionedBy(Guid taskId) => By.Id($"{taskId:D}-actioned-by");
-        public static By TaskCheckbox(Guid taskId) => By.Id($"{taskId:D}-checkbox");
-        public static By TaskCreatedDate(Guid taskId) => By.Id($"{taskId:D}-created-date");
-        public static By TaskDetails(Guid taskId) => By.Id($"{taskId:D}-type");
-        public static By TaskFromUser(Guid taskId) => By.Id($"{taskId:D}-from-user");
+        public static By TaskActionedBy(long taskId) => By.Id($"{taskId:D}-actioned-by");
+        public static By TaskCheckbox(long taskId) => By.Id($"{taskId:D}-checkbox");
+        public static By TaskCreatedDate(long taskId) => By.Id($"{taskId:D}-created-date");
+        public static By TaskDetails(long taskId) => By.Id($"{taskId:D}-type");
+        public static By TaskFromUser(long taskId) => By.Id($"{taskId:D}-from-user");
     }
 }
