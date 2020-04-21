@@ -47,7 +47,6 @@ export class AppComponent implements OnInit, OnDestroy {
         this.isRepresentativeOrIndividual = false;
         this.initAuthentication();
 
-        pageTracker.trackNavigation(router);
         pageTracker.trackPreviousPage(router);
     }
 

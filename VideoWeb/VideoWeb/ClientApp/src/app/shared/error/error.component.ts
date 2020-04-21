@@ -46,7 +46,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
 
     private startGoBackTimer(): void {
         this.returnTimeout = setTimeout(async () => {
-            // this.goBack();
+            this.goBack();
         }, this.CALL_TIMEOUT);
     }
 
