@@ -1,8 +1,6 @@
 import { TestBed, inject } from '@angular/core/testing';
 import { PageTrackerService } from './page-tracker.service';
 import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { Component, NgModule } from '@angular/core';
 
 describe('PageTrackerService', () => {
   let pageTrackerService: PageTrackerService;
@@ -48,8 +46,4 @@ describe('PageTrackerService', () => {
     service.getPreviousUrl();
     expect(sessionStorage.getItem).toHaveBeenCalled();
   }));
-/*   it('it should save data to session', inject([PageTrackerService], (service: PageTrackerService) => {
-    service.trackPreviousPage(routerSpy);
-    expect(sessionStorage.setItem).toHaveBeenCalled();
-  })); */
 });
