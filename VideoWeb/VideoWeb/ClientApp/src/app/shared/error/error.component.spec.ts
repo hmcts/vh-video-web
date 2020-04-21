@@ -5,6 +5,7 @@ import { ErrorComponent } from './error.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ContactUsFoldingComponent } from '../contact-us-folding/contact-us-folding.component';
 import { SessionStorage } from 'src/app/services/session-storage';
+import { PageTrackerService } from 'src/app/services/page-tracker.service';
 
 describe('ErrorComponent', () => {
     let component: ErrorComponent;
@@ -12,11 +13,15 @@ describe('ErrorComponent', () => {
 
     let location: Location;
     let router: Router;
+    let pageTracker: jasmine.SpyObj<PageTrackerService>;
 
     beforeEach(async(() => {
+        pageTracker = jasmine.createSpyObj<PageTrackerService>(['trackNavigation', 'trackPreviousPage', 'getPreviousUrl']);
+
         TestBed.configureTestingModule({
             declarations: [ErrorComponent, ContactUsFoldingComponent],
             imports: [RouterTestingModule],
+            providers: [{ provide: PageTrackerService, useValue: pageTracker }]
         }).compileComponents();
     }));
 
@@ -30,11 +35,6 @@ describe('ErrorComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
-    });
-    it('should navigate back when reconnect is clicked', () => {
-        spyOn(location, 'back');
-        component.reconnect();
-        expect(location.back).toHaveBeenCalledTimes(1);
     });
     it('should show default error message if session storage is empty', () => {
         const key = 'vh.error.message';

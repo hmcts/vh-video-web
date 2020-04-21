@@ -270,6 +270,10 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         }
     }
 
+    stopEventHub() {
+        this.eventService.stop();
+    }
+
     handleParticipantStatusChange(message: ParticipantStatusMessage): any {
         const participant = this.hearing.getConference().participants.find(p => p.id === message.participantId);
         const isMe = participant.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase();

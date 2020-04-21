@@ -3,6 +3,7 @@ import { Location } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { SessionStorage } from 'src/app/services/session-storage';
+import { PageTrackerService } from 'src/app/services/page-tracker.service';
 
 @Component({
     selector: 'app-error',
@@ -20,7 +21,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
     errorMessageText: string;
     connectionError: boolean;
 
-    constructor(private router: Router, private location: Location) {
+    constructor(private router: Router, private location: Location, private pageTracker: PageTrackerService) {
         this.browserRefresh = false;
         this.subscription = this.router.events.subscribe(event => {
             if (event instanceof NavigationEnd) {
@@ -45,7 +46,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
 
     private startGoBackTimer(): void {
         this.returnTimeout = setTimeout(async () => {
-            this.goBack();
+            // this.goBack();
         }, this.CALL_TIMEOUT);
     }
 
@@ -62,6 +63,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
     }
 
     reconnect(): void {
-        this.location.back();
+        const previousPage = this.pageTracker.getPreviousUrl();
+        this.router.navigate([previousPage]);
     }
 }

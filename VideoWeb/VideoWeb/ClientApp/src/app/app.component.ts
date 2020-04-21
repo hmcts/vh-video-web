@@ -11,6 +11,7 @@ import { Title } from '@angular/platform-browser';
 import { filter, map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { LocationService } from './services/location.service';
+import { PageTrackerService } from './services/page-tracker.service';
 
 @Component({
     selector: 'app-root',
@@ -39,11 +40,15 @@ export class AppComponent implements OnInit, OnDestroy {
         private errorService: ErrorService,
         private titleService: Title,
         private activatedRoute: ActivatedRoute,
-        private locationService: LocationService
+        private locationService: LocationService,
+        pageTracker: PageTrackerService,
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
         this.initAuthentication();
+
+        pageTracker.trackNavigation(router);
+        pageTracker.trackPreviousPage(router);
     }
 
     private initAuthentication() {
