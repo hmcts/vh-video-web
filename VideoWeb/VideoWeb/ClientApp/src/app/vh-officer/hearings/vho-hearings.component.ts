@@ -1,6 +1,5 @@
 import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import * as $ from 'jquery';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -367,12 +366,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     }
 
     enableFullScreen(fullScreen: boolean) {
-        // tslint:disable-next-line:quotemark
-        const masterContainerCount = $("div[id*='master-container']").length;
-        if (masterContainerCount > 1) {
-            throw new Error('Multiple master containers in DOM');
-        }
-
         const masterContainer = document.getElementById('master-container');
         if (!masterContainer) {
             return;
