@@ -1,4 +1,6 @@
+import { discardPeriodicTasks, fakeAsync } from '@angular/core/testing';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { of } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -20,6 +22,8 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { ExtendedConferenceStatus } from 'src/app/shared/models/hearings-filter';
 import { ParticipantSummary } from 'src/app/shared/models/participant-summary';
+import { PageUrls } from 'src/app/shared/page-url.constants';
+import { TestFixtureHelper } from 'src/app/testing/Helper/test-fixture-helper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
@@ -27,9 +31,7 @@ import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { ParticipantStatusMessage } from '../../services/models/participant-status-message';
 import { VhoHearingsComponent } from './vho-hearings.component';
-import { Router } from '@angular/router';
-import { TestFixtureHelper } from 'src/app/testing/Helper/test-fixture-helper';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
 
 describe('VhoHearingsComponent', () => {
     let component: VhoHearingsComponent;
@@ -95,6 +97,17 @@ describe('VhoHearingsComponent', () => {
     afterAll(() => {
         component.ngOnDestroy();
         TestFixtureHelper.clearVenues();
+    });
+
+    it('should load venue selection', () => {
+        component.loadVenueSelection();
+        expect(component.venueAllocations).toBeDefined();
+    });
+
+    it('should setup interval to retrieve conference changes', () => {
+        expect(component.interval).toBeUndefined();
+        component.setupConferenceInterval();
+        expect(component.interval).toBeDefined();
     });
 
     it('should retrieve conference and sanitise iframe uri', () => {
@@ -386,7 +399,7 @@ describe('VhoHearingsComponent', () => {
     });
 
     it('should update hearing status when conference status message is received', () => {
-        component.ngOnInit();
+        component.setupEventHubSubscribers();
         component.conferences[0].status = ConferenceStatus.InSession;
         const message = new ConferenceStatusMessage(conferences[0].id, ConferenceStatus.Paused);
 
@@ -396,7 +409,7 @@ describe('VhoHearingsComponent', () => {
     });
 
     it('should selected hearing status when conference status message is received for currently selected conference', () => {
-        component.ngOnInit();
+        component.setupEventHubSubscribers();
         const clone: ConferenceResponseVho = Object.assign(conferenceDetail);
         component.selectedHearing = new Hearing(clone);
         component.selectedHearing.getConference().status = ConferenceStatus.InSession;
@@ -414,7 +427,7 @@ describe('VhoHearingsComponent', () => {
 
     it('should not update participant status when conference is not selected', () => {
         spyOn(component, 'getJudgeStatusDetails');
-        component.ngOnInit();
+        component.setupEventHubSubscribers();
         const participant = conferences[0].participants.find((x) => x.role === Role.Judge);
         component.conferencesAll[0].participants[0].status = ParticipantStatus.Joining;
         const message = new ParticipantStatusMessage(participant.id, ParticipantStatus.Available);
@@ -426,7 +439,7 @@ describe('VhoHearingsComponent', () => {
 
     it('should not update participant status when participant message is received for a difference conference', () => {
         spyOn(component, 'getJudgeStatusDetails');
-        component.ngOnInit();
+        component.setupEventHubSubscribers();
         component.participants = conferenceDetail.participants;
         const participant = conferences[2].participants.find((x) => x.role === Role.Judge);
         component.participants[0].status = ParticipantStatus.Joining;
@@ -438,7 +451,7 @@ describe('VhoHearingsComponent', () => {
     });
 
     it('should update participant status when conference participant message is received', () => {
-        component.ngOnInit();
+        component.setupEventHubSubscribers();
         component.participants = conferenceDetail.participants;
         const participant = conferenceDetail.participants[0];
         component.participants[0].status = ParticipantStatus.Joining;
@@ -451,7 +464,7 @@ describe('VhoHearingsComponent', () => {
 
     it('should get judge status participant message is received and participant is judge', () => {
         spyOn(component, 'getJudgeStatusDetails');
-        component.ngOnInit();
+        component.setupEventHubSubscribers();
         component.participants = conferenceDetail.participants;
         const participant = conferenceDetail.participants.find((x) => x.role === Role.Judge);
         const message = new ParticipantStatusMessage(participant.id, ParticipantStatus.Available);
@@ -483,6 +496,44 @@ describe('VhoHearingsComponent', () => {
         expect(component.displayFilter).toBeTruthy();
     });
 
+    it('should return false when checking is "hasHearings" and still loading', () => {
+        component.loadingData = true;
+        component.conferencesAll = undefined;
+        expect(component.hasHearings).toBeFalsy();
+    });
+
+    it('should return false when checking is "hasHearings" and conference is not set', () => {
+        component.loadingData = false;
+        component.conferencesAll = undefined;
+        expect(component.hasHearings).toBeFalsy();
+    });
+
+    it('should return false when checking is "hasHearings" and conference is empty list', () => {
+        component.loadingData = false;
+        component.conferencesAll = [];
+        expect(component.hasHearings).toBeFalsy();
+    });
+
+    it('should return true when checking is "hasHearings" and conference list is not empty', () => {
+        component.loadingData = false;
+        component.conferencesAll = conferences;
+        expect(component.hasHearings).toBeTruthy();
+    });
+
+    it('should load venues, interval and retrieve conferences', fakeAsync(() => {
+        component.loadingData = false;
+        component.conferencesAll = undefined;
+        component.conferencesSubscription = undefined;
+
+        component.ngOnInit();
+
+        discardPeriodicTasks();
+        expect(component.conferencesAll.length).toBeGreaterThan(0);
+        expect(component.conferences.length).toBeGreaterThan(0);
+        expect(component.conferencesSubscription).toBeDefined();
+        expect(component.interval).toBeDefined();
+    }));
+
     it('should reset unread message counter when admin has answered', () => {
         component.conferences[0].numberOfUnreadMessages = 10;
 
@@ -502,5 +553,77 @@ describe('VhoHearingsComponent', () => {
     it('should go back to venue list selection page', () => {
         component.goBackToVenueSelection();
         expect(router.navigateByUrl).toHaveBeenCalledWith(PageUrls.AdminVenueList);
+    });
+
+    it('should refresh data on eventhub disconnect', () => {
+        spyOn(component, 'refreshConferenceDataDuringDisconnect');
+        errorService.goToServiceError.calls.reset();
+
+        component.setupEventHubSubscribers();
+        mockEventService.eventHubDisconnectSubject.next(1);
+        mockEventService.eventHubDisconnectSubject.next(2);
+        mockEventService.eventHubDisconnectSubject.next(3);
+        mockEventService.eventHubDisconnectSubject.next(4);
+        mockEventService.eventHubDisconnectSubject.next(5);
+        mockEventService.eventHubDisconnectSubject.next(6);
+
+        expect(component.refreshConferenceDataDuringDisconnect).toHaveBeenCalledTimes(6);
+        expect(errorService.goToServiceError).toHaveBeenCalledTimes(0);
+    });
+
+    it('should redirect to service error when disconnected more than 6 times', () => {
+        spyOn(component, 'refreshConferenceDataDuringDisconnect');
+
+        component.setupEventHubSubscribers();
+        errorService.goToServiceError.calls.reset();
+        mockEventService.eventHubDisconnectSubject.next(7);
+        expect(component.refreshConferenceDataDuringDisconnect).toHaveBeenCalledTimes(0);
+        expect(errorService.goToServiceError).toHaveBeenCalled();
+    });
+
+    it('should refresh data on eventhub reconnect', () => {
+        spyOn(component, 'refreshConferenceDataDuringDisconnect');
+
+        component.setupEventHubSubscribers();
+        mockEventService.eventHubReconnectSubject.next();
+
+        expect(component.refreshConferenceDataDuringDisconnect).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not be full screen if there are no hearings', () => {
+        spyOn(component, 'enableFullScreen');
+        videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(of([]));
+        component.retrieveHearingsForVhOfficer();
+        expect(component.enableFullScreen).toHaveBeenCalledWith(false);
+    });
+
+    it('should hide filter on apply', () => {
+        component.displayFilter = true;
+        const vhoHearingListComponentSpy = jasmine.createSpyObj<VhoHearingListComponent>('VhoHearingListComponent', [
+            'currentConference',
+            'selectConference'
+        ]);
+        component.$conferenceList = vhoHearingListComponentSpy;
+        const filter = new ConferenceTestData().getHearingsFilter();
+        component.applyFilters(filter);
+        expect(component.displayFilter).toBeFalsy();
+    });
+
+    it('should toggle fullscreen class on master-container', () => {
+        const id = 'master-container';
+        const masterContainer = document.createElement('div');
+        masterContainer.setAttribute('id', id);
+        document.getElementById = jasmine.createSpy(id).and.returnValue(masterContainer);
+
+        component.enableFullScreen(true);
+        expect(masterContainer.classList.contains('fullscreen')).toBeTruthy();
+        component.enableFullScreen(false);
+        expect(masterContainer.classList.contains('fullscreen')).toBeFalsy();
+    });
+
+    it('should adminFrameWith to maxWidth possible', () => {
+        component.updateWidthForAdminFrame();
+        expect(component.adminFrameWidth).toBeGreaterThan(0);
+        expect(component.adminFrameWidth).toBe(window.innerWidth - 350);
     });
 });

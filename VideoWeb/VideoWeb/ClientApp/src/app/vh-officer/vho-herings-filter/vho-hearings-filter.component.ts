@@ -72,7 +72,6 @@ export class VhoHearingsFilterComponent implements OnInit {
     }
 
     applyFilters() {
-        console.log(this.hearingsFilter);
         this.hearingsFilter.numberFilterOptions = this.hearingsFilterOptionsService.countOptions(this.hearingsFilter);
         this.fiterOptionsEvent.emit(this.hearingsFilter);
     }

@@ -100,21 +100,16 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.enableFullScreen(false);
         this.logger.debug('Clearing intervals and subscriptions for VH Officer');
         clearInterval(this.interval);
+        this.eventHubSubscriptions.unsubscribe();
         if (this.conferencesSubscription) {
             this.conferencesSubscription.unsubscribe();
-        }
-        if (this.eventHubSubscriptions) {
-            this.eventHubSubscriptions.unsubscribe();
         }
     }
 
     getConferenceForSelectedAllocations() {
         this.loadVenueSelection();
         this.retrieveHearingsForVhOfficer();
-        clearInterval(this.interval);
-        this.interval = setInterval(() => {
-            this.retrieveHearingsForVhOfficer();
-        }, 30000);
+        this.setupConferenceInterval();
     }
 
     loadVenueSelection(): void {
@@ -122,7 +117,14 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.venueAllocations = venues.map((v) => v.name);
     }
 
-    private setupEventHubSubscribers() {
+    setupConferenceInterval() {
+        clearInterval(this.interval);
+        this.interval = setInterval(() => {
+            this.retrieveHearingsForVhOfficer();
+        }, 30000);
+    }
+
+    setupEventHubSubscribers() {
         this.logger.debug('Subscribing to conference status changes...');
         this.eventHubSubscriptions.add(
             this.eventService.getHearingStatusMessage().subscribe((message) => {
@@ -140,7 +142,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.logger.debug('Subscribing to EventHub disconnects');
         this.eventHubSubscriptions.add(
             this.eventService.getServiceDisconnected().subscribe((reconnectionAttempt) => {
-                if (reconnectionAttempt < 6) {
+                if (reconnectionAttempt <= 6) {
                     this.logger.info(`EventHub disconnection for vh officer`);
                     this.refreshConferenceDataDuringDisconnect();
                 } else {
@@ -249,15 +251,15 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         }
     }
 
-    hasHearings(): boolean {
+    get hasHearings(): boolean {
         return !this.loadingData && this.conferencesAll && this.conferencesAll.length > 0;
     }
 
-    hasTasks(): boolean {
+    get hasTasks(): boolean {
         return this.selectedHearing !== undefined && this.tasks !== undefined && this.tasks.length > 0;
     }
 
-    isHearingSelected(): boolean {
+    get isHearingSelected(): boolean {
         return !!(this.selectedHearing && this.selectedHearing.getConference());
     }
 
@@ -306,7 +308,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     }
 
     getHeightForFrame(): number {
-        if (this.hasTasks()) {
+        if (this.hasTasks) {
             return 300;
         } else {
             return 600;
@@ -398,9 +400,9 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
     selectFilteredConference(selectedConferenceId: string) {
         if (selectedConferenceId) {
-            const selectedConferenceFound = this.conferences.filter((x) => x.id === selectedConferenceId);
+            const selectedConferenceFound = this.conferences.find((x) => x.id === selectedConferenceId);
             if (selectedConferenceFound) {
-                this.$conferenceList.selectConference(selectedConferenceFound[0]);
+                this.$conferenceList.selectConference(selectedConferenceFound);
             }
         }
     }

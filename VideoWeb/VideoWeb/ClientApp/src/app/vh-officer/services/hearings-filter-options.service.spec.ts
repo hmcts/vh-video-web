@@ -1,6 +1,7 @@
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { HearingVenueResponse } from '../../services/clients/api-client';
 import { HearingsFilterOptionsService } from './hearings-filter-options.service';
+import { TestFixtureHelper } from 'src/app/testing/Helper/test-fixture-helper';
 
 describe('HearingFilterOptionsService', () => {
     const venueList = [new HearingVenueResponse({ id: 1, name: 'Birmingham' })];
@@ -9,6 +10,14 @@ describe('HearingFilterOptionsService', () => {
     videoWebServiceSpy.getHearingVenues.and.returnValue(Promise.resolve(venueList));
 
     const component = new HearingsFilterOptionsService();
+
+    beforeEach(() => {
+        TestFixtureHelper.clearHearingFilters();
+    });
+
+    afterAll(() => {
+        TestFixtureHelper.clearHearingFilters();
+    });
 
     it('should get hearings filter object with number selected options 0', async () => {
         const filter = await component.getFilter();
