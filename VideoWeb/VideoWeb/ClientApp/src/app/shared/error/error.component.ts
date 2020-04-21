@@ -46,6 +46,9 @@ export class ErrorComponent implements OnInit, OnDestroy {
 
     private startGoBackTimer(): void {
         this.returnTimeout = setTimeout(async () => {
+            if (!this.connectionError) {
+                this.goBack();
+            }
             this.goBack();
         }, this.CALL_TIMEOUT);
     }

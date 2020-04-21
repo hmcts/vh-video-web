@@ -19,6 +19,21 @@ describe('PageTrackerService', () => {
     });
 
     pageTrackerService = TestBed.get(PageTrackerService);
+    const mockSessionStorage = {
+      getItem: (key: string): string => {
+        return 'true';
+      },
+      setItem: (key: string, value: string) => {
+      },
+      removeItem: (key: string) => {
+      },
+      clear: () => {
+      }
+    };
+    spyOn(sessionStorage, 'getItem')
+      .and.callFake(mockSessionStorage.getItem);
+    spyOn(sessionStorage, 'setItem')
+      .and.callFake(mockSessionStorage.setItem);
   });
 
   afterEach(() => {
@@ -28,4 +43,13 @@ describe('PageTrackerService', () => {
   it('should be created', inject([PageTrackerService], (service: PageTrackerService) => {
     expect(service).toBeTruthy();
   }));
+
+  it('it should retrieve data from session', inject([PageTrackerService], (service: PageTrackerService) => {
+    service.getPreviousUrl();
+    expect(sessionStorage.getItem).toHaveBeenCalled();
+  }));
+/*   it('it should save data to session', inject([PageTrackerService], (service: PageTrackerService) => {
+    service.trackPreviousPage(routerSpy);
+    expect(sessionStorage.setItem).toHaveBeenCalled();
+  })); */
 });
