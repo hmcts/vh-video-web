@@ -9,6 +9,7 @@ import {
     ListFilter,
     StatusFilter
 } from '../../shared/models/hearings-filter';
+import { VhoStorageKeys } from './models/session-keys';
 
 @Injectable({
     providedIn: 'root'
@@ -16,10 +17,9 @@ import {
 export class HearingsFilterOptionsService {
     private hearingsFilter: HearingsFilter;
     private readonly hearingsFilterStorage: SessionStorage<HearingsFilter>;
-    readonly HEARINGS_FITER_KEY = 'vho.hearings.filter';
 
     constructor() {
-        this.hearingsFilterStorage = new SessionStorage(this.HEARINGS_FITER_KEY);
+        this.hearingsFilterStorage = new SessionStorage(VhoStorageKeys.HEARINGS_FITER_KEY);
     }
 
     getFilter() {
