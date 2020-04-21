@@ -13,15 +13,16 @@ describe('ErrorComponent', () => {
 
     let location: Location;
     let router: Router;
-    let pageTracker: jasmine.SpyObj<PageTrackerService>;
+    let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
 
     beforeEach(async(() => {
-        pageTracker = jasmine.createSpyObj<PageTrackerService>(['trackNavigation', 'trackPreviousPage', 'getPreviousUrl']);
+        pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackNavigation', 'trackPreviousPage', 'getPreviousUrl']);
+        pageTrackerSpy.getPreviousUrl.and.returnValue('testurl');
 
         TestBed.configureTestingModule({
             declarations: [ErrorComponent, ContactUsFoldingComponent],
             imports: [RouterTestingModule],
-            providers: [{ provide: PageTrackerService, useValue: pageTracker }]
+            providers: [{ provide: PageTrackerService, useValue: pageTrackerSpy }]
         }).compileComponents();
     }));
 
@@ -57,5 +58,9 @@ describe('ErrorComponent', () => {
     it('should unsubscribe all subcriptions on destroy component', () => {
         component.ngOnDestroy();
         expect(component.subscription.closed).toBeTruthy();
+    });
+    it('should navigate to previous page on reconnect click', () => {
+        component.reconnect();
+        expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalled();
     });
 });
