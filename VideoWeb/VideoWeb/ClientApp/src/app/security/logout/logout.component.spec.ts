@@ -1,33 +1,20 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { AdalService } from 'adal-angular4';
-import { configureTestSuite } from 'ng-bullet';
+import { ProfileService } from 'src/app/services/api/profile.service';
 import { MockAdalService } from '../../testing/mocks/MockAdalService';
 import { LogoutComponent } from './logout.component';
-import { HttpClientModule } from '@angular/common/http';
 
 describe('LogoutComponent', () => {
     let component: LogoutComponent;
-    let fixture: ComponentFixture<LogoutComponent>;
-    let adalService: MockAdalService;
+    let profileServiceSpy: jasmine.SpyObj<ProfileService>;
+    const mockAdalService = new MockAdalService();
+    let adalService;
 
-    configureTestSuite(() => {
-        TestBed.configureTestingModule({
-            declarations: [LogoutComponent],
-            imports: [RouterTestingModule, HttpClientModule],
-            providers: [{ provide: AdalService, useClass: MockAdalService }]
-        });
+    beforeAll(() => {
+        adalService = mockAdalService;
+        profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['clearUserProfile']);
     });
 
     beforeEach(() => {
-        adalService = TestBed.get(AdalService);
-        fixture = TestBed.createComponent(LogoutComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
-
-    it('should create', () => {
-        expect(component).toBeTruthy();
+        component = new LogoutComponent(adalService, profileServiceSpy);
     });
 
     it('should call logout if authenticated', () => {
@@ -42,5 +29,15 @@ describe('LogoutComponent', () => {
         spyOn(adalService, 'logOut').and.callFake(() => {});
         component.ngOnInit();
         expect(adalService.logOut).toHaveBeenCalledTimes(0);
+    });
+
+    it('should return true for "loggedIn" when authenticated', () => {
+        mockAdalService.setAuthenticated(true);
+        expect(component.loggedIn).toBeTruthy();
+    });
+
+    it('should return false for "loggedIn" when not authenticated', () => {
+        mockAdalService.setAuthenticated(false);
+        expect(component.loggedIn).toBeFalsy();
     });
 });
