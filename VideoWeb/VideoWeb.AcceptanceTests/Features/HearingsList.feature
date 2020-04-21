@@ -57,8 +57,9 @@ Scenario: Video Hearings Officer has 1 or more hearings
 	Given I have a hearing
 	And a new browser is open for a Video Hearings Officer
 	When the user attempts to login with valid credentials
-	Then the user is on the VHO Hearing List page
+	Then the user is on the VHO Venue List page
   When the VHO selects the venue Birmingham Civil and Family Justice Centre
+  And the VHO confirms their allocation selection
 	Then the VHO can see a list of hearings including the new hearing
 	When the VHO selects the hearing
 	Then the VHO can see the hearing view

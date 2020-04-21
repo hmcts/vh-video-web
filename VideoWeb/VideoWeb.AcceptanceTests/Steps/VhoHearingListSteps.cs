@@ -30,12 +30,18 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the VHO selects the venues (.*)")]
         public void SelectVenues(string venues = "Select All")
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.VenuesDropdown).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesDropdown).Displayed.Should().BeTrue();
             foreach (var venue in ConvertStringIntoArray(venues))
             {
-                _browsers[_c.CurrentUser.Key].ClickCheckbox(VhoHearingListPage.VenueCheckbox(venue));
+                _browsers[_c.CurrentUser.Key].ClickCheckbox(VhoVenueAllocationPage.VenueCheckbox(venue));
             }
-            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.VenuesDropdown);
+            _browsers[_c.CurrentUser.Key].Click(VhoVenueAllocationPage.VenuesDropdown);
+        }
+        
+        [When(@"the VHO confirms their allocation selection")]
+        public void ConfirmVenue()
+        {
+            _browsers[_c.CurrentUser.Key].Click(VhoVenueAllocationPage.VenueConfirmButton);
         }
 
         private static IEnumerable<string> ConvertStringIntoArray(string options)
@@ -46,7 +52,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the VHO selects the hearing")]
         public void ProgressToNextPage()
         {
-            SelectVenues();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id)).Click();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
         }
