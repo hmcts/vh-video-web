@@ -35,7 +35,9 @@ namespace VideoWeb.Mappings
                 Status = status,
                 Participants = participants,
                 ClosedDateTime = conference.Closed_date_time,
-                HearingVenueName = conference.Hearing_venue_name
+                HearingVenueName = conference.Hearing_venue_name,
+                AudioRecordingRequired = conference.Audio_recording_required,
+                HearingRefId = conference.Hearing_id
             };
 
             if (conference.Meeting_room == null) return response;
