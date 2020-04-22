@@ -10,8 +10,8 @@ import { Role } from './services/clients/api-client';
 import { DeviceTypeService } from './services/device-type.service';
 import { ErrorService } from './services/error.service';
 import { LocationService } from './services/location.service';
-import { PageUrls } from './shared/page-url.constants';
 import { PageTrackerService } from './services/page-tracker.service';
+import { PageUrls } from './shared/page-url.constants';
 
 @Component({
     selector: 'app-root',
@@ -41,7 +41,7 @@ export class AppComponent implements OnInit, OnDestroy {
         private titleService: Title,
         private activatedRoute: ActivatedRoute,
         private locationService: LocationService,
-        pageTracker: PageTrackerService,
+        pageTracker: PageTrackerService
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
