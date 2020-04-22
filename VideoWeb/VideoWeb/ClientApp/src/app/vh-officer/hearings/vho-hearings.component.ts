@@ -16,8 +16,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
-import { Participant } from 'src/app/shared/models/participant';
-import { ParticipantStatusModel } from 'src/app/shared/models/participants-status-model';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { SessionStorage } from '../../services/session-storage';
 import { ConferenceForUser, ExtendedConferenceStatus, HearingsFilter } from '../../shared/models/hearings-filter';
@@ -44,7 +42,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     conferencesAll: ConferenceForVhOfficerResponse[];
     selectedHearing: Hearing;
     participants: ParticipantResponseVho[];
-    participantStatusModel: ParticipantStatusModel;
     selectedConferenceUrl: SafeResourceUrl;
 
     tasks: TaskResponse[];
@@ -63,6 +60,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     @ViewChild('conferenceList', { static: false })
     $conferenceList: VhoHearingListComponent;
     participantsHeartBeat: ParticipantHeartbeat[] = [];
+    judgeStatuses: ParticipantStatus[];
 
     @HostListener('window:resize', [])
     onResize() {
@@ -451,10 +449,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
     getJudgeStatusDetails() {
         if (this.selectedHearing) {
-            this.participantStatusModel = new ParticipantStatusModel();
-            this.participantStatusModel.Participants = this.participants.map((p) => new Participant(p));
-            this.participantStatusModel.JudgeStatuses = this.getJudgeDetailsForStatus(this.selectedHearing.id);
-            this.participantStatusModel.HearingVenueName = this.selectedHearing.hearingVenueName;
+            this.judgeStatuses = this.getJudgeDetailsForStatus(this.selectedHearing.id);
         }
     }
 

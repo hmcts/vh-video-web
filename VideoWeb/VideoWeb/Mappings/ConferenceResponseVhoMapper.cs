@@ -22,7 +22,7 @@ namespace VideoWeb.Mappings
 
             var participants = conference.Participants
                 .OrderBy(x => x.Case_type_group)
-                .Select(ParticipantResponseForVhoMapper.MapParticipantToResponseModel)
+                .Select(ParticipantResponseForVhoMapper.MapParticipantTo)
                 .ToList();
 
             var response = new ConferenceResponseVho

@@ -90,7 +90,7 @@ namespace VideoWeb.Controllers
             if (conference == null)
             {
                 var conferenceDetail = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-                await _conferenceCache.AddConferenceToCacheAsync(conferenceDetail);
+                await _conferenceCache.AddConferenceAsync(conferenceDetail);
                 conference = await _conferenceCache.GetConferenceAsync(conferenceId);
             }
 

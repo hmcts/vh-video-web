@@ -28,7 +28,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
     {
         private ConferencesController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
-        private Mock<IBookingsApiClient> _bookingsApiClientMock;
         private Mock<ILogger<ConferencesController>> _mockLogger;
         private Mock<IConferenceCache> _mockConferenceCache;
 
@@ -36,7 +35,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public void Setup()
         {
             _videoApiClientMock = new Mock<IVideoApiClient>();
-            _bookingsApiClientMock = new Mock<IBookingsApiClient>();
             _mockLogger = new Mock<ILogger<ConferencesController>>();
             _mockConferenceCache = new Mock<IConferenceCache>();
 
@@ -49,13 +47,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 }
             };
 
-            _controller = new ConferencesController(_videoApiClientMock.Object, _bookingsApiClientMock.Object,
+            _controller = new ConferencesController(_videoApiClientMock.Object,
                 _mockLogger.Object, _mockConferenceCache.Object)
             {
                 ControllerContext = context
             };
 
-            _mockConferenceCache.Setup(x => x.AddConferenceToCacheAsync(It.IsAny<ConferenceDetailsResponse>()));
+            _mockConferenceCache.Setup(x => x.AddConferenceAsync(It.IsAny<ConferenceDetailsResponse>()));
         }
 
         [Test]

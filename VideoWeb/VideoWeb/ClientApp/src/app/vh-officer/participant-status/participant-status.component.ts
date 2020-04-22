@@ -1,57 +1,44 @@
-import {Component, HostListener, Input, OnDestroy, OnInit} from '@angular/core';
-import {ParticipantResponseVho, ParticipantStatus} from 'src/app/services/clients/api-client';
-import {Participant} from 'src/app/shared/models/participant';
-import {ParticipantStatusModel} from 'src/app/shared/models/participants-status-model';
-import {Subscription} from 'rxjs';
+import {Component, Input, OnInit} from '@angular/core';
+import {ParticipantStatus} from 'src/app/services/clients/api-client';
 import {VideoWebService} from '../../services/api/video-web.service';
 import {ErrorService} from '../../services/error.service';
 import {Logger} from '../../services/logging/logger-base';
+import {ParticipantContactDetails} from '../../shared/models/participant-contact-details';
 
 @Component({
   selector: 'app-participant-status',
   templateUrl: './participant-status.component.html',
   styleUrls: ['./participant-status.component.scss']
 })
-export class ParticipantStatusComponent implements OnInit, OnDestroy {
-  _participants: Participant[];
-  _judgeStatuses: ParticipantStatus[];
-  _venueName: string;
+export class ParticipantStatusComponent implements OnInit {
   loadingData: boolean;
-  conferencesSubscription: Subscription;
+  participants: ParticipantContactDetails[];
 
-  @Input() set participants(participants: ParticipantStatusModel) {
-    this._participants = participants.Participants;
-    this._judgeStatuses = participants.JudgeStatuses;
-    this._venueName = participants.HearingVenueName;
-  }
+  @Input() conferenceId: string;
+  @Input() hearingVenueName: string;
+  @Input() judgeStatuses: ParticipantStatus[];
 
   constructor(private videoWebService: VideoWebService, private errorService: ErrorService, private logger: Logger) {
     this.loadingData = true;
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<any> {
     this.logger.info('Loading VH Officer Dashboard Participant Status list');
-    this.conferencesSubscription = this.videoWebService.getConferenceParticipantContactDetails(this._participants.map(x => x.username)).subscribe(
-      (data: ParticipantResponseVho[]) => {
-        this.loadingData = false;
-        // Map the participant contact details to the this._participants
-      },
-      (error) => {
-        this.logger.error('There was an error getting the VH Officer dashboard participant status list of names', error);
-        this.loadingData = false;
-        this.errorService.handleApiError(error);
-      }
-    );
-  }
 
-  @HostListener('window:beforeunload')
-  ngOnDestroy(): void {
-    if (this.conferencesSubscription) {
-      this.conferencesSubscription.unsubscribe();
+    try {
+      const participantDetails = await this.videoWebService.getParticipantsByConferenceIdVho(this.conferenceId);
+
+      this.loadingData = false;
+      this.participants = participantDetails.map(x => new ParticipantContactDetails(x));
+    } catch (error) {
+      this.logger.error('There was an error getting the VH Officer dashboard participant status list of names', error);
+      this.loadingData = false;
+      this.errorService.handleApiError(error);
     }
   }
+  // Need to handle participant status change
 
-  getParticipantStatusClass(participant: Participant): string {
+  getParticipantStatusClass(participant: ParticipantContactDetails): string {
     switch (participant.status) {
       case ParticipantStatus.None:
       case ParticipantStatus.NotSignedIn:

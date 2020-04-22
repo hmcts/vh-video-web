@@ -1,12 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { Participant } from 'src/app/shared/models/participant';
+import {ParticipantContactDetails} from '../../shared/models/participant-contact-details';
 
 @Component({
     selector: 'app-participant-info-tooltip',
     templateUrl: './participant-info-tooltip.component.html'
 })
 export class ParticipantInfoTooltipComponent implements OnInit {
-    @Input() participant: Participant;
+    @Input() participant: ParticipantContactDetails;
     @Input() venueName: string;
     constructor() {}
 

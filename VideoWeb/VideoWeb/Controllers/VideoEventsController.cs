@@ -50,7 +50,7 @@ namespace VideoWeb.Controllers
                     {
                         _logger.LogTrace($"Retrieving conference details for conference: {callbackEvent.ConferenceId}");
                         var conference = await _videoApiClient.GetConferenceDetailsByIdAsync(callbackEvent.ConferenceId);
-                        await _conferenceCache.AddConferenceToCacheAsync(conference);
+                        await _conferenceCache.AddConferenceAsync(conference);
                     }
                     catch (VideoApiException e)
                     {

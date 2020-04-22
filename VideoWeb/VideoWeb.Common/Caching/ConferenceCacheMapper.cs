@@ -14,9 +14,13 @@ namespace VideoWeb.Common.Caching
                 .Select(participant => new Participant
                 {
                     Id = participant.Id, 
+                    RefId = participant.Ref_id,
+                    Name = participant.Name,
                     DisplayName = participant.Display_name, 
                     Role = (Role) Enum.Parse(typeof(Role), participant.User_role.ToString()), 
-                    Username = participant.Username
+                    ParticipantStatus = (ParticipantStatus) Enum.Parse(typeof(ParticipantStatus), participant.Current_status.ToString()),
+                    Username = participant.Username,
+                    CaseTypeGroup = participant.Case_type_group
                 })
                 .ToList();
 

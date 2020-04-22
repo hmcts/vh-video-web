@@ -54,7 +54,7 @@ namespace VideoWeb.EventHub.Handlers.Core
             var conference = await _conferenceCache.GetConferenceAsync(conferenceId);
             if (conference != null) return conference;
             var conferenceDetail = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-            await _conferenceCache.AddConferenceToCacheAsync(conferenceDetail);
+            await _conferenceCache.AddConferenceAsync(conferenceDetail);
 
             return await _conferenceCache.GetConferenceAsync(conferenceId);
 

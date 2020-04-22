@@ -6,12 +6,14 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using EventComponentHelper = VideoWeb.UnitTests.Builders.EventComponentHelper;
@@ -27,6 +29,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         private Conference _testConference;
         private MemoryCache _memoryCache;
         private IConferenceCache _conferenceCache;
+        private Mock<ILogger<ParticipantsController>> _mockLogger;
+        private Mock<IBookingsApiClient> _bookingsApiClientMock;
 
         [SetUp]
         public void Setup()
@@ -37,6 +41,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _videoApiClientMock = new Mock<IVideoApiClient>();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             _testConference = _eventComponentHelper.BuildConferenceForTest();
+            _mockLogger = new Mock<ILogger<ParticipantsController>>();
+            _bookingsApiClientMock = new Mock<IBookingsApiClient>();
 
             var context = new ControllerContext
             {
@@ -47,7 +53,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             };
 
             var eventHandlerFactory = new EventHandlerFactory(_eventComponentHelper.GetHandlers());
-            _controller = new ParticipantsController(_videoApiClientMock.Object, eventHandlerFactory, _conferenceCache)
+            _controller = new ParticipantsController(_videoApiClientMock.Object, eventHandlerFactory, _conferenceCache,
+                _mockLogger.Object, _bookingsApiClientMock.Object)
             {
                 ControllerContext = context
             };

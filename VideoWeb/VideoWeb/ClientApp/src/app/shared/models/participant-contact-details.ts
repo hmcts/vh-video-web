@@ -1,37 +1,42 @@
-import { ParticipantResponse, ParticipantStatus, Role, ParticipantResponseVho } from 'src/app/services/clients/api-client';
+import {
+  ParticipantStatus,
+  Role,
+  ParticipantContactDetailsResponseVho
+} from 'src/app/services/clients/api-client';
 import { ParticipantStatusReader } from './participant-status-reader';
 
-export class Participant {
-  private participant: ParticipantResponseVho;
+export class ParticipantContactDetails {
+  private participant: ParticipantContactDetailsResponseVho;
 
-  constructor(participant: ParticipantResponseVho) {
-    const isVhResponse = participant instanceof ParticipantResponseVho;
-    const isParticipantResponse = participant instanceof ParticipantResponse;
+  constructor(participant: ParticipantContactDetailsResponseVho) {
 
-    if (!(isVhResponse || isParticipantResponse)) {
-      throw new Error('Object not a ParticipantResponseVho or ParticipantResponse');
-    }
     this.participant = participant;
-  }
-
-  get base(): ParticipantResponseVho {
-    return this.participant;
   }
 
   get id(): string {
     return this.participant.id;
   }
 
-  get fullName() {
-    return this.participant.name;
-  }
-
   get caseGroup() {
     return this.participant.case_type_group;
   }
 
+  get contactEmail() {
+    return this.participant.contact_email;
+  }
+
   get username() {
     return this.participant.username;
+  }
+
+  get contactTelephone() {
+    return this.participant.contact_telephone;
+  }
+
+  get initialedName(): string {
+    const initial = this.participant.first_name ? this.participant.first_name.substr(0, 1) : '';
+    const name = this.participant.last_name || '';
+    return `${initial} ${name}`;
   }
 
   get status(): ParticipantStatus {
@@ -48,10 +53,6 @@ export class Participant {
 
   get displayName(): string {
     return this.participant.display_name;
-  }
-
-  get representee(): string {
-    return this.participant.representee;
   }
 
   getStatusAsText(): string {

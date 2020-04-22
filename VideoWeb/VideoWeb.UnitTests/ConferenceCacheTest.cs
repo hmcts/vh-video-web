@@ -29,7 +29,7 @@ namespace VideoWeb.UnitTests
         public async Task Should_add_conference_to_cache()
         {
             var conference = CreateConferenceResponse();
-            await _conferenceCache.AddConferenceToCacheAsync(conference);
+            await _conferenceCache.AddConferenceAsync(conference);
             _memoryCache.Get(conference.Id).Should().NotBeNull();
         }
 

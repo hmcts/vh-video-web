@@ -4,7 +4,7 @@
 
 <p *ngIf="loadingData">Loading...</p>
 <div id="participant-status-list">
-  <div *ngFor="let participant of _participants" class="govuk-grid-row">
+  <div *ngFor="let participant of participants" class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
       <div id="participant-contact-details-link-{{participant.id}}" class="govuk-body-s tooltip-wrapper">
         <ng-container *ngIf="participant.isJudge; else individualName">
@@ -14,7 +14,7 @@
           {{participant.initialedName}}
         </ng-template>
         <div id="tooltip-{{participant.id}}" class="tooltip">
-          <app-participant-info-tooltip [participant]="participant" [venueName]="_venueName">
+          <app-participant-info-tooltip [participant]="participant" [venueName]="hearingVenueName">
           </app-participant-info-tooltip>
         </div>
       </div>
@@ -22,7 +22,7 @@
 
     <div class="govuk-grid-column-one-half">
       <p id="participant-status-{{participant.id}}" class="govuk-body-s govuk-!-font-weight-bold" [ngClass]="getParticipantStatusClass(participant)">
-        {{participant.isJudge ? participant.getStatusAsTextForJudge(_judgeStatuses) : participant.getStatusAsText()}}
+        {{participant.isJudge ? participant.getStatusAsTextForJudge(judgeStatuses) : participant.getStatusAsText()}}
       </p>
     </div>
   </div>

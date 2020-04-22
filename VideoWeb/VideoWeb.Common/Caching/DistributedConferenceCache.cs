@@ -17,7 +17,7 @@ namespace VideoWeb.Common.Caching
             _distributedCache = distributedCache;
         }
 
-        public Task AddConferenceToCacheAsync(ConferenceDetailsResponse conferenceResponse)
+        public Task AddConferenceAsync(ConferenceDetailsResponse conferenceResponse)
         {
             var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse);
             var serialisedConference = JsonConvert.SerializeObject(conference, CachingHelper.SerializerSettings);
@@ -30,6 +30,19 @@ namespace VideoWeb.Common.Caching
                     SlidingExpiration = TimeSpan.FromHours(4)
                 });
 
+        }
+
+        public async Task<Conference> GetOrAddConferenceAsync(Guid id, Func<Task<ConferenceDetailsResponse>> addConferenceDetailsFactory)
+        {
+            var conference = await GetConferenceAsync(id);
+
+            if (conference != null) return conference;
+            
+            var conferenceDetails = await addConferenceDetailsFactory();
+            await AddConferenceAsync(conferenceDetails);
+            conference = await GetConferenceAsync(id);
+
+            return conference;
         }
 
         public async Task<Conference> GetConferenceAsync(Guid id)

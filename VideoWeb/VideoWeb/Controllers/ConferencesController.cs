@@ -13,9 +13,7 @@ using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
-using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
 using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
 using ConferenceForJudgeResponse = VideoWeb.Contract.Responses.ConferenceForJudgeResponse;
 
@@ -27,16 +25,12 @@ namespace VideoWeb.Controllers
     public class ConferencesController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
-        private readonly IBookingsApiClient _bookingsApiClient;
         private readonly ILogger<ConferencesController> _logger;
         private readonly IConferenceCache _conferenceCache;
 
-        public ConferencesController(IVideoApiClient videoApiClient,
-            IBookingsApiClient bookingsApiClient, ILogger<ConferencesController> logger,
-            IConferenceCache conferenceCache)
+        public ConferencesController(IVideoApiClient videoApiClient, ILogger<ConferencesController> logger, IConferenceCache conferenceCache)
         {
             _videoApiClient = videoApiClient;
-            _bookingsApiClient = bookingsApiClient;
             _logger = logger;
             _conferenceCache = conferenceCache;
         }
@@ -156,7 +150,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         [SwaggerOperation(OperationId = "GetConferenceByIdVHO")]
-        public async Task<ActionResult<ConferenceResponseVho>> GetConferenceByIdVHOAsync(Guid conferenceId)
+        public async Task<ActionResult<ConferenceResponseVho>> GetConferenceByIdVhoAsync(Guid conferenceId)
         {
             _logger.LogDebug("GetConferenceById");
             if (conferenceId == Guid.Empty)
@@ -214,65 +208,9 @@ namespace VideoWeb.Controllers
 
             var response = ConferenceResponseVhoMapper.MapConferenceDetailsToResponseModel(conference);
             
-            await _conferenceCache.AddConferenceToCacheAsync(conference);
+            await _conferenceCache.AddConferenceAsync(conference);
 
             return Ok(response);
-        }
-
-        /// <summary>
-        /// Get the participant details of a conference by id for VH officer
-        /// </summary>
-        /// <param name="conferenceId">The unique id of the conference</param>
-        /// <returns>the participant details, if permitted</returns>
-        [HttpGet("{conferenceId}/vhofficer/participants")]
-        [ProducesResponseType(typeof(ConferenceResponseVho), (int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        [SwaggerOperation(OperationId = "GetParticipantsByConferenceIdVho")]
-        public async Task<ActionResult<ConferenceResponseVho>> GetParticipantsByConferenceIdVhoAsync(Guid conferenceId)
-        {
-            _logger.LogDebug("GetParticipantsByConferenceIdVho");
-            
-            if (conferenceId == Guid.Empty)
-            {
-                _logger.LogWarning("Unable to get conference when id is not provided");
-                ModelState.AddModelError(nameof(conferenceId), $"Please provide a valid {nameof(conferenceId)}");
-                
-                return BadRequest(ModelState);
-            }
-
-            var username = User.Identity.Name.ToLower().Trim();
-
-            _logger.LogTrace("Checking to see if user is a VH Officer");
-            if (!User.IsInRole(Role.VideoHearingsOfficer.EnumDataMemberAttr()))
-            {
-                _logger.LogWarning($"Failed to get conference: ${conferenceId}, {username} is not a VH officer");
-                
-                return Unauthorized("User must be a VH Officer");
-            }
-
-            var conference = await _conferenceCache.GetConferenceAsync(conferenceId);
-            
-            if (conference == null)
-            {
-                try
-                {
-                    _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
-                    var conferenceDetails = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-                    
-                    await _conferenceCache.AddConferenceToCacheAsync(conferenceDetails);
-                    conference = await _conferenceCache.GetConferenceAsync(conferenceId);
-                    
-                }
-                catch (VideoApiException e)
-                {
-                    _logger.LogError(e, $"Unable to retrieve conference: ${conferenceId}");
-                    
-                    return StatusCode(e.StatusCode, e.Response);
-                }
-            }
-
-            return Ok();
         }
 
         /// <summary>
@@ -329,7 +267,7 @@ namespace VideoWeb.Controllers
                 .Where(x => displayRoles.Contains((Role)x.User_role)).ToList();
 
             var response = ConferenceResponseMapper.MapConferenceDetailsToResponseModel(conference);
-            await _conferenceCache.AddConferenceToCacheAsync(conference);
+            await _conferenceCache.AddConferenceAsync(conference);
 
             return Ok(response);
         }

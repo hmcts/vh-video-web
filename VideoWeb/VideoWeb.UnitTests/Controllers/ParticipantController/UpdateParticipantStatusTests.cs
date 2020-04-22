@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
@@ -10,6 +11,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
@@ -26,6 +28,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         private readonly EventComponentHelper _eventComponentHelper = new EventComponentHelper();
         private Conference _testConference;
         private Mock<IConferenceCache> _conferenceCacheMock;
+        private Mock<ILogger<ParticipantsController>> _mockLogger;
+        private Mock<IBookingsApiClient> _bookingsApiClientMock;
 
         [SetUp]
         public void Setup()
@@ -34,6 +38,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _videoApiClientMock = new Mock<IVideoApiClient>();
             _eventHandlerFactoryMock = new Mock<IEventHandlerFactory>();
             _eventHandlerMock = new Mock<IEventHandler>();
+            _mockLogger = new Mock<ILogger<ParticipantsController>>();
+            _bookingsApiClientMock = new Mock<IBookingsApiClient>();
 
             _eventHandlerFactoryMock.Setup(x => x.Get(It.IsAny<EventHubEventType>())).Returns(_eventHandlerMock.Object);
             
@@ -49,7 +55,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 }
             };
             
-            _controller = new ParticipantsController(_videoApiClientMock.Object, _eventHandlerFactoryMock.Object, _conferenceCacheMock.Object)
+            _controller = new ParticipantsController(_videoApiClientMock.Object, _eventHandlerFactoryMock.Object, 
+                _conferenceCacheMock.Object, _mockLogger.Object, _bookingsApiClientMock.Object)
             {
                 ControllerContext = context
             };
