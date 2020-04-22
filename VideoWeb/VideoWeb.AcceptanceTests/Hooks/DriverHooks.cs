@@ -38,10 +38,9 @@ namespace VideoWeb.AcceptanceTests.Hooks
             context.VideoWebConfig.TestConfig.TargetBrowser = DriverManager.GetTargetBrowser(NUnit.Framework.TestContext.Parameters["TargetBrowser"]);
             context.VideoWebConfig.TestConfig.TargetDevice = DriverManager.GetTargetDevice(NUnit.Framework.TestContext.Parameters["TargetDevice"]);
             DriverManager.KillAnyLocalDriverProcesses();
-            var versions = new BrowserVersions {Chrome = SetChromeVersion(), ChromeMac = SetChromeVersion()};
             var options = new DriverOptions()
             {
-                BrowserVersions = versions,
+                BrowserVersion = SetBrowserVersion(),
                 EnableLogging = true,
                 TargetBrowser = context.VideoWebConfig.TestConfig.TargetBrowser,
                 TargetDevice = context.VideoWebConfig.TestConfig.TargetDevice
@@ -52,9 +51,9 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 options);
         }
 
-        private static string SetChromeVersion()
+        private static string SetBrowserVersion()
         {
-            return NUnit.Framework.TestContext.Parameters["ChromeVersion"] ?? "latest";
+            return NUnit.Framework.TestContext.Parameters["BrowserVersion"] ?? "latest";
         }
 
         [BeforeScenario(Order = (int)HooksSequence.SetTimeZone)]
@@ -105,7 +104,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             if (_browsers.Count.Equals(0))
             {
                 context.CurrentUser = UserManager.GetDefaultParticipantUser(context.UserAccounts);
-                var browser = new UserBrowser(context.CurrentUser)
+                var browser = new UserBrowser()
                     .SetBaseUrl(context.VideoWebConfig.VhServices.VideoWebUrl)
                     .SetTargetBrowser(context.VideoWebConfig.TestConfig.TargetBrowser)
                     .SetDriver(context.Driver);
