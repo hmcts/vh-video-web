@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Helpers;
 using AcceptanceTests.Common.Configuration.Users;
 using FluentAssertions;
@@ -85,6 +83,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _c.Test.NewHearingId = hearing.Id;
             _c.Test.Case = hearing.Cases.First();
             _c.Test.HearingParticipants = hearing.Participants;
+            NUnit.Framework.TestContext.WriteLine($"Hearing created with Hearing Id {hearing.Id}");
         }
 
         private void CheckThatTheHearingWillBeCreatedForToday(DateTime dateTime)
@@ -113,6 +112,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _c.Test.Conferences.Add(conference);
             _c.Test.NewConferenceId = conference.Id;
             _c.Test.ConferenceParticipants = conference.Participants;
+            NUnit.Framework.TestContext.WriteLine($"Conference created with Conference Id {conference.Id}");
         }
     }
 }
