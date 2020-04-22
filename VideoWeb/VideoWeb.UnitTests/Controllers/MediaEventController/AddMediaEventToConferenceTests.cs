@@ -46,7 +46,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                     ControllerContext = context
                 };
             
-            _conferenceCacheMock.Setup(x => x.GetConference(_testConference.Id)).Returns(_testConference);
+            _conferenceCacheMock.Setup(x => x.GetConferenceAsync(_testConference.Id)).ReturnsAsync(_testConference);
         }
 
         [Test]

@@ -58,7 +58,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         [Test]
         public async Task should_return_ok()
         {
-            _conferenceCacheMock.Setup(x => x.GetConference(_testConference.Id)).Returns(_testConference);
+            _conferenceCacheMock.Setup(x => x.GetConferenceAsync(_testConference.Id)).ReturnsAsync(_testConference);
             var conferenceId = _testConference.Id;
             var request = new UpdateParticipantStatusEventRequest
             {
@@ -76,9 +76,9 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         [Test]
         public async Task should_call_api_when_cache_is_empty()
         {
-            _conferenceCacheMock.SetupSequence(cache => cache.GetConference(_testConference.Id))
-                .Returns((Conference) null)
-                .Returns(_testConference);
+            _conferenceCacheMock.SetupSequence(cache => cache.GetConferenceAsync(_testConference.Id))
+                .ReturnsAsync((Conference) null)
+                .ReturnsAsync(_testConference);
             
             var conferenceId = _testConference.Id;
             var request = new UpdateParticipantStatusEventRequest
@@ -96,7 +96,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         [Test]
         public async Task Should_throw_error_when_get_api_throws_error()
         {
-            _conferenceCacheMock.Setup(x => x.GetConference(_testConference.Id)).Returns(_testConference);
+            _conferenceCacheMock.Setup(x => x.GetConferenceAsync(_testConference.Id)).ReturnsAsync(_testConference);
             
             var conferenceId = _testConference.Id;
             var request = new UpdateParticipantStatusEventRequest

@@ -49,7 +49,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 ControllerContext = context
             };
 
-            _mockConferenceCache.Setup(x => x.AddConferenceToCache(It.IsAny<ConferenceDetailsResponse>()));
+            _mockConferenceCache.Setup(x => x.AddConferenceToCacheAsync(It.IsAny<ConferenceDetailsResponse>()));
         }
 
 
@@ -64,7 +64,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var result = await _controller.GetConferenceByIdAsync(conference.Id);
             var typedResult = (UnauthorizedResult)result.Result;
             typedResult.Should().NotBeNull();
-            _mockConferenceCache.Verify(x => x.AddConferenceToCache(new ConferenceDetailsResponse()), Times.Never);
+            _mockConferenceCache.Verify(x => x.AddConferenceToCacheAsync(new ConferenceDetailsResponse()), Times.Never);
         }
 
         [Test]

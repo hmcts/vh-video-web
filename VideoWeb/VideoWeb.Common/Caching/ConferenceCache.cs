@@ -15,7 +15,7 @@ namespace VideoWeb.Common.Caching
             _memoryCache = memoryCache;
         }
 
-        public async Task AddConferenceToCache(ConferenceDetailsResponse conferenceResponse)
+        public async Task AddConferenceToCacheAsync(ConferenceDetailsResponse conferenceResponse)
         {
             var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse);
             
@@ -26,9 +26,9 @@ namespace VideoWeb.Common.Caching
             });
         }
 
-        public Conference GetConference(Guid id)
+        public async Task<Conference> GetConferenceAsync(Guid id)
         {
-            return _memoryCache.Get<Conference>(id);
+            return await Task.FromResult(_memoryCache.Get<Conference>(id));
         }
     }
 }

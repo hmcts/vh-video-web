@@ -9,7 +9,7 @@ namespace VideoWeb.Mappings
 {
     public static class ParticipantResponseForVhoMapper
     {
-        public static ParticipantResponseVho MapParticipantToResponseModel(ParticipantDetailsResponse participant, BookingParticipant bookingParticipant)
+        public static ParticipantResponseVho MapParticipantToResponseModel(ParticipantDetailsResponse participant)
         {
             var status = Enum.Parse<ParticipantStatus>(participant.Current_status.ToString());
             var role = Enum.Parse<Role>(participant.User_role.ToString());
@@ -17,8 +17,6 @@ namespace VideoWeb.Mappings
             var response = new ParticipantResponseVho
             {
                 Id = participant.Id,
-                FirstName = bookingParticipant?.First_name,
-                LastName = bookingParticipant?.Last_name,
                 Name = participant.Name,
                 Status = status,
                 Role = role,
@@ -26,8 +24,6 @@ namespace VideoWeb.Mappings
                 DisplayName = participant.Display_name,
                 CaseTypeGroup = participant.Case_type_group,
                 Representee = participant.Representee,
-                ContactEmail = bookingParticipant?.Contact_email,
-                ContactTelephone = bookingParticipant?.Telephone_number
             };
 
             if (role == Role.Judge)

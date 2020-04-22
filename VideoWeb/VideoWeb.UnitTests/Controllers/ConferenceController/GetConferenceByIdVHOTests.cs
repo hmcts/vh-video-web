@@ -41,69 +41,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(Role.VideoHearingsOfficer).Build();
             _controller = SetupControllerWithClaims(claimsPrincipal);
            
-            _mockConferenceCache.Setup(x => x.AddConferenceToCache(It.IsAny<ConferenceDetailsResponse>()));
-        }
-
-        [Test]
-        public async Task Should_not_return_error_when_unable_to_retrieve_booking_participants()
-        {
-            var apiException = new BookingsApiException("Hearing does not exist", (int)HttpStatusCode.NotFound,
-                "Invalid Hearing Id", null, null);
-            _bookingsApiClientMock
-                .Setup(x => x.GetAllParticipantsInHearingAsync(It.IsAny<Guid>()))
-                .ThrowsAsync(apiException);
-
-            var conference = CreateValidConferenceResponse();
-            _videoApiClientMock
-                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(conference);
-
-            var result = await _controller.GetConferenceByIdVHOAsync(conference.Id);
-            var typedResult = result.Value;
-            typedResult.Should().BeNull();
-            var objectResult = (ObjectResult)result.Result;
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.OK);
-        }
-
-
-        [Test]
-        public async Task Should_return_ok_when_user_belongs_to_conference()
-        {
-            var conference = CreateValidConferenceResponse();
-            _videoApiClientMock
-                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(conference);
-
-            var bookingParticipants = CreateBookingParticipantResponses(conference.Participants);
-            _bookingsApiClientMock
-                .Setup(x => x.GetAllParticipantsInHearingAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(bookingParticipants);
-
-            var result = await _controller.GetConferenceByIdVHOAsync(conference.Id);
-            var typedResult = (OkObjectResult)result.Result;
-            typedResult.Should().NotBeNull();
-        }
-
-        [Test]
-        public async Task Should_return_error_when_booking_participants_are_missing()
-        {
-            var conference = CreateValidConferenceResponse();
-            _videoApiClientMock
-                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(conference);
-
-            var bookingParticipants = CreateBookingParticipantResponses(conference.Participants);
-            bookingParticipants[0].Id = Guid.NewGuid();
-            _bookingsApiClientMock
-                .Setup(x => x.GetAllParticipantsInHearingAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(bookingParticipants);
-
-            var result = await _controller.GetConferenceByIdVHOAsync(conference.Id);
-
-            var typedResult = (ObjectResult)result.Result;
-            typedResult.StatusCode.Should().Be((int)HttpStatusCode.ExpectationFailed);
-            ((AggregateException)typedResult.Value).Message.Should()
-                .Contain("Unable to find a participant in bookings api with id ");
+            _mockConferenceCache.Setup(x => x.AddConferenceToCacheAsync(It.IsAny<ConferenceDetailsResponse>()));
         }
 
         [Test]
@@ -114,15 +52,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
 
-            var bookingParticipants = CreateBookingParticipantResponses(conference.Participants);
-            _bookingsApiClientMock
-                .Setup(x => x.GetAllParticipantsInHearingAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(bookingParticipants);
-
             var result = await _controller.GetConferenceByIdVHOAsync(conference.Id);
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
-            _mockConferenceCache.Verify(x => x.AddConferenceToCache(new ConferenceDetailsResponse()), Times.Never);
+            _mockConferenceCache.Verify(x => x.AddConferenceToCacheAsync(new ConferenceDetailsResponse()), Times.Never);
         }
 
         [Test]

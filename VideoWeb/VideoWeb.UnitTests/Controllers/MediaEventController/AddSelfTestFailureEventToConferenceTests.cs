@@ -35,7 +35,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
             _testParticipant = _testConference.Participants.First(x => !x.IsJudge());
             _testParticipant.Username = ClaimsPrincipalBuilder.Username;
 
-            _conferenceCacheMock.Setup(x => x.GetConference(_testConference.Id)).Returns(_testConference);
+            _conferenceCacheMock.Setup(x => x.GetConferenceAsync(_testConference.Id)).ReturnsAsync(_testConference);
             
             var context = new ControllerContext
             {
@@ -92,9 +92,9 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
         [Test]
         public async Task should_call_api_when_cache_is_empty()
         {
-            _conferenceCacheMock.SetupSequence(cache => cache.GetConference(_testConference.Id))
-                .Returns((Conference) null)
-                .Returns(_testConference);
+            _conferenceCacheMock.SetupSequence(cache => cache.GetConferenceAsync(_testConference.Id))
+                .ReturnsAsync((Conference) null)
+                .ReturnsAsync(_testConference);
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .Returns(Task.FromResult(default(object)));

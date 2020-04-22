@@ -44,13 +44,13 @@ namespace VideoWeb.Controllers
                 _logger.LogTrace("Received callback from Kinly.");
                 _logger.LogTrace($"ConferenceId: {request.Conference_id}, EventType: {request.Event_type}, Participant ID : {request.Participant_id}");
                 var callbackEvent = CallbackEventMapper.MapConferenceEventToCallbackEventModel(request);
-                if (_conferenceCache.GetConference(callbackEvent.ConferenceId) == null)
+                if (await _conferenceCache.GetConferenceAsync(callbackEvent.ConferenceId) == null)
                 {
                     try
                     {
                         _logger.LogTrace($"Retrieving conference details for conference: {callbackEvent.ConferenceId}");
                         var conference = await _videoApiClient.GetConferenceDetailsByIdAsync(callbackEvent.ConferenceId);
-                        await _conferenceCache.AddConferenceToCache(conference);
+                        await _conferenceCache.AddConferenceToCacheAsync(conference);
                     }
                     catch (VideoApiException e)
                     {

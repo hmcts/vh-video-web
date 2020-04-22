@@ -55,7 +55,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 ControllerContext = context
             };
 
-            _mockConferenceCache.Setup(x => x.AddConferenceToCache(It.IsAny<ConferenceDetailsResponse>()));
+            _mockConferenceCache.Setup(x => x.AddConferenceToCacheAsync(It.IsAny<ConferenceDetailsResponse>()));
         }
 
         [Test]
