@@ -11,6 +11,7 @@ import { DeviceTypeService } from './services/device-type.service';
 import { ErrorService } from './services/error.service';
 import { LocationService } from './services/location.service';
 import { PageUrls } from './shared/page-url.constants';
+import { PageTrackerService } from './services/page-tracker.service';
 
 @Component({
     selector: 'app-root',
@@ -39,11 +40,14 @@ export class AppComponent implements OnInit, OnDestroy {
         private errorService: ErrorService,
         private titleService: Title,
         private activatedRoute: ActivatedRoute,
-        private locationService: LocationService
+        private locationService: LocationService,
+        pageTracker: PageTrackerService,
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
         this.initAuthentication();
+
+        pageTracker.trackPreviousPage(router);
     }
 
     private initAuthentication() {
