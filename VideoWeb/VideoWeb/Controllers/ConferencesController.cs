@@ -262,6 +262,7 @@ namespace VideoWeb.Controllers
                     
                     await _conferenceCache.AddConferenceToCacheAsync(conferenceDetails);
                     conference = await _conferenceCache.GetConferenceAsync(conferenceId);
+                    
                 }
                 catch (VideoApiException e)
                 {
