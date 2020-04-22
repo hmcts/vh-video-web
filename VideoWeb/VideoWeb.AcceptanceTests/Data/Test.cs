@@ -23,6 +23,7 @@ namespace VideoWeb.AcceptanceTests.Data
         public Guid NewHearingId { get; set; }
         public ParticipantDetailsResponse Participant { get; set; }
         public bool SelfTestJourney { get; set; } = false;
+        public long TaskId { get; set; }
         public DefaultData TestData { get; set; }
     }
 }

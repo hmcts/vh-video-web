@@ -5,24 +5,24 @@
   <div *ngFor="let task of tasks" class="govuk-grid-row govuk-!-margin-0">
     <div class="govuk-grid-column-one-quarter task-checkbox-and-time">
       <div class="govuk-checkboxes__item">
-        <input class="govuk-checkboxes__input" type="checkbox" [checked]="task.status === 'Done'"
+        <input id="{{task.id}}-checkbox" class="govuk-checkboxes__input" type="checkbox" [checked]="task.status === 'Done'"
           [disabled]="task.status === 'Done'" (click)="completeTask(task)">
         <label class="govuk-label govuk-checkboxes__label govuk-!-padding-left-2" for="task-created">
-          <p id="task-created" class="govuk-body-s">{{task.created | date:'HH:mm' }}</p>
+          <p id="{{task.id}}-created-date" class="govuk-body-s">{{task.created | date:'HH:mm' }}</p>
         </label>
       </div>
     </div>
     <div class="govuk-grid-column-one-quarter task-body">
-      <p class="govuk-body govuk-body-s pending-alert-text" [ngClass]="{'task-completed': task.status === 'Done'}">
+      <p id="{{task.id}}-type" class="govuk-body govuk-body-s pending-alert-text" [ngClass]="{'task-completed': task.status === 'Done'}">
         {{task.body}}
       </p>
     </div>
     <div class="govuk-grid-column-one-quarter task-origin">
-      <p class="govuk-body-s" [ngClass]="{'task-completed': task.status === 'Done'}">{{getOriginName(task)}}
+      <p id="{{task.id}}-from-user" class="govuk-body-s" [ngClass]="{'task-completed': task.status === 'Done'}">{{getOriginName(task)}}
       </p>
     </div>
     <div class="govuk-grid-column-one-quarter task-updated">
-      <p class="govuk-body-s" [ngClass]="{'task-completed': task.status === 'Done'}">{{task.updated_by}}
+      <p id="{{task.id}}-actioned-by" class="govuk-body-s" [ngClass]="{'task-completed': task.status === 'Done'}">{{task.updated_by}}
         {{task.updated | date:'HH:mm'}}
       </p>
     </div>

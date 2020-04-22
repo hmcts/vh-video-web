@@ -3,7 +3,7 @@ Feature: Instant Messaging
 	I need to have a quick method of resolving technical issues
 	So that I can run a hearing smoothly
 
-@VIH-5517 @NotEdge @NotFirefox @NotIE @NotSafari @Smoketest-Extended
+@VIH-5517 @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari @Smoketest-Extended
 Scenario: Instant Messaging
 	Given the Clerk user has progressed to the Waiting Room page
 	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
@@ -17,7 +17,7 @@ Scenario: Instant Messaging
   When the Clerk closes the chat window
   Then the Clerk can no longer see the messages
 
-  @VIH-5517 @NotEdge @NotFirefox @NotIE @NotSafari
+  @VIH-5517 @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
 Scenario: Instant Messaging Video Hearings Officer logged in first
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
   When the Video Hearings Officer instant messages the Clerk
@@ -29,7 +29,7 @@ Scenario: Instant Messaging Video Hearings Officer logged in first
   Then the Video Hearings Officer can see the notification for the message
   And the Video Hearings Officer can see the message
 
-@VIH-5517 @NotEdge @NotFirefox @NotIE @NotSafari
+@VIH-5517 @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
 Scenario: Instant Messaging Clerk logged in first
 	Given the Clerk user has progressed to the Waiting Room page
   When the Clerk opens the chat window
@@ -40,7 +40,7 @@ Scenario: Instant Messaging Clerk logged in first
   When the Video Hearings Officer instant messages the Clerk
   Then the Clerk can see the message
 
-@VIH-5517 @NotEdge @NotFirefox @NotIE @NotSafari
+@VIH-5517 @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
 Scenario: Instant Messaging multiple messages
 	Given the Clerk user has progressed to the Waiting Room page
   When the Clerk opens the chat window

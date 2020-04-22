@@ -8,13 +8,6 @@ namespace VideoWeb.AcceptanceTests.Pages
     {
         public const string AdminIframeId = "admin-frame";
         public static By AlertsHeader = CommonLocators.ElementContainingText("Alerts for this hearing");
-        public static By AlertRows = By.XPath("//app-tasks-table//div[contains(@class,'govuk-grid-row')]");
-        public static By AlertCheckboxes = By.XPath("//div[@id='tasks-list']//input");
-        public static By AlertCheckbox(int row) => By.XPath($"(//div[@id='tasks-list']//input)[{row}]");
-        public static By AlertTimestamp = CommonLocators.AlertCellText(":");
-        public static By AlertMessage = By.XPath("//div[contains(@class,'task-body')]/p");
-        public static By AlertByUser = By.XPath("//div[contains(@class,'task-origin')]/p");
-        public static By ActionedBy(string alertType) => By.XPath($"//div[contains(@class,'task-body')]/p[contains(text(),'{alertType}')]/../..//div/p[contains(text(),':')]");
         public static By ParticipantStatusTable = By.Id("participant-status-table");
         public static By ParticipantStatus(Guid participantId) => By.Id($"participant-status-{participantId}");
         public static By ParticipantInIframe(string displayName) => By.XPath($"//b[contains(text(),'{displayName}')]");
@@ -24,5 +17,10 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By SelfViewVideo = By.Id("selfviewVideo");
         public static By SelfViewButton = By.Id("selfViewButton");
         public static By CloseButton = By.Id("closeButton");
+        public static By TaskActionedBy(long taskId) => By.Id($"{taskId:D}-actioned-by");
+        public static By TaskCheckbox(long taskId) => By.Id($"{taskId:D}-checkbox");
+        public static By TaskCreatedDate(long taskId) => By.Id($"{taskId:D}-created-date");
+        public static By TaskDetails(long taskId) => By.Id($"{taskId:D}-type");
+        public static By TaskFromUser(long taskId) => By.Id($"{taskId:D}-from-user");
     }
 }
