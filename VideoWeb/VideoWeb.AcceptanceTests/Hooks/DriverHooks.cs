@@ -35,12 +35,13 @@ namespace VideoWeb.AcceptanceTests.Hooks
         [BeforeScenario(Order = (int)HooksSequence.ConfigureDriverHooks)]
         public void ConfigureDriver(TestContext context, ScenarioContext scenarioContext)
         {
-            context.VideoWebConfig.TestConfig.TargetBrowser = DriverManager.GetTargetBrowser(NUnit.Framework.TestContext.Parameters["TargetBrowser"]);
+            var browserAndVersion = GetBrowserAndVersion();
+            var version = SetBrowserAndVersion(context, browserAndVersion);
             context.VideoWebConfig.TestConfig.TargetDevice = DriverManager.GetTargetDevice(NUnit.Framework.TestContext.Parameters["TargetDevice"]);
             DriverManager.KillAnyLocalDriverProcesses();
             var options = new DriverOptions()
             {
-                BrowserVersion = SetBrowserVersion(),
+                BrowserVersion = version,
                 EnableLogging = true,
                 TargetBrowser = context.VideoWebConfig.TestConfig.TargetBrowser,
                 TargetDevice = context.VideoWebConfig.TestConfig.TargetDevice
@@ -51,9 +52,23 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 options);
         }
 
-        private static string SetBrowserVersion()
+        private static string GetBrowserAndVersion()
         {
-            return NUnit.Framework.TestContext.Parameters["BrowserVersion"] ?? "latest";
+            return NUnit.Framework.TestContext.Parameters["TargetBrowser"] ?? "";
+        }
+
+        private static string SetBrowserAndVersion(TestContext context, string browserAndVersion)
+        {
+            if (browserAndVersion.Contains(":"))
+            {
+                context.VideoWebConfig.TestConfig.TargetBrowser = DriverManager.GetTargetBrowser(browserAndVersion.Split(":")[0]);
+                return browserAndVersion.Split(":")[1];
+            }
+            else
+            {
+                context.VideoWebConfig.TestConfig.TargetBrowser = DriverManager.GetTargetBrowser(NUnit.Framework.TestContext.Parameters["TargetBrowser"]);
+                return "latest";
+            }
         }
 
         [BeforeScenario(Order = (int)HooksSequence.SetTimeZone)]
