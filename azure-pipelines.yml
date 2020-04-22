@@ -81,4 +81,3 @@ jobs:
     dalWorkingDirectory: $(dalWorkingDirectory)
     dotNetCoreVersion: '3.1.100'
     nodeVersion: '10.x'
-    vstsFeedId: '3f69a23d-fbc7-4541-afc7-4cccefcad773/5225fff4-7336-46f1-aa3e-289aa7e464a7'
