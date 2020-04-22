@@ -266,7 +266,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             this.getConference().then(() => this.updateShowVideo());
         } else {
             this.logger.info(`EventHub disconnection too many times (#${reconnectionAttempt}), going to service error`);
-            this.errorService.goToServiceError();
+            this.errorService.goToServiceError('Your connection was lost');
         }
     }
 
@@ -354,7 +354,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             self.updateShowVideo();
             self.logger.error(`Error from pexip. Reason : ${reason}`, reason);
             if (self.errorCount > 3) {
-                self.errorService.goToServiceError();
+                self.errorService.goToServiceError('Your connection was lost');
             }
         };
 

@@ -3,12 +3,17 @@ import { Router } from '@angular/router';
 import { PageUrls } from '../shared/page-url.constants';
 import { ApiException } from './clients/api-client';
 import { Logger } from './logging/logger-base';
+import { SessionStorage } from './session-storage';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ErrorService {
-    constructor(private router: Router, private logger: Logger) {}
+    constructor(private router: Router, private logger: Logger) {
+        this.errorMessage = new SessionStorage<string>(this.ERROR_MESSAGE_KEY);
+    }
+    readonly ERROR_MESSAGE_KEY = 'vh.error.message';
+    errorMessage: SessionStorage<string>;
 
     handleApiError(error: any, skipRedirect: boolean = false) {
         this.logger.error('API error', error);
@@ -25,7 +30,7 @@ export class ErrorService {
             case 404:
                 return this.goToNotFound();
             default:
-                return this.goToServiceError();
+                return this.goToServiceError(swaggerError.message);
         }
     }
 
@@ -50,7 +55,13 @@ export class ErrorService {
         this.router.navigate([PageUrls.NotFound]);
     }
 
-    goToServiceError() {
+    goToServiceError(message: string) {
+        this.saveToSession(message);
         this.router.navigate([PageUrls.ServiceError]);
+    }
+
+    private saveToSession(message: string): void {
+        this.errorMessage.clear();
+        this.errorMessage.set(message);
     }
 }
