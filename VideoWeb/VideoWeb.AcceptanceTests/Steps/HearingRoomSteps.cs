@@ -85,7 +85,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheHearingControlsAreVisible()
         {
             SwitchToTheJudgeIFrame();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.ToggleSelfview).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.ToggleSelfView).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.PauseButton).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.CloseButton).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.TechnicalIssues).Displayed.Should().BeTrue();
@@ -96,9 +96,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             SwitchToTheJudgeIFrame();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.SelfView).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Click(HearingRoomPage.ToggleSelfview);
+            _browsers[_c.CurrentUser.Key].Click(HearingRoomPage.ToggleSelfView);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(HearingRoomPage.SelfView).Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Click(HearingRoomPage.ToggleSelfview);
+            _browsers[_c.CurrentUser.Key].Click(HearingRoomPage.ToggleSelfView);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.SelfView).Displayed.Should().BeTrue();
         }
 

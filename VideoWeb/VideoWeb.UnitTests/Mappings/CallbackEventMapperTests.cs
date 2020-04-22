@@ -14,7 +14,7 @@ namespace VideoWeb.UnitTests.Mappings
     public class CallbackEventMapperTests
     {
         [Test]
-        public void should_map_conferenceevent_to_callbackevent()
+        public void Should_map_conferenceevent_to_callbackevent()
         {
             var _testConference = new Conference {
                                         Id = Guid.NewGuid(),

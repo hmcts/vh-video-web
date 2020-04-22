@@ -90,7 +90,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
         }
         
         [Test]
-        public async Task should_call_api_when_cache_is_empty()
+        public async Task Should_call_api_when_cache_is_empty()
         {
             _conferenceCacheMock.SetupSequence(cache => cache.GetConference(_testConference.Id))
                 .Returns((Conference) null)
