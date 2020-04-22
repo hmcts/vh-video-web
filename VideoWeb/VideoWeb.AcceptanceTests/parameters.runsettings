@@ -2,7 +2,7 @@
 <RunSettings>
   <TestRunParameters>
     <Parameter name="RunOnSauceLabs" value="false" />
-    <Parameter name="TargetBrowser" value="Chrome:beta"  />
+    <Parameter name="TargetBrowser" value="Chrome"  />
     <Parameter name="TargetDevice" value="Desktop"  />
     <Parameter name="TargetEnvironment" value=""  />
   </TestRunParameters>
