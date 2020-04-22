@@ -86,7 +86,7 @@ export class AppComponent implements OnInit, OnDestroy {
             this.adalService.handleWindowCallback();
             this.loggedIn = this.adalService.userInfo.authenticated;
             if (!this.loggedIn) {
-                this.router.navigate(['/login'], { queryParams: { returnUrl: currentUrl } });
+                this.router.navigate([`/${PageUrls.Login}`], { queryParams: { returnUrl: currentUrl } });
                 return;
             }
             await this.retrieveProfileRole();
