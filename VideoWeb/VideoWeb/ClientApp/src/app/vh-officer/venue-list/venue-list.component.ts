@@ -64,12 +64,13 @@ export class VenueListComponent implements OnInit {
     }
 
     updateSelection() {
-        if (this.selectedVenues && this.selectedVenues.length > 0) {
+        if (this.venuesSelected) {
             this.venueAllocationStorage.set(this.selectedVenues);
         }
     }
 
     goToHearingList() {
+        this.updateSelection();
         this.router.navigateByUrl(PageUrls.AdminHearingList);
     }
 }
