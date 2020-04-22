@@ -26,29 +26,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             _c = testContext;
         }
 
-        [When(@"the VHO selects the venue (.*)")]
-        [When(@"the VHO selects the venues (.*)")]
-        public void SelectVenues(string venues = "Select All")
-        {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesDropdown).Displayed.Should().BeTrue();
-            foreach (var venue in ConvertStringIntoArray(venues))
-            {
-                _browsers[_c.CurrentUser.Key].ClickCheckbox(VhoVenueAllocationPage.VenueCheckbox(venue));
-            }
-            _browsers[_c.CurrentUser.Key].Click(VhoVenueAllocationPage.VenuesDropdown);
-        }
-        
-        [When(@"the VHO confirms their allocation selection")]
-        public void ConfirmVenue()
-        {
-            _browsers[_c.CurrentUser.Key].Click(VhoVenueAllocationPage.VenueConfirmButton);
-        }
-
-        private static IEnumerable<string> ConvertStringIntoArray(string options)
-        {
-            return options.Split(",");
-        }
-
         [When(@"the VHO selects the hearing")]
         public void ProgressToNextPage()
         {

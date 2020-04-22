@@ -73,6 +73,7 @@ Scenario: Video Hearings Officer can see all hearings for today only
 	And I have another hearing in 2 days time
 	And a new browser is open for a Video Hearings Officer
 	When the user attempts to login with valid credentials
+  And the VHO selects all the venues
 	Then the Video Hearings Officer should only see hearings for today
 
 Scenario: Clerk cannot access Closed hearing

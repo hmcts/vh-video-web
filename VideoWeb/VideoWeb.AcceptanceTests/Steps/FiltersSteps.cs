@@ -53,7 +53,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user filters by status with the options (.*)")]
         public void VhoFilter(string options)
         {
-            _vhoHearingListSteps.SelectVenues();
             _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.FiltersButton);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(FiltersPopupPage.FiltersPopup).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].ClickLink(FiltersPopupPage.ClearFiltersLink);
