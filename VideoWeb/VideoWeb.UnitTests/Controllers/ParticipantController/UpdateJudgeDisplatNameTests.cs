@@ -56,7 +56,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         }
 
         [Test]
-        public async Task should_return_ok()
+        public async Task Should_return_ok()
         {
             _conferenceCacheMock.Setup(x => x.GetConference(_testConference.Id)).Returns(_testConference);
             var conferenceId = _testConference.Id;

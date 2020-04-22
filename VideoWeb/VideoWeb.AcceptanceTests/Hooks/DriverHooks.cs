@@ -35,11 +35,11 @@ namespace VideoWeb.AcceptanceTests.Hooks
         [BeforeScenario(Order = (int)HooksSequence.ConfigureDriverHooks)]
         public void ConfigureDriver(TestContext context, ScenarioContext scenarioContext)
         {
-            context.VideoWebConfig.TestConfig.TargetBrowser = DriverManager.GetTargetBrowser(NUnit.Framework.TestContext.Parameters["TargetBrowser"]);
             context.VideoWebConfig.TestConfig.TargetDevice = DriverManager.GetTargetDevice(NUnit.Framework.TestContext.Parameters["TargetDevice"]);
             DriverManager.KillAnyLocalDriverProcesses();
             var options = new DriverOptions()
             {
+                BrowserVersion = SetBrowserAndVersion(context),
                 EnableLogging = true,
                 TargetBrowser = context.VideoWebConfig.TestConfig.TargetBrowser,
                 TargetDevice = context.VideoWebConfig.TestConfig.TargetDevice
@@ -48,6 +48,26 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 context.VideoWebConfig.SauceLabsConfiguration, 
                 scenarioContext.ScenarioInfo,
                 options);
+        }
+
+        private static string SetBrowserAndVersion(TestContext context)
+        {
+            var browserAndVersion = GetBrowserAndVersion();
+            if (browserAndVersion.Contains(":"))
+            {
+                context.VideoWebConfig.TestConfig.TargetBrowser = DriverManager.GetTargetBrowser(browserAndVersion.Split(":")[0]);
+                return browserAndVersion.Split(":")[1];
+            }
+            else
+            {
+                context.VideoWebConfig.TestConfig.TargetBrowser = DriverManager.GetTargetBrowser(NUnit.Framework.TestContext.Parameters["TargetBrowser"]);
+                return "latest";
+            }
+        }
+
+        private static string GetBrowserAndVersion()
+        {
+            return NUnit.Framework.TestContext.Parameters["TargetBrowser"] ?? "";
         }
 
         [BeforeScenario(Order = (int)HooksSequence.SetTimeZone)]
@@ -98,7 +118,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             if (_browsers.Count.Equals(0))
             {
                 context.CurrentUser = UserManager.GetDefaultParticipantUser(context.UserAccounts);
-                var browser = new UserBrowser(context.CurrentUser)
+                var browser = new UserBrowser()
                     .SetBaseUrl(context.VideoWebConfig.VhServices.VideoWebUrl)
                     .SetTargetBrowser(context.VideoWebConfig.TestConfig.TargetBrowser)
                     .SetDriver(context.Driver);

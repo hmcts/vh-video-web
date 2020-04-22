@@ -13,6 +13,7 @@ Scenario: VHO filters hearings by alert type
   Then the hearings are filtered
 
 @VIH-5417
+@VIH-5417 @Smoketest-Extended
 Scenario: VHO filters hearings by status
   Given I have a hearing
   And I have another hearing in -10 minutes time

@@ -3,7 +3,7 @@ Feature: Hearing Status
 	As a Video Hearings Officer
 	I want to be able to see an overview of the status of all hearings
 
-@VIH-4195
+@VIH-4195 @Smoketest-Extended
 Scenario Outline: Video Hearings Officer views hearing status
 	Given I have a hearing in 2 minutes time
 	And I have another hearing

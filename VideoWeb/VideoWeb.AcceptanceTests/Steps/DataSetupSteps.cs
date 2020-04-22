@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Net;
-using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Helpers;
 using AcceptanceTests.Common.Configuration.Users;
 using FluentAssertions;
@@ -11,8 +10,6 @@ using VideoWeb.AcceptanceTests.Assertions;
 using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
-using EventType = VideoWeb.EventHub.Enums.EventType;
-using RoomType = VideoWeb.EventHub.Enums.RoomType;
 using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
 
 namespace VideoWeb.AcceptanceTests.Steps
@@ -86,6 +83,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _c.Test.NewHearingId = hearing.Id;
             _c.Test.Case = hearing.Cases.First();
             _c.Test.HearingParticipants = hearing.Participants;
+            NUnit.Framework.TestContext.WriteLine($"Hearing created with Hearing Id {hearing.Id}");
         }
 
         private void CheckThatTheHearingWillBeCreatedForToday(DateTime dateTime)
@@ -106,8 +104,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             var response = _c.Apis.BookingsApi.ConfirmHearingToCreateConference(_c.Test.NewHearingId, updateRequest);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-            var videoApiManager = new VideoApiManager(_c.VideoWebConfig.VhServices.VideoApiUrl, _c.Tokens.VideoApiBearerToken);
-            response = videoApiManager.PollForConferenceResponse(_c.Test.NewHearingId);
+            response = _c.Apis.VideoApi.PollForConferenceResponse(_c.Test.NewHearingId);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
             AssertConferenceDetailsResponse.ForConference(conference);
@@ -115,6 +112,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _c.Test.Conferences.Add(conference);
             _c.Test.NewConferenceId = conference.Id;
             _c.Test.ConferenceParticipants = conference.Participants;
+            NUnit.Framework.TestContext.WriteLine($"Conference created with Conference Id {conference.Id}");
         }
     }
 }

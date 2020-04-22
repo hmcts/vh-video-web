@@ -64,7 +64,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
         }
 
         [Test]
-        public async Task should_return_okay_code_when_chat_history_is_found()
+        public async Task Should_return_okay_code_when_chat_history_is_found()
         {
             var conferenceId = Guid.NewGuid();
             var messages = Builder<InstantMessageResponse>.CreateListOfSize(5).Build().ToList();
@@ -80,7 +80,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
         }
 
         [Test]
-        public async Task should_return_okay_code_when_chat_history_is_empty()
+        public async Task Should_return_okay_code_when_chat_history_is_empty()
         {
             var conferenceId = Guid.NewGuid();
             var messages = new List<InstantMessageResponse>();
@@ -95,7 +95,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
         }
 
         [Test]
-        public async Task should_map_originators_when_message_is_not_from_user()
+        public async Task Should_map_originators_when_message_is_not_from_user()
         {
 
             var conferenceId = Guid.NewGuid();
@@ -126,7 +126,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
         }
 
         [Test]
-        public async Task should_return_exception()
+        public async Task Should_return_exception()
         {
             var conferenceId = Guid.NewGuid();
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",

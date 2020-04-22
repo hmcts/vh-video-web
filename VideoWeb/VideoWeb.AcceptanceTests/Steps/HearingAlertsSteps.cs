@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading;
 using AcceptanceTests.Common.Api.Hearings;
@@ -26,7 +25,7 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public sealed class HearingAlertsSteps
     {
-        private const int Timeout = 10;
+        private const int TimeoutForCheckboxToNotBeEnabled = 10;
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _c;
 
@@ -49,6 +48,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             var response = SendEventToVideoApi(request);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            Tasks.GetTheTaskId(_c, EventType.MediaPermissionDenied);
         }
 
         [When(@"the hearing is suspended")]
@@ -63,6 +63,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             var response = SendEventToVideoWeb(request);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            Tasks.GetTheTaskId(_c, EventType.Suspend);
         }
 
         [When(@"a (.*) has disconnected from the (.*)")]
@@ -79,6 +80,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             var response = SendEventToVideoWeb(request);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            Tasks.GetTheTaskId(_c, EventType.Disconnected);
         }
 
         [When(@"a participant has failed the self-test with (.*)")]
@@ -95,6 +97,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             var response = SendEventToVideoApi(request);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            Tasks.GetTheTaskId(_c, EventType.SelfTestFailed);
         }
 
         private ParticipantDetailsResponse GetUserFromConferenceDetails(string userRole)
@@ -102,16 +105,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             _c.Test.Participant = userRole.ToLower().Equals("judge") || userRole.ToLower().Equals("clerk")
                 ? _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(Role.Judge.ToString()))
                 : _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(Role.Individual.ToString()));
-
             return _c.Test.Participant;
         }
 
-        [When(@"the user selects the (.*) alert")]
-        public void WhenTheUserSelectsTheAlert(string alertType)
+        [When(@"the user selects the alert")]
+        public void WhenTheUserSelectsTheAlert()
         {
-            var alerts = GetAlerts();
-            var alert = alerts.First(x => x.AlertType.ToLower().Contains(alertType.ToLower()));
-            _browsers[_c.CurrentUser.Key].ClickCheckbox(AdminPanelPage.AlertCheckbox(alert.Row + 1));
+            _browsers[_c.CurrentUser.Key].ClickCheckbox(AdminPanelPage.TaskCheckbox(_c.Test.TaskId));
         }
 
         [When(@"the hearing has been closed")]
@@ -141,97 +141,54 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser.Key].Refresh();
             _browsers[_c.CurrentUser.Key].Driver.WaitForAngular();
-            var alertCount =_browsers[_c.CurrentUser.Key].Driver
-                .WaitUntilElementExists(VhoHearingListPage.NumberOfAlerts(_c.Test.Conference.Id))
-                .GetAttribute("data-badge");
-            int.Parse(alertCount).Should().BePositive();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.StatusBadge(_c.Test.Conference.Id)).Text.Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id)).Click();
+            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.TaskDetails(_c.Test.TaskId)).Text.Trim().Should().Be(alertType);
 
-            var alerts = GetAlerts();
             var timeOfAlert = _c.TimeZone.AdjustForVideoWeb(_c.Test.AlertTime).ToString(DateFormats.AlertMessageTimestamp);
             var timeOfAlertMinusAMinute = _c.TimeZone.AdjustForVideoWeb(_c.Test.AlertTime).AddMinutes(-1).ToString(DateFormats.AlertMessageTimestamp);
             var timeOfAlertPlusAMinute = _c.TimeZone.AdjustForVideoWeb(_c.Test.AlertTime).AddMinutes(1).ToString(DateFormats.AlertMessageTimestamp);
 
-            foreach (var alert in alerts)
-            {
-                alert.Checkbox.Selected.Should().BeFalse();
-                alert.Checkbox.Enabled.Should().BeTrue();
-                alert.Timestamp.Should().Match<string>(t=> t.Equals(timeOfAlert) || t.Equals(timeOfAlertMinusAMinute) || t.Equals(timeOfAlertPlusAMinute));
-            }
-
-            var alertTypeExists = alerts.Any(alert => alert.AlertType.ToLower().Contains(alertType.ToLower()));
-            alertTypeExists.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(AdminPanelPage.TaskCheckbox(_c.Test.TaskId)).Selected.Should().BeFalse();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(AdminPanelPage.TaskCheckbox(_c.Test.TaskId)).Enabled.Should().BeTrue();
+            
+            var timestamp = _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.TaskCreatedDate(_c.Test.TaskId)).Text.Trim();
+            timestamp.Should().BeOneOf(timeOfAlert, timeOfAlertMinusAMinute, timeOfAlertPlusAMinute);
 
             if (alertType.ToLower().Contains("failed self-test") || alertType.ToLower().Equals("disconnected"))
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.TaskFromUser(_c.Test.TaskId)).Text.Trim().Should().Be(_c.Test.Participant.Name);
+        }
+
+        [Then(@"the alert checkbox is no longer enabled")]
+        public void ThenTheCheckboxIsNoLongerEnabled()
+        {
+            for (var i = 0; i < TimeoutForCheckboxToNotBeEnabled; i++)
             {
-                alerts.First(x => x.AlertType.ToLower().Contains(alertType.ToLower())).Username.Should().Be(_c.Test.Participant.Name);
+                if (!_browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(AdminPanelPage.TaskCheckbox(_c.Test.TaskId)).Enabled)
+                {
+                    return;
+                }
+                Thread.Sleep(TimeSpan.FromSeconds(1));
             }
+
+            throw new InvalidElementStateException($"Alert is still enabled after {TimeoutForCheckboxToNotBeEnabled} seconds.");
         }
 
-        [Then(@"the (.*) checkbox is no longer enabled")]
-        public void ThenTheCheckboxIsNoLongerEnabled(string alertType)
+        [Then(@"the alert should be updated with the details of the user that actioned the alert")]
+        public void ThenTheAlertShouldBeUpdatedWithTheDetailsOfTheUserThatActionedTheAlert()
         {
-            CheckboxShouldBeDisabled(alertType);
-        }
-
-        [Then(@"the (.*) alert should be updated with the details of the user that actioned the alert")]
-        public void ThenTheAlertShouldBeUpdatedWithTheDetailsOfTheUserThatActionedTheAlert(string alertType)
-        {
-            var alerts = GetAlerts();
-            var alert = alerts.First(x => x.AlertType.ToLower().Contains(alertType.ToLower()));
             var time = _c.TimeZone.Adjust(DateTime.Now).ToString(DateFormats.AlertMessageTimestamp);
             var timeMinusAMinute = _c.TimeZone.Adjust(DateTime.Now).AddMinutes(-1).ToString(DateFormats.AlertMessageTimestamp);
             var timePlusAMinute = _c.TimeZone.Adjust(DateTime.Now).AddMinutes(1).ToString(DateFormats.AlertMessageTimestamp);
-            alert.ActionedAt.Should().Match<string>(t => t.Equals(time) || t.Equals(timeMinusAMinute) || t.Equals(timePlusAMinute));
-            alert.ActionedBy.Should().Be(_c.CurrentUser.Username.ToLower());
+            var actionedDetails = _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.TaskActionedBy(_c.Test.TaskId)).Text.Trim();
+            actionedDetails.Should().ContainAny(time, timeMinusAMinute, timePlusAMinute);
+            actionedDetails.ToLower().Should().Contain(_c.CurrentUser.Username.ToLower());
         }
 
-        private Guid? GetClerkParticipantId()
+        private Guid GetClerkParticipantId()
         {
             return _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(Role.Judge.ToString())).Id;
-        }
-
-        private List<Alert> GetAlerts()
-        {
-            var rowsCount = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertRows).Count;
-            rowsCount.Should().BeGreaterThan(0);
-            var alerts = new List<Alert>();
-
-            for (var i = 0; i < rowsCount; i++)
-            {
-                var alert = new Alert
-                {
-                    Row = i,
-                    Checkbox = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertCheckboxes)[i],
-                    CheckboxEnabled = TryGetEnabledStatus(i),
-                    Timestamp = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertTimestamp)[i].Text,
-                    AlertType = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertMessage)[i].Text.Trim(),
-                    Username = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertByUser)[i].Text.Trim()
-                };
-                if (!_browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertCheckboxes)[i].Enabled)
-                {
-                    var actionedByDetails = _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ActionedBy(alert.AlertType)).Text;
-                    alert.ActionedBy = actionedByDetails.Split(" ")[0].Trim();
-                    alert.ActionedAt = actionedByDetails.Split(" ")[1].Trim();
-                }
-                alerts.Add(alert);
-            }
-
-            return alerts;
-        }
-
-        private bool TryGetEnabledStatus(int row)
-        {
-            try
-            {
-                return _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(AdminPanelPage.AlertCheckboxes)[row].Enabled;
-            }
-            catch
-            {
-                return false;
-            }
         }
 
         private IRestResponse SendEventToVideoApi(CallbackEvent request)
@@ -245,22 +202,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             _c.Test.AlertTime = _c.TimeZone.Adjust(DateTime.Now);
             _c.Tokens.CallbackBearerToken = GenerateTemporaryTokens.SetCustomJwTokenForCallback(_c.VideoWebConfig.VideoWebKinlyConfiguration);
             return new VideoWebApiManager(_c.VideoWebConfig.VhServices.VideoWebUrl, _c.Tokens.CallbackBearerToken).SendCallBackEvent(request);
-        }
-
-        private void CheckboxShouldBeDisabled(string alertType)
-        {
-            for (var i = 0; i < Timeout; i++)
-            {
-                var alerts = GetAlerts();
-                var alert = alerts.First(x => x.AlertType.ToLower().Contains(alertType.ToLower()));
-                if (alert.CheckboxEnabled.Equals(false))
-                {
-                    return;
-                }
-                Thread.Sleep(TimeSpan.FromSeconds(1));
-            }
-
-            throw new InvalidElementStateException($"Alert is still enabled after {Timeout} seconds.");
         }
     }
 }

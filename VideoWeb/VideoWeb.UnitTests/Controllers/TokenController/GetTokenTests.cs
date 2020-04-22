@@ -9,7 +9,7 @@ namespace VideoWeb.UnitTests.Controllers.TokenController
     public class GetTokenTests: TokenControllerTest
     {
         [Test]
-        public void should_return_ok_token_response()
+        public void Should_return_ok_token_response()
         { 
             var result = _tokenController.GetSelfTestToken(participantId);
 

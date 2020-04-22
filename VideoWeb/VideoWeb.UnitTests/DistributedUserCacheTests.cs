@@ -23,7 +23,7 @@ namespace VideoWeb.UnitTests
         }
 
         [Test]
-        public async Task should_return_profile_if_in_cache()
+        public async Task Should_return_profile_if_in_cache()
         {
             var profile = Builder<UserProfile>.CreateNew().Build();
             var serialized = JsonConvert.SerializeObject(profile, SerializerSettings);
@@ -45,7 +45,7 @@ namespace VideoWeb.UnitTests
         }
         
         [Test]
-        public async Task should_call_function_and_add_to_cache_when_cache_empty()
+        public async Task Should_call_function_and_add_to_cache_when_cache_empty()
         {
             var profile = Builder<UserProfile>.CreateNew().Build();
             var cache = new DistributedUserCache(_distributedCacheMock.Object);
@@ -63,7 +63,7 @@ namespace VideoWeb.UnitTests
         }
         
         [Test]
-        public async Task should_call_function_and_add_to_cache_when_cache_contains_unexpected_data()
+        public async Task Should_call_function_and_add_to_cache_when_cache_contains_unexpected_data()
         {
             var profile = Builder<UserProfile>.CreateNew().Build();
             var conferenceResponse = Builder<Conference>.CreateNew().Build();
