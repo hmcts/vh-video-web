@@ -29,7 +29,7 @@ namespace VideoWeb.UnitTests.Mappings
         }
 
         [Test]
-        public void should_return_true_when_message_is_from_provided_username()
+        public void Should_return_true_when_message_is_from_provided_username()
         {
             var loggedInUsername = "john@doe.com";
 
@@ -42,7 +42,7 @@ namespace VideoWeb.UnitTests.Mappings
         }
 
         [Test]
-        public void should_return_false_when_message_is_from_another_user()
+        public void Should_return_false_when_message_is_from_another_user()
         {
             var loggedInUsername = "john@doe.com";
             var otherUsername = "someone@else.com";
@@ -56,7 +56,7 @@ namespace VideoWeb.UnitTests.Mappings
         }
 
         [Test]
-        public async Task should_get_participant_display_name_when_message_from_participant_in_conference()
+        public async Task Should_get_participant_display_name_when_message_from_participant_in_conference()
         {
             const string loggedInUsername = "john@doe.com";
             const string displayName = "johnny";
@@ -72,7 +72,7 @@ namespace VideoWeb.UnitTests.Mappings
         }
 
         [Test]
-        public async Task should_get_first_name_from_ad_when_message_from_non_participant()
+        public async Task Should_get_first_name_from_ad_when_message_from_non_participant()
         {
             var nonParticipantUsername = "someone@else.com";
             var userProfile = new UserProfile

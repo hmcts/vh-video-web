@@ -22,7 +22,7 @@ using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
-    public class GetConferenceByIdVHOTests
+    public class GetConferenceByIdVhoTests
     {
         private ConferencesController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;

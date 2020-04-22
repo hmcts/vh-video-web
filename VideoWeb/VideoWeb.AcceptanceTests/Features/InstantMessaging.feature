@@ -3,7 +3,7 @@ Feature: Instant Messaging
 	I need to have a quick method of resolving technical issues
 	So that I can run a hearing smoothly
 
-@VIH-5517 @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
+@VIH-5517 @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari @Smoketest-Extended
 Scenario: Instant Messaging
 	Given the Clerk user has progressed to the Waiting Room page
 	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing

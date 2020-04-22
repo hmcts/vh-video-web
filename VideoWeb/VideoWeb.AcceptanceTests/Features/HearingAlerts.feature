@@ -21,7 +21,7 @@ Scenario: Video Hearings Officer receieves suspended alert
 	Then the alert checkbox is no longer enabled
 	And the alert should be updated with the details of the user that actioned the alert
 
-@VIH-1630 @VIH-4418
+@VIH-1630 @VIH-4418 @Smoketest-Extended
 Scenario Outline: Video Hearings Officer receieves disconnected alert
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	When a <Participant> has disconnected from the <Room>
