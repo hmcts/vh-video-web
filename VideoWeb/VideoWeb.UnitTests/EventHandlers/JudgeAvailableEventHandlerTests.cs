@@ -36,7 +36,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             // Verify messages sent to event hub clients
             EventHubClientMock.Verify(
-                x => x.ParticipantStatusMessage(participantForEvent.Id, ParticipantState.Available),
+                x => x.ParticipantStatusMessage(participantForEvent.Id, conference.Id, ParticipantState.Available),
                 Times.Exactly(participantCount));
         }
     }

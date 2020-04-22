@@ -70,13 +70,13 @@ namespace VideoWeb.EventHub.Handlers.Core
             foreach (var participant in SourceConference.Participants)
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
-                    .ParticipantStatusMessage(SourceParticipant.Id, participantState);
+                    .ParticipantStatusMessage(SourceParticipant.Id, SourceConference.Id, participantState);
                 _logger.LogTrace($"Participant Status: Participant Id: { participant.Id } | " +
                     $"Role: { participant.Role } | Participant State: { participantState } | Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
             }
             
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
-                .ParticipantStatusMessage(SourceParticipant.Id, participantState);
+                .ParticipantStatusMessage(SourceParticipant.Id, SourceConference.Id, participantState);
             _logger.LogTrace($"Participant Status: Participant Id: { SourceParticipant.Id } | " +
                 $"Role: { SourceParticipant.Role } | Participant State: { participantState } | Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
         }

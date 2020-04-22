@@ -37,7 +37,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             await _eventHandler.HandleAsync(callbackEvent);
 
             EventHubClientMock.Verify(
-                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id,
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, conference.Id,
                     ParticipantState.Disconnected), Times.Exactly(participantCount));
         }
     }

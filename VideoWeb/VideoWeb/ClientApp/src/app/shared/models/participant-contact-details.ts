@@ -17,6 +17,22 @@ export class ParticipantContactDetails {
     return this.participant.id;
   }
 
+  get refId(): string {
+    return this.participant.ref_id;
+  }
+
+  get name() {
+    return this.participant.name;
+  }
+
+  get firstname() {
+    return this.participant.first_name;
+  }
+
+  get lastname() {
+    return this.participant.last_name;
+  }
+
   get caseGroup() {
     return this.participant.case_type_group;
   }
