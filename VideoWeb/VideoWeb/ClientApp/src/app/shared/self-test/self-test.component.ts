@@ -170,7 +170,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.pexipAPI.onError = function (reason) {
             self.displayFeed = false;
             self.logger.error('Error from pexip. Reason : ' + reason, reason);
-            self.errorService.goToServiceError();
+            self.errorService.goToServiceError('Your connection was lost');
         };
 
         this.pexipAPI.onDisconnect = function (reason) {
