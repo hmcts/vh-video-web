@@ -165,7 +165,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             for (var i = 0; i < TimeoutForCheckboxToNotBeEnabled; i++)
             {
-                if (!_browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(AdminPanelPage.TaskCheckbox(_c.Test.TaskId)).Enabled)
+                if (!IsEnabled())
                 {
                     return;
                 }
@@ -173,6 +173,19 @@ namespace VideoWeb.AcceptanceTests.Steps
             }
 
             throw new InvalidElementStateException($"Alert is still enabled after {TimeoutForCheckboxToNotBeEnabled} seconds.");
+        }
+
+        private bool IsEnabled()
+        {
+            try
+            {
+                return _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(AdminPanelPage.TaskCheckbox(_c.Test.TaskId)).Enabled;
+            }
+            catch (StaleElementReferenceException e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
         }
 
         [Then(@"the alert should be updated with the details of the user that actioned the alert")]

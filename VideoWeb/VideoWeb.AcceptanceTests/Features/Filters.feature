@@ -12,7 +12,6 @@ Scenario: VHO filters hearings by alert type
   When the user filters by alert with the options Disconnected,Self-test failed,Cam/mic blocked,Suspended
   Then the hearings are filtered
 
-@VIH-5417
 @VIH-5417 @Smoketest-Extended
 Scenario: VHO filters hearings by status
   Given I have a hearing

@@ -119,7 +119,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenParticipantsCanSeeTheOtherParticipants(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            _browsers[_c.CurrentUser.Key].Driver.SwitchTo().DefaultContent();
+            SwitchToParticipantContent();
             new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser.Key]).Feed(HearingRoomPage.ParticipantIncomingVideo);
         }
 
@@ -132,9 +132,16 @@ namespace VideoWeb.AcceptanceTests.Steps
         private void SwitchToTheJudgeIFrame()
         {
             if (_c.Test.JudgeInIframe) return;
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.JudgeIframe).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.SwitchTo().Frame(HearingRoomPage.JudgeIframeId);
             _c.Test.JudgeInIframe = true;
+        }
+
+        private void SwitchToParticipantContent()
+        {
+            if (!_browsers[_c.CurrentUser.Key].IsDisplayed(HearingRoomPage.ParticipantIncomingVideo))
+            {
+                _browsers[_c.CurrentUser.Key].Driver.SwitchTo().DefaultContent();
+            }
         }
     }
 }
