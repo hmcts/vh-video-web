@@ -1,5 +1,4 @@
 import { ParticipantResponse, ParticipantStatus, Role, ParticipantResponseVho } from 'src/app/services/clients/api-client';
-import { ParticipantStatusReader } from './participant-status-reader';
 
 export class Participant {
   private participant: ParticipantResponseVho;
@@ -52,13 +51,5 @@ export class Participant {
 
   get representee(): string {
     return this.participant.representee;
-  }
-
-  getStatusAsText(): string {
-    return new ParticipantStatusReader().getStatusAsText(this.participant.status);
-  }
-
-  getStatusAsTextForJudge(statuses: ParticipantStatus[]): string {
-    return new ParticipantStatusReader().getStatusAsTextForJudge(this.participant.status, statuses);
   }
 }

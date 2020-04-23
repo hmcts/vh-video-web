@@ -1,6 +1,9 @@
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
 
 export class ParticipantStatusReader {
+  public inAnotherHearingText = 'In another hearing';
+  public unavailableText = 'Unavailable';
+
     getStatusAsText(status: ParticipantStatus): string {
         switch (status) {
             case ParticipantStatus.None:
@@ -17,15 +20,15 @@ export class ParticipantStatusReader {
         }
     }
 
-    getStatusAsTextForJudge(status: ParticipantStatus, statuses: ParticipantStatus[]): string {
+  getStatusAsTextForJudge(status: ParticipantStatus, statuses: ParticipantStatus[]): string {
         switch (status) {
             case ParticipantStatus.None:
             case ParticipantStatus.NotSignedIn:
                 const inHearing = statuses.filter(x => x === ParticipantStatus.InHearing);
-                return inHearing.length > 0 ? 'In another hearing' : 'Unavailable';
+                return inHearing.length > 0 ? this.inAnotherHearingText : this.unavailableText;
             case ParticipantStatus.InConsultation:
             case ParticipantStatus.UnableToJoin:
-                return 'Unavailable';
+                return this.unavailableText;
             case ParticipantStatus.InHearing:
                 return 'In Hearing';
 

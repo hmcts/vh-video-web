@@ -2,7 +2,6 @@
   <span class="govuk-!-padding-2 govuk-!-padding-left-4 govuk-heading-s">Participant Status</span>
 </div>
 
-<p *ngIf="loadingData">Loading...</p>
 <div id="participant-status-list">
   <div *ngFor="let participant of participants" class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
@@ -21,8 +20,10 @@
     </div>
 
     <div class="govuk-grid-column-one-half">
-      <p id="participant-status-{{participant.id}}" class="govuk-body-s govuk-!-font-weight-bold" [ngClass]="getParticipantStatusClass(participant)">
-        {{participant.isJudge ? participant.getStatusAsTextForJudge(judgeStatuses) : participant.getStatusAsText()}}
+      <p id="participant-status-{{participant.id}}"
+         class="govuk-body-s govuk-!-font-weight-bold"
+         [ngClass]="getParticipantStatusClass(participant.status)">
+        {{participant.statusText}}
       </p>
     </div>
   </div>

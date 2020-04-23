@@ -3,13 +3,12 @@ import {
   Role,
   ParticipantContactDetailsResponseVho
 } from 'src/app/services/clients/api-client';
-import { ParticipantStatusReader } from './participant-status-reader';
 
 export class ParticipantContactDetails {
   private participant: ParticipantContactDetailsResponseVho;
+  private participantStatusText: string;
 
   constructor(participant: ParticipantContactDetailsResponseVho) {
-
     this.participant = participant;
   }
 
@@ -23,14 +22,6 @@ export class ParticipantContactDetails {
 
   get name() {
     return this.participant.name;
-  }
-
-  get firstname() {
-    return this.participant.first_name;
-  }
-
-  get lastname() {
-    return this.participant.last_name;
   }
 
   get caseGroup() {
@@ -59,6 +50,18 @@ export class ParticipantContactDetails {
     return this.participant.status;
   }
 
+  set status(value: ParticipantStatus) {
+    this.participant.status = value;
+  }
+
+  get statusText(): string {
+    return this.participantStatusText;
+  }
+
+  set statusText(value: string) {
+    this.participantStatusText = value;
+  }
+
   get role(): Role {
     return this.participant.role;
   }
@@ -69,13 +72,5 @@ export class ParticipantContactDetails {
 
   get displayName(): string {
     return this.participant.display_name;
-  }
-
-  getStatusAsText(): string {
-    return new ParticipantStatusReader().getStatusAsText(this.participant.status);
-  }
-
-  getStatusAsTextForJudge(statuses: ParticipantStatus[]): string {
-    return new ParticipantStatusReader().getStatusAsTextForJudge(this.participant.status, statuses);
   }
 }
