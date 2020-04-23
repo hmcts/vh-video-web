@@ -9,15 +9,14 @@ import { ConfigService } from './services/api/config.service';
 import { ClientSettingsResponse, UserProfileResponse, Role } from './services/clients/api-client';
 import { DeviceTypeService } from './services/device-type.service';
 import { Logger } from './services/logging/logger-base';
-import { PageUrls } from './shared/page-url.constants';
 import { MockLogger } from './testing/mocks/MockLogger';
 import { FooterStubComponent } from './testing/stubs/footer-stub';
 import { HeaderStubComponent } from './testing/stubs/header-stub';
 import { ProfileService } from './services/api/profile.service';
 import { BetaBannerStubComponent } from './testing/stubs/beta-banner-stub';
 import { LocationService } from './services/location.service';
-import { ErrorService } from './services/error.service';
 import { PageTrackerService } from './services/page-tracker.service';
+import { EventsService } from './services/events.service';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -25,6 +24,7 @@ describe('AppComponent', () => {
     let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
     let locationServiceSpy: jasmine.SpyObj<LocationService>;
+    let eventsServiceSpy: jasmine.SpyObj<EventsService>;
 
     const clientSettings = new ClientSettingsResponse({
         tenant_id: 'tenantid',
@@ -53,6 +53,7 @@ describe('AppComponent', () => {
 
         locationServiceSpy = jasmine.createSpyObj<LocationService>('LocationService', ['getCurrentUrl', 'getCurrentPathName']);
         pageTracker = jasmine.createSpyObj('PageTrackerService', ['trackNavigation', 'trackPreviousPage']);
+        eventsServiceSpy = jasmine.createSpyObj('EventsService', ['stop']);
 
         TestBed.configureTestingModule({
             imports: [HttpClientModule, RouterTestingModule],
@@ -65,7 +66,8 @@ describe('AppComponent', () => {
                 { provide: DeviceTypeService, useValue: deviceTypeServiceSpy },
                 { provide: ProfileService, useValue: profileServiceSpy },
                 { provide: LocationService, useValue: locationServiceSpy },
-                { provide: PageTrackerService, useValue: pageTracker }
+                { provide: PageTrackerService, useValue: pageTracker },
+                { provide: EventsService, useValue: eventsServiceSpy }
             ]
         });
     });
