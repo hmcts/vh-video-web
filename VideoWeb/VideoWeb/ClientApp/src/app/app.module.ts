@@ -18,6 +18,7 @@ import { LOG_ADAPTER, LoggerService } from './services/logging/logger.service';
 import { ConsoleLogger } from './services/logging/loggers/console-logger';
 import { AppInsightsLoggerService } from './services/logging/loggers/app-insights-logger.service';
 import { Logger } from './services/logging/logger-base';
+import { PageTrackerService } from './services/page-tracker.service';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -46,7 +47,8 @@ export function getSettings(configService: ConfigService) {
         AdalGuard,
         ConfigService,
         AuthGuard,
-        Title
+        Title,
+        PageTrackerService
     ],
     bootstrap: [AppComponent]
 })

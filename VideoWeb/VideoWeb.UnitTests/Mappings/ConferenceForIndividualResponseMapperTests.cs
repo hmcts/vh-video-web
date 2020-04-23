@@ -13,7 +13,7 @@ namespace VideoWeb.UnitTests.Mappings
     public class ConferenceForIndividualResponseMapperTests
     {
         [Test]
-        public void should_map_all_properties()
+        public void Should_map_all_properties()
         {
             const string loggedInUsername = "test@user.com";
 

@@ -8,27 +8,27 @@ Scenario: Video Hearings Officer receieves media blocked alert
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	When a participant has chosen to block user media
 	Then the Video Hearings Officer user should see a Not Started notification and a Media blocked alert
-	When the user selects the Media blocked alert
-	Then the Media blocked checkbox is no longer enabled
-	And the Media blocked alert should be updated with the details of the user that actioned the alert
+	When the user selects the alert
+	Then the alert checkbox is no longer enabled
+	And the alert should be updated with the details of the user that actioned the alert
 
 @VIH-4419
 Scenario: Video Hearings Officer receieves suspended alert
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	When the hearing is suspended
-	Then the Video Hearings Officer user should see a Suspended notification and a Suspended alert
-	When the user selects the Suspended alert
-	Then the Suspended checkbox is no longer enabled
-	And the Suspended alert should be updated with the details of the user that actioned the alert
+	Then the Video Hearings Officer user should see a Suspended notification and a Hearing suspended alert
+	When the user selects the alert
+	Then the alert checkbox is no longer enabled
+	And the alert should be updated with the details of the user that actioned the alert
 
-@VIH-1630 @VIH-4418
+@VIH-1630 @VIH-4418 @Smoketest-Extended
 Scenario Outline: Video Hearings Officer receieves disconnected alert
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	When a <Participant> has disconnected from the <Room>
 	Then the Video Hearings Officer user should see a Not Started notification and a Disconnected alert
-	When the user selects the Disconnected alert
-	Then the Disconnected checkbox is no longer enabled
-	And the Disconnected alert should be updated with the details of the user that actioned the alert
+	When the user selects the alert
+	Then the alert checkbox is no longer enabled
+	And the alert should be updated with the details of the user that actioned the alert
 	Examples: 
 	| Participant | Room			        |
 	| Judge       | WaitingRoom		    |
@@ -42,9 +42,9 @@ Scenario Outline: Video Hearings Officer receieves failed self test alert
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	When a participant has failed the self-test with <Reason>
 	Then the Video Hearings Officer user should see a Not Started notification and a <Reason> alert
-	When the user selects the <Reason> alert
-	Then the <Reason> checkbox is no longer enabled
-	And the <Reason> alert should be updated with the details of the user that actioned the alert
+	When the user selects the alert
+	Then the alert checkbox is no longer enabled
+	And the alert should be updated with the details of the user that actioned the alert
 	Examples:
 	| Reason						            |
 	| Failed self-test (Camera)     |

@@ -10,7 +10,7 @@ namespace VideoWeb.UnitTests.Mappings
     public class ChatResponseMapperTests
     {
         [Test]
-        public void should_map_all_properties()
+        public void Should_map_all_properties()
         {
             const string username = "john@doe.com";
             const string fromDisplayName = "Johnny";

@@ -14,7 +14,7 @@ namespace VideoWeb.UnitTests.Hub
     public class SendMessageTests : EventHubBaseTests
     {
         [Test]
-        public async Task should_send_message_to_conference_group_if_user_is_judge()
+        public async Task Should_send_message_to_conference_group_if_user_is_judge()
         {
             var username = "john@doe.com";
             var conferenceId = Guid.NewGuid();
@@ -40,7 +40,7 @@ namespace VideoWeb.UnitTests.Hub
         }
 
         [Test]
-        public void should_throw_exception_when_conference_is_not_in_cache()
+        public void Should_throw_exception_when_conference_is_not_in_cache()
         {
             var conferenceId = Guid.NewGuid();
 
@@ -53,7 +53,7 @@ namespace VideoWeb.UnitTests.Hub
         }
 
         [Test]
-        public async Task should_send_message_to_conference_group_if_user_is_vho()
+        public async Task Should_send_message_to_conference_group_if_user_is_vho()
         {
             var username = "john@doe.com";
             var conferenceId = Guid.NewGuid();
@@ -84,7 +84,7 @@ namespace VideoWeb.UnitTests.Hub
         }
 
         [Test]
-        public async Task should_not_send_message_if_not_judge_or_vho()
+        public async Task Should_not_send_message_if_not_judge_or_vho()
         {
             var judgeUsername = "judge@hmcts.net";
             var username = "john@doe.com";

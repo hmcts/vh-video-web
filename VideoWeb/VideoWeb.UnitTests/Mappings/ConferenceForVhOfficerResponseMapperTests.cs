@@ -14,7 +14,7 @@ namespace VideoWeb.UnitTests.Mappings
     public class ConferenceForVhOfficerResponseMapperTests
     {
         [Test]
-        public void should_map_and_count_number_of_messages_since_vho_message()
+        public void Should_map_and_count_number_of_messages_since_vho_message()
         {
             var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(4)
                 .All()
@@ -54,7 +54,7 @@ namespace VideoWeb.UnitTests.Mappings
         }
 
         [Test]
-        public void should_map_and_return_total_message_count_when_vho_has_not_answered()
+        public void Should_map_and_return_total_message_count_when_vho_has_not_answered()
         {
             var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(4)
                 .All()

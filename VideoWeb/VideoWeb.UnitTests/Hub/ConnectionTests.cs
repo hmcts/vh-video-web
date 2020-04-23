@@ -9,7 +9,7 @@ namespace VideoWeb.UnitTests.Hub
     public class ConnectionTests : EventHubBaseTests
     {
         [Test]
-        public async Task should_subscribe_admin_to_all_conferences()
+        public async Task Should_subscribe_admin_to_all_conferences()
         {
             var numOfConferences = 10;
             var conferences = SetupAdminConferences(numOfConferences);
@@ -23,7 +23,7 @@ namespace VideoWeb.UnitTests.Hub
         }
         
         [Test]
-        public async Task should_subscribe_admin_to_vho_group()
+        public async Task Should_subscribe_admin_to_vho_group()
         {
             var numOfConferences = 10;
             SetupAdminConferences(numOfConferences);
@@ -37,7 +37,7 @@ namespace VideoWeb.UnitTests.Hub
         }
         
         [Test]
-        public async Task should_subscribe_judge_to_conferences_they_are_assigned_to()
+        public async Task Should_subscribe_judge_to_conferences_they_are_assigned_to()
         {
             const int numOfConferences = 10;
             const int numOfConferencesWithUser = 2;
@@ -51,7 +51,7 @@ namespace VideoWeb.UnitTests.Hub
         }
 
         [Test]
-        public async Task should_subscribe_user_to_own_user_group()
+        public async Task Should_subscribe_user_to_own_user_group()
         {
             const int numOfConferences = 10;
             const int numOfConferencesWithUser = 2;

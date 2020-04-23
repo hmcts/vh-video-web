@@ -123,7 +123,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
                     this.logger.info(`EventHub disconnection for vh officer`);
                     this.refreshConferenceDataDuringDisconnect();
                 } else {
-                    this.errorService.goToServiceError();
+                    this.errorService.goToServiceError('Your connection was lost');
                 }
             })
         );
