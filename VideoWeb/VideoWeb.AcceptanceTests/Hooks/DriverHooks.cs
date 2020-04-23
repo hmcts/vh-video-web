@@ -41,6 +41,8 @@ namespace VideoWeb.AcceptanceTests.Hooks
             {
                 BrowserVersion = SetBrowserAndVersion(context),
                 EnableLogging = true,
+                SauceLabsCommandTimeoutInSeconds = 60,
+                SauceLabsIdleTimeoutInSeconds = 60,
                 TargetBrowser = context.VideoWebConfig.TestConfig.TargetBrowser,
                 TargetDevice = context.VideoWebConfig.TestConfig.TargetDevice
             };
