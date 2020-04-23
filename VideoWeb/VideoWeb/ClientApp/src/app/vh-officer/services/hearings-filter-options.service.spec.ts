@@ -1,14 +1,7 @@
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { HearingVenueResponse } from '../../services/clients/api-client';
-import { HearingsFilterOptionsService } from './hearings-filter-options.service';
 import { TestFixtureHelper } from 'src/app/testing/Helper/test-fixture-helper';
+import { HearingsFilterOptionsService } from './hearings-filter-options.service';
 
 describe('HearingFilterOptionsService', () => {
-    const venueList = [new HearingVenueResponse({ id: 1, name: 'Birmingham' })];
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getHearingVenues']);
-    videoWebServiceSpy.getHearingVenues.and.returnValue(Promise.resolve(venueList));
-
     const component = new HearingsFilterOptionsService();
 
     beforeEach(() => {
