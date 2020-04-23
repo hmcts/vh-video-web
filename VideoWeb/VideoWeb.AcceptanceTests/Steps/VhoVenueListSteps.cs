@@ -1,7 +1,7 @@
-using System;
 using System.Collections.Generic;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
+using AcceptanceTests.Common.Test.Helpers;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -32,11 +32,10 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void SelectVenues(string venues)
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesDropdown).Displayed.Should().BeTrue();
-            foreach (var venue in ConvertStringIntoArray(venues))
+            foreach (var venue in ConverterHelpers.ConvertStringIntoArray(venues))
             {
                 _browsers[_c.CurrentUser.Key].ClickCheckbox(VhoVenueAllocationPage.VenueCheckbox(venue));
             }
-            _browsers[_c.CurrentUser.Key].Click(VhoVenueAllocationPage.VenuesDropdown);
         }
         
         [When(@"the VHO confirms their allocation selection")]
@@ -48,14 +47,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the VHO selects all the venues")]
         public void SelectAllVenuesAndProceed()
         {
-            var venues = "Select All";
+            const string venues = "Select All";
             SelectVenues(venues);
             ConfirmVenue();
-        }
-
-        private static IEnumerable<string> ConvertStringIntoArray(string options)
-        {
-            return options.Split(",");
         }
     }
 }
