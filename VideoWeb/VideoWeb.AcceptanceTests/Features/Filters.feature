@@ -13,14 +13,6 @@ Scenario: VHO filters hearings by alert type
   Then the hearings are filtered
 
 @VIH-5417
-Scenario: VHO filters hearings by location
-  Given I have a hearing located in Birmingham Civil and Family Justice Centre
-  And I have another hearing located in Manchester Civil and Family Justice Centre
-	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
-  And the hearing has every type of alert
-  When the user filters by location with the options Manchester Civil and Family Justice Centre,Taylor House Tribunal Hearing Centre
-  Then the hearings are filtered
-
 @VIH-5417 @Smoketest-Extended
 Scenario: VHO filters hearings by status
   Given I have a hearing

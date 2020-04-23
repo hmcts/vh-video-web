@@ -15,31 +15,32 @@ import { ParticipantNetworkStatusComponent } from './participant-network-status/
 import { ChartsModule } from 'ng2-charts';
 import { MonitoringGraphComponent } from '../vh-officer/monitoring-graph/monitoring-graph.component';
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
+import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { VenueListComponent } from './venue-list/venue-list.component';
 
 @NgModule({
-  declarations: [
-    VhoHearingsComponent,
-    TasksTableComponent,
-    VhoHearingListComponent,
-    ParticipantStatusComponent,
-    ParticipantInfoTooltipComponent,
-    VhoHearingsFilterComponent,
-    VhoChatComponent,
-    ParticipantNetworkStatusComponent,
-    MonitoringGraphComponent
-  ],
-  imports: [
-    CommonModule,
-    SharedModule,
-    ChartsModule,
-    ClipboardModule,
-    VhOfficerRoutingModule,
-    PerfectScrollbarModule
-
+    declarations: [
+        VhoHearingsComponent,
+        TasksTableComponent,
+        VhoHearingListComponent,
+        ParticipantStatusComponent,
+        ParticipantInfoTooltipComponent,
+        VhoHearingsFilterComponent,
+        VhoChatComponent,
+        ParticipantNetworkStatusComponent,
+        MonitoringGraphComponent,
+        VenueListComponent
     ],
-    providers: [
-      HearingsFilterOptionsService,
+    imports: [
+        CommonModule,
+        SharedModule,
+        ChartsModule,
+        ClipboardModule,
+        VhOfficerRoutingModule,
+        PerfectScrollbarModule,
+        NgMultiSelectDropDownModule.forRoot()
     ],
+    providers: [HearingsFilterOptionsService],
     exports: [MonitoringGraphComponent]
 })
-export class VhOfficerModule { }
+export class VhOfficerModule {}

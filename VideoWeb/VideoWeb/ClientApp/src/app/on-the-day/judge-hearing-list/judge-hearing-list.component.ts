@@ -1,7 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import * as $ from 'jquery';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -45,7 +44,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.profileService.getUserProfile().then(profile => {
+        this.profileService.getUserProfile().then((profile) => {
             this.profile = profile;
         });
         this.retrieveHearingsForUser();
@@ -73,7 +72,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
                     this.enableFullScreen(true);
                 }
             },
-            error => {
+            (error) => {
                 this.loadingData = false;
                 this.enableFullScreen(false);
                 this.errorService.handleApiError(error);
@@ -99,12 +98,6 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
     }
 
     enableFullScreen(fullScreen: boolean) {
-        // tslint:disable-next-line:quotemark
-        const masterContainerCount = $("div[id*='master-container']").length;
-        if (masterContainerCount > 1) {
-            throw new Error('Multiple master containers in DOM');
-        }
-
         const masterContainer = document.getElementById('master-container');
         if (!masterContainer) {
             return;
@@ -119,14 +112,14 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
 
     setupSubscribers() {
         this.eventHubSubscriptions.add(
-            this.eventsService.getHearingStatusMessage().subscribe(message => {
+            this.eventsService.getHearingStatusMessage().subscribe((message) => {
                 this.handleConferenceStatusChange(message);
             })
         );
     }
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
-        const conference = this.conferences.find(c => c.id === message.conferenceId);
+        const conference = this.conferences.find((c) => c.id === message.conferenceId);
         conference.status = message.status;
     }
 }

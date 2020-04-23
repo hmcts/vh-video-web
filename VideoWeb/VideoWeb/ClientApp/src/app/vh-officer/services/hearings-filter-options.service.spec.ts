@@ -1,18 +1,19 @@
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { HearingVenueResponse } from '../../services/clients/api-client';
+import { TestFixtureHelper } from 'src/app/testing/Helper/test-fixture-helper';
 import { HearingsFilterOptionsService } from './hearings-filter-options.service';
 
 describe('HearingFilterOptionsService', () => {
-    const venueList = [new HearingVenueResponse({ id: 1, name: 'Birmingham' })];
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getHearingVenues']);
-    videoWebServiceSpy.getHearingVenues.and.returnValue(Promise.resolve(venueList));
+    const component = new HearingsFilterOptionsService();
 
-    const component = new HearingsFilterOptionsService(videoWebServiceSpy);
+    beforeEach(() => {
+        TestFixtureHelper.clearHearingFilters();
+    });
+
+    afterAll(() => {
+        TestFixtureHelper.clearHearingFilters();
+    });
 
     it('should get hearings filter object with number selected options 0', async () => {
         const filter = await component.getFilter();
-        expect(filter.locations.length).toBeGreaterThan(0);
         expect(filter.alerts.length).toBe(4);
         expect(filter.statuses.length).toBe(6);
         expect(filter.numberFilterOptions).toBe(0);

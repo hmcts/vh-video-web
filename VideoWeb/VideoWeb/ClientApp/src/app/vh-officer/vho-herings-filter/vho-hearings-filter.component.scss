@@ -1,45 +1,45 @@
 .vh-popup {
-  margin: 0 0 0 5px;
-  padding: 30px;
-  background: #fff;
-  border-radius: 0px;
-  width: 80%;
-  position: relative;
-  transition: all 2s ease-in-out;
-  box-shadow: 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  z-index: 1;
+    margin: 0 0 0 5px;
+    padding: 30px;
+    background: #fff;
+    border-radius: 0px;
+    width: fit-content;
+    position: relative;
+    transition: all 2s ease-in-out;
+    box-shadow: 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    z-index: 1;
 }
 
 .vh-popup-overlay {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.7);
-  transition: opacity 500ms;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    transition: opacity 500ms;
 }
 
 .vh-popup-small {
-  min-width: 500px !important;
+    min-width: 500px !important;
 }
 
 .vh-mb10 {
-  margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 .vh-mt30 {
-  margin-top: 30px;
+    margin-top: 30px;
 }
 
 .vh-mt20 {
-  margin-top: 20px;
+    margin-top: 20px;
 }
 
 vh-word {
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-  word-break: break-all;
-  word-break: break-word;
-  hyphens: auto;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-all;
+    word-break: break-word;
+    hyphens: auto;
 }

@@ -10,7 +10,8 @@ Scenario Outline: Video Hearings Officer views hearing status
 	And the hearing status changes to <Status>
 	And a new browser is open for a Video Hearings Officer
 	When the user attempts to login with valid credentials
-	Then the user is on the Hearing List page
+  And the VHO selects all the venues
+  Then the user is on the Hearing List page
 	And the hearings should be in chronological order
 	And the Video Hearings Officer user should see a <Status> notification
 	Examples: 
@@ -27,6 +28,7 @@ Scenario: Video Hearings Officer views closed hearings
 	And the hearing status changes to Closed
 	And a new browser is open for a Video Hearings Officer
 	When the user attempts to login with valid credentials
+  And the VHO selects all the venues
 	Then the user is on the Hearing List page
 	And the closedDate attribute should be populated
 	And the VHO can see a list of hearings including the new hearing

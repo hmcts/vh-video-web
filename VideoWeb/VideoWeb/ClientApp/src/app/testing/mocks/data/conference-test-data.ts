@@ -3,18 +3,19 @@ import * as moment from 'moment';
 import {
     ConferenceForVhOfficerResponse,
     ConferenceResponse,
+    ConferenceResponseVho,
     ConferenceStatus,
     ParticipantForUserResponse,
+    ParticipantResponseVho,
     ParticipantStatus,
+    Role,
     SelfTestPexipResponse,
     TaskResponse,
     TaskType,
-    TaskUserResponse,
-    Role,    ParticipantResponseVho,
-    ConferenceResponseVho
+    TaskUserResponse
 } from 'src/app/services/clients/api-client';
 import { InstantMessage } from 'src/app/services/models/instant-message';
-import { AlertFilter, AlertsStatus, HearingsFilter, ListFilter, StatusFilter } from '../../../shared/models/hearings-filter';
+import { AlertFilter, AlertsStatus, HearingsFilter, StatusFilter } from '../../../shared/models/hearings-filter';
 
 export class ConferenceTestData {
     getConferenceNow(): ConferenceForVhOfficerResponse {
@@ -309,9 +310,6 @@ export class ConferenceTestData {
         filter.statuses.push(new StatusFilter('In Session', ConferenceStatus.InSession, false));
         filter.statuses.push(new StatusFilter('Not started', ConferenceStatus.NotStarted, false));
 
-        filter.locations.push(new ListFilter('Birmingham', false));
-        filter.locations.push(new ListFilter('Manchester', false));
-
         filter.alerts.push(new AlertFilter('Disconnected', AlertsStatus.Disconnected, 'Disconnected', false));
         filter.alerts.push(new AlertFilter('Self-test failed', AlertsStatus.FailedSelfTest, 'self-test', false));
         return filter;
@@ -325,9 +323,7 @@ export class ConferenceTestData {
             id: Guid.create().toString(),
             from: 'vho.user@hearings.net',
             message: 'test message from vho',
-            timestamp: moment(now)
-                .subtract(3, 'minutes')
-                .toDate()
+            timestamp: moment(now).subtract(3, 'minutes').toDate()
         });
 
         const message2 = new InstantMessage({
@@ -335,9 +331,7 @@ export class ConferenceTestData {
             id: Guid.create().toString(),
             from: 'judge.fudge@hearings.net',
             message: 'test message from judge',
-            timestamp: moment(now)
-                .subtract(5, 'minutes')
-                .toDate()
+            timestamp: moment(now).subtract(5, 'minutes').toDate()
         });
 
         const message3 = new InstantMessage({
@@ -345,9 +339,7 @@ export class ConferenceTestData {
             id: Guid.create().toString(),
             from: 'vho.user@hearings.net',
             message: 'test message from vho 2',
-            timestamp: moment(now)
-                .subtract(8, 'minutes')
-                .toDate()
+            timestamp: moment(now).subtract(8, 'minutes').toDate()
         });
 
         const message4 = new InstantMessage({
@@ -355,16 +347,14 @@ export class ConferenceTestData {
             id: Guid.create().toString(),
             from: 'vho.user@hearings.net',
             message: 'test message from vho 3',
-            timestamp: moment(now)
-                .subtract(10, 'minutes')
-                .toDate()
+            timestamp: moment(now).subtract(10, 'minutes').toDate()
         });
 
         messages.push(message1);
         messages.push(message2);
         messages.push(message3);
         messages.push(message4);
-        messages.forEach(m => {
+        messages.forEach((m) => {
             m.is_user = m.from.toLocaleLowerCase() === loggedInUser.toLocaleLowerCase();
         });
         return messages;
