@@ -1,33 +1,22 @@
-import { TestBed, async } from '@angular/core/testing';
-
-import { AdminGuard } from './admin.guard';
-import { SharedModule } from '../shared/shared.module';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ProfileService } from '../services/api/profile.service';
-import { UserProfileResponse, Role } from '../services/clients/api-client';
+import { async } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { Logger } from '../services/logging/logger-base';
+import { ProfileService } from '../services/api/profile.service';
+import { Role, UserProfileResponse } from '../services/clients/api-client';
 import { MockLogger } from '../testing/mocks/MockLogger';
+import { AdminGuard } from './admin.guard';
 
 describe('AdminGuard', () => {
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
     let guard: AdminGuard;
-    const router = {
-        navigate: jasmine.createSpy('navigate')
-    };
+    let router: jasmine.SpyObj<Router>;
+
+    beforeAll(() => {
+        router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+        profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
+    });
 
     beforeEach(() => {
-        profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-        TestBed.configureTestingModule({
-            imports: [RouterTestingModule, SharedModule],
-            providers: [
-                AdminGuard,
-                { provide: Router, useValue: router },
-                { provide: ProfileService, useValue: profileServiceSpy },
-                { provide: Logger, useClass: MockLogger }
-            ]
-        });
-        guard = TestBed.get(AdminGuard);
+        guard = new AdminGuard(profileServiceSpy, router, new MockLogger());
     });
 
     it('should not be able to activate component if role is not VHOfficer', async(async () => {

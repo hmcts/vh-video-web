@@ -1,48 +1,37 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { configureTestSuite } from 'ng-bullet';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { TaskStatus, TaskResponse, TaskType, Role } from 'src/app/services/clients/api-client';
-import { SharedModule } from 'src/app/shared/shared.module';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { TasksTestData } from 'src/app/testing/mocks/data/tasks-test-data';
-import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
-import { TasksTableComponent } from './tasks-table.component';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { Guid } from 'guid-typescript';
 import { TaskCompleted } from 'src/app/on-the-day/models/task-completed';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { Role, TaskResponse, TaskStatus, TaskType } from 'src/app/services/clients/api-client';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { TasksTestData } from 'src/app/testing/mocks/data/tasks-test-data';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { TasksTableComponent } from './tasks-table.component';
 
 describe('TasksTableComponent', () => {
     let component: TasksTableComponent;
-    let fixture: ComponentFixture<TasksTableComponent>;
+    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+    const conference = new ConferenceTestData().getConferenceDetailFuture();
+    const allTasks = new TasksTestData().getTestData();
+    const completedTask = new TasksTestData().getCompletedTask();
 
-    configureTestSuite(() => {
-        TestBed.configureTestingModule({
-            imports: [SharedModule],
-            declarations: [TasksTableComponent],
-            providers: [
-                { provide: VideoWebService, useClass: MockVideoWebService },
-                { provide: Logger, useClass: MockLogger }
-            ]
-        });
+    beforeAll(() => {
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getTasksForConference', 'completeTask']);
+        videoWebServiceSpy.completeTask.and.returnValue(Promise.resolve(completedTask));
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(TasksTableComponent);
-        component = fixture.componentInstance;
-        component.conference = new ConferenceTestData().getConferenceDetailFuture();
+        component = new TasksTableComponent(videoWebServiceSpy, new MockLogger());
+        component.conference = Object.assign(conference);
         // 1 To-Do & 2 Done
-        component.tasks = new TasksTestData().getTestData();
+        component.tasks = Object.assign(allTasks);
         spyOn(component, 'updateDivWidthForTasks').and.callFake(() => {
             component.taskDivWidth = 100;
         });
-        fixture.detectChanges();
     });
 
     it('should set task to done', () => {
-        const task = component.tasks.filter(x => x.status === TaskStatus.ToDo)[0];
+        const task = component.tasks.filter((x) => x.status === TaskStatus.ToDo)[0];
         const index = component.tasks.indexOf(task);
-        const completedTask = new TasksTestData().getCompletedTask();
         component.updateTask(completedTask);
 
         const taskUpdated = component.tasks[index];
@@ -73,7 +62,7 @@ describe('TasksTableComponent', () => {
     });
 
     it('should return username for judge tasks', () => {
-        const pat = component.conference.participants.find(x => x.role === Role.Judge);
+        const pat = component.conference.participants.find((x) => x.role === Role.Judge);
         const task = new TaskResponse({
             type: TaskType.Judge,
             id: 1,
@@ -95,8 +84,8 @@ describe('TasksTableComponent', () => {
     });
 
     it('should emit task completed', async () => {
-        const task = component.tasks.find(x => x.status === TaskStatus.ToDo);
-
+        component.tasks = new TasksTestData().getTestData();
+        const task = component.tasks.find((x) => x.status === TaskStatus.ToDo);
         spyOn(component.taskCompleted, 'emit');
         await component.completeTask(task);
 
@@ -105,11 +94,11 @@ describe('TasksTableComponent', () => {
     });
 
     it('should throw error when task cannot complete', async () => {
-        const videoWebService = TestBed.get(VideoWebService);
+        component.tasks = new TasksTestData().getTestData();
         const error = { error: 'service error' };
-        spyOn(videoWebService, 'completeTask').and.callFake(() => Promise.reject(error));
+        videoWebServiceSpy.completeTask.and.callFake(() => Promise.reject(error));
         spyOn(component.taskCompleted, 'emit');
-        const task = component.tasks.find(x => x.status === TaskStatus.ToDo);
+        const task = component.tasks.find((x) => x.status === TaskStatus.ToDo);
 
         await component.completeTask(task);
 

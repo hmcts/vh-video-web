@@ -18,11 +18,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly TestContext _c;
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly HearingAlertsSteps _alertsSteps;
-        public FiltersSteps(TestContext c, HearingAlertsSteps alertsSteps, Dictionary<string, UserBrowser> browsers)
+        private readonly VhoHearingListSteps _vhoHearingListSteps;
+        public FiltersSteps(TestContext c, HearingAlertsSteps alertsSteps, Dictionary<string, UserBrowser> browsers, VhoHearingListSteps vhoHearingListSteps)
         {
             _c = c;
             _alertsSteps = alertsSteps;
             _browsers = browsers;
+            _vhoHearingListSteps = vhoHearingListSteps;
         }
 
         [Given(@"the hearing has every type of alert")]

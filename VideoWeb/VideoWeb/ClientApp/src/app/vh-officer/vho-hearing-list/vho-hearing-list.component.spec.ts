@@ -1,99 +1,186 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { configureTestSuite } from 'ng-bullet';
+import { ClipboardService } from 'ngx-clipboard';
 import { ConferenceStatus, ParticipantForUserResponse } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { VhoHearingListComponent } from './vho-hearing-list.component';
-import { VhoParticipantNetworkStatusStubComponent } from '../../testing/stubs/vho-participant-network-status-stub';
 import { HearingSummary } from '../../shared/models/hearing-summary';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
-import { PerfectScrollbarStubComponent } from '../../testing/stubs/perfect-scrollbar-stub';
+import { VhoHearingListComponent } from './vho-hearing-list.component';
 
 describe('VhoHearingListComponent', () => {
-  let component: VhoHearingListComponent;
-  let fixture: ComponentFixture<VhoHearingListComponent>;
+    let component: VhoHearingListComponent;
+    let clipboardServiceSpy: jasmine.SpyObj<ClipboardService>;
 
-  configureTestSuite(() => {
-    TestBed.configureTestingModule({
-      declarations: [VhoHearingListComponent, VhoParticipantNetworkStatusStubComponent,
-        PerfectScrollbarStubComponent]
+    beforeAll(() => {
+        clipboardServiceSpy = jasmine.createSpyObj<ClipboardService>('ClipboardService', ['copyFromContent']);
     });
-  });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(VhoHearingListComponent);
-    component = fixture.componentInstance;
-    component.conferences = new ConferenceTestData().getVhoTestData().map(c => new HearingSummary(c));
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        component = new VhoHearingListComponent(clipboardServiceSpy);
+        component.conferences = new ConferenceTestData().getVhoTestData().map((c) => new HearingSummary(c));
+    });
 
-  it('should return true if current conference is the same one selected', () => {
-    component.currentConference = component.conferences[0];
-    expect(component.isCurrentConference(component.conferences[0])).toBeTruthy();
-  });
+    it('should return true if current conference is the same one selected', () => {
+        component.currentConference = component.conferences[0];
+        expect(component.isCurrentConference(component.conferences[0])).toBeTruthy();
+    });
 
-  it('should return false if current conference is not the same one selected', () => {
-    component.currentConference = component.conferences[1];
-    expect(component.isCurrentConference(component.conferences[0])).toBeFalsy();
-  });
+    it('should return false if current conference is not the same one selected', () => {
+        component.currentConference = component.conferences[1];
+        expect(component.isCurrentConference(component.conferences[0])).toBeFalsy();
+    });
 
-  it('should return false if current conference is null', () => {
-    component.currentConference = null;
-    expect(component.isCurrentConference(component.conferences[0])).toBeFalsy();
-  });
+    it('should return false if current conference is null', () => {
+        component.currentConference = null;
+        expect(component.isCurrentConference(component.conferences[0])).toBeFalsy();
+    });
 
-  it('should get `Delayed` conference status text', () => {
-    const conference = new ConferenceTestData().getVHOConferencePast();
-    conference.status = ConferenceStatus.NotStarted;
-    expect(component.getConferenceStatusText(new HearingSummary(conference))).toBe('Delayed');
-  });
+    const conferenceStatusTextTestCases = [
+        { status: ConferenceStatus.NotStarted, expected: 'Not Started' },
+        { status: ConferenceStatus.InSession, expected: 'In Session' },
+        { status: ConferenceStatus.Paused, expected: 'Paused' },
+        { status: ConferenceStatus.Suspended, expected: 'Suspended' },
+        { status: ConferenceStatus.Closed, expected: 'Closed' }
+    ];
 
-  it('should get `Not Started` conference status text', () => {
-    const conference = new ConferenceTestData().getConferenceFuture();
-    conference.status = ConferenceStatus.NotStarted;
-    expect(component.getConferenceStatusText(new HearingSummary(conference))).toBe('Not Started');
-  });
+    conferenceStatusTextTestCases.forEach((test) => {
+        it(`should return ${test.expected} when conference status is ${test.status}`, () => {
+            const conference = new ConferenceTestData().getConferenceFuture();
+            conference.status = test.status;
+            expect(component.getConferenceStatusText(new HearingSummary(conference))).toBe(test.expected);
+        });
+    });
 
-  it('should get `Suspended` conference status text', () => {
-    const conference = new ConferenceTestData().getConferenceFuture();
-    conference.status = ConferenceStatus.Suspended;
-    expect(component.getConferenceStatusText(new HearingSummary(conference))).toBe('Suspended');
-  });
+    it('should get `Delayed` conference status text', () => {
+        const conference = new ConferenceTestData().getVHOConferencePast();
+        conference.status = ConferenceStatus.NotStarted;
+        expect(component.getConferenceStatusText(new HearingSummary(conference))).toBe('Delayed');
+    });
 
-  it('should get `Paused` conference status text', () => {
-    const conference = new ConferenceTestData().getConferenceFuture();
-    conference.status = ConferenceStatus.Paused;
-    expect(component.getConferenceStatusText(new HearingSummary(conference))).toBe('Paused');
-  });
+    it('should emit conference selected', () => {
+        component.currentConference = null;
+        spyOn(component.selectedConference, 'emit');
+        const conference = component.conferences[0];
+        component.selectConference(conference);
+        expect(component.selectedConference.emit).toHaveBeenCalledWith(conference);
+        expect(component.currentConference).toBe(conference);
+    });
 
-  it('should get `Closed` conference status text', () => {
-    const conference = new ConferenceTestData().getConferenceFuture();
-    conference.status = ConferenceStatus.Closed;
-    expect(component.getConferenceStatusText(new HearingSummary(conference))).toBe('Closed');
-  });
+    it('should emit event with selected ParticipantSummary and conference id on the participant network status click', () => {
+        spyOn(component.selectedParticipant, 'emit');
+        const param = {
+            participant: new ParticipantSummary(new ParticipantForUserResponse({ id: '1111-2222-3333' })),
+            conferenceId: '1234-12345678'
+        };
+        component.showParticipantGraph(param);
+        expect(component.selectedParticipant.emit).toHaveBeenCalled();
+        expect(component.selectedParticipant.emit).toHaveBeenCalledWith(param);
+    });
 
-  it('should get `In Session` conference status text', () => {
-    const conference = new ConferenceTestData().getConferenceFuture();
-    conference.status = ConferenceStatus.InSession;
-    expect(component.getConferenceStatusText(new HearingSummary(conference))).toBe('In Session');
-  });
+    it('should set configuration for scrollbar to suppress scroll x', () => {
+        expect(component.scrollConfig.suppressScrollX).toBe(true);
+    });
 
-  it('should emit conference selected', () => {
-    spyOn(component, 'selectConference');
-    const selectConference = component.conferences[0];
-    component.selectConference(selectConference);
-    expect(component.selectConference).toHaveBeenCalledWith(selectConference);
-  });
-  it('should emit event with selected ParticipantSummary and conference id on the participant network status click', () => {
-    spyOn(component.selectedParticipant, 'emit');
-    const param = {
-      participant: new ParticipantSummary(new ParticipantForUserResponse({ id: '1111-2222-3333' })),
-      conferenceId: '1234-12345678'
-    };
-    component.showParticipantGraph(param);
-    expect(component.selectedParticipant.emit).toHaveBeenCalled();
-    expect(component.selectedParticipant.emit).toHaveBeenCalledWith(param);
-  });
-  it('should set configuration for scrollbar to suppress scroll x', () => {
-    expect(component.scrollConfig.suppressScrollX).toBe(true);
-  });
+    it('should return true when conference is suspended', () => {
+        const conference = new ConferenceTestData().getConferenceFuture();
+        conference.status = ConferenceStatus.Suspended;
+        const hearing = new HearingSummary(conference);
+        expect(component.isSuspended(hearing)).toBeTruthy();
+    });
+
+    it('should return false when conference is not suspended', () => {
+        const conference = new ConferenceTestData().getConferenceFuture();
+        conference.status = ConferenceStatus.Paused;
+        const hearing = new HearingSummary(conference);
+        expect(component.isSuspended(hearing)).toBeFalsy();
+    });
+
+    it('should return true when conference is on time', () => {
+        const conference = new ConferenceTestData().getConferenceFuture();
+        conference.status = ConferenceStatus.NotStarted;
+        const hearing = new HearingSummary(conference);
+        expect(component.isOnTime(hearing)).toBeTruthy();
+    });
+
+    it('should return false when conference is not on time', () => {
+        const conference = new ConferenceTestData().getConferencePast();
+        conference.status = ConferenceStatus.NotStarted;
+        const hearing = new HearingSummary(conference);
+        expect(component.isOnTime(hearing)).toBeFalsy();
+    });
+
+    it('should return true when conference is delayed', () => {
+        const conference = new ConferenceTestData().getConferencePast();
+        conference.status = ConferenceStatus.NotStarted;
+        const hearing = new HearingSummary(conference);
+        expect(component.isDelayed(hearing)).toBeTruthy();
+    });
+
+    it('should return false when conference is not delayed', () => {
+        const conference = new ConferenceTestData().getConferenceNow();
+        conference.status = ConferenceStatus.NotStarted;
+        const hearing = new HearingSummary(conference);
+        expect(component.isDelayed(hearing)).toBeFalsy();
+    });
+
+    it('should return true when conference is paused', () => {
+        const conference = new ConferenceTestData().getConferenceFuture();
+        conference.status = ConferenceStatus.Paused;
+        const hearing = new HearingSummary(conference);
+        expect(component.isPaused(hearing)).toBeTruthy();
+    });
+
+    it('should return false when conference is not paused', () => {
+        const conference = new ConferenceTestData().getConferenceFuture();
+        conference.status = ConferenceStatus.InSession;
+        const hearing = new HearingSummary(conference);
+        expect(component.isPaused(hearing)).toBeFalsy();
+    });
+
+    it('should return true when conference is in session', () => {
+        const conference = new ConferenceTestData().getConferenceFuture();
+        conference.status = ConferenceStatus.InSession;
+        const hearing = new HearingSummary(conference);
+        expect(component.isInSession(hearing)).toBeTruthy();
+    });
+
+    it('should return false when conference is not in session', () => {
+        const conference = new ConferenceTestData().getConferenceFuture();
+        conference.status = ConferenceStatus.Paused;
+        const hearing = new HearingSummary(conference);
+        expect(component.isInSession(hearing)).toBeFalsy();
+    });
+
+    it('should return true when conference is closed', () => {
+        const conference = new ConferenceTestData().getConferenceFuture();
+        conference.status = ConferenceStatus.Closed;
+        const hearing = new HearingSummary(conference);
+        expect(component.isClosed(hearing)).toBeTruthy();
+    });
+
+    it('should return false when conference is not closed', () => {
+        const conference = new ConferenceTestData().getConferenceFuture();
+        conference.status = ConferenceStatus.Paused;
+        const hearing = new HearingSummary(conference);
+        expect(component.isClosed(hearing)).toBeFalsy();
+    });
+
+    it('should get duration as text', () => {
+        const conference = new ConferenceTestData().getConferenceFuture();
+        conference.scheduled_duration = 10;
+        const hearing = new HearingSummary(conference);
+        expect(component.getDuration(hearing)).toBe('10 minutes');
+    });
+
+    it('should get participants for conference', () => {
+        const conference = new ConferenceTestData().getConferenceFuture();
+        const participants = conference.participants;
+        const hearing = new HearingSummary(conference);
+        expect(component.getParticipantsForConference(hearing).length).toEqual(participants.length);
+    });
+
+    it('expect clipboard to copy conference id', () => {
+        const conference = new ConferenceTestData().getConferenceFuture();
+        const hearing = new HearingSummary(conference);
+        component.copyToClipboard(hearing);
+        expect(clipboardServiceSpy.copyFromContent).toHaveBeenCalledWith(conference.id);
+    });
 });

@@ -38,13 +38,13 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         super(videoWebService, profileService, eventService, logger, adalService);
     }
 
-    ngOnInit() {
+    async ngOnInit() {
         this.logger.debug(`[ChatHub VHO] starting chat for ${this._hearing.id}`);
         this.updateDivWidthForSection();
         this.initForm();
         this.chatHubSubscription = this.setupChatSubscription();
         this.loading = true;
-        this.retrieveChatForConference().then(messages => {
+        this.retrieveChatForConference().then((messages) => {
             this.messages = messages;
             this.loading = false;
         });
