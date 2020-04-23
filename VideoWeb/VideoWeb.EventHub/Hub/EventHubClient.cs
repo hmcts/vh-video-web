@@ -49,7 +49,7 @@ namespace VideoWeb.EventHub.Hub
 
             await AddUserToUserGroup(isAdmin);
             await AddUserToConferenceGroups(isAdmin);
-            MonitorTokenExpiryOnHeartbeat(userName);
+
             await base.OnConnectedAsync();
         }
 
@@ -185,22 +185,6 @@ namespace VideoWeb.EventHub.Hub
             {
                 _logger.LogError(ex, "Error occured when sending heartbeat");
             }
-        }
-        private void MonitorTokenExpiryOnHeartbeat(string userName)
-        {
-            _logger.LogTrace($"MonitorTokenExpiryOnHeartbeat server-side: {userName} ");
-            var heartbeat = Context.Features.Get<IConnectionHeartbeatFeature>();
-            heartbeat.OnHeartbeat(state =>
-            {
-                (var context, string connectionId) = ((HttpContext, string))state;
-                var value = long.Parse(((ClaimsIdentity)context.User.Identity).Claims.Single(x => x.Type == "exp").Value);
-                var expiresUtc = DateTimeOffset.FromUnixTimeSeconds(value).UtcDateTime;
-                // Ensure the access token token is still valid
-                if (expiresUtc < DateTimeOffset.UtcNow)
-                {
-                    _logger.LogTrace($"Bearer token used to connect to HUB has expired: {userName}");
-                }
-            }, (Context.GetHttpContext(), Context.ConnectionId));
         }
     }
 }
