@@ -26,6 +26,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>appsettings.local.json</TargetPath>
     </ContentWithTargetPath>
+    <ContentWithTargetPath Include="Configuration\Environments\appsettings.preprod.json" Condition="Exists('Configuration\Environments\appsettings.preprod.json')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>appsettings.preprod.json</TargetPath>
+    </ContentWithTargetPath>
     <ContentWithTargetPath Include="Configuration\Environments\appsettings.preview.json" Condition="Exists('Configuration\Environments\appsettings.aat.json')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>appsettings.preview.json</TargetPath>

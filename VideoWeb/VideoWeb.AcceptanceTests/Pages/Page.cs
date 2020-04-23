@@ -16,6 +16,7 @@ namespace VideoWeb.AcceptanceTests.Pages
 
         public static readonly Page Login = new Page("Login", "login.microsoftonline.com");
         public static readonly Page HearingList = new Page("Hearing List", "hearing-list");
+        public static readonly Page VhoVenueList = new Page("VHO Venue List", "venue-list");
         public static readonly Page VhoHearingList = new Page("VHO Hearing List", "hearing-list");
         public static readonly Page Introduction = new Page("Introduction", "introduction");
         public static readonly Page EquipmentCheck = new Page("Equipment Check", "equipment-check");
@@ -61,6 +62,7 @@ namespace VideoWeb.AcceptanceTests.Pages
             {
                 yield return Login;
                 yield return HearingList;
+                yield return VhoVenueList;
                 yield return VhoHearingList;
                 yield return Introduction;
                 yield return EquipmentCheck;

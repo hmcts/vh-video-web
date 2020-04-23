@@ -1,17 +1,17 @@
-import { Component, OnInit, ElementRef, ViewChild, OnDestroy } from '@angular/core';
-import { Router, ActivatedRoute, NavigationEnd } from '@angular/router';
-import { AdalService } from 'adal-angular4';
-import { ConfigService } from './services/api/config.service';
-import { DeviceTypeService } from './services/device-type.service';
-import { PageUrls } from './shared/page-url.constants';
-import { ProfileService } from './services/api/profile.service';
-import { ErrorService } from './services/error.service';
-import { Role } from './services/clients/api-client';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { filter, map } from 'rxjs/operators';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
+import { ConfigService } from './services/api/config.service';
+import { ProfileService } from './services/api/profile.service';
+import { Role } from './services/clients/api-client';
+import { DeviceTypeService } from './services/device-type.service';
+import { ErrorService } from './services/error.service';
 import { LocationService } from './services/location.service';
 import { PageTrackerService } from './services/page-tracker.service';
+import { PageUrls } from './shared/page-url.constants';
 
 @Component({
     selector: 'app-root',
@@ -41,7 +41,7 @@ export class AppComponent implements OnInit, OnDestroy {
         private titleService: Title,
         private activatedRoute: ActivatedRoute,
         private locationService: LocationService,
-        pageTracker: PageTrackerService,
+        pageTracker: PageTrackerService
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
@@ -56,7 +56,8 @@ export class AppComponent implements OnInit, OnDestroy {
             tenant: clientSettings.tenant_id,
             clientId: clientSettings.client_id,
             postLogoutRedirectUri: clientSettings.post_logout_redirect_uri,
-            redirectUri: clientSettings.redirect_uri
+            redirectUri: clientSettings.redirect_uri,
+            cacheLocation: 'sessionStorage'
         };
         this.adalService.init(config);
     }
@@ -85,7 +86,7 @@ export class AppComponent implements OnInit, OnDestroy {
             this.adalService.handleWindowCallback();
             this.loggedIn = this.adalService.userInfo.authenticated;
             if (!this.loggedIn) {
-                this.router.navigate(['/login'], { queryParams: { returnUrl: currentUrl } });
+                this.router.navigate([`/${PageUrls.Login}`], { queryParams: { returnUrl: currentUrl } });
                 return;
             }
             await this.retrieveProfileRole();
@@ -118,7 +119,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.subscriptions.add(
             this.router.events
                 .pipe(
-                    filter(event => event instanceof NavigationEnd),
+                    filter((event) => event instanceof NavigationEnd),
                     map(() => {
                         let child = this.activatedRoute.firstChild;
                         while (child.firstChild) {
