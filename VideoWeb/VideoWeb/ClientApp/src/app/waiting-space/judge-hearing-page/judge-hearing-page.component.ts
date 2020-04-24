@@ -94,8 +94,8 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
     this.judgeUri = `${this.conference.judge_i_frame_uri}?display_name=${encodedDisplayName}&cam=${cam}&mic=${mic}`;
     this.selectedHearingUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.judgeUri);
 
-    const iFrameElem = <HTMLIFrameElement>document.getElementById('judgeIframe');
-    iFrameElem.setAttribute('allow', this.allowPermissions);
+    // const iFrameElem = <HTMLIFrameElement>document.getElementById('judgeIframe');
+    // iFrameElem.setAttribute('allow', this.allowPermissions);
   }
 
   private setupSubscribers() {
