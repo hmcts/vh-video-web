@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
+using AcceptanceTests.Common.Test.Helpers;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -18,13 +19,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly TestContext _c;
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly HearingAlertsSteps _alertsSteps;
-        private readonly VhoHearingListSteps _vhoHearingListSteps;
-        public FiltersSteps(TestContext c, HearingAlertsSteps alertsSteps, Dictionary<string, UserBrowser> browsers, VhoHearingListSteps vhoHearingListSteps)
+        public FiltersSteps(TestContext c, HearingAlertsSteps alertsSteps, Dictionary<string, UserBrowser> browsers)
         {
             _c = c;
             _alertsSteps = alertsSteps;
             _browsers = browsers;
-            _vhoHearingListSteps = vhoHearingListSteps;
         }
 
         [Given(@"the hearing has every type of alert")]
@@ -56,18 +55,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.FiltersButton);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(FiltersPopupPage.FiltersPopup).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].ClickLink(FiltersPopupPage.ClearFiltersLink);
-            foreach (var option in ConvertStringIntoArray(options))
+            foreach (var option in ConverterHelpers.ConvertStringIntoArray(options))
             {
                 _browsers[_c.CurrentUser.Key].ClickCheckbox(FiltersPopupPage.CheckBox(option));
             }
             _browsers[_c.CurrentUser.Key].Click(FiltersPopupPage.ApplyButton);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(FiltersPopupPage.FiltersPopup).Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Refresh();
-        }
-
-        private static IEnumerable<string> ConvertStringIntoArray(string options)
-        {
-            return options.Split(",");
         }
 
         [Then(@"the hearings are filtered")]
