@@ -46,20 +46,21 @@ namespace VideoWeb.AcceptanceTests.Api
 
         public ParticipantState Poll()
         {
+            var actualState = ParticipantState.None;
             for (var i = 0; i < _maxRetries; i++)
             {
                 var response = _videoApi.GetConferenceByConferenceId(_conferenceId);
                 var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
                 conference.Should().NotBeNull();
                 var participant = conference.Participants.Find(x => x.Username.ToLower().Equals(_username.ToLower()));
-                var participantState = participant.Current_status;
-                if (participantState.Equals(_expectedState))
+                actualState = participant.Current_status;
+                if (actualState.Equals(_expectedState))
                 {
-                    return participantState;
+                    return actualState;
                 }
                 Thread.Sleep(TimeSpan.FromSeconds(1));
             }
-            throw new DataMisalignedException($"Participant state not updated to {_expectedState}");
+            throw new DataMisalignedException($"Expected participant state to be updated to {_expectedState} but was {actualState}");
         }
     }
 }
