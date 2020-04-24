@@ -2,9 +2,9 @@
   Please wait to be connected...
 </div>
 
-<div  [ngClass]="{'showFrame': !loadingData, 'hideFrame': loadingData}" class="govuk-width-container">
-  <iframe #judgeIframe  id="judgeIframe" [src]='selectedHearingUrl' width="1000px"
-    height="500px" allowfullscreen frameborder="0" webkitallowfullscreen mozallowfullscreen
-    (load)="judgeURLChanged();" title="Judge view of the hearing room">
+<div *ngIf="!loadingData" class="govuk-width-container">
+  <iframe #judgeIframe id="judgeIframe" [src]='selectedHearingUrl' allow='microphone *; camera *;' width="1000px"
+          height="500px" allowfullscreen frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen
+          (load)="judgeURLChanged();" title="Judge view of the hearing room">
   </iframe>
 </div>

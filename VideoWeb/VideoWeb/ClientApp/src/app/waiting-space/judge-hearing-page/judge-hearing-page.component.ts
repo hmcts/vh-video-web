@@ -40,7 +40,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
-    this.selectedHearingUrl = this.sanitizer.bypassSecurityTrustResourceUrl('judge-hearing-page-temp.html');
+    // this.selectedHearingUrl = this.sanitizer.bypassSecurityTrustResourceUrl('judge-hearing-page-temp.html');
     this.getConference()
       .then(conference => {
         this.loadingData = false;
