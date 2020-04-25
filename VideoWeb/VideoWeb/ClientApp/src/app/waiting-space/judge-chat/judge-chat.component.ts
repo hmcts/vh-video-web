@@ -45,7 +45,6 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
     ngAfterViewChecked(): void {
         if (this.showChat) {
             this.resetUnreadMessageCount();
-            this.getMessageWindow().focus();
         }
     }
 
