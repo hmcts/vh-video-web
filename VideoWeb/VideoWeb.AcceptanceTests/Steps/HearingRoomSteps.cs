@@ -6,6 +6,7 @@ using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.Driver.Support;
 using AcceptanceTests.Common.Test.Helpers;
 using FluentAssertions;
+using OpenQA.Selenium;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
@@ -105,6 +106,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the participant is back in the hearing")]
         public void ThenTheParticipantIsBackInTheHearing()
         {
+            SwitchToParticipantContent();
             new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser.Key]).Feed(HearingRoomPage.ParticipantIncomingVideo);
         }
 
@@ -132,6 +134,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private void SwitchToTheJudgeIFrame()
         {
             if (_c.Test.JudgeInIframe) return;
+            if (!_browsers[_c.CurrentUser.Key].IsDisplayed(By.Id(HearingRoomPage.JudgeIframeId))) return;
             _browsers[_c.CurrentUser.Key].Driver.SwitchTo().Frame(HearingRoomPage.JudgeIframeId);
             _c.Test.JudgeInIframe = true;
         }
