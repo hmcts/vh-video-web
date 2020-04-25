@@ -212,7 +212,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.logger.debug('Successfully retrieved hearings for VHO');
         this.conferences = data.map((c) => new HearingSummary(c));
         this.participantsAll = this.conferences.map(x => x.getParticipants()).reduce((a, b) => a.concat(b));
-        this.addAllJudgesThatAreInHearings();
 
         this.conferencesAll = data;
         if (this.participantsHeartBeat !== undefined && this.participantsHeartBeat.length > 0) {
@@ -280,12 +279,12 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
   async retrieveConferenceDetails(conferenceId: string) {
     try {
+      this.addAllJudgesThatAreInHearings();
       const data = await this.videoWebService.getConferenceByIdVHO(conferenceId);
       this.selectedHearing = new Hearing(data);
       this.participants = data.participants;
       this.sanitiseAndLoadIframe();
       await this.getTasksForConference(conferenceId);
-      this.addAllJudgesThatAreInHearings();
     } catch (error) {
       this.logger.error(`There was an error when selecting conference ${conferenceId}`, error);
       if (!this.errorService.returnHomeIfUnauthorised(error)) {

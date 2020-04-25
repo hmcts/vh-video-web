@@ -73,7 +73,9 @@ export class ParticipantStatusComponent implements OnInit {
     participant.status = participantStatus;
 
     if (participant.role === Role.Judge) {
-      const judgeFromOtherConference = this._judgeStatuses.find(x => x.conferenceId !== this.conferenceId && x.username === participant.username && x.status === ParticipantStatus.InHearing);
+      const judgeFromOtherConference =
+        this._judgeStatuses.find(x => x.conferenceId !== this.conferenceId && x.username === participant.username &&
+          x.status === ParticipantStatus.InHearing);
       participant.statusText = judgeFromOtherConference
         ? this.participantStatusReader.inAnotherHearingText
         : this.participantStatusReader.getStatusAsTextForJudge(participantStatus);
