@@ -8,6 +8,7 @@ import {ParticipantStatusMessage} from '../../services/models/participant-status
 import {Subscription} from 'rxjs';
 import {EventsService} from '../../services/events.service';
 import {ParticipantStatusReader} from '../../shared/models/participant-status-reader';
+import {JudgeHearingStatus} from '../../shared/models/judge-hearing-status';
 
 @Component({
   selector: 'app-participant-status',
@@ -21,7 +22,16 @@ export class ParticipantStatusComponent implements OnInit {
 
   @Input() conferenceId: string;
   @Input() hearingVenueName: string;
-  @Input() judgeStatuses: ParticipantStatus[];
+  _judgeStatuses: JudgeHearingStatus[];
+
+  @Input() set judgeStatuses(judgeStatuses: JudgeHearingStatus[]) {
+    this._judgeStatuses = judgeStatuses;
+    console.log('****OnSet: ' + JSON.stringify(judgeStatuses));
+  }
+
+  // Re jig the input of statuses and pass in custom obj, all I want to know is which Judges are in a hearing. Then
+  // here i can say go load participants again to say "in another hearing" if other judge by username is in a hearing
+  // Store judge usernames in a cache e.g.  profiles: Record<string, UserProfileResponse> = {};
 
   constructor(private videoWebService: VideoWebService, private errorService: ErrorService,
               private eventService: EventsService, private logger: Logger,
@@ -61,9 +71,17 @@ export class ParticipantStatusComponent implements OnInit {
 
   SetParticipantStatus(participantStatus: ParticipantStatus, participant: ParticipantContactDetails) {
     participant.status = participantStatus;
-    participant.statusText = participant.role === Role.Judge
-      ? this.participantStatusReader.getStatusAsTextForJudge(participantStatus, this.judgeStatuses)
-      : this.participantStatusReader.getStatusAsText(participantStatus);
+
+    if (participant.role === Role.Judge) {
+      //console.log('****this._judgeStatuses: ' + JSON.stringify(this._judgeStatuses));
+      const judgeFromOtherConference = this._judgeStatuses.find(x => x.username === participant.username && x.status === ParticipantStatus.InHearing);
+      //console.log('****JudgeInOtherConference: ' + JSON.stringify(judgeFromOtherConference));
+      participant.statusText = judgeFromOtherConference
+        ? this.participantStatusReader.inAnotherHearingText
+        : this.participantStatusReader.getStatusAsTextForJudge(participantStatus);
+    } else {
+      participant.statusText = this.participantStatusReader.getStatusAsText(participantStatus);
+    }
   }
 
   async setupEventHubSubscribers() {
@@ -71,6 +89,14 @@ export class ParticipantStatusComponent implements OnInit {
     this.eventHubSubscriptions.add(
       this.eventService.getParticipantStatusMessage().subscribe(async (message) => {
         await this.handleParticipantStatusChange(message);
+      })
+    );
+
+    this.logger.debug('Subscribing to EventHub reconnects');
+    this.eventHubSubscriptions.add(
+      this.eventService.getServiceReconnected().subscribe(async () => {
+        this.logger.info(`EventHub reconnected for vh officer`);
+        await this.refreshConferenceDataDuringDisconnect();
       })
     );
   }
@@ -84,6 +110,11 @@ export class ParticipantStatusComponent implements OnInit {
     if (participant) {
       this.SetParticipantStatus(message.status, participant);
     }
+  }
+
+  async refreshConferenceDataDuringDisconnect(): Promise<void> {
+    this.logger.warn('EventHub refresh pending...');
+    await this.LoadParticipants();
   }
 
   getParticipantStatusClass(state: ParticipantStatus): string {
