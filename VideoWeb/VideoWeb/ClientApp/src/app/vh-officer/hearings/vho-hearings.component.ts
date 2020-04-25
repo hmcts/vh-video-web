@@ -252,7 +252,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     }
 
     get hasHearings(): boolean {
-        return !this.loadingData && this.conferencesAll && this.conferencesAll.length > 0;
+        return this.conferencesAll && this.conferencesAll.length > 0;
     }
 
     get hasTasks(): boolean {
