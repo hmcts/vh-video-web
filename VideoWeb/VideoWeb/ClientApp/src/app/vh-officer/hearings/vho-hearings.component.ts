@@ -212,7 +212,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.logger.debug('Successfully retrieved hearings for VHO');
         this.conferences = data.map((c) => new HearingSummary(c));
         this.participantsAll = this.conferences.map(x => x.getParticipants()).reduce((a, b) => a.concat(b));
-        this.initaliseJudgeStatuses();
+        this.addAllJudgesThatAreInHearings();
 
         this.conferencesAll = data;
         if (this.participantsHeartBeat !== undefined && this.participantsHeartBeat.length > 0) {
@@ -285,8 +285,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
       this.participants = data.participants;
       this.sanitiseAndLoadIframe();
       await this.getTasksForConference(conferenceId);
-      // this.initaliseJudgeStatuses();
-      this.judgeStatuses = this.judgeStatuses.filter(x => x.conferenceId !== conferenceId);
+      this.addAllJudgesThatAreInHearings();
     } catch (error) {
       this.logger.error(`There was an error when selecting conference ${conferenceId}`, error);
       if (!this.errorService.returnHomeIfUnauthorised(error)) {
@@ -334,7 +333,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
     if (judgeChanged) {
       this.judgeStatuses = this.judgeStatuses.filter(x => x.username !== judgeChanged.username);
-      this.judgeStatuses.push(new JudgeHearingStatus(message.conferenceId, judgeChanged.username, message.status));
+      this.judgeStatuses.push(new JudgeHearingStatus(message.conferenceId, message.participantId, judgeChanged.username, message.status));
     }
 
     if (!this.participants) {
@@ -510,11 +509,14 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(PageUrls.AdminVenueList);
   }
 
-  private initaliseJudgeStatuses() {
+  private addAllJudgesThatAreInHearings() {
     this.conferences
-      .map(x => ({conferenceId: x.id, participants: x.getParticipants().filter(y => y.isJudge)}))
+      .map(x => ({conferenceId: x.id, participants: x.getParticipants().filter(y => y.isJudge && y.status === ParticipantStatus.InHearing)}))
       .map(x => {
-        x.participants.forEach(p => this.judgeStatuses.push(new JudgeHearingStatus(x.conferenceId, p.username, p.status)));
+        x.participants.forEach(p => {
+          this.judgeStatuses.splice(this.judgeStatuses.findIndex(i => i.username === p.username), 1);
+          this.judgeStatuses.push(new JudgeHearingStatus(x.conferenceId, p.id, p.username, p.status));
+        });
       });
   }
 }

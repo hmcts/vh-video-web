@@ -73,9 +73,7 @@ export class ParticipantStatusComponent implements OnInit {
     participant.status = participantStatus;
 
     if (participant.role === Role.Judge) {
-      //console.log('****this._judgeStatuses: ' + JSON.stringify(this._judgeStatuses));
-      const judgeFromOtherConference = this._judgeStatuses.find(x => x.username === participant.username && x.status === ParticipantStatus.InHearing);
-      //console.log('****JudgeInOtherConference: ' + JSON.stringify(judgeFromOtherConference));
+      const judgeFromOtherConference = this._judgeStatuses.find(x => x.conferenceId !== this.conferenceId && x.username === participant.username && x.status === ParticipantStatus.InHearing);
       participant.statusText = judgeFromOtherConference
         ? this.participantStatusReader.inAnotherHearingText
         : this.participantStatusReader.getStatusAsTextForJudge(participantStatus);
@@ -106,9 +104,30 @@ export class ParticipantStatusComponent implements OnInit {
       return;
     }
 
-    const participant = this.participants.find((x) => x.id === message.participantId);
-    if (participant) {
-      this.SetParticipantStatus(message.status, participant);
+    // Check if the participant is not in this conference
+    if (this.conferenceId !== message.conferenceId) {
+      // Only want to change status if its a Judge and they are in another hearing
+      const otherJudgeStatus = this._judgeStatuses.find(x => x.participantId === message.participantId);
+      if (otherJudgeStatus) {
+        // Is the judge in this conference
+        const thisJudgeInAnotherConference = this.participants.find(x => x.username === otherJudgeStatus.username);
+        if (thisJudgeInAnotherConference) {
+          if (message.status === ParticipantStatus.InHearing) {
+            thisJudgeInAnotherConference.status = ParticipantStatus.None;
+            thisJudgeInAnotherConference.statusText = this.participantStatusReader.inAnotherHearingText;
+          } else {
+            thisJudgeInAnotherConference.status = ParticipantStatus.None;
+            thisJudgeInAnotherConference.statusText = this.participantStatusReader.getStatusAsTextForJudge(ParticipantStatus.None);
+          }
+        }
+      }
+    }
+
+    const participantInThisConference = this.participants.find((x) => x.id === message.participantId);
+    if (participantInThisConference) {
+      this.SetParticipantStatus(message.status, participantInThisConference);
+
+      return;
     }
   }
 
