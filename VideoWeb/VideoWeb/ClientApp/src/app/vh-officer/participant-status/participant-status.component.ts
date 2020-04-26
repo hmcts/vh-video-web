@@ -93,7 +93,11 @@ export class ParticipantStatusComponent implements OnInit {
     }
 
     if (this.conferenceId !== message.conferenceId) {
-
+      const thisJudge = this.participants.find(x => x.username === message.username);
+      if (thisJudge) {
+        thisJudge.judgeInAnotherHearing = message.status === ParticipantStatus.InHearing;
+        this.SetParticipantStatus(thisJudge.judgeInAnotherHearing ? thisJudge.status : message.status, thisJudge);
+      }
     }
 
     const participantInThisConference = this.participants.find((x) => x.id === message.participantId);

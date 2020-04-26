@@ -74,8 +74,8 @@ export class EventsService {
   }
 
   private registerHandlers(): void {
-    this.connection.on('ParticipantStatusMessage', (participantId: string, conferenceId: string, status: ParticipantStatus) => {
-      const message = new ParticipantStatusMessage(participantId, conferenceId, status);
+    this.connection.on('ParticipantStatusMessage', (participantId: string, username: string, conferenceId: string, status: ParticipantStatus) => {
+      const message = new ParticipantStatusMessage(participantId, username, conferenceId, status);
       this.logger.event('ParticipantStatusMessage received', message);
       this.participantStatusSubject.next(message);
     });

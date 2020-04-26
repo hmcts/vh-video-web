@@ -7,9 +7,11 @@ import {
 export class ParticipantContactDetails {
   private participant: ParticipantContactDetailsResponseVho;
   private participantStatusText: string;
+  private isJudgeInAnotherHearing: boolean;
 
   constructor(participant: ParticipantContactDetailsResponseVho) {
     this.participant = participant;
+    this.isJudgeInAnotherHearing = participant.judge_in_another_hearing;
   }
 
   get id(): string {
@@ -79,6 +81,10 @@ export class ParticipantContactDetails {
   }
 
   get judgeInAnotherHearing(): boolean {
-    return this.participant.judge_in_another_hearing;
+    return this.isJudgeInAnotherHearing;
+  }
+
+  set judgeInAnotherHearing(value: boolean) {
+    this.isJudgeInAnotherHearing = value;
   }
 }
