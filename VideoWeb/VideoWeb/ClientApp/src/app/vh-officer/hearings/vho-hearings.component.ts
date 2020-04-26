@@ -108,7 +108,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
     getConferenceForSelectedAllocations() {
         this.loadVenueSelection();
-        this.retrieveHearingsForVhOfficer();
+        this.retrieveHearingsForVhOfficer(true);
         this.setupConferenceInterval();
     }
 
@@ -120,7 +120,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     setupConferenceInterval() {
         clearInterval(this.interval);
         this.interval = setInterval(() => {
-            this.retrieveHearingsForVhOfficer();
+            this.retrieveHearingsForVhOfficer(false);
         }, 30000);
     }
 
@@ -202,14 +202,14 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
     refreshConferenceDataDuringDisconnect() {
         this.logger.warn('EventHub refresh pending...');
-        this.retrieveHearingsForVhOfficer();
+        this.retrieveHearingsForVhOfficer(true);
         if (this.selectedHearing) {
             this.retrieveConferenceDetails(this.selectedHearing.id);
         }
     }
 
-    retrieveHearingsForVhOfficer() {
-        this.loadingData = true;
+      retrieveHearingsForVhOfficer(reload: boolean) {
+        this.loadingData = reload;
         this.conferencesSubscription = this.videoWebService.getConferencesForVHOfficer(this.venueAllocations).subscribe(
             (data: ConferenceForVhOfficerResponse[]) => {
                 this.logger.debug('Successfully retrieved hearings for VHO');
