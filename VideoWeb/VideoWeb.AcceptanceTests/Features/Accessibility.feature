@@ -81,12 +81,21 @@ Scenario: Help page accessibility
 	Then the user is on the Help page
 	And the page should be accessible 
 
-@Accessibility @HearingTest @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
+@Accessibility @HearingTest @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari @DisableLogging
 Scenario: Hearing Room page accessibility
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
 	Then the participant status for Individual01 is displayed as Connected
 	When the Clerk starts the hearing
+  And the countdown finishes
 	Then the page should be accessible apart from a missing header
 	When in Individual01's browser
 	Then the page should be accessible apart from a missing header
+  When in the Clerk's browser
+  And the Clerk clicks close
+	Then the user is on the Hearing List page
+
+@Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
+Scenario: Venue List page accessibility
+	Given the Video Hearings Officer user has progressed to the VHO Venue List page
+	Then the page should be accessible 
