@@ -192,6 +192,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     replayVideo() {
         this.logger.debug('replaying self test video');
         this.disconnect();
+        this.updatePexipAudioVideoSource();
         this.call();
     }
 

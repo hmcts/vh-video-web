@@ -207,6 +207,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
   }
 
   retrieveHearingsForVhOfficer() {
+        this.loadingData = true;
     this.conferencesSubscription = this.videoWebService.getConferencesForVHOfficer(this.venueAllocations).subscribe(
       (data: ConferenceForVhOfficerResponse[]) => {
         this.logger.debug('Successfully retrieved hearings for VHO');

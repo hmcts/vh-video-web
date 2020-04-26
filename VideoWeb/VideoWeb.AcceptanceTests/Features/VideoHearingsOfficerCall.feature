@@ -33,7 +33,7 @@ Scenario: Video Hearings Officer cannot call users in private consultation
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
 	Then the option to call Individual01 is not visible
 
-@VIH-4613 @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
+@VIH-4613 @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari @DisableLogging
 Scenario: Video Hearings Officer cannot call users in a hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
