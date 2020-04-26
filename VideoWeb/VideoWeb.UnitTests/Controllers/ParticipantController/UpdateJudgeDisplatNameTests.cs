@@ -6,14 +6,17 @@ using NUnit.Framework;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using EventHubEventType = VideoWeb.EventHub.Enums.EventType;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
+using UpdateParticipantRequest = VideoWeb.Services.Video.UpdateParticipantRequest;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {
@@ -26,6 +29,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         private readonly EventComponentHelper _eventComponentHelper = new EventComponentHelper();
         private Conference _testConference;
         private Mock<IConferenceCache> _conferenceCacheMock;
+        private Mock<ILogger<ParticipantsController>> _mockLogger;
+        private Mock<IBookingsApiClient> _bookingsApiClientMock;
 
         [SetUp]
         public void Setup()
@@ -34,6 +39,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _videoApiClientMock = new Mock<IVideoApiClient>();
             _eventHandlerFactoryMock = new Mock<IEventHandlerFactory>();
             _eventHandlerMock = new Mock<IEventHandler>();
+            _mockLogger = new Mock<ILogger<ParticipantsController>>();
+            _bookingsApiClientMock = new Mock<IBookingsApiClient>();
 
             _eventHandlerFactoryMock.Setup(x => x.Get(It.IsAny<EventHubEventType>())).Returns(_eventHandlerMock.Object);
 
@@ -49,7 +56,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 }
             };
 
-            _controller = new ParticipantsController(_videoApiClientMock.Object, _eventHandlerFactoryMock.Object, _conferenceCacheMock.Object)
+            _controller = new ParticipantsController(_videoApiClientMock.Object, _eventHandlerFactoryMock.Object, 
+                _conferenceCacheMock.Object, _mockLogger.Object, _bookingsApiClientMock.Object)
             {
                 ControllerContext = context
             };
@@ -58,7 +66,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         [Test]
         public async Task Should_return_ok()
         {
-            _conferenceCacheMock.Setup(x => x.GetConference(_testConference.Id)).Returns(_testConference);
+            _conferenceCacheMock.Setup(x => x.GetConferenceAsync(_testConference.Id)).ReturnsAsync(_testConference);
             var conferenceId = _testConference.Id;
             var participantId = Guid.NewGuid();
 

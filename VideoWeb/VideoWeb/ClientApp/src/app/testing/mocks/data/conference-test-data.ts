@@ -231,10 +231,6 @@ export class ConferenceTestData {
         const participants: ParticipantResponseVho[] = [];
         const participant1 = new ParticipantResponseVho({
             id: '9F681318-4955-49AF-A887-DED64554429D',
-            contact_email: 'chris@green.com',
-            first_name: 'Chris',
-            last_name: 'Green',
-            contact_telephone: '0123456780',
             name: 'Mr Chris Green',
             status: ParticipantStatus.Available,
             role: Role.Individual,
@@ -246,10 +242,6 @@ export class ConferenceTestData {
 
         const participant2 = new ParticipantResponseVho({
             id: '9F681318-4955-49AF-A887-DED64554429J',
-            contact_email: 'james@green.com',
-            first_name: 'James',
-            last_name: 'Green',
-            contact_telephone: '0123456781',
             name: 'Mr James Green',
             representee: 'Chris Green',
             status: ParticipantStatus.NotSignedIn,
@@ -262,10 +254,6 @@ export class ConferenceTestData {
 
         const participant3 = new ParticipantResponseVho({
             id: '9F681318-4955-49AF-A887-DED64554429T',
-            contact_email: 'judge@kinly.com',
-            first_name: 'Jeff',
-            last_name: 'Kinly',
-            contact_telephone: '01235468791',
             name: 'Judge Fudge',
             status: ParticipantStatus.Available,
             role: Role.Judge,

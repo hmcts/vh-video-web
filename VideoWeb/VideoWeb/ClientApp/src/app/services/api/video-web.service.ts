@@ -1,24 +1,24 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
-    AddMediaEventRequest,
-    AddSelfTestFailureEventRequest,
-    ApiClient,
-    ChatResponse,
-    ConferenceEventRequest,
-    ConferenceForJudgeResponse,
-    ConferenceForIndividualResponse,
-    ConferenceForVhOfficerResponse,
-    ConferenceResponse,
-    HearingVenueResponse,
-    ParticipantHeartbeatResponse,
-    SelfTestPexipResponse,
-    TaskResponse,
-    TestCallScoreResponse,
-    TokenResponse,
-    UpdateParticipantStatusEventRequest,
-    UpdateParticipantRequest,
-    ConferenceResponseVho
+  AddMediaEventRequest,
+  AddSelfTestFailureEventRequest,
+  ApiClient,
+  ChatResponse,
+  ConferenceEventRequest,
+  ConferenceForJudgeResponse,
+  ConferenceForIndividualResponse,
+  ConferenceForVhOfficerResponse,
+  ConferenceResponse,
+  HearingVenueResponse,
+  ParticipantHeartbeatResponse,
+  SelfTestPexipResponse,
+  TaskResponse,
+  TestCallScoreResponse,
+  TokenResponse,
+  UpdateParticipantStatusEventRequest,
+  UpdateParticipantRequest,
+  ConferenceResponseVho, ParticipantContactDetailsResponseVho
 } from '../clients/api-client';
 import { ConferenceLite } from '../models/conference-lite';
 import { SessionStorage } from '../session-storage';
@@ -123,6 +123,10 @@ export class VideoWebService implements IVideoWebApiService {
 
     getActiveIndividualConference(): ConferenceLite {
         return this.activeConferencesCache.get();
+    }
+
+    getParticipantsByConferenceIdVho(conferenceId: string): Promise<ParticipantContactDetailsResponseVho[]> {
+      return this.apiClient.getParticipantsByConferenceIdVho(conferenceId).toPromise();
     }
 
     updateParticipantDetails(

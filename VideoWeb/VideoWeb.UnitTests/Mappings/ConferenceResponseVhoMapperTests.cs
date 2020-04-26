@@ -46,7 +46,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Meeting_room = meetingRoom)
                 .Build();
 
-            var response = ConferenceResponseVhoMapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
+            var response = ConferenceResponseVhoMapper.MapConferenceDetailsToResponseModel(conference);
 
             response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.Case_name);
@@ -107,7 +107,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Meeting_room = meetingRoom)
                 .Build();
 
-            var response = ConferenceResponseVhoMapper.MapConferenceDetailsToResponseModel(conference, new List<BookingParticipant>());
+            var response = ConferenceResponseVhoMapper.MapConferenceDetailsToResponseModel(conference);
 
             response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.Case_name);
@@ -136,7 +136,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Meeting_room = meetingRoom)
                 .Build();
 
-            var response = ConferenceResponseVhoMapper.MapConferenceDetailsToResponseModel(conference, null);
+            var response = ConferenceResponseVhoMapper.MapConferenceDetailsToResponseModel(conference);
 
             response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.Case_name);
@@ -153,40 +153,6 @@ namespace VideoWeb.UnitTests.Mappings
         }
 
         [Test]
-        public void Should_throw_exception_if_have_two_participants_with_the_same_id()
-        {
-            var participants = new List<ParticipantDetailsResponse>
-            {
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Representative, "Defendant").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Judge, "None").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.CaseAdmin, "None").Build()
-            };
-
-            var bookingParticipants = Builder<BookingParticipant>.CreateListOfSize(participants.Count)
-                .Build().ToList();
-            bookingParticipants[1].Id = bookingParticipants[0].Id;
-            participants[0].Ref_id = bookingParticipants[0].Id;
-            participants[1].Ref_id = bookingParticipants[1].Id;
-            participants[2].Ref_id = bookingParticipants[2].Id;
-            participants[3].Ref_id = bookingParticipants[3].Id;
-            participants[4].Ref_id = bookingParticipants[4].Id;
-
-
-            var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
-
-            var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-                .With(x => x.Current_status = ConferenceState.Suspended)
-                .With(x => x.Participants = participants)
-                .With(x => x.Meeting_room = meetingRoom)
-                .Build();
-
-            Assert.Throws<InvalidOperationException>(() =>
-                ConferenceResponseVhoMapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants));
-        }
-
-        [Test]
         public void Should_map_if_have_not_booking_participants_with_the_same_id()
         {
             var participants = new List<ParticipantDetailsResponse>
@@ -197,9 +163,6 @@ namespace VideoWeb.UnitTests.Mappings
                 new ParticipantDetailsResponseBuilder(UserRole.Judge, "None").Build(),
                 new ParticipantDetailsResponseBuilder(UserRole.CaseAdmin, "None").Build()
             };
-
-            var bookingParticipants = Builder<BookingParticipant>.CreateListOfSize(participants.Count)
-                .Build().ToList();
 
             participants[0].Ref_id = Guid.NewGuid();
             participants[1].Ref_id = Guid.NewGuid();
@@ -216,7 +179,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Meeting_room = meetingRoom)
                 .Build();
 
-            var response = ConferenceResponseVhoMapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
+            var response = ConferenceResponseVhoMapper.MapConferenceDetailsToResponseModel(conference);
 
             response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.Case_name);

@@ -73,7 +73,7 @@ namespace VideoWeb.Controllers
                 return response;
             }
             
-            var conference = _conferenceCache.GetConference(conferenceId);
+            var conference = await _conferenceCache.GetConferenceAsync(conferenceId);
             var username = User.Identity.Name;
 
             foreach (var message in messages)
