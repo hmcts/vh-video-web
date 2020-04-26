@@ -14,8 +14,8 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public sealed class VideoHearingsOfficerCallSteps
     {
-        private const int SecondsWaitToCallAndAnswer = 3;
-        private const int SecondsDelayBeforeCallingTheParticipant = 3;
+        private const int SecondsWaitToCallAndAnswer = 5;
+        private const int SecondsDelayBeforeCallingTheParticipant = 5;
         private const int Retries = 60;
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _c;
