@@ -7,7 +7,6 @@ import {ParticipantContactDetails} from '../../shared/models/participant-contact
 })
 export class ParticipantInfoTooltipComponent implements OnInit {
     @Input() participant: ParticipantContactDetails;
-    @Input() venueName: string;
     constructor() {}
 
     ngOnInit() {}

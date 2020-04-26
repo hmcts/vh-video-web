@@ -196,12 +196,10 @@ namespace VideoWeb.Controllers
                 return BadRequest(ModelState);
             }
 
-            var username = User.Identity.Name.ToLower().Trim();
-
             _logger.LogTrace("Checking to see if user is a VH Officer");
             if (!User.IsInRole(Role.VideoHearingsOfficer.EnumDataMemberAttr()))
             {
-                _logger.LogWarning($"Failed to get conference: ${conferenceId}, {username} is not a VH officer");
+                _logger.LogWarning($"Failed to get conference: ${conferenceId}, {User.Identity.Name} is not a VH officer");
                 
                 return Unauthorized("User must be a VH Officer");
             }
@@ -217,8 +215,9 @@ namespace VideoWeb.Controllers
                 
                 _logger.LogTrace($"Retrieving booking participants for hearing ${conference.HearingId}");
                 var bookingParticipants = await _bookingsApiClient.GetAllParticipantsInHearingAsync(conference.HearingId);
+                var judgesInHearingsToday = await _videoApiClient.GetJudgesInHearingsTodayAsync();
                 
-                var response = ParticipantResponseForVhoMapper.MapParticipantsTo(conference.Participants, bookingParticipants);
+                var response = ParticipantStatusResponseForVhoMapper.MapParticipantsTo(conference, bookingParticipants, judgesInHearingsToday);
 
                 return Ok(response);
 

@@ -33,12 +33,7 @@
     <div *ngIf="!loadingData && isHearingSelected" id="conference-frame" class="govuk-grid-column-one-half">
 
       <div id="participant-status-table" class="govuk-grid-column-two-thirds govuk-!-padding-0">
-        <app-participant-status
-          [conferenceId]="selectedHearing.id"
-          [hearingVenueName]="selectedHearing.hearingVenueName"
-          [judgeStatuses]="judgeStatuses">
-
-        </app-participant-status>
+        <app-participant-status [conferenceId]="selectedHearing.id"></app-participant-status>
       </div>
 
       <div id="vho-admin-view" class="govuk-grid-column-one-third govuk-!-padding-0">

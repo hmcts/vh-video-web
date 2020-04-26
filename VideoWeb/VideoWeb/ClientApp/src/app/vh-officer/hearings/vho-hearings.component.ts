@@ -1,33 +1,32 @@
-import {Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
-import {Subscription} from 'rxjs';
-import {VideoWebService} from 'src/app/services/api/video-web.service';
+import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { Subscription } from 'rxjs';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
   ConferenceForVhOfficerResponse,
-  HearingVenueResponse,
   ParticipantResponseVho,
   ParticipantStatus,
-  TaskResponse
+  TaskResponse,
+  HearingVenueResponse
 } from 'src/app/services/clients/api-client';
-import {ErrorService} from 'src/app/services/error.service';
-import {EventsService} from 'src/app/services/events.service';
-import {Logger} from 'src/app/services/logging/logger-base';
-import {ConferenceStatusMessage} from 'src/app/services/models/conference-status-message';
-import {ParticipantStatusMessage} from 'src/app/services/models/participant-status-message';
-import {Hearing} from 'src/app/shared/models/hearing';
-import {HearingSummary} from 'src/app/shared/models/hearing-summary';
-import {TaskCompleted} from '../../on-the-day/models/task-completed';
-import {ParticipantHeartbeat} from '../../services/models/participant-heartbeat';
-import {SessionStorage} from '../../services/session-storage';
-import {ConferenceForUser, ExtendedConferenceStatus, HearingsFilter} from '../../shared/models/hearings-filter';
-import {ParticipantSummary} from '../../shared/models/participant-summary';
-import {PackageLost} from '../services/models/package-lost';
-import {ParticipantGraphInfo} from '../services/models/participant-graph-info';
-import {VhoHearingListComponent} from '../vho-hearing-list/vho-hearing-list.component';
-import {VhoStorageKeys} from '../services/models/session-keys';
-import {Router} from '@angular/router';
-import {PageUrls} from 'src/app/shared/page-url.constants';
-import {JudgeHearingStatus} from '../../shared/models/judge-hearing-status';
+import { ErrorService } from 'src/app/services/error.service';
+import { EventsService } from 'src/app/services/events.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { Hearing } from 'src/app/shared/models/hearing';
+import { HearingSummary } from 'src/app/shared/models/hearing-summary';
+import { TaskCompleted } from '../../on-the-day/models/task-completed';
+import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
+import { SessionStorage } from '../../services/session-storage';
+import { ConferenceForUser, ExtendedConferenceStatus, HearingsFilter } from '../../shared/models/hearings-filter';
+import { ParticipantSummary } from '../../shared/models/participant-summary';
+import { PackageLost } from '../services/models/package-lost';
+import { ParticipantGraphInfo } from '../services/models/participant-graph-info';
+import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
+import { VhoStorageKeys } from '../services/models/session-keys';
+import { Router } from '@angular/router';
+import { PageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
   selector: 'app-vho-hearings',
@@ -45,7 +44,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
   conferencesAll: ConferenceForVhOfficerResponse[];
   selectedHearing: Hearing;
   participants: ParticipantResponseVho[];
-  participantsAll: ParticipantSummary[];
   selectedConferenceUrl: SafeResourceUrl;
 
   tasks: TaskResponse[];
@@ -61,10 +59,10 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
   packageLostArray: PackageLost[];
   monitoringParticipant: ParticipantGraphInfo;
 
-  @ViewChild('conferenceList', {static: false})
+  @ViewChild('conferenceList', { static: false })
   $conferenceList: VhoHearingListComponent;
   participantsHeartBeat: ParticipantHeartbeat[] = [];
-  judgeStatuses: JudgeHearingStatus[] = [];
+
   venueAllocations: string[] = [];
 
   @HostListener('window:resize', [])
@@ -139,10 +137,10 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
     this.logger.debug('Subscribing to EventHub disconnects');
     this.eventHubSubscriptions.add(
-      this.eventService.getServiceDisconnected().subscribe((reconnectionAttempt) => {
+      this.eventService.getServiceDisconnected().subscribe(async (reconnectionAttempt) => {
         if (reconnectionAttempt <= 6) {
           this.logger.info(`EventHub disconnection for vh officer`);
-          this.refreshConferenceDataDuringDisconnect();
+          await this.refreshConferenceDataDuringDisconnect();
         } else {
           this.errorService.goToServiceError('Your connection was lost');
         }
@@ -151,9 +149,9 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
     this.logger.debug('Subscribing to EventHub reconnects');
     this.eventHubSubscriptions.add(
-      this.eventService.getServiceReconnected().subscribe(() => {
+      this.eventService.getServiceReconnected().subscribe(async () => {
         this.logger.info(`EventHub reconnected for vh officer`);
-        this.refreshConferenceDataDuringDisconnect();
+        await this.refreshConferenceDataDuringDisconnect();
       })
     );
 
@@ -198,22 +196,20 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     }
   }
 
-  refreshConferenceDataDuringDisconnect() {
+  async refreshConferenceDataDuringDisconnect() {
     this.logger.warn('EventHub refresh pending...');
     this.retrieveHearingsForVhOfficer();
     if (this.selectedHearing) {
-      this.retrieveConferenceDetails(this.selectedHearing.id);
+      await this.retrieveConferenceDetails(this.selectedHearing.id);
     }
   }
 
   retrieveHearingsForVhOfficer() {
-        this.loadingData = true;
+    this.loadingData = true;
     this.conferencesSubscription = this.videoWebService.getConferencesForVHOfficer(this.venueAllocations).subscribe(
-      (data: ConferenceForVhOfficerResponse[]) => {
+      async (data: ConferenceForVhOfficerResponse[]) => {
         this.logger.debug('Successfully retrieved hearings for VHO');
         this.conferences = data.map((c) => new HearingSummary(c));
-        this.participantsAll = this.conferences.map(x => x.getParticipants()).reduce((a, b) => a.concat(b));
-
         this.conferencesAll = data;
         if (this.participantsHeartBeat !== undefined && this.participantsHeartBeat.length > 0) {
           this.participantsHeartBeat.forEach((x) => {
@@ -231,7 +227,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
         if (this.selectedHearing) {
           this.logger.debug(`Retrieving tasks for conference ${this.selectedHearing.id}`);
-          this.getTasksForConference(this.selectedHearing.getConference().id);
+          await this.getTasksForConference(this.selectedHearing.getConference().id);
         }
 
         this.loadingData = false;
@@ -280,7 +276,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
   async retrieveConferenceDetails(conferenceId: string) {
     try {
-      this.addAllJudgesThatAreInHearings();
       const data = await this.videoWebService.getConferenceByIdVHO(conferenceId);
       this.selectedHearing = new Hearing(data);
       this.participants = data.participants;
@@ -329,13 +324,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
   }
 
   handleParticipantStatusChange(message: ParticipantStatusMessage): any {
-    const judgeChanged = this.participantsAll.find(x => x.id === message.participantId && x.isJudge);
-
-    if (judgeChanged) {
-      this.judgeStatuses = this.judgeStatuses.filter(x => x.username !== judgeChanged.username);
-      this.judgeStatuses.push(new JudgeHearingStatus(message.conferenceId, message.participantId, judgeChanged.username, message.status));
-    }
-
     if (!this.participants) {
       return;
     }
@@ -358,7 +346,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
       return false;
     }
     conference.status = message.status;
-    if (this.isCurrentConference(new ConferenceForVhOfficerResponse({id: message.conferenceId}))) {
+    if (this.isCurrentConference(new ConferenceForVhOfficerResponse({ id: message.conferenceId }))) {
       this.selectedHearing.getConference().status = message.status;
     }
   }
@@ -507,16 +495,5 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
   goBackToVenueSelection() {
     this.router.navigateByUrl(PageUrls.AdminVenueList);
-  }
-
-  private addAllJudgesThatAreInHearings() {
-    this.conferences
-      .map(x => ({conferenceId: x.id, participants: x.getParticipants().filter(y => y.isJudge && y.status === ParticipantStatus.InHearing)}))
-      .map(x => {
-        x.participants.forEach(p => {
-          this.judgeStatuses.splice(this.judgeStatuses.findIndex(i => i.username === p.username), 1);
-          this.judgeStatuses.push(new JudgeHearingStatus(x.conferenceId, p.id, p.username, p.status));
-        });
-      });
   }
 }

@@ -3,7 +3,7 @@
     <p>{{participant.displayName}} ({{participant.caseGroup}})</p>
   </div>
   <div class="govuk-grid-column-full" *ngIf="participant.isJudge">
-    <p>{{venueName}}</p>
+    <p>{{participant.hearingVenueName}}</p>
   </div>
   <div class="govuk-grid-column-full">
     <a id="tooltip-email-{{participant.id}}" class="govuk-body-s govuk-link" href="mailto:{{participant.contactEmail}}">{{participant.contactEmail}}</a>

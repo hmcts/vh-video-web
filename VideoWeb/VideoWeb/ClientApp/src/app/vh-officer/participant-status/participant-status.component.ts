@@ -8,7 +8,6 @@ import {ParticipantStatusMessage} from '../../services/models/participant-status
 import {Subscription} from 'rxjs';
 import {EventsService} from '../../services/events.service';
 import {ParticipantStatusReader} from '../../shared/models/participant-status-reader';
-import {JudgeHearingStatus} from '../../shared/models/judge-hearing-status';
 
 @Component({
   selector: 'app-participant-status',
@@ -17,21 +16,11 @@ import {JudgeHearingStatus} from '../../shared/models/judge-hearing-status';
 })
 export class ParticipantStatusComponent implements OnInit {
   loadingData: boolean;
+  hearingVenueName: string;
   participants: ParticipantContactDetails[];
   eventHubSubscriptions: Subscription = new Subscription();
 
   @Input() conferenceId: string;
-  @Input() hearingVenueName: string;
-  _judgeStatuses: JudgeHearingStatus[];
-
-  @Input() set judgeStatuses(judgeStatuses: JudgeHearingStatus[]) {
-    this._judgeStatuses = judgeStatuses;
-    console.log('****OnSet: ' + JSON.stringify(judgeStatuses));
-  }
-
-  // Re jig the input of statuses and pass in custom obj, all I want to know is which Judges are in a hearing. Then
-  // here i can say go load participants again to say "in another hearing" if other judge by username is in a hearing
-  // Store judge usernames in a cache e.g.  profiles: Record<string, UserProfileResponse> = {};
 
   constructor(private videoWebService: VideoWebService, private errorService: ErrorService,
               private eventService: EventsService, private logger: Logger,
@@ -41,10 +30,10 @@ export class ParticipantStatusComponent implements OnInit {
 
   async ngOnInit(): Promise<any> {
     await this.setupEventHubSubscribers();
-    await this.LoadParticipants();
+    await this.LoadData();
   }
 
-  async LoadParticipants() {
+  async LoadData() {
     this.logger.info('Loading VH Officer Dashboard Participant Status list');
 
     const participantDetails = await this.getParticipantsByConference(this.conferenceId);
@@ -73,10 +62,7 @@ export class ParticipantStatusComponent implements OnInit {
     participant.status = participantStatus;
 
     if (participant.role === Role.Judge) {
-      const judgeFromOtherConference =
-        this._judgeStatuses.find(x => x.conferenceId !== this.conferenceId && x.username === participant.username &&
-          x.status === ParticipantStatus.InHearing);
-      participant.statusText = judgeFromOtherConference
+      participant.statusText = participant.judgeInAnotherHearing
         ? this.participantStatusReader.inAnotherHearingText
         : this.participantStatusReader.getStatusAsTextForJudge(participantStatus);
     } else {
@@ -106,23 +92,8 @@ export class ParticipantStatusComponent implements OnInit {
       return;
     }
 
-    // Check if the participant is not in this conference
     if (this.conferenceId !== message.conferenceId) {
-      // Only want to change status if its a Judge and they are in another hearing
-      const otherJudgeStatus = this._judgeStatuses.find(x => x.participantId === message.participantId);
-      if (otherJudgeStatus) {
-        // Is the judge in this conference
-        const thisJudgeInAnotherConference = this.participants.find(x => x.username === otherJudgeStatus.username);
-        if (thisJudgeInAnotherConference) {
-          if (message.status === ParticipantStatus.InHearing) {
-            thisJudgeInAnotherConference.status = ParticipantStatus.None;
-            thisJudgeInAnotherConference.statusText = this.participantStatusReader.inAnotherHearingText;
-          } else {
-            thisJudgeInAnotherConference.status = ParticipantStatus.None;
-            thisJudgeInAnotherConference.statusText = this.participantStatusReader.getStatusAsTextForJudge(ParticipantStatus.None);
-          }
-        }
-      }
+
     }
 
     const participantInThisConference = this.participants.find((x) => x.id === message.participantId);
@@ -135,7 +106,7 @@ export class ParticipantStatusComponent implements OnInit {
 
   async refreshConferenceDataDuringDisconnect(): Promise<void> {
     this.logger.warn('EventHub refresh pending...');
-    await this.LoadParticipants();
+    await this.LoadData();
   }
 
   getParticipantStatusClass(state: ParticipantStatus): string {

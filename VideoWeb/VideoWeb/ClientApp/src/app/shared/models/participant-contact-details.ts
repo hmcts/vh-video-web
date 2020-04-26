@@ -73,4 +73,12 @@ export class ParticipantContactDetails {
   get displayName(): string {
     return this.participant.display_name;
   }
+
+  get hearingVenueName(): string {
+    return this.participant.hearing_venue_name;
+  }
+
+  get judgeInAnotherHearing(): boolean {
+    return this.participant.judge_in_another_hearing;
+  }
 }

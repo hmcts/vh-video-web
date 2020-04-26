@@ -11,6 +11,11 @@ namespace VideoWeb.Contract.Responses
         public Guid Id { get; set; }
         
         /// <summary>
+        /// The conference id
+        /// </summary>
+        public Guid ConferenceId { get; set; }
+        
+        /// <summary>
         /// The participant's full name
         /// </summary>
         public string Name { get; set; }
@@ -65,6 +70,14 @@ namespace VideoWeb.Contract.Responses
         /// </summary>
         public string ContactTelephone { get; set; }
         
+        /// <summary>
+        /// The hearing venue this participant is assigned to
+        /// </summary>
+        public string HearingVenueName { get; set; }
         
+        /// <summary>
+        /// The Judge is In Another Hearing
+        /// </summary>
+        public bool JudgeInAnotherHearing { get; set; }
     }
 }

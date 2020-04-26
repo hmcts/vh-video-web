@@ -20,7 +20,7 @@ namespace VideoWeb.UnitTests.Mappings
             var participant = new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant")
                 .WithStatus(ParticipantState.Available).Build();
 
-            var response = ParticipantResponseForVhoMapper.MapParticipantTo(participant);
+            var response = ParticipantResponseForVhoMapper.MapParticipantToResponseModel(participant);
             response.Id.Should().Be(participant.Id);
             response.Name.Should().Be(participant.Name);
             response.Username.Should().Be(participant.Username);

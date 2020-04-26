@@ -28,7 +28,8 @@ namespace VideoWeb.Common.Caching
             {
                 Id = conferenceResponse.Id,
                 HearingId = conferenceResponse.Hearing_id,
-                Participants = participants
+                Participants = participants,
+                HearingVenueName = conferenceResponse.Hearing_venue_name
             };
             return conference;
         }
