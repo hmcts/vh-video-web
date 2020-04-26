@@ -275,7 +275,7 @@ describe('VhoHearingsComponent', () => {
         );
         component.participantsHeartBeat = [];
         component.participantsHeartBeat.push(heartBeat);
-        component.retrieveHearingsForVhOfficer();
+        component.retrieveHearingsForVhOfficer(true);
         expect(component.conferences).not.toBe(undefined);
         expect(component.conferences.length).toBeGreaterThan(0);
         expect(component.participantsHeartBeat).not.toBe(undefined);
@@ -593,7 +593,7 @@ describe('VhoHearingsComponent', () => {
     it('should not be full screen if there are no hearings', () => {
         spyOn(component, 'enableFullScreen');
         videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(of([]));
-        component.retrieveHearingsForVhOfficer();
+        component.retrieveHearingsForVhOfficer(true);
         expect(component.enableFullScreen).toHaveBeenCalledWith(false);
     });
 

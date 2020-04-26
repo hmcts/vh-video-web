@@ -40,7 +40,7 @@ describe('VhoHearingsComponent when conference retrieval fails', () => {
             Promise.resolve(true);
         });
         tick();
-        component.retrieveHearingsForVhOfficer();
+        component.retrieveHearingsForVhOfficer(true);
         expect(errorService.handleApiError).toHaveBeenCalledTimes(1);
     }));
 });
