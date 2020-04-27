@@ -40,7 +40,7 @@ export class VenueListComponent implements OnInit {
             unSelectAllText: 'Unselect All',
             itemsShowLimit: 1,
             allowSearchFilter: true,
-            searchPlaceholderText: 'Seach venue name'
+            searchPlaceholderText: 'Search venue name'
         };
     }
 
