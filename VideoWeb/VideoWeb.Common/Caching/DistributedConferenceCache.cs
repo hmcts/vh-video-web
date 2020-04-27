@@ -17,14 +17,14 @@ namespace VideoWeb.Common.Caching
             _distributedCache = distributedCache;
         }
 
-        public Task AddConferenceAsync(ConferenceDetailsResponse conferenceResponse)
+        public async Task AddConferenceAsync(ConferenceDetailsResponse conferenceResponse)
         {
             var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse);
             var serialisedConference = JsonConvert.SerializeObject(conference, CachingHelper.SerializerSettings);
 
             var data = Encoding.UTF8.GetBytes(serialisedConference);
 
-            return _distributedCache.SetAsync(conference.Id.ToString(), data,
+            await _distributedCache.SetAsync(conference.Id.ToString(), data,
                 new DistributedCacheEntryOptions
                 {
                     SlidingExpiration = TimeSpan.FromHours(4)

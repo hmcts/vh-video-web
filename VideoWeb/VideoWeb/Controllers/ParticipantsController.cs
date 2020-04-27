@@ -184,7 +184,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         [SwaggerOperation(OperationId = "GetParticipantsByConferenceIdVho")]
-        public async Task<ActionResult<ConferenceResponseVho>> GetParticipantsByConferenceIdVhoAsync(Guid conferenceId)
+        public async Task<IActionResult> GetParticipantsByConferenceIdVhoAsync(Guid conferenceId)
         {
             _logger.LogDebug("GetParticipantsByConferenceIdVho");
             

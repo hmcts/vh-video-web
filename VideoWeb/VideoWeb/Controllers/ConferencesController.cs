@@ -150,7 +150,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         [SwaggerOperation(OperationId = "GetConferenceByIdVHO")]
-        public async Task<ActionResult<ConferenceResponseVho>> GetConferenceByIdVhoAsync(Guid conferenceId)
+        public async Task<ActionResult<ConferenceResponseVho>> GetConferenceByIdVHOAsync(Guid conferenceId)
         {
             _logger.LogDebug("GetConferenceById");
             if (conferenceId == Guid.Empty)
@@ -161,12 +161,10 @@ namespace VideoWeb.Controllers
                 return BadRequest(ModelState);
             }
 
-            var username = User.Identity.Name.ToLower().Trim();
-
             _logger.LogTrace("Checking to see if user is a VH Officer");
             if (!User.IsInRole(Role.VideoHearingsOfficer.EnumDataMemberAttr()))
             {
-                _logger.LogWarning($"Failed to get conference: ${conferenceId}, {username} is not a VH officer");
+                _logger.LogWarning($"Failed to get conference: ${conferenceId}, {User.Identity.Name} is not a VH officer");
                 
                 return Unauthorized("User must be a VH Officer");
             }
@@ -187,7 +185,7 @@ namespace VideoWeb.Controllers
             var exceededTimeLimit = !ConferenceHelper.HasNotPassed(conference.Current_status, conference.Closed_date_time);
             if (exceededTimeLimit)
             {
-                _logger.LogWarning(
+                _logger.LogInformation(
                     $"Unauthorised to view conference details {conferenceId} because user is not " +
                     "Officer nor a participant of the conference, or the conference has been closed for over 30 minutes");
                 

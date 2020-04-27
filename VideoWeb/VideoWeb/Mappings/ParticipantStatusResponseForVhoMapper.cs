@@ -24,7 +24,7 @@ namespace VideoWeb.Mappings
                 .Select(x =>
                 {
                     var status = Enum.Parse<ParticipantStatus>(x.ParticipantStatus.ToString());
-                    var bookingParticipant = bookingParticipants.SingleOrDefault(p => x.RefId == p.Id);
+                    var bookingParticipant = bookingParticipants.SingleOrDefault(p => p.Id == x.RefId);
                     var judgeInHearing = judgesInHearings.SingleOrDefault(j => j.Username == x.Username && j.Id != x.Id);
 
                     return new ParticipantContactDetailsResponseVho
