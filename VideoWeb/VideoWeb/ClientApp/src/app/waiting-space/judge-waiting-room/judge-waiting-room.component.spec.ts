@@ -85,7 +85,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
     it('should update participant status', async () => {
         const pat = conference.participants[0];
-        const message = new ParticipantStatusMessage(pat.id, ParticipantStatus.InConsultation);
+        const message = new ParticipantStatusMessage(pat.id, pat.username, conference.id, ParticipantStatus.InConsultation);
         component.handleParticipantStatusChange(message);
         const participant = component.conference.participants.find(x => x.id === message.participantId);
         expect(participant.status).toBe(message.status);
@@ -230,9 +230,9 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     it('should update participant status when message received', () => {
-        const participantId = conference.participants[0].id;
+        const participant = conference.participants[0];
         component.conference.participants[0].status = ParticipantStatus.Available;
-        const message = new ParticipantStatusMessage(participantId, ParticipantStatus.InConsultation);
+        const message = new ParticipantStatusMessage(participant.id, participant.username, conference.id, ParticipantStatus.InConsultation);
 
         eventService.participantStatusSubject.next(message);
 
