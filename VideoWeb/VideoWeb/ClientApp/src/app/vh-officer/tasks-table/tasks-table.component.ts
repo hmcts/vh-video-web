@@ -12,23 +12,36 @@ import { Logger } from 'src/app/services/logging/logger-base';
 })
 export class TasksTableComponent implements OnInit {
     taskDivWidth: number;
+    loading: boolean;
 
-    @Input() conference: ConferenceResponse;
-    @Input() tasks: TaskResponse[];
+    @Input() conferenceId: string;
     @Output() taskCompleted = new EventEmitter<TaskCompleted>();
+    tasks: TaskResponse[];
+    conference: ConferenceResponse;
 
-    @HostListener('window:resize', ['$event'])
-    onResize(event) {
+    @HostListener('window:resize')
+    onResize() {
         this.updateDivWidthForTasks();
     }
-    constructor(private videoWebService: VideoWebService, private logger: Logger) {}
+    constructor(private videoWebService: VideoWebService, private dashboardHelper: VHODashboardHelper, private logger: Logger) {}
 
     ngOnInit() {
         this.updateDivWidthForTasks();
+        this.loading = true;
+        this.retrieveConference(this.conferenceId)
+            .then(async (conference) => {
+                this.conference = conference;
+                const tasks = await this.retrieveTasksForConference(this.conference.id);
+                this.tasks = tasks;
+                this.loading = false;
+            })
+            .catch((err) => {
+                this.logger.error(`Failed to init tasks list for conference ${this.conferenceId}`, err);
+            });
     }
 
     updateDivWidthForTasks(): void {
-        this.taskDivWidth = new VHODashboardHelper().getWidthAvailableForConference();
+        this.taskDivWidth = this.dashboardHelper.getWidthAvailableForConference();
     }
 
     getOriginName(task: TaskResponse): string {
@@ -38,6 +51,14 @@ export class TasksTableComponent implements OnInit {
         } else {
             return '';
         }
+    }
+
+    retrieveConference(conferenceId): Promise<ConferenceResponse> {
+        return this.videoWebService.getConferenceByIdVHO(conferenceId);
+    }
+
+    retrieveTasksForConference(conferenceId: string): Promise<TaskResponse[]> {
+        return this.videoWebService.getTasksForConference(conferenceId);
     }
 
     async completeTask(task: TaskResponse) {
