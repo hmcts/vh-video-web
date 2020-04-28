@@ -123,4 +123,18 @@ describe('SelfTestComponent', () => {
         await component.ngOnDestroy();
         expect(videoWebService.raiseSelfTestFailureEvent).toHaveBeenCalledTimes(0);
     });
+    it('should retrive self test score for conference and participant', async () => {
+      spyOn(videoWebService, 'getTestCallScore');
+      component.conference = new ConferenceTestData().getConferenceNow();
+      component.participant = component.conference.participants[0];
+      await component.retrieveSelfTestScore();
+      expect(videoWebService.getTestCallScore).toHaveBeenCalledTimes(1);
+    });
+    it('should retrive independent self test score as a conference and participant are null', async () => {
+      spyOn(videoWebService, 'getIndependentTestCallScore');
+      component.conference = null;
+      component.participant = null;
+      await component.retrieveSelfTestScore();
+      expect(videoWebService.getIndependentTestCallScore).toHaveBeenCalledTimes(1);
+    });
 });
