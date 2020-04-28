@@ -2063,9 +2063,9 @@ export enum ConferenceStatus {
 }
 
 export enum Role {
-    VideoHearingsOfficer = "VideoHearingsOfficer",
     None = "None",
     CaseAdmin = "CaseAdmin",
+    VideoHearingsOfficer = "VideoHearingsOfficer",
     HearingFacilitationSupport = "HearingFacilitationSupport",
     Judge = "Judge",
     Individual = "Individual",
@@ -3508,6 +3508,7 @@ export interface IUpdateParticipantRequest {
 export class ParticipantContactDetailsResponseVho implements IParticipantContactDetailsResponseVho {
     /** The participant id in a conference */
     id?: string;
+    conference_id?: string;
     /** The participant's full name */
     name?: string | undefined;
     /** The participant's username */
@@ -3523,6 +3524,8 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
     last_name?: string | undefined;
     contact_email?: string | undefined;
     contact_telephone?: string | undefined;
+    hearing_venue_name?: string | undefined;
+    judge_in_another_hearing?: boolean;
 
     constructor(data?: IParticipantContactDetailsResponseVho) {
         if (data) {
@@ -3536,6 +3539,7 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
+            this.conference_id = _data["conference_id"];
             this.name = _data["name"];
             this.username = _data["username"];
             this.role = _data["role"];
@@ -3547,6 +3551,8 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
             this.last_name = _data["last_name"];
             this.contact_email = _data["contact_email"];
             this.contact_telephone = _data["contact_telephone"];
+            this.hearing_venue_name = _data["hearing_venue_name"];
+            this.judge_in_another_hearing = _data["judge_in_another_hearing"];
         }
     }
 
@@ -3560,6 +3566,7 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
+        data["conference_id"] = this.conference_id;
         data["name"] = this.name;
         data["username"] = this.username;
         data["role"] = this.role;
@@ -3571,6 +3578,8 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
         data["last_name"] = this.last_name;
         data["contact_email"] = this.contact_email;
         data["contact_telephone"] = this.contact_telephone;
+        data["hearing_venue_name"] = this.hearing_venue_name;
+        data["judge_in_another_hearing"] = this.judge_in_another_hearing;
         return data; 
     }
 }
@@ -3578,6 +3587,7 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
 export interface IParticipantContactDetailsResponseVho {
     /** The participant id in a conference */
     id?: string;
+    conference_id?: string;
     /** The participant's full name */
     name?: string | undefined;
     /** The participant's username */
@@ -3593,6 +3603,8 @@ export interface IParticipantContactDetailsResponseVho {
     last_name?: string | undefined;
     contact_email?: string | undefined;
     contact_telephone?: string | undefined;
+    hearing_venue_name?: string | undefined;
+    judge_in_another_hearing?: boolean;
 }
 
 export class UserProfileResponse implements IUserProfileResponse {
