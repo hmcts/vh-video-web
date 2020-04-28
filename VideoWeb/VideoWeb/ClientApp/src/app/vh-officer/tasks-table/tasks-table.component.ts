@@ -29,13 +29,12 @@ export class TasksTableComponent implements OnInit {
         this.updateDivWidthForTasks();
         this.loading = true;
         this.retrieveConference(this.conferenceId)
-            .then(async (conference) => {
+            .then(async conference => {
                 this.conference = conference;
-                const tasks = await this.retrieveTasksForConference(this.conference.id);
-                this.tasks = tasks;
+                this.tasks = await this.retrieveTasksForConference(this.conference.id);
                 this.loading = false;
             })
-            .catch((err) => {
+            .catch(err => {
                 this.logger.error(`Failed to init tasks list for conference ${this.conferenceId}`, err);
             });
     }
@@ -46,7 +45,7 @@ export class TasksTableComponent implements OnInit {
 
     getOriginName(task: TaskResponse): string {
         if (task.type !== TaskType.Hearing) {
-            const participantTask = this.conference.participants.find((x) => x.id === task.origin_id);
+            const participantTask = this.conference.participants.find(x => x.id === task.origin_id);
             return participantTask ? participantTask.name : '';
         } else {
             return '';
@@ -65,7 +64,7 @@ export class TasksTableComponent implements OnInit {
         try {
             const updatedTask = await this.videoWebService.completeTask(this.conference.id, task.id);
             this.updateTask(updatedTask);
-            const pendingTasks = this.tasks.filter((x) => x.status === TaskStatus.ToDo).length;
+            const pendingTasks = this.tasks.filter(x => x.status === TaskStatus.ToDo).length;
             this.taskCompleted.emit(new TaskCompleted(this.conference.id, pendingTasks));
         } catch (error) {
             this.logger.error(`Failed to complete task ${task.id}`, error);
@@ -73,7 +72,7 @@ export class TasksTableComponent implements OnInit {
     }
 
     updateTask(updatedTask: TaskResponse) {
-        const taskToUpdate = this.tasks.find((x) => x.id === updatedTask.id);
+        const taskToUpdate = this.tasks.find(x => x.id === updatedTask.id);
         const index = this.tasks.indexOf(taskToUpdate);
         this.tasks[index] = updatedTask;
     }
