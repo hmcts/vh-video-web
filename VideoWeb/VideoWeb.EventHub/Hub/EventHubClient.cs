@@ -158,8 +158,10 @@ namespace VideoWeb.EventHub.Hub
         private bool IsAllowedToSendMessage(Guid conferenceId, bool isAdmin)
         {
             if (isAdmin) return true;
-            var conference = _conferenceCache.GetConference(conferenceId);
-            if (conference == null) throw new ConferenceNotFoundException(conferenceId);
+            var conferenceResponse = _videoApiClient.GetConferenceDetailsById(conferenceId);
+            var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse);
+            
+            // if (conference == null) throw new ConferenceNotFoundException(conferenceId);
 
             return conference.GetJudge().Username
                 .Equals(Context.UserIdentifier, StringComparison.InvariantCultureIgnoreCase);
