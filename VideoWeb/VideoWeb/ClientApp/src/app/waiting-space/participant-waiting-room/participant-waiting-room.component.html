@@ -66,8 +66,8 @@
       <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="getCurrentTimeClass()">
 
         <div *ngIf="hearing.isOnTime()">
-          <p class="govuk-body-l white">
-            The video hearings team will contact you by video before the hearing begins to check you're ready.
+          <h2 class="govuk-heading-m white">Please wait</h2>
+          <p class="white">Your video hearing is scheduled to begin at {{ hearing.scheduledStartTime | date: 'HH:mm' }}
           </p>
         </div>
 
