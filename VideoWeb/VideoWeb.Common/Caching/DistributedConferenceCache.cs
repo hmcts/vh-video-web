@@ -34,17 +34,10 @@ namespace VideoWeb.Common.Caching
 
         public Conference GetConference(Guid id)
         {
-            try
-            {
-                var data = _distributedCache.Get(id.ToString());
-                var conferenceSerialised = Encoding.UTF8.GetString(data);
-                var conference = JsonConvert.DeserializeObject<Conference>(conferenceSerialised, CachingHelper.SerializerSettings);
-                return conference;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            var data = _distributedCache.Get(id.ToString());
+            var conferenceSerialised = Encoding.UTF8.GetString(data);
+            var conference = JsonConvert.DeserializeObject<Conference>(conferenceSerialised, CachingHelper.SerializerSettings);
+            return conference;
         }
     }
 }
