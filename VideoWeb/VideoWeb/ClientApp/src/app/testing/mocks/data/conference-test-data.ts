@@ -5,6 +5,7 @@ import {
     ConferenceResponse,
     ConferenceResponseVho,
     ConferenceStatus,
+    ParticipantContactDetailsResponseVho,
     ParticipantForUserResponse,
     ParticipantResponseVho,
     ParticipantStatus,
@@ -266,6 +267,83 @@ export class ConferenceTestData {
         participants.push(participant1);
         participants.push(participant2);
         participants.push(participant3);
+        return participants;
+    }
+
+    getListOParticipantContactDetailsResponseVho(conferenceId: string, hearingVenueName: string): ParticipantContactDetailsResponseVho[] {
+        const participants: ParticipantContactDetailsResponseVho[] = [];
+        const participant1 = new ParticipantContactDetailsResponseVho({
+            id: '9F681318-4955-49AF-A887-DED64554429D',
+            name: 'Mr Chris Green',
+            status: ParticipantStatus.Available,
+            role: Role.Individual,
+            case_type_group: 'Defendent',
+            display_name: 'Greeno',
+            username: 'chris.green@hearings.net',
+            conference_id: conferenceId,
+            hearing_venue_name: hearingVenueName,
+            contact_email: 'chris.green@hearings.net',
+            contact_telephone: '123',
+            first_name: 'Chris',
+            last_name: 'Green',
+            ref_id: 'B505FA9D-8072-4F96-8CA6-4F0489DD6E08'
+        });
+
+        const participant2 = new ParticipantContactDetailsResponseVho({
+            id: '9F681318-4955-49AF-A887-DED64554429J',
+            name: 'Mr James Green',
+            status: ParticipantStatus.NotSignedIn,
+            role: Role.Representative,
+            display_name: 'James Green',
+            case_type_group: 'Defendent',
+            username: 'james.green@hearings.net',
+            conference_id: conferenceId,
+            hearing_venue_name: hearingVenueName,
+            contact_email: 'james.green@hearings.net',
+            contact_telephone: '456',
+            first_name: 'James',
+            last_name: 'Green',
+            ref_id: '072D80ED-6816-42AF-A0C0-2FAE0F65E17A'
+        });
+
+        const participant3 = new ParticipantContactDetailsResponseVho({
+            id: '9F681318-4955-49AF-A887-DED64554429T',
+            name: 'Judge Fudge',
+            status: ParticipantStatus.Available,
+            role: Role.Judge,
+            display_name: 'Judge Fudge',
+            username: 'judge.fudge@hearings.net',
+            case_type_group: 'Judge',
+            conference_id: conferenceId,
+            hearing_venue_name: hearingVenueName,
+            contact_email: 'judge.fudge@hearings.net',
+            contact_telephone: '789',
+            first_name: 'Judge',
+            last_name: 'Fudge',
+            ref_id: '9B4737C9-5D8A-4B67-8569-EF8185FFE6E3'
+        });
+
+        const participant4 = new ParticipantContactDetailsResponseVho({
+            id: '9D13E6A4-035F-47B3-9F5E-72FD2F2E0DFD',
+            name: 'Judge Fudge',
+            status: ParticipantStatus.Available,
+            role: Role.Judge,
+            display_name: 'Judge Fudge',
+            username: 'judge.fudge@hearings.net',
+            case_type_group: 'Judge',
+            conference_id: '6D4F28D0-0638-48F7-9C34-18221C3F87F2',
+            hearing_venue_name: hearingVenueName,
+            contact_email: 'judge.fudge@hearings.net',
+            contact_telephone: '910',
+            first_name: 'Judge',
+            last_name: 'Fudge',
+            ref_id: '9B4737C9-5D8A-4B67-8569-EF8185FFE6E3'
+        });
+
+        participants.push(participant1);
+        participants.push(participant2);
+        participants.push(participant3);
+        participants.push(participant4);
         return participants;
     }
 

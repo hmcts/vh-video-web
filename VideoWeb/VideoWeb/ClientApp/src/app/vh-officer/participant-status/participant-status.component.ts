@@ -100,7 +100,7 @@ export class ParticipantStatusComponent implements OnInit {
             const thisJudge = this.participants.find((x) => x.username === message.username);
             if (thisJudge) {
                 thisJudge.judgeInAnotherHearing = message.status === ParticipantStatus.InHearing;
-                this.setParticipantStatus(thisJudge.judgeInAnotherHearing ? thisJudge.status : message.status, thisJudge);
+                this.setParticipantStatus(thisJudge.status, thisJudge);
             }
         }
 
