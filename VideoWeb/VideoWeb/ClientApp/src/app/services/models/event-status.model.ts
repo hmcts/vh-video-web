@@ -1,9 +1,9 @@
 export class EventStatusModel {
     constructor(conferenceId: string, participantId: string) {
-        this.ConferenceId = conferenceId;
-        this.ParticipantId = participantId;
+        this.conferenceId = conferenceId;
+        this.participantId = participantId;
     }
 
-    ConferenceId: string;
-    ParticipantId: string;
+    conferenceId: string;
+    participantId: string;
 }

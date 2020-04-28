@@ -22,7 +22,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { ExtendedConferenceStatus } from 'src/app/shared/models/hearings-filter';
 import { ParticipantSummary } from 'src/app/shared/models/participant-summary';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { TestFixtureHelper } from 'src/app/testing/Helper/test-fixture-helper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
@@ -230,8 +230,12 @@ describe('VhoHearingsComponent', () => {
             'Chrome',
             '80.0.3987.132'
         );
-        const message = new ParticipantStatusMessage(conferenceDetail.participants[0].id, conferenceDetail.participants[0].username,
-          conferenceDetail.id, ParticipantStatus.Disconnected);
+        const message = new ParticipantStatusMessage(
+            conferenceDetail.participants[0].id,
+            conferenceDetail.participants[0].username,
+            conferenceDetail.id,
+            ParticipantStatus.Disconnected
+        );
         component.participantsHeartBeat = [];
         component.participantsHeartBeat.push(heartBeat1);
         component.participantsHeartBeat.push(heartBeat2);
@@ -296,8 +300,12 @@ describe('VhoHearingsComponent', () => {
             'Chrome',
             '80.0.3987.132'
         );
-        const message = new ParticipantStatusMessage(conferenceDetail.participants[0].id, conferenceDetail.participants[0].username,
-          conferenceDetail.id, ParticipantStatus.Available);
+        const message = new ParticipantStatusMessage(
+            conferenceDetail.participants[0].id,
+            conferenceDetail.participants[0].username,
+            conferenceDetail.id,
+            ParticipantStatus.Available
+        );
         component.participantsHeartBeat = [];
         component.participantsHeartBeat.push(heartBeat1);
         component.participantsHeartBeat.push(heartBeat2);
@@ -407,8 +415,7 @@ describe('VhoHearingsComponent', () => {
         component.setupEventHubSubscribers();
         const participant = conferences[0].participants.find((x) => x.role === Role.Judge);
         component.conferencesAll[0].participants[0].status = ParticipantStatus.Joining;
-        const message = new ParticipantStatusMessage(participant.id, participant.username,
-          conferences[0].id, ParticipantStatus.Available);
+        const message = new ParticipantStatusMessage(participant.id, participant.username, conferences[0].id, ParticipantStatus.Available);
 
         mockEventService.participantStatusSubject.next(message);
     });
@@ -418,8 +425,7 @@ describe('VhoHearingsComponent', () => {
         component.participants = conferenceDetail.participants;
         const participant = conferences[2].participants.find((x) => x.role === Role.Judge);
         component.participants[0].status = ParticipantStatus.Joining;
-        const message = new ParticipantStatusMessage(participant.id, participant.username,
-          conferences[0].id, ParticipantStatus.Available);
+        const message = new ParticipantStatusMessage(participant.id, participant.username, conferences[0].id, ParticipantStatus.Available);
 
         mockEventService.participantStatusSubject.next(message);
     });
@@ -429,8 +435,7 @@ describe('VhoHearingsComponent', () => {
         component.participants = conferenceDetail.participants;
         const participant = conferenceDetail.participants[0];
         component.participants[0].status = ParticipantStatus.Joining;
-        const message = new ParticipantStatusMessage(participant.id, participant.username,
-          conferences[0].id, ParticipantStatus.Available);
+        const message = new ParticipantStatusMessage(participant.id, participant.username, conferences[0].id, ParticipantStatus.Available);
 
         mockEventService.participantStatusSubject.next(message);
 
@@ -441,8 +446,7 @@ describe('VhoHearingsComponent', () => {
         component.setupEventHubSubscribers();
         component.participants = conferenceDetail.participants;
         const participant = conferenceDetail.participants.find((x) => x.role === Role.Judge);
-        const message = new ParticipantStatusMessage(participant.id, participant.username,
-          conferences[0].id, ParticipantStatus.Available);
+        const message = new ParticipantStatusMessage(participant.id, participant.username, conferences[0].id, ParticipantStatus.Available);
 
         mockEventService.participantStatusSubject.next(message);
     });
@@ -453,8 +457,8 @@ describe('VhoHearingsComponent', () => {
         delayedConference.status = ConferenceStatus.NotStarted;
         futureConference.status = ConferenceStatus.NotStarted;
         const result = component.setStatusDelayed([delayedConference, futureConference]);
-        expect(result[0].StatusExtended).toBe(ExtendedConferenceStatus.Delayed);
-        expect(result[1].StatusExtended).toBe(ConferenceStatus.NotStarted);
+        expect(result[0].statusExtended).toBe(ExtendedConferenceStatus.Delayed);
+        expect(result[1].statusExtended).toBe(ConferenceStatus.NotStarted);
     });
 
     it('should not show filter', () => {
@@ -525,7 +529,7 @@ describe('VhoHearingsComponent', () => {
 
     it('should go back to venue list selection page', () => {
         component.goBackToVenueSelection();
-        expect(router.navigateByUrl).toHaveBeenCalledWith(PageUrls.AdminVenueList);
+        expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.AdminVenueList);
     });
 
     it('should refresh data on eventhub disconnect', () => {

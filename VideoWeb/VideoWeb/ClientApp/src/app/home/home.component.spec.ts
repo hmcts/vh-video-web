@@ -3,7 +3,7 @@ import { ProfileService } from '../services/api/profile.service';
 import { Role, UserProfileResponse } from '../services/clients/api-client';
 import { DeviceTypeService } from '../services/device-type.service';
 import { ErrorService } from '../services/error.service';
-import { PageUrls } from '../shared/page-url.constants';
+import { pageUrls } from '../shared/page-url.constants';
 import { HomeComponent } from './home.component';
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 
@@ -29,37 +29,37 @@ describe('HomeComponent', () => {
     it('should go to judge hearing list if user is a judge', async () => {
         const profile = new UserProfileResponse({ role: Role.Judge });
         component.navigateToHearingList(profile);
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeHearingList]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeHearingList]);
     });
 
     it('should go to admin venue list if user is a vho', () => {
         const profile = new UserProfileResponse({ role: Role.VideoHearingsOfficer });
         component.navigateToHearingList(profile);
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.AdminVenueList]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.AdminVenueList]);
     });
 
     it('should go to participant hearing list if user is a representative', () => {
         const profile = new UserProfileResponse({ role: Role.Representative });
         component.navigateToHearingList(profile);
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.ParticipantHearingList]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.ParticipantHearingList]);
     });
 
     it('should go to participant hearing list if user is an individual', () => {
         const profile = new UserProfileResponse({ role: Role.Individual });
         component.navigateToHearingList(profile);
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.ParticipantHearingList]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.ParticipantHearingList]);
     });
 
     it('should go to unauthorised if user is a case admin', () => {
         const profile = new UserProfileResponse({ role: Role.CaseAdmin });
         component.navigateToHearingList(profile);
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.Unauthorised]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.Unauthorised]);
     });
 
     it('should redirect to signon-a-computer screen if on a mobile device', () => {
         deviceTypeServiceSpy.isDesktop.and.returnValue(false);
         component.ngOnInit();
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.SignonAComputer]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.SignonAComputer]);
     });
 
     it('should navigate to hearing list when device is a desktop', fakeAsync(() => {

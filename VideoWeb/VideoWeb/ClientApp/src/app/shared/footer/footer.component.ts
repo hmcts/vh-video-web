@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router, RouterEvent } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { PageUrls } from '../page-url.constants';
+import { pageUrls } from '../page-url.constants';
 
 @Component({
     selector: 'app-footer',
@@ -10,12 +10,12 @@ import { PageUrls } from '../page-url.constants';
 })
 export class FooterComponent implements OnInit {
     hideContactUsLink = false;
-    privacyPolicyUri = PageUrls.PrivacyPolicy;
-    accessibilityUri = PageUrls.Accessibility;
+    privacyPolicyUri = pageUrls.PrivacyPolicy;
+    accessibilityUri = pageUrls.Accessibility;
     hideLinksForUnsupportedBrowser = false;
 
     constructor(private router: Router) {
-        this.router.events.pipe(filter((event: RouterEvent) => event instanceof NavigationEnd)).subscribe(x => {
+        this.router.events.pipe(filter((event: RouterEvent) => event instanceof NavigationEnd)).subscribe((x) => {
             this.hideContactUs();
             this.hideLinks();
         });
@@ -30,6 +30,6 @@ export class FooterComponent implements OnInit {
     }
 
     hideLinks() {
-        this.hideLinksForUnsupportedBrowser = this.router.url === `/${PageUrls.UnsupportedBrowser}`;
+        this.hideLinksForUnsupportedBrowser = this.router.url === `/${pageUrls.UnsupportedBrowser}`;
     }
 }

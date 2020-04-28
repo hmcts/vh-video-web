@@ -10,11 +10,11 @@ import { InstantMessage } from 'src/app/services/models/instant-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 
 export abstract class ChatBaseComponent {
-    protected _hearing: Hearing;
+    protected hearing: Hearing;
     messages: InstantMessage[];
 
     @Input() set conference(conference: ConferenceResponse) {
-        this._hearing = new Hearing(conference);
+        this.hearing = new Hearing(conference);
     }
 
     constructor(
@@ -42,7 +42,7 @@ export abstract class ChatBaseComponent {
 
     async handleIncomingMessage(message: InstantMessage) {
         // ignore if not for current conference
-        if (message.conferenceId !== this._hearing.id) {
+        if (message.conferenceId !== this.hearing.id) {
             return;
         }
 
@@ -67,7 +67,7 @@ export abstract class ChatBaseComponent {
     }
 
     async assignMessageFrom(username: string): Promise<string> {
-        const participant = this._hearing.getParticipantByUsername(username);
+        const participant = this.hearing.getParticipantByUsername(username);
         if (participant) {
             return participant.displayName;
         } else {
@@ -87,9 +87,9 @@ export abstract class ChatBaseComponent {
     handleIncomingOtherMessage() {}
 
     async retrieveChatForConference(): Promise<InstantMessage[]> {
-        this.messages = (await this.videoWebService.getConferenceChatHistory(this._hearing.id)).map((m) => {
+        this.messages = (await this.videoWebService.getConferenceChatHistory(this.hearing.id)).map((m) => {
             const im = new InstantMessage(m);
-            im.conferenceId = this._hearing.id;
+            im.conferenceId = this.hearing.id;
             return im;
         });
         return this.messages;

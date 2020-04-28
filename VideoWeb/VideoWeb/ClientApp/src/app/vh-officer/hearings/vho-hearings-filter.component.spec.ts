@@ -55,18 +55,18 @@ describe('VhoHearingsComponent Filter', () => {
 
     it('should apply filter with selected status and location to conferences records', () => {
         expect(component.conferences.length).toBe(3);
-        filter.statuses[0].Selected = true;
+        filter.statuses[0].selected = true;
         component.activateFilterOptions(filter);
         expect(component.conferences.length).toBe(2);
-        expect(component.conferences[0].status).toBe(filter.statuses[0].Status);
-        expect(component.conferences[1].status).toBe(filter.statuses[0].Status);
+        expect(component.conferences[0].status).toBe(filter.statuses[0].status);
+        expect(component.conferences[1].status).toBe(filter.statuses[0].status);
     });
 
     it('should apply filter with selected alerts records', () => {
         expect(component.conferences.length).toBe(3);
-        filter.statuses.forEach((x) => (x.Selected = false));
-        filter.alerts[1].Selected = true;
-        const expectedAlerts1 = filter.alerts[1].BodyText;
+        filter.statuses.forEach((x) => (x.selected = false));
+        filter.alerts[1].selected = true;
+        const expectedAlerts1 = filter.alerts[1].bodyText;
         component.activateFilterOptions(filter);
 
         expect(component.conferences.length).toBe(2);

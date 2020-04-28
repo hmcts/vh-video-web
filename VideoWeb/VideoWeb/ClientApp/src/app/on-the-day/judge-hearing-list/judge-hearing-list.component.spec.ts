@@ -9,7 +9,7 @@ import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
@@ -112,7 +112,7 @@ describe('JudgeHearingListComponent with conferences for user', () => {
         spyOn(router, 'navigate').and.callFake(() => {});
         const conference = conferences[0];
         component.onConferenceSelected(conference);
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeWaitingRoom, conference.id]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeWaitingRoom, conference.id]);
     });
 
     it('should update conference status when message arrives', () => {
@@ -120,14 +120,14 @@ describe('JudgeHearingListComponent with conferences for user', () => {
         const conference = conferences[0];
         const message = new ConferenceStatusMessage(conference.id, ConferenceStatus.Closed);
         eventsService.hearingStatusSubject.next(message);
-        const updatedConference = component.conferences.find(x => x.id === conference.id);
+        const updatedConference = component.conferences.find((x) => x.id === conference.id);
         expect(updatedConference.status).toBe(message.status);
     });
 
     it('should navigate to equipment check', () => {
         spyOn(router, 'navigate');
         component.goToEquipmentCheck();
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.EquipmentCheck]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.EquipmentCheck]);
     });
 });
 

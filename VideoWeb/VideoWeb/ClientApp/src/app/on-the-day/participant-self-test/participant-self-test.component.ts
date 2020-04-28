@@ -5,7 +5,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { TestCallScoreResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { BaseSelfTestComponent } from '../models/base-self-test.component';
 
 @Component({
@@ -34,7 +34,7 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
 
     continueParticipantJourney() {
         const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-        this.router.navigate([PageUrls.CameraWorking, conferenceId]);
+        this.router.navigate([pageUrls.CameraWorking, conferenceId]);
     }
 
     restartTest() {

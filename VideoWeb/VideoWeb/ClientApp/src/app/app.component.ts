@@ -11,7 +11,7 @@ import { DeviceTypeService } from './services/device-type.service';
 import { ErrorService } from './services/error.service';
 import { LocationService } from './services/location.service';
 import { PageTrackerService } from './services/page-tracker.service';
-import { PageUrls } from './shared/page-url.constants';
+import { pageUrls } from './shared/page-url.constants';
 
 @Component({
     selector: 'app-root',
@@ -76,17 +76,17 @@ export class AppComponent implements OnInit, OnDestroy {
 
     checkBrowser(): void {
         if (!this.deviceTypeService.isSupportedBrowser()) {
-            this.router.navigateByUrl(PageUrls.UnsupportedBrowser);
+            this.router.navigateByUrl(pageUrls.UnsupportedBrowser);
         }
     }
 
     async checkAuth(): Promise<void> {
         const currentUrl = this.locationService.getCurrentUrl();
-        if (this.locationService.getCurrentPathName() !== `/${PageUrls.Logout}`) {
+        if (this.locationService.getCurrentPathName() !== `/${pageUrls.Logout}`) {
             this.adalService.handleWindowCallback();
             this.loggedIn = this.adalService.userInfo.authenticated;
             if (!this.loggedIn) {
-                this.router.navigate([`/${PageUrls.Login}`], { queryParams: { returnUrl: currentUrl } });
+                this.router.navigate([`/${pageUrls.Login}`], { queryParams: { returnUrl: currentUrl } });
                 return;
             }
             await this.retrieveProfileRole();

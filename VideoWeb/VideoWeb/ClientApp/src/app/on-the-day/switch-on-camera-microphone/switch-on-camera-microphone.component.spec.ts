@@ -8,7 +8,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
@@ -63,7 +63,7 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
         spyOn(router, 'navigate').and.callFake(() => {});
         component.isJudge = true;
         component.goVideoTest();
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeSelfTestVideo, component.conference.id]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeSelfTestVideo, component.conference.id]);
     });
 
     it('should go to participant self test when profile is not a judge', async () => {
@@ -71,7 +71,7 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
         profileServiceSpy.getUserProfile.and.returnValue(individualProfile);
         component.isJudge = false;
         component.goVideoTest();
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.ParticipantSelfTestVideo, component.conference.id]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.ParticipantSelfTestVideo, component.conference.id]);
     });
 
     it('should raise permission denied event on media access rejection', async () => {
