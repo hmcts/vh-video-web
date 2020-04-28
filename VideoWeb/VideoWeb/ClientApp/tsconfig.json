@@ -21,5 +21,10 @@
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true
+  },
+  "variable-name": {
+    "options": [
+      "check-format"
+    ]
   }
 }

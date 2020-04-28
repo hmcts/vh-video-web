@@ -20,6 +20,7 @@ namespace VideoWeb.UnitTests.Hub
             var conferenceId = Guid.NewGuid();
             var participants = Builder<Participant>.CreateListOfSize(2)
                 .TheFirst(1).With(x => x.Role = Role.Judge).With(x => x.Username = username)
+                .TheRest().With(x => x.Role = Role.Individual)
                 .Build().ToList();
             var conference = Builder<Conference>.CreateNew()
                 .With(x => x.Id = conferenceId)

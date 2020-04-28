@@ -183,10 +183,10 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(IEnumerable<ParticipantContactDetailsResponseVho>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        [SwaggerOperation(OperationId = "GetParticipantsByConferenceIdVho")]
-        public async Task<IActionResult> GetParticipantsByConferenceIdVhoAsync(Guid conferenceId)
+        [SwaggerOperation(OperationId = "GetParticipantsWithContactDetailsByConferenceId")]
+        public async Task<IActionResult> GetParticipantsWithContactDetailsByConferenceIdAsync(Guid conferenceId)
         {
-            _logger.LogDebug("GetParticipantsByConferenceIdVho");
+            _logger.LogDebug("GetParticipantsWithContactDetailsByConferenceId");
             
             if (conferenceId == Guid.Empty)
             {

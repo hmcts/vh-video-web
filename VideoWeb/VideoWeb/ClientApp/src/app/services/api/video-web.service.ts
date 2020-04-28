@@ -125,8 +125,8 @@ export class VideoWebService implements IVideoWebApiService {
         return this.activeConferencesCache.get();
     }
 
-    getParticipantsByConferenceIdVho(conferenceId: string): Promise<ParticipantContactDetailsResponseVho[]> {
-      return this.apiClient.getParticipantsByConferenceIdVho(conferenceId).toPromise();
+    getParticipantsWithContactDetailsByConferenceId(conferenceId: string): Promise<ParticipantContactDetailsResponseVho[]> {
+      return this.apiClient.getParticipantsWithContactDetailsByConferenceId(conferenceId).toPromise();
     }
 
     updateParticipantDetails(

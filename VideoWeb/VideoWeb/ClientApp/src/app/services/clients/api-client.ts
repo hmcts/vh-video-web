@@ -1332,7 +1332,7 @@ export class ApiClient {
      * @param conferenceId The unique id of the conference
      * @return Success
      */
-    getParticipantsByConferenceIdVho(conferenceId: string): Observable<ParticipantContactDetailsResponseVho[]> {
+    getParticipantsWithContactDetailsByConferenceId(conferenceId: string): Observable<ParticipantContactDetailsResponseVho[]> {
         let url_ = this.baseUrl + "/conferences/{conferenceId}/vhofficer/participants";
         if (conferenceId === undefined || conferenceId === null)
             throw new Error("The parameter 'conferenceId' must be defined.");
@@ -1348,11 +1348,11 @@ export class ApiClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetParticipantsByConferenceIdVho(response_);
+            return this.processGetParticipantsWithContactDetailsByConferenceId(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetParticipantsByConferenceIdVho(<any>response_);
+                    return this.processGetParticipantsWithContactDetailsByConferenceId(<any>response_);
                 } catch (e) {
                     return <Observable<ParticipantContactDetailsResponseVho[]>><any>_observableThrow(e);
                 }
@@ -1361,7 +1361,7 @@ export class ApiClient {
         }));
     }
 
-    protected processGetParticipantsByConferenceIdVho(response: HttpResponseBase): Observable<ParticipantContactDetailsResponseVho[]> {
+    protected processGetParticipantsWithContactDetailsByConferenceId(response: HttpResponseBase): Observable<ParticipantContactDetailsResponseVho[]> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
