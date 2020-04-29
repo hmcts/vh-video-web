@@ -19,8 +19,5 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By ParticipantContactEmail(Guid participantId) => By.Id($"tooltip-email-{participantId:D}");
         public static By ParticipantContactPhone(Guid participantId) => By.Id($"tooltip-contact-phone-{participantId:D}");
         public static By FiltersButton = By.Id("filterButton");
-        public static By ConferencesList = By.Id("conferences-list");
-        public static By ScrollBar = By.XPath("//perfect-scrollbar");
-        public static By ListColumn = By.Id("list-column");
     }
 }
