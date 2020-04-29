@@ -6,7 +6,7 @@ import { AddSelfTestFailureEventRequest, SelfTestFailureReason } from 'src/app/s
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceLite } from 'src/app/services/models/conference-lite';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 
 export abstract class EquipmentCheckBaseComponent {
     form: FormGroup;
@@ -52,7 +52,7 @@ export abstract class EquipmentCheckBaseComponent {
                 this.participantName
             } requested check equipment again.`
         );
-        this.router.navigate([PageUrls.EquipmentCheck, this.conferenceId]);
+        this.router.navigate([pageUrls.EquipmentCheck, this.conferenceId]);
     }
 
     showError(): boolean {
@@ -80,7 +80,7 @@ export abstract class EquipmentCheckBaseComponent {
             this.logger.info(
                 `Camera check | ConferenceId : ${this.conferenceId} | Participant : ${this.participantName} responded camera not working.`
             );
-            this.router.navigate([PageUrls.GetHelp]);
+            this.router.navigate([pageUrls.GetHelp]);
         } catch (error) {
             this.logger.error('Failed to raise "SelfTestFailureEvent"', error);
         }

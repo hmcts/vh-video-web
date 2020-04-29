@@ -6,7 +6,7 @@ import { configureTestSuite } from 'ng-bullet';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceLite } from 'src/app/services/models/conference-lite';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
@@ -66,7 +66,7 @@ describe('CameraCheckComponent', () => {
         await component.onSubmit();
         expect(component.form.valid).toBeFalsy();
         expect(router.navigate).toHaveBeenCalledTimes(1);
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.GetHelp]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.GetHelp]);
     });
 
     it('should validate form when "Yes" is selected', async () => {
@@ -75,7 +75,7 @@ describe('CameraCheckComponent', () => {
         component.equipmentCheck.markAsDirty();
         await component.onSubmit();
         expect(component.form.valid).toBeTruthy();
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.MicrophoneWorking, conference.id]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.MicrophoneWorking, conference.id]);
     });
 
     it('should allow equipment check when answered "No"', () => {
@@ -84,7 +84,7 @@ describe('CameraCheckComponent', () => {
         component.form.markAsDirty();
         component.checkEquipmentAgain();
         expect(component.form.invalid).toBeTruthy();
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.EquipmentCheck, conference.id]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.EquipmentCheck, conference.id]);
     });
 
     it('should allow equipment check when answered "Yes"', () => {

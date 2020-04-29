@@ -122,7 +122,7 @@ export class HearingsFilterOptionsService {
     private count(options: ListFilter[]) {
         let countOptions = 0;
         options.forEach((x) => {
-            if (x.Selected) {
+            if (x.selected) {
                 countOptions++;
             }
         });

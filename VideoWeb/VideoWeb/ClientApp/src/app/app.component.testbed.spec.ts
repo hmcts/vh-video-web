@@ -9,7 +9,7 @@ import { ConfigService } from './services/api/config.service';
 import { ClientSettingsResponse, UserProfileResponse, Role } from './services/clients/api-client';
 import { DeviceTypeService } from './services/device-type.service';
 import { Logger } from './services/logging/logger-base';
-import { PageUrls } from './shared/page-url.constants';
+import { pageUrls } from './shared/page-url.constants';
 import { MockLogger } from './testing/mocks/MockLogger';
 import { FooterStubComponent } from './testing/stubs/footer-stub';
 import { HeaderStubComponent } from './testing/stubs/header-stub';

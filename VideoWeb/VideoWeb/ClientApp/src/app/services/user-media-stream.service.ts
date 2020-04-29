@@ -12,16 +12,16 @@ export class UserMediaStreamService {
         video: true
     };
 
-    _navigator = <any>navigator;
+    navigator = <any>navigator;
 
     private requestStream: MediaStream;
 
     constructor(private logger: Logger) {
-        this._navigator.getUserMedia =
-            this._navigator.getUserMedia ||
-            this._navigator.webkitGetUserMedia ||
-            this._navigator.mozGetUserMedia ||
-            this._navigator.msGetUserMedia;
+        this.navigator.getUserMedia =
+            this.navigator.getUserMedia ||
+            this.navigator.webkitGetUserMedia ||
+            this.navigator.mozGetUserMedia ||
+            this.navigator.msGetUserMedia;
     }
 
     async requestAccess(): Promise<boolean> {
@@ -48,13 +48,13 @@ export class UserMediaStreamService {
             this.stopStream(this.requestStream);
         }
 
-        this.requestStream = await this._navigator.mediaDevices.getUserMedia(this.permissionConstraints);
+        this.requestStream = await this.navigator.mediaDevices.getUserMedia(this.permissionConstraints);
         return this.requestStream;
     }
 
     async getStreamForMic(device: UserMediaDevice): Promise<MediaStream> {
         if (device) {
-            const stream = await this._navigator.mediaDevices.getUserMedia({ audio: { deviceId: { exact: device.deviceId } } });
+            const stream = await this.navigator.mediaDevices.getUserMedia({ audio: { deviceId: { exact: device.deviceId } } });
             return stream;
         } else {
             return this.getDefaultMicStream();
@@ -63,7 +63,7 @@ export class UserMediaStreamService {
 
     async getStreamForCam(device: UserMediaDevice): Promise<MediaStream> {
         if (device) {
-            const stream = await this._navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } });
+            const stream = await this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } });
             return stream;
         } else {
             return this.getDefaultCamStream();
@@ -71,14 +71,14 @@ export class UserMediaStreamService {
     }
 
     private async getDefaultCamStream(): Promise<MediaStream> {
-        return await this._navigator.mediaDevices.getUserMedia({
+        return await this.navigator.mediaDevices.getUserMedia({
             audio: false,
             video: true
         });
     }
 
     private async getDefaultMicStream(): Promise<MediaStream> {
-        return await this._navigator.mediaDevices.getUserMedia({
+        return await this.navigator.mediaDevices.getUserMedia({
             audio: true,
             video: false
         });
@@ -89,7 +89,7 @@ export class UserMediaStreamService {
             return;
         }
 
-        stream.getTracks().forEach(track => {
+        stream.getTracks().forEach((track) => {
             track.stop();
         });
     }

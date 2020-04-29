@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { HearingVenueResponse } from 'src/app/services/clients/api-client';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -71,6 +71,6 @@ export class VenueListComponent implements OnInit {
 
     goToHearingList() {
         this.updateSelection();
-        this.router.navigateByUrl(PageUrls.AdminHearingList);
+        this.router.navigateByUrl(pageUrls.AdminHearingList);
     }
 }

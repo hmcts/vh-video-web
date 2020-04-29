@@ -20,14 +20,14 @@ namespace VideoWeb.Common.Caching
             _logger = logger;
         }
 
-        public Task AddConferenceToCache(ConferenceDetailsResponse conferenceResponse)
+        public async Task AddConferenceAsync(ConferenceDetailsResponse conferenceResponse)
         {
             var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse);
             var serialisedConference = JsonConvert.SerializeObject(conference, CachingHelper.SerializerSettings);
 
             var data = Encoding.UTF8.GetBytes(serialisedConference);
 
-            return _distributedCache.SetAsync(conference.Id.ToString(), data,
+            await _distributedCache.SetAsync(conference.Id.ToString(), data,
                 new DistributedCacheEntryOptions
                 {
                     SlidingExpiration = TimeSpan.FromHours(4)
@@ -35,12 +35,25 @@ namespace VideoWeb.Common.Caching
 
         }
 
-        public Conference GetConference(Guid id)
+        public async Task<Conference> GetOrAddConferenceAsync(Guid id, Func<Task<ConferenceDetailsResponse>> addConferenceDetailsFactory)
+        {
+            var conference = await GetConferenceAsync(id);
+
+            if (conference != null) return conference;
+            
+            var conferenceDetails = await addConferenceDetailsFactory();
+            await AddConferenceAsync(conferenceDetails);
+            conference = await GetConferenceAsync(id);
+
+            return conference;
+        }
+
+        public async Task<Conference> GetConferenceAsync(Guid id)
         {
             _logger.LogTrace($"Cached GetConference: {id} ");
             try
             {
-                var data = _distributedCache.Get(id.ToString());
+                var data = await _distributedCache.GetAsync(id.ToString());
                 _logger.LogTrace($"distribured cache: {data} ");
                 var conferenceSerialised = Encoding.UTF8.GetString(data);
                 var conference = JsonConvert.DeserializeObject<Conference>(conferenceSerialised, CachingHelper.SerializerSettings);

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
     selector: 'app-camera-and-microphone',
@@ -16,6 +16,6 @@ export class CameraAndMicrophoneComponent implements OnInit {
     }
 
     goToHearingRules() {
-        this.router.navigate([PageUrls.HearingRules, this.conferenceId]);
+        this.router.navigate([pageUrls.HearingRules, this.conferenceId]);
     }
 }

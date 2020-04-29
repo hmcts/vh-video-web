@@ -20,12 +20,13 @@ namespace VideoWeb.UnitTests.Hub
             var conferenceId = Guid.NewGuid();
             var participants = Builder<Participant>.CreateListOfSize(2)
                 .TheFirst(1).With(x => x.Role = Role.Judge).With(x => x.Username = username)
+                .TheRest().With(x => x.Role = Role.Individual)
                 .Build().ToList();
             var conference = Builder<Conference>.CreateNew()
                 .With(x => x.Id = conferenceId)
                 .With(x => x.Participants = participants)
                 .Build();
-            ConferenceCacheMock.Setup(x => x.GetConference(conferenceId)).Returns(conference);
+            ConferenceCacheMock.Setup(x => x.GetConferenceAsync(conferenceId)).ReturnsAsync(conference);
             var message = "test message";
 
             var mockClient = new Mock<IEventHubClient>();
@@ -64,7 +65,7 @@ namespace VideoWeb.UnitTests.Hub
                 .With(x => x.Id = conferenceId)
                 .With(x => x.Participants = participants)
                 .Build();
-            ConferenceCacheMock.Setup(x => x.GetConference(conferenceId)).Returns(conference);
+            ConferenceCacheMock.Setup(x => x.GetConferenceAsync(conferenceId)).ReturnsAsync(conference);
             var message = "test message";
 
             Claims = new ClaimsPrincipalBuilder().WithRole(Role.VideoHearingsOfficer).Build();
@@ -97,7 +98,7 @@ namespace VideoWeb.UnitTests.Hub
                 .With(x => x.Id = conferenceId)
                 .With(x => x.Participants = participants)
                 .Build();
-            ConferenceCacheMock.Setup(x => x.GetConference(conferenceId)).Returns(conference);
+            ConferenceCacheMock.Setup(x => x.GetConferenceAsync(conferenceId)).ReturnsAsync(conference);
             var message = "test message";
 
             var mockClient = new Mock<IEventHubClient>();

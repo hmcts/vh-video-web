@@ -22,7 +22,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { ExtendedConferenceStatus } from 'src/app/shared/models/hearings-filter';
 import { ParticipantSummary } from 'src/app/shared/models/participant-summary';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { TestFixtureHelper } from 'src/app/testing/Helper/test-fixture-helper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
@@ -143,30 +143,6 @@ describe('VhoHearingsComponent', () => {
         expect(component.conferences[0].numberOfPendingTasks).toBeLessThan(initPendingTasks);
     });
 
-    it('should get the selected judge statuses from another hearings', () => {
-        const currentConference = conferenceDetail;
-        currentConference.hearing_venue_name = 'venue name';
-        component.selectedHearing = new Hearing(currentConference);
-        component.participants = currentConference.participants;
-        component.getJudgeStatusDetails();
-        expect(component.participantStatusModel.JudgeStatuses.length).toBeGreaterThan(0);
-        expect(component.participantStatusModel.HearingVenueName).toBe('venue name');
-    });
-
-    it('should not return selected judge statuses from another hearings', () => {
-        component.clearSelectedConference();
-        const currentConference = conferenceDetail;
-        component.selectedHearing = new Hearing(currentConference);
-        component.participants = currentConference.participants;
-        component.participants.forEach((x) => {
-            if (x.role === Role.Judge) {
-                x.username = 'changeName@email.com';
-            }
-        });
-        component.getJudgeStatusDetails();
-        expect(component.participantStatusModel.JudgeStatuses.length).toBe(0);
-    });
-
     it('should reset conference unread counter when vho sends a message', () => {
         const conference = component.conferences[0];
         component.conferences[0].numberOfUnreadMessages = 5;
@@ -237,7 +213,12 @@ describe('VhoHearingsComponent', () => {
             'Chrome',
             '80.0.3987.132'
         );
-        const message = new ParticipantStatusMessage(conferenceDetail.participants[0].id, ParticipantStatus.Disconnected);
+        const message = new ParticipantStatusMessage(
+            conferenceDetail.participants[0].id,
+            conferenceDetail.participants[0].username,
+            conferenceDetail.id,
+            ParticipantStatus.Disconnected
+        );
         component.participantsHeartBeat = [];
         component.participantsHeartBeat.push(heartBeat1);
         component.participantsHeartBeat.push(heartBeat2);
@@ -302,7 +283,12 @@ describe('VhoHearingsComponent', () => {
             'Chrome',
             '80.0.3987.132'
         );
-        const message = new ParticipantStatusMessage(conferenceDetail.participants[0].id, ParticipantStatus.Available);
+        const message = new ParticipantStatusMessage(
+            conferenceDetail.participants[0].id,
+            conferenceDetail.participants[0].username,
+            conferenceDetail.id,
+            ParticipantStatus.Available
+        );
         component.participantsHeartBeat = [];
         component.participantsHeartBeat.push(heartBeat1);
         component.participantsHeartBeat.push(heartBeat2);
@@ -409,28 +395,22 @@ describe('VhoHearingsComponent', () => {
     });
 
     it('should not update participant status when conference is not selected', () => {
-        spyOn(component, 'getJudgeStatusDetails');
         component.setupEventHubSubscribers();
         const participant = conferences[0].participants.find((x) => x.role === Role.Judge);
         component.conferencesAll[0].participants[0].status = ParticipantStatus.Joining;
-        const message = new ParticipantStatusMessage(participant.id, ParticipantStatus.Available);
+        const message = new ParticipantStatusMessage(participant.id, participant.username, conferences[0].id, ParticipantStatus.Available);
 
         mockEventService.participantStatusSubject.next(message);
-
-        expect(component.getJudgeStatusDetails).toHaveBeenCalledTimes(0);
     });
 
     it('should not update participant status when participant message is received for a difference conference', () => {
-        spyOn(component, 'getJudgeStatusDetails');
         component.setupEventHubSubscribers();
         component.participants = conferenceDetail.participants;
         const participant = conferences[2].participants.find((x) => x.role === Role.Judge);
         component.participants[0].status = ParticipantStatus.Joining;
-        const message = new ParticipantStatusMessage(participant.id, ParticipantStatus.Available);
+        const message = new ParticipantStatusMessage(participant.id, participant.username, conferences[0].id, ParticipantStatus.Available);
 
         mockEventService.participantStatusSubject.next(message);
-
-        expect(component.getJudgeStatusDetails).toHaveBeenCalledTimes(0);
     });
 
     it('should update participant status when conference participant message is received', () => {
@@ -438,7 +418,7 @@ describe('VhoHearingsComponent', () => {
         component.participants = conferenceDetail.participants;
         const participant = conferenceDetail.participants[0];
         component.participants[0].status = ParticipantStatus.Joining;
-        const message = new ParticipantStatusMessage(participant.id, ParticipantStatus.Available);
+        const message = new ParticipantStatusMessage(participant.id, participant.username, conferences[0].id, ParticipantStatus.Available);
 
         mockEventService.participantStatusSubject.next(message);
 
@@ -446,15 +426,12 @@ describe('VhoHearingsComponent', () => {
     });
 
     it('should get judge status participant message is received and participant is judge', () => {
-        spyOn(component, 'getJudgeStatusDetails');
         component.setupEventHubSubscribers();
         component.participants = conferenceDetail.participants;
         const participant = conferenceDetail.participants.find((x) => x.role === Role.Judge);
-        const message = new ParticipantStatusMessage(participant.id, ParticipantStatus.Available);
+        const message = new ParticipantStatusMessage(participant.id, participant.username, conferences[0].id, ParticipantStatus.Available);
 
         mockEventService.participantStatusSubject.next(message);
-
-        expect(component.getJudgeStatusDetails).toHaveBeenCalledTimes(1);
     });
 
     it('should update status to "delayed" when hearing is 10 minutes beyond scheduled start time', () => {
@@ -463,8 +440,8 @@ describe('VhoHearingsComponent', () => {
         delayedConference.status = ConferenceStatus.NotStarted;
         futureConference.status = ConferenceStatus.NotStarted;
         const result = component.setStatusDelayed([delayedConference, futureConference]);
-        expect(result[0].StatusExtended).toBe(ExtendedConferenceStatus.Delayed);
-        expect(result[1].StatusExtended).toBe(ConferenceStatus.NotStarted);
+        expect(result[0].statusExtended).toBe(ExtendedConferenceStatus.Delayed);
+        expect(result[1].statusExtended).toBe(ConferenceStatus.NotStarted);
     });
 
     it('should not show filter', () => {
@@ -535,7 +512,7 @@ describe('VhoHearingsComponent', () => {
 
     it('should go back to venue list selection page', () => {
         component.goBackToVenueSelection();
-        expect(router.navigateByUrl).toHaveBeenCalledWith(PageUrls.AdminVenueList);
+        expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.AdminVenueList);
     });
 
     it('should refresh data on eventhub disconnect', () => {

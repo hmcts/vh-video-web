@@ -36,25 +36,25 @@ describe('VhoHearingsFilterComponent', () => {
     it('should select filter status option and enable apply filter', () => {
         component.statusOptionSelected(0);
         expect(component.statusAllChecked).toBeFalsy();
-        expect(component.hearingsFilter.statuses[0].Selected).toBe(true);
+        expect(component.hearingsFilter.statuses[0].selected).toBe(true);
         expect(component.disableFilterApply).toBe(false);
     });
     it('should select filter alerts option and enable apply filter', () => {
         component.alertOptionSelected(0);
         expect(component.alertsAllChecked).toBe(false);
-        expect(component.hearingsFilter.alerts[0].Selected).toBe(true);
+        expect(component.hearingsFilter.alerts[0].selected).toBe(true);
         expect(component.disableFilterApply).toBe(false);
     });
     it('should select all status options', () => {
         expect(component.statusAllChecked).toBeFalsy();
         component.statusAllSelected();
-        expect(component.hearingsFilter.statuses[0].Selected).toBe(false);
+        expect(component.hearingsFilter.statuses[0].selected).toBe(false);
         expect(component.statusAllChecked).toBe(true);
     });
     it('should select all alerts options', () => {
         expect(component.alertsAllChecked).toBe(false);
         component.alertAllSelected();
-        expect(component.hearingsFilter.alerts[0].Selected).toBe(false);
+        expect(component.hearingsFilter.alerts[0].selected).toBe(false);
         expect(component.alertsAllChecked).toBe(true);
     });
     it('should clear all selected filter options ', () => {

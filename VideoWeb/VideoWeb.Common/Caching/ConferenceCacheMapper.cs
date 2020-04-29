@@ -14,9 +14,13 @@ namespace VideoWeb.Common.Caching
                 .Select(participant => new Participant
                 {
                     Id = participant.Id, 
+                    RefId = participant.Ref_id,
+                    Name = participant.Name,
                     DisplayName = participant.Display_name, 
                     Role = (Role) Enum.Parse(typeof(Role), participant.User_role.ToString()), 
-                    Username = participant.Username
+                    ParticipantStatus = (ParticipantStatus) Enum.Parse(typeof(ParticipantStatus), participant.Current_status.ToString()),
+                    Username = participant.Username,
+                    CaseTypeGroup = participant.Case_type_group
                 })
                 .ToList();
 
@@ -24,7 +28,8 @@ namespace VideoWeb.Common.Caching
             {
                 Id = conferenceResponse.Id,
                 HearingId = conferenceResponse.Hearing_id,
-                Participants = participants
+                Participants = participants,
+                HearingVenueName = conferenceResponse.Hearing_venue_name
             };
             return conference;
         }

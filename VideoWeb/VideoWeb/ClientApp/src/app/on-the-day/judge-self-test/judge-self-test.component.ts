@@ -4,7 +4,7 @@ import { AdalService } from 'adal-angular4';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
 import { BaseSelfTestComponent } from '../models/base-self-test.component';
 
@@ -28,7 +28,7 @@ export class JudgeSelfTestComponent extends BaseSelfTestComponent {
     }
 
     equipmentWorksHandler() {
-        this.router.navigateByUrl(PageUrls.JudgeHearingList);
+        this.router.navigateByUrl(pageUrls.JudgeHearingList);
         this.hideSelfTest = true;
     }
 

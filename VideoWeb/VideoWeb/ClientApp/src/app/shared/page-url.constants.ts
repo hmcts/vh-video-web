@@ -1,4 +1,4 @@
-export const PageUrls = {
+export const pageUrls = {
     // shared
     Home: 'home',
     ContactUs: 'contact-us',

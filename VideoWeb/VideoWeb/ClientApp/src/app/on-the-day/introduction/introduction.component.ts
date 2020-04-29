@@ -5,7 +5,7 @@ import { EventType, UpdateParticipantStatusEventRequest } from 'src/app/services
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceLite } from 'src/app/services/models/conference-lite';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
     selector: 'app-introduction',
@@ -41,7 +41,7 @@ export class IntroductionComponent implements OnInit {
     }
 
     goToEquipmentCheck() {
-        this.router.navigate([PageUrls.EquipmentCheck, this.conferenceId]);
+        this.router.navigate([pageUrls.EquipmentCheck, this.conferenceId]);
     }
 
     async postParticipantJoiningStatus() {

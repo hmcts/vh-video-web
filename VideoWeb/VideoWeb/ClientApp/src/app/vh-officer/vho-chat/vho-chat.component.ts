@@ -39,7 +39,7 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
     }
 
     async ngOnInit() {
-        this.logger.debug(`[ChatHub VHO] starting chat for ${this._hearing.id}`);
+        this.logger.debug(`[ChatHub VHO] starting chat for ${this.hearing.id}`);
         this.updateDivWidthForSection();
         this.initForm();
         this.chatHubSubscription = this.setupChatSubscription();
@@ -59,7 +59,7 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
     }
 
     sendMessage(messageBody: string) {
-        this.eventService.sendMessage(this._hearing.id, messageBody);
+        this.eventService.sendMessage(this.hearing.id, messageBody);
     }
 
     getMessageWindow(): HTMLElement {
@@ -68,7 +68,7 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
 
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
-        this.logger.debug(`[ChatHub VHO] closing chat for ${this._hearing.id}`);
+        this.logger.debug(`[ChatHub VHO] closing chat for ${this.hearing.id}`);
         if (this.chatHubSubscription) {
             this.chatHubSubscription.unsubscribe();
         }

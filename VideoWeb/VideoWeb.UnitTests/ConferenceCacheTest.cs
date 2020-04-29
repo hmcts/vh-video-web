@@ -29,12 +29,12 @@ namespace VideoWeb.UnitTests
         public async Task Should_add_conference_to_cache()
         {
             var conference = CreateConferenceResponse();
-            await _conferenceCache.AddConferenceToCache(conference);
+            await _conferenceCache.AddConferenceAsync(conference);
             _memoryCache.Get(conference.Id).Should().NotBeNull();
         }
 
         [Test]
-        public void Should_get_conference_from_cache()
+        public async Task Should_get_conference_from_cache()
         {
             var conference = new Conference
             {
@@ -42,7 +42,7 @@ namespace VideoWeb.UnitTests
             };
 
             _memoryCache.Set(conference.Id, conference);
-            var result = _conferenceCache.GetConference(conference.Id);
+            var result = await _conferenceCache.GetConferenceAsync(conference.Id);
 
             result.Should().NotBeNull();
             result.Id.Should().Be(conference.Id);
