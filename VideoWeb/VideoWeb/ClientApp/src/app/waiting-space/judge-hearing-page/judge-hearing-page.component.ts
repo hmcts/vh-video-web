@@ -9,7 +9,6 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 
 @Component({
     selector: 'app-judge-hearing-page',
@@ -33,8 +32,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
         public sanitizer: DomSanitizer,
         private errorService: ErrorService,
         private userMediaService: UserMediaService,
-        private logger: Logger,
-        private audioRecordingService: AudioRecordingService
+        private logger: Logger
     ) {
         this.loadingData = true;
     }
@@ -139,7 +137,6 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
         };
 
         if (conferenceStatus === ConferenceStatus.Closed) {
-            this.stopAudioRecording();
             this.logger.event(`Conference closed, navigating back to hearing list`, properties);
             return this.router.navigate([pageUrls.JudgeHearingList]);
         }
@@ -159,18 +156,6 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
         if (src && src !== this.judgeUri) {
             this.logger.warn(`Uri ${src} is not recogised`);
             this.router.navigate([pageUrls.JudgeHearingList]);
-        }
-    }
-
-    async stopAudioRecording() {
-        if (this.conference.audio_recording_required) {
-            this.logger.event(`[Judge WR] - stop audio recording for hearing ${this.conference.hearing_ref_id}`);
-
-            try {
-                await this.audioRecordingService.stopAudioRecording(this.conference.hearing_ref_id);
-            } catch (error) {
-                this.logger.error(`[Judge WR] - failed to stop audio recording for hearing ${this.conference.hearing_ref_id}`, error);
-            }
         }
     }
 }
