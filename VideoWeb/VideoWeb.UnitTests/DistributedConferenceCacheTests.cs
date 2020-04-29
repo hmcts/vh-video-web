@@ -83,7 +83,7 @@ namespace VideoWeb.UnitTests
                 .Setup(x => x.GetAsync(conference.Id.ToString(), CancellationToken.None))
                 .ReturnsAsync(rawData);
 
-            var cache = new DistributedConferenceCache(_distributedCacheMock.Object);
+            var cache = new DistributedConferenceCache(_distributedCacheMock.Object, _loggerMock.Object);
 
             var result = await cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>());
             result.Should().BeEquivalentTo(conference);
@@ -104,7 +104,7 @@ namespace VideoWeb.UnitTests
             _distributedCacheMock
                 .Setup(x => x.SetAsync(conference.Id.ToString(), rawData, It.IsAny<DistributedCacheEntryOptions>(), CancellationToken.None));
 
-            var cache = new DistributedConferenceCache(_distributedCacheMock.Object);
+            var cache = new DistributedConferenceCache(_distributedCacheMock.Object, _loggerMock.Object);
 
             var result = await cache.GetOrAddConferenceAsync(conference.Id, async () => await Task.FromResult(conferenceResponse));
             result.Should().BeEquivalentTo(conference);
