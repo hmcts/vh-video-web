@@ -33,7 +33,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                await _videoApiClient.DeleteAudioStreamAsync(hearingId);
+                await _videoApiClient.DeleteAudioApplicationAsync(hearingId);
 
                 return Ok();
             }
