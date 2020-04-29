@@ -30,8 +30,8 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { ParticipantStatusMessage } from '../../services/models/participant-status-message';
-import { VhoHearingsComponent } from './vho-hearings.component';
 import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
+import { VhoHearingsComponent } from './vho-hearings.component';
 
 describe('VhoHearingsComponent', () => {
     let component: VhoHearingsComponent;
@@ -54,8 +54,7 @@ describe('VhoHearingsComponent', () => {
 
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getConferencesForVHOfficer',
-            'getConferenceById',
-            'getTasksForConference',
+            'getConferenceByIdVHO',
             'getParticipantHeartbeats'
         ]);
         domSanitizerSpy = jasmine.createSpyObj<DomSanitizer>('DomSanitizer', ['bypassSecurityTrustResourceUrl']);
@@ -86,8 +85,7 @@ describe('VhoHearingsComponent', () => {
 
     beforeEach(() => {
         videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(of(conferences));
-        videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(conferenceDetail));
-        videoWebServiceSpy.getTasksForConference.and.returnValue(Promise.resolve(new ConferenceTestData().getTasksForConference()));
+        videoWebServiceSpy.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
 
         component = new VhoHearingsComponent(videoWebServiceSpy, domSanitizerSpy, errorService, eventsService, logger, router);
         component.conferences = hearings;
@@ -134,21 +132,6 @@ describe('VhoHearingsComponent', () => {
         const currentConference = conferences[0];
         component.selectedHearing = new Hearing(new ConferenceResponse({ id: conferences[1].id }));
         expect(component.isCurrentConference(currentConference)).toBeFalsy();
-    });
-
-    it('should load tasks for conference when current conference is selected', async () => {
-        const currentConference = conferences[0];
-        component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
-        await component.getTasksForConference(currentConference.id);
-        expect(component.tasks.length > 0).toBeTruthy();
-    });
-
-    it('should handle error when get tasks fails', async () => {
-        const error = { error: 'unable to reach api' };
-        videoWebServiceSpy.getTasksForConference.and.callFake(() => Promise.reject(error));
-        const currentConference = conferences[0];
-        await component.getTasksForConference(currentConference.id);
-        expect(errorService.handleApiError).toHaveBeenCalledWith(error);
     });
 
     it('should update number of pending tasks on task completed', () => {
