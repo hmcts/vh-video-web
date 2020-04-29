@@ -12,7 +12,6 @@ import { ErrorService } from './services/error.service';
 import { LocationService } from './services/location.service';
 import { PageTrackerService } from './services/page-tracker.service';
 import { PageUrls } from './shared/page-url.constants';
-import { EventsService } from './services/events.service';
 
 @Component({
     selector: 'app-root',
@@ -42,8 +41,7 @@ export class AppComponent implements OnInit, OnDestroy {
         private titleService: Title,
         private activatedRoute: ActivatedRoute,
         private locationService: LocationService,
-        pageTracker: PageTrackerService,
-        private eventsService: EventsService
+        pageTracker: PageTrackerService
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
@@ -72,10 +70,8 @@ export class AppComponent implements OnInit, OnDestroy {
         });
     }
 
-    @HostListener('window:beforeunload')
     ngOnDestroy(): void {
         this.subscriptions.unsubscribe();
-        this.eventsService.stop();
     }
 
     checkBrowser(): void {

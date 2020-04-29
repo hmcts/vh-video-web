@@ -160,10 +160,12 @@ namespace VideoWeb.EventHub.Hub
 
         private bool IsAllowedToSendMessage(Guid conferenceId, bool isAdmin)
         {
+            _logger.LogInformation($"ConferenceId : { conferenceId } ");
             if (isAdmin) return true;
             var conference = _conferenceCache.GetConference(conferenceId);
             if (conference == null) throw new ConferenceNotFoundException(conferenceId);
 
+            _logger.LogInformation($"JudgeName : { conference.GetJudge().Username } ");
             return conference.GetJudge().Username
                 .Equals(Context.UserIdentifier, StringComparison.InvariantCultureIgnoreCase);
         }

@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VideoWeb.Common.Models;
 using VideoWeb.Services.Video;
@@ -11,10 +12,12 @@ namespace VideoWeb.Common.Caching
     public class DistributedConferenceCache : IConferenceCache
     {
         private readonly IDistributedCache _distributedCache;
+        private readonly ILogger<DistributedConferenceCache> _logger;
 
-        public DistributedConferenceCache(IDistributedCache distributedCache)
+        public DistributedConferenceCache(IDistributedCache distributedCache, ILogger<DistributedConferenceCache> logger)
         {
             _distributedCache = distributedCache;
+            _logger = logger;
         }
 
         public Task AddConferenceToCache(ConferenceDetailsResponse conferenceResponse)
@@ -34,15 +37,19 @@ namespace VideoWeb.Common.Caching
 
         public Conference GetConference(Guid id)
         {
+            _logger.LogInformation($"ConferenceId : { id } ");
             try
             {
                 var data = _distributedCache.Get(id.ToString());
+                _logger.LogInformation($"data cached : { data } ");
                 var conferenceSerialised = Encoding.UTF8.GetString(data);
                 var conference = JsonConvert.DeserializeObject<Conference>(conferenceSerialised, CachingHelper.SerializerSettings);
+                _logger.LogInformation($"cached conference : { conference } ");
                 return conference;
             }
             catch (Exception)
             {
+                _logger.LogInformation($"Errored in GetConference cached : { id } ");
                 return null;
             }
         }
