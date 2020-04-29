@@ -38,6 +38,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
 
             _conferenceCacheMock
                 .Setup(x => x.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(_testConference);
             
             var context = new ControllerContext
@@ -96,6 +97,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
         public async Task Should_call_api_when_cache_is_empty()
         {
             _conferenceCacheMock.Setup(cache => cache.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(_testConference);
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))

@@ -67,6 +67,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         public async Task Should_return_ok()
         {
             _conferenceCacheMock.Setup(cache => cache.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(_testConference);
             
             var conferenceId = _testConference.Id;
@@ -87,6 +88,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         public async Task Should_call_api_when_cache_is_empty()
         {
             _conferenceCacheMock.Setup(cache => cache.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(_testConference);
             
             var conferenceId = _testConference.Id;
@@ -105,6 +107,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         public async Task Should_throw_error_when_get_api_throws_error()
         {
             _conferenceCacheMock.Setup(cache => cache.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(_testConference);
             
             var conferenceId = _testConference.Id;
