@@ -63,10 +63,11 @@ export class ParticipantStatusComponent implements OnInit {
     }
 
     setParticipantStatus(participantStatus: ParticipantStatus, participant: ParticipantContactDetails) {
+        const inAnotherHearing = participant.judgeInAnotherHearing && participant.status !== ParticipantStatus.InHearing;
         participant.status = participantStatus;
 
         if (participant.role === Role.Judge) {
-            participant.statusText = participant.judgeInAnotherHearing
+            participant.statusText = inAnotherHearing
                 ? this.participantStatusReader.inAnotherHearingText
                 : this.participantStatusReader.getStatusAsTextForJudge(participantStatus);
         } else {

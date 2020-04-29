@@ -320,7 +320,8 @@ export class ConferenceTestData {
             contact_telephone: '789',
             first_name: 'Judge',
             last_name: 'Fudge',
-            ref_id: '9B4737C9-5D8A-4B67-8569-EF8185FFE6E3'
+            ref_id: '9B4737C9-5D8A-4B67-8569-EF8185FFE6E3',
+            judge_in_another_hearing: true
         });
 
         const participant4 = new ParticipantContactDetailsResponseVho({

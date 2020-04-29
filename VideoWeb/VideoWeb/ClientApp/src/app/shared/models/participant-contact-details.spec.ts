@@ -9,8 +9,6 @@ describe('ParticipantContactDetails', () => {
         );
         const participant = participants[0];
         const p = new ParticipantContactDetails(participant);
-        p.judgeInAnotherHearing = true;
-
         expect(participant.id).toBe(p.id);
         expect(participant.name).toBe(p.name);
         expect(participant.status).toBe(p.status);
@@ -23,7 +21,7 @@ describe('ParticipantContactDetails', () => {
         expect(participant.contact_telephone).toBe(p.contactTelephone);
         expect(p.initialedName).toBe('C Green');
         expect(participant.ref_id).toBe(p.refId);
-        expect(p.judgeInAnotherHearing).toBe(true);
+        expect(participant.judge_in_another_hearing).toBe(p.judgeInAnotherHearing);
         expect(p.isJudge).toBe(false);
     });
 });
