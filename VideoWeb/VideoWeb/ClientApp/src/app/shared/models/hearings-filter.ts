@@ -12,39 +12,39 @@ export enum ExtendedConferenceStatus {
 }
 export class ListFilter {
     constructor(description: string, selected: boolean) {
-        this.Description = description;
-        this.Selected = selected;
+        this.description = description;
+        this.selected = selected;
     }
 
-    Description: string;
-    Selected: boolean;
+    description: string;
+    selected: boolean;
 }
 export class StatusFilter extends ListFilter {
     constructor(description: string, status: ConferenceStatus | ExtendedConferenceStatus, selected: boolean) {
         super(description, selected);
-        this.Status = status;
+        this.status = status;
     }
 
-    Status: ConferenceStatus | ExtendedConferenceStatus;
+    status: ConferenceStatus | ExtendedConferenceStatus;
 }
 
 export class AlertFilter extends ListFilter {
     constructor(description: string, status: AlertsStatus, bodyText: string, selected: boolean) {
         super(description, selected);
-        this.Status = status;
-        this.BodyText = bodyText;
+        this.status = status;
+        this.bodyText = bodyText;
     }
 
-    Status: AlertsStatus;
-    BodyText: string;
+    status: AlertsStatus;
+    bodyText: string;
 }
 
 export class ConferenceForUser extends ConferenceForVhOfficerResponse {
     constructor(conference: ConferenceForVhOfficerResponse) {
         super(conference);
-        this.StatusExtended = conference.status;
+        this.statusExtended = conference.status;
     }
-    StatusExtended: ConferenceStatus | ExtendedConferenceStatus;
+    statusExtended: ConferenceStatus | ExtendedConferenceStatus;
 }
 
 export class HearingsFilter {

@@ -8,7 +8,7 @@ import { ConferenceResponse, ConferenceStatus } from 'src/app/services/clients/a
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
@@ -52,7 +52,6 @@ describe('JudgeHearingPageComponent when conference in session', () => {
                 { provide: EventsService, useClass: MockEventsService },
                 { provide: Logger, useClass: MockLogger },
                 { provide: AudioRecordingService, useValue: audioRecordingServiceSpy }
-
             ]
         });
     });
@@ -79,7 +78,7 @@ describe('JudgeHearingPageComponent when conference in session', () => {
         });
         conference.status = ConferenceStatus.Closed;
         component.determineJudgeLocation();
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeHearingList]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeHearingList]);
     });
 
     it('should send judge to waiting room when conference is suspended', () => {
@@ -90,7 +89,7 @@ describe('JudgeHearingPageComponent when conference in session', () => {
         const status = ConferenceStatus.Suspended;
         component.handleHearingStatusChange(status);
         expect(component.conference.status).toBe(status);
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeWaitingRoom, conference.id]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeWaitingRoom, conference.id]);
     });
 
     it('should send judge to waiting room when conference is paused', () => {
@@ -101,7 +100,7 @@ describe('JudgeHearingPageComponent when conference in session', () => {
         const status = ConferenceStatus.Paused;
         component.handleHearingStatusChange(status);
         expect(component.conference.status).toBe(status);
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeWaitingRoom, conference.id]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeWaitingRoom, conference.id]);
     });
 
     it('should not send judge anywhere is conference is in session', () => {
@@ -146,9 +145,9 @@ describe('JudgeHearingPageComponent when conference in session', () => {
         expect(errorService.handleApiError).toHaveBeenCalledTimes(0);
     });
     it('should stop audio recording', () => {
-      component.conference.audio_recording_required = true;
-      component.conference.hearing_ref_id = '1234567';
-      component.stopAudioRecording();
-      expect(audioRecordingServiceSpy.stopAudioRecording).toHaveBeenCalled();
+        component.conference.audio_recording_required = true;
+        component.conference.hearing_ref_id = '1234567';
+        component.stopAudioRecording();
+        expect(audioRecordingServiceSpy.stopAudioRecording).toHaveBeenCalled();
     });
 });

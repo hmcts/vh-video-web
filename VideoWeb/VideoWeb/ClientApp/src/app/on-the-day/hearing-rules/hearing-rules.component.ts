@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
     selector: 'app-hearing-rules',
@@ -17,6 +17,6 @@ export class HearingRulesComponent implements OnInit {
     }
 
     goToDeclaration() {
-        this.router.navigate([PageUrls.Declaration, this.conferenceId]);
+        this.router.navigate([pageUrls.Declaration, this.conferenceId]);
     }
 }

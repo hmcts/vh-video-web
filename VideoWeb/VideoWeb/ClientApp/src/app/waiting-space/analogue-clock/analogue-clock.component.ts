@@ -20,7 +20,7 @@ export class AnalogueClockComponent implements OnInit {
     ngOnInit() {
         this.setCurrentTime();
 
-        this.clockService.getClock().subscribe(time => {
+        this.clockService.getClock().subscribe((time) => {
             this.currentTime = time;
             this.updateclock();
         });
@@ -43,11 +43,11 @@ export class AnalogueClockComponent implements OnInit {
         this.updateClockUI(timeNow);
     }
     private updateClockUI(newTime: Date): void {
-        const hour_as_degree = ((newTime.getHours() + newTime.getHours() / 60) / 12) * 360;
-        const minute_as_degree = (newTime.getMinutes() / 60) * 360;
-        const second_as_degree = ((newTime.getSeconds() + newTime.getMilliseconds() / 1000) / 60) * 360;
-        this.hourHand.style.transform = `rotate(${hour_as_degree}deg)`;
-        this.minuteHand.style.transform = `rotate(${minute_as_degree}deg)`;
-        this.secondHand.style.transform = `rotate(${second_as_degree}deg)`;
+        const hourAsDegree = ((newTime.getHours() + newTime.getHours() / 60) / 12) * 360;
+        const minuteAsDegree = (newTime.getMinutes() / 60) * 360;
+        const secondAsDegree = ((newTime.getSeconds() + newTime.getMilliseconds() / 1000) / 60) * 360;
+        this.hourHand.style.transform = `rotate(${hourAsDegree}deg)`;
+        this.minuteHand.style.transform = `rotate(${minuteAsDegree}deg)`;
+        this.secondHand.style.transform = `rotate(${secondAsDegree}deg)`;
     }
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
     selector: 'app-declaration',
@@ -27,6 +27,6 @@ export class DeclarationComponent implements OnInit {
         if (this.declarationForm.invalid) {
             return;
         }
-        this.router.navigate([PageUrls.ParticipantWaitingRoom, this.conferenceId]);
+        this.router.navigate([pageUrls.ParticipantWaitingRoom, this.conferenceId]);
     }
 }

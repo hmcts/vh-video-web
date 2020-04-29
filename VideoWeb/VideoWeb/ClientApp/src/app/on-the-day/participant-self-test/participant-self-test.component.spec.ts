@@ -12,7 +12,7 @@ import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { SelfTestStubComponent } from 'src/app/testing/stubs/self-test-stub';
 import { ParticipantSelfTestComponent } from './participant-self-test.component';
 import { ContactUsFoldingStubComponent } from 'src/app/testing/stubs/contact-us-stub';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { configureTestSuite } from 'ng-bullet';
 
 describe('ParticipantSelfTestComponent', () => {
@@ -51,6 +51,6 @@ describe('ParticipantSelfTestComponent', () => {
     it('should navigate to camera working screen', () => {
         spyOn(router, 'navigate').and.callFake(() => {});
         component.continueParticipantJourney();
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.CameraWorking, conference.id]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.CameraWorking, conference.id]);
     });
 });

@@ -11,8 +11,7 @@ namespace VideoWeb.Mappings
 {
     public static class ConferenceResponseVhoMapper
     {
-        public static ConferenceResponseVho MapConferenceDetailsToResponseModel(ConferenceDetailsResponse conference,
-            IEnumerable<BookingParticipant> bookingParticipants)
+        public static ConferenceResponseVho MapConferenceDetailsToResponseModel(ConferenceDetailsResponse conference)
         {
             if (!Enum.TryParse(conference.Current_status.ToString(), true, out ConferenceStatus status))
             {
@@ -23,9 +22,7 @@ namespace VideoWeb.Mappings
 
             var participants = conference.Participants
                 .OrderBy(x => x.Case_type_group)
-                .Select(x =>
-                    ParticipantResponseForVhoMapper
-                        .MapParticipantToResponseModel(x, bookingParticipants.SingleOrDefault(p => x.Ref_id == p.Id)))
+                .Select(ParticipantResponseForVhoMapper.MapParticipantToResponseModel)
                 .ToList();
 
             var response = new ConferenceResponseVho

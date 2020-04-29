@@ -2,7 +2,7 @@ import { Router } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { HearingVenueResponse } from 'src/app/services/clients/api-client';
 import { SessionStorage } from 'src/app/services/session-storage';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VhoStorageKeys } from '../services/models/session-keys';
 import { VenueListComponent } from './venue-list.component';
 
@@ -81,7 +81,7 @@ describe('VenueListComponent', () => {
 
     it('should navigate to admin hearing list', () => {
         component.goToHearingList();
-        expect(router.navigateByUrl).toHaveBeenCalledWith(PageUrls.AdminHearingList);
+        expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.AdminHearingList);
     });
 
     it('should return false when no allocations are selected', () => {

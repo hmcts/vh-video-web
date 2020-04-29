@@ -12,7 +12,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
 import { configureTestSuite } from 'ng-bullet';
 
@@ -54,7 +54,7 @@ describe('IndependentSelfTestComponent', () => {
     it('should navigate to hearing list when equipment works', () => {
         spyOn(router, 'navigateByUrl').and.callFake(() => {});
         component.equipmentWorksHandler();
-        expect(router.navigateByUrl).toHaveBeenCalledWith(PageUrls.ParticipantHearingList);
+        expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.ParticipantHearingList);
     });
 
     it('should show equipment fault message when equipment fails', () => {

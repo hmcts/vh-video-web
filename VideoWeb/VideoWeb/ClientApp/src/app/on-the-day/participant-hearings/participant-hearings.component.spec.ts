@@ -6,7 +6,7 @@ import { of, throwError } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
@@ -110,14 +110,14 @@ describe('ParticipantHearingsComponent with conferences for user', () => {
         const conference = conferences[0];
         component.onConferenceSelected(conference);
         expect(videoWebServiceSpy.setActiveIndividualConference).toHaveBeenCalledWith(conference);
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.Introduction, conference.id]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.Introduction, conference.id]);
     });
 
     it('should go to equipment check without conference id', () => {
         const router = TestBed.get(Router);
         spyOn(router, 'navigate').and.callFake(() => {});
         component.goToEquipmentCheck();
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.EquipmentCheck]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.EquipmentCheck]);
     });
 });
 

@@ -5,7 +5,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, ParticipantResponse, SelfTestPexipResponse, TestCallScoreResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { VhContactDetails } from 'src/app/shared/contact-information';
+import { vhContactDetails } from 'src/app/shared/contact-information';
 import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
 
 export abstract class BaseSelfTestComponent implements OnInit {
@@ -23,7 +23,7 @@ export abstract class BaseSelfTestComponent implements OnInit {
 
     showEquipmentFaultMessage: boolean;
     contact = {
-        phone: VhContactDetails.phone
+        phone: vhContactDetails.phone
     };
 
     constructor(
@@ -49,15 +49,15 @@ export abstract class BaseSelfTestComponent implements OnInit {
     getConference(): void {
         this.logger.debug(`retrieving conference ${this.conferenceId}`);
         this.videoWebService.getConferenceById(this.conferenceId).then(
-            response => {
+            (response) => {
                 this.logger.debug(`retrieved conference ${this.conferenceId} successfully`);
                 this.loadingData = false;
                 this.conference = response;
                 this.participant = response.participants.find(
-                    x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
+                    (x) => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
                 );
             },
-            error => {
+            (error) => {
                 this.loadingData = false;
                 if (!this.errorService.returnHomeIfUnauthorised(error)) {
                     this.errorService.handleApiError(error);

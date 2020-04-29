@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
     selector: 'app-equipment-check',
@@ -17,9 +17,9 @@ export class EquipmentCheckComponent implements OnInit {
 
     goToCameraAndMicCheck() {
         if (this.conferenceId) {
-            this.router.navigate([PageUrls.SwitchOnCameraMicrophone, this.conferenceId]);
+            this.router.navigate([pageUrls.SwitchOnCameraMicrophone, this.conferenceId]);
         } else {
-            this.router.navigate([PageUrls.SwitchOnCameraMicrophone]);
+            this.router.navigate([pageUrls.SwitchOnCameraMicrophone]);
         }
     }
 }
