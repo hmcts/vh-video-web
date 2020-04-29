@@ -42,7 +42,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> HandleConsultationRequestAsync(ConsultationRequest request)
         {
-            var conference = _conferenceCache.GetConference(request.Conference_id);
+            var conference = await _conferenceCache.GetConferenceAsync(request.Conference_id);
             if (conference == null)
             {
                 return NotFound();
@@ -94,7 +94,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> LeavePrivateConsultationAsync(LeaveConsultationRequest request)
         {
-            var conference = _conferenceCache.GetConference(request.Conference_id);
+            var conference = await _conferenceCache.GetConferenceAsync(request.Conference_id);
             if (conference == null)
             {
                 return NotFound();
@@ -126,7 +126,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> RespondToAdminConsultationRequestAsync(AdminConsultationRequest request)
         {
-            var conference = _conferenceCache.GetConference(request.Conference_id);
+            var conference = await _conferenceCache.GetConferenceAsync(request.Conference_id);
             if (conference == null)
             {
                 return NotFound();

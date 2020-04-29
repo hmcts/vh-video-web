@@ -9,7 +9,7 @@ import { BehaviorSubject } from 'rxjs';
     providedIn: 'root'
 })
 export class UserMediaService {
-    _navigator = <any>navigator;
+    navigator = <any>navigator;
 
     private readonly preferredCamCache: SessionStorage<UserMediaDevice>;
     private readonly preferredMicCache: SessionStorage<UserMediaDevice>;
@@ -24,25 +24,25 @@ export class UserMediaService {
         this.preferredCamCache = new SessionStorage(this.PREFERRED_CAMERA_KEY);
         this.preferredMicCache = new SessionStorage(this.PREFERRED_MICROPHONE_KEY);
 
-        this._navigator.getUserMedia =
-            this._navigator.getUserMedia ||
-            this._navigator.webkitGetUserMedia ||
-            this._navigator.mozGetUserMedia ||
-            this._navigator.msGetUserMedia;
+        this.navigator.getUserMedia =
+            this.navigator.getUserMedia ||
+            this.navigator.webkitGetUserMedia ||
+            this.navigator.mozGetUserMedia ||
+            this.navigator.msGetUserMedia;
 
-        this._navigator.mediaDevices.ondevicechange = async () => {
+        this.navigator.mediaDevices.ondevicechange = async () => {
             await this.updateAvailableDevicesList();
         };
     }
 
     async getListOfVideoDevices(): Promise<UserMediaDevice[]> {
         await this.checkDeviceListIsReady();
-        return this.availableDeviceList.filter(x => x.kind === 'videoinput');
+        return this.availableDeviceList.filter((x) => x.kind === 'videoinput');
     }
 
     async getListOfMicrophoneDevices(): Promise<UserMediaDevice[]> {
         await this.checkDeviceListIsReady();
-        return this.availableDeviceList.filter(x => x.kind === 'audioinput');
+        return this.availableDeviceList.filter((x) => x.kind === 'audioinput');
     }
 
     async checkDeviceListIsReady() {
@@ -52,25 +52,25 @@ export class UserMediaService {
     }
 
     async updateAvailableDevicesList(): Promise<void> {
-        if (!this._navigator.mediaDevices || !this._navigator.mediaDevices.enumerateDevices) {
+        if (!this.navigator.mediaDevices || !this.navigator.mediaDevices.enumerateDevices) {
             this.logger.error('enumerateDevices() not supported.', new Error('enumerateDevices() not supported.'));
             throw new Error('enumerateDevices() not supported.');
         }
 
         let updatedDevices: MediaDeviceInfo[];
 
-        const stream = await this._navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+        const stream = await this.navigator.mediaDevices.getUserMedia({ audio: true, video: true });
         if (stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0) {
             updatedDevices = await navigator.mediaDevices.enumerateDevices();
         }
 
-        updatedDevices = updatedDevices.filter(x => x.deviceId !== 'default' && x.kind !== 'audiooutput');
+        updatedDevices = updatedDevices.filter((x) => x.deviceId !== 'default' && x.kind !== 'audiooutput');
         this.availableDeviceList = Array.from(
             updatedDevices,
-            device => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)
+            (device) => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)
         );
 
-        stream.getTracks().forEach(track => {
+        stream.getTracks().forEach((track) => {
             track.stop();
         });
         this.connectedDevices.next(this.availableDeviceList);
@@ -98,7 +98,7 @@ export class UserMediaService {
 
         await this.checkDeviceListIsReady();
 
-        const stillConnected = this.availableDeviceList.find(x => x.label === device.label);
+        const stillConnected = this.availableDeviceList.find((x) => x.label === device.label);
         if (stillConnected) {
             return device;
         } else {

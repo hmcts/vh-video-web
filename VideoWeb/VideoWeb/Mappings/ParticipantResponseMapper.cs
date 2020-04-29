@@ -2,7 +2,7 @@ using System;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Services.Video;
-using ParticipantStatus = VideoWeb.Contract.Responses.ParticipantStatus;
+using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
 
 namespace VideoWeb.Mappings
 {

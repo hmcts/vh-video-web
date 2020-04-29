@@ -7,7 +7,7 @@ import { configureTestSuite } from 'ng-bullet';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { TestCallScoreResponse, TestScore } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
@@ -55,7 +55,7 @@ describe('JudgeSelfTestComponent', () => {
     it('should navigate to hearing list when equipment works', () => {
         spyOn(router, 'navigateByUrl').and.callFake(() => {});
         component.equipmentWorksHandler();
-        expect(router.navigateByUrl).toHaveBeenCalledWith(PageUrls.JudgeHearingList);
+        expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.JudgeHearingList);
     });
 
     it('should show equipment fault message when equipment fails', () => {

@@ -9,8 +9,8 @@ import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
-import { VhContactDetails } from 'src/app/shared/contact-information';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { vhContactDetails } from 'src/app/shared/contact-information';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
     selector: 'app-judge-hearing-list',
@@ -19,7 +19,7 @@ import { PageUrls } from 'src/app/shared/page-url.constants';
 })
 export class JudgeHearingListComponent implements OnInit, OnDestroy {
     contact = {
-        phone: VhContactDetails.phone
+        phone: vhContactDetails.phone
     };
 
     conferences: ConferenceForJudgeResponse[];
@@ -90,11 +90,11 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
 
     onConferenceSelected(conference: ConferenceForJudgeResponse) {
         this.logger.event('signing into judge waiting room', { conference: conference.id });
-        this.router.navigate([PageUrls.JudgeWaitingRoom, conference.id]);
+        this.router.navigate([pageUrls.JudgeWaitingRoom, conference.id]);
     }
 
     goToEquipmentCheck() {
-        this.router.navigate([PageUrls.EquipmentCheck]);
+        this.router.navigate([pageUrls.EquipmentCheck]);
     }
 
     enableFullScreen(fullScreen: boolean) {

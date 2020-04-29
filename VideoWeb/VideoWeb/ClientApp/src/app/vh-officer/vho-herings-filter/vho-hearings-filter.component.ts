@@ -42,16 +42,16 @@ export class VhoHearingsFilterComponent implements OnInit {
     }
 
     private removeOptions(options: ListFilter[]) {
-        options.forEach((x) => (x.Selected = false));
+        options.forEach((x) => (x.selected = false));
     }
 
     statusOptionSelected(optionIndex: number) {
-        this.hearingsFilter.statuses[optionIndex].Selected = !this.hearingsFilter.statuses[optionIndex].Selected;
+        this.hearingsFilter.statuses[optionIndex].selected = !this.hearingsFilter.statuses[optionIndex].selected;
         this.countOptions();
     }
 
     alertOptionSelected(optionIndex: number) {
-        this.hearingsFilter.alerts[optionIndex].Selected = !this.hearingsFilter.alerts[optionIndex].Selected;
+        this.hearingsFilter.alerts[optionIndex].selected = !this.hearingsFilter.alerts[optionIndex].selected;
         this.countOptions();
     }
 
@@ -62,7 +62,7 @@ export class VhoHearingsFilterComponent implements OnInit {
     }
 
     private isSelectedFilterOptions(options: ListFilter[]): boolean {
-        const selectedOptions = options.filter((x) => x.Selected);
+        const selectedOptions = options.filter((x) => x.selected);
         return selectedOptions && selectedOptions.length > 0;
     }
 

@@ -5,7 +5,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { configureTestSuite } from 'ng-bullet';
 
 describe('CameraAndMicrophoneComponent', () => {
@@ -45,6 +45,6 @@ describe('CameraAndMicrophoneComponent', () => {
     it('should navigate to hearing rules', () => {
         spyOn(router, 'navigate').and.callFake(() => {});
         component.goToHearingRules();
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.HearingRules, conference.id]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.HearingRules, conference.id]);
     });
 });

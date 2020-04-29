@@ -11,10 +11,10 @@
         <hr />
         <div *ngFor="let child of hearingsFilter.statuses; let i=index">
           <div class="govuk-checkboxes__item vh-mb10">
-            <input class="govuk-checkboxes__input" type="checkbox" [checked]="child.Selected" id="{{'status' + i}}"
-              name="{{'status'+i}}" (click)="statusOptionSelected(i)">
+            <input class="govuk-checkboxes__input" type="checkbox" [checked]="child.selected" id="{{'status' + i}}"
+                   name="{{'status'+i}}" (click)="statusOptionSelected(i)">
             <label class="govuk-label govuk-checkboxes__label vh-word"
-              for="{{'status' + i}}">{{child.Description}}</label>
+              for="{{'status' + i}}">{{child.description}}</label>
           </div>
         </div>
       </div>
@@ -29,10 +29,10 @@
         <hr />
         <div *ngFor="let child of hearingsFilter.alerts; let i=index">
           <div class="govuk-checkboxes__item vh-mb10">
-            <input class="govuk-checkboxes__input" type="checkbox" [checked]="child.Selected" id="{{'alert' + i}}"
-              name="{{'alert' + i}}" (click)="alertOptionSelected(i)">
+            <input class="govuk-checkboxes__input" type="checkbox" [checked]="child.selected" id="{{'alert' + i}}"
+                   name="{{'alert' + i}}" (click)="alertOptionSelected(i)">
             <label class="govuk-label govuk-checkboxes__label vh-word"
-              for="{{'alert' + i}}">{{child.Description}}</label>
+              for="{{'alert' + i}}">{{child.description}}</label>
           </div>
         </div>
       </div>

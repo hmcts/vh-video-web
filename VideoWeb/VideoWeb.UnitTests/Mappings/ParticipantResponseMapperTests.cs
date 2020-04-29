@@ -4,7 +4,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
-using ParticipantStatus = VideoWeb.Contract.Responses.ParticipantStatus;
+using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
 
 namespace VideoWeb.UnitTests.Mappings
 {

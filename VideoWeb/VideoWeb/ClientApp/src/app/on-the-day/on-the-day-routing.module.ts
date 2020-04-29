@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { JudgeGuard } from '../security/judge.guard';
 import { ParticipantGuard } from '../security/participant.guard';
 import { EquipmentProblemComponent } from '../shared/equipment-problem/equipment-problem.component';
-import { PageUrls } from '../shared/page-url.constants';
+import { pageUrls } from '../shared/page-url.constants';
 import { SignonAComputerComponent } from '../shared/signon-a-computer/signon-a-computer.component';
 import { CameraAndMicrophoneComponent } from './camera-and-microphone/camera-and-microphone.component';
 import { CameraCheckComponent } from './camera-check/camera-check.component';
@@ -22,41 +22,41 @@ import { IndependentSelfTestComponent } from './independent-self-test/independen
 
 export const routes: Routes = [
     {
-        path: `${PageUrls.JudgeHearingList}`,
+        path: `${pageUrls.JudgeHearingList}`,
         component: JudgeHearingListComponent,
         canActivate: [JudgeGuard],
         data: { title: 'Judge hearing list' }
     },
     {
-        path: `${PageUrls.ParticipantHearingList}`,
+        path: `${pageUrls.ParticipantHearingList}`,
         component: ParticipantHearingsComponent,
         canActivate: [ParticipantGuard],
         data: { title: 'Hearing list' }
     },
-    { path: `${PageUrls.Declaration}/:conferenceId`, component: DeclarationComponent, data: { title: 'Declaration' } },
-    { path: `${PageUrls.HearingRules}/:conferenceId`, component: HearingRulesComponent, data: { title: 'Hearing rules' } },
-    { path: `${PageUrls.EquipmentCheck}/:conferenceId`, component: EquipmentCheckComponent, data: { title: 'Equipment check' } },
-    { path: `${PageUrls.EquipmentCheck}`, component: EquipmentCheckComponent },
-    { path: `${PageUrls.CameraWorking}/:conferenceId`, component: CameraCheckComponent, data: { title: 'Camera working' } },
-    { path: `${PageUrls.MicrophoneWorking}/:conferenceId`, component: MicrophoneCheckComponent, data: { title: 'Microphone working' } },
-    { path: `${PageUrls.VideoWorking}/:conferenceId`, component: VideoCheckComponent, data: { title: 'See and hear video' } },
-    { path: `${PageUrls.CameraAndMicrophone}/:conferenceId`, component: CameraAndMicrophoneComponent },
+    { path: `${pageUrls.Declaration}/:conferenceId`, component: DeclarationComponent, data: { title: 'Declaration' } },
+    { path: `${pageUrls.HearingRules}/:conferenceId`, component: HearingRulesComponent, data: { title: 'Hearing rules' } },
+    { path: `${pageUrls.EquipmentCheck}/:conferenceId`, component: EquipmentCheckComponent, data: { title: 'Equipment check' } },
+    { path: `${pageUrls.EquipmentCheck}`, component: EquipmentCheckComponent },
+    { path: `${pageUrls.CameraWorking}/:conferenceId`, component: CameraCheckComponent, data: { title: 'Camera working' } },
+    { path: `${pageUrls.MicrophoneWorking}/:conferenceId`, component: MicrophoneCheckComponent, data: { title: 'Microphone working' } },
+    { path: `${pageUrls.VideoWorking}/:conferenceId`, component: VideoCheckComponent, data: { title: 'See and hear video' } },
+    { path: `${pageUrls.CameraAndMicrophone}/:conferenceId`, component: CameraAndMicrophoneComponent },
     {
-        path: `${PageUrls.SwitchOnCameraMicrophone}/:conferenceId`,
+        path: `${pageUrls.SwitchOnCameraMicrophone}/:conferenceId`,
         component: SwitchOnCameraMicrophoneComponent,
         data: { title: 'Switch on camera and microphone' }
     },
-    { path: `${PageUrls.SwitchOnCameraMicrophone}`, component: SwitchOnCameraMicrophoneComponent },
+    { path: `${pageUrls.SwitchOnCameraMicrophone}`, component: SwitchOnCameraMicrophoneComponent },
     {
-        path: `${PageUrls.ParticipantSelfTestVideo}/:conferenceId`,
+        path: `${pageUrls.ParticipantSelfTestVideo}/:conferenceId`,
         component: ParticipantSelfTestComponent,
         data: { title: 'Practice video hearing' }
     },
-    { path: `${PageUrls.JudgeSelfTestVideo}/:conferenceId`, component: JudgeSelfTestComponent },
-    { path: `${PageUrls.IndependentSelfTestVideo}`, component: IndependentSelfTestComponent },
-    { path: `${PageUrls.GetHelp}`, component: EquipmentProblemComponent, data: { title: 'Get help' } },
-    { path: `${PageUrls.SignonAComputer}`, component: SignonAComputerComponent },
-    { path: `${PageUrls.Introduction}/:conferenceId`, component: IntroductionComponent, data: { title: 'Introduction' } }
+    { path: `${pageUrls.JudgeSelfTestVideo}/:conferenceId`, component: JudgeSelfTestComponent },
+    { path: `${pageUrls.IndependentSelfTestVideo}`, component: IndependentSelfTestComponent },
+    { path: `${pageUrls.GetHelp}`, component: EquipmentProblemComponent, data: { title: 'Get help' } },
+    { path: `${pageUrls.SignonAComputer}`, component: SignonAComputerComponent },
+    { path: `${pageUrls.Introduction}/:conferenceId`, component: IntroductionComponent, data: { title: 'Introduction' } }
 ];
 
 @NgModule({

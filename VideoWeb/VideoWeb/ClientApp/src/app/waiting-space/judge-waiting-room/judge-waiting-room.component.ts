@@ -9,7 +9,7 @@ import { JudgeEventService } from 'src/app/services/judge-event.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -30,7 +30,7 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
         private eventService: EventsService,
         private errorService: ErrorService,
         private logger: Logger,
-        private judgeEventService: JudgeEventService,
+        private judgeEventService: JudgeEventService
     ) {
         this.loadingData = true;
     }
@@ -102,22 +102,22 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     goToHearingPage(): void {
-        this.router.navigate([PageUrls.JudgeHearingRoom, this.conference.id]);
+        this.router.navigate([pageUrls.JudgeHearingRoom, this.conference.id]);
     }
 
     goToJudgeHearingList(): void {
-        this.router.navigate([PageUrls.JudgeHearingList]);
+        this.router.navigate([pageUrls.JudgeHearingList]);
     }
 
     setupEventHubSubscribers() {
         this.eventHubSubscriptions.add(
-            this.eventService.getHearingStatusMessage().subscribe(message => {
+            this.eventService.getHearingStatusMessage().subscribe((message) => {
                 this.handleHearingStatusChange(message.status);
             })
         );
 
         this.eventHubSubscriptions.add(
-            this.eventService.getParticipantStatusMessage().subscribe(message => {
+            this.eventService.getParticipantStatusMessage().subscribe((message) => {
                 this.handleParticipantStatusChange(message);
             })
         );
@@ -142,11 +142,11 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): any {
-      const status = message.status;
-      const participant = this.conference.participants.find(p => p.id === message.participantId);
-      if (participant) {
-        participant.status = status;
-      }
+        const status = message.status;
+        const participant = this.conference.participants.find((p) => p.id === message.participantId);
+        if (participant) {
+            participant.status = status;
+        }
 
         const judgeDisconnected = this.hearing.judge.id === message.participantId && message.status === ParticipantStatus.Disconnected;
         if (
@@ -158,11 +158,11 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     handleHearingStatusChange(status: ConferenceStatus) {
-      this.conference.status = status;
+        this.conference.status = status;
     }
 
     checkEquipment() {
-        this.router.navigate([PageUrls.EquipmentCheck, this.conference.id]);
+        this.router.navigate([pageUrls.EquipmentCheck, this.conference.id]);
     }
 
     hearingSuspended(): boolean {
@@ -171,5 +171,5 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
 
     hearingPaused(): boolean {
         return this.conference.status === ConferenceStatus.Paused;
-  }
+    }
 }

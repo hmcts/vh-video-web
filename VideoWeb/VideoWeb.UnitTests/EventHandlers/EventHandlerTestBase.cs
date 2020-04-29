@@ -55,16 +55,20 @@ namespace VideoWeb.UnitTests.EventHandlers
                 Participants = new List<Participant>()
                 {
                     Builder<Participant>.CreateNew()
-                        .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
+                        .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid()).With(x => x.Username = "one")
                         .Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
-                        .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
-                        .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
-                        .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
-                        .With(x => x.Id = Guid.NewGuid()).Build()
+                    Builder<Participant>.CreateNew()
+                        .With(x => x.Role = Role.Individual).With(x => x.Id = Guid.NewGuid()).With(x => x.Username = "two")
+                        .Build(),
+                    Builder<Participant>.CreateNew()
+                        .With(x => x.Role = Role.Representative).With(x => x.Id = Guid.NewGuid()).With(x => x.Username = "three")
+                        .Build(),
+                    Builder<Participant>.CreateNew()
+                        .With(x => x.Role = Role.Individual).With(x => x.Id = Guid.NewGuid()).With(x => x.Username = "four")
+                        .Build(),
+                    Builder<Participant>.CreateNew()
+                        .With(x => x.Role = Role.Representative).With(x => x.Id = Guid.NewGuid()).With(x => x.Username = "five")
+                        .Build()
                 }
             };
         }

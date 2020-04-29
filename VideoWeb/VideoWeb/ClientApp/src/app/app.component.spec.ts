@@ -9,7 +9,7 @@ import { ClientSettingsResponse, Role, UserProfileResponse } from './services/cl
 import { DeviceTypeService } from './services/device-type.service';
 import { ErrorService } from './services/error.service';
 import { LocationService } from './services/location.service';
-import { PageUrls } from './shared/page-url.constants';
+import { pageUrls } from './shared/page-url.constants';
 import { PageTrackerService } from './services/page-tracker.service';
 import { MockAdalService } from './testing/mocks/MockAdalService';
 
@@ -83,7 +83,7 @@ describe('AppComponent', () => {
     it('should navigate to unsupported browser page if browser is not compatible', () => {
         deviceTypeServiceSpy.isSupportedBrowser.and.returnValue(false);
         component.checkBrowser();
-        expect(routerSpy.navigateByUrl).toHaveBeenCalledWith(PageUrls.UnsupportedBrowser);
+        expect(routerSpy.navigateByUrl).toHaveBeenCalledWith(pageUrls.UnsupportedBrowser);
     });
 
     it('should allow user to continue on a supported browser', () => {
@@ -128,25 +128,25 @@ describe('AppComponent', () => {
     });
 
     it('should retrieve profile when on not on logout and authenticated', async () => {
-        locationServiceSpy.getCurrentUrl.and.returnValue(PageUrls.AdminVenueList);
-        locationServiceSpy.getCurrentPathName.and.returnValue(`/${PageUrls.AdminVenueList}`);
+        locationServiceSpy.getCurrentUrl.and.returnValue(pageUrls.AdminVenueList);
+        locationServiceSpy.getCurrentPathName.and.returnValue(`/${pageUrls.AdminVenueList}`);
         mockAdalService.setAuthenticated(true);
         await component.checkAuth();
         expect(profileServiceSpy.getUserProfile).toHaveBeenCalled();
     });
 
     it('should navigate to login not on logout and not authenticated', async () => {
-        locationServiceSpy.getCurrentUrl.and.returnValue(PageUrls.AdminVenueList);
-        locationServiceSpy.getCurrentPathName.and.returnValue(`/${PageUrls.AdminVenueList}`);
+        locationServiceSpy.getCurrentUrl.and.returnValue(pageUrls.AdminVenueList);
+        locationServiceSpy.getCurrentPathName.and.returnValue(`/${pageUrls.AdminVenueList}`);
         mockAdalService.setAuthenticated(false);
         await component.checkAuth();
         expect(profileServiceSpy.getUserProfile).toHaveBeenCalledTimes(0);
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['/login'], { queryParams: { returnUrl: PageUrls.AdminVenueList } });
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/login'], { queryParams: { returnUrl: pageUrls.AdminVenueList } });
     });
 
     it('should not check auth or get profile on logout', async () => {
-        locationServiceSpy.getCurrentUrl.and.returnValue(PageUrls.Logout);
-        locationServiceSpy.getCurrentPathName.and.returnValue(`/${PageUrls.Logout}`);
+        locationServiceSpy.getCurrentUrl.and.returnValue(pageUrls.Logout);
+        locationServiceSpy.getCurrentPathName.and.returnValue(`/${pageUrls.Logout}`);
         mockAdalService.setAuthenticated(true);
         await component.checkAuth();
         expect(routerSpy.navigate).toHaveBeenCalledTimes(0);

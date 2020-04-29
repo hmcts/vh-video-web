@@ -1,4 +1,4 @@
-export const TopMenuItems = [
+export const topMenuItems = [
     {
         url: '/dashboard',
         name: 'Dashboard',

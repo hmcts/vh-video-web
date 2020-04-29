@@ -6,7 +6,7 @@ using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
-using ParticipantStatus = VideoWeb.Contract.Responses.ParticipantStatus;
+using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -20,10 +20,7 @@ namespace VideoWeb.UnitTests.Mappings
             var participant = new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant")
                 .WithStatus(ParticipantState.Available).Build();
 
-            var bookingParticipant = Builder<BookingParticipant>.CreateNew().With(
-                x => x.Id = participant.Ref_id).Build();
-
-            var response = ParticipantResponseForVhoMapper.MapParticipantToResponseModel(participant, bookingParticipant);
+            var response = ParticipantResponseForVhoMapper.MapParticipantToResponseModel(participant);
             response.Id.Should().Be(participant.Id);
             response.Name.Should().Be(participant.Name);
             response.Username.Should().Be(participant.Username);
@@ -32,10 +29,6 @@ namespace VideoWeb.UnitTests.Mappings
             response.Role.Should().Be(expectedRole);
             response.CaseTypeGroup.Should().Be(participant.Case_type_group);
             response.Representee.Should().Be(participant.Representee);
-            response.FirstName.Should().NotBeNullOrEmpty();
-            response.LastName.Should().NotBeNullOrEmpty();
-            response.ContactEmail.Should().NotBeNullOrEmpty();
-            response.ContactTelephone.Should().NotBeNullOrEmpty();
         }
 
     }

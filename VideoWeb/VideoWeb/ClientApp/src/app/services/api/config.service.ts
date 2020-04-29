@@ -17,10 +17,10 @@ export class ConfigService {
 
     async loadConfig() {
         try {
-            const result_1 = await this.retrieveConfigFromApi();
-            this.clientSettings = result_1;
-            this.clientSettingCache.set(result_1);
-            return Promise.resolve(result_1);
+            const result1 = await this.retrieveConfigFromApi();
+            this.clientSettings = result1;
+            this.clientSettingCache.set(result1);
+            return Promise.resolve(result1);
         } catch (err) {
             console.error(`failed to read configuration: ${err}`);
             throw err;
