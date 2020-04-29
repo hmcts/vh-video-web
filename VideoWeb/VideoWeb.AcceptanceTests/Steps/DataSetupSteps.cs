@@ -66,6 +66,19 @@ namespace VideoWeb.AcceptanceTests.Steps
             GetTheNewConferenceDetails();
         }
 
+        [Given(@"I have a hearing with audio recording")]
+        public void GivenIHaveAHearingWihAudioRecording()
+        {
+            var request = new HearingRequestBuilder()
+                .WithUserAccounts(_c.UserAccounts)
+                .WithScheduledTime(_c.TimeZone.AdjustForVideoWeb(DateTime.Now.ToUniversalTime()))
+                .WithScheduledDuration(HearingDuration)
+                .AudioRecordingRequired()
+                .Build();
+
+            SendTheHearingRequest(request);
+        }
+
         public void GivenIHaveAHearing(int minutes = 0, string location = "Birmingham Civil and Family Justice Centre")
         {
             var request = new HearingRequestBuilder()
@@ -75,6 +88,11 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithLocation(location)
                 .Build();
 
+            SendTheHearingRequest(request);
+        }
+
+        private void SendTheHearingRequest(BookNewHearingRequest request)
+        {
             var hearingResponse = _c.Apis.BookingsApi.CreateHearing(request);
             hearingResponse.StatusCode.Should().Be(HttpStatusCode.Created);
             var hearing = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(hearingResponse.Content);
