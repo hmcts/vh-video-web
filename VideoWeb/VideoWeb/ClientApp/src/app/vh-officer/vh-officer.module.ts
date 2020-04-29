@@ -17,6 +17,7 @@ import { MonitoringGraphComponent } from '../vh-officer/monitoring-graph/monitor
 import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { VenueListComponent } from './venue-list/venue-list.component';
+import { VHODashboardHelper } from './helper';
 
 @NgModule({
     declarations: [
@@ -40,7 +41,7 @@ import { VenueListComponent } from './venue-list/venue-list.component';
         PerfectScrollbarModule,
         NgMultiSelectDropDownModule.forRoot()
     ],
-    providers: [HearingsFilterOptionsService],
+    providers: [HearingsFilterOptionsService, VHODashboardHelper],
     exports: [MonitoringGraphComponent]
 })
 export class VhOfficerModule {}
