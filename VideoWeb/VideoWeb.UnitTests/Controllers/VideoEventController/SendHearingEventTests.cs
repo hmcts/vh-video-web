@@ -77,7 +77,6 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             var result = await _controller.SendHearingEventAsync(CreateRequest());
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
-            _videoApiClientMock.Verify(v => v.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()), Times.Once);
         }
         
         [Test]

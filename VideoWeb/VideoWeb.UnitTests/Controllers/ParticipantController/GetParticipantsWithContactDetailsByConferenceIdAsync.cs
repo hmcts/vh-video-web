@@ -24,7 +24,7 @@ using ProblemDetails = VideoWeb.Services.User.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {
-    public class GetParticipantsByConferenceIdVhoTests
+    public class GetParticipantsWithContactDetailsByConferenceIdAsyncTests
     {
         private EventComponentHelper _eventComponentHelper;
         private Mock<IVideoApiClient> _videoApiClientMock;
