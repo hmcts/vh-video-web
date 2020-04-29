@@ -132,7 +132,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheVideoHearingsOfficerUserShouldNotSeeAnAlert()
         {
             _browsers[_c.CurrentUser.Key].Refresh();
+            Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser.Key], _c.Test.Conference.Id);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id)).Click();
+            Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser.Key]);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(AdminPanelPage.AlertsHeader).Should().BeTrue("Alerts box should not be visible.");
         }
 
@@ -141,8 +143,10 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser.Key].Refresh();
             _browsers[_c.CurrentUser.Key].Driver.WaitForAngular();
+            Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser.Key], _c.Test.Conference.Id);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.StatusBadge(_c.Test.Conference.Id)).Text.Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
             _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
+            Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser.Key]);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.TaskDetails(_c.Test.TaskId)).Text.Trim().Should().Be(alertType);
 

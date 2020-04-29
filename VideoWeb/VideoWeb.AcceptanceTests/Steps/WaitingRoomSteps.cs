@@ -138,6 +138,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private string GetTheTimePanelColour()
         {
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.TimePanel);
             _browsers[_c.CurrentUser.Key].ScrollTo(WaitingRoomPage.TimePanel);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.TimePanel).Displayed.Should().BeTrue();
             var rgba = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(WaitingRoomPage.TimePanel).GetCssValue("background-color");
@@ -211,6 +212,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             foreach (var user in _browsers.Keys.Select(lastname => _c.Test.ConferenceParticipants.First(x => x.Name.ToLower().Contains(lastname.ToLower()))).Where(user => !user.User_role.Equals(UserRole.Judge)))
             {
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ParticipantStatus(user.Id));
                 _browsers[_c.CurrentUser.Key].ScrollTo(ClerkWaitingRoomPage.ParticipantStatus(user.Id));
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ParticipantStatus(user.Id)).Text.ToUpper().Trim()
                     .Should().Be("CONNECTED");
