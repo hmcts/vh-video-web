@@ -19,7 +19,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By DelayedText = CommonLocators.ElementContainingText("We're really sorry your hearing is delayed");
         public static string DelayedBgColour = "#ffdd00";
         public static By ScheduledHeader = CommonLocators.ElementContainingText("Your video hearing");
-        public static By ScheduledText = CommonLocators.ElementContainingText("The video hearings team will contact you by video before the hearing"); 
+        public static By ScheduledText = CommonLocators.ElementContainingText("Please wait"); 
         public static string ScheduledBgColour = "#1d70b8";
         public static By TimePanel = By.XPath("(//div[contains(@class,'govuk-panel')])[1]");
         public static By PausedTitle = CommonLocators.ElementContainingText("Your video hearing is paused");
