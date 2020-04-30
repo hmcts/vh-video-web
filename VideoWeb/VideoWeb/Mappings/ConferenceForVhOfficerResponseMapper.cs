@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.Core.Internal;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Services.Video;
@@ -10,8 +11,9 @@ namespace VideoWeb.Mappings
     public static class ConferenceForVhOfficerResponseMapper
     {
         public static ConferenceForVhOfficerResponse MapConferenceSummaryToResponseModel(ConferenceForAdminResponse conference,
-            IList<InstantMessageResponse> messageResponses)
+            IList<InstantMessageResponse> messageResponses, IList<TaskResponse> taskResponses)
         {
+            var pendingTasks = taskResponses.IsNullOrEmpty() ? 0 : taskResponses.Count(t => t.Status == TaskStatus.ToDo);
             var response = new ConferenceForVhOfficerResponse
             {
                 Id = conference.Id,
@@ -21,20 +23,20 @@ namespace VideoWeb.Mappings
                 ScheduledDateTime = conference.Scheduled_date_time,
                 ScheduledDuration = conference.Scheduled_duration,
                 Status = Enum.Parse<ConferenceStatus>(conference.Status.ToString()),
-                NoOfPendingTasks = conference.Pending_tasks,
+                NoOfPendingTasks = pendingTasks,
                 HearingVenueName = conference.Hearing_venue_name,
                 Participants = ParticipantForUserResponseMapper.MapParticipants(conference.Participants),
                 NumberOfUnreadMessages = MapMessages(conference, messageResponses),
-                Tasks = MapTasks(conference)
+                Tasks = MapTasks(taskResponses)
             };
 
 
             return response;
         }
 
-        private static List<TaskUserResponse> MapTasks(ConferenceForAdminResponse conference)
+        private static List<TaskUserResponse> MapTasks(IList<TaskResponse> taskResponses)
         {
-            return conference.Tasks?.Select(x => 
+            return taskResponses?.Select(x => 
                     new TaskUserResponse { Id = x.Id, Body = x.Body }
                 ).ToList();
         }
