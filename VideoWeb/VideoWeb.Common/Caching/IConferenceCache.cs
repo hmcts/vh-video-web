@@ -9,6 +9,5 @@ namespace VideoWeb.Common.Caching
     {
         Task AddConferenceAsync(ConferenceDetailsResponse conferenceResponse);
         Task <Conference>GetOrAddConferenceAsync(Guid id, Func<Task<ConferenceDetailsResponse>> addConferenceDetailsFactory);
-        Task<Conference> GetConferenceAsync(Guid id);
     }
 }

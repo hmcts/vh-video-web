@@ -28,20 +28,15 @@ namespace VideoWeb.Common.Caching
 
         public async Task<Conference> GetOrAddConferenceAsync(Guid id, Func<Task<ConferenceDetailsResponse>> addConferenceDetailsFactory)
         {
-            var conference = await GetConferenceAsync(id);
+            var conference = await Task.FromResult(_memoryCache.Get<Conference>(id));
 
             if (conference != null) return conference;
             
             var conferenceDetails = await addConferenceDetailsFactory();
             await AddConferenceAsync(conferenceDetails);
-            conference = await GetConferenceAsync(id);
+            conference = await Task.FromResult(_memoryCache.Get<Conference>(id));
 
             return conference;
-        }
-
-        public async Task<Conference> GetConferenceAsync(Guid id)
-        {
-            return await Task.FromResult(_memoryCache.Get<Conference>(id));
         }
     }
 }
