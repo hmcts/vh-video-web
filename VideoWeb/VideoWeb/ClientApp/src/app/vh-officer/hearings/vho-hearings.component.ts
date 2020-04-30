@@ -365,6 +365,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         }
     }
 
+            // }
     setStatusDelayed(data: ConferenceForVhOfficerResponse[]): ConferenceForUser[] {
         const conferences = data.map(x => {
             const hearing = new HearingSummary(x);

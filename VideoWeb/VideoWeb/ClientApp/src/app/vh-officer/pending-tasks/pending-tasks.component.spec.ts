@@ -1,24 +1,29 @@
-import { fakeAsync, tick } from '@angular/core/testing';
-import { Guid } from 'guid-typescript';
-import { TaskCompleted } from 'src/app/on-the-day/models/task-completed';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { TaskResponse } from 'src/app/services/clients/api-client';
-import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { DataService } from 'src/app/services/data.service';
 import { TasksTestData } from 'src/app/testing/mocks/data/tasks-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { PendingTasksComponent } from './pending-tasks.component';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { Subject } from 'rxjs';
+import { TaskCompleted } from 'src/app/on-the-day/models/task-completed';
+import { fakeAsync, tick } from '@angular/core/testing';
+import { Guid } from 'guid-typescript';
+import { TaskResponse } from 'src/app/services/clients/api-client';
 
 describe('PendingTasksComponent', () => {
     let component: PendingTasksComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    const eventbus = new EventBusService();
+    let dataServiceSpy: jasmine.SpyObj<DataService>;
     const conference = new ConferenceTestData().getConferenceDetailFuture();
     // 1 To-Do & 2 Done
     let allTasks: TaskResponse[];
     let logger: MockLogger;
 
+    const subject = new Subject<TaskCompleted>();
+
     beforeAll(() => {
+        dataServiceSpy = jasmine.createSpyObj<DataService>('DataService', ['taskCompleted', 'completedTasks']);
+        dataServiceSpy.completedTasks.and.returnValue(subject.asObservable());
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getTasksForConference']);
         videoWebServiceSpy.getTasksForConference.and.callFake(() => Promise.resolve(allTasks));
 
@@ -27,7 +32,7 @@ describe('PendingTasksComponent', () => {
 
     beforeEach(() => {
         allTasks = new TasksTestData().getTestData();
-        component = new PendingTasksComponent(videoWebServiceSpy, eventbus, logger);
+        component = new PendingTasksComponent(videoWebServiceSpy, dataServiceSpy, logger);
         component.conferenceId = conference.id;
         component.tasks = Object.assign(allTasks);
     });
@@ -61,7 +66,7 @@ describe('PendingTasksComponent', () => {
         const taskCompleted = new TaskCompleted(conference.id, allTasks[0].id);
         component.setupSubscribers();
 
-        eventbus.emit(new EmitEvent<TaskCompleted>(VHEventType.TaskCompleted, taskCompleted));
+        subject.next(taskCompleted);
 
         expect(component.pendingTasks).toBe(0);
     });
@@ -70,7 +75,7 @@ describe('PendingTasksComponent', () => {
         const taskCompleted = new TaskCompleted(Guid.create().toString(), 9999);
         component.setupSubscribers();
 
-        eventbus.emit(new EmitEvent<TaskCompleted>(VHEventType.TaskCompleted, taskCompleted));
+        subject.next(taskCompleted);
 
         expect(component.pendingTasks).toBe(1);
     });

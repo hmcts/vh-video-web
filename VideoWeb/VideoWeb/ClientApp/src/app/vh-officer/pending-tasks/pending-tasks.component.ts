@@ -1,10 +1,10 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { TaskResponse, TaskStatus } from 'src/app/services/clients/api-client';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { DataService } from 'src/app/services/data.service';
 import { Subscription } from 'rxjs';
 import { TaskCompleted } from 'src/app/on-the-day/models/task-completed';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { TaskResponse, TaskStatus } from 'src/app/services/clients/api-client';
-import { EventBusService, VHEventType } from 'src/app/services/event-bus.service';
-import { Logger } from 'src/app/services/logging/logger-base';
 
 @Component({
     selector: 'app-pending-tasks',
@@ -17,7 +17,7 @@ export class PendingTasksComponent implements OnInit, OnDestroy {
     taskSubscription$: Subscription;
     tasks: TaskResponse[];
 
-    constructor(private videoWebService: VideoWebService, private eventbus: EventBusService, private logger: Logger) {}
+    constructor(private videoWebService: VideoWebService, private dataService: DataService, private logger: Logger) {}
 
     ngOnInit() {
         this.setupSubscribers();
@@ -34,12 +34,13 @@ export class PendingTasksComponent implements OnInit, OnDestroy {
     }
 
     setupSubscribers() {
-        this.taskSubscription$ = this.eventbus.on<TaskCompleted>(VHEventType.TaskCompleted, completedTask =>
-            this.handleTaskCompleted(completedTask)
-        );
+        this.taskSubscription$ = this.dataService.completedTasks().subscribe(completedTask => {
+            this.handleTaskCompleted(completedTask);
+        });
     }
 
     handleTaskCompleted(completedTask: TaskCompleted) {
+        console.log(this.tasks);
         const task = this.tasks.find(t => t.id === completedTask.taskId);
         if (task) {
             task.status = TaskStatus.Done;
