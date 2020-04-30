@@ -5,6 +5,7 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
@@ -34,18 +35,31 @@ namespace VideoWeb.UnitTests
         }
 
         [Test]
-        public async Task Should_get_conference_from_cache()
+        public async Task GetOrAddConferenceAsync_should_return_conference_when_cache_contains_key()
         {
-            var conference = new Conference
-            {
-                Id = Guid.NewGuid()
-            };
+            var conference = new Conference { Id = Guid.NewGuid() };
 
             _memoryCache.Set(conference.Id, conference);
-            var result = await _conferenceCache.GetConferenceAsync(conference.Id);
+            var result = await _conferenceCache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>());
 
             result.Should().NotBeNull();
             result.Id.Should().Be(conference.Id);
+        }
+        
+        [Test]
+        public async Task GetOrAddConferenceAsync_should_return_conference_when_cache_does_not_contains_key()
+        {
+            var conferenceDetails = CreateConferenceResponse();
+            conferenceDetails.Id = Guid.NewGuid();
+
+            var result = await _conferenceCache.GetOrAddConferenceAsync(conferenceDetails.Id, () =>
+            {
+                _memoryCache.Set(conferenceDetails.Id, new Conference{ Id = conferenceDetails.Id });
+                return Task.FromResult(conferenceDetails);
+            });
+
+            result.Should().NotBeNull();
+            result.Id.Should().Be(conferenceDetails.Id);
         }
 
         private static ConferenceDetailsResponse CreateConferenceResponse()

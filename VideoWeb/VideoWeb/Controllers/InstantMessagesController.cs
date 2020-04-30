@@ -73,7 +73,12 @@ namespace VideoWeb.Controllers
                 return response;
             }
             
-            var conference = await _conferenceCache.GetConferenceAsync(conferenceId);
+            var conference = await _conferenceCache.GetOrAddConferenceAsync
+            (
+                conferenceId, 
+                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
+            );
+            
             var username = User.Identity.Name;
 
             foreach (var message in messages)

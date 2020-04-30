@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
@@ -25,10 +26,10 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         private ConsultationsController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
         private Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> _eventHubContextMock;
-        private MemoryCache _memoryCache;
-        private IConferenceCache _conferenceCache;
+        private Mock<IConferenceCache> _conferenceCacheMock;
         private Conference _testConference;
         private Mock<IEventHubClient> _eventHubClientMock;
+        private Mock<ILogger<ConsultationsController>> _loggerMock;
 
         [SetUp]
         public void Setup()
@@ -36,12 +37,11 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _videoApiClientMock = new Mock<IVideoApiClient>();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             _eventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>();
-            _memoryCache = new MemoryCache(new MemoryCacheOptions());
-            _conferenceCache = new ConferenceCache(_memoryCache);
+            _conferenceCacheMock = new Mock<IConferenceCache>();
             _eventHubClientMock = new Mock<IEventHubClient>();
+            _loggerMock = new Mock<ILogger<ConsultationsController>>();
 
             _testConference = ConsultationHelper.BuildConferenceForTest();
-            _memoryCache.Set(_testConference.Id, _testConference);
 
             foreach (var participant in _testConference.Participants)
             {
@@ -60,24 +60,15 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 }
             };
 
-            _controller = new ConsultationsController(_videoApiClientMock.Object, _eventHubContextMock.Object, _conferenceCache)
+            _conferenceCacheMock.Setup(cache => cache.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+                .ReturnsAsync(_testConference);
+            
+            _controller = new ConsultationsController(_videoApiClientMock.Object, _eventHubContextMock.Object, 
+                _conferenceCacheMock.Object, _loggerMock.Object)
             {
                 ControllerContext = context
             };
-        }
-
-        [Test]
-        public async Task Should_return_conference_not_found_when_request_is_sent()
-        {
-            _videoApiClientMock
-                .Setup(x => x.RespondToAdminConsultationRequestAsync(It.IsAny<AdminConsultationRequest>()))
-                .Returns(Task.FromResult(default(object)));
-            _memoryCache.Remove(_testConference.Id);
-            var consultationRequest = ConsultationHelper.GetAdminConsultationRequest(_testConference, ConsultationAnswer.None);
-            var result = await _controller.RespondToAdminConsultationRequestAsync(consultationRequest);
-
-            var typedResult = (NotFoundResult)result;
-            typedResult.Should().NotBeNull();
         }
 
         [Test]
@@ -87,7 +78,10 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Setup(x => x.RespondToAdminConsultationRequestAsync(It.IsAny<AdminConsultationRequest>()))
                 .Returns(Task.FromResult(default(object)));
             var conference = new Conference { Id = Guid.NewGuid() };
-            _memoryCache.Set(conference.Id, conference);
+
+            _conferenceCacheMock.Setup(cache => cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+                .ReturnsAsync(conference);
 
             var consultationRequest = Builder<AdminConsultationRequest>.CreateNew().With(x => x.Conference_id = conference.Id).Build();
             var result = await _controller.RespondToAdminConsultationRequestAsync(consultationRequest);
