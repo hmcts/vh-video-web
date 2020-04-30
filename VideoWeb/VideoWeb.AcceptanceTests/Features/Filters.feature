@@ -4,6 +4,7 @@ Feature: Filters
 	I want to limit the number of displayed hearings
 
 @VIH-5503
+@ignore
 Scenario: VHO filters hearings by alert type
   Given I have a hearing
   And I have another hearing
@@ -22,6 +23,7 @@ Scenario: VHO filters hearings by location
   Then the hearings are filtered
 
 @VIH-5417 @Smoketest-Extended
+@ignore
 Scenario: VHO filters hearings by status
   Given I have a hearing
   And I have another hearing in -10 minutes time
