@@ -51,12 +51,7 @@ namespace VideoWeb.EventHub.Handlers.Core
 
         private async Task<Conference> GetConference(Guid conferenceId)
         {
-            var conference = await _conferenceCache.GetConferenceAsync(conferenceId);
-            if (conference != null) return conference;
-            var conferenceDetail = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-            await _conferenceCache.AddConferenceAsync(conferenceDetail);
-
-            return await _conferenceCache.GetConferenceAsync(conferenceId);
+            return await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
 
         }
 

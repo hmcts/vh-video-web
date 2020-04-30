@@ -7,6 +7,7 @@ using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Hub;
+using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Hub
@@ -26,7 +27,11 @@ namespace VideoWeb.UnitTests.Hub
                 .With(x => x.Id = conferenceId)
                 .With(x => x.Participants = participants)
                 .Build();
-            ConferenceCacheMock.Setup(x => x.GetConferenceAsync(conferenceId)).ReturnsAsync(conference);
+            
+            ConferenceCacheMock.Setup(cache => cache.GetOrAddConferenceAsync(conferenceId, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+                .ReturnsAsync(conference);
+            
             var message = "test message";
 
             var mockClient = new Mock<IEventHubClient>();
@@ -41,19 +46,6 @@ namespace VideoWeb.UnitTests.Hub
         }
 
         [Test]
-        public void Should_throw_exception_when_conference_is_not_in_cache()
-        {
-            var conferenceId = Guid.NewGuid();
-
-            var message = "test message";
-
-            var mockClient = new Mock<IEventHubClient>();
-            EventHubClientMock.Setup(x => x.Group(conferenceId.ToString())).Returns(mockClient.Object);
-
-            Assert.ThrowsAsync<ConferenceNotFoundException>(() => Hub.SendMessage(conferenceId, message));
-        }
-
-        [Test]
         public async Task Should_send_message_to_conference_group_if_user_is_vho()
         {
             var username = "john@doe.com";
@@ -65,7 +57,11 @@ namespace VideoWeb.UnitTests.Hub
                 .With(x => x.Id = conferenceId)
                 .With(x => x.Participants = participants)
                 .Build();
-            ConferenceCacheMock.Setup(x => x.GetConferenceAsync(conferenceId)).ReturnsAsync(conference);
+            
+            ConferenceCacheMock.Setup(cache => cache.GetOrAddConferenceAsync(conferenceId, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+                .ReturnsAsync(conference);
+            
             var message = "test message";
 
             Claims = new ClaimsPrincipalBuilder().WithRole(Role.VideoHearingsOfficer).Build();
@@ -98,7 +94,11 @@ namespace VideoWeb.UnitTests.Hub
                 .With(x => x.Id = conferenceId)
                 .With(x => x.Participants = participants)
                 .Build();
-            ConferenceCacheMock.Setup(x => x.GetConferenceAsync(conferenceId)).ReturnsAsync(conference);
+            
+            ConferenceCacheMock.Setup(cache => cache.GetOrAddConferenceAsync(conferenceId, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+                .ReturnsAsync(conference);
+            
             var message = "test message";
 
             var mockClient = new Mock<IEventHubClient>();

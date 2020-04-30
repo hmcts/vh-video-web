@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -65,7 +66,10 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         [Test]
         public async Task Should_return_ok()
         {
-            _conferenceCacheMock.Setup(x => x.GetConferenceAsync(_testConference.Id)).ReturnsAsync(_testConference);
+            _conferenceCacheMock.Setup(cache => cache.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+                .ReturnsAsync(_testConference);
+            
             var conferenceId = _testConference.Id;
             var request = new UpdateParticipantStatusEventRequest
             {
@@ -83,8 +87,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         [Test]
         public async Task Should_call_api_when_cache_is_empty()
         {
-            _conferenceCacheMock.SetupSequence(cache => cache.GetConferenceAsync(_testConference.Id))
-                .ReturnsAsync((Conference) null)
+            _conferenceCacheMock.Setup(cache => cache.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(_testConference);
             
             var conferenceId = _testConference.Id;
@@ -97,13 +101,14 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .Returns(Task.FromResult(default(object)));
             
             await _controller.UpdateParticipantStatusAsync(conferenceId, request);
-            _videoApiClientMock.Verify(x => x.GetConferenceDetailsByIdAsync(_testConference.Id), Times.Once);
         }
 
         [Test]
         public async Task Should_throw_error_when_get_api_throws_error()
         {
-            _conferenceCacheMock.Setup(x => x.GetConferenceAsync(_testConference.Id)).ReturnsAsync(_testConference);
+            _conferenceCacheMock.Setup(cache => cache.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+                .ReturnsAsync(_testConference);
             
             var conferenceId = _testConference.Id;
             var request = new UpdateParticipantStatusEventRequest

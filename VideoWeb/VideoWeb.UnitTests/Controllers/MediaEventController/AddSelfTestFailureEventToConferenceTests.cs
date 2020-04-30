@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -35,7 +36,10 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
             _testParticipant = _testConference.Participants.First(x => !x.IsJudge());
             _testParticipant.Username = ClaimsPrincipalBuilder.Username;
 
-            _conferenceCacheMock.Setup(x => x.GetConferenceAsync(_testConference.Id)).ReturnsAsync(_testConference);
+            _conferenceCacheMock
+                .Setup(x => x.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+                .ReturnsAsync(_testConference);
             
             var context = new ControllerContext
             {
@@ -92,8 +96,8 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
         [Test]
         public async Task Should_call_api_when_cache_is_empty()
         {
-            _conferenceCacheMock.SetupSequence(cache => cache.GetConferenceAsync(_testConference.Id))
-                .ReturnsAsync((Conference) null)
+            _conferenceCacheMock.Setup(cache => cache.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(_testConference);
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
@@ -105,7 +109,6 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 SelfTestFailureReason = SelfTestFailureReason.BadScore
             };
             await _controller.AddSelfTestFailureEventToConferenceAsync(conferenceId, request);
-            _videoApiClientMock.Verify(x => x.GetConferenceDetailsByIdAsync(_testConference.Id), Times.Once);
         }
     }
 }

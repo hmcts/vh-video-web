@@ -162,12 +162,11 @@ namespace VideoWeb.EventHub.Hub
                 return true;
             }
             
-            var conference = await _conferenceCache.GetConferenceAsync(conferenceId);
-            
-            if (conference == null)
-            {
-                throw new ConferenceNotFoundException(conferenceId);
-            }
+            var conference = await _conferenceCache.GetOrAddConferenceAsync
+            (
+                conferenceId, 
+                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
+            );
 
             return conference
                 .GetJudge().Username
