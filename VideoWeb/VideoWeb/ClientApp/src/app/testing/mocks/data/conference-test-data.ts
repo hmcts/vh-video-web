@@ -12,8 +12,7 @@ import {
     Role,
     SelfTestPexipResponse,
     TaskResponse,
-    TaskType,
-    TaskUserResponse
+    TaskType
 } from 'src/app/services/clients/api-client';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { AlertFilter, AlertsStatus, HearingsFilter, StatusFilter } from '../../../shared/models/hearings-filter';
@@ -81,8 +80,7 @@ export class ConferenceTestData {
             status: ConferenceStatus.NotStarted,
             participants: this.getListOfParticipants(),
             hearing_venue_name: 'Manchester',
-            number_of_unread_messages: 4,
-            no_of_pending_tasks: 3
+            number_of_unread_messages: 4
         });
         return conference;
     }
@@ -111,21 +109,14 @@ export class ConferenceTestData {
 
     getTestDataForFilter(): Array<ConferenceForVhOfficerResponse> {
         const testData: Array<ConferenceForVhOfficerResponse> = [];
-        const task1 = new TaskUserResponse({ id: 1, body: 'Disconnected' });
-        const task2 = new TaskUserResponse({ id: 2, body: 'Failed self-test (Bad Score)' });
         const conference1 = this.getConferenceNow();
         const conference2 = this.getConferenceNow();
         conference2.status = ConferenceStatus.InSession;
         conference2.hearing_venue_name = 'Manchester';
-        conference2.tasks = [];
-        conference2.tasks.push(task1);
-        conference2.tasks.push(task2);
 
         const conference3 = this.getConferenceNow();
         conference3.status = ConferenceStatus.InSession;
         conference3.hearing_venue_name = 'Manchester';
-        conference3.tasks = [];
-        conference3.tasks.push(task2);
 
         testData.push(conference1);
         testData.push(conference2);
@@ -421,7 +412,7 @@ export class ConferenceTestData {
         messages.push(message2);
         messages.push(message3);
         messages.push(message4);
-        messages.forEach((m) => {
+        messages.forEach(m => {
             m.is_user = m.from.toLocaleLowerCase() === loggedInUser.toLocaleLowerCase();
         });
         return messages;

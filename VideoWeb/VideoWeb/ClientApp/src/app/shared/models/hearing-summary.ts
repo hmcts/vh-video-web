@@ -2,7 +2,6 @@ import {
     ConferenceForIndividualResponse,
     ConferenceForVhOfficerResponse,
     ConferenceStatus,
-    TaskUserResponse,
     Role,
     ConferenceForJudgeResponse
 } from 'src/app/services/clients/api-client';
@@ -98,18 +97,6 @@ export class HearingSummary extends HearingBase {
 
     get judge(): ParticipantSummary {
         return this.participants.find(x => x.role === Role.Judge);
-    }
-
-    get numberOfPendingTasks(): number {
-        return this.conference.no_of_pending_tasks;
-    }
-
-    set numberOfPendingTasks(numberOfPendingTasks: number) {
-        this.conference.no_of_pending_tasks = numberOfPendingTasks;
-    }
-
-    get tasks(): TaskUserResponse[] {
-        return this.conference.tasks;
     }
 
     get caseType(): string {

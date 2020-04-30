@@ -18,7 +18,7 @@ describe('VhoHearingsComponent Filter', () => {
     const logger: Logger = new MockLogger();
     const conferences = new ConferenceTestData().getTestDataForFilter();
     const filter = new ConferenceTestData().getHearingsFilter();
-    const hearings = conferences.map((c) => new HearingSummary(c));
+    const hearings = conferences.map(c => new HearingSummary(c));
     let errorService: jasmine.SpyObj<ErrorService>;
     let router: jasmine.SpyObj<Router>;
 
@@ -62,19 +62,6 @@ describe('VhoHearingsComponent Filter', () => {
         expect(component.conferences[1].status).toBe(filter.statuses[0].status);
     });
 
-    it('should apply filter with selected alerts records', () => {
-        expect(component.conferences.length).toBe(3);
-        filter.statuses.forEach((x) => (x.selected = false));
-        filter.alerts[1].selected = true;
-        const expectedAlerts1 = filter.alerts[1].bodyText;
-        component.activateFilterOptions(filter);
-
-        expect(component.conferences.length).toBe(2);
-        const filtered1 = component.conferences[0].tasks.filter((x) => x.body.includes(expectedAlerts1)).length > 0;
-        expect(filtered1).toBe(true);
-        const filtered2 = component.conferences[1].tasks.filter((x) => x.body.includes(expectedAlerts1)).length > 0;
-        expect(filtered2).toBe(true);
-    });
     it('should close monitoring graph for selected participant', () => {
         component.displayGraph = true;
         component.closeGraph(true);

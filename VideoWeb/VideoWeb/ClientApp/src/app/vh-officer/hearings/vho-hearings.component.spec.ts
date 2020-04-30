@@ -40,7 +40,7 @@ describe('VhoHearingsComponent', () => {
     let domSanitizerSpy: jasmine.SpyObj<DomSanitizer>;
     const logger: Logger = new MockLogger();
     const conferences = new ConferenceTestData().getVhoTestData();
-    const hearings = conferences.map((c) => new HearingSummary(c));
+    const hearings = conferences.map(c => new HearingSummary(c));
     let errorService: jasmine.SpyObj<ErrorService>;
     let router: jasmine.SpyObj<Router>;
 
@@ -132,15 +132,6 @@ describe('VhoHearingsComponent', () => {
         const currentConference = conferences[0];
         component.selectedHearing = new Hearing(new ConferenceResponse({ id: conferences[1].id }));
         expect(component.isCurrentConference(currentConference)).toBeFalsy();
-    });
-
-    it('should update number of pending tasks on task completed', () => {
-        const currentConference = component.conferences[0];
-        const initPendingTasks = 5;
-        currentConference.numberOfPendingTasks = initPendingTasks;
-
-        component.onTaskCompleted(new TaskCompleted(currentConference.id, 3));
-        expect(component.conferences[0].numberOfPendingTasks).toBeLessThan(initPendingTasks);
     });
 
     it('should reset conference unread counter when vho sends a message', () => {
@@ -255,7 +246,7 @@ describe('VhoHearingsComponent', () => {
             '80.0.3987.132'
         );
         component.handleHeartbeat(heartBeat1);
-        const conferenceToUpdate = component.conferences.find((x) => x.id === heartBeat1.conferenceId);
+        const conferenceToUpdate = component.conferences.find(x => x.id === heartBeat1.conferenceId);
         expect(conferenceToUpdate).toBe(undefined);
     });
 
@@ -263,8 +254,8 @@ describe('VhoHearingsComponent', () => {
         const conference = component.conferences[0];
         const heartBeat1 = new ParticipantHeartbeat(conference.id, '0000-0000-0000-0000', HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
         component.handleHeartbeat(heartBeat1);
-        const conferenceToUpdate = component.conferences.find((x) => x.id === heartBeat1.conferenceId);
-        const participantToUpdate = conferenceToUpdate.getParticipants().find((p) => p.id === heartBeat1.participantId);
+        const conferenceToUpdate = component.conferences.find(x => x.id === heartBeat1.conferenceId);
+        const participantToUpdate = conferenceToUpdate.getParticipants().find(p => p.id === heartBeat1.participantId);
         expect(participantToUpdate).toBe(undefined);
     });
 
@@ -396,7 +387,7 @@ describe('VhoHearingsComponent', () => {
 
     it('should not update participant status when conference is not selected', () => {
         component.setupEventHubSubscribers();
-        const participant = conferences[0].participants.find((x) => x.role === Role.Judge);
+        const participant = conferences[0].participants.find(x => x.role === Role.Judge);
         component.conferencesAll[0].participants[0].status = ParticipantStatus.Joining;
         const message = new ParticipantStatusMessage(participant.id, participant.username, conferences[0].id, ParticipantStatus.Available);
 
@@ -406,7 +397,7 @@ describe('VhoHearingsComponent', () => {
     it('should not update participant status when participant message is received for a difference conference', () => {
         component.setupEventHubSubscribers();
         component.participants = conferenceDetail.participants;
-        const participant = conferences[2].participants.find((x) => x.role === Role.Judge);
+        const participant = conferences[2].participants.find(x => x.role === Role.Judge);
         component.participants[0].status = ParticipantStatus.Joining;
         const message = new ParticipantStatusMessage(participant.id, participant.username, conferences[0].id, ParticipantStatus.Available);
 
@@ -428,7 +419,7 @@ describe('VhoHearingsComponent', () => {
     it('should get judge status participant message is received and participant is judge', () => {
         component.setupEventHubSubscribers();
         component.participants = conferenceDetail.participants;
-        const participant = conferenceDetail.participants.find((x) => x.role === Role.Judge);
+        const participant = conferenceDetail.participants.find(x => x.role === Role.Judge);
         const message = new ParticipantStatusMessage(participant.id, participant.username, conferences[0].id, ParticipantStatus.Available);
 
         mockEventService.participantStatusSubject.next(message);

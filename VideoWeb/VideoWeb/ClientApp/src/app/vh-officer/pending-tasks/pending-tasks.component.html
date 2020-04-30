@@ -1,0 +1,6 @@
+<span
+    id="{{ conferenceId }}--pending-tasks"
+    class="alert-badge has-alerts"
+    [ngClass]="{ 'has-alerts': pendingTasks > 0, 'no-alerts': pendingTasks === 0 }"
+    [attr.data-badge]="pendingTasks"
+></span>

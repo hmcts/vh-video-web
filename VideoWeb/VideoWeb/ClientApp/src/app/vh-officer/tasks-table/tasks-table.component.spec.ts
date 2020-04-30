@@ -8,11 +8,13 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { TasksTableComponent } from './tasks-table.component';
 import { VHODashboardHelper } from '../helper';
 import { fakeAsync, tick } from '@angular/core/testing';
+import { DataService } from 'src/app/services/data.service';
 
 describe('TasksTableComponent', () => {
     let component: TasksTableComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     let dashboardHelper: jasmine.SpyObj<VHODashboardHelper>;
+    let dataServiceSpy: jasmine.SpyObj<DataService>;
     const conference = new ConferenceTestData().getConferenceDetailFuture();
     const allTasks = new TasksTestData().getTestData();
     const completedTask = new TasksTestData().getCompletedTask();
@@ -20,6 +22,7 @@ describe('TasksTableComponent', () => {
     let logger: MockLogger;
 
     beforeAll(() => {
+        dataServiceSpy = jasmine.createSpyObj<DataService>('DataService', ['taskCompleted']);
         dashboardHelper = jasmine.createSpyObj<VHODashboardHelper>('VHODashboardHelper', ['getWidthAvailableForConference']);
         dashboardHelper.getWidthAvailableForConference.and.returnValue(fakeDivWidth);
 
@@ -36,11 +39,13 @@ describe('TasksTableComponent', () => {
     });
 
     beforeEach(() => {
-        component = new TasksTableComponent(videoWebServiceSpy, dashboardHelper, logger);
+        component = new TasksTableComponent(videoWebServiceSpy, dashboardHelper, logger, dataServiceSpy);
         component.conferenceId = conference.id;
         component.conference = Object.assign(conference);
         // 1 To-Do & 2 Done
         component.tasks = Object.assign(allTasks);
+
+        dataServiceSpy.taskCompleted.calls.reset();
     });
 
     it('should get tasks on init', fakeAsync(() => {
@@ -79,7 +84,7 @@ describe('TasksTableComponent', () => {
     });
 
     it('should set task to done', () => {
-        const task = component.tasks.filter((x) => x.status === TaskStatus.ToDo)[0];
+        const task = component.tasks.filter(x => x.status === TaskStatus.ToDo)[0];
         const index = component.tasks.indexOf(task);
         component.updateTask(completedTask);
 
@@ -111,7 +116,7 @@ describe('TasksTableComponent', () => {
     });
 
     it('should return username for judge tasks', () => {
-        const pat = component.conference.participants.find((x) => x.role === Role.Judge);
+        const pat = component.conference.participants.find(x => x.role === Role.Judge);
         const task = new TaskResponse({
             type: TaskType.Judge,
             id: 1,
@@ -134,23 +139,21 @@ describe('TasksTableComponent', () => {
 
     it('should emit task completed', async () => {
         component.tasks = new TasksTestData().getTestData();
-        const task = component.tasks.find((x) => x.status === TaskStatus.ToDo);
-        spyOn(component.taskCompleted, 'emit');
+        const task = component.tasks.find(x => x.status === TaskStatus.ToDo);
         await component.completeTask(task);
 
-        const expected = new TaskCompleted(component.conference.id, 0);
-        expect(component.taskCompleted.emit).toHaveBeenCalledWith(expected);
+        const expected = new TaskCompleted(component.conference.id, task.id);
+        expect(dataServiceSpy.taskCompleted).toHaveBeenCalledWith(expected);
     });
 
     it('should throw error when task cannot complete', async () => {
         component.tasks = new TasksTestData().getTestData();
         const error = { error: 'service error' };
         videoWebServiceSpy.completeTask.and.callFake(() => Promise.reject(error));
-        spyOn(component.taskCompleted, 'emit');
-        const task = component.tasks.find((x) => x.status === TaskStatus.ToDo);
+        const task = component.tasks.find(x => x.status === TaskStatus.ToDo);
 
         await component.completeTask(task);
 
-        expect(component.taskCompleted.emit).toHaveBeenCalledTimes(0);
+        expect(dataServiceSpy.taskCompleted).toHaveBeenCalledTimes(0);
     });
 });

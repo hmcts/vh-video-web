@@ -1,9 +1,10 @@
-import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
+import { Component, HostListener, Input, OnInit } from '@angular/core';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, TaskResponse, TaskStatus, TaskType } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, TaskResponse, TaskType } from 'src/app/services/clients/api-client';
+import { DataService } from 'src/app/services/data.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { VHODashboardHelper } from '../helper';
-import { Logger } from 'src/app/services/logging/logger-base';
 
 @Component({
     selector: 'app-tasks-table',
@@ -15,7 +16,6 @@ export class TasksTableComponent implements OnInit {
     loading: boolean;
 
     @Input() conferenceId: string;
-    @Output() taskCompleted = new EventEmitter<TaskCompleted>();
     tasks: TaskResponse[];
     conference: ConferenceResponse;
 
@@ -23,7 +23,12 @@ export class TasksTableComponent implements OnInit {
     onResize() {
         this.updateDivWidthForTasks();
     }
-    constructor(private videoWebService: VideoWebService, private dashboardHelper: VHODashboardHelper, private logger: Logger) {}
+    constructor(
+        private videoWebService: VideoWebService,
+        private dashboardHelper: VHODashboardHelper,
+        private logger: Logger,
+        private dataService: DataService
+    ) {}
 
     ngOnInit() {
         this.updateDivWidthForTasks();
@@ -64,8 +69,7 @@ export class TasksTableComponent implements OnInit {
         try {
             const updatedTask = await this.videoWebService.completeTask(this.conference.id, task.id);
             this.updateTask(updatedTask);
-            const pendingTasks = this.tasks.filter(x => x.status === TaskStatus.ToDo).length;
-            this.taskCompleted.emit(new TaskCompleted(this.conference.id, pendingTasks));
+            this.dataService.taskCompleted(new TaskCompleted(this.conference.id, task.id));
         } catch (error) {
             this.logger.error(`Failed to complete task ${task.id}`, error);
         }

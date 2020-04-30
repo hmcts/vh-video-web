@@ -28,67 +28,6 @@ export class ApiClient {
     }
 
     /**
-     * @return Success
-     */
-    stopAudioRecording(hearingId: string): Observable<void> {
-        let url_ = this.baseUrl + "/conferences/audiostreams/{hearingId}";
-        if (hearingId === undefined || hearingId === null)
-            throw new Error("The parameter 'hearingId' must be defined.");
-        url_ = url_.replace("{hearingId}", encodeURIComponent("" + hearingId)); 
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",			
-            headers: new HttpHeaders({
-            })
-        };
-
-        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processStopAudioRecording(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processStopAudioRecording(<any>response_);
-                } catch (e) {
-                    return <Observable<void>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<void>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processStopAudioRecording(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob = 
-            response instanceof HttpResponse ? response.body : 
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(<any>null);
-            }));
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = ProblemDetails.fromJS(resultData400);
-            return throwException("Bad Request", status, _responseText, _headers, result400);
-            }));
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("Unauthorized", status, _responseText, _headers);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<void>(<any>null);
-    }
-
-    /**
      * Get conferences today for a judge or a clerk
      * @return Success
      */
@@ -1986,74 +1925,6 @@ export class ApiClient {
     }
 }
 
-export class ProblemDetails implements IProblemDetails {
-    type?: string | undefined;
-    title?: string | undefined;
-    status?: number | undefined;
-    detail?: string | undefined;
-    instance?: string | undefined;
-    readonly extensions?: { [key: string]: any; } | undefined;
-
-    constructor(data?: IProblemDetails) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.type = _data["type"];
-            this.title = _data["title"];
-            this.status = _data["status"];
-            this.detail = _data["detail"];
-            this.instance = _data["instance"];
-            if (_data["extensions"]) {
-                (<any>this).extensions = {} as any;
-                for (let key in _data["extensions"]) {
-                    if (_data["extensions"].hasOwnProperty(key))
-                        (<any>this).extensions![key] = _data["extensions"][key];
-                }
-            }
-        }
-    }
-
-    static fromJS(data: any): ProblemDetails {
-        data = typeof data === 'object' ? data : {};
-        let result = new ProblemDetails();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["type"] = this.type;
-        data["title"] = this.title;
-        data["status"] = this.status;
-        data["detail"] = this.detail;
-        data["instance"] = this.instance;
-        if (this.extensions) {
-            data["extensions"] = {};
-            for (let key in this.extensions) {
-                if (this.extensions.hasOwnProperty(key))
-                    data["extensions"][key] = this.extensions[key];
-            }
-        }
-        return data; 
-    }
-}
-
-export interface IProblemDetails {
-    type?: string | undefined;
-    title?: string | undefined;
-    status?: number | undefined;
-    detail?: string | undefined;
-    instance?: string | undefined;
-    extensions?: { [key: string]: any; } | undefined;
-}
-
 export enum ConferenceStatus {
     NotStarted = "NotStarted",
     InSession = "InSession",
@@ -2202,6 +2073,74 @@ export interface IConferenceForJudgeResponse {
     participants?: ParticipantForJudgeResponse[] | undefined;
 }
 
+export class ProblemDetails implements IProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+    readonly extensions?: { [key: string]: any; } | undefined;
+
+    constructor(data?: IProblemDetails) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.type = _data["type"];
+            this.title = _data["title"];
+            this.status = _data["status"];
+            this.detail = _data["detail"];
+            this.instance = _data["instance"];
+            if (_data["extensions"]) {
+                (<any>this).extensions = {} as any;
+                for (let key in _data["extensions"]) {
+                    if (_data["extensions"].hasOwnProperty(key))
+                        (<any>this).extensions![key] = _data["extensions"][key];
+                }
+            }
+        }
+    }
+
+    static fromJS(data: any): ProblemDetails {
+        data = typeof data === 'object' ? data : {};
+        let result = new ProblemDetails();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["type"] = this.type;
+        data["title"] = this.title;
+        data["status"] = this.status;
+        data["detail"] = this.detail;
+        data["instance"] = this.instance;
+        if (this.extensions) {
+            data["extensions"] = {};
+            for (let key in this.extensions) {
+                if (this.extensions.hasOwnProperty(key))
+                    data["extensions"][key] = this.extensions[key];
+            }
+        }
+        return data; 
+    }
+}
+
+export interface IProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+    extensions?: { [key: string]: any; } | undefined;
+}
+
 export class ConferenceForIndividualResponse implements IConferenceForIndividualResponse {
     /** Conference UUID */
     id?: string;
@@ -2343,46 +2282,6 @@ export interface IParticipantForUserResponse {
     case_type_group?: string | undefined;
 }
 
-export class TaskUserResponse implements ITaskUserResponse {
-    id?: number;
-    body?: string | undefined;
-
-    constructor(data?: ITaskUserResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.body = _data["body"];
-        }
-    }
-
-    static fromJS(data: any): TaskUserResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new TaskUserResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["body"] = this.body;
-        return data; 
-    }
-}
-
-export interface ITaskUserResponse {
-    id?: number;
-    body?: string | undefined;
-}
-
 export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerResponse {
     /** Conference ID */
     id?: string;
@@ -2395,10 +2294,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
     status?: ConferenceStatus;
     /** The conference participants */
     participants?: ParticipantForUserResponse[] | undefined;
-    no_of_pending_tasks?: number;
     hearing_venue_name?: string | undefined;
-    /** The conferences tasks */
-    tasks?: TaskUserResponse[] | undefined;
     number_of_unread_messages?: number;
 
     constructor(data?: IConferenceForVhOfficerResponse) {
@@ -2424,13 +2320,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
                 for (let item of _data["participants"])
                     this.participants!.push(ParticipantForUserResponse.fromJS(item));
             }
-            this.no_of_pending_tasks = _data["no_of_pending_tasks"];
             this.hearing_venue_name = _data["hearing_venue_name"];
-            if (Array.isArray(_data["tasks"])) {
-                this.tasks = [] as any;
-                for (let item of _data["tasks"])
-                    this.tasks!.push(TaskUserResponse.fromJS(item));
-            }
             this.number_of_unread_messages = _data["number_of_unread_messages"];
         }
     }
@@ -2456,13 +2346,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
             for (let item of this.participants)
                 data["participants"].push(item.toJSON());
         }
-        data["no_of_pending_tasks"] = this.no_of_pending_tasks;
         data["hearing_venue_name"] = this.hearing_venue_name;
-        if (Array.isArray(this.tasks)) {
-            data["tasks"] = [];
-            for (let item of this.tasks)
-                data["tasks"].push(item.toJSON());
-        }
         data["number_of_unread_messages"] = this.number_of_unread_messages;
         return data; 
     }
@@ -2480,10 +2364,7 @@ export interface IConferenceForVhOfficerResponse {
     status?: ConferenceStatus;
     /** The conference participants */
     participants?: ParticipantForUserResponse[] | undefined;
-    no_of_pending_tasks?: number;
     hearing_venue_name?: string | undefined;
-    /** The conferences tasks */
-    tasks?: TaskUserResponse[] | undefined;
     number_of_unread_messages?: number;
 }
 

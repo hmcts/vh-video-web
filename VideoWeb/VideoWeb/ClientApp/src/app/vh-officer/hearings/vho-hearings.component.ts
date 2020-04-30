@@ -7,8 +7,7 @@ import {
     ConferenceForVhOfficerResponse,
     HearingVenueResponse,
     ParticipantResponseVho,
-    ParticipantStatus,
-    TaskResponse
+    ParticipantStatus
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -17,7 +16,7 @@ import { ConferenceStatusMessage } from 'src/app/services/models/conference-stat
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
-import { TaskCompleted } from '../../on-the-day/models/task-completed';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { SessionStorage } from '../../services/session-storage';
 import { ConferenceForUser, ExtendedConferenceStatus, HearingsFilter } from '../../shared/models/hearings-filter';
@@ -26,7 +25,6 @@ import { PackageLost } from '../services/models/package-lost';
 import { ParticipantGraphInfo } from '../services/models/participant-graph-info';
 import { VhoStorageKeys } from '../services/models/session-keys';
 import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
-import { pageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
     selector: 'app-vho-hearings',
@@ -109,7 +107,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
     loadVenueSelection(): void {
         const venues = this.venueAllocationStorage.get();
-        this.venueAllocations = venues.map((v) => v.name);
+        this.venueAllocations = venues.map(v => v.name);
     }
 
     setupConferenceInterval() {
@@ -122,21 +120,21 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     setupEventHubSubscribers() {
         this.logger.debug('Subscribing to conference status changes...');
         this.eventHubSubscriptions.add(
-            this.eventService.getHearingStatusMessage().subscribe((message) => {
+            this.eventService.getHearingStatusMessage().subscribe(message => {
                 this.handleConferenceStatusChange(message);
             })
         );
 
         this.logger.debug('Subscribing to participant status changes...');
         this.eventHubSubscriptions.add(
-            this.eventService.getParticipantStatusMessage().subscribe((message) => {
+            this.eventService.getParticipantStatusMessage().subscribe(message => {
                 this.handleParticipantStatusChange(message);
             })
         );
 
         this.logger.debug('Subscribing to EventHub disconnects');
         this.eventHubSubscriptions.add(
-            this.eventService.getServiceDisconnected().subscribe(async (reconnectionAttempt) => {
+            this.eventService.getServiceDisconnected().subscribe(async reconnectionAttempt => {
                 if (reconnectionAttempt <= 6) {
                     this.logger.info(`EventHub disconnection for vh officer`);
                     await this.refreshConferenceDataDuringDisconnect();
@@ -155,14 +153,14 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         );
 
         this.eventHubSubscriptions.add(
-            this.eventService.getAdminAnsweredChat().subscribe((message) => {
+            this.eventService.getAdminAnsweredChat().subscribe(message => {
                 this.logger.info(`an admin has answered`);
                 this.resetConferenceUnreadCounter(message);
             })
         );
 
         this.eventHubSubscriptions.add(
-            this.eventService.getHeartbeat().subscribe((heartbeat) => {
+            this.eventService.getHeartbeat().subscribe(heartbeat => {
                 this.logger.info(`Participant Network Heartbeat Captured`);
                 this.addHeartBeatToTheList(heartbeat);
                 this.handleHeartbeat(heartbeat);
@@ -173,7 +171,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     }
 
     resetConferenceUnreadCounter(conferenceId: string) {
-        const conference = this.conferences.find((x) => x.id === conferenceId);
+        const conference = this.conferences.find(x => x.id === conferenceId);
         if (conference) {
             const index = this.conferences.indexOf(conference);
             this.conferences[index].numberOfUnreadMessages = 0;
@@ -182,13 +180,13 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
     handleHeartbeat(heartBeat: ParticipantHeartbeat) {
         if (this.conferences !== undefined) {
-            const conferenceToUpdate = this.conferences.find((c) => c.id === heartBeat.conferenceId);
+            const conferenceToUpdate = this.conferences.find(c => c.id === heartBeat.conferenceId);
 
             if (!conferenceToUpdate) {
                 return;
             }
 
-            const participantToUpdate = conferenceToUpdate.getParticipants().find((x) => x.id === heartBeat.participantId);
+            const participantToUpdate = conferenceToUpdate.getParticipants().find(x => x.id === heartBeat.participantId);
             if (participantToUpdate) {
                 participantToUpdate.participantHertBeatHealth = heartBeat;
             }
@@ -208,10 +206,10 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.conferencesSubscription = this.videoWebService.getConferencesForVHOfficer(this.venueAllocations).subscribe(
             async (data: ConferenceForVhOfficerResponse[]) => {
                 this.logger.debug('Successfully retrieved hearings for VHO');
-                this.conferences = data.map((c) => new HearingSummary(c));
+                this.conferences = data.map(c => new HearingSummary(c));
                 this.conferencesAll = data;
                 if (this.participantsHeartBeat !== undefined && this.participantsHeartBeat.length > 0) {
-                    this.participantsHeartBeat.forEach((x) => {
+                    this.participantsHeartBeat.forEach(x => {
                         this.handleHeartbeat(x);
                     });
                 }
@@ -226,7 +224,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
                 this.loadingData = false;
             },
-            (error) => {
+            error => {
                 this.logger.error('There was an error setting up VH Officer dashboard', error);
                 this.loadingData = false;
                 this.enableFullScreen(false);
@@ -295,12 +293,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         return 300;
     }
 
-    onTaskCompleted(taskCompleted: TaskCompleted) {
-        this.logger.info(`task completed for conference ${taskCompleted.conferenceId}`);
-        const conference = this.conferences.find((x) => x.id === taskCompleted.conferenceId);
-        conference.numberOfPendingTasks = taskCompleted.pendingTasks;
-    }
-
     private sanitiseAndLoadIframe() {
         const adminUri = this.selectedHearing.getConference().admin_i_frame_uri;
         this.updateWidthForAdminFrame();
@@ -311,11 +303,11 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         if (!this.participants) {
             return;
         }
-        const participantToUpdate = this.participants.find((x) => x.id === message.participantId);
+        const participantToUpdate = this.participants.find(x => x.id === message.participantId);
         if (participantToUpdate) {
             participantToUpdate.status = message.status;
             if (participantToUpdate.status === ParticipantStatus.Disconnected) {
-                const participantHeartBeat = this.participantsHeartBeat.find((y) => y.participantId === participantToUpdate.id);
+                const participantHeartBeat = this.participantsHeartBeat.find(y => y.participantId === participantToUpdate.id);
                 if (participantHeartBeat !== undefined) {
                     const heartBeatIndex = this.participantsHeartBeat.indexOf(participantHeartBeat);
                     this.participantsHeartBeat.splice(heartBeatIndex, 1);
@@ -325,7 +317,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     }
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
-        const conference = this.conferences.find((c) => c.id === message.conferenceId);
+        const conference = this.conferences.find(c => c.id === message.conferenceId);
         if (!conference) {
             return false;
         }
@@ -368,7 +360,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
     selectFilteredConference(selectedConferenceId: string) {
         if (selectedConferenceId) {
-            const selectedConferenceFound = this.conferences.find((x) => x.id === selectedConferenceId);
+            const selectedConferenceFound = this.conferences.find(x => x.id === selectedConferenceId);
             if (selectedConferenceFound) {
                 this.$conferenceList.selectConference(selectedConferenceFound);
             }
@@ -378,47 +370,30 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     activateFilterOptions(filterOptions: HearingsFilter) {
         this.filterOptionsCount = filterOptions.numberFilterOptions;
 
-        const selectedStatuses = filterOptions.statuses.filter((x) => x.selected).map((x) => x.status);
-        const selectedAlerts = filterOptions.alerts.filter((x) => x.selected).map((x) => x.bodyText);
+        const selectedStatuses = filterOptions.statuses.filter(x => x.selected).map(x => x.status);
+        const selectedAlerts = filterOptions.alerts.filter(x => x.selected).map(x => x.bodyText);
 
         if (selectedStatuses.length > 0 || selectedAlerts.length > 0) {
             const clone = Object.assign(this.conferencesAll);
-            this.conferences = clone.map((c) => new HearingSummary(c));
+            this.conferences = clone.map(c => new HearingSummary(c));
             if (selectedStatuses.length > 0) {
                 const conferencesAllExtended = this.setStatusDelayed(this.conferencesAll);
                 this.conferences = conferencesAllExtended
-                    .filter((x) => selectedStatuses.includes(x.statusExtended))
-                    .map((c) => new HearingSummary(c));
+                    .filter(x => selectedStatuses.includes(x.statusExtended))
+                    .map(c => new HearingSummary(c));
             }
 
-            if (selectedAlerts.length > 0) {
-                this.conferences = this.conferences.filter((x) => this.findSelectedAlert(x.tasks, selectedAlerts));
-            }
+            // TODO: replace filtering
+            // if (selectedAlerts.length > 0) {
+            //     this.conferences = this.conferences.filter(x => this.findSelectedAlert(x.tasks, selectedAlerts));
+            // }
         } else {
-            this.conferences = this.conferencesAll.map((c) => new HearingSummary(c));
+            this.conferences = this.conferencesAll.map(c => new HearingSummary(c));
         }
-    }
-
-    private findSelectedAlert(tasks: TaskResponse[], selectedAlerts: string[]): boolean {
-        let tasksFiltered = [];
-        if (tasks) {
-            tasksFiltered = tasks.filter((x) => this.filterTaskByBody(selectedAlerts, x.body));
-        }
-        return tasksFiltered.length > 0;
-    }
-
-    private filterTaskByBody(selectedAlerts: string[], body: string): boolean {
-        let result = false;
-        selectedAlerts.forEach((x) => {
-            if (body.includes(x)) {
-                result = true;
-            }
-        });
-        return result;
     }
 
     setStatusDelayed(data: ConferenceForVhOfficerResponse[]): ConferenceForUser[] {
-        const conferences = data.map((x) => {
+        const conferences = data.map(x => {
             const hearing = new HearingSummary(x);
             const item = new ConferenceForUser(x);
             if (hearing.isDelayed()) {
@@ -438,8 +413,8 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
 
                 await this.videoWebService
                     .getParticipantHeartbeats(participantInfo.conferenceId, participantInfo.participant.id)
-                    .then((s) => {
-                        this.packageLostArray = s.map((x) => {
+                    .then(s => {
+                        this.packageLostArray = s.map(x => {
                             return new PackageLost(x.recent_packet_loss, x.browser_name, x.browser_version, x.timestamp.getTime());
                         });
                         this.displayGraph = true;
@@ -455,7 +430,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     addHeartBeatToTheList(heartbeat: ParticipantHeartbeat) {
         if (this.participantsHeartBeat !== undefined && this.participantsHeartBeat.length > 0) {
             const participantPreviousHeartbeat = this.participantsHeartBeat.find(
-                (x) => x.participantId === heartbeat.participantId && x.conferenceId === heartbeat.conferenceId
+                x => x.participantId === heartbeat.participantId && x.conferenceId === heartbeat.conferenceId
             );
             if (participantPreviousHeartbeat === undefined) {
                 this.participantsHeartBeat.push(heartbeat);
