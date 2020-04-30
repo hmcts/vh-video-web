@@ -89,11 +89,15 @@ describe('ParticipantStatusComponent', () => {
     });
 
     it('should not update participant status when participants null', () => {
+        spyOn(component, 'setParticipantStatus');
+
         component.setupEventHubSubscribers();
         component.participants = null;
         const message = new ParticipantStatusMessage('', '', '', ParticipantStatus.None);
 
         mockEventService.participantStatusSubject.next(message);
+
+        expect(component.setParticipantStatus).toHaveBeenCalledTimes(0);
     });
 
     it('should update participant status', () => {
