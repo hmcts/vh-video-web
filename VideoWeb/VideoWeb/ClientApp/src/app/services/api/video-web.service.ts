@@ -1,24 +1,26 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
-  AddMediaEventRequest,
-  AddSelfTestFailureEventRequest,
-  ApiClient,
-  ChatResponse,
-  ConferenceEventRequest,
-  ConferenceForJudgeResponse,
-  ConferenceForIndividualResponse,
-  ConferenceForVhOfficerResponse,
-  ConferenceResponse,
-  HearingVenueResponse,
-  ParticipantHeartbeatResponse,
-  SelfTestPexipResponse,
-  TaskResponse,
-  TestCallScoreResponse,
-  TokenResponse,
-  UpdateParticipantStatusEventRequest,
-  UpdateParticipantRequest,
-  ConferenceResponseVho, ParticipantContactDetailsResponseVho
+    AddMediaEventRequest,
+    AddSelfTestFailureEventRequest,
+    ApiClient,
+    ChatResponse,
+    ConferenceEventRequest,
+    ConferenceForJudgeResponse,
+    ConferenceForIndividualResponse,
+    ConferenceForVhOfficerResponse,
+    ConferenceResponse,
+    HearingVenueResponse,
+    ParticipantHeartbeatResponse,
+    SelfTestPexipResponse,
+    TaskResponse,
+    TestCallScoreResponse,
+    TokenResponse,
+    UpdateParticipantStatusEventRequest,
+    UpdateParticipantRequest,
+    ConferenceResponseVho,
+    ParticipantContactDetailsResponseVho,
+    UnreadAdminMessageResponse
 } from '../clients/api-client';
 import { ConferenceLite } from '../models/conference-lite';
 import { SessionStorage } from '../session-storage';
@@ -111,6 +113,10 @@ export class VideoWebService implements IVideoWebApiService {
         return this.apiClient.getConferenceInstantMessageHistory(conferenceId).toPromise();
     }
 
+    getUnreadAdminMessageCountForConference(conferenceId: string): Promise<UnreadAdminMessageResponse> {
+        return this.apiClient.getNumberOfUnreadAdminMessagesForConference(conferenceId).toPromise();
+    }
+
     getParticipantHeartbeats(conferenceId: string, participantId: string): Promise<ParticipantHeartbeatResponse[]> {
         return this.apiClient.getHeartbeatDataForParticipant(conferenceId, participantId).toPromise();
     }
@@ -126,7 +132,7 @@ export class VideoWebService implements IVideoWebApiService {
     }
 
     getParticipantsWithContactDetailsByConferenceId(conferenceId: string): Promise<ParticipantContactDetailsResponseVho[]> {
-      return this.apiClient.getParticipantsWithContactDetailsByConferenceId(conferenceId).toPromise();
+        return this.apiClient.getParticipantsWithContactDetailsByConferenceId(conferenceId).toPromise();
     }
 
     updateParticipantDetails(

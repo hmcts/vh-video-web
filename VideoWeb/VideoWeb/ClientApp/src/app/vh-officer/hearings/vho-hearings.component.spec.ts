@@ -27,7 +27,6 @@ import { TestFixtureHelper } from 'src/app/testing/Helper/test-fixture-helper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { ParticipantStatusMessage } from '../../services/models/participant-status-message';
 import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
@@ -66,14 +65,12 @@ describe('VhoHearingsComponent', () => {
             'getParticipantStatusMessage',
             'getServiceDisconnected',
             'getServiceReconnected',
-            'getAdminAnsweredChat',
             'getHeartbeat'
         ]);
         eventsService.getHearingStatusMessage.and.returnValue(mockEventService.hearingStatusSubject.asObservable());
         eventsService.getParticipantStatusMessage.and.returnValue(mockEventService.participantStatusSubject.asObservable());
         eventsService.getServiceDisconnected.and.returnValue(mockEventService.eventHubDisconnectSubject.asObservable());
         eventsService.getServiceReconnected.and.returnValue(mockEventService.eventHubReconnectSubject.asObservable());
-        eventsService.getAdminAnsweredChat.and.returnValue(mockEventService.adminAnsweredChatSubject.asObservable());
         eventsService.getHeartbeat.and.returnValue(mockEventService.hearingStatusSubject.asObservable());
 
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
@@ -132,13 +129,6 @@ describe('VhoHearingsComponent', () => {
         const currentConference = conferences[0];
         component.selectedHearing = new Hearing(new ConferenceResponse({ id: conferences[1].id }));
         expect(component.isCurrentConference(currentConference)).toBeFalsy();
-    });
-
-    it('should reset conference unread counter when vho sends a message', () => {
-        const conference = component.conferences[0];
-        component.conferences[0].numberOfUnreadMessages = 5;
-        component.resetConferenceUnreadCounter(conference.id);
-        expect(component.conferences[0].numberOfUnreadMessages).toBe(0);
     });
 
     it('should show monitoring graph for selected participant', async () => {
@@ -456,22 +446,6 @@ describe('VhoHearingsComponent', () => {
         expect(component.conferencesSubscription).toBeDefined();
         expect(component.interval).toBeDefined();
     }));
-
-    it('should reset unread message counter when admin has answered', () => {
-        component.conferences[0].numberOfUnreadMessages = 10;
-
-        mockEventService.adminAnsweredChatSubject.next(component.conferences[0].id);
-
-        expect(component.conferences[0].numberOfUnreadMessages).toBe(0);
-    });
-
-    it('should not reset unread message counter when conference id does not exist', () => {
-        component.conferences[0].numberOfUnreadMessages = 10;
-
-        mockEventService.adminAnsweredChatSubject.next(Guid.create().toString());
-
-        expect(component.conferences[0].numberOfUnreadMessages).toBe(10);
-    });
 
     it('should go back to venue list selection page', () => {
         component.goBackToVenueSelection();

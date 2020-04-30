@@ -79,8 +79,7 @@ export class ConferenceTestData {
             scheduled_duration: 50,
             status: ConferenceStatus.NotStarted,
             participants: this.getListOfParticipants(),
-            hearing_venue_name: 'Manchester',
-            number_of_unread_messages: 4
+            hearing_venue_name: 'Manchester'
         });
         return conference;
     }

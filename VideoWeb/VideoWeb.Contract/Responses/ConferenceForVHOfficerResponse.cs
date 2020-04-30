@@ -50,10 +50,5 @@ namespace VideoWeb.Contract.Responses
         /// The name of the hearing venue
         /// </summary>
         public string HearingVenueName { get; set; }
-        
-        /// <summary>
-        /// The number of messages since a VHO has answered
-        /// </summary>
-        public int NumberOfUnreadMessages { get; set; }
     }
 }

@@ -18,7 +18,6 @@ describe('HearingSummary', () => {
         expect(hearing.caseNumber).toBe(c.case_number);
         expect(hearing.scheduledStartTime).toEqual(c.scheduled_date_time);
         expect(hearing.scheduledEndTime).toBeDefined();
-        expect(hearing.numberOfUnreadMessages).toBe(c.number_of_unread_messages);
         expect(hearing.hearingVenueName).toBe(c.hearing_venue_name);
     });
 

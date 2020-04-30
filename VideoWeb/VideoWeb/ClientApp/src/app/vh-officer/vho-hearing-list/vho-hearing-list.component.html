@@ -27,12 +27,7 @@
               <div class="govuk-grid-row">
               <div class="govuk-grid-column-one-half govuk-!-padding-top-3">
                 <app-pending-tasks [conferenceId]="conference.id"></app-pending-tasks>
-                <div class="govuk-grid-column-one-half notification-badge"
-                  [ngClass]="{ 'has-messages': conference.numberOfUnreadMessages > 0, 'no-messages' : conference.numberOfUnreadMessages === 0}"
-                  title="{{conference.numberOfUnreadMessages}} Unread messages">
-                  <span id="{{conference.id}}-unread-messages" class="notification-badge-counter"
-                    [ngClass]="{ 'has-messages': conference.numberOfUnreadMessages > 0, 'no-messages' : conference.numberOfUnreadMessages === 0}">{{ conference.numberOfUnreadMessages }}</span>
-                </div>
+                <app-unread-messages [conferenceId]="conference.id"></app-unread-messages>
               </div>
 
               <div class="govuk-grid-column-one-half govuk-!-padding-top-3 right-side vh-col">

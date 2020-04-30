@@ -102,7 +102,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     getConferenceForSelectedAllocations() {
         this.loadVenueSelection();
         this.retrieveHearingsForVhOfficer(true);
-        this.setupConferenceInterval();
+        // this.setupConferenceInterval();
     }
 
     loadVenueSelection(): void {
@@ -153,13 +153,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         );
 
         this.eventHubSubscriptions.add(
-            this.eventService.getAdminAnsweredChat().subscribe(message => {
-                this.logger.info(`an admin has answered`);
-                this.resetConferenceUnreadCounter(message);
-            })
-        );
-
-        this.eventHubSubscriptions.add(
             this.eventService.getHeartbeat().subscribe(heartbeat => {
                 this.logger.info(`Participant Network Heartbeat Captured`);
                 this.addHeartBeatToTheList(heartbeat);
@@ -168,14 +161,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         );
 
         this.eventService.start();
-    }
-
-    resetConferenceUnreadCounter(conferenceId: string) {
-        const conference = this.conferences.find(x => x.id === conferenceId);
-        if (conference) {
-            const index = this.conferences.indexOf(conference);
-            this.conferences[index].numberOfUnreadMessages = 0;
-        }
     }
 
     handleHeartbeat(heartBeat: ParticipantHeartbeat) {
