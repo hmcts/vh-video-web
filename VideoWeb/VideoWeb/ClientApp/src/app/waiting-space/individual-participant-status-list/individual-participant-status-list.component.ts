@@ -173,9 +173,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         calling Participant ${requestee.id}, ${this.videoWebService.getObfuscatedName(requestee.name)}`);
 
         try {
-            console.log('boop1');
             await this.consultationService.raiseConsultationRequest(this.conference, requester, requestee);
-            console.log('boop2');
             this.logger.info('Raised consultation request event');
             await this.startCallRinging(true);
         } catch (error) {

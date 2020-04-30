@@ -40,7 +40,6 @@ export class PendingTasksComponent implements OnInit, OnDestroy {
     }
 
     handleTaskCompleted(completedTask: TaskCompleted) {
-        console.log(this.tasks);
         const task = this.tasks.find(t => t.id === completedTask.taskId);
         if (task) {
             task.status = TaskStatus.Done;
