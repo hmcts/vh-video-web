@@ -138,7 +138,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             for (var i = 0; i < Timeout; i++)
             {
-                var newMessagesCount = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(VhoHearingListPage.UnreadMessagesBadge(_c.Test.NewConferenceId)).Text.Trim();
+                var newMessagesCount = GetNotificationText().Trim();
                 if (int.Parse(newMessagesCount).Equals(expected))
                 {
                     return true;
@@ -146,6 +146,19 @@ namespace VideoWeb.AcceptanceTests.Steps
                 Thread.Sleep(TimeSpan.FromSeconds(1));
             }
             return false;
+        }
+
+        private string GetNotificationText()
+        {
+            try
+            {
+                return _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(VhoHearingListPage.UnreadMessagesBadge(_c.Test.NewConferenceId)).Text;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return string.Empty;
+            }
         }
     }
 }

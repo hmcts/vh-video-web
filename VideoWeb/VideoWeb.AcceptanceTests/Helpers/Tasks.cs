@@ -32,5 +32,13 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 return "Failed self-test";
             return eventType.ToString();
         }
+
+        public static void TasksListShouldBeEmpty(TestContext context, EventType eventType)
+        {
+            var response = context.Apis.VideoApi.GetTasks(context.Test.NewConferenceId);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var tasks = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<TaskResponse>>(response.Content);
+            tasks.Count.Should().Be(0);
+        }
     }
 }
