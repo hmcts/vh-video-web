@@ -1,7 +1,7 @@
 import { Component, HostListener, Input, OnInit } from '@angular/core';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, TaskResponse, TaskType } from 'src/app/services/clients/api-client';
-import { DataService } from 'src/app/services/data.service';
+import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { VHODashboardHelper } from '../helper';
@@ -27,7 +27,7 @@ export class TasksTableComponent implements OnInit {
         private videoWebService: VideoWebService,
         private dashboardHelper: VHODashboardHelper,
         private logger: Logger,
-        private dataService: DataService
+        private eventbus: EventBusService
     ) {}
 
     ngOnInit() {
@@ -69,7 +69,8 @@ export class TasksTableComponent implements OnInit {
         try {
             const updatedTask = await this.videoWebService.completeTask(this.conference.id, task.id);
             this.updateTask(updatedTask);
-            this.dataService.taskCompleted(new TaskCompleted(this.conference.id, task.id));
+            const payload = new TaskCompleted(this.conference.id, task.id);
+            this.eventbus.emit(new EmitEvent(VHEventType.TaskCompleted, payload));
         } catch (error) {
             this.logger.error(`Failed to complete task ${task.id}`, error);
         }

@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { DataService } from './data.service';
+import { EventBusService } from './event-bus.service';
 
-describe('DataService', () => {
+describe('EventBusService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: DataService = TestBed.get(DataService);
+    const service: EventBusService = TestBed.get(EventBusService);
     expect(service).toBeTruthy();
   });
 });

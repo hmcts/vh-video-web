@@ -1,20 +1,20 @@
+import { fakeAsync, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { TaskCompleted } from 'src/app/on-the-day/models/task-completed';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { Role, TaskResponse, TaskStatus, TaskType } from 'src/app/services/clients/api-client';
+import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { TasksTestData } from 'src/app/testing/mocks/data/tasks-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { TasksTableComponent } from './tasks-table.component';
 import { VHODashboardHelper } from '../helper';
-import { fakeAsync, tick } from '@angular/core/testing';
-import { DataService } from 'src/app/services/data.service';
+import { TasksTableComponent } from './tasks-table.component';
 
 describe('TasksTableComponent', () => {
     let component: TasksTableComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     let dashboardHelper: jasmine.SpyObj<VHODashboardHelper>;
-    let dataServiceSpy: jasmine.SpyObj<DataService>;
+    let eventBusServiceSpy: jasmine.SpyObj<EventBusService>;
     const conference = new ConferenceTestData().getConferenceDetailFuture();
     const allTasks = new TasksTestData().getTestData();
     const completedTask = new TasksTestData().getCompletedTask();
@@ -22,7 +22,7 @@ describe('TasksTableComponent', () => {
     let logger: MockLogger;
 
     beforeAll(() => {
-        dataServiceSpy = jasmine.createSpyObj<DataService>('DataService', ['taskCompleted']);
+        eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit']);
         dashboardHelper = jasmine.createSpyObj<VHODashboardHelper>('VHODashboardHelper', ['getWidthAvailableForConference']);
         dashboardHelper.getWidthAvailableForConference.and.returnValue(fakeDivWidth);
 
@@ -39,13 +39,13 @@ describe('TasksTableComponent', () => {
     });
 
     beforeEach(() => {
-        component = new TasksTableComponent(videoWebServiceSpy, dashboardHelper, logger, dataServiceSpy);
+        component = new TasksTableComponent(videoWebServiceSpy, dashboardHelper, logger, eventBusServiceSpy);
         component.conferenceId = conference.id;
         component.conference = Object.assign(conference);
         // 1 To-Do & 2 Done
         component.tasks = Object.assign(allTasks);
 
-        dataServiceSpy.taskCompleted.calls.reset();
+        eventBusServiceSpy.emit.calls.reset();
     });
 
     it('should get tasks on init', fakeAsync(() => {
@@ -142,8 +142,9 @@ describe('TasksTableComponent', () => {
         const task = component.tasks.find(x => x.status === TaskStatus.ToDo);
         await component.completeTask(task);
 
-        const expected = new TaskCompleted(component.conference.id, task.id);
-        expect(dataServiceSpy.taskCompleted).toHaveBeenCalledWith(expected);
+        const payload = new TaskCompleted(component.conference.id, task.id);
+        const expected = new EmitEvent(VHEventType.TaskCompleted, payload);
+        expect(eventBusServiceSpy.emit).toHaveBeenCalledWith(expected);
     });
 
     it('should throw error when task cannot complete', async () => {
@@ -154,6 +155,6 @@ describe('TasksTableComponent', () => {
 
         await component.completeTask(task);
 
-        expect(dataServiceSpy.taskCompleted).toHaveBeenCalledTimes(0);
+        expect(eventBusServiceSpy.emit).toHaveBeenCalledTimes(0);
     });
 });
