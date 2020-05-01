@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 
-interface CallbackFunction<T = any> {
-    (event: T): void;
-}
+type CallbackFunction<T = any> = (event: T) => void;
 
 @Injectable({
     providedIn: 'root'
