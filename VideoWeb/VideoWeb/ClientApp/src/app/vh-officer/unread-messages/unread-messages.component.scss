@@ -1,11 +1,10 @@
 @import '~govuk-frontend/govuk/all';
 
 .notification-badge {
-    min-width: 45px;
     width: auto;
     height: 28px;
     border-radius: 4px;
-    position: relative;
+    position: absolute;
     float: right;
     text-align: center;
     margin-bottom: 15px;
@@ -23,7 +22,7 @@
 
 .notification-badge:after {
     content: '';
-    display: block;
+    display: grid;
     position: absolute;
     width: 0;
     height: 0;

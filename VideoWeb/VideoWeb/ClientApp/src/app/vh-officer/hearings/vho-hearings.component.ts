@@ -102,7 +102,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     getConferenceForSelectedAllocations() {
         this.loadVenueSelection();
         this.retrieveHearingsForVhOfficer(true);
-        this.setupConferenceInterval();
+        // this.setupConferenceInterval();
     }
 
     loadVenueSelection(): void {

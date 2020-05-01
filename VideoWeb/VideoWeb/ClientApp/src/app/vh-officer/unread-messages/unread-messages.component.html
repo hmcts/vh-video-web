@@ -1,12 +1,12 @@
 <div
-    class="notification-badge"
-    [ngClass]="{ 'has-messages': unreadCount > 0, 'no-messages': unreadCount === 0 }"
-    title="{{ unreadCount }} Unread messages"
+  class="notification-badge govuk-grid-column-full"
+  [ngClass]="{ 'has-messages': unreadCount > 0, 'no-messages': unreadCount === 0 }"
+  title="{{ unreadCount }} Unread messages"
 >
-    <span
-        id="{{ conferenceId }}-unread-messages"
-        class="notification-badge-counter"
-        [ngClass]="{ 'has-messages': unreadCount > 0, 'no-messages': unreadCount === 0 }"
-        >{{ unreadCount }}</span
-    >
+  <span
+    id="{{ conferenceId }}-unread-messages"
+    class="notification-badge-counter"
+    [ngClass]="{ 'has-messages': unreadCount > 0, 'no-messages': unreadCount === 0 }"
+    >{{ unreadCount }}</span
+  >
 </div>
