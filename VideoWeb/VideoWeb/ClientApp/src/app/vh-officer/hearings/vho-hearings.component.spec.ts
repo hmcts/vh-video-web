@@ -385,25 +385,6 @@ describe('VhoHearingsComponent', () => {
         expect(component.handleConferenceStatusChange(message)).toBeFalsy();
     });
 
-    it('should not update participant status when conference is not selected', () => {
-        component.setupEventHubSubscribers();
-        const participant = conferences[0].participants.find(x => x.role === Role.Judge);
-        component.conferencesAll[0].participants[0].status = ParticipantStatus.Joining;
-        const message = new ParticipantStatusMessage(participant.id, participant.username, conferences[0].id, ParticipantStatus.Available);
-
-        mockEventService.participantStatusSubject.next(message);
-    });
-
-    it('should not update participant status when participant message is received for a difference conference', () => {
-        component.setupEventHubSubscribers();
-        component.participants = conferenceDetail.participants;
-        const participant = conferences[2].participants.find(x => x.role === Role.Judge);
-        component.participants[0].status = ParticipantStatus.Joining;
-        const message = new ParticipantStatusMessage(participant.id, participant.username, conferences[0].id, ParticipantStatus.Available);
-
-        mockEventService.participantStatusSubject.next(message);
-    });
-
     it('should update participant status when conference participant message is received', () => {
         component.setupEventHubSubscribers();
         component.participants = conferenceDetail.participants;
@@ -414,15 +395,6 @@ describe('VhoHearingsComponent', () => {
         mockEventService.participantStatusSubject.next(message);
 
         expect(component.participants[0].status).toBe(message.status);
-    });
-
-    it('should get judge status participant message is received and participant is judge', () => {
-        component.setupEventHubSubscribers();
-        component.participants = conferenceDetail.participants;
-        const participant = conferenceDetail.participants.find(x => x.role === Role.Judge);
-        const message = new ParticipantStatusMessage(participant.id, participant.username, conferences[0].id, ParticipantStatus.Available);
-
-        mockEventService.participantStatusSubject.next(message);
     });
 
     it('should update status to "delayed" when hearing is 10 minutes beyond scheduled start time', () => {
