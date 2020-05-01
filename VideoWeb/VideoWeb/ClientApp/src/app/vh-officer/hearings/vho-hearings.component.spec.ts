@@ -549,4 +549,10 @@ describe('VhoHearingsComponent', () => {
         expect(component.adminFrameWidth).toBeGreaterThan(0);
         expect(component.adminFrameWidth).toBe(window.innerWidth - 350);
     });
+
+    it('should close monitoring graph for selected participant', () => {
+        component.displayGraph = true;
+        component.closeGraph(true);
+        expect(component.displayGraph).toBe(false);
+    });
 });

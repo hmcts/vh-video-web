@@ -236,7 +236,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     applyActiveFilter() {
         const filter = this.hearingsFilterStorage.get();
         if (filter) {
-            this.activateFilterOptions(filter);
+            // filtering removed from front-end
         }
     }
 
@@ -353,8 +353,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         this.hearingsFilterStorage.set(filterOptions);
         this.displayFilter = false;
 
-        this.activateFilterOptions(filterOptions);
-
         this.selectFilteredConference(selectedConferenceId);
     }
 
@@ -364,31 +362,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
             if (selectedConferenceFound) {
                 this.$conferenceList.selectConference(selectedConferenceFound);
             }
-        }
-    }
-
-    activateFilterOptions(filterOptions: HearingsFilter) {
-        this.filterOptionsCount = filterOptions.numberFilterOptions;
-
-        const selectedStatuses = filterOptions.statuses.filter(x => x.selected).map(x => x.status);
-        const selectedAlerts = filterOptions.alerts.filter(x => x.selected).map(x => x.bodyText);
-
-        if (selectedStatuses.length > 0 || selectedAlerts.length > 0) {
-            const clone = Object.assign(this.conferencesAll);
-            this.conferences = clone.map(c => new HearingSummary(c));
-            if (selectedStatuses.length > 0) {
-                const conferencesAllExtended = this.setStatusDelayed(this.conferencesAll);
-                this.conferences = conferencesAllExtended
-                    .filter(x => selectedStatuses.includes(x.statusExtended))
-                    .map(c => new HearingSummary(c));
-            }
-
-            // TODO: replace filtering
-            // if (selectedAlerts.length > 0) {
-            //     this.conferences = this.conferences.filter(x => this.findSelectedAlert(x.tasks, selectedAlerts));
-            // }
-        } else {
-            this.conferences = this.conferencesAll.map(c => new HearingSummary(c));
         }
     }
 
