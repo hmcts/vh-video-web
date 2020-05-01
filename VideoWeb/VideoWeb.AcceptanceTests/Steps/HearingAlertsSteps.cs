@@ -135,7 +135,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser.Key], _c.Test.Conference.Id);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id)).Click();
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser.Key]);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(AdminPanelPage.AlertsHeader).Should().BeTrue("Alerts box should not be visible.");
+            Tasks.TasksListShouldBeEmpty(_c, EventType.Close);
         }
 
         [Then(@"the Video Hearings Officer user should see a (.*) notification and a (.*) alert")]

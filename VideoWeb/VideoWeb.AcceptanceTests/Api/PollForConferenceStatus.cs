@@ -38,17 +38,19 @@ namespace VideoWeb.AcceptanceTests.Api
 
         public ConferenceState Poll()
         {
+            var actualState = ConferenceState.NotStarted;
             for (var i = 0; i < _maxRetries; i++)
             {
                 var response = _videoApi.GetConferenceByConferenceId(_conferenceId);
                 var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
-                if (conference.Current_status.Equals(_expectedState))
+                actualState = conference.Current_status;
+                if (actualState.Equals(_expectedState))
                 {
                     return conference.Current_status;
                 }
                 Thread.Sleep(TimeSpan.FromSeconds(1));
             }
-            throw new DataMisalignedException($"Participant state not updated to {_expectedState}");
+            throw new DataMisalignedException($"Expected hearing state to be updated to {_expectedState} but was {actualState}");
         }
     }
 }
