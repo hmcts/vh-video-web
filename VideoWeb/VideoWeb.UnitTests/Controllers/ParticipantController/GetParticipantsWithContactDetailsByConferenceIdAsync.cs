@@ -24,7 +24,7 @@ using ProblemDetails = VideoWeb.Services.User.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {
-    public class GetParticipantsByConferenceIdVhoTests
+    public class GetParticipantsWithContactDetailsByConferenceIdAsyncTests
     {
         private EventComponentHelper _eventComponentHelper;
         private Mock<IVideoApiClient> _videoApiClientMock;
@@ -75,6 +75,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             };
 
             _mockConferenceCache.Setup(x => x.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
             _bookingsApiClientMock.Setup(x => x.GetAllParticipantsInHearingAsync(conference.HearingId))
                 .ReturnsAsync(bookingParticipants);
@@ -124,6 +125,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id and participant Id", null, default, null);
             _mockConferenceCache.Setup(x => x.GetOrAddConferenceAsync(conferenceId, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ThrowsAsync(apiException);
         
             var result = await _controller.GetParticipantsWithContactDetailsByConferenceIdAsync(conferenceId);
@@ -146,11 +148,13 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             };
 
             _mockConferenceCache.Setup(x => x.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
             
             var apiException = new BookingsApiException("Hearing does not exist", (int)HttpStatusCode.NotFound,
                 "Invalid Hearing Id", null, null);
             _mockConferenceCache.Setup(x => x.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
             _bookingsApiClientMock.Setup(x => x.GetAllParticipantsInHearingAsync(conference.HearingId))
                 .ThrowsAsync(apiException);
