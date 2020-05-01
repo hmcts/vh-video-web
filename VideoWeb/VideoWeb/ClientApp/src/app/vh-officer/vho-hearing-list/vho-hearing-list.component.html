@@ -9,7 +9,7 @@
       >
         <dd id="{{ conference.id }}-summary" class="govuk-summary-list__value govuk-!-padding-left-4">
           <div class="govuk-grid-row">
-            <div class="govuk-grid-column-three-quarters">
+            <div class="govuk-grid-column-three-quarters vh-width-main">
               <!-- time, case number-->
               <div class="govuk-grid-row">
                 <div id="{{ conference.id }}-time" class="govuk-grid-column-one-half">
@@ -41,7 +41,7 @@
                   </div>
                 </div>
 
-                <div class="govuk-grid-column-one-half right-side govuk-!-padding-1">
+                <div class="govuk-grid-column-one-half right-side">
                   <div class="govuk-grid-row">
                     <span
                       id="{{ conference.id }}-status"
@@ -75,8 +75,8 @@
                 </div>
               </div>
             </div>
-            <div class="govuk-grid-column-one-quarter">
-              <div class="govuk-grid-column-one-half">
+            <div class="govuk-grid-column-one-quarter vh-width-traffic">
+              <div class="govuk-grid-column-one-half right-side">
                 <app-participant-network-status
                   *ngFor="let participant of getParticipantsForConference(conference)"
                   [participant]="participant"
