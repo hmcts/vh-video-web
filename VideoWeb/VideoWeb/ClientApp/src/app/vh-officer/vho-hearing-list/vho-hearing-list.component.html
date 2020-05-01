@@ -26,12 +26,10 @@
               </div>
               <div class="govuk-grid-row">
               <div class="govuk-grid-column-one-half govuk-!-padding-top-3">
-                <span id="{{conference.id}}--pending-tasks" class="alert-badge has-alerts"
-                  [ngClass]="{ 'has-alerts': conference.numberOfPendingTasks > 0, 'no-alerts': conference.numberOfPendingTasks === 0}"
-                  [attr.data-badge]="conference.numberOfPendingTasks"></span>
+                <app-pending-tasks [conferenceId]="conference.id"></app-pending-tasks>
                 <div class="govuk-grid-column-one-half notification-badge"
                   [ngClass]="{ 'has-messages': conference.numberOfUnreadMessages > 0, 'no-messages' : conference.numberOfUnreadMessages === 0}"
-                  title="{{conference.numberOfPendingTasks}} Unread messages">
+                  title="{{conference.numberOfUnreadMessages}} Unread messages">
                   <span id="{{conference.id}}-unread-messages" class="notification-badge-counter"
                     [ngClass]="{ 'has-messages': conference.numberOfUnreadMessages > 0, 'no-messages' : conference.numberOfUnreadMessages === 0}">{{ conference.numberOfUnreadMessages }}</span>
                 </div>

@@ -48,7 +48,7 @@ namespace VideoWeb.UnitTests.Mappings
             };
 
             var response =
-                ConferenceForVhOfficerResponseMapper.MapConferenceSummaryToResponseModel(conference, messages, new List<TaskResponse>());
+                ConferenceForVhOfficerResponseMapper.MapConferenceSummaryToResponseModel(conference, messages);
 
             response.NumberOfUnreadMessages.Should().Be(2);
         }
@@ -82,7 +82,7 @@ namespace VideoWeb.UnitTests.Mappings
             };
 
             var response =
-                ConferenceForVhOfficerResponseMapper.MapConferenceSummaryToResponseModel(conference, messages, new List<TaskResponse>());
+                ConferenceForVhOfficerResponseMapper.MapConferenceSummaryToResponseModel(conference, messages);
 
             response.NumberOfUnreadMessages.Should().Be(messages.Count);
         }
@@ -106,12 +106,10 @@ namespace VideoWeb.UnitTests.Mappings
             };
 
             conference.Participants = participants;
-            var tasks = new List<TaskResponse>
-                {new TaskResponse {Id = 1, Status = TaskStatus.ToDo, Body = "self-test"}};
 
             var response =
                 ConferenceForVhOfficerResponseMapper.MapConferenceSummaryToResponseModel(conference,
-                    new List<InstantMessageResponse>(), tasks);
+                    new List<InstantMessageResponse>());
 
             response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.Case_name);
@@ -120,11 +118,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);
             response.ScheduledDuration.Should().Be(conference.Scheduled_duration);
             response.Status.ToString().Should().Be(conference.Status.ToString());
-            response.NoOfPendingTasks.Should().Be(1);
             response.HearingVenueName.Should().Be(conference.Hearing_venue_name);
-            response.Tasks.Count.Should().Be(1);
-            response.Tasks[0].Id.Should().Be(1);
-            response.Tasks[0].Body.Should().Be("self-test");
             response.Participants.Count.Should().Be(participants.Count);
         }
     }

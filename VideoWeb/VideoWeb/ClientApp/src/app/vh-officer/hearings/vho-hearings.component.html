@@ -1,11 +1,4 @@
 <div *ngIf="hasHearings" id="vho-top-row" class="govuk-grid-row filter-row">
-
-
-  <div id="filterButton" class="govuk-!-padding-1 govuk-!-margin-left-2 report-conference govuk-body filter-drop"
-    (click)="showFilter()">
-    Filter {{filterOptionsCount > 0 ? '('+ filterOptionsCount +')' : ''}}
-    <i [ngClass]="{'triangle-up':!displayFilter, 'triangle-down': displayFilter}"></i>
-  </div>
   <div class="govuk-grid-column-one-half vh-mt20">
     <input type="button" value="Change venues" (click)="goBackToVenueSelection()" id="change-venue-allocation-btn"
       class="govuk-button" />
@@ -42,8 +35,7 @@
           title="Admin overview of the hearings"></iframe>
       </div>
       <div class="govuk-grid-column-full">
-        <app-tasks-table *ngIf="!loadingData" [conferenceId]="selectedHearing.id"
-          (taskCompleted)="onTaskCompleted($event)"></app-tasks-table>
+        <app-tasks-table *ngIf="!loadingData" [conferenceId]="selectedHearing.id"></app-tasks-table>
       </div>
       <div class="govuk-grid-column-full">
         <app-vho-chat *ngIf="!loadingData" [conference]="selectedHearing.getConference()">

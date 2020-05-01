@@ -40,7 +40,7 @@ describe('VhoHearingsComponent', () => {
     let domSanitizerSpy: jasmine.SpyObj<DomSanitizer>;
     const logger: Logger = new MockLogger();
     const conferences = new ConferenceTestData().getVhoTestData();
-    const hearings = conferences.map((c) => new HearingSummary(c));
+    const hearings = conferences.map(c => new HearingSummary(c));
     let errorService: jasmine.SpyObj<ErrorService>;
     let router: jasmine.SpyObj<Router>;
 
@@ -132,15 +132,6 @@ describe('VhoHearingsComponent', () => {
         const currentConference = conferences[0];
         component.selectedHearing = new Hearing(new ConferenceResponse({ id: conferences[1].id }));
         expect(component.isCurrentConference(currentConference)).toBeFalsy();
-    });
-
-    it('should update number of pending tasks on task completed', () => {
-        const currentConference = component.conferences[0];
-        const initPendingTasks = 5;
-        currentConference.numberOfPendingTasks = initPendingTasks;
-
-        component.onTaskCompleted(new TaskCompleted(currentConference.id, 3));
-        expect(component.conferences[0].numberOfPendingTasks).toBeLessThan(initPendingTasks);
     });
 
     it('should reset conference unread counter when vho sends a message', () => {
@@ -255,7 +246,7 @@ describe('VhoHearingsComponent', () => {
             '80.0.3987.132'
         );
         component.handleHeartbeat(heartBeat1);
-        const conferenceToUpdate = component.conferences.find((x) => x.id === heartBeat1.conferenceId);
+        const conferenceToUpdate = component.conferences.find(x => x.id === heartBeat1.conferenceId);
         expect(conferenceToUpdate).toBe(undefined);
     });
 
@@ -263,8 +254,8 @@ describe('VhoHearingsComponent', () => {
         const conference = component.conferences[0];
         const heartBeat1 = new ParticipantHeartbeat(conference.id, '0000-0000-0000-0000', HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
         component.handleHeartbeat(heartBeat1);
-        const conferenceToUpdate = component.conferences.find((x) => x.id === heartBeat1.conferenceId);
-        const participantToUpdate = conferenceToUpdate.getParticipants().find((p) => p.id === heartBeat1.participantId);
+        const conferenceToUpdate = component.conferences.find(x => x.id === heartBeat1.conferenceId);
+        const participantToUpdate = conferenceToUpdate.getParticipants().find(p => p.id === heartBeat1.participantId);
         expect(participantToUpdate).toBe(undefined);
     });
 
@@ -557,5 +548,11 @@ describe('VhoHearingsComponent', () => {
         component.updateWidthForAdminFrame();
         expect(component.adminFrameWidth).toBeGreaterThan(0);
         expect(component.adminFrameWidth).toBe(window.innerWidth - 350);
+    });
+
+    it('should close monitoring graph for selected participant', () => {
+        component.displayGraph = true;
+        component.closeGraph(true);
+        expect(component.displayGraph).toBe(false);
     });
 });
