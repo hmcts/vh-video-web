@@ -1,214 +1,169 @@
 @import '~govuk-frontend/govuk/all';
 
+.vh-width-main {
+  width: 90%;
+}
+
+.vh-width-traffic {
+  width: 10%;
+}
+
 .status-badge {
-    font-size: 0.7em;
+  font-size: 0.7em;
 }
 
 .conference-suspended,
 .conference-delayed,
 .conference-not-ready {
-    background-color: govuk-colour('red');
-    color: govuk-colour('white');
-    font-weight: bold;
+  background-color: govuk-colour('red');
+  color: govuk-colour('white');
+  font-weight: bold;
 }
 
 .conference-in-session {
-    background-color: govuk-colour('blue');
-    color: govuk-colour('white');
-    font-weight: bold;
+  background-color: govuk-colour('blue');
+  color: govuk-colour('white');
+  font-weight: bold;
 }
 
 .conference-paused {
-    background-color: govuk-colour('yellow');
-    color: govuk-colour('black');
-    font-weight: bold;
+  background-color: govuk-colour('yellow');
+  color: govuk-colour('black');
+  font-weight: bold;
 }
 
 .conference-ready {
-    background-color: govuk-colour('green');
-    color: govuk-colour('white');
-    font-weight: bold;
+  background-color: govuk-colour('green');
+  color: govuk-colour('white');
+  font-weight: bold;
 }
 
 .conference-closed {
-    background-color: govuk-colour('black');
-    color: govuk-colour('white');
-    font-weight: bold;
+  background-color: govuk-colour('black');
+  color: govuk-colour('white');
+  font-weight: bold;
 }
 
 .selected-conference {
-    background: govuk-colour('light-grey');
+  background: govuk-colour('light-grey');
 }
 
 .report-conference {
-    background: transparent;
-    border-style: solid;
-    border-width: 1.5px;
-    border-color: govuk-colour('dark-grey');
-    color: govuk-colour('dark-grey');
-    font-weight: bold;
+  background: transparent;
+  border-style: solid;
+  border-width: 1.5px;
+  border-color: govuk-colour('dark-grey');
+  color: govuk-colour('dark-grey');
+  font-weight: bold;
 }
 
 .selected-conference .report-conference {
-    background: govuk-colour('dark-grey');
-    border-style: solid;
-    border-width: 1.5px;
-    border-color: govuk-colour('dark-grey');
-    color: govuk-colour('white');
-    font-weight: bold;
+  background: govuk-colour('dark-grey');
+  border-style: solid;
+  border-width: 1.5px;
+  border-color: govuk-colour('dark-grey');
+  color: govuk-colour('white');
+  font-weight: bold;
 }
 
 .report-conference:active {
-    background: govuk-colour('dark-grey');
-    color: govuk-colour('white');
+  background: govuk-colour('dark-grey');
+  color: govuk-colour('white');
 }
 
 .selected-conference .report-conference:active {
-    background: govuk-colour('white');
-    color: govuk-colour('dark-grey');
+  background: govuk-colour('white');
+  color: govuk-colour('dark-grey');
 }
 
 .copy-clipboard {
-    padding-left: 5px;
+  padding-left: 5px;
 }
 
 .tooltip-wrapper {
-    /*position: relative;*/
-    color: $govuk-link-colour;
-    white-space: nowrap;
-    padding: 4px !important;
+  /*position: relative;*/
+  color: $govuk-link-colour;
+  white-space: nowrap;
+  padding: 4px !important;
 }
 
 .tooltip-wrapper:active {
-    color: $govuk-link-hover-colour;
+  color: $govuk-link-hover-colour;
 }
 
 .tooltip {
-    visibility: hidden;
-    width: 215px;
-    height: 20px;
-    background-color: govuk-colour('white');
-    color: $govuk-text-colour;
-    padding: 0 25px 25px 25px;
+  visibility: hidden;
+  width: 215px;
+  height: 20px;
+  background-color: govuk-colour('white');
+  color: $govuk-text-colour;
+  padding: 0 25px 25px 25px;
 
-    /* Position the tooltip text - see examples below! */
-    position: absolute;
-    z-index: 1;
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
 
-    -webkit-transform: translateY(82px, 14px);
-    -moz-transform: translateY(82px, 14px);
-    -ms-transform: translateY(82px, 14px);
-    -o-transform: translateY(82px, 14px);
-    transform: translate(82px, 14px);
+  -webkit-transform: translateY(82px, 14px);
+  -moz-transform: translateY(82px, 14px);
+  -ms-transform: translateY(82px, 14px);
+  -o-transform: translateY(82px, 14px);
+  transform: translate(82px, 14px);
 
-    -webkit-transition: all 0.25s ease-out;
-    -moz-transition: all 0.25s ease-out;
-    -ms-transition: all 0.25s ease-out;
-    -o-transition: all 0.25s ease-out;
-    transition: all 0.25s ease-out;
+  -webkit-transition: all 0.25s ease-out;
+  -moz-transition: all 0.25s ease-out;
+  -ms-transition: all 0.25s ease-out;
+  -o-transition: all 0.25s ease-out;
+  transition: all 0.25s ease-out;
 
-    -webkit-box-shadow: 2px 2px 6px $govuk-border-colour;
-    -moz-box-shadow: 2px 2px 6px $govuk-border-colour;
-    -ms-box-shadow: 2px 2px 6px $govuk-border-colour;
-    -o-box-shadow: 2px 2px 6px $govuk-border-colour;
-    box-shadow: 2px 2px 6px $govuk-border-colour;
+  -webkit-box-shadow: 2px 2px 6px $govuk-border-colour;
+  -moz-box-shadow: 2px 2px 6px $govuk-border-colour;
+  -ms-box-shadow: 2px 2px 6px $govuk-border-colour;
+  -o-box-shadow: 2px 2px 6px $govuk-border-colour;
+  box-shadow: 2px 2px 6px $govuk-border-colour;
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */
 .tooltip-wrapper:active .tooltip {
-    visibility: visible;
+  visibility: visible;
 }
 
 .tooltip::after {
-    position: absolute;
-    bottom: 100%;
-    /* At the bottom of the tooltip */
-    left: 5%;
-    margin-left: -5px;
-    border-left: solid transparent 10px;
-    border-right: solid transparent 10px;
-    border-bottom: solid gray 10px;
+  position: absolute;
+  bottom: 100%;
+  /* At the bottom of the tooltip */
+  left: 5%;
+  margin-left: -5px;
+  border-left: solid transparent 10px;
+  border-right: solid transparent 10px;
+  border-bottom: solid gray 10px;
 
-    -webkit-transition: all 0.25s ease-out;
-    -moz-transition: all 0.25s ease-out;
-    -ms-transition: all 0.25s ease-out;
-    -o-transition: all 0.25s ease-out;
-    transition: all 0.25s ease-out;
+  -webkit-transition: all 0.25s ease-out;
+  -moz-transition: all 0.25s ease-out;
+  -ms-transition: all 0.25s ease-out;
+  -o-transition: all 0.25s ease-out;
+  transition: all 0.25s ease-out;
 }
 
 #tooltip-1 {
-    animation: css 35s 36s forwards;
+  animation: css 35s 36s forwards;
 }
 
 @keyframes css {
-    to {
-        visibility: hidden;
-    }
+  to {
+    visibility: hidden;
+  }
 }
 
 @-webkit-keyframes css {
-    to {
-        overflow: hidden;
-    }
-}
-
-.notification-badge {
-    min-width: 45px;
-    width: auto;
-    height: 28px;
-    border-radius: 4px;
-    position: relative;
-    float: right;
-    text-align: center;
-    margin-bottom: 15px;
-    font-weight: bold;
-    margin-right: 4vw;
-}
-
-.notification-badge.has-messages {
-    background-color: govuk-colour('blue');
-}
-
-.notification-badge.no-messages {
-    background-color: govuk-colour('mid-grey');
-}
-
-.notification-badge:after {
-    content: '';
-    display: block;
-    position: absolute;
-    width: 0;
-    height: 0;
-    left: 10px;
-    bottom: -10px;
-    border-left: 2px solid transparent;
-    border-right: 10px solid transparent;
-}
-
-.notification-badge.has-messages:after {
-    border-top: 10px solid govuk-colour('blue');
-}
-
-.notification-badge.no-messages:after {
-    border-top: 10px solid govuk-colour('mid-grey');
-}
-
-.notification-badge-counter.has-messages {
-    font-size: 0.8em;
-    text-align: center;
-    color: govuk-colour('white');
-}
-
-.notification-badge-counter.no-messages {
-    font-size: 0.8em;
-    text-align: center;
-    color: govuk-colour('mid-grey');
+  to {
+    overflow: hidden;
+  }
 }
 
 .right-side {
-    float: right;
+  float: right;
 }
 
 .vh-col {
-    padding: 0;
+  padding: 0;
 }

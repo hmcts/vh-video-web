@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Services.Video;
@@ -9,8 +7,8 @@ namespace VideoWeb.Mappings
 {
     public static class ConferenceForVhOfficerResponseMapper
     {
-        public static ConferenceForVhOfficerResponse MapConferenceSummaryToResponseModel(ConferenceForAdminResponse conference,
-            IList<InstantMessageResponse> messageResponses)
+        public static ConferenceForVhOfficerResponse MapConferenceSummaryToResponseModel(
+            ConferenceForAdminResponse conference)
         {
             var response = new ConferenceForVhOfficerResponse
             {
@@ -22,29 +20,9 @@ namespace VideoWeb.Mappings
                 ScheduledDuration = conference.Scheduled_duration,
                 Status = Enum.Parse<ConferenceStatus>(conference.Status.ToString()),
                 HearingVenueName = conference.Hearing_venue_name,
-                Participants = ParticipantForUserResponseMapper.MapParticipants(conference.Participants),
-                NumberOfUnreadMessages = MapMessages(conference, messageResponses)
+                Participants = ParticipantForUserResponseMapper.MapParticipants(conference.Participants)
             };
             return response;
-        }
-
-        private static int MapMessages(ConferenceForAdminResponse conference,
-            IList<InstantMessageResponse> messageResponses)
-        {
-            if (messageResponses == null || !messageResponses.Any())
-            {
-                return 0;
-            }
-
-            messageResponses = messageResponses.OrderByDescending(x => x.Time_stamp).ToList();
-            var vhoMessage = messageResponses.FirstOrDefault(m => IsNonParticipantMessage(conference, m));
-            return
-                vhoMessage == null ? messageResponses.Count() : messageResponses.IndexOf(vhoMessage);
-        }
-
-        private static bool IsNonParticipantMessage(ConferenceForAdminResponse conference, InstantMessageResponse message)
-        {
-            return !conference.Participants.Any(p => p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase));
         }
     }
 }

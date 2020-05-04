@@ -23,7 +23,7 @@ namespace VideoWeb.Common
 
         public static void Trace(string traceCategory, string eventTitle, string information)
         {
-            var telemetryTrace = new TraceTelemetry(traceCategory, severityLevel: SeverityLevel.Information);
+            var telemetryTrace = new TraceTelemetry(traceCategory, SeverityLevel.Information);
             telemetryTrace.Properties.Add("Information", information);
             telemetryTrace.Properties.Add("Event", eventTitle);
             TelemetryClient.TrackTrace(telemetryTrace);
@@ -31,7 +31,7 @@ namespace VideoWeb.Common
 
         public static void TraceWithProperties(string traceCategory, string eventTitle, string user, IDictionary<string, string> properties)
         {
-            var telemetryTrace = new TraceTelemetry(traceCategory.ToString(), severityLevel: SeverityLevel.Information);
+            var telemetryTrace = new TraceTelemetry(traceCategory, SeverityLevel.Information);
 
             telemetryTrace.Properties.Add("Event", eventTitle);
 
@@ -56,7 +56,7 @@ namespace VideoWeb.Common
 
         public static void TraceWithObject(string traceCategory, string eventTitle, string user, object valueToSerialized)
         {
-            var telemetryTrace = new TraceTelemetry(traceCategory.ToString(), severityLevel: SeverityLevel.Information);
+            var telemetryTrace = new TraceTelemetry(traceCategory, SeverityLevel.Information);
 
             telemetryTrace.Properties.Add("Event", eventTitle);
 

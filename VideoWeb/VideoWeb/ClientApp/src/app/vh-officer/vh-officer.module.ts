@@ -20,6 +20,7 @@ import { VenueListComponent } from './venue-list/venue-list.component';
 import { ParticipantStatusReader } from '../shared/models/participant-status-reader';
 import { VHODashboardHelper } from './helper';
 import { PendingTasksComponent } from './pending-tasks/pending-tasks.component';
+import { UnreadMessagesComponent } from './unread-messages/unread-messages.component';
 
 @NgModule({
     declarations: [
@@ -33,7 +34,8 @@ import { PendingTasksComponent } from './pending-tasks/pending-tasks.component';
         ParticipantNetworkStatusComponent,
         MonitoringGraphComponent,
         VenueListComponent,
-        PendingTasksComponent
+        PendingTasksComponent,
+        UnreadMessagesComponent
     ],
     imports: [
         CommonModule,

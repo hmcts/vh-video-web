@@ -4,5 +4,13 @@
     "printWidth": 140,
     "tabWidth": 4,
     "arrowParens": "avoid",
-    "htmlWhitespaceSensitivity": "css"
+    "htmlWhitespaceSensitivity": "css",
+    "overrides": [
+        {
+            "files": ["*.html", "*.scss"],
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ]
 }
