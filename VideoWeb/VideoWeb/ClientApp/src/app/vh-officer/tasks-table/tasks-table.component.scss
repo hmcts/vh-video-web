@@ -1,11 +1,11 @@
-@import "~govuk-frontend/govuk/all";
+@import '~govuk-frontend/govuk/all';
 
 .task-header {
-  background: govuk-colour("light-grey");
+  background: govuk-colour('light-grey');
 }
 
 .pending-alert-text {
-  color: govuk-colour("red");
+  color: govuk-colour('red');
   font-weight: bold;
 }
 
@@ -29,7 +29,7 @@
 }
 
 .task-completed {
-  color: govuk-colour("mid-grey");
+  color: govuk-colour('mid-grey');
 }
 
 .task-list {
@@ -44,6 +44,6 @@
 
 ::-webkit-scrollbar-thumb {
   border-radius: 5px;
-  background-color: rgba(0, 0, 0, .5);
-  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+  background-color: rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
 }

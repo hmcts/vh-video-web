@@ -7,9 +7,9 @@
         *ngFor="let conference of conferences"
         (click)="selectConference(conference)"
       >
-        <dd id="{{ conference.id }}-summary" class="govuk-summary-list__value govuk-!-padding-left-4 govuk-!-padding-bottom-0">
+        <dd id="{{ conference.id }}-summary" class="govuk-summary-list__value govuk-!-padding-left-4">
           <div class="govuk-grid-row">
-            <div class="govuk-grid-column-three-quarters vh-width-main">
+            <div class="govuk-grid-column-three-quarters vh-width-main govuk-!-padding-bottom-2">
               <!-- time, case number-->
               <div class="govuk-grid-row">
                 <div id="{{ conference.id }}-time" class="govuk-grid-column-one-half">
