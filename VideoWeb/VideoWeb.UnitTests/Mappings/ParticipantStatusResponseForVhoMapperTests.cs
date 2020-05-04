@@ -42,7 +42,8 @@ namespace VideoWeb.UnitTests.Mappings
                 new JudgeInHearingResponse{ Id = judge3DifferentHearing.Id, Username = judge3.Username, Status = ParticipantState.InHearing }
             };
 
-            var results = ParticipantStatusResponseForVhoMapper.MapParticipantsTo(conference, bookingParticipants, judgesInHearings);
+            var results = ParticipantStatusResponseForVhoMapper
+                .MapParticipantsTo(conference, bookingParticipants, judgesInHearings).ToList();
             
             AssertResponseItem(results.ElementAt(0), conference.Participants[0], conferenceId, bookingParticipants[0], false);
             AssertResponseItem(results.ElementAt(1), conference.Participants[1], conferenceId, bookingParticipants[1], false);
@@ -80,7 +81,7 @@ namespace VideoWeb.UnitTests.Mappings
             bookingParticipants[1].Id = judge1.RefId;
 
             Assert.Throws<InvalidOperationException>(() =>
-                ParticipantStatusResponseForVhoMapper.MapParticipantsTo(conference, bookingParticipants, judgesInHearings).ToList());
+                ParticipantStatusResponseForVhoMapper.MapParticipantsTo(conference, bookingParticipants, judgesInHearings));
         }
         
         private static void AssertResponseItem(ParticipantContactDetailsResponseVho response, Participant participant, 

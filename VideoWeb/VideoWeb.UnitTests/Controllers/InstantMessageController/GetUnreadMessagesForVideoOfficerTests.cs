@@ -78,8 +78,6 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
                 .TheFirst(1).With(x => x.Role = Role.Judge)
                 .TheRest().With(x => x.Role = Role.Individual).Build().ToList();
 
-            var judge = participants.Single(x => x.Role == Role.Judge);
-
             return Builder<Conference>.CreateNew().With(x => x.Id = Guid.NewGuid())
                 .With(x => x.Participants = participants).Build();
         }

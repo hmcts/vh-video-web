@@ -13,7 +13,7 @@ namespace VideoWeb.UnitTests.Mappings
 {
     public class UnreadAdminMessageResponseMapperTests
     {
-        
+
         [Test]
         public void Should_map_and_count_number_of_messages_since_vho_message()
         {
@@ -86,6 +86,29 @@ namespace VideoWeb.UnitTests.Mappings
                 UnreadAdminMessageResponseMapper.MapToResponseModel(conference, messages);
 
             response.NumberOfUnreadMessages.Should().Be(messages.Count);
+        }
+
+        [Test]
+        public void should_map_total_message_count_when_there_is_no_chat_history()
+        {
+            var participants = Builder<Participant>.CreateListOfSize(4)
+                .All()
+                .With(x => x.Username = Internet.Email())
+                .TheFirst(1).With(x => x.Role = Role.Judge)
+                .TheRest().With(x => x.Role = Role.Individual).Build().ToList();
+
+            var conference = Builder<Conference>.CreateNew().With(x => x.Participants = participants)
+                .Build();
+
+            var messages = new List<InstantMessageResponse>();
+
+            var response1 =
+                UnreadAdminMessageResponseMapper.MapToResponseModel(conference, messages);
+            var response2 =
+                UnreadAdminMessageResponseMapper.MapToResponseModel(conference, null);
+
+            response1.NumberOfUnreadMessages.Should().Be(0);
+            response2.NumberOfUnreadMessages.Should().Be(0);
         }
     }
 }

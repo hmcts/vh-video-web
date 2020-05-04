@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -128,19 +127,6 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .With(x => x.Participants = participants)
                 .Build();
             return conference;
-        }
-
-        private List<BookingParticipant> CreateBookingParticipantResponses(
-            List<ParticipantDetailsResponse> participantDetails)
-        {
-            var bookingParticipants = new List<BookingParticipant>();
-            foreach (var participantDetail in participantDetails)
-            {
-                var bp = Builder<BookingParticipant>.CreateNew().With(x => x.Id = participantDetail.Ref_id).Build();
-                bookingParticipants.Add(bp);
-            }
-
-            return bookingParticipants;
         }
         
         private ConferencesController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)
