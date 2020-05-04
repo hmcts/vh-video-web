@@ -17,6 +17,7 @@ using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Extensions;
+using Microsoft.IdentityModel.Logging;
 
 namespace VideoWeb
 {
@@ -146,6 +147,7 @@ namespace VideoWeb
 
             if (!env.IsDevelopment())
             {
+                IdentityModelEventSource.ShowPII = true;
                 app.UseSpaStaticFiles();
             }
 
