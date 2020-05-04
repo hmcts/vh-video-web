@@ -146,6 +146,7 @@ namespace VideoWeb
 
             if (!env.IsDevelopment())
             {
+                IdentityModelEventSource.ShowPII = true;
                 app.UseSpaStaticFiles();
             }
 
