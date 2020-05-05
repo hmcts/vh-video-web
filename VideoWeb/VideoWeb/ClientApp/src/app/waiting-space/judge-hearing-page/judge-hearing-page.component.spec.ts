@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, async, fakeAsync, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
@@ -16,6 +16,8 @@ import { MockEventsNonHttpService, MockEventsService } from 'src/app/testing/moc
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { JudgeHearingPageComponent } from './judge-hearing-page.component';
+import { AudioAlertComponent } from '../audio-alert/audio-alert.component';
+import { AudioRecordingService } from '../../services/api/audio-recording.service';
 
 describe('JudgeHearingPageComponent when conference in session', () => {
     let component: JudgeHearingPageComponent;
@@ -26,13 +28,14 @@ describe('JudgeHearingPageComponent when conference in session', () => {
     let adalService: MockAdalService;
     let eventService: MockEventsNonHttpService;
     let errorService: ErrorService;
+    let audioRecordingServiceMock: jasmine.SpyObj<AudioRecordingService>;
 
     configureTestSuite(() => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
-
+        audioRecordingServiceMock = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],
-            declarations: [JudgeHearingPageComponent],
+            declarations: [JudgeHearingPageComponent, AudioAlertComponent],
             providers: [
                 {
                     provide: ActivatedRoute,
@@ -45,7 +48,8 @@ describe('JudgeHearingPageComponent when conference in session', () => {
                 { provide: VideoWebService, useValue: videoWebServiceMock },
                 { provide: AdalService, useClass: MockAdalService },
                 { provide: EventsService, useClass: MockEventsService },
-                { provide: Logger, useClass: MockLogger }
+                { provide: Logger, useClass: MockLogger },
+                {provide: AudioRecordingService, useValue: audioRecordingServiceMock}
             ]
         });
     });
@@ -137,5 +141,31 @@ describe('JudgeHearingPageComponent when conference in session', () => {
         expect(component.conference).toBeUndefined();
         expect(errorService.returnHomeIfUnauthorised).toBeTruthy();
         expect(errorService.handleApiError).toHaveBeenCalledTimes(0);
+    });
+    it('should retrieve audio recording stream and if an error then alert judge', () => {
+        audioRecordingServiceMock.getAudioStreamInfo.and.throwError('Error');
+        const hearingId = '5256626262626';
+        component.retrieveAudioStreamInfo(hearingId);
+
+        expect(component.showAudioRecordingAlert).toBeTruthy();
+    });
+    it('should stop to show alert if it was already closed by judge', () => {
+        audioRecordingServiceMock.getAudioStreamInfo.and.throwError('Error');
+        const hearingId = '5256626262626';
+        component.retrieveAudioStreamInfo(hearingId);
+        component.closeAlert(true);
+
+        expect(component.showAudioRecordingAlert).toBeFalsy();
+    });
+    it('should close audio  alert  for judge', () => {
+        component.closeAlert(true);
+        expect(component.continueWithNoRecording).toBeTruthy();
+    });
+    it('should retrieve audio recording stream and if no error then no alert', () => {
+        audioRecordingServiceMock.getAudioStreamInfo.and.returnValue(true);
+        const hearingId = '5256626262626';
+        component.retrieveAudioStreamInfo(hearingId);
+
+        expect(component.showAudioRecordingAlert).toBeFalsy();
     });
 });

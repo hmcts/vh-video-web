@@ -9,6 +9,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { pageUrls } from 'src/app/shared/page-url.constants';
+import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 
 @Component({
     selector: 'app-judge-hearing-page',
@@ -24,6 +25,12 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
 
     eventHubSubscriptions: Subscription = new Subscription();
 
+    interval: NodeJS.Timer;
+    isRecording: boolean;
+    continueWithNoRecording = false;
+    showAudioRecordingAlert = false;
+
+
     constructor(
         private route: ActivatedRoute,
         private router: Router,
@@ -32,7 +39,8 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
         public sanitizer: DomSanitizer,
         private errorService: ErrorService,
         private userMediaService: UserMediaService,
-        private logger: Logger
+        private logger: Logger,
+        private audioRecordingService: AudioRecordingService
     ) {
         this.loadingData = true;
     }
@@ -44,6 +52,9 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
                 this.sanitiseIframeUrl();
                 this.loadingData = false;
                 this.setupSubscribers();
+                if (this.conference.audio_recording_required) {
+                    this.setupAudioRecordingInterval();
+                }
             })
             .catch((error) => {
                 this.loadingData = false;
@@ -56,6 +67,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.eventHubSubscriptions.unsubscribe();
         this.selectedHearingUrl = '';
+        clearInterval(this.interval);
     }
 
     async getConference(): Promise<ConferenceResponse> {
@@ -157,5 +169,32 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
             this.logger.warn(`Uri ${src} is not recogised`);
             this.router.navigate([pageUrls.JudgeHearingList]);
         }
+    }
+
+    setupAudioRecordingInterval() {
+        this.interval = setInterval(() => {
+            this.retrieveAudioStreamInfo(this.conference.hearing_ref_id);
+        }, 10000);
+    }
+
+    async retrieveAudioStreamInfo(hearingId) {
+        this.logger.debug(`retrieve audio stream info for ${hearingId}`);
+        try {
+            const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId);
+            if (!audioStreamWorking && !this.continueWithNoRecording) {
+                this.showAudioRecordingAlert = true;
+            }
+        } catch (error) {
+            if (!this.continueWithNoRecording) {
+                this.showAudioRecordingAlert = true;
+            }
+        }
+
+    }
+
+    closeAlert(value) {
+        this.showAudioRecordingAlert = !value;
+        this.continueWithNoRecording = true;
+        clearInterval(this.interval);
     }
 }
