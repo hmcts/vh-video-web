@@ -149,6 +149,14 @@ describe('JudgeHearingPageComponent when conference in session', () => {
 
         expect(component.showAudioRecordingAlert).toBeTruthy();
     });
+    it('should stop to show alert if it was already closed by judge', () => {
+        audioRecordingServiceMock.getAudioStreamInfo.and.throwError('Error');
+        const hearingId = '5256626262626';
+        component.retrieveAudioStreamInfo(hearingId);
+        component.closeAlert(true);
+
+        expect(component.showAudioRecordingAlert).toBeFalsy();
+    });
     it('should close audio  alert  for judge', () => {
         component.closeAlert(true);
         expect(component.continueWithNoRecording).toBeTruthy();
