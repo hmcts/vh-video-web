@@ -25,3 +25,36 @@
   height: 30px;
   cursor: pointer;
 }
+
+.graph-container {
+  z-index: 1;
+  position: fixed;
+  background: govuk-colour('black');
+  width: auto;
+  color: white;
+  margin-top: -1.8vw;
+}
+
+.vh-popup {
+  margin: 0;
+  background: govuk-colour('white');
+  border-radius: 0px;
+  position: relative;
+  transition: all 2s ease-in-out;
+  box-shadow: 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 8px 0 rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  width: 50%;
+}
+
+.vh-popup-overlay {
+  position: fixed;
+  top: 25%;
+  bottom: 10%;
+  left: 25%;
+  right: 0;
+}
+
+.vh-popup-small {
+  max-height: 300px !important;
+  min-width: 500px !important;
+}

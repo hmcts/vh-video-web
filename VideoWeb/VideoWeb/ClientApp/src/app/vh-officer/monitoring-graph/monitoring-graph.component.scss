@@ -12,11 +12,8 @@
 }
 
 .vh-popup-overlay {
-  position: fixed;
-  top: 25%;
-  bottom: 10%;
-  left: 25%;
-  right: 0;
+  background: govuk-colour('white');
+  position: relative;
 }
 
 .vh-popup-small {

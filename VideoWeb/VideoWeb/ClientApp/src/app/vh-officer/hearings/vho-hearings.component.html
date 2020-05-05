@@ -55,14 +55,3 @@
     <input type="button" value="Change venues" (click)="goBackToVenueSelection()" id="change-venue-allocation-btn" class="govuk-button" />
   </div>
 </div>
-
-<div *ngIf="displayGraph">
-  <div class="govuk-grid-row">
-    <app-monitoring-graph
-      [pakagesLostData]="packageLostArray"
-      [participantGraphInfo]="monitoringParticipant"
-      (closeGraph)="closeGraph($event)"
-    >
-    </app-monitoring-graph>
-  </div>
-</div>

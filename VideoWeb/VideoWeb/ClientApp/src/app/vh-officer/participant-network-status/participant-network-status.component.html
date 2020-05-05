@@ -1,7 +1,7 @@
 <div class="govuk-grid-row">
   <div
     id="p-row-{{ participant.id }}"
-    class="govuk-grid-column-one-half tooltip-wrapper"
+    class="govuk-grid-column-one-half"
     title="{{ participant.displayName }}"
     *ngIf="!participant.isJudge"
   >
@@ -9,11 +9,11 @@
       id="network-status-icon"
       src="/assets/images/{{ getParticipantNetworkStatus() }}"
       (mouseenter)="showParticipantGraph()"
-      (mouseout)="setGraphVisibility(false)"
+      (mouseup)="setGraphVisibility(false)"
       alt="Open instant messaging chat window arrow"
     />
 
-    <div *ngIf="displayGraph && networkHistory" class="tooltip">
+    <div *ngIf="displayGraph" class="graph-container" (mouseleave)="setGraphVisibility(false)">
       <app-monitoring-graph
         [pakagesLostData]="networkHistory.packageLostArray"
         [participantGraphInfo]="monitoringParticipant"
@@ -22,14 +22,3 @@
     </div>
   </div>
 </div>
-<!-- 
-<div *ngIf="displayGraph && networkHistory">
-  <div [style.top]="mousePositionTop" [style.scrollLeft]="mousePositionLeft" style="display: block;">
-    <app-monitoring-graph
-      [pakagesLostData]="networkHistory.packageLostArray"
-      [participantGraphInfo]="monitoringParticipant"
-      (closeGraph)="setGraphVisibility(false)"
-    >
-    </app-monitoring-graph>
-  </div>
-</div> -->

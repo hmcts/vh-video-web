@@ -37,6 +37,5 @@ export class EmitEvent<T> {
 }
 
 export enum VHEventType {
-    TaskCompleted = 'TaskCompleted',
-    HeartBeatHistorySelected = 'HeartBeatHistorySelected'
+    TaskCompleted = 'TaskCompleted'
 }

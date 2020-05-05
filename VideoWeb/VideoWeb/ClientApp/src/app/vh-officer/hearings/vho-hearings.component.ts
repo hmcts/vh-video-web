@@ -20,13 +20,8 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { SessionStorage } from '../../services/session-storage';
 import { ConferenceForUser, ExtendedConferenceStatus, HearingsFilter } from '../../shared/models/hearings-filter';
-import { ParticipantSummary } from '../../shared/models/participant-summary';
-import { PackageLost } from '../services/models/package-lost';
-import { ParticipantGraphInfo } from '../services/models/participant-graph-info';
 import { VhoStorageKeys } from '../services/models/session-keys';
 import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
-import { EventBusService, VHEventType } from 'src/app/services/event-bus.service';
-import { NetworkHistory } from 'src/app/shared/models/network-history';
 
 @Component({
     selector: 'app-vho-hearings',
@@ -54,10 +49,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     private readonly hearingsFilterStorage: SessionStorage<HearingsFilter>;
     private readonly venueAllocationStorage: SessionStorage<HearingVenueResponse[]>;
 
-    displayGraph = false;
-    packageLostArray: PackageLost[];
-    monitoringParticipant: ParticipantGraphInfo;
-
     @ViewChild('conferenceList', { static: false })
     $conferenceList: VhoHearingListComponent;
     participantsHeartBeat: ParticipantHeartbeat[] = [];
@@ -75,8 +66,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         private errorService: ErrorService,
         private eventService: EventsService,
         private logger: Logger,
-        private router: Router,
-        private eventbus: EventBusService
+        private router: Router
     ) {
         this.loadingData = false;
         this.adminFrameWidth = 0;
@@ -152,12 +142,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
             this.eventService.getServiceReconnected().subscribe(async () => {
                 this.logger.info(`EventHub reconnected for vh officer`);
                 await this.refreshConferenceDataDuringDisconnect();
-            })
-        );
-
-        this.eventHubSubscriptions.add(
-            this.eventbus.on<any>(VHEventType.HeartBeatHistorySelected, async hearbeatHistoricalData => {
-                await this.diplayNetworkHealthGraph(hearbeatHistoricalData);
             })
         );
 
@@ -370,19 +354,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         });
 
         return conferences;
-    }
-
-    async diplayNetworkHealthGraph(networkHistory: NetworkHistory) {
-        if (!this.displayGraph) {
-            const participant: ParticipantSummary = networkHistory.participant;
-            this.monitoringParticipant = new ParticipantGraphInfo(participant.displayName, participant.status, participant.representee);
-            this.packageLostArray = networkHistory.packageLostArray;
-            this.displayGraph = true;
-        }
-    }
-
-    closeGraph(value) {
-        this.displayGraph = !value;
     }
 
     addHeartBeatToTheList(heartbeat: ParticipantHeartbeat) {
