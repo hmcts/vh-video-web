@@ -27,7 +27,7 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "GetAudioStreamInfo")]
         [ProducesResponseType(typeof(AudioStreamInfoResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> GetAudioStreamInfoAsync(Guid hearingId)
+        public async Task<IActionResult> GetAudioStreamInfoAsync(Guid hearingId)
         {
             _logger.LogDebug("GetAudioStreamInfo");
 
