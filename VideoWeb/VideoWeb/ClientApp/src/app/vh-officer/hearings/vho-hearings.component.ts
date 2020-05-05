@@ -25,6 +25,8 @@ import { PackageLost } from '../services/models/package-lost';
 import { ParticipantGraphInfo } from '../services/models/participant-graph-info';
 import { VhoStorageKeys } from '../services/models/session-keys';
 import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
+import { EventBusService, VHEventType } from 'src/app/services/event-bus.service';
+import { NetworkHistory } from 'src/app/shared/models/network-history';
 
 @Component({
     selector: 'app-vho-hearings',
@@ -73,7 +75,8 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         private errorService: ErrorService,
         private eventService: EventsService,
         private logger: Logger,
-        private router: Router
+        private router: Router,
+        private eventbus: EventBusService
     ) {
         this.loadingData = false;
         this.adminFrameWidth = 0;
@@ -149,6 +152,12 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
             this.eventService.getServiceReconnected().subscribe(async () => {
                 this.logger.info(`EventHub reconnected for vh officer`);
                 await this.refreshConferenceDataDuringDisconnect();
+            })
+        );
+
+        this.eventHubSubscriptions.add(
+            this.eventbus.on<any>(VHEventType.HeartBeatHistorySelected, async hearbeatHistoricalData => {
+                await this.diplayNetworkHealthGraph(hearbeatHistoricalData);
             })
         );
 
@@ -363,21 +372,12 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         return conferences;
     }
 
-    async onParticipantSelected(participantInfo) {
+    async diplayNetworkHealthGraph(networkHistory: NetworkHistory) {
         if (!this.displayGraph) {
-            if (participantInfo && participantInfo.conferenceId && participantInfo.participant) {
-                const participant: ParticipantSummary = participantInfo.participant;
-                this.monitoringParticipant = new ParticipantGraphInfo(participant.displayName, participant.status, participant.representee);
-
-                await this.videoWebService
-                    .getParticipantHeartbeats(participantInfo.conferenceId, participantInfo.participant.id)
-                    .then(s => {
-                        this.packageLostArray = s.map(x => {
-                            return new PackageLost(x.recent_packet_loss, x.browser_name, x.browser_version, x.timestamp.getTime());
-                        });
-                        this.displayGraph = true;
-                    });
-            }
+            const participant: ParticipantSummary = networkHistory.participant;
+            this.monitoringParticipant = new ParticipantGraphInfo(participant.displayName, participant.status, participant.representee);
+            this.packageLostArray = networkHistory.packageLostArray;
+            this.displayGraph = true;
         }
     }
 

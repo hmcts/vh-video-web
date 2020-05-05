@@ -31,6 +31,7 @@ import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/par
 import { ParticipantStatusMessage } from '../../services/models/participant-status-message';
 import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
 import { VhoHearingsComponent } from './vho-hearings.component';
+import { EventBusService } from 'src/app/services/event-bus.service';
 
 describe('VhoHearingsComponent', () => {
     let component: VhoHearingsComponent;
@@ -42,6 +43,7 @@ describe('VhoHearingsComponent', () => {
     const hearings = conferences.map(c => new HearingSummary(c));
     let errorService: jasmine.SpyObj<ErrorService>;
     let router: jasmine.SpyObj<Router>;
+    let eventbus: EventBusService;
 
     const mockEventService = new MockEventsService();
 
@@ -78,13 +80,15 @@ describe('VhoHearingsComponent', () => {
             'handleApiError',
             'returnHomeIfUnauthorised'
         ]);
+
+        eventbus = new EventBusService();
     });
 
     beforeEach(() => {
         videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(of(conferences));
         videoWebServiceSpy.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
 
-        component = new VhoHearingsComponent(videoWebServiceSpy, domSanitizerSpy, errorService, eventsService, logger, router);
+        component = new VhoHearingsComponent(videoWebServiceSpy, domSanitizerSpy, errorService, eventsService, logger, router, eventbus);
         component.conferences = hearings;
         component.conferencesAll = conferences;
     });
@@ -146,7 +150,7 @@ describe('VhoHearingsComponent', () => {
             ),
             conferenceId: '1234-12345678'
         };
-        await component.onParticipantSelected(param);
+        await component.diplayNetworkHealthGraph(param);
         expect(component.monitoringParticipant).toBeTruthy();
         expect(component.monitoringParticipant.name).toBe('Adam');
         expect(component.monitoringParticipant.status).toBe(ParticipantStatus.Disconnected);

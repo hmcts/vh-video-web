@@ -1,7 +1,35 @@
 <div class="govuk-grid-row">
-  <div id="p-row-{{participant.id}}" class="govuk-grid-column-one-half" title="{{participant.displayName}}" *ngIf="!participant.isJudge">
-    <img id="network-status-icon" src="/assets/images/{{getParticipantNetworkStatus()}}"
-         (click)="showParticipantGraph()"
-         alt="Open instant messaging chat window arrow" />
+  <div
+    id="p-row-{{ participant.id }}"
+    class="govuk-grid-column-one-half tooltip-wrapper"
+    title="{{ participant.displayName }}"
+    *ngIf="!participant.isJudge"
+  >
+    <img
+      id="network-status-icon"
+      src="/assets/images/{{ getParticipantNetworkStatus() }}"
+      (mouseenter)="showParticipantGraph()"
+      (mouseout)="setGraphVisibility(false)"
+      alt="Open instant messaging chat window arrow"
+    />
+
+    <div *ngIf="displayGraph && networkHistory" class="tooltip">
+      <app-monitoring-graph
+        [pakagesLostData]="networkHistory.packageLostArray"
+        [participantGraphInfo]="monitoringParticipant"
+        (closeGraph)="setGraphVisibility(false)"
+      ></app-monitoring-graph>
+    </div>
   </div>
 </div>
+<!-- 
+<div *ngIf="displayGraph && networkHistory">
+  <div [style.top]="mousePositionTop" [style.scrollLeft]="mousePositionLeft" style="display: block;">
+    <app-monitoring-graph
+      [pakagesLostData]="networkHistory.packageLostArray"
+      [participantGraphInfo]="monitoringParticipant"
+      (closeGraph)="setGraphVisibility(false)"
+    >
+    </app-monitoring-graph>
+  </div>
+</div> -->

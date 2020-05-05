@@ -1,84 +1,27 @@
-@import "~govuk-frontend/govuk/all";
+@import '~govuk-frontend/govuk/all';
 
 .participant-status-header {
-  background: govuk-colour("light-grey");
+  background: govuk-colour('light-grey');
 }
 
 .participant-not-signed-in {
-  color: govuk-colour("dark-grey");
+  color: govuk-colour('dark-grey');
 }
 
 .participant-disconnected {
-  color: govuk-colour("red");
+  color: govuk-colour('red');
 }
 
 .participant-available {
-  color: govuk-colour("green");
+  color: govuk-colour('green');
 }
 
 .participant-default-status {
-  color: govuk-colour("black");
-}
-
-.tooltip-wrapper {
-  position: relative;
-  display: inline-block;
-  text-decoration: underline;
-  color: $govuk-link-colour;
-  margin-left: 10px;
-}
-
-.tooltip-wrapper:hover {
-  color: $govuk-link-hover-colour;
-}
-
-.tooltip-wrapper .tooltip {
-  visibility: hidden;
-  width: 300px;
-  background-color: govuk-colour("white");
-  color: $govuk-text-colour;
-  padding: 0 25px 25px 25px;
-
-  /* Position the tooltip text - see examples below! */
-  position: absolute;
-  z-index: 1;
-
-  -webkit-transform: translateY(10px);
-  -moz-transform: translateY(10px);
-  -ms-transform: translateY(10px);
-  -o-transform: translateY(10px);
-  transform: translateY(10px);
-  -webkit-transition: all .25s ease-out;
-  -moz-transition: all .25s ease-out;
-  -ms-transition: all .25s ease-out;
-  -o-transition: all .25s ease-out;
-  transition: all .25s ease-out;
-  -webkit-box-shadow: 2px 2px 6px $govuk-border-colour;
-  -moz-box-shadow: 2px 2px 6px $govuk-border-colour;
-  -ms-box-shadow: 2px 2px 6px $govuk-border-colour;
-  -o-box-shadow: 2px 2px 6px $govuk-border-colour;
-  box-shadow: 2px 2px 6px $govuk-border-colour;
-}
-
-/* Show the tooltip text when you mouse over the tooltip container */
-.tooltip-wrapper:hover .tooltip {
-  visibility: visible;
-}
-
-.tooltip-wrapper .tooltip::after {
-  content: " ";
-  position: absolute;
-  bottom: 100%;
-  /* At the bottom of the tooltip */
-  left: 5%;
-  margin-left: -5px;
-  border-left: solid transparent 10px;
-  border-right: solid transparent 10px;
-  border-bottom: solid gray 10px;
+  color: govuk-colour('black');
 }
 
 #network-status-icon {
   width: 30px;
   height: 30px;
-  cursor:pointer;
+  cursor: pointer;
 }
