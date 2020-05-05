@@ -30,7 +30,7 @@ export class ApiClient {
     /**
      * @return Success
      */
-    stopAudioRecording(hearingId: string): Observable<void> {
+    getAudioStreamInfo(hearingId: string): Observable<AudioStreamInfoResponse> {
         let url_ = this.baseUrl + "/conferences/audiostreams/{hearingId}";
         if (hearingId === undefined || hearingId === null)
             throw new Error("The parameter 'hearingId' must be defined.");
@@ -41,24 +41,25 @@ export class ApiClient {
             observe: "response",
             responseType: "blob",			
             headers: new HttpHeaders({
+                "Accept": "application/json"
             })
         };
 
-        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processStopAudioRecording(response_);
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAudioStreamInfo(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processStopAudioRecording(<any>response_);
+                    return this.processGetAudioStreamInfo(<any>response_);
                 } catch (e) {
-                    return <Observable<void>><any>_observableThrow(e);
+                    return <Observable<AudioStreamInfoResponse>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<void>><any>_observableThrow(response_);
+                return <Observable<AudioStreamInfoResponse>><any>_observableThrow(response_);
         }));
     }
 
-    protected processStopAudioRecording(response: HttpResponseBase): Observable<void> {
+    protected processGetAudioStreamInfo(response: HttpResponseBase): Observable<AudioStreamInfoResponse> {
         const status = response.status;
         const responseBlob = 
             response instanceof HttpResponse ? response.body : 
@@ -67,14 +68,17 @@ export class ApiClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }};
         if (status === 200) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(<any>null);
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AudioStreamInfoResponse.fromJS(resultData200);
+            return _observableOf(result200);
             }));
-        } else if (status === 400) {
+        } else if (status === 404) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = ProblemDetails.fromJS(resultData400);
-            return throwException("Bad Request", status, _responseText, _headers, result400);
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Not Found", status, _responseText, _headers, result404);
             }));
         } else if (status === 401) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
@@ -85,7 +89,7 @@ export class ApiClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(<any>null);
+        return _observableOf<AudioStreamInfoResponse>(<any>null);
     }
 
     /**
@@ -1984,6 +1988,102 @@ export class ApiClient {
         }
         return _observableOf<void>(<any>null);
     }
+}
+
+export class AudioStreamInfoResponse implements IAudioStreamInfoResponse {
+    instance_name?: string | undefined;
+    server_name?: string | undefined;
+    recorder_name?: string | undefined;
+    current_size?: number;
+    output_path?: string | undefined;
+    current_file?: string | undefined;
+    application_name?: string | undefined;
+    recorder_error_string?: string | undefined;
+    base_file?: string | undefined;
+    segment_duration?: number;
+    recording_start_time?: string | undefined;
+    current_duration?: number;
+    file_format?: string | undefined;
+    recorder_state?: string | undefined;
+    option?: string | undefined;
+    is_recording?: boolean;
+
+    constructor(data?: IAudioStreamInfoResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.instance_name = _data["instance_name"];
+            this.server_name = _data["server_name"];
+            this.recorder_name = _data["recorder_name"];
+            this.current_size = _data["current_size"];
+            this.output_path = _data["output_path"];
+            this.current_file = _data["current_file"];
+            this.application_name = _data["application_name"];
+            this.recorder_error_string = _data["recorder_error_string"];
+            this.base_file = _data["base_file"];
+            this.segment_duration = _data["segment_duration"];
+            this.recording_start_time = _data["recording_start_time"];
+            this.current_duration = _data["current_duration"];
+            this.file_format = _data["file_format"];
+            this.recorder_state = _data["recorder_state"];
+            this.option = _data["option"];
+            this.is_recording = _data["is_recording"];
+        }
+    }
+
+    static fromJS(data: any): AudioStreamInfoResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new AudioStreamInfoResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["instance_name"] = this.instance_name;
+        data["server_name"] = this.server_name;
+        data["recorder_name"] = this.recorder_name;
+        data["current_size"] = this.current_size;
+        data["output_path"] = this.output_path;
+        data["current_file"] = this.current_file;
+        data["application_name"] = this.application_name;
+        data["recorder_error_string"] = this.recorder_error_string;
+        data["base_file"] = this.base_file;
+        data["segment_duration"] = this.segment_duration;
+        data["recording_start_time"] = this.recording_start_time;
+        data["current_duration"] = this.current_duration;
+        data["file_format"] = this.file_format;
+        data["recorder_state"] = this.recorder_state;
+        data["option"] = this.option;
+        data["is_recording"] = this.is_recording;
+        return data; 
+    }
+}
+
+export interface IAudioStreamInfoResponse {
+    instance_name?: string | undefined;
+    server_name?: string | undefined;
+    recorder_name?: string | undefined;
+    current_size?: number;
+    output_path?: string | undefined;
+    current_file?: string | undefined;
+    application_name?: string | undefined;
+    recorder_error_string?: string | undefined;
+    base_file?: string | undefined;
+    segment_duration?: number;
+    recording_start_time?: string | undefined;
+    current_duration?: number;
+    file_format?: string | undefined;
+    recorder_state?: string | undefined;
+    option?: string | undefined;
+    is_recording?: boolean;
 }
 
 export class ProblemDetails implements IProblemDetails {
