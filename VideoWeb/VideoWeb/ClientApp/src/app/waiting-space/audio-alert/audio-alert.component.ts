@@ -5,7 +5,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
     templateUrl: './audio-alert.component.html',
     styleUrls: ['./audio-alert.component.scss']
 })
-export class AudioAlertComponent implements OnInit{
+export class AudioAlertComponent implements OnInit {
     @Output() alertClose: EventEmitter<boolean> = new EventEmitter<boolean>();
 
     ngOnInit() {

@@ -1,6 +1,6 @@
 import { AudioAlertComponent } from './audio-alert.component';
 
-describe('AudioAlertComponent', ()=>{
+describe('AudioAlertComponent', () => {
     const component = new AudioAlertComponent();
 
     it('should emit event close on close alert', () => {
