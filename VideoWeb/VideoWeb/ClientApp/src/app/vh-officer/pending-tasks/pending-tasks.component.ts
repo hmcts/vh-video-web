@@ -9,7 +9,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 @Component({
     selector: 'app-pending-tasks',
     templateUrl: './pending-tasks.component.html',
-    styleUrls: ['./pending-tasks.component.scss']
+    styleUrls: ['./pending-tasks.component.scss', '../vho-global-styles.scss']
 })
 export class PendingTasksComponent implements OnInit, OnDestroy {
     @Input() conferenceId: string;
