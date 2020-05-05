@@ -5,7 +5,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Polly.CircuitBreaker;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Extensions;
@@ -14,9 +13,7 @@ using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
-using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
 using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
 using ConferenceForJudgeResponse = VideoWeb.Contract.Responses.ConferenceForJudgeResponse;
 
@@ -28,16 +25,12 @@ namespace VideoWeb.Controllers
     public class ConferencesController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
-        private readonly IBookingsApiClient _bookingsApiClient;
         private readonly ILogger<ConferencesController> _logger;
         private readonly IConferenceCache _conferenceCache;
 
-        public ConferencesController(IVideoApiClient videoApiClient,
-            IBookingsApiClient bookingsApiClient, ILogger<ConferencesController> logger,
-            IConferenceCache conferenceCache)
+        public ConferencesController(IVideoApiClient videoApiClient, ILogger<ConferencesController> logger, IConferenceCache conferenceCache)
         {
             _videoApiClient = videoApiClient;
-            _bookingsApiClient = bookingsApiClient;
             _logger = logger;
             _conferenceCache = conferenceCache;
         }
@@ -111,7 +104,7 @@ namespace VideoWeb.Controllers
             var username = User.Identity.Name.ToLower().Trim();
             if (!User.IsInRole(Role.VideoHearingsOfficer.EnumDataMemberAttr()))
             {
-                _logger.LogError($"Failed to get conferences for today: {username} is not a VH officer");
+                _logger.LogWarning($"Failed to get conferences for today: {username} is not a VH officer");
                 return Unauthorized("User must be a VH Officer");
             }
 
@@ -121,29 +114,16 @@ namespace VideoWeb.Controllers
                 conferences = conferences.Where(c => ConferenceHelper.HasNotPassed(c.Status, c.Closed_date_time))
                     .ToList();
                 conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();
-                var tasks = conferences.Select(MapConferenceForVhoAsync).ToArray();
 
-                var response = await Task.WhenAll(tasks);
+                var responses = conferences.Select(ConferenceForVhOfficerResponseMapper
+                    .MapConferenceSummaryToResponseModel).ToList();
 
-                return Ok(response.ToList());
+                return Ok(responses);
             }
             catch (VideoApiException e)
             {
                 return StatusCode(e.StatusCode, e.Response);
             }
-        }
-
-        private async Task<ConferenceForVhOfficerResponse> MapConferenceForVhoAsync(
-            ConferenceForAdminResponse conference)
-        {
-            if (!conference.IsInStateToChat())
-            {
-                return ConferenceForVhOfficerResponseMapper.MapConferenceSummaryToResponseModel(conference, null);
-            }
-
-            var messages = await _videoApiClient.GetInstantMessageHistoryAsync(conference.Id);
-
-            return ConferenceForVhOfficerResponseMapper.MapConferenceSummaryToResponseModel(conference, messages);
         }
 
 
@@ -162,17 +142,17 @@ namespace VideoWeb.Controllers
             _logger.LogDebug("GetConferenceById");
             if (conferenceId == Guid.Empty)
             {
-                _logger.LogError("Unable to get conference when id is not provided");
+                _logger.LogWarning("Unable to get conference when id is not provided");
                 ModelState.AddModelError(nameof(conferenceId), $"Please provide a valid {nameof(conferenceId)}");
+                
                 return BadRequest(ModelState);
             }
-
-            var username = User.Identity.Name.ToLower().Trim();
 
             _logger.LogTrace("Checking to see if user is a VH Officer");
             if (!User.IsInRole(Role.VideoHearingsOfficer.EnumDataMemberAttr()))
             {
-                _logger.LogError($"Failed to get conference: ${conferenceId}, {username} is not a VH officer");
+                _logger.LogWarning($"Failed to get conference: ${conferenceId}, {User.Identity.Name} is not a VH officer");
+                
                 return Unauthorized("User must be a VH Officer");
             }
 
@@ -185,44 +165,18 @@ namespace VideoWeb.Controllers
             catch (VideoApiException e)
             {
                 _logger.LogError(e, $"Unable to retrieve conference: ${conferenceId}");
+                
                 return StatusCode(e.StatusCode, e.Response);
             }
 
-            var exceededTimeLimit =
-                !ConferenceHelper.HasNotPassed(conference.Current_status, conference.Closed_date_time);
+            var exceededTimeLimit = !ConferenceHelper.HasNotPassed(conference.Current_status, conference.Closed_date_time);
             if (exceededTimeLimit)
             {
                 _logger.LogInformation(
                     $"Unauthorised to view conference details {conferenceId} because user is not " +
                     "Officer nor a participant of the conference, or the conference has been closed for over 30 minutes");
+                
                 return Unauthorized();
-            }
-
-            var bookingParticipants = new List<BookingParticipant>();
-            try
-            {
-                _logger.LogTrace($"Retrieving booking participants for hearing ${conference.Hearing_id}");
-                bookingParticipants = await _bookingsApiClient.GetAllParticipantsInHearingAsync(conference.Hearing_id);
-            }
-            catch (BookingsApiException e)
-            {
-                _logger.LogError(e, $"Unable to retrieve booking participants for hearing ${conference.Hearing_id}");
-            }
-            catch (BrokenCircuitException e)
-            {
-                _logger.LogError(e, $"Unable to retrieve booking participants for hearing ${conference.Hearing_id}");
-            }
-
-            if (bookingParticipants.Any())
-            {
-                try
-                {
-                    ValidateConferenceAndBookingParticipantsMatch(conference.Participants, bookingParticipants);
-                }
-                catch (AggregateException e)
-                {
-                    return StatusCode((int) HttpStatusCode.ExpectationFailed, e);
-                }
             }
 
             // these are roles that are filtered against when lists participants on the UI
@@ -232,12 +186,14 @@ namespace VideoWeb.Controllers
                 Role.Individual,
                 Role.Representative
             };
-            conference.Participants = conference.Participants
+            
+            conference.Participants = conference
+                .Participants
                 .Where(x => displayRoles.Contains((Role) x.User_role)).ToList();
 
-            var response =
-                ConferenceResponseVhoMapper.MapConferenceDetailsToResponseModel(conference, bookingParticipants);
-            await _conferenceCache.AddConferenceToCache(conference);
+            var response = ConferenceResponseVhoMapper.MapConferenceDetailsToResponseModel(conference);
+            
+            await _conferenceCache.AddConferenceAsync(conference);
 
             return Ok(response);
         }
@@ -257,7 +213,7 @@ namespace VideoWeb.Controllers
             _logger.LogDebug("GetConferenceById");
             if (conferenceId == Guid.Empty)
             {
-                _logger.LogError("Unable to get conference when id is not provided");
+                _logger.LogWarning("Unable to get conference when id is not provided");
                 ModelState.AddModelError(nameof(conferenceId), $"Please provide a valid {nameof(conferenceId)}");
                 return BadRequest(ModelState);
             }
@@ -296,29 +252,9 @@ namespace VideoWeb.Controllers
                 .Where(x => displayRoles.Contains((Role)x.User_role)).ToList();
 
             var response = ConferenceResponseMapper.MapConferenceDetailsToResponseModel(conference);
-            await _conferenceCache.AddConferenceToCache(conference);
+            await _conferenceCache.AddConferenceAsync(conference);
 
             return Ok(response);
-        }
-
-        private static void ValidateConferenceAndBookingParticipantsMatch(
-            IEnumerable<ParticipantDetailsResponse> participants,
-            IReadOnlyCollection<BookingParticipant> bookingParticipants)
-        {
-            var missingBookingParticipantIds = new List<Exception>();
-            foreach (var participant in participants)
-            {
-                if (bookingParticipants.SingleOrDefault(p => p.Id == participant.Ref_id) == null)
-                {
-                    missingBookingParticipantIds.Add(new ArgumentNullException(
-                        $"Unable to find a participant in bookings api with id ${participant.Ref_id}"));
-                }
-            }
-
-            if (missingBookingParticipantIds.Any())
-            {
-                throw new AggregateException(missingBookingParticipantIds);
-            }
         }
     }
 }

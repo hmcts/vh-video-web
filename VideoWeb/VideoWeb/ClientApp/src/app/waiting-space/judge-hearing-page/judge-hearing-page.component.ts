@@ -8,7 +8,7 @@ import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaService } from 'src/app/services/user-media.service';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
     selector: 'app-judge-hearing-page',
@@ -39,13 +39,13 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
 
     async ngOnInit() {
         this.getConference()
-            .then(conference => {
-                this.loadingData = false;
+            .then((conference) => {
                 this.conference = conference;
                 this.sanitiseIframeUrl();
+                this.loadingData = false;
                 this.setupSubscribers();
             })
-            .catch(error => {
+            .catch((error) => {
                 this.loadingData = false;
                 if (!this.errorService.returnHomeIfUnauthorised(error)) {
                     this.errorService.handleApiError(error);
@@ -66,7 +66,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
     }
 
     async sanitiseIframeUrl(): Promise<void> {
-        const judge = this.conference.participants.find(x => x.role === Role.Judge);
+        const judge = this.conference.participants.find((x) => x.role === Role.Judge);
         const encodedDisplayName = encodeURIComponent(judge.tiled_display_name);
 
         const preferredCam = await this.userMediaService.getPreferredCamera();
@@ -94,7 +94,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
 
     private setupSubscribers() {
         this.eventHubSubscriptions.add(
-            this.eventService.getHearingStatusMessage().subscribe(message => {
+            this.eventService.getHearingStatusMessage().subscribe((message) => {
                 this.handleHearingStatusChange(<ConferenceStatus>message.status);
             })
         );
@@ -130,7 +130,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
 
     determineJudgeLocation() {
         const conferenceStatus = this.conference.status;
-        const judge = this.conference.participants.find(x => x.role === Role.Judge);
+        const judge = this.conference.participants.find((x) => x.role === Role.Judge);
         const properties = {
             conferenceId: this.conference.id,
             user: judge.id
@@ -138,12 +138,12 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
 
         if (conferenceStatus === ConferenceStatus.Closed) {
             this.logger.event(`Conference closed, navigating back to hearing list`, properties);
-            return this.router.navigate([PageUrls.JudgeHearingList]);
+            return this.router.navigate([pageUrls.JudgeHearingList]);
         }
 
         if (conferenceStatus === ConferenceStatus.Paused || conferenceStatus === ConferenceStatus.Suspended) {
             this.logger.event(`Conference closed, navigating back to waiting room`, properties);
-            return this.router.navigate([PageUrls.JudgeWaitingRoom, this.conference.id]);
+            return this.router.navigate([pageUrls.JudgeWaitingRoom, this.conference.id]);
         }
     }
 
@@ -155,7 +155,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
         this.logger.debug(src);
         if (src && src !== this.judgeUri) {
             this.logger.warn(`Uri ${src} is not recogised`);
-            this.router.navigate([PageUrls.JudgeHearingList]);
+            this.router.navigate([pageUrls.JudgeHearingList]);
         }
     }
 }

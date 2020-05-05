@@ -5,7 +5,7 @@ import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { configureTestSuite } from 'ng-bullet';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
@@ -77,6 +77,6 @@ describe('DeclarationComponent Tests', () => {
         spyOn(router, 'navigate').and.callFake(() => {});
         checkboxControl.setValue(true);
         component.onSubmit();
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.ParticipantWaitingRoom, conference.id]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.ParticipantWaitingRoom, conference.id]);
     });
 });

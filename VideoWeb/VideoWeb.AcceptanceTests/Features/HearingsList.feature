@@ -52,13 +52,14 @@ Scenario: Clerk has 1 or more hearings
 	When the user clicks on the Start Hearing button
 	Then the user is on the Waiting Room page
 
-@VIH-4156 @VIH-4507 @Smoketest
+@VIH-4156 @VIH-4507 @Smoketest @Smoketest-Extended
 Scenario: Video Hearings Officer has 1 or more hearings
 	Given I have a hearing
 	And a new browser is open for a Video Hearings Officer
 	When the user attempts to login with valid credentials
-	Then the user is on the VHO Hearing List page
-  When the user filters by location with the option Birmingham Civil and Family Justice Centre
+	Then the user is on the VHO Venue List page
+  When the VHO selects the venue Birmingham Civil and Family Justice Centre
+  And the VHO confirms their allocation selection
 	Then the VHO can see a list of hearings including the new hearing
 	When the VHO selects the hearing
 	Then the VHO can see the hearing view
@@ -72,6 +73,7 @@ Scenario: Video Hearings Officer can see all hearings for today only
 	And I have another hearing in 2 days time
 	And a new browser is open for a Video Hearings Officer
 	When the user attempts to login with valid credentials
+  And the VHO selects all the venues
 	Then the Video Hearings Officer should only see hearings for today
 
 Scenario: Clerk cannot access Closed hearing

@@ -1,0 +1,17 @@
+<div class="govuk-grid-row govuk-!-margin-bottom-2 govuk-!-margin-top-2">
+
+  <div class="govuk-grid-column-full">
+    <h1 class="govuk-heading-m">Select your hearing lists</h1>
+  </div>
+
+  <div class="govuk-grid-column-three-quarters">
+    <ng-multiselect-dropdown id="venue-allocation-list" [placeholder]="'Choose lists'" [data]="venues"
+      [(ngModel)]="selectedVenues" [settings]="dropdownSettings" (onSelect)="onItemSelect($event)"
+      (onDeSelect)="onItemDeselect($event)" (onSelectAll)="onSelectAll()" (onDropDownClose)="updateSelection()">
+    </ng-multiselect-dropdown>
+  </div>
+  <div class="govuk-grid-column-one-quarter">
+    <input type="button" [disabled]="!venuesSelected" value="View hearings" (click)="goToHearingList()"
+      id="select-venue-allocation-btn" class="govuk-button" />
+  </div>
+</div>

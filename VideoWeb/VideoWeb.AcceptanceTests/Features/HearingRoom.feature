@@ -4,7 +4,7 @@ Feature: Hearing Room
 	As a registered user
 	I want to be able to access the video hearing room and interact with the controls
 
-@VIH-4610 @VIH-4615 @HearingTest
+@VIH-4610 @VIH-4615 @HearingTest @Smoketest-Extended @DisableLogging
 Scenario: Clerk pauses and closes hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
@@ -33,7 +33,7 @@ Scenario: Clerk pauses and closes hearing
 	Then the user is on the Hearing List page
 	And the hearing status changed to Closed
 
-@HearingTest
+@HearingTest @Smoketest-Extended @DisableLogging
 Scenario: Two participants join hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
@@ -52,7 +52,7 @@ Scenario: Two participants join hearing
 	When in Individual01's browser
 	Then the participants waiting room displays the closed status
 
-@HearingTest
+@HearingTest @Smoketest-Extended @DisableLogging
 Scenario: Four participants join hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing

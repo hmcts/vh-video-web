@@ -10,7 +10,7 @@ import { JudgeEventService } from 'src/app/services/judge-event.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
@@ -35,7 +35,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'raiseParticipantEvent']);
         videoWebServiceSpy.getConferenceById.and.returnValue(conference);
         videoWebServiceSpy.raiseParticipantEvent.and.returnValue(Promise.resolve());
-
         judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService', [
             'raiseJudgeAvailableEvent',
             'raiseJudgeUnavailableEvent'
@@ -86,9 +85,9 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
     it('should update participant status', async () => {
         const pat = conference.participants[0];
-        const message = new ParticipantStatusMessage(pat.id, ParticipantStatus.InConsultation);
+        const message = new ParticipantStatusMessage(pat.id, pat.username, conference.id, ParticipantStatus.InConsultation);
         component.handleParticipantStatusChange(message);
-        const participant = component.conference.participants.find(x => x.id === message.participantId);
+        const participant = component.conference.participants.find((x) => x.id === message.participantId);
         expect(participant.status).toBe(message.status);
     });
 
@@ -143,7 +142,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         });
 
         component.goToHearingPage();
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeHearingRoom, component.conference.id]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeHearingRoom, component.conference.id]);
     });
 
     it('should navigate to check equipment with conference id', async () => {
@@ -152,7 +151,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         });
 
         component.checkEquipment();
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.EquipmentCheck, component.conference.id]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.EquipmentCheck, component.conference.id]);
     });
 
     it('should navigate to judge hearing list', async () => {
@@ -161,7 +160,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         });
 
         component.goToJudgeHearingList();
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeHearingList]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeHearingList]);
     });
 
     it('should raise judge avaliable event', () => {
@@ -175,7 +174,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         const message = eventService.nextJudgeStatusMessage;
         component.handleParticipantStatusChange(message);
-        const participant = component.conference.participants.find(x => x.id === message.participantId);
+        const participant = component.conference.participants.find((x) => x.id === message.participantId);
         expect(participant.status === message.status);
         expect(judgeEventServiceSpy.raiseJudgeAvailableEvent).toHaveBeenCalled();
     });
@@ -186,7 +185,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         const message = eventService.nextJudgeStatusMessage;
         component.handleParticipantStatusChange(message);
-        const participant = component.conference.participants.find(x => x.id === message.participantId);
+        const participant = component.conference.participants.find((x) => x.id === message.participantId);
         expect(participant.status === message.status);
         expect(judgeEventServiceSpy.raiseJudgeAvailableEvent).toHaveBeenCalled();
     });
@@ -231,9 +230,9 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     it('should update participant status when message received', () => {
-        const participantId = conference.participants[0].id;
+        const participant = conference.participants[0];
         component.conference.participants[0].status = ParticipantStatus.Available;
-        const message = new ParticipantStatusMessage(participantId, ParticipantStatus.InConsultation);
+        const message = new ParticipantStatusMessage(participant.id, participant.username, conference.id, ParticipantStatus.InConsultation);
 
         eventService.participantStatusSubject.next(message);
 

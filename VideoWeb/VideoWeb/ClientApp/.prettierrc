@@ -1,6 +1,16 @@
 {
-  "trailingComma": "none",
-  "singleQuote": true,
-  "printWidth": 140,
-  "tabWidth": 4
+    "trailingComma": "none",
+    "singleQuote": true,
+    "printWidth": 140,
+    "tabWidth": 4,
+    "arrowParens": "avoid",
+    "htmlWhitespaceSensitivity": "css",
+    "overrides": [
+        {
+            "files": ["*.html", "*.scss"],
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ]
 }

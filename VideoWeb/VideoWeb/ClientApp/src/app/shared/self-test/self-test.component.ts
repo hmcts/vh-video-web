@@ -15,7 +15,7 @@ import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
-import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
+import { SelectedUserMediaDevice } from '../models/selected-user-media-device';
 import { Subscription } from 'rxjs';
 import { Guid } from 'guid-typescript';
 declare var PexRTC: any;
@@ -154,7 +154,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         const self = this;
         this.pexipAPI = new PexRTC();
         this.updatePexipAudioVideoSource();
-        this.pexipAPI.onSetup = function (stream, pin_status, conference_extension) {
+        this.pexipAPI.onSetup = function (stream, pinStatus, conferenceExtension) {
             self.logger.info('running pexip test call setup');
             self.outgoingStream = stream;
             this.connect('0000', null);
@@ -170,7 +170,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.pexipAPI.onError = function (reason) {
             self.displayFeed = false;
             self.logger.error('Error from pexip. Reason : ' + reason, reason);
-            self.errorService.goToServiceError();
+            self.errorService.goToServiceError('Your connection was lost');
         };
 
         this.pexipAPI.onDisconnect = function (reason) {
@@ -192,6 +192,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     replayVideo() {
         this.logger.debug('replaying self test video');
         this.disconnect();
+        this.updatePexipAudioVideoSource();
         this.call();
     }
 
@@ -217,15 +218,13 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     async retrieveSelfTestScore() {
         this.logger.debug('retrieving self test score');
         try {
-            if (this.conference) {
-                this.logger.info(`Self test : ConferenceId : ${this.conference.id} | retrieveSelfTestScore for Participant Id : ${
-                    this.participant.id
-                }
-          | Participant : ${this.videoWebService.getObfuscatedName(this.participant.name)}`);
+            if (this.conference && this.participant) {
+                this.logger.info(`Self test : ConferenceId : ${this.conference.id} | retrieveSelfTestScore for Participant Id :
+        ${this.participant.id}
+          | Participant : ${this.videoWebService.getObfuscatedName(this.participant.display_name)}`);
                 this.testCallResult = await this.videoWebService.getTestCallScore(this.conference.id, this.selfTestParticipantId);
             } else {
-                this.logger.info(`Self test : retrieveSelfTestScore for Participant Id : ${this.participant.id}
-          | Participant : ${this.videoWebService.getObfuscatedName(this.participant.name)}`);
+                this.logger.info(`Self test : independent retrieveSelfTestScore for Participant Id : ${this.selfTestParticipantId}`);
                 this.testCallResult = await this.videoWebService.getIndependentTestCallScore(this.selfTestParticipantId);
             }
 

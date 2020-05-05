@@ -3,18 +3,24 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './security/auth.guard';
 import { HomeComponent } from './home/home.component';
 import { SendVideoEventsComponent } from './send-video-events/send-video-events.component';
-import { PageUrls } from './shared/page-url.constants';
+import { pageUrls } from './shared/page-url.constants';
+import { environment } from 'src/environments/environment';
+import { AdminGuard } from './security/admin.guard';
 
 export const routes: Routes = [
-    { path: '', redirectTo: `${PageUrls.Home}`, pathMatch: 'full' },
-    { path: `${PageUrls.AdminHearingList}`, loadChildren: () => import('./vh-officer/vh-officer.module').then(m => m.VhOfficerModule) },
+    { path: '', redirectTo: `${pageUrls.Home}`, pathMatch: 'full' },
+    {
+        canActivate: [AdminGuard],
+        path: 'admin',
+        loadChildren: () => import('./vh-officer/vh-officer.module').then((m) => m.VhOfficerModule)
+    },
     { path: 'events/:conferenceId', component: SendVideoEventsComponent },
-    { path: `${PageUrls.Home}`, component: HomeComponent, canActivate: [AuthGuard] },
-    { path: '**', redirectTo: `${PageUrls.NotFound}`, pathMatch: 'full', canActivate: [AuthGuard] }
+    { path: `${pageUrls.Home}`, component: HomeComponent, canActivate: [AuthGuard] },
+    { path: '**', redirectTo: `${pageUrls.NotFound}`, pathMatch: 'full', canActivate: [AuthGuard] }
 ];
 
 @NgModule({
     exports: [RouterModule],
-    imports: [RouterModule.forRoot(routes)]
+    imports: [RouterModule.forRoot(routes, { enableTracing: !environment.production })]
 })
 export class AppRoutingModule {}

@@ -8,6 +8,9 @@ export class MockProfileService {
         role: Role.Individual
     });
 
+    profile: UserProfileResponse;
+    profiles: Record<string, UserProfileResponse> = {};
+
     async getUserProfile(): Promise<UserProfileResponse> {
         return this.mockProfile;
     }

@@ -47,23 +47,8 @@ namespace VideoWeb.Contract.Responses
         public List<ParticipantForUserResponse> Participants { get; set; }
 
         /// <summary>
-        /// Number of pending tasks for a given hearing
-        /// </summary>
-        public int NoOfPendingTasks { get; set; }
-
-        /// <summary>
         /// The name of the hearing venue
         /// </summary>
         public string HearingVenueName { get; set; }
-
-        /// <summary>
-        /// The conferences tasks
-        /// </summary>
-        public List<TaskUserResponse> Tasks { get; set; }
-        
-        /// <summary>
-        /// The number of messages since a VHO has answered
-        /// </summary>
-        public int NumberOfUnreadMessages { get; set; }
     }
 }

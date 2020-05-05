@@ -30,11 +30,11 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
     }
 
     ngOnInit() {
-        this.logger.debug(`[ChatHub Judge] starting chat for ${this._hearing.id}`);
+        this.logger.debug(`[ChatHub Judge] starting chat for ${this.hearing.id}`);
         this.showChat = false;
         this.unreadMessageCount = 0;
         this.loading = true;
-        this.retrieveChatForConference().then(messages => {
+        this.retrieveChatForConference().then((messages) => {
             this.chatHubSubscription = this.setupChatSubscription();
             this.unreadMessageCount = this.getCountSinceUsersLastMessage(messages);
             this.loading = false;
@@ -45,12 +45,11 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
     ngAfterViewChecked(): void {
         if (this.showChat) {
             this.resetUnreadMessageCount();
-            this.getMessageWindow().focus();
         }
     }
 
     sendMessage(messageBody: string) {
-        this.eventService.sendMessage(this._hearing.id, messageBody);
+        this.eventService.sendMessage(this.hearing.id, messageBody);
     }
 
     getMessageWindow(): HTMLElement {
@@ -59,7 +58,7 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
 
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
-        this.logger.debug(`[ChatHub Judge] closing chat for ${this._hearing.id}`);
+        this.logger.debug(`[ChatHub Judge] closing chat for ${this.hearing.id}`);
         if (this.chatHubSubscription) {
             this.chatHubSubscription.unsubscribe();
         }
@@ -84,7 +83,7 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
         reversedMessages.sort((a: ChatResponse, b: ChatResponse) => {
             return b.timestamp.getTime() - a.timestamp.getTime();
         });
-        const index = reversedMessages.findIndex(x => x.is_user);
+        const index = reversedMessages.findIndex((x) => x.is_user);
         if (index < 0) {
             return reversedMessages.length;
         } else {

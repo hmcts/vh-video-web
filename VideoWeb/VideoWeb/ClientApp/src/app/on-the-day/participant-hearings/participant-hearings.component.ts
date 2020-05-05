@@ -5,7 +5,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceForIndividualResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { ProfileService } from '../../services/api/profile.service';
-import { PageUrls } from '../../shared/page-url.constants';
+import { pageUrls } from '../../shared/page-url.constants';
 
 @Component({
     selector: 'app-participant-hearings',
@@ -29,7 +29,7 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.profileService.getUserProfile().then(profile => {
+        this.profileService.getUserProfile().then((profile) => {
             this.profile = profile;
         });
         this.errorCount = 0;
@@ -52,7 +52,7 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
                 this.loadingData = false;
                 this.conferences = data;
             },
-            error => {
+            (error) => {
                 this.handleApiError(error);
             }
         );
@@ -73,11 +73,11 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
     }
 
     goToEquipmentCheck() {
-        this.router.navigate([PageUrls.EquipmentCheck]);
+        this.router.navigate([pageUrls.EquipmentCheck]);
     }
 
     onConferenceSelected(conference: ConferenceForIndividualResponse) {
         this.videoWebService.setActiveIndividualConference(conference);
-        this.router.navigate([PageUrls.Introduction, conference.id]);
+        this.router.navigate([pageUrls.Introduction, conference.id]);
     }
 }

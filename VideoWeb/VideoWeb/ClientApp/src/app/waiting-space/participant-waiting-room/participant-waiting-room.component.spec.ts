@@ -23,7 +23,7 @@ import {
 } from 'src/app/testing/stubs/participant-status-list-stub';
 import { Hearing } from '../../shared/models/hearing';
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room.component';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 
@@ -95,7 +95,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.heartbeat = jasmine.createSpyObj('heartbeat', ['kill']);
         component.conference = futureConference;
         component.hearing = new Hearing(futureConference);
-        component.participant = futureConference.participants.find(x => x.username === 'chris.green@hearings.net');
+        component.participant = futureConference.participants.find((x) => x.username === 'chris.green@hearings.net');
     });
 
     it('should create and display conference details', async () => {
@@ -115,7 +115,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     it('should update participant status', () => {
         const message = eventService.nextParticipantStatusMessage;
         component.handleParticipantStatusChange(message);
-        const participant = component.hearing.getConference().participants.find(x => x.id === message.participantId);
+        const participant = component.hearing.getConference().participants.find((x) => x.id === message.participantId);
         expect(participant.status).toBe(message.status);
     });
 
@@ -262,7 +262,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
         component.checkIfHearingIsClosed();
 
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.ParticipantHearingList]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.ParticipantHearingList]);
     });
 
     it('should get latest conference when status changes to closed', () => {

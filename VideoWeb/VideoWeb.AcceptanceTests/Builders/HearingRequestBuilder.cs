@@ -19,6 +19,7 @@ namespace VideoWeb.AcceptanceTests.Builders
         private readonly List<ParticipantRequest> _participants;
         private List<UserAccount> _userAccounts;
         private string _venueName = "Birmingham Civil and Family Justice Centre";
+        private bool _audioRecordingRequired = false;
 
         public HearingRequestBuilder()
         {
@@ -52,7 +53,13 @@ namespace VideoWeb.AcceptanceTests.Builders
             _venueName = venueName;
             return this;
         }
-        
+
+        public HearingRequestBuilder AudioRecordingRequired()
+        {
+            _audioRecordingRequired = true;
+            return this;
+        }
+
         public BookNewHearingRequest Build()
         {
             _individuals.AddRange(UserManager.GetIndividualUsers(_userAccounts));
@@ -95,6 +102,7 @@ namespace VideoWeb.AcceptanceTests.Builders
                 .With(x => x.Cases = cases)
                 .With(x => x.Created_by = UserManager.GetCaseAdminUser(_userAccounts).Username)
                 .With(x => x.Questionnaire_not_required = true)
+                .With(x => x.Audio_recording_required = _audioRecordingRequired)
                 .Build();
 
             return _request;

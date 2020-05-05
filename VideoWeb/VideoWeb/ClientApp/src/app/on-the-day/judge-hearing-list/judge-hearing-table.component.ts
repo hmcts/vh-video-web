@@ -11,12 +11,12 @@ import { ParticipantSummary } from 'src/app/shared/models/participant-summary';
     styleUrls: ['./judge-hearing-table.component.scss']
 })
 export class JudgeHearingTableComponent implements OnInit {
-    private _conferences: ConferenceForJudgeResponse[];
+    private conferenceForJudgeResponse: ConferenceForJudgeResponse[];
     hearings: JudgeHearingSummary[];
 
     @Input() set conferences(conferences: ConferenceForJudgeResponse[]) {
-        this._conferences = conferences;
-        this.hearings = conferences.map(c => new JudgeHearingSummary(c));
+        this.conferenceForJudgeResponse = conferences;
+        this.hearings = conferences.map((c) => new JudgeHearingSummary(c));
     }
 
     @Output() selectedConference = new EventEmitter<ConferenceForJudgeResponse>();
@@ -24,20 +24,20 @@ export class JudgeHearingTableComponent implements OnInit {
     constructor(private logger: Logger) {}
 
     ngOnInit() {
-        this.hearings = this._conferences.map(c => new HearingSummary(c));
+        this.hearings = this.conferenceForJudgeResponse.map((c) => new HearingSummary(c));
     }
 
     getRepresentative(participants: ParticipantSummary[]): ParticipantSummary {
-        return participants.find(x => x.representee !== null && x.representee.trim() !== '');
+        return participants.find((x) => x.representee !== null && x.representee.trim() !== '');
     }
 
     getIndividual(participants: ParticipantSummary[]): ParticipantSummary {
-        return participants.find(x => x.representee === null || x.representee.trim() === '');
+        return participants.find((x) => x.representee === null || x.representee.trim() === '');
     }
 
     signIntoConference(hearing: JudgeHearingSummary) {
         this.logger.info(`selected conference to sign into: ${hearing.id}`);
-        const conference = this._conferences.find(x => x.id === hearing.id);
+        const conference = this.conferenceForJudgeResponse.find((x) => x.id === hearing.id);
         this.selectedConference.emit(conference);
     }
 

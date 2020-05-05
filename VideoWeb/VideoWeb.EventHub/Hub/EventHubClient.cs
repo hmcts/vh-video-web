@@ -9,7 +9,6 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Extensions;
 using VideoWeb.Common.Models;
 using VideoWeb.Common.SignalR;
-using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Mappers;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
@@ -136,7 +135,7 @@ namespace VideoWeb.EventHub.Hub
         public async Task SendMessage(Guid conferenceId, string message)
         {
             var isAdmin = IsVhOfficerAsync();
-            var isAllowed = IsAllowedToSendMessage(conferenceId, isAdmin);
+            var isAllowed = await IsAllowedToSendMessageAsync(conferenceId, isAdmin);
             if (!isAllowed) return;
             var from = Context.User.Identity.Name;
             var timestamp = DateTime.UtcNow;
@@ -155,13 +154,21 @@ namespace VideoWeb.EventHub.Hub
             }
         }
 
-        private bool IsAllowedToSendMessage(Guid conferenceId, bool isAdmin)
+        private async Task<bool> IsAllowedToSendMessageAsync(Guid conferenceId, bool isAdmin)
         {
-            if (isAdmin) return true;
-            var conference = _conferenceCache.GetConference(conferenceId);
-            if (conference == null) throw new ConferenceNotFoundException(conferenceId);
+            if (isAdmin)
+            {
+                return true;
+            }
+            
+            var conference = await _conferenceCache.GetOrAddConferenceAsync
+            (
+                conferenceId, 
+                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
+            );
 
-            return conference.GetJudge().Username
+            return conference
+                .GetJudge().Username
                 .Equals(Context.UserIdentifier, StringComparison.InvariantCultureIgnoreCase);
         }
 
@@ -180,7 +187,7 @@ namespace VideoWeb.EventHub.Hub
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error occured when sending heartbeat", ex);
+                _logger.LogError(ex, "Error occured when sending heartbeat");
             }
         }
     }

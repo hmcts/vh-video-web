@@ -15,7 +15,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         private JudgeUnavailableEventHandler _eventHandler;
 
         [Test]
-        public async Task should_send_unavailable_participant_messages_when_judge_unavailable()
+        public async Task Should_send_unavailable_participant_messages_when_judge_unavailable()
         {
             _eventHandler = new JudgeUnavailableEventHandler(EventHubContextMock.Object, ConferenceCache,
                 LoggerMock.Object, VideoApiClientMock.Object);
@@ -36,7 +36,7 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             // Verify messages sent to event hub clients
             EventHubClientMock.Verify(
-                x => x.ParticipantStatusMessage(participantForEvent.Id, ParticipantState.NotSignedIn),
+                x => x.ParticipantStatusMessage(participantForEvent.Id, participantForEvent.Username, conference.Id, ParticipantState.NotSignedIn),
                 Times.Exactly(participantCount));
         }
     }

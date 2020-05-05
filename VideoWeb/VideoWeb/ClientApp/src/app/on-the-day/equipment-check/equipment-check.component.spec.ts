@@ -5,7 +5,7 @@ import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { configureTestSuite } from 'ng-bullet';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { BackNavigationStubComponent } from 'src/app/testing/stubs/back-navigation-stub';
@@ -51,6 +51,6 @@ describe('EquipmentCheckComponent', () => {
     it('should navigate to camera-and-microphone', () => {
         spyOn(router, 'navigate').and.callFake(() => {});
         component.goToCameraAndMicCheck();
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.SwitchOnCameraMicrophone, conference.id]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.SwitchOnCameraMicrophone, conference.id]);
     });
 });

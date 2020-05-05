@@ -5,7 +5,7 @@ import { AdalService } from 'adal-angular4';
 import { SelfTestFailureReason } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VideoWebService } from '../../services/api/video-web.service';
 import { EquipmentCheckBaseComponent } from '../abstract/equipment-check-base.component';
 
@@ -40,6 +40,6 @@ export class CameraCheckComponent extends EquipmentCheckBaseComponent implements
     }
 
     navigateToNextPage(): void {
-        this.router.navigate([PageUrls.MicrophoneWorking, this.conferenceId]);
+        this.router.navigate([pageUrls.MicrophoneWorking, this.conferenceId]);
     }
 }

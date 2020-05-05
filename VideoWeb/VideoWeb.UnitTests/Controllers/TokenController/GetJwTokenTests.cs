@@ -10,7 +10,7 @@ namespace VideoWeb.UnitTests.Controllers.TokenController
     public class GetJwTokenTests: TokenControllerTest
     {
         [Test]
-        public void should_return_ok_token_response()
+        public void Should_return_ok_token_response()
         {
             var result = _tokenController.GetJwToken(participantId);
 

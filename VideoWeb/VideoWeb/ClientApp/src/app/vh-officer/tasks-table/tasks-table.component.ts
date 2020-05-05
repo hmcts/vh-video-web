@@ -1,9 +1,10 @@
-import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
+import { Component, HostListener, Input, OnInit } from '@angular/core';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, TaskResponse, TaskStatus, TaskType } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, TaskResponse, TaskType } from 'src/app/services/clients/api-client';
+import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { VHODashboardHelper } from '../helper';
-import { Logger } from 'src/app/services/logging/logger-base';
 
 @Component({
     selector: 'app-tasks-table',
@@ -12,23 +13,39 @@ import { Logger } from 'src/app/services/logging/logger-base';
 })
 export class TasksTableComponent implements OnInit {
     taskDivWidth: number;
+    loading: boolean;
 
-    @Input() conference: ConferenceResponse;
-    @Input() tasks: TaskResponse[];
-    @Output() taskCompleted = new EventEmitter<TaskCompleted>();
+    @Input() conferenceId: string;
+    tasks: TaskResponse[];
+    conference: ConferenceResponse;
 
-    @HostListener('window:resize', ['$event'])
-    onResize(event) {
+    @HostListener('window:resize')
+    onResize() {
         this.updateDivWidthForTasks();
     }
-    constructor(private videoWebService: VideoWebService, private logger: Logger) {}
+    constructor(
+        private videoWebService: VideoWebService,
+        private dashboardHelper: VHODashboardHelper,
+        private logger: Logger,
+        private eventbus: EventBusService
+    ) {}
 
     ngOnInit() {
         this.updateDivWidthForTasks();
+        this.loading = true;
+        this.retrieveConference(this.conferenceId)
+            .then(async conference => {
+                this.conference = conference;
+                this.tasks = await this.retrieveTasksForConference(this.conference.id);
+                this.loading = false;
+            })
+            .catch(err => {
+                this.logger.error(`Failed to init tasks list for conference ${this.conferenceId}`, err);
+            });
     }
 
     updateDivWidthForTasks(): void {
-        this.taskDivWidth = new VHODashboardHelper().getWidthAvailableForConference();
+        this.taskDivWidth = this.dashboardHelper.getWidthAvailableForConference();
     }
 
     getOriginName(task: TaskResponse): string {
@@ -40,12 +57,20 @@ export class TasksTableComponent implements OnInit {
         }
     }
 
+    retrieveConference(conferenceId): Promise<ConferenceResponse> {
+        return this.videoWebService.getConferenceByIdVHO(conferenceId);
+    }
+
+    retrieveTasksForConference(conferenceId: string): Promise<TaskResponse[]> {
+        return this.videoWebService.getTasksForConference(conferenceId);
+    }
+
     async completeTask(task: TaskResponse) {
         try {
             const updatedTask = await this.videoWebService.completeTask(this.conference.id, task.id);
             this.updateTask(updatedTask);
-            const pendingTasks = this.tasks.filter(x => x.status === TaskStatus.ToDo).length;
-            this.taskCompleted.emit(new TaskCompleted(this.conference.id, pendingTasks));
+            const payload = new TaskCompleted(this.conference.id, task.id);
+            this.eventbus.emit(new EmitEvent(VHEventType.TaskCompleted, payload));
         } catch (error) {
             this.logger.error(`Failed to complete task ${task.id}`, error);
         }

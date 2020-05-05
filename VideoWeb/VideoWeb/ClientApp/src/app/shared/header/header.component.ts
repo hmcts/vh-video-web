@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { TopMenuItems } from './topMenuItems';
+import { topMenuItems } from './topMenuItems';
 
 @Component({
     selector: 'app-header',
@@ -24,6 +24,6 @@ export class HeaderComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.topMenuItems = TopMenuItems;
+        this.topMenuItems = topMenuItems;
     }
 }

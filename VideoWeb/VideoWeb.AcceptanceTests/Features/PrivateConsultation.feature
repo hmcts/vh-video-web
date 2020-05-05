@@ -3,7 +3,7 @@ Feature: Private Consultation
 	As a video hearings service
 	I want to be able to connect those participants into a private call
 
-@VIH-4134 @Video
+@VIH-4134 @Video @Smoketest-Extended
 Scenario: Start a private consultation
 	Given the Individual01 user has progressed to the Waiting Room page with a hearing in 10 minutes time
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing

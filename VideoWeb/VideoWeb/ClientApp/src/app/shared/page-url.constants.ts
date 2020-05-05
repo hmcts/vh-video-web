@@ -1,4 +1,4 @@
-export const PageUrls = {
+export const pageUrls = {
     // shared
     Home: 'home',
     ContactUs: 'contact-us',
@@ -25,6 +25,7 @@ export const PageUrls = {
     // representative
     IndependentSelfTestVideo: 'representative/practice-video-hearing',
     // vh officer
+    AdminVenueList: 'admin/venue-list',
     AdminHearingList: 'admin/hearing-list',
     // security
     Login: 'login',

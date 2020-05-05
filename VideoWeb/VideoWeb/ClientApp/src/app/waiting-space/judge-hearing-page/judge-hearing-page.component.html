@@ -3,8 +3,8 @@
 </div>
 
 <div *ngIf="!loadingData" class="govuk-width-container">
-  <iframe #judgeIframe  id="judgeIframe" [src]='selectedHearingUrl' [attr.allow]='allowPermissions' width="1000px"
-    height="500px" allowfullscreen frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen
-    (load)="judgeURLChanged();" title="Judge view of the hearing room">
+  <iframe #judgeIframe id="judgeIframe" [src]='selectedHearingUrl' allow='microphone *; camera *;' width="1000px"
+          height="500px" allowfullscreen frameborder="0" webkitallowfullscreen mozallowfullscreen
+          (load)="judgeURLChanged();" title="Judge view of the hearing room">
   </iframe>
 </div>

@@ -12,7 +12,6 @@ export class VhoHearingsFilterComponent implements OnInit {
     fiterOptionsEvent = new EventEmitter<HearingsFilter>();
 
     statusAllChecked = true;
-    locationAllChecked = true;
     alertsAllChecked = true;
     filterOptionsCounter = 0;
     disableFilterApply = true;
@@ -21,25 +20,15 @@ export class VhoHearingsFilterComponent implements OnInit {
 
     constructor(private hearingsFilterOptionsService: HearingsFilterOptionsService) {}
 
-    async ngOnInit() {
-        this.hearingsFilterOptionsService.getFilter().then(filter => {
-            this.hearingsFilter = filter;
-            this.countOptions(false);
-        });
+    ngOnInit() {
+        this.hearingsFilter = this.hearingsFilterOptionsService.getFilter();
+        this.countOptions(false);
     }
 
     statusAllSelected() {
         this.statusAllChecked = !this.statusAllChecked;
         if (this.statusAllChecked) {
             this.removeOptions(this.hearingsFilter.statuses);
-        }
-        this.countOptions();
-    }
-
-    locationAllSelected() {
-        this.locationAllChecked = !this.locationAllChecked;
-        if (this.locationAllChecked) {
-            this.removeOptions(this.hearingsFilter.locations);
         }
         this.countOptions();
     }
@@ -53,40 +42,33 @@ export class VhoHearingsFilterComponent implements OnInit {
     }
 
     private removeOptions(options: ListFilter[]) {
-        options.forEach(x => (x.Selected = false));
+        options.forEach((x) => (x.selected = false));
     }
 
     statusOptionSelected(optionIndex: number) {
-        this.hearingsFilter.statuses[optionIndex].Selected = !this.hearingsFilter.statuses[optionIndex].Selected;
-        this.countOptions();
-    }
-
-    locationOptionSelected(optionIndex: number) {
-        this.hearingsFilter.locations[optionIndex].Selected = !this.hearingsFilter.locations[optionIndex].Selected;
+        this.hearingsFilter.statuses[optionIndex].selected = !this.hearingsFilter.statuses[optionIndex].selected;
         this.countOptions();
     }
 
     alertOptionSelected(optionIndex: number) {
-        this.hearingsFilter.alerts[optionIndex].Selected = !this.hearingsFilter.alerts[optionIndex].Selected;
+        this.hearingsFilter.alerts[optionIndex].selected = !this.hearingsFilter.alerts[optionIndex].selected;
         this.countOptions();
     }
 
     private countOptions(changesMade: boolean = true) {
         this.statusAllChecked = !this.isSelectedFilterOptions(this.hearingsFilter.statuses);
-        this.locationAllChecked = !this.isSelectedFilterOptions(this.hearingsFilter.locations);
         this.alertsAllChecked = !this.isSelectedFilterOptions(this.hearingsFilter.alerts);
         this.disableFilterApply = !changesMade;
     }
 
     private isSelectedFilterOptions(options: ListFilter[]): boolean {
-        const selectedOptions = options.filter(x => x.Selected);
+        const selectedOptions = options.filter((x) => x.selected);
         return selectedOptions && selectedOptions.length > 0;
     }
 
     clearFilters() {
         this.statusAllSelected();
         this.alertAllSelected();
-        this.locationAllSelected();
     }
 
     applyFilters() {

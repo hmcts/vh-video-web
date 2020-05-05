@@ -85,15 +85,14 @@ namespace VideoWeb.Controllers
         
         private async Task<Guid> GetIdForParticipantByUsernameInConference(Guid conferenceId)
         {
-            var username = User.Identity.Name;
-            var conference = _conferenceCache.GetConference(conferenceId);
-            if (conference == null)
-            {
-                var conferenceDetail = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-                await _conferenceCache.AddConferenceToCache(conferenceDetail);
-                conference = _conferenceCache.GetConference(conferenceId);
-            }
+            var conference = await _conferenceCache.GetOrAddConferenceAsync
+            (
+                conferenceId, 
+                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
+            );
 
+            var username = User.Identity.Name;
+            
             return conference.Participants
                 .Single(x => x.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase)).Id;
         }

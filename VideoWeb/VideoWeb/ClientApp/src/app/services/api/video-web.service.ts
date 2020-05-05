@@ -18,7 +18,9 @@ import {
     TokenResponse,
     UpdateParticipantStatusEventRequest,
     UpdateParticipantRequest,
-    ConferenceResponseVho
+    ConferenceResponseVho,
+    ParticipantContactDetailsResponseVho,
+    UnreadAdminMessageResponse
 } from '../clients/api-client';
 import { ConferenceLite } from '../models/conference-lite';
 import { SessionStorage } from '../session-storage';
@@ -111,6 +113,10 @@ export class VideoWebService implements IVideoWebApiService {
         return this.apiClient.getConferenceInstantMessageHistory(conferenceId).toPromise();
     }
 
+    getUnreadAdminMessageCountForConference(conferenceId: string): Promise<UnreadAdminMessageResponse> {
+        return this.apiClient.getNumberOfUnreadAdminMessagesForConference(conferenceId).toPromise();
+    }
+
     getParticipantHeartbeats(conferenceId: string, participantId: string): Promise<ParticipantHeartbeatResponse[]> {
         return this.apiClient.getHeartbeatDataForParticipant(conferenceId, participantId).toPromise();
     }
@@ -123,6 +129,10 @@ export class VideoWebService implements IVideoWebApiService {
 
     getActiveIndividualConference(): ConferenceLite {
         return this.activeConferencesCache.get();
+    }
+
+    getParticipantsWithContactDetailsByConferenceId(conferenceId: string): Promise<ParticipantContactDetailsResponseVho[]> {
+        return this.apiClient.getParticipantsWithContactDetailsByConferenceId(conferenceId).toPromise();
     }
 
     updateParticipantDetails(

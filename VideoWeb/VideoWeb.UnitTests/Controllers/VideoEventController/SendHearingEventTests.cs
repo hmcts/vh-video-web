@@ -64,7 +64,9 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             _videoApiClientMock
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
-
+            _mockConferenceCache.Setup(cache => cache.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+                .ReturnsAsync(_testConference);
         }
 
         [Test]
@@ -77,7 +79,6 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             var result = await _controller.SendHearingEventAsync(CreateRequest());
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
-            _videoApiClientMock.Verify(v => v.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()), Times.Once);
         }
         
         [Test]
@@ -106,6 +107,21 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             var result = await _controller.SendHearingEventAsync(CreateRequest());
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
+        }
+        
+        [Test]
+        public async Task Should_return_exception_when_cache_func_throws_video_exception()
+        {
+            var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
+                "Stacktrace goes here", null, default, null);
+            _mockConferenceCache
+                .Setup(x => x.GetOrAddConferenceAsync(It.IsAny<Guid>(), It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .ThrowsAsync(apiException);
+
+            var result = await _controller.SendHearingEventAsync(CreateRequest());
+            var typedResult = (ObjectResult) result;
+            typedResult.Should().NotBeNull();
+            typedResult.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
         }
 
         private ConferenceEventRequest CreateRequest()

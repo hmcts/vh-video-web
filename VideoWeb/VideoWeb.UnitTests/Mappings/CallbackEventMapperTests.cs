@@ -5,7 +5,6 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using VideoWeb.Common.Models;
-using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 
@@ -14,9 +13,9 @@ namespace VideoWeb.UnitTests.Mappings
     public class CallbackEventMapperTests
     {
         [Test]
-        public void should_map_conferenceevent_to_callbackevent()
+        public void Should_map_conferenceevent_to_callbackevent()
         {
-            var _testConference = new Conference {
+            var testConference = new Conference {
                                         Id = Guid.NewGuid(),
                                         HearingId = Guid.NewGuid(),
                                         Participants = new List<Participant>()
@@ -35,8 +34,8 @@ namespace VideoWeb.UnitTests.Mappings
                                         }
                                     };
             var conferenceEventRequest = Builder<ConferenceEventRequest>.CreateNew()
-                .With(x => x.Conference_id = _testConference.Id.ToString())
-                .With(x => x.Participant_id = _testConference.Participants[0].Id.ToString())
+                .With(x => x.Conference_id = testConference.Id.ToString())
+                .With(x => x.Participant_id = testConference.Participants[0].Id.ToString())
                 .With(x => x.Event_type = EventType.Joined)
                 .Build();
 

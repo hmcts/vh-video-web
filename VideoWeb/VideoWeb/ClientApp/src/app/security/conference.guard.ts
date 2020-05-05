@@ -3,7 +3,7 @@ import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
 import { VideoWebService } from '../services/api/video-web.service';
 import { ConferenceStatus } from '../services/clients/api-client';
 import { Logger } from '../services/logging/logger-base';
-import { PageUrls } from '../shared/page-url.constants';
+import { pageUrls } from '../shared/page-url.constants';
 
 @Injectable({
     providedIn: 'root'
@@ -19,7 +19,7 @@ export class ConferenceGuard implements CanActivate {
 
             if (data.status === ConferenceStatus.Closed) {
                 this.logger.info('Conference Guard - Returning back to hearing list because status closed');
-                this.router.navigate([PageUrls.Home]);
+                this.router.navigate([pageUrls.Home]);
 
                 return false;
             }
@@ -32,7 +32,7 @@ export class ConferenceGuard implements CanActivate {
 
     private handleError(error) {
         this.logger.error(`Could not get conference data.`, error);
-        this.router.navigate([PageUrls.Home]);
+        this.router.navigate([pageUrls.Home]);
 
         return false;
     }

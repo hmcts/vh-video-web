@@ -1,4 +1,4 @@
-namespace VideoWeb.Contract.Responses
+namespace VideoWeb.Common.Models
 {
     /// <summary>
     /// Known states of a participant

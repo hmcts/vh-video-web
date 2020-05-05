@@ -13,7 +13,7 @@ namespace VideoWeb.UnitTests.Mappings
     public class ConferenceForJudgeResponseMapperTests
     {
         [Test]
-        public void should_map_all_properties()
+        public void Should_map_all_properties()
         {
             Builder<Participant>.CreateNew().With(x => x.Role = UserRole.Individual).Build();
             var participants = new List<Participant>

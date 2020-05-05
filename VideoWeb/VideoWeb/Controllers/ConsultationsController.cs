@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
@@ -21,14 +22,16 @@ namespace VideoWeb.Controllers
         private readonly IVideoApiClient _videoApiClient;
         private readonly IHubContext<EventHub.Hub.EventHub, IEventHubClient> _hubContext;
         private readonly IConferenceCache _conferenceCache;
+        private readonly ILogger<ConsultationsController> _logger;
 
         public ConsultationsController(IVideoApiClient videoApiClient, 
             IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext,
-            IConferenceCache conferenceCache)
+            IConferenceCache conferenceCache, ILogger<ConsultationsController> logger)
         {
             _videoApiClient = videoApiClient;
             _hubContext = hubContext;
             _conferenceCache = conferenceCache;
+            _logger = logger;
         }
         
         /// <summary>
@@ -42,47 +45,50 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> HandleConsultationRequestAsync(ConsultationRequest request)
         {
-            var conference = _conferenceCache.GetConference(request.Conference_id);
-            if (conference == null)
-            {
-                return NotFound();
-            }
-
-            conference.Participants ??= new List<Participant>();
-
-            var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.Requested_by);
-            if (requestedBy == null)
-            {
-                return NotFound();
-            }
-
-            var requestedFor = conference.Participants?.SingleOrDefault(x => x.Id == request.Requested_for);
-            if (requestedFor == null)
-            {
-                return NotFound();
-            }
-
-            var requestRaised = !request.Answer.HasValue;
-            if (requestRaised)
-            {
-                await NotifyConsultationRequestAsync(conference, requestedBy, requestedFor);
-            }
-            else if (request.Answer == ConsultationAnswer.Cancelled)
-            {
-                await NotifyConsultationCancelledAsync(conference, requestedBy, requestedFor);
-            }
-            else
-            {
-                await NotifyConsultationResponseAsync(conference, requestedBy, requestedFor, request.Answer.Value);
-            }
-
             try
             {
+                var conference = await _conferenceCache.GetOrAddConferenceAsync(request.Conference_id, () =>
+                {
+                    _logger.LogTrace($"Retrieving conference details for conference: ${request.Conference_id}");
+                    
+                    return _videoApiClient.GetConferenceDetailsByIdAsync(request.Conference_id);
+                });
+                
+                conference.Participants ??= new List<Participant>();
+
+                var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.Requested_by);
+                if (requestedBy == null)
+                {
+                    return NotFound();
+                }
+
+                var requestedFor = conference.Participants?.SingleOrDefault(x => x.Id == request.Requested_for);
+                if (requestedFor == null)
+                {
+                    return NotFound();
+                }
+
+                var requestRaised = !request.Answer.HasValue;
+                if (requestRaised)
+                {
+                    await NotifyConsultationRequestAsync(conference, requestedBy, requestedFor);
+                }
+                else if (request.Answer == ConsultationAnswer.Cancelled)
+                {
+                    await NotifyConsultationCancelledAsync(conference, requestedBy, requestedFor);
+                }
+                else
+                {
+                    await NotifyConsultationResponseAsync(conference, requestedBy, requestedFor, request.Answer.Value);
+                }
+            
                 await _videoApiClient.HandleConsultationRequestAsync(request);
                 return NoContent();
             }
             catch (VideoApiException e)
             {
+                _logger.LogError(e, $"ConferenceId: {request.Conference_id}, ErrorCode: {e.StatusCode}");
+                    
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -94,22 +100,23 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> LeavePrivateConsultationAsync(LeaveConsultationRequest request)
         {
-            var conference = _conferenceCache.GetConference(request.Conference_id);
-            if (conference == null)
-            {
-                return NotFound();
-            }
-
-            conference.Participants ??= new List<Participant>();
-
-            var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.Participant_id);
-            if (participant == null)
-            {
-                return NotFound();
-            }
-
             try
             {
+                var conference = await _conferenceCache.GetOrAddConferenceAsync(request.Conference_id, () =>
+                {
+                    _logger.LogTrace($"Retrieving conference details for conference: ${request.Conference_id}");
+                    
+                    return _videoApiClient.GetConferenceDetailsByIdAsync(request.Conference_id);
+                });
+
+                conference.Participants ??= new List<Participant>();
+
+                var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.Participant_id);
+                if (participant == null)
+                {
+                    return NotFound();
+                }
+                
                 await _videoApiClient.LeavePrivateConsultationAsync(request);
                 return NoContent();
             }
@@ -126,21 +133,22 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> RespondToAdminConsultationRequestAsync(AdminConsultationRequest request)
         {
-            var conference = _conferenceCache.GetConference(request.Conference_id);
-            if (conference == null)
-            {
-                return NotFound();
-            }
-
-            conference.Participants ??= new List<Participant>();
-            var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.Participant_id);
-            if (participant == null)
-            {
-                return NotFound();
-            }
-
             try
             {
+                var conference = await _conferenceCache.GetOrAddConferenceAsync(request.Conference_id, () =>
+                {
+                    _logger.LogTrace($"Retrieving conference details for conference: ${request.Conference_id}");
+                
+                    return _videoApiClient.GetConferenceDetailsByIdAsync(request.Conference_id);
+                });
+
+                conference.Participants ??= new List<Participant>();
+                var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.Participant_id);
+                if (participant == null)
+                {
+                    return NotFound();
+                }
+                
                 await _videoApiClient.RespondToAdminConsultationRequestAsync(request);
                 if (request.Answer != null && request.Answer.Value == ConsultationAnswer.Accepted)
                 {

@@ -44,19 +44,21 @@ namespace VideoWeb.Controllers
                 _logger.LogTrace("Received callback from Kinly.");
                 _logger.LogTrace($"ConferenceId: {request.Conference_id}, EventType: {request.Event_type}, Participant ID : {request.Participant_id}");
                 var callbackEvent = CallbackEventMapper.MapConferenceEventToCallbackEventModel(request);
-                if (_conferenceCache.GetConference(callbackEvent.ConferenceId) == null)
+
+                try
                 {
-                    try
+                    await _conferenceCache.GetOrAddConferenceAsync(callbackEvent.ConferenceId, () =>
                     {
-                        _logger.LogTrace($"Retrieving conference details for conference: {callbackEvent.ConferenceId}");
-                        var conference = await _videoApiClient.GetConferenceDetailsByIdAsync(callbackEvent.ConferenceId);
-                        await _conferenceCache.AddConferenceToCache(conference);
-                    }
-                    catch (VideoApiException e)
-                    {
-                        _logger.LogError($"ConferenceId: {request.Conference_id}, ErrorCode: {e.StatusCode}");
-                        return StatusCode(e.StatusCode, e.Response);
-                    }
+                        _logger.LogTrace($"Retrieving conference details for conference: ${callbackEvent.ConferenceId}");
+                    
+                        return _videoApiClient.GetConferenceDetailsByIdAsync(callbackEvent.ConferenceId);
+                    });
+                }
+                catch (VideoApiException e)
+                {
+                    _logger.LogError(e, $"ConferenceId: {request.Conference_id}, ErrorCode: {e.StatusCode}");
+                    
+                    return StatusCode(e.StatusCode, e.Response);
                 }
 
                 if (callbackEvent.EventType != EventType.VhoCall)
@@ -72,7 +74,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError($"ConferenceId: {request.Conference_id}, ErrorCode: {e.StatusCode}");
+                _logger.LogError(e, $"ConferenceId: {request.Conference_id}, ErrorCode: {e.StatusCode}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }

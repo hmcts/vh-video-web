@@ -9,6 +9,7 @@ namespace VideoWeb.Common.Models
         public Guid Id { get; set; }
         public Guid HearingId { get; set; }
         public List<Participant> Participants { get; set; }
+        public string HearingVenueName { get; set; }
 
         public Participant GetJudge()
         {

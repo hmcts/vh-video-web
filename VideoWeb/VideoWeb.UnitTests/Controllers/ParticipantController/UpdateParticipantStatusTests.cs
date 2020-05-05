@@ -1,8 +1,10 @@
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
@@ -10,6 +12,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
@@ -26,6 +29,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         private readonly EventComponentHelper _eventComponentHelper = new EventComponentHelper();
         private Conference _testConference;
         private Mock<IConferenceCache> _conferenceCacheMock;
+        private Mock<ILogger<ParticipantsController>> _mockLogger;
+        private Mock<IBookingsApiClient> _bookingsApiClientMock;
 
         [SetUp]
         public void Setup()
@@ -34,6 +39,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _videoApiClientMock = new Mock<IVideoApiClient>();
             _eventHandlerFactoryMock = new Mock<IEventHandlerFactory>();
             _eventHandlerMock = new Mock<IEventHandler>();
+            _mockLogger = new Mock<ILogger<ParticipantsController>>();
+            _bookingsApiClientMock = new Mock<IBookingsApiClient>();
 
             _eventHandlerFactoryMock.Setup(x => x.Get(It.IsAny<EventHubEventType>())).Returns(_eventHandlerMock.Object);
             
@@ -49,16 +56,20 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 }
             };
             
-            _controller = new ParticipantsController(_videoApiClientMock.Object, _eventHandlerFactoryMock.Object, _conferenceCacheMock.Object)
+            _controller = new ParticipantsController(_videoApiClientMock.Object, _eventHandlerFactoryMock.Object, 
+                _conferenceCacheMock.Object, _mockLogger.Object, _bookingsApiClientMock.Object)
             {
                 ControllerContext = context
             };
         }
 
         [Test]
-        public async Task should_return_ok()
+        public async Task Should_return_ok()
         {
-            _conferenceCacheMock.Setup(x => x.GetConference(_testConference.Id)).Returns(_testConference);
+            _conferenceCacheMock.Setup(cache => cache.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+                .ReturnsAsync(_testConference);
+            
             var conferenceId = _testConference.Id;
             var request = new UpdateParticipantStatusEventRequest
             {
@@ -74,11 +85,11 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         }
         
         [Test]
-        public async Task should_call_api_when_cache_is_empty()
+        public async Task Should_call_api_when_cache_is_empty()
         {
-            _conferenceCacheMock.SetupSequence(cache => cache.GetConference(_testConference.Id))
-                .Returns((Conference) null)
-                .Returns(_testConference);
+            _conferenceCacheMock.Setup(cache => cache.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+                .ReturnsAsync(_testConference);
             
             var conferenceId = _testConference.Id;
             var request = new UpdateParticipantStatusEventRequest
@@ -96,7 +107,9 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         [Test]
         public async Task Should_throw_error_when_get_api_throws_error()
         {
-            _conferenceCacheMock.Setup(x => x.GetConference(_testConference.Id)).Returns(_testConference);
+            _conferenceCacheMock.Setup(cache => cache.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+                .ReturnsAsync(_testConference);
             
             var conferenceId = _testConference.Id;
             var request = new UpdateParticipantStatusEventRequest

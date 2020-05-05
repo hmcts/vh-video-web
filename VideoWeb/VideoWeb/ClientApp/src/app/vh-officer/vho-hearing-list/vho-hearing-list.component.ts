@@ -11,49 +11,49 @@ import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
     styleUrls: ['./vho-hearing-list.component.scss']
 })
 export class VhoHearingListComponent implements OnInit {
-  @Input() conferences: HearingSummary[];
-  @Output() selectedConference = new EventEmitter<HearingSummary>();
-  @Output() selectedParticipant = new EventEmitter<any>();
-  currentConference: HearingSummary;
+    @Input() conferences: HearingSummary[];
+    @Output() selectedConference = new EventEmitter<HearingSummary>();
+    @Output() selectedParticipant = new EventEmitter<any>();
+    currentConference: HearingSummary;
 
-  scrollConfig: PerfectScrollbarConfigInterface = {
-    suppressScrollX: true
-  };
+    scrollConfig: PerfectScrollbarConfigInterface = {
+        suppressScrollX: true
+    };
 
-   constructor(private clipboardService: ClipboardService) {}
+    constructor(private clipboardService: ClipboardService) {}
 
     ngOnInit() {}
 
-  isCurrentConference(conference: HearingSummary): boolean {
+    isCurrentConference(conference: HearingSummary): boolean {
         return this.currentConference != null && this.currentConference.id === conference.id;
     }
 
-  isOnTime(conference: HearingSummary): boolean {
+    isOnTime(conference: HearingSummary): boolean {
         return conference.isOnTime() || conference.isStarting();
     }
 
-  isSuspended(conference: HearingSummary): boolean {
+    isSuspended(conference: HearingSummary): boolean {
         return conference.status === ConferenceStatus.Suspended;
     }
 
-  isDelayed(conference: HearingSummary): boolean {
+    isDelayed(conference: HearingSummary): boolean {
         return conference.isDelayed();
     }
 
-  isPaused(conference: HearingSummary): boolean {
+    isPaused(conference: HearingSummary): boolean {
         return conference.isPaused();
     }
 
-  isInSession(conference: HearingSummary): boolean {
+    isInSession(conference: HearingSummary): boolean {
         return conference.isInSession();
     }
 
-  isClosed(conference: HearingSummary): boolean {
+    isClosed(conference: HearingSummary): boolean {
         return conference.isClosed();
     }
 
-  getConferenceStatusText(conference: HearingSummary): string {
-    const hearing = conference;
+    getConferenceStatusText(conference: HearingSummary): string {
+        const hearing = conference;
         if (hearing.getConference().status === ConferenceStatus.NotStarted) {
             if (hearing.isDelayed()) {
                 return 'Delayed';
@@ -69,14 +69,13 @@ export class VhoHearingListComponent implements OnInit {
         } else if (hearing.isInSession()) {
             return 'In Session';
         }
-        return '';
     }
 
-  getDuration(conference: HearingSummary): string {
+    getDuration(conference: HearingSummary): string {
         return conference.getDurationAsText();
     }
 
-  selectConference(conference: HearingSummary) {
+    selectConference(conference: HearingSummary) {
         this.currentConference = conference;
         this.selectedConference.emit(conference);
     }
@@ -85,11 +84,11 @@ export class VhoHearingListComponent implements OnInit {
         this.clipboardService.copyFromContent(conference.id);
     }
 
-  getParticipantsForConference(conference: HearingSummary): ParticipantSummary[] {
-    return conference.getParticipants();
-  }
+    getParticipantsForConference(conference: HearingSummary): ParticipantSummary[] {
+        return conference.getParticipants();
+    }
 
-  showParticipantGraph(selectedParticipant) {
-    this.selectedParticipant.emit(selectedParticipant);
-  }
+    showParticipantGraph(selectedParticipant) {
+        this.selectedParticipant.emit(selectedParticipant);
+    }
 }

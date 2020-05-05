@@ -3,18 +3,19 @@ import * as moment from 'moment';
 import {
     ConferenceForVhOfficerResponse,
     ConferenceResponse,
+    ConferenceResponseVho,
     ConferenceStatus,
+    ParticipantContactDetailsResponseVho,
     ParticipantForUserResponse,
+    ParticipantResponseVho,
     ParticipantStatus,
+    Role,
     SelfTestPexipResponse,
     TaskResponse,
-    TaskType,
-    TaskUserResponse,
-    Role,    ParticipantResponseVho,
-    ConferenceResponseVho
+    TaskType
 } from 'src/app/services/clients/api-client';
 import { InstantMessage } from 'src/app/services/models/instant-message';
-import { AlertFilter, AlertsStatus, HearingsFilter, ListFilter, StatusFilter } from '../../../shared/models/hearings-filter';
+import { AlertFilter, AlertsStatus, HearingsFilter, StatusFilter } from '../../../shared/models/hearings-filter';
 
 export class ConferenceTestData {
     getConferenceNow(): ConferenceForVhOfficerResponse {
@@ -78,9 +79,7 @@ export class ConferenceTestData {
             scheduled_duration: 50,
             status: ConferenceStatus.NotStarted,
             participants: this.getListOfParticipants(),
-            hearing_venue_name: 'Manchester',
-            number_of_unread_messages: 4,
-            no_of_pending_tasks: 3
+            hearing_venue_name: 'Manchester'
         });
         return conference;
     }
@@ -109,21 +108,14 @@ export class ConferenceTestData {
 
     getTestDataForFilter(): Array<ConferenceForVhOfficerResponse> {
         const testData: Array<ConferenceForVhOfficerResponse> = [];
-        const task1 = new TaskUserResponse({ id: 1, body: 'Disconnected' });
-        const task2 = new TaskUserResponse({ id: 2, body: 'Failed self-test (Bad Score)' });
         const conference1 = this.getConferenceNow();
         const conference2 = this.getConferenceNow();
         conference2.status = ConferenceStatus.InSession;
         conference2.hearing_venue_name = 'Manchester';
-        conference2.tasks = [];
-        conference2.tasks.push(task1);
-        conference2.tasks.push(task2);
 
         const conference3 = this.getConferenceNow();
         conference3.status = ConferenceStatus.InSession;
         conference3.hearing_venue_name = 'Manchester';
-        conference3.tasks = [];
-        conference3.tasks.push(task2);
 
         testData.push(conference1);
         testData.push(conference2);
@@ -230,10 +222,6 @@ export class ConferenceTestData {
         const participants: ParticipantResponseVho[] = [];
         const participant1 = new ParticipantResponseVho({
             id: '9F681318-4955-49AF-A887-DED64554429D',
-            contact_email: 'chris@green.com',
-            first_name: 'Chris',
-            last_name: 'Green',
-            contact_telephone: '0123456780',
             name: 'Mr Chris Green',
             status: ParticipantStatus.Available,
             role: Role.Individual,
@@ -245,10 +233,6 @@ export class ConferenceTestData {
 
         const participant2 = new ParticipantResponseVho({
             id: '9F681318-4955-49AF-A887-DED64554429J',
-            contact_email: 'james@green.com',
-            first_name: 'James',
-            last_name: 'Green',
-            contact_telephone: '0123456781',
             name: 'Mr James Green',
             representee: 'Chris Green',
             status: ParticipantStatus.NotSignedIn,
@@ -261,10 +245,6 @@ export class ConferenceTestData {
 
         const participant3 = new ParticipantResponseVho({
             id: '9F681318-4955-49AF-A887-DED64554429T',
-            contact_email: 'judge@kinly.com',
-            first_name: 'Jeff',
-            last_name: 'Kinly',
-            contact_telephone: '01235468791',
             name: 'Judge Fudge',
             status: ParticipantStatus.Available,
             role: Role.Judge,
@@ -277,6 +257,84 @@ export class ConferenceTestData {
         participants.push(participant1);
         participants.push(participant2);
         participants.push(participant3);
+        return participants;
+    }
+
+    getListOParticipantContactDetailsResponseVho(conferenceId: string, hearingVenueName: string): ParticipantContactDetailsResponseVho[] {
+        const participants: ParticipantContactDetailsResponseVho[] = [];
+        const participant1 = new ParticipantContactDetailsResponseVho({
+            id: '9F681318-4955-49AF-A887-DED64554429D',
+            name: 'Mr Chris Green',
+            status: ParticipantStatus.Available,
+            role: Role.Individual,
+            case_type_group: 'Defendent',
+            display_name: 'Greeno',
+            username: 'chris.green@hearings.net',
+            conference_id: conferenceId,
+            hearing_venue_name: hearingVenueName,
+            contact_email: 'chris.green@hearings.net',
+            contact_telephone: '123',
+            first_name: 'Chris',
+            last_name: 'Green',
+            ref_id: 'B505FA9D-8072-4F96-8CA6-4F0489DD6E08'
+        });
+
+        const participant2 = new ParticipantContactDetailsResponseVho({
+            id: '9F681318-4955-49AF-A887-DED64554429J',
+            name: 'Mr James Green',
+            status: ParticipantStatus.NotSignedIn,
+            role: Role.Representative,
+            display_name: 'James Green',
+            case_type_group: 'Defendent',
+            username: 'james.green@hearings.net',
+            conference_id: conferenceId,
+            hearing_venue_name: hearingVenueName,
+            contact_email: 'james.green@hearings.net',
+            contact_telephone: '456',
+            first_name: 'James',
+            last_name: 'Green',
+            ref_id: '072D80ED-6816-42AF-A0C0-2FAE0F65E17A'
+        });
+
+        const participant3 = new ParticipantContactDetailsResponseVho({
+            id: '9F681318-4955-49AF-A887-DED64554429T',
+            name: 'Judge Fudge',
+            status: ParticipantStatus.Available,
+            role: Role.Judge,
+            display_name: 'Judge Fudge',
+            username: 'judge.fudge@hearings.net',
+            case_type_group: 'Judge',
+            conference_id: conferenceId,
+            hearing_venue_name: hearingVenueName,
+            contact_email: 'judge.fudge@hearings.net',
+            contact_telephone: '789',
+            first_name: 'Judge',
+            last_name: 'Fudge',
+            ref_id: '9B4737C9-5D8A-4B67-8569-EF8185FFE6E3',
+            judge_in_another_hearing: true
+        });
+
+        const participant4 = new ParticipantContactDetailsResponseVho({
+            id: '9D13E6A4-035F-47B3-9F5E-72FD2F2E0DFD',
+            name: 'Judge Fudge',
+            status: ParticipantStatus.Available,
+            role: Role.Judge,
+            display_name: 'Judge Fudge',
+            username: 'judge.fudge@hearings.net',
+            case_type_group: 'Judge',
+            conference_id: '6D4F28D0-0638-48F7-9C34-18221C3F87F2',
+            hearing_venue_name: hearingVenueName,
+            contact_email: 'judge.fudge@hearings.net',
+            contact_telephone: '910',
+            first_name: 'Judge',
+            last_name: 'Fudge',
+            ref_id: '9B4737C9-5D8A-4B67-8569-EF8185FFE6E3'
+        });
+
+        participants.push(participant1);
+        participants.push(participant2);
+        participants.push(participant3);
+        participants.push(participant4);
         return participants;
     }
 
@@ -309,9 +367,6 @@ export class ConferenceTestData {
         filter.statuses.push(new StatusFilter('In Session', ConferenceStatus.InSession, false));
         filter.statuses.push(new StatusFilter('Not started', ConferenceStatus.NotStarted, false));
 
-        filter.locations.push(new ListFilter('Birmingham', false));
-        filter.locations.push(new ListFilter('Manchester', false));
-
         filter.alerts.push(new AlertFilter('Disconnected', AlertsStatus.Disconnected, 'Disconnected', false));
         filter.alerts.push(new AlertFilter('Self-test failed', AlertsStatus.FailedSelfTest, 'self-test', false));
         return filter;
@@ -325,9 +380,7 @@ export class ConferenceTestData {
             id: Guid.create().toString(),
             from: 'vho.user@hearings.net',
             message: 'test message from vho',
-            timestamp: moment(now)
-                .subtract(3, 'minutes')
-                .toDate()
+            timestamp: moment(now).subtract(3, 'minutes').toDate()
         });
 
         const message2 = new InstantMessage({
@@ -335,9 +388,7 @@ export class ConferenceTestData {
             id: Guid.create().toString(),
             from: 'judge.fudge@hearings.net',
             message: 'test message from judge',
-            timestamp: moment(now)
-                .subtract(5, 'minutes')
-                .toDate()
+            timestamp: moment(now).subtract(5, 'minutes').toDate()
         });
 
         const message3 = new InstantMessage({
@@ -345,9 +396,7 @@ export class ConferenceTestData {
             id: Guid.create().toString(),
             from: 'vho.user@hearings.net',
             message: 'test message from vho 2',
-            timestamp: moment(now)
-                .subtract(8, 'minutes')
-                .toDate()
+            timestamp: moment(now).subtract(8, 'minutes').toDate()
         });
 
         const message4 = new InstantMessage({
@@ -355,9 +404,7 @@ export class ConferenceTestData {
             id: Guid.create().toString(),
             from: 'vho.user@hearings.net',
             message: 'test message from vho 3',
-            timestamp: moment(now)
-                .subtract(10, 'minutes')
-                .toDate()
+            timestamp: moment(now).subtract(10, 'minutes').toDate()
         });
 
         messages.push(message1);

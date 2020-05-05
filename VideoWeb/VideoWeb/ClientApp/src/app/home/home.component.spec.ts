@@ -1,76 +1,84 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { configureTestSuite } from 'ng-bullet';
 import { ProfileService } from '../services/api/profile.service';
-import { UserProfileResponse, Role } from '../services/clients/api-client';
+import { Role, UserProfileResponse } from '../services/clients/api-client';
 import { DeviceTypeService } from '../services/device-type.service';
-import { Logger } from '../services/logging/logger-base';
-import { PageUrls } from '../shared/page-url.constants';
-import { SharedModule } from '../shared/shared.module';
-import { MockLogger } from '../testing/mocks/MockLogger';
+import { ErrorService } from '../services/error.service';
+import { pageUrls } from '../shared/page-url.constants';
 import { HomeComponent } from './home.component';
+import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 
 describe('HomeComponent', () => {
     let component: HomeComponent;
-    let fixture: ComponentFixture<HomeComponent>;
-    let router: Router;
+    let router: jasmine.SpyObj<Router>;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
     let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
+    let errorServiceSpy: jasmine.SpyObj<ErrorService>;
 
-    configureTestSuite(() => {
+    beforeAll(() => {
+        router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
         deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isMobile', 'isTablet', 'isDesktop']);
-        TestBed.configureTestingModule({
-            imports: [RouterTestingModule, SharedModule],
-            declarations: [HomeComponent],
-            providers: [
-                { provide: ProfileService, useValue: profileServiceSpy },
-                { provide: DeviceTypeService, useValue: deviceTypeServiceSpy },
-                { provide: Logger, useClass: MockLogger }
-            ]
-        });
+        errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError']);
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(HomeComponent);
-        component = fixture.componentInstance;
-        router = TestBed.get(Router);
-        spyOn(router, 'navigate').and.returnValue(true);
+        component = new HomeComponent(router, profileServiceSpy, errorServiceSpy, deviceTypeServiceSpy);
+        router.navigate.and.callFake(() => Promise.resolve(true));
     });
 
-    it('should go to judge hearing list', async () => {
+    it('should go to judge hearing list if user is a judge', async () => {
         const profile = new UserProfileResponse({ role: Role.Judge });
         component.navigateToHearingList(profile);
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.JudgeHearingList]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeHearingList]);
     });
 
-    it('should go to admin hearing list', () => {
+    it('should go to admin venue list if user is a vho', () => {
         const profile = new UserProfileResponse({ role: Role.VideoHearingsOfficer });
         component.navigateToHearingList(profile);
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.AdminHearingList]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.AdminVenueList]);
     });
 
-    it('should go to participant hearing list', () => {
+    it('should go to participant hearing list if user is a representative', () => {
         const profile = new UserProfileResponse({ role: Role.Representative });
         component.navigateToHearingList(profile);
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.ParticipantHearingList]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.ParticipantHearingList]);
+    });
+
+    it('should go to participant hearing list if user is an individual', () => {
+        const profile = new UserProfileResponse({ role: Role.Individual });
+        component.navigateToHearingList(profile);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.ParticipantHearingList]);
+    });
+
+    it('should go to unauthorised if user is a case admin', () => {
+        const profile = new UserProfileResponse({ role: Role.CaseAdmin });
+        component.navigateToHearingList(profile);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.Unauthorised]);
     });
 
     it('should redirect to signon-a-computer screen if on a mobile device', () => {
         deviceTypeServiceSpy.isDesktop.and.returnValue(false);
-        fixture.detectChanges();
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.SignonAComputer]);
+        component.ngOnInit();
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.SignonAComputer]);
     });
 
-    it('should navigate to hearing list when device is a desktop', async () => {
+    it('should navigate to hearing list when device is a desktop', fakeAsync(() => {
         const profile = new UserProfileResponse({ role: Role.Representative });
-        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
+        profileServiceSpy.getUserProfile.and.callFake(() => Promise.resolve(profile));
         deviceTypeServiceSpy.isDesktop.and.returnValue(true);
         spyOn(component, 'navigateToHearingList');
-
-        fixture.detectChanges();
-        await fixture.whenStable();
+        component.ngOnInit();
+        flushMicrotasks();
         expect(component.navigateToHearingList).toHaveBeenCalledWith(profile);
-    });
+    }));
+
+    it('should let error service manage API error when get profile fails', fakeAsync(() => {
+        const error = { error: 'test error', statusCode: 500 };
+        profileServiceSpy.getUserProfile.and.returnValue(Promise.reject(error));
+        deviceTypeServiceSpy.isDesktop.and.returnValue(true);
+        spyOn(component, 'navigateToHearingList');
+        component.ngOnInit();
+        flushMicrotasks();
+        expect(errorServiceSpy.handleApiError).toHaveBeenCalledWith(error);
+    }));
 });

@@ -14,8 +14,8 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public sealed class VideoHearingsOfficerCallSteps
     {
-        private const int SecondsWaitToCallAndAnswer = 3;
-        private const int SecondsDelayBeforeCallingTheParticipant = 3;
+        private const int SecondsWaitToCallAndAnswer = 5;
+        private const int SecondsDelayBeforeCallingTheParticipant = 5;
         private const int Retries = 60;
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _c;
@@ -31,7 +31,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the Video Hearings Officer starts a call with (.*)")]
         public void WhenTheVideoHearingsOfficerStartsACallWithIndividual(string user)
         {
+            Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser.Key], _c.Test.Conference.Id);
             _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
+            Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser.Key]);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.SwitchTo().Frame(AdminPanelPage.AdminIframeId);
             var participant = _c.Test.ConferenceParticipants.Find(x => x.Name.ToLower().Contains(user.ToLower()));
@@ -90,7 +92,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the option to call (.*) is not visible")]
         public void ThenTheOptionToCallIsNotVisible(string user)
         {
+            Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser.Key], _c.Test.Conference.Id);
             _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
+            Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser.Key]);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.SwitchTo().Frame(AdminPanelPage.AdminIframeId);
             var participant = _c.Test.ConferenceParticipants.Find(x => x.Name.ToLower().Contains(user.ToLower()));

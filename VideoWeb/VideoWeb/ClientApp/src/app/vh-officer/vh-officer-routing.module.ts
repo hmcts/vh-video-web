@@ -1,9 +1,14 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { VhoHearingsComponent } from './hearings/vho-hearings.component';
-import { AdminGuard } from '../security/admin.guard';
+import { VenueListComponent } from './venue-list/venue-list.component';
+import { pageUrls } from '../shared/page-url.constants';
 
-const routes: Routes = [{ path: '', component: VhoHearingsComponent, canActivate: [AdminGuard], data: { title: 'VHO Admin dashboard' } }];
+const routes: Routes = [
+    { path: '', redirectTo: pageUrls.AdminVenueList },
+    { path: 'venue-list', component: VenueListComponent, data: { title: 'VHO Admin dashboard' } },
+    { path: 'hearing-list', component: VhoHearingsComponent, data: { title: 'VHO Admin dashboard' } }
+];
 
 @NgModule({
     imports: [RouterModule.forChild(routes)],

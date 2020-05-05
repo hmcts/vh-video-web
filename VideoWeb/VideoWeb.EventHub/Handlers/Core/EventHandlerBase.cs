@@ -51,12 +51,7 @@ namespace VideoWeb.EventHub.Handlers.Core
 
         private async Task<Conference> GetConference(Guid conferenceId)
         {
-            var conference = _conferenceCache.GetConference(conferenceId);
-            if (conference != null) return conference;
-            var conferenceDetail = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-            await _conferenceCache.AddConferenceToCache(conferenceDetail);
-
-            return _conferenceCache.GetConference(conferenceId);
+            return await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
 
         }
 
@@ -70,13 +65,13 @@ namespace VideoWeb.EventHub.Handlers.Core
             foreach (var participant in SourceConference.Participants)
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
-                    .ParticipantStatusMessage(SourceParticipant.Id, participantState);
+                    .ParticipantStatusMessage(SourceParticipant.Id, SourceParticipant.Username, SourceConference.Id, participantState);
                 _logger.LogTrace($"Participant Status: Participant Id: { participant.Id } | " +
                     $"Role: { participant.Role } | Participant State: { participantState } | Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
             }
             
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
-                .ParticipantStatusMessage(SourceParticipant.Id, participantState);
+                .ParticipantStatusMessage(SourceParticipant.Id, SourceParticipant.Username, SourceConference.Id, participantState);
             _logger.LogTrace($"Participant Status: Participant Id: { SourceParticipant.Id } | " +
                 $"Role: { SourceParticipant.Role } | Participant State: { participantState } | Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
         }

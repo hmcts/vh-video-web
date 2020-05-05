@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
+import { ConferenceStatus } from 'src/app/services/clients/api-client';
+import { SessionStorage } from '../../services/session-storage';
 import {
+    AlertFilter,
+    AlertsStatus,
+    ExtendedConferenceStatus,
     HearingsFilter,
     ListFilter,
-    StatusFilter,
-    ExtendedConferenceStatus,
-    AlertsStatus,
-    AlertFilter
+    StatusFilter
 } from '../../shared/models/hearings-filter';
-import { SessionStorage } from '../../services/session-storage';
-import { ConferenceStatus, HearingVenueResponse } from 'src/app/services/clients/api-client';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { VhoStorageKeys } from './models/session-keys';
 
 @Injectable({
     providedIn: 'root'
@@ -17,33 +17,26 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 export class HearingsFilterOptionsService {
     private hearingsFilter: HearingsFilter;
     private readonly hearingsFilterStorage: SessionStorage<HearingsFilter>;
-    readonly HEARINGS_FITER_KEY = 'vho.hearings.filter';
 
-    constructor(private videoWebService: VideoWebService) {
-        this.hearingsFilterStorage = new SessionStorage(this.HEARINGS_FITER_KEY);
+    constructor() {
+        this.hearingsFilterStorage = new SessionStorage(VhoStorageKeys.HEARINGS_FITER_KEY);
     }
 
-    async getFilter() {
+    getFilter() {
         this.hearingsFilter = this.hearingsFilterStorage.get();
         if (!this.hearingsFilter) {
-            await this.setFilterOptions();
+            this.setFilterOptions();
         }
         this.hearingsFilter.numberFilterOptions = this.countOptions(this.hearingsFilter);
         return this.hearingsFilter;
     }
 
-    private async setFilterOptions() {
+    private setFilterOptions() {
         this.hearingsFilter = new HearingsFilter();
         this.setStatuses();
-        await this.setLocations();
         this.setAlerts();
 
         return this.hearingsFilter;
-    }
-
-    private async setLocations() {
-        const locations = await this.videoWebService.getHearingVenues();
-        this.addLocations(locations);
     }
 
     private setAlerts() {
@@ -63,13 +56,6 @@ export class HearingsFilterOptionsService {
             this.hearingsFilter.statuses.push(itemStatus);
         });
         this.hearingsFilter.statuses.push(new StatusFilter('Delayed', ExtendedConferenceStatus.Delayed, false));
-    }
-
-    private addLocations(locations: HearingVenueResponse[]) {
-        locations.forEach((location) => {
-            const itemLocation = new ListFilter(location.name, false);
-            this.hearingsFilter.locations.push(itemLocation);
-        });
     }
 
     private addAlerts(alerts: AlertsStatus[]) {
@@ -130,13 +116,13 @@ export class HearingsFilterOptionsService {
     }
 
     countOptions(filter: HearingsFilter) {
-        return this.count(filter.statuses) + this.count(filter.locations) + this.count(filter.alerts);
+        return this.count(filter.statuses) + this.count(filter.alerts);
     }
 
     private count(options: ListFilter[]) {
         let countOptions = 0;
         options.forEach((x) => {
-            if (x.Selected) {
+            if (x.selected) {
                 countOptions++;
             }
         });

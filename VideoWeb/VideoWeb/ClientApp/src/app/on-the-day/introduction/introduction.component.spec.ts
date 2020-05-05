@@ -7,7 +7,7 @@ import { configureTestSuite } from 'ng-bullet';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceLite } from 'src/app/services/models/conference-lite';
-import { PageUrls } from 'src/app/shared/page-url.constants';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
@@ -62,6 +62,6 @@ describe('IntroductionComponent', () => {
     it('should navigate to equipment check', () => {
         spyOn(router, 'navigate').and.callFake(() => {});
         component.goToEquipmentCheck();
-        expect(router.navigate).toHaveBeenCalledWith([PageUrls.EquipmentCheck, conference.id]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.EquipmentCheck, conference.id]);
     });
 });
