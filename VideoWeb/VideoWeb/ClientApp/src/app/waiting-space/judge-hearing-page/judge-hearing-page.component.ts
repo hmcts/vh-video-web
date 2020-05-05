@@ -180,8 +180,8 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
     async retrieveAudioStreamInfo(hearingId) {
         this.logger.debug(`retrieve audio stream info for ${hearingId}`);
         try {
-            const audioStreamInfo = await this.audioRecordingService.getAudioStreamInfo(hearingId);
-            if (!audioStreamInfo.is_recording && !this.continueWithNoRecording) {
+            const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId);
+            if (!audioStreamWorking && !this.continueWithNoRecording) {
                 this.showAudioRecordingAlert = true;
             }
         } catch (error) {

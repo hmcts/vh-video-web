@@ -25,7 +25,7 @@ namespace VideoWeb.Controllers
 
         [HttpGet("audiostreams/{hearingId}")]
         [SwaggerOperation(OperationId = "GetAudioStreamInfo")]
-        [ProducesResponseType(typeof(AudioStreamInfoResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAudioStreamInfoAsync(Guid hearingId)
         {
@@ -35,7 +35,7 @@ namespace VideoWeb.Controllers
             {
               var response = await _videoApiClient.GetAudioStreamInfoAsync(hearingId);
 
-                return Ok(response);
+                return Ok(response.Is_recording);
             }
             catch (VideoApiException e)
             {
