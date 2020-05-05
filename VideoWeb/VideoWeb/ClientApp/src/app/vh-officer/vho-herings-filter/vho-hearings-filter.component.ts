@@ -5,7 +5,7 @@ import { HearingsFilterOptionsService } from '../services/hearings-filter-option
 @Component({
     selector: 'app-vho-hearings-filter',
     templateUrl: './vho-hearings-filter.component.html',
-    styleUrls: ['./vho-hearings-filter.component.scss']
+    styleUrls: ['./vho-hearings-filter.component.scss', '../vho-global-styles.scss']
 })
 export class VhoHearingsFilterComponent implements OnInit {
     @Output()
@@ -42,7 +42,7 @@ export class VhoHearingsFilterComponent implements OnInit {
     }
 
     private removeOptions(options: ListFilter[]) {
-        options.forEach((x) => (x.selected = false));
+        options.forEach(x => (x.selected = false));
     }
 
     statusOptionSelected(optionIndex: number) {
@@ -62,7 +62,7 @@ export class VhoHearingsFilterComponent implements OnInit {
     }
 
     private isSelectedFilterOptions(options: ListFilter[]): boolean {
-        const selectedOptions = options.filter((x) => x.selected);
+        const selectedOptions = options.filter(x => x.selected);
         return selectedOptions && selectedOptions.length > 0;
     }
 
