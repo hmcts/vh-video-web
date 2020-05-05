@@ -82,46 +82,34 @@ describe('ParticipantNetworkStatusComponent', () => {
         expect(videoWebServiceSpy.getParticipantHeartbeats).toHaveBeenCalled();
     });
 
-    it('should return "good signal" image', () => {
-        const p = new ConferenceTestData().getConferenceFuture().participants.map(x => new ParticipantSummary(x))[0];
-        p.status = ParticipantStatus.Available;
-        p.participantHertBeatHealth = new ParticipantHeartbeat(
-            '1111-1111-1111-1111',
-            '1111-1111-1111-1111',
-            HeartbeatHealth.Good,
-            'Chrome',
-            '80.0.3987.132'
-        );
-        component.participant = p;
-        expect(component.getParticipantNetworkStatus()).toBe('good-signal.png');
-    });
+    const networkStatusTestCases = [
+        { status: ParticipantStatus.Available, health: HeartbeatHealth.Good, browser: 'Chrome', expected: 'good-signal.png' },
+        { status: ParticipantStatus.Available, health: HeartbeatHealth.Bad, browser: 'Chrome', expected: 'bad-signal.png' },
+        { status: ParticipantStatus.Available, health: HeartbeatHealth.Poor, browser: 'Chrome', expected: 'poor-signal.png' },
+        { status: ParticipantStatus.Disconnected, health: HeartbeatHealth.None, browser: 'Chrome', expected: 'disconnected.png' },
+        {
+            status: ParticipantStatus.Available,
+            health: HeartbeatHealth.None,
+            browser: 'Safari',
+            expected: 'incompatible-browser-signal.png'
+        },
+        { status: ParticipantStatus.Available, health: HeartbeatHealth.None, browser: 'Edge', expected: 'incompatible-browser-signal.png' }
+    ];
 
-    it('should return "bad signal" image', () => {
-        const p = new ConferenceTestData().getConferenceFuture().participants.map(x => new ParticipantSummary(x))[0];
-        p.status = ParticipantStatus.Available;
-        p.participantHertBeatHealth = new ParticipantHeartbeat(
-            '1111-1111-1111-1111',
-            '1111-1111-1111-1111',
-            HeartbeatHealth.Bad,
-            'Chrome',
-            '80.0.3987.132'
-        );
-        component.participant = p;
-        expect(component.getParticipantNetworkStatus()).toBe('bad-signal.png');
-    });
-
-    it('should return "poor signal" image', () => {
-        const p = new ConferenceTestData().getConferenceFuture().participants.map(x => new ParticipantSummary(x))[0];
-        p.status = ParticipantStatus.Available;
-        p.participantHertBeatHealth = new ParticipantHeartbeat(
-            '1111-1111-1111-1111',
-            '1111-1111-1111-1111',
-            HeartbeatHealth.Poor,
-            'Chrome',
-            '80.0.3987.132'
-        );
-        component.participant = p;
-        expect(component.getParticipantNetworkStatus()).toBe('poor-signal.png');
+    networkStatusTestCases.forEach(test => {
+        it(`should return ${test.expected} when participant is ${test.status} and heartbeat is ${test.health} with on ${test.browser}`, () => {
+            const p = new ConferenceTestData().getConferenceFuture().participants.map(x => new ParticipantSummary(x))[0];
+            p.status = test.status;
+            p.participantHertBeatHealth = new ParticipantHeartbeat(
+                '1111-1111-1111-1111',
+                '1111-1111-1111-1111',
+                test.health,
+                test.browser,
+                '80.0.3987.132'
+            );
+            component.participant = p;
+            expect(component.getParticipantNetworkStatus()).toBe(test.expected);
+        });
     });
 
     it('should return "not signed in" class', () => {
@@ -135,44 +123,6 @@ describe('ParticipantNetworkStatusComponent', () => {
         p.status = ParticipantStatus.Disconnected;
         component.participant = p;
         expect(component.getParticipantNetworkStatus()).toBe('disconnected.png');
-    });
-
-    it('should return "disconnected" class', () => {
-        const p = new ConferenceTestData().getConferenceFuture().participants.map(x => new ParticipantSummary(x))[0];
-        p.participantHertBeatHealth = new ParticipantHeartbeat(
-            '1111-1111-1111-1111',
-            '1111-1111-1111-1111',
-            HeartbeatHealth.None,
-            'Chrome',
-            '80.0.3987.132'
-        );
-        p.status = ParticipantStatus.Disconnected;
-        component.participant = p;
-
-        expect(component.getParticipantNetworkStatus()).toBe('disconnected.png');
-    });
-
-    it('should return "non compatible browser" image', () => {
-        const p = new ConferenceTestData().getConferenceFuture().participants.map(x => new ParticipantSummary(x))[0];
-        p.participantHertBeatHealth = new ParticipantHeartbeat(
-            '1111-1111-1111-1111',
-            '1111-1111-1111-1111',
-            HeartbeatHealth.None,
-            'Safari',
-            '13.0'
-        );
-        component.participant = p;
-        expect(component.getParticipantNetworkStatus()).toBe('incompatible-browser-signal.png');
-
-        p.participantHertBeatHealth = new ParticipantHeartbeat(
-            '1111-1111-1111-1111',
-            '1111-1111-1111-1111',
-            HeartbeatHealth.None,
-            'Edge',
-            '38.14393'
-        );
-        component.participant = p;
-        expect(component.getParticipantNetworkStatus()).toBe('incompatible-browser-signal.png');
     });
 
     it('should return not-signed-in when no participant defined', () => {
