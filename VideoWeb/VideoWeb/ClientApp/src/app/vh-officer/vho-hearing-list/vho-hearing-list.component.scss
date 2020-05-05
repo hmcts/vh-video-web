@@ -1,4 +1,12 @@
-@import "~govuk-frontend/govuk/all";
+@import '~govuk-frontend/govuk/all';
+
+.vh-width-main {
+  width: 90%;
+}
+
+.vh-width-traffic {
+  width: 10%;
+}
 
 .status-badge {
   font-size: 0.7em;
@@ -7,70 +15,65 @@
 .conference-suspended,
 .conference-delayed,
 .conference-not-ready {
-  background-color: govuk-colour("red");
-  color: govuk-colour("white");
-  font-weight: bold;
-}
-
-.pending-alerts {
-  color: govuk-colour("red");
+  background-color: govuk-colour('red');
+  color: govuk-colour('white');
   font-weight: bold;
 }
 
 .conference-in-session {
-  background-color: govuk-colour("blue");
-  color: govuk-colour("white");
+  background-color: govuk-colour('blue');
+  color: govuk-colour('white');
   font-weight: bold;
 }
 
 .conference-paused {
-  background-color: govuk-colour("yellow");
-  color: govuk-colour("black");
+  background-color: govuk-colour('yellow');
+  color: govuk-colour('black');
   font-weight: bold;
 }
 
 .conference-ready {
-  background-color: govuk-colour("green");
-  color: govuk-colour("white");
+  background-color: govuk-colour('green');
+  color: govuk-colour('white');
   font-weight: bold;
 }
 
 .conference-closed {
-  background-color: govuk-colour("black");
-  color: govuk-colour("white");
+  background-color: govuk-colour('black');
+  color: govuk-colour('white');
   font-weight: bold;
 }
 
 .selected-conference {
-  background: govuk-colour("light-grey");
+  background: govuk-colour('light-grey');
 }
 
 .report-conference {
   background: transparent;
   border-style: solid;
   border-width: 1.5px;
-  border-color: govuk-colour("dark-grey");
-  color: govuk-colour("dark-grey");
+  border-color: govuk-colour('dark-grey');
+  color: govuk-colour('dark-grey');
   font-weight: bold;
 }
 
 .selected-conference .report-conference {
-  background: govuk-colour("dark-grey");
+  background: govuk-colour('dark-grey');
   border-style: solid;
   border-width: 1.5px;
-  border-color: govuk-colour("dark-grey");
-  color: govuk-colour("white");
+  border-color: govuk-colour('dark-grey');
+  color: govuk-colour('white');
   font-weight: bold;
 }
 
 .report-conference:active {
-  background: govuk-colour("dark-grey");
-  color: govuk-colour("white");
+  background: govuk-colour('dark-grey');
+  color: govuk-colour('white');
 }
 
 .selected-conference .report-conference:active {
-  background: govuk-colour("white");
-  color: govuk-colour("dark-grey");
+  background: govuk-colour('white');
+  color: govuk-colour('dark-grey');
 }
 
 .copy-clipboard {
@@ -92,7 +95,7 @@
   visibility: hidden;
   width: 215px;
   height: 20px;
-  background-color: govuk-colour("white");
+  background-color: govuk-colour('white');
   color: $govuk-text-colour;
   padding: 0 25px 25px 25px;
 
@@ -106,11 +109,11 @@
   -o-transform: translateY(82px, 14px);
   transform: translate(82px, 14px);
 
-  -webkit-transition: all .25s ease-out;
-  -moz-transition: all .25s ease-out;
-  -ms-transition: all .25s ease-out;
-  -o-transition: all .25s ease-out;
-  transition: all .25s ease-out;
+  -webkit-transition: all 0.25s ease-out;
+  -moz-transition: all 0.25s ease-out;
+  -ms-transition: all 0.25s ease-out;
+  -o-transition: all 0.25s ease-out;
+  transition: all 0.25s ease-out;
 
   -webkit-box-shadow: 2px 2px 6px $govuk-border-colour;
   -moz-box-shadow: 2px 2px 6px $govuk-border-colour;
@@ -134,11 +137,11 @@
   border-right: solid transparent 10px;
   border-bottom: solid gray 10px;
 
-  -webkit-transition: all .25s ease-out;
-  -moz-transition: all .25s ease-out;
-  -ms-transition: all .25s ease-out;
-  -o-transition: all .25s ease-out;
-  transition: all .25s ease-out;
+  -webkit-transition: all 0.25s ease-out;
+  -moz-transition: all 0.25s ease-out;
+  -ms-transition: all 0.25s ease-out;
+  -o-transition: all 0.25s ease-out;
+  transition: all 0.25s ease-out;
 }
 
 #tooltip-1 {
@@ -157,90 +160,8 @@
   }
 }
 
-.notification-badge {
-  min-width: 45px;
-  width: auto;
-  height: 28px;
-  border-radius: 4px;
-  position: relative;
-  float: right;
-  text-align: center;
-  margin-bottom: 15px;
-  font-weight: bold;
-  margin-right: 4vw;
-}
-
-.notification-badge.has-messages {
-  background-color: govuk-colour("blue");
-}
-
-.notification-badge.no-messages {
-  background-color: govuk-colour("mid-grey");
-}
-
-.notification-badge:after {
-  content: "";
-  display: block;
-  position: absolute;
-  width: 0;
-  height: 0;
-  left: 10px;
-  bottom: -10px;
-  border-left: 2px solid transparent;
-  border-right: 10px solid transparent;
-}
-
-.notification-badge.has-messages:after {
-  border-top: 10px solid govuk-colour("blue");
-}
-
-.notification-badge.no-messages:after {
-  border-top: 10px solid govuk-colour("mid-grey");
-}
-
-.notification-badge-counter.has-messages {
-  font-size: 0.8em;
-  text-align: center;
-  color: govuk-colour("white");
-}
-
-.notification-badge-counter.no-messages {
-  font-size: 0.8em;
-  text-align: center;
-  color: govuk-colour("mid-grey");
-}
-
-.alert-badge {
-  position: relative;
-  font-weight: bold;
-}
-
-.alert-badge[data-badge]:after {
-  position: absolute;
-  right: -35px;
-  color: govuk-colour("white");
-  width: 25px;
-  height: 25px;
-  font-size: 0.7em;
-  padding: 5px;
-  text-align: center;
-  line-height: 25px;
-  border-radius: 50%;
-  box-shadow: 0 0 1px #333;
-}
-
 .right-side {
   float: right;
-}
-
-.has-alerts:after {
-  background: govuk-colour("red");
-  content: attr(data-badge);
-}
-
-.no-alerts:after {
-  background: govuk-colour("mid-grey");
-  content: "";
 }
 
 .vh-col {

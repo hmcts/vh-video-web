@@ -114,38 +114,16 @@ namespace VideoWeb.Controllers
                 conferences = conferences.Where(c => ConferenceHelper.HasNotPassed(c.Status, c.Closed_date_time))
                     .ToList();
                 conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();
-                
-                var alertConfDictionary = new Dictionary<Guid, List<TaskResponse>>();
-                foreach (var conf in conferences)
-                {
-                    var alerts = await _videoApiClient.GetTasksForConferenceAsync(conf.Id);
-                    alertConfDictionary.Add(conf.Id, alerts);
-                }
-                
-                
-                var tasks = conferences.Select(c => MapConferenceForVhoAsync(c, alertConfDictionary[c.Id])).ToArray();
 
-                var response = await Task.WhenAll(tasks);
+                var responses = conferences.Select(ConferenceForVhOfficerResponseMapper
+                    .MapConferenceSummaryToResponseModel).ToList();
 
-                return Ok(response.ToList());
+                return Ok(responses);
             }
             catch (VideoApiException e)
             {
                 return StatusCode(e.StatusCode, e.Response);
             }
-        }
-
-        private async Task<ConferenceForVhOfficerResponse> MapConferenceForVhoAsync(
-            ConferenceForAdminResponse conference, IList<TaskResponse> taskResponses)
-        {
-            if (!conference.IsInStateToChat())
-            {
-                return ConferenceForVhOfficerResponseMapper.MapConferenceSummaryToResponseModel(conference, null, taskResponses);
-            }
-
-            var messages = await _videoApiClient.GetInstantMessageHistoryAsync(conference.Id);
-
-            return ConferenceForVhOfficerResponseMapper.MapConferenceSummaryToResponseModel(conference, messages, taskResponses);
         }
 
 

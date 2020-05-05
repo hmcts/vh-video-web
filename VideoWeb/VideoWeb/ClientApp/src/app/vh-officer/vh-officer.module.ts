@@ -19,6 +19,8 @@ import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { VenueListComponent } from './venue-list/venue-list.component';
 import { ParticipantStatusReader } from '../shared/models/participant-status-reader';
 import { VHODashboardHelper } from './helper';
+import { PendingTasksComponent } from './pending-tasks/pending-tasks.component';
+import { UnreadMessagesComponent } from './unread-messages/unread-messages.component';
 
 @NgModule({
     declarations: [
@@ -31,7 +33,9 @@ import { VHODashboardHelper } from './helper';
         VhoChatComponent,
         ParticipantNetworkStatusComponent,
         MonitoringGraphComponent,
-        VenueListComponent
+        VenueListComponent,
+        PendingTasksComponent,
+        UnreadMessagesComponent
     ],
     imports: [
         CommonModule,

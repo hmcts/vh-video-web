@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using VideoWeb.Common.Models;
-using VideoWeb.Contract.Responses;
 using Conference = VideoWeb.Services.Video.ConferenceForJudgeResponse;
 using Participant = VideoWeb.Services.Video.ParticipantForJudgeResponse;
 using ConferenceForJudgeResponse = VideoWeb.Contract.Responses.ConferenceForJudgeResponse;
