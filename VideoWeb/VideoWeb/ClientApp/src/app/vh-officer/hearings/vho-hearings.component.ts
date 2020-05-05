@@ -29,7 +29,7 @@ import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.co
 @Component({
     selector: 'app-vho-hearings',
     templateUrl: './vho-hearings.component.html',
-    styleUrls: ['./vho-hearings.component.scss']
+    styleUrls: ['./vho-hearings.component.scss', '../vho-global-styles.scss']
 })
 export class VhoHearingsComponent implements OnInit, OnDestroy {
     adminFrameWidth: number;
@@ -102,7 +102,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     getConferenceForSelectedAllocations() {
         this.loadVenueSelection();
         this.retrieveHearingsForVhOfficer(true);
-        this.setupConferenceInterval();
+        // this.setupConferenceInterval();
     }
 
     loadVenueSelection(): void {

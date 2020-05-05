@@ -8,7 +8,7 @@ import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 @Component({
     selector: 'app-vho-hearing-list',
     templateUrl: './vho-hearing-list.component.html',
-    styleUrls: ['./vho-hearing-list.component.scss']
+    styleUrls: ['./vho-hearing-list.component.scss', '../vho-global-styles.scss']
 })
 export class VhoHearingListComponent implements OnInit {
     @Input() conferences: HearingSummary[];

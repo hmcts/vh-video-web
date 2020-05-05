@@ -9,7 +9,7 @@ import { ParticipantGraphInfo } from '../services/models/participant-graph-info'
 @Component({
     selector: 'app-monitoring-graph',
     templateUrl: './monitoring-graph.component.html',
-    styleUrls: ['./monitoring-graph.component.scss']
+    styleUrls: ['./monitoring-graph.component.scss', '../vho-global-styles.scss']
 })
 export class MonitoringGraphComponent implements OnInit {
     @Input('pakagesLostData')

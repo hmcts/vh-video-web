@@ -9,7 +9,7 @@ import { VHODashboardHelper } from '../helper';
 @Component({
     selector: 'app-tasks-table',
     templateUrl: './tasks-table.component.html',
-    styleUrls: ['./tasks-table.component.scss']
+    styleUrls: ['./tasks-table.component.scss', '../vho-global-styles.scss']
 })
 export class TasksTableComponent implements OnInit {
     taskDivWidth: number;
