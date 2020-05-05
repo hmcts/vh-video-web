@@ -161,4 +161,11 @@ describe('JudgeHearingPageComponent when conference in session', () => {
         component.closeAlert(true);
         expect(component.continueWithNoRecording).toBeTruthy();
     });
+    it('should retrieve audio recording stream and if no error then no alert', () => {
+        audioRecordingServiceMock.getAudioStreamInfo.and.returnValue(true);
+        const hearingId = '5256626262626';
+        component.retrieveAudioStreamInfo(hearingId);
+
+        expect(component.showAudioRecordingAlert).toBeFalsy();
+    });
 });
