@@ -1,5 +1,23 @@
+@import '~govuk-frontend/govuk/all';
+
 $font-size: 1rem;
 
 [class^='govuk-'] {
   font-size: $font-size;
+}
+
+h1[class^='govuk-'] {
+  @extend .govuk-heading-xl;
+}
+
+h2[class^='govuk-'] {
+  @extend .govuk-heading-l;
+}
+
+h3[class^='govuk-'] {
+  @extend .govuk-heading-m;
+}
+
+h4[class^='govuk-'] {
+  @extend .govuk-heading-s;
 }
