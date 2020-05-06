@@ -5292,6 +5292,9 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonProperty("app_version", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public ApplicationVersion App_version { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("wowza_health", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public HealthCheck Wowza_health { get; set; }
+    
     
     }
     

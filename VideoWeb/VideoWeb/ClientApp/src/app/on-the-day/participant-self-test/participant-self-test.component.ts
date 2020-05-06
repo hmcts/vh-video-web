@@ -13,7 +13,6 @@ import { BaseSelfTestComponent } from '../models/base-self-test.component';
     templateUrl: './participant-self-test.component.html'
 })
 export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
-    videoCompleted: boolean;
 
     constructor(
         private router: Router,
@@ -24,7 +23,6 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
         protected logger: Logger
     ) {
         super(route, videoWebService, errorService, adalService, logger);
-        this.videoCompleted = false;
     }
 
     onSelfTestCompleted(testcallScore: TestCallScoreResponse): void {
@@ -40,12 +38,5 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
     restartTest() {
         this.logger.debug('restarting participant self-test');
         this.selfTestComponent.replayVideo();
-    }
-
-    testCompleted(): boolean {
-        if (this.selfTestComponent) {
-            this.videoCompleted = this.selfTestComponent.didTestComplete;
-        }
-        return this.videoCompleted;
     }
 }
