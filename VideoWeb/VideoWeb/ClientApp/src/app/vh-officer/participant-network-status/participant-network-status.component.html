@@ -15,7 +15,7 @@
 
     <div *ngIf="displayGraph" class="graph-container" (mouseleave)="setGraphVisibility(false)">
       <app-monitoring-graph
-        [pakagesLostData]="networkHistory.packageLostArray"
+        [pakagesLostData]="packageLostArray"
         [participantGraphInfo]="monitoringParticipant"
         (closeGraph)="setGraphVisibility(false)"
       ></app-monitoring-graph>

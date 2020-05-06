@@ -61,7 +61,7 @@ describe('ParticipantNetworkStatusComponent', () => {
         const error = { error: 'failed to find data', error_code: 404 };
         videoWebServiceSpy.getParticipantHeartbeats.and.callFake(() => Promise.reject(error));
         const spy = spyOn(logger, 'error');
-        component.networkHistory = undefined;
+        component.packageLostArray = undefined;
 
         component.showParticipantGraph();
         tick();
@@ -69,7 +69,7 @@ describe('ParticipantNetworkStatusComponent', () => {
         expect(component.displayGraph).toBeFalsy();
         expect(spy.calls.mostRecent().args[0]).toMatch(`Failed to get heartbeat history for particpant`);
         expect(spy.calls.mostRecent().args[1]).toBe(error);
-        expect(component.networkHistory).toBeUndefined();
+        expect(component.packageLostArray).toBeUndefined();
     }));
 
     it('should show monitoring graph for selected participant', async () => {

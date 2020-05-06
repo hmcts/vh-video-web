@@ -2,7 +2,6 @@ import { Component, Input, OnInit } from '@angular/core';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { NetworkHistory } from 'src/app/shared/models/network-history';
 import { HeartbeatHealth } from '../../services/models/participant-heartbeat';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { PackageLost } from '../services/models/package-lost';
@@ -19,12 +18,13 @@ export class ParticipantNetworkStatusComponent implements OnInit {
 
     displayGraph: boolean;
     loading: boolean;
-    networkHistory: NetworkHistory;
     monitoringParticipant: ParticipantGraphInfo;
+    packageLostArray: PackageLost[];
 
     constructor(private videoWebService: VideoWebService, private logger: Logger) {}
     ngOnInit(): void {
         this.displayGraph = false;
+        this.packageLostArray = [];
     }
 
     async showParticipantGraph() {
@@ -32,18 +32,15 @@ export class ParticipantNetworkStatusComponent implements OnInit {
         if (this.displayGraph || this.loading) {
             return;
         }
-
-        let packageLostArray: PackageLost[] = [];
         try {
             this.loading = true;
             const heartbeatHistory = await this.videoWebService.getParticipantHeartbeats(this.conferenceId, this.participant.id);
 
             this.loading = false;
-            packageLostArray = heartbeatHistory.map(x => {
+            this.packageLostArray = heartbeatHistory.map(x => {
                 return new PackageLost(x.recent_packet_loss, x.browser_name, x.browser_version, x.timestamp.getTime());
             });
 
-            this.networkHistory = new NetworkHistory(this.conferenceId, this.participant, packageLostArray);
             this.monitoringParticipant = new ParticipantGraphInfo(
                 this.participant.displayName,
                 this.participant.status,
