@@ -3,3 +3,11 @@ $font-size: 1rem;
 [class^='govuk-'] {
   font-size: $font-size;
 }
+
+h1[class^='govuk-'] {
+  font-size: 3rem;
+}
+
+h3[class^='govuk-'] {
+  font-size: 1.5rem;
+}
