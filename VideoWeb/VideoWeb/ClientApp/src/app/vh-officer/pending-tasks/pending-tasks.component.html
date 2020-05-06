@@ -1,6 +1,7 @@
-<span
-    id="{{ conferenceId }}--pending-tasks"
-    class="alert-badge has-alerts"
-    [ngClass]="{ 'has-alerts': pendingTasks > 0, 'no-alerts': pendingTasks === 0 }"
-    [attr.data-badge]="pendingTasks"
-></span>
+<div
+  class="govuk-grid-column-full"
+  id="{{ conferenceId }}--pending-tasks"
+  class="alert-badge has-alerts"
+  [ngClass]="{ 'has-alerts': pendingTasks > 0, 'no-alerts': pendingTasks === 0 }"
+  [attr.data-badge]="pendingTasks"
+></div>

@@ -1,19 +1,19 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { ConferenceStatus } from 'src/app/services/clients/api-client';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ClipboardService } from 'ngx-clipboard';
+import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
+import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
-import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 
 @Component({
     selector: 'app-vho-hearing-list',
     templateUrl: './vho-hearing-list.component.html',
-    styleUrls: ['./vho-hearing-list.component.scss']
+    styleUrls: ['./vho-hearing-list.component.scss', '../vho-global-styles.scss']
 })
 export class VhoHearingListComponent implements OnInit {
     @Input() conferences: HearingSummary[];
     @Output() selectedConference = new EventEmitter<HearingSummary>();
-    @Output() selectedParticipant = new EventEmitter<any>();
+
     currentConference: HearingSummary;
 
     scrollConfig: PerfectScrollbarConfigInterface = {
@@ -86,9 +86,5 @@ export class VhoHearingListComponent implements OnInit {
 
     getParticipantsForConference(conference: HearingSummary): ParticipantSummary[] {
         return conference.getParticipants();
-    }
-
-    showParticipantGraph(selectedParticipant) {
-        this.selectedParticipant.emit(selectedParticipant);
     }
 }

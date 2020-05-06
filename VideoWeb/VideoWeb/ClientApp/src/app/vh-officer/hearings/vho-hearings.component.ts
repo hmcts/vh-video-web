@@ -20,16 +20,13 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { SessionStorage } from '../../services/session-storage';
 import { ConferenceForUser, ExtendedConferenceStatus, HearingsFilter } from '../../shared/models/hearings-filter';
-import { ParticipantSummary } from '../../shared/models/participant-summary';
-import { PackageLost } from '../services/models/package-lost';
-import { ParticipantGraphInfo } from '../services/models/participant-graph-info';
 import { VhoStorageKeys } from '../services/models/session-keys';
 import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
 
 @Component({
     selector: 'app-vho-hearings',
     templateUrl: './vho-hearings.component.html',
-    styleUrls: ['./vho-hearings.component.scss']
+    styleUrls: ['./vho-hearings.component.scss', '../vho-global-styles.scss']
 })
 export class VhoHearingsComponent implements OnInit, OnDestroy {
     adminFrameWidth: number;
@@ -51,10 +48,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     filterOptionsCount = 0;
     private readonly hearingsFilterStorage: SessionStorage<HearingsFilter>;
     private readonly venueAllocationStorage: SessionStorage<HearingVenueResponse[]>;
-
-    displayGraph = false;
-    packageLostArray: PackageLost[];
-    monitoringParticipant: ParticipantGraphInfo;
 
     @ViewChild('conferenceList', { static: false })
     $conferenceList: VhoHearingListComponent;
@@ -153,13 +146,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         );
 
         this.eventHubSubscriptions.add(
-            this.eventService.getAdminAnsweredChat().subscribe(message => {
-                this.logger.info(`an admin has answered`);
-                this.resetConferenceUnreadCounter(message);
-            })
-        );
-
-        this.eventHubSubscriptions.add(
             this.eventService.getHeartbeat().subscribe(heartbeat => {
                 this.logger.info(`Participant Network Heartbeat Captured`);
                 this.addHeartBeatToTheList(heartbeat);
@@ -168,14 +154,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         );
 
         this.eventService.start();
-    }
-
-    resetConferenceUnreadCounter(conferenceId: string) {
-        const conference = this.conferences.find(x => x.id === conferenceId);
-        if (conference) {
-            const index = this.conferences.indexOf(conference);
-            this.conferences[index].numberOfUnreadMessages = 0;
-        }
     }
 
     handleHeartbeat(heartBeat: ParticipantHeartbeat) {
@@ -376,28 +354,6 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
         });
 
         return conferences;
-    }
-
-    async onParticipantSelected(participantInfo) {
-        if (!this.displayGraph) {
-            if (participantInfo && participantInfo.conferenceId && participantInfo.participant) {
-                const participant: ParticipantSummary = participantInfo.participant;
-                this.monitoringParticipant = new ParticipantGraphInfo(participant.displayName, participant.status, participant.representee);
-
-                await this.videoWebService
-                    .getParticipantHeartbeats(participantInfo.conferenceId, participantInfo.participant.id)
-                    .then(s => {
-                        this.packageLostArray = s.map(x => {
-                            return new PackageLost(x.recent_packet_loss, x.browser_name, x.browser_version, x.timestamp.getTime());
-                        });
-                        this.displayGraph = true;
-                    });
-            }
-        }
-    }
-
-    closeGraph(value) {
-        this.displayGraph = !value;
     }
 
     addHeartBeatToTheList(heartbeat: ParticipantHeartbeat) {

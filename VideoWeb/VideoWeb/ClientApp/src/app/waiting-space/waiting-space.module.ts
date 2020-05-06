@@ -9,6 +9,7 @@ import { ParticipantWaitingRoomComponent } from './participant-waiting-room/part
 import { WaitingSpaceRoutingModule } from './waiting-space-routing.module';
 import { IndividualConsultationControlsComponent } from './individual-consultation-controls/individual-consultation-controls.component';
 import { JudgeChatComponent } from './judge-chat/judge-chat.component';
+import { AudioAlertComponent } from './audio-alert/audio-alert.component';
 
 @NgModule({
     imports: [SharedModule, WaitingSpaceRoutingModule],
@@ -20,7 +21,8 @@ import { JudgeChatComponent } from './judge-chat/judge-chat.component';
         JudgeHearingPageComponent,
         AnalogueClockComponent,
         IndividualConsultationControlsComponent,
-        JudgeChatComponent
+        JudgeChatComponent,
+        AudioAlertComponent
     ]
 })
 export class WaitingSpaceModule {}

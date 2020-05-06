@@ -19,7 +19,7 @@ namespace VideoWeb.Mappings
             var conferenceId = conference.Id;
             var hearingVenueName = conference.HearingVenueName;
             
-            return conference.Participants
+            var pats = conference.Participants
                 .OrderBy(x => x.CaseTypeGroup)
                 .Select(x =>
                 {
@@ -46,6 +46,7 @@ namespace VideoWeb.Mappings
                         JudgeInAnotherHearing = judgeInHearing != null
                     };
                 });
+            return pats.ToList();
         }
     }
 }

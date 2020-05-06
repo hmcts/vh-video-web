@@ -109,6 +109,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 SelfTestFailureReason = SelfTestFailureReason.BadScore
             };
             await _controller.AddSelfTestFailureEventToConferenceAsync(conferenceId, request);
+            _videoApiClientMock.Verify(x => x.GetConferenceDetailsByIdAsync(_testConference.Id), Times.Once);
         }
     }
 }

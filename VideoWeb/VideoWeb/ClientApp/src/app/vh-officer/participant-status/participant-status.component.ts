@@ -12,7 +12,7 @@ import { ParticipantStatusReader } from '../../shared/models/participant-status-
 @Component({
     selector: 'app-participant-status',
     templateUrl: './participant-status.component.html',
-    styleUrls: ['./participant-status.component.scss']
+    styleUrls: ['./participant-status.component.scss', '../vho-global-styles.scss']
 })
 export class ParticipantStatusComponent implements OnInit {
     loadingData: boolean;
@@ -42,7 +42,7 @@ export class ParticipantStatusComponent implements OnInit {
 
         const participantDetails = await this.getParticipantsByConference(this.conferenceId);
 
-        this.participants = participantDetails.map((x) => {
+        this.participants = participantDetails.map(x => {
             const participant = new ParticipantContactDetails(x);
             this.setParticipantStatus(participant.status, participant);
 
@@ -78,7 +78,7 @@ export class ParticipantStatusComponent implements OnInit {
     async setupEventHubSubscribers() {
         this.logger.debug('Subscribing to participant status changes...');
         this.eventHubSubscriptions.add(
-            this.eventService.getParticipantStatusMessage().subscribe(async (message) => {
+            this.eventService.getParticipantStatusMessage().subscribe(async message => {
                 await this.handleParticipantStatusChange(message);
             })
         );
@@ -98,14 +98,14 @@ export class ParticipantStatusComponent implements OnInit {
         }
 
         if (this.conferenceId !== message.conferenceId) {
-            const thisJudge = this.participants.find((x) => x.username === message.username);
+            const thisJudge = this.participants.find(x => x.username === message.username);
             if (thisJudge) {
                 thisJudge.judgeInAnotherHearing = message.status === ParticipantStatus.InHearing;
                 this.setParticipantStatus(thisJudge.status, thisJudge);
             }
         }
 
-        const participantInThisConference = this.participants.find((x) => x.id === message.participantId);
+        const participantInThisConference = this.participants.find(x => x.id === message.participantId);
         if (participantInThisConference) {
             this.setParticipantStatus(message.status, participantInThisConference);
 

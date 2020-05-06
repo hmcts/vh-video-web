@@ -1,34 +1,34 @@
 @import '~govuk-frontend/govuk/all';
 
 .pending-alerts {
-    color: govuk-colour('red');
-    font-weight: bold;
+  color: govuk-colour('red');
+  font-weight: bold;
 }
 .alert-badge {
-    position: relative;
-    font-weight: bold;
+  position: absolute;
+  font-weight: bold;
 }
 
 .alert-badge[data-badge]:after {
-    position: absolute;
-    right: -35px;
-    color: govuk-colour('white');
-    width: 25px;
-    height: 25px;
-    font-size: 0.7em;
-    padding: 5px;
-    text-align: center;
-    line-height: 25px;
-    border-radius: 50%;
-    box-shadow: 0 0 1px #333;
+  position: absolute;
+  right: -35px;
+  color: govuk-colour('white');
+  width: 25px;
+  height: 25px;
+  font-size: 0.7em;
+  padding: 5px;
+  text-align: center;
+  line-height: 25px;
+  border-radius: 50%;
+  box-shadow: 0 0 1px #333;
 }
 
 .has-alerts:after {
-    background: govuk-colour('red');
-    content: attr(data-badge);
+  background: govuk-colour('red');
+  content: attr(data-badge);
 }
 
 .no-alerts:after {
-    background: govuk-colour('mid-grey');
-    content: '';
+  background: govuk-colour('mid-grey');
+  content: '';
 }

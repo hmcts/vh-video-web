@@ -83,14 +83,6 @@ export class HearingSummary extends HearingBase {
             .filter(x => x.caseGroup.toLowerCase() === 'respondent' || x.caseGroup.toLowerCase() === 'defendant');
     }
 
-    get numberOfUnreadMessages(): number {
-        return this.conference.number_of_unread_messages;
-    }
-
-    set numberOfUnreadMessages(numberOfUnreadMessages: number) {
-        this.conference.number_of_unread_messages = numberOfUnreadMessages;
-    }
-
     get hearingVenueName(): string {
         return this.conference.hearing_venue_name;
     }

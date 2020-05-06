@@ -3,28 +3,27 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DeviceDetectorModule } from 'ngx-device-detector';
-
+import { AccessibilityComponent } from './accessibility/accessibility.component';
+import { BackNavigationComponent } from './back-navigation/back-navigation.component';
+import { BetaBannerComponent } from './beta-banner/beta-banner.component';
+import { ChatInputBoxComponent } from './chat-input-box/chat-input-box.component';
+import { ContactUsFoldingComponent } from './contact-us-folding/contact-us-folding.component';
 import { ContactUsComponent } from './contact-us/contact-us.component';
+import { ScrollTriggerDirective } from './directives/scroll-trigger.directive';
+import { WindowScrolling } from './directives/window-scrolling';
+import { EquipmentProblemComponent } from './equipment-problem/equipment-problem.component';
+import { ErrorComponent } from './error/error.component';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
-import { PaginationComponent } from './pagination/pagination.component';
-import { SharedRoutingModule } from './shared-routing.module';
-import { ContactUsFoldingComponent } from './contact-us-folding/contact-us-folding.component';
-import { ErrorComponent } from './error/error.component';
-import { NotFoundComponent } from './not-found/not-found.component';
-import { SelectMediaDevicesComponent } from './select-media-devices/select-media-devices.component';
 import { MicVisualiserComponent } from './mic-visualiser/mic-visualiser.component';
-import { EquipmentProblemComponent } from './equipment-problem/equipment-problem.component';
-import { SelfTestComponent } from './self-test/self-test.component';
-import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-browser.component';
-import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { ModalComponent } from './modal/modal.component';
-import { BetaBannerComponent } from './beta-banner/beta-banner.component';
-import { AccessibilityComponent } from './accessibility/accessibility.component';
-import { WindowScrolling } from './directives/window-scrolling';
-import { ScrollTriggerDirective } from './directives/scroll-trigger.directive';
-import { BackNavigationComponent } from './back-navigation/back-navigation.component';
-import { ChatInputBoxComponent } from './chat-input-box/chat-input-box.component';
+import { NotFoundComponent } from './not-found/not-found.component';
+import { PaginationComponent } from './pagination/pagination.component';
+import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
+import { SelectMediaDevicesComponent } from './select-media-devices/select-media-devices.component';
+import { SelfTestComponent } from './self-test/self-test.component';
+import { SharedRoutingModule } from './shared-routing.module';
+import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-browser.component';
 
 @NgModule({
     imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, SharedRoutingModule, DeviceDetectorModule.forRoot()],

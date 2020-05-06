@@ -1,63 +1,67 @@
 /deep/ #master-container.fullscreen {
-    margin-left: 10px !important;
-    margin-right: 10px !important;
+  margin-left: 10px !important;
+  margin-right: 10px !important;
 }
 
 .report-conference {
-    background: transparent;
-    border-style: solid;
-    border-width: 1.5px;
-    border-color: govuk-colour('dark-grey');
-    color: govuk-colour('dark-grey');
-    margin-top: 0;
+  background: transparent;
+  border-style: solid;
+  border-width: 1.5px;
+  border-color: govuk-colour('dark-grey');
+  color: govuk-colour('dark-grey');
+  margin-top: 0;
 }
 
 i {
-    border: solid black;
-    border-width: 0 2px 2px 0;
-    display: inline-block;
-    padding: 3px;
-    margin-left: 25px;
+  border: solid black;
+  border-width: 0 2px 2px 0;
+  display: inline-block;
+  padding: 3px;
+  margin-left: 25px;
 }
 
 .triangle-up {
-    transform: rotate(-135deg);
-    -webkit-transform: rotate(-135deg);
+  transform: rotate(-135deg);
+  -webkit-transform: rotate(-135deg);
 }
 
 .triangle-down {
-    transform: rotate(45deg);
-    -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
 }
 
 .connected {
-    position: element(#filterButton);
-    transform: translateY(-100%);
-    margin-top: 5px;
+  position: element(#filterButton);
+  transform: translateY(-100%);
+  margin-top: 5px;
 }
 
 .vh-top {
-    position: relative;
-    z-index: 9999 !important;
+  position: relative;
+  z-index: 9999 !important;
 }
 
 #filterButton {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .thin-allocation {
-    width: fit-content;
+  width: fit-content;
 }
 
 .hide-allocation {
-    display: none;
+  display: none;
 }
 
 .filter-drop {
-    width: fit-content;
-    margin-bottom: auto;
+  width: fit-content;
+  margin-bottom: auto;
 }
 
 .filter-row {
-    display: flex;
+  display: flex;
+}
+
+#admin-frame {
+  border: none;
 }

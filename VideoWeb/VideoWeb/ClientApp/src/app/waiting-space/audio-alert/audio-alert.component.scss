@@ -1,0 +1,43 @@
+.vh-alert {
+    position: fixed;
+    float: initial;
+    z-index: 999;
+    width: 700px;
+    height: 80px;
+    background: #050505;
+    top: 10px;
+    border: 1px solid #383838;
+    color: white;
+    box-shadow: 5px 5px 5px rgba(38, 38, 38, 0.5);
+    -webkit-box-shadow: 5px 5px 5px rgba(38, 38, 38, 0.5);
+    margin-left:7%;
+}
+.vh-close-popup {
+    float: right;
+    vertical-align: top;
+    margin-top: 0;
+    margin-right: 5px;
+    text-decoration: none;
+    color: white;
+    top:3px;
+}
+
+.vh-close-popup:active {
+    background-color: gray !important;
+    color: #fff;
+}
+
+.vh-float {
+    float: left;
+    display: flex;
+}
+
+.vh-inline {
+    display: inline;
+}
+
+.vh-msg {
+    color: white !important;
+    vertical-align: top;
+    display: inline;
+}
