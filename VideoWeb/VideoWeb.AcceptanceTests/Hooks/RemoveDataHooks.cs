@@ -64,7 +64,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         {
             var response = videoApi.GetConferenceByConferenceId(conferenceId);
             var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
-            return conference.Hearing_id;
+            return conference?.Hearing_id ?? Guid.Empty;
         }
 
         private static bool HearingHasNotBeenDeletedAlready(BookingsApiManager bookingsApi, Guid hearingId)
