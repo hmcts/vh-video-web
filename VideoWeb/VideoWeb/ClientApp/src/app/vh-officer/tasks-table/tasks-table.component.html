@@ -3,7 +3,7 @@
 </div>
 <div id="tasks-list" style="overflow: auto; height: xyz;" class="task-list" [style.width.px]="taskDivWidth">
   <div *ngFor="let task of tasks" class="govuk-grid-row govuk-!-margin-0">
-    <div class="govuk-grid-column-one-quarter task-checkbox-and-time">
+    <div class="govuk-grid-column-one-quarter task-checkbox-and-time govuk-!-padding-right-0">
       <div class="govuk-checkboxes__item">
         <input id="{{task.id}}-checkbox" class="govuk-checkboxes__input" type="checkbox" [checked]="task.status === 'Done'"
           [disabled]="task.status === 'Done'" (click)="completeTask(task)">
