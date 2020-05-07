@@ -15,7 +15,7 @@ describe('VhoHearingListComponent', () => {
 
     beforeEach(() => {
         component = new VhoHearingListComponent(clipboardServiceSpy);
-        component.conferences = new ConferenceTestData().getVhoTestData().map((c) => new HearingSummary(c));
+        component.conferences = new ConferenceTestData().getVhoTestData().map(c => new HearingSummary(c));
     });
 
     it('should return true if current conference is the same one selected', () => {
@@ -41,7 +41,7 @@ describe('VhoHearingListComponent', () => {
         { status: ConferenceStatus.Closed, expected: 'Closed' }
     ];
 
-    conferenceStatusTextTestCases.forEach((test) => {
+    conferenceStatusTextTestCases.forEach(test => {
         it(`should return ${test.expected} when conference status is ${test.status}`, () => {
             const conference = new ConferenceTestData().getConferenceFuture();
             conference.status = test.status;
@@ -62,17 +62,6 @@ describe('VhoHearingListComponent', () => {
         component.selectConference(conference);
         expect(component.selectedConference.emit).toHaveBeenCalledWith(conference);
         expect(component.currentConference).toBe(conference);
-    });
-
-    it('should emit event with selected ParticipantSummary and conference id on the participant network status click', () => {
-        spyOn(component.selectedParticipant, 'emit');
-        const param = {
-            participant: new ParticipantSummary(new ParticipantForUserResponse({ id: '1111-2222-3333' })),
-            conferenceId: '1234-12345678'
-        };
-        component.showParticipantGraph(param);
-        expect(component.selectedParticipant.emit).toHaveBeenCalled();
-        expect(component.selectedParticipant.emit).toHaveBeenCalledWith(param);
     });
 
     it('should set configuration for scrollbar to suppress scroll x', () => {

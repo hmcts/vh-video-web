@@ -80,7 +80,7 @@
                 <app-participant-network-status
                   *ngFor="let participant of getParticipantsForConference(conference)"
                   [participant]="participant"
-                  (showMonitorGraph)="showParticipantGraph({ participant: participant, conferenceId: conference.id })"
+                  [conferenceId]="conference.id"
                 >
                 </app-participant-network-status>
               </div>

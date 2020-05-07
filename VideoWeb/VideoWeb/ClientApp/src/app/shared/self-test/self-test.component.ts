@@ -255,11 +255,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             let reason: SelfTestFailureReason;
             if (this.testCallResult && this.testCallResult.score === TestScore.Bad) {
                 reason = SelfTestFailureReason.BadScore;
-            } else if (!this.testCallResult) {
-                reason = SelfTestFailureReason.IncompleteTest;
-            }
-
-            if (reason) {
                 await this.raiseFailedSelfTest(reason);
             }
         }
