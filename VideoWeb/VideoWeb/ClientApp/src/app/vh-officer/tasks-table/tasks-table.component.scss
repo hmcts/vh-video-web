@@ -10,11 +10,12 @@
 }
 
 .task-checkbox-and-time {
-  width: 12%;
+  width: 15%;
+  max-width: max-content;
 }
 
 .task-body {
-  width: 18%;
+  width: 15%;
   padding: 7px 0px;
 }
 
@@ -26,6 +27,10 @@
 .task-updated {
   width: 55%;
   padding: 7px 0px;
+}
+
+.task-updated-body {
+  float: right;
 }
 
 .task-completed {
