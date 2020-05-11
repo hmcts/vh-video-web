@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -21,15 +21,18 @@ export class ParticipantNetworkStatusComponent implements OnInit {
     monitoringParticipant: ParticipantGraphInfo;
     packageLostArray: PackageLost[];
 
+    @ViewChild('graphContainer', { static: false })
+    graphContainer: ElementRef;
+
     constructor(private videoWebService: VideoWebService, private logger: Logger) {}
     ngOnInit(): void {
         this.displayGraph = false;
         this.packageLostArray = [];
     }
 
-    async showParticipantGraph() {
-        this.logger.debug('showParticipantGraph');
+    async showParticipantGraph($event: MouseEvent) {
         if (this.displayGraph || this.loading) {
+            this.logger.debug('Graph already displayed or still loading');
             return;
         }
         try {
@@ -47,6 +50,7 @@ export class ParticipantNetworkStatusComponent implements OnInit {
                 this.participant.representee
             );
             this.setGraphVisibility(true);
+            this.updateGraphPosition($event);
         } catch (err) {
             this.loading = false;
             this.logger.error(
@@ -54,6 +58,18 @@ export class ParticipantNetworkStatusComponent implements OnInit {
                 err
             );
         }
+    }
+
+    updateGraphPosition($event: MouseEvent) {
+        if (!this.graphContainer) {
+            return;
+        }
+        const x = $event.clientX;
+        const y = $event.clientY;
+        const elem = this.graphContainer.nativeElement as HTMLDivElement;
+
+        elem.style.top = y + 30 + 'px';
+        elem.style.left = x - 350 + 'px';
     }
 
     getParticipantNetworkStatus(): string {
