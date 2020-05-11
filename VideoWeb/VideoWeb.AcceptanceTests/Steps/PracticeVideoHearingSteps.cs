@@ -95,8 +95,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ProgressToNextPage()
         {
             ThePracticeVideoHearingVideoHasStarted();
-            _browsers[_c.CurrentUser.Key].ScrollTo(PracticeVideoHearingPage.SkipLink);
-            _browsers[_c.CurrentUser.Key].ClickLink(PracticeVideoHearingPage.SkipLink);
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(PracticeVideoHearingPage.ContinueButton);
+            _browsers[_c.CurrentUser.Key].ScrollTo(PracticeVideoHearingPage.ContinueButton);
+            _browsers[_c.CurrentUser.Key].Click(PracticeVideoHearingPage.ContinueButton);
         }
     }
 }
