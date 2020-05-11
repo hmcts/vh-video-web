@@ -46,7 +46,6 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
     async ngOnDestroy(): Promise<void> {
         this.logger.debug('[Judge WR] - Clearing intervals and subscriptions for judge waiting room');
         this.eventHubSubscriptions.unsubscribe();
-        this.eventService.stop();
         await this.postEventJudgeUnvailableStatus();
     }
 
