@@ -5,26 +5,38 @@
   <div *ngFor="let task of tasks" class="govuk-grid-row govuk-!-margin-0">
     <div class="govuk-grid-column-one-quarter task-checkbox-and-time govuk-!-padding-right-0">
       <div class="govuk-checkboxes__item">
-        <input id="{{task.id}}-checkbox" class="govuk-checkboxes__input" type="checkbox" [checked]="task.status === 'Done'"
-          [disabled]="task.status === 'Done'" (click)="completeTask(task)">
+        <input
+          id="{{ task.id }}-checkbox"
+          class="govuk-checkboxes__input"
+          type="checkbox"
+          [checked]="task.status === 'Done'"
+          [disabled]="task.status === 'Done'"
+          (click)="completeTask(task)"
+        />
         <label class="govuk-label govuk-checkboxes__label govuk-!-padding-left-2" for="task-created">
-          <p id="{{task.id}}-created-date" class="govuk-body-s">{{task.created | date:'HH:mm' }}</p>
+          <p id="{{ task.id }}-created-date" class="govuk-body-s">{{ task.created | date: 'HH:mm' }}</p>
         </label>
       </div>
     </div>
     <div class="govuk-grid-column-one-quarter task-body">
-      <p id="{{task.id}}-type" class="govuk-body govuk-body-s pending-alert-text" [ngClass]="{'task-completed': task.status === 'Done'}">
-        {{task.body}}
+      <p
+        id="{{ task.id }}-type"
+        class="govuk-body govuk-body-s pending-alert-text govuk-!-padding-right-2"
+        [ngClass]="{ 'task-completed': task.status === 'Done' }"
+      >
+        {{ task.body }}
       </p>
     </div>
     <div class="govuk-grid-column-one-quarter task-origin">
-      <p id="{{task.id}}-from-user" class="govuk-body-s" [ngClass]="{'task-completed': task.status === 'Done'}">{{getOriginName(task)}}
+      <p id="{{ task.id }}-from-user" class="govuk-body-s" [ngClass]="{ 'task-completed': task.status === 'Done' }">
+        {{ getOriginName(task) }}
       </p>
     </div>
     <div class="govuk-grid-column-one-quarter task-updated">
-      <p id="{{task.id}}-actioned-by" class="govuk-body-s" [ngClass]="{'task-completed': task.status === 'Done'}">{{task.updated_by}}
-        {{task.updated | date:'HH:mm'}}
-      </p>
+      <span id="{{ task.id }}-actioned-by" class="govuk-body-s" [ngClass]="{ 'task-completed': task.status === 'Done' }">
+        <span>{{ usernameWithoutDomain(task.updated_by) }}</span>
+        <span class="updated-time">{{ task.updated | date: 'HH:mm' }}</span>
+      </span>
     </div>
   </div>
 </div>

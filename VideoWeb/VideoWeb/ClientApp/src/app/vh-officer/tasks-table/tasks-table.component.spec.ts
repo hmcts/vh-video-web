@@ -157,4 +157,10 @@ describe('TasksTableComponent', () => {
 
         expect(eventBusServiceSpy.emit).toHaveBeenCalledTimes(0);
     });
+
+    it('should return username without domain', () => {
+        const username = 'test@user1.com';
+        const reult = component.usernameWithoutDomain(username);
+        expect(reult).toBe('test');
+    });
 });
