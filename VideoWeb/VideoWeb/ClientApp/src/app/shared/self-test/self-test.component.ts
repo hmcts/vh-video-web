@@ -186,7 +186,9 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.didTestComplete = false;
         const conferenceAlias = 'testcall2';
         const tokenOptions = btoa(`${this.token.expires_on};${this.selfTestParticipantId};${this.token.token}`);
-        this.pexipAPI.h264_enabled = false;
+        if (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1) {
+            this.pexipAPI.h264_enabled = false;
+        }
         this.pexipAPI.makeCall(this.selfTestPexipNode, `${conferenceAlias};${tokenOptions}`, this.selfTestParticipantId, this.maxBandwidth);
     }
 

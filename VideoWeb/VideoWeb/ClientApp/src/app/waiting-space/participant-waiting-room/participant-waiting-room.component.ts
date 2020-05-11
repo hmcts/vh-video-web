@@ -377,7 +377,9 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         const conferenceAlias = this.hearing.getConference().participant_uri;
         const displayName = this.participant.tiled_display_name;
         this.logger.debug(`Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`);
-        this.pexipAPI.h264_enabled = false;
+        if (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1) {
+            this.pexipAPI.h264_enabled = false;
+        }
         this.pexipAPI.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth);
     }
 
