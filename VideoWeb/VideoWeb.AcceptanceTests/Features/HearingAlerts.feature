@@ -4,7 +4,7 @@ Feature: Hearing Alerts
 	So that I can have an administrate the hearings I am involved in
 
 @VIH-4417
-Scenario: Video Hearings Officer receieves media blocked alert
+Scenario: Video Hearings Officer receives media blocked alert
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	When a participant has chosen to block user media
 	Then the Video Hearings Officer user should see a Not Started notification and a Media blocked alert
@@ -13,7 +13,7 @@ Scenario: Video Hearings Officer receieves media blocked alert
 	And the alert should be updated with the details of the user that actioned the alert
 
 @VIH-4419
-Scenario: Video Hearings Officer receieves suspended alert
+Scenario: Video Hearings Officer receives suspended alert
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	When the hearing is suspended
 	Then the Video Hearings Officer user should see a Suspended notification and a Hearing suspended alert
@@ -22,7 +22,7 @@ Scenario: Video Hearings Officer receieves suspended alert
 	And the alert should be updated with the details of the user that actioned the alert
 
 @VIH-1630 @VIH-4418 @Smoketest-Extended
-Scenario Outline: Video Hearings Officer receieves disconnected alert
+Scenario Outline: Video Hearings Officer receives disconnected alert
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	When a <Participant> has disconnected from the <Room>
 	Then the Video Hearings Officer user should see a Not Started notification and a Disconnected alert
@@ -38,7 +38,7 @@ Scenario Outline: Video Hearings Officer receieves disconnected alert
 	| Participant | ConsultationRoom1 |
 
 @VIH-1630 @VIH-4416
-Scenario Outline: Video Hearings Officer receieves failed self test alert
+Scenario Outline: Video Hearings Officer receives failed self test alert
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	When a participant has failed the self-test with <Reason>
 	Then the Video Hearings Officer user should see a Not Started notification and a <Reason> alert
