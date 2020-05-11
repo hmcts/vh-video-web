@@ -25,7 +25,8 @@
     this.lookbackPeriodMS = 60000;
     this.lookbackSlices = (this.lookbackPeriodMS / this.interval) + 1;
     this.lookbackValues = {
-      outgoing: {
+      outgoing:
+      {
         audio: {
           packetsSent: [0],
           packetsLost: [0],
@@ -35,7 +36,8 @@
           packetsLost: [0],
         }
       },
-      incoming: {
+      incoming:
+      {
         audio: {
           packetsSent: [0],
           packetsLost: [0],
@@ -136,24 +138,24 @@
 
 
   HeartbeatFactory.prototype.getRecentPercentageLost = function (medium) {
-    var totalSent = medium.packetsSent[0] - medium.packetsSent[medium.packetsSent.length - 1];
-    if (totalSent === 0) {
+    if (this.isCounterReset(medium.packetsSent) || this.isCounterReset(medium.packetsLost)) {
+      medium.packetsSent = [medium.packetsSent[0]];
+      medium.packetsLost = [medium.packetsLost[0]];
       return 0;
     }
-    this.correctForCorruptedPacketsLostValues(medium);
+    var totalSent = medium.packetsSent[0] - medium.packetsSent[medium.packetsSent.length - 1];
     var totalLost = medium.packetsLost[0] - medium.packetsLost[medium.packetsLost.length - 1];
-    //console.log("packetratio : " + totalLost + " over " + totalSent);
-    return (totalLost / (totalLost + totalSent)) * 100;
+    return (totalLost / (totalLost + totalSent)) * 100 || 0;
   };
 
-  HeartbeatFactory.prototype.correctForCorruptedPacketsLostValues = function (medium) {
-    if (medium.packetsLost.length > 1 && medium.packetsLost[0] < medium.packetsLost[1]) {
-      var buffer = medium.packetsLost[1];
-      for (var i = 1; i < medium.packetsLost.length; i++) {
-        medium.packetsLost[i] = medium.packetsLost[i] - buffer;
+  HeartbeatFactory.prototype.isCounterReset = function (packetsArray) {
+    for (var i = 1; i < packetsArray.length; i++) {
+      if (packetsArray[i - 1] < packetsArray[i]) {
+        return true;
       }
     }
-  };
+    return false;
+  }
 
   HeartbeatFactory.prototype.postHeartbeat = function (heartbeat) {
     console.log("HEARTBEAT : " + heartbeat);
@@ -167,11 +169,14 @@
       body: heartbeat
     };
     if (this.token !== "none") {
-      request.headers.Authorization = this.token;
+      request.headers.Authorization = `Bearer ${this.token}`;
     }
 
     fetch(url, request)
-      .then(function (response) {});
+      .then(function (response) {
+        // console.log(response.json());
+      }
+      );
   };
 
   HeartbeatFactory.prototype.beat = function () {
