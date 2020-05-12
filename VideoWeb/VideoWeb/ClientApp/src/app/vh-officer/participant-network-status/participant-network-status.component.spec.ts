@@ -7,6 +7,7 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { ParticipantNetworkStatusComponent } from './participant-network-status.component';
+import { ElementRef } from '@angular/core';
 
 describe('ParticipantNetworkStatusComponent', () => {
     let component: ParticipantNetworkStatusComponent;
@@ -14,6 +15,10 @@ describe('ParticipantNetworkStatusComponent', () => {
     const logger: Logger = new MockLogger();
     let conference: ConferenceForVhOfficerResponse;
     let participant: ParticipantSummary;
+
+    let mockGraphContainer: HTMLDivElement;
+
+    let mouseEvent: MouseEvent;
 
     const hearbeatResponse = new ParticipantHeartbeatResponse({
         browser_name: 'Chrome',
@@ -23,6 +28,9 @@ describe('ParticipantNetworkStatusComponent', () => {
     });
 
     beforeAll(() => {
+        mouseEvent = document.createEvent('MouseEvent');
+        mouseEvent.initMouseEvent('mousemove', true, true, window, 0, 0, 0, 80, 20, false, false, false, false, 0, null);
+
         conference = new ConferenceTestData().getConferenceNow();
         participant = new ParticipantSummary(conference.participants[0]);
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getParticipantHeartbeats']);
@@ -30,12 +38,13 @@ describe('ParticipantNetworkStatusComponent', () => {
 
     beforeEach(() => {
         videoWebServiceSpy.getParticipantHeartbeats.and.returnValue(Promise.resolve([hearbeatResponse]));
-
         component = new ParticipantNetworkStatusComponent(videoWebServiceSpy, logger);
         component.conferenceId = conference.id;
         component.participant = participant;
 
         videoWebServiceSpy.getParticipantHeartbeats.calls.reset();
+
+        mockGraphContainer = document.createElement('div');
     });
 
     it('should not show grow on init', () => {
@@ -46,14 +55,14 @@ describe('ParticipantNetworkStatusComponent', () => {
     it('should not get hearbeat history if graph already displayed', async () => {
         component.displayGraph = true;
         component.loading = false;
-        await component.showParticipantGraph();
+        await component.showParticipantGraph(mouseEvent);
         expect(videoWebServiceSpy.getParticipantHeartbeats).toHaveBeenCalledTimes(0);
     });
 
     it('should not get hearbeat history if graph already loading', async () => {
         component.displayGraph = false;
         component.loading = true;
-        await component.showParticipantGraph();
+        await component.showParticipantGraph(mouseEvent);
         expect(videoWebServiceSpy.getParticipantHeartbeats).toHaveBeenCalledTimes(0);
     });
 
@@ -63,7 +72,7 @@ describe('ParticipantNetworkStatusComponent', () => {
         const spy = spyOn(logger, 'error');
         component.packageLostArray = undefined;
 
-        component.showParticipantGraph();
+        component.showParticipantGraph(mouseEvent);
         tick();
         expect(component.loading).toBeFalsy();
         expect(component.displayGraph).toBeFalsy();
@@ -74,12 +83,22 @@ describe('ParticipantNetworkStatusComponent', () => {
 
     it('should show monitoring graph for selected participant', async () => {
         component.displayGraph = false;
-        await component.showParticipantGraph();
+        await component.showParticipantGraph(mouseEvent);
         expect(component.monitoringParticipant).toBeDefined();
         expect(component.monitoringParticipant.name).toBe(participant.displayName);
         expect(component.monitoringParticipant.status).toBe(participant.status);
         expect(component.monitoringParticipant.representee).toBe(participant.representee);
         expect(videoWebServiceSpy.getParticipantHeartbeats).toHaveBeenCalled();
+    });
+
+    it('should update graph container location on mouse move', () => {
+        component.graphContainer = new ElementRef(mockGraphContainer);
+        component.updateGraphPosition(mouseEvent);
+
+        const expectedTop = mouseEvent.clientY + 30 + 'px';
+        const expectedLeft = mouseEvent.clientX - 350 + 'px';
+        expect(mockGraphContainer.style.top).toBe(expectedTop);
+        expect(mockGraphContainer.style.left).toBe(expectedLeft);
     });
 
     const networkStatusTestCases = [
