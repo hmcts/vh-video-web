@@ -1,0 +1,24 @@
+<div class="govuk-grid-row menu" style="clear: both;">
+  <div class="half-left">
+    <input
+      type="button"
+      value="Change venues"
+      (click)="goBackToVenueSelection()"
+      id="change-venue-allocation-btn"
+      class="govuk-button govuk-button--black"
+    />
+  </div>
+
+  <div class="half-right">
+    <app-command-centre-menu></app-command-centre-menu>
+  </div>
+</div>
+
+<div class="vho-line-border"></div>
+
+<div class="govuk-grid-row">
+  <div class="conference-list">
+    <app-vho-hearing-list #conferenceList [conferences]="conferences" (selectedConference)="onConferenceSelected($event)">
+    </app-vho-hearing-list>
+  </div>
+</div>

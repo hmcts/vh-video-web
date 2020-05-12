@@ -1,0 +1,67 @@
+@import '~govuk-frontend/govuk/all';
+//TABS
+
+.tab {
+  overflow: hidden;
+  float: right;
+}
+
+.tab button {
+  float: left;
+  padding: 8px 12px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: 0.3s;
+  font-family: 'GDS Transport', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.11111;
+  margin-top: 0;
+}
+
+.tab button:hover {
+  background-color: govuk-colour('green');
+  color: govuk-colour('white');
+}
+
+.tab button.active {
+  background-color: govuk-colour('black');
+  color: govuk-colour('white');
+}
+
+.tabcontent {
+  display: none;
+}
+
+//TOGGLE BUTTONS
+
+.tab--left {
+  border: 2px solid govuk-colour('black');
+  border-radius: 3px 0px 0px 3px;
+  display: inline-block;
+  position: relative;
+  text-align: center;
+  background: govuk-colour('white');
+}
+
+.tab--right {
+  border: 2px solid govuk-colour('black');
+  border-radius: 0px 3px 3px 0px;
+  display: inline-block;
+  position: relative;
+  text-align: center;
+  background: govuk-colour('white');
+}
+.tab--middle {
+  margin-left: -8px;
+  margin-right: -8px;
+  border: 2px solid govuk-colour('black');
+  border-radius: 0px;
+  display: inline-block;
+  position: relative;
+  text-align: center;
+  background: govuk-colour('white');
+}

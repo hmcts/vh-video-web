@@ -21,6 +21,8 @@ import { ParticipantStatusReader } from '../shared/models/participant-status-rea
 import { VHODashboardHelper } from './helper';
 import { PendingTasksComponent } from './pending-tasks/pending-tasks.component';
 import { UnreadMessagesComponent } from './unread-messages/unread-messages.component';
+import { CommandCentreComponent } from './command-centre/command-centre.component';
+import { CommandCentreMenuComponent } from './command-centre-menu/command-centre-menu.component';
 
 @NgModule({
     declarations: [
@@ -35,7 +37,9 @@ import { UnreadMessagesComponent } from './unread-messages/unread-messages.compo
         MonitoringGraphComponent,
         VenueListComponent,
         PendingTasksComponent,
-        UnreadMessagesComponent
+        UnreadMessagesComponent,
+        CommandCentreComponent,
+        CommandCentreMenuComponent
     ],
     imports: [
         CommonModule,

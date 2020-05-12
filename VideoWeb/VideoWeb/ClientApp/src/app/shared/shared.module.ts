@@ -24,6 +24,7 @@ import { SelectMediaDevicesComponent } from './select-media-devices/select-media
 import { SelfTestComponent } from './self-test/self-test.component';
 import { SharedRoutingModule } from './shared-routing.module';
 import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-browser.component';
+import { ScreenHelper } from './screen-helper';
 
 @NgModule({
     imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, SharedRoutingModule, DeviceDetectorModule.forRoot()],
@@ -48,7 +49,7 @@ import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-b
         BackNavigationComponent,
         ChatInputBoxComponent
     ],
-    providers: [WindowScrolling],
+    providers: [WindowScrolling, ScreenHelper],
     exports: [
         HeaderComponent,
         FooterComponent,

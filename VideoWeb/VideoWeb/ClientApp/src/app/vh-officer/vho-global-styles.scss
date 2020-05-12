@@ -11,3 +11,20 @@ h1[class^='govuk-'] {
 h3[class^='govuk-'] {
   font-size: 1.5rem;
 }
+
+@import '~govuk-frontend/govuk/all';
+
+.govuk-button--black {
+  border: 2px solid govuk-colour('black');
+  border-radius: 3px;
+  background-color: govuk-colour('white');
+  color: govuk-colour('black');
+  margin-bottom: 0px;
+  box-shadow: 0 0px 0 govuk-colour('white');
+}
+
+.vho-line-border {
+  border-top: 1px solid govuk-colour('light-grey');
+  clear: both;
+  margin: 16px -30px 0px -30px;
+}
