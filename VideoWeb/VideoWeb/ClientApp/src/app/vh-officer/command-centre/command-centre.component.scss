@@ -16,7 +16,7 @@
 
 .conference-list {
   @include govuk-grid-column(one-third);
-  overflow-y: scroll;
+  overflow-y: auto;
   height: 100vh;
   padding: 0px;
   border-right: 1px solid govuk-colour('light-grey');

@@ -10,7 +10,7 @@
   </div>
 
   <div class="half-right">
-    <app-command-centre-menu></app-command-centre-menu>
+    <app-command-centre-menu (selectedMenu)="onMenuSelected($event)"></app-command-centre-menu>
   </div>
 </div>
 
@@ -20,5 +20,18 @@
   <div class="conference-list">
     <app-vho-hearing-list #conferenceList [conferences]="conferences" (selectedConference)="onConferenceSelected($event)">
     </app-vho-hearing-list>
+  </div>
+  <div class="selected-menu-content" [ngSwitch]="selectedMenu">
+    <app-admin-hearing *ngSwitchCase="menuOption.Hearing"></app-admin-hearing>
+
+    <app-admin-im *ngSwitchCase="menuOption.Message"></app-admin-im>
+
+    <div *ngSwitchDefault>
+      <div class="govuk-grid-row govuk-!-padding-3">
+        <div class="govuk-grid-column-full">
+          <h2 class="govuk-heading-l">Select a hearing</h2>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

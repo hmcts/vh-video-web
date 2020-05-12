@@ -13,6 +13,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceResponse } from 'src/app/services/clients/api-client';
 import { fakeAsync, discardPeriodicTasks, tick } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
+import { MenuOption } from '../models/menus-options';
 
 describe('CommandCentreComponent', () => {
     let component: CommandCentreComponent;
@@ -158,4 +159,12 @@ describe('CommandCentreComponent', () => {
         component.retrieveConferenceDetails(conferences[0].id);
         expect(errorService.handleApiError).toHaveBeenCalledWith(error);
     }));
+
+    it('should update selectedMenu', () => {
+        const menu = MenuOption.Message;
+
+        component.onMenuSelected(menu);
+
+        expect(component.selectedMenu).toBe(menu);
+    });
 });

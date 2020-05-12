@@ -11,6 +11,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { VhoStorageKeys } from '../services/models/session-keys';
+import { MenuOption } from '../models/menus-options';
 
 @Component({
     selector: 'app-command-centre',
@@ -18,9 +19,13 @@ import { VhoStorageKeys } from '../services/models/session-keys';
     styleUrls: ['./command-centre.component.scss', '../vho-global-styles.scss']
 })
 export class CommandCentreComponent implements OnInit, OnDestroy {
+    public menuOption = MenuOption;
+
     private readonly venueAllocationStorage: SessionStorage<HearingVenueResponse[]>;
 
     venueAllocations: string[] = [];
+
+    selectedMenu: MenuOption;
 
     conferencesSubscription: Subscription;
     conferences: HearingSummary[];
@@ -41,6 +46,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.selectedMenu = this.menuOption.Hearing;
         this.screenHelper.enableFullScreen(true);
         this.getConferenceForSelectedAllocations();
     }
@@ -110,6 +116,10 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             this.logger.error(`There was an error when selecting conference ${conferenceId}`, error);
             this.errorService.handleApiError(error);
         }
+    }
+
+    onMenuSelected(menu: MenuOption) {
+        this.selectedMenu = menu;
     }
 
     goBackToVenueSelection() {

@@ -23,6 +23,8 @@ import { PendingTasksComponent } from './pending-tasks/pending-tasks.component';
 import { UnreadMessagesComponent } from './unread-messages/unread-messages.component';
 import { CommandCentreComponent } from './command-centre/command-centre.component';
 import { CommandCentreMenuComponent } from './command-centre-menu/command-centre-menu.component';
+import { AdminImComponent } from './admin-im/admin-im.component';
+import { AdminHearingComponent } from './admin-hearing/admin-hearing.component';
 
 @NgModule({
     declarations: [
@@ -39,7 +41,9 @@ import { CommandCentreMenuComponent } from './command-centre-menu/command-centre
         PendingTasksComponent,
         UnreadMessagesComponent,
         CommandCentreComponent,
-        CommandCentreMenuComponent
+        CommandCentreMenuComponent,
+        AdminImComponent,
+        AdminHearingComponent
     ],
     imports: [
         CommonModule,
