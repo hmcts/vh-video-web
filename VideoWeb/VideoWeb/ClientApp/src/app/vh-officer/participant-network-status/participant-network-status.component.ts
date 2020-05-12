@@ -1,56 +1,117 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
-import { ParticipantSummary } from '../../shared/models/participant-summary';
+import { Logger } from 'src/app/services/logging/logger-base';
 import { HeartbeatHealth } from '../../services/models/participant-heartbeat';
+import { ParticipantSummary } from '../../shared/models/participant-summary';
+import { PackageLost } from '../services/models/package-lost';
+import { ParticipantGraphInfo } from '../services/models/participant-graph-info';
 
 @Component({
-  selector: 'app-participant-network-status',
-  templateUrl: './participant-network-status.component.html',
-  styleUrls: ['./participant-network-status.component.scss']
+    selector: 'app-participant-network-status',
+    templateUrl: './participant-network-status.component.html',
+    styleUrls: ['./participant-network-status.component.scss', '../vho-global-styles.scss']
 })
-export class ParticipantNetworkStatusComponent {
-  @Input() participant: ParticipantSummary;
+export class ParticipantNetworkStatusComponent implements OnInit {
+    @Input() participant: ParticipantSummary;
+    @Input() conferenceId: string;
 
-  @Output()
-  showMonitorGraph: EventEmitter<ParticipantSummary> = new EventEmitter<ParticipantSummary>();
+    displayGraph: boolean;
+    loading: boolean;
+    monitoringParticipant: ParticipantGraphInfo;
+    packageLostArray: PackageLost[];
 
-  constructor() {
-  }
+    @ViewChild('graphContainer', { static: false })
+    graphContainer: ElementRef;
 
-  showParticipantGraph() {
-    this.showMonitorGraph.emit(this.participant);
-  }
-
-  getParticipantNetworkStatus(): string {
-
-    if (this.participant === undefined)  {
-      return 'not-signed-in.png';
-    } else if (this.participant.participantHertBeatHealth === undefined) {
-      if (this.participant.status === ParticipantStatus.Disconnected) {
-        return 'disconnected.png';
-      } else {
-        return 'not-signed-in.png';
-      }
-    } else {
-      if (this.participant.participantHertBeatHealth.browserName.toLowerCase() === 'ms-edge' || this.participant.participantHertBeatHealth.browserName.toLowerCase() === 'safari') {
-        return 'incompatible-browser-signal.png';
-      } else {
-        if (this.participant.status === ParticipantStatus.Disconnected) {
-          return 'disconnected.png';
-        } else {
-          switch (this.participant.participantHertBeatHealth.heartbeatHealth) {
-            case HeartbeatHealth.Good:
-              return 'good-signal.png';
-            case HeartbeatHealth.Bad:
-              return 'bad-signal.png';
-            case HeartbeatHealth.Poor:
-              return 'poor-signal.png';
-            case HeartbeatHealth.None:
-              return 'incompatible-browser-signal.png';
-          }
-        }
-      }
-
+    constructor(private videoWebService: VideoWebService, private logger: Logger) {}
+    ngOnInit(): void {
+        this.displayGraph = false;
+        this.packageLostArray = [];
     }
-  }
+
+    async showParticipantGraph($event: MouseEvent) {
+        if (this.displayGraph || this.loading) {
+            this.logger.debug('Graph already displayed or still loading');
+            return;
+        }
+        try {
+            this.loading = true;
+            const heartbeatHistory = await this.videoWebService.getParticipantHeartbeats(this.conferenceId, this.participant.id);
+
+            this.loading = false;
+            this.packageLostArray = heartbeatHistory.map(x => {
+                return new PackageLost(x.recent_packet_loss, x.browser_name, x.browser_version, x.timestamp.getTime());
+            });
+
+            this.monitoringParticipant = new ParticipantGraphInfo(
+                this.participant.displayName,
+                this.participant.status,
+                this.participant.representee
+            );
+            this.setGraphVisibility(true);
+            this.updateGraphPosition($event);
+        } catch (err) {
+            this.loading = false;
+            this.logger.error(
+                `Failed to get heartbeat history for particpant ${this.participant.id} in conference ${this.conferenceId}`,
+                err
+            );
+        }
+    }
+
+    updateGraphPosition($event: MouseEvent) {
+        if (!this.graphContainer) {
+            return;
+        }
+        const x = $event.clientX;
+        const y = $event.clientY;
+        const elem = this.graphContainer.nativeElement as HTMLDivElement;
+
+        elem.style.top = y + 30 + 'px';
+        elem.style.left = x - 350 + 'px';
+    }
+
+    getParticipantNetworkStatus(): string {
+        if (this.participant === undefined) {
+            return 'not-signed-in.png';
+        } else if (this.participant.participantHertBeatHealth === undefined) {
+            if (this.participant.status === ParticipantStatus.Disconnected) {
+                return 'disconnected.png';
+            } else {
+                return 'not-signed-in.png';
+            }
+        } else {
+            if (this.isUnsupportedBrowser(this.participant.participantHertBeatHealth.browserName)) {
+                return 'incompatible-browser-signal.png';
+            } else {
+                if (this.participant.status === ParticipantStatus.Disconnected) {
+                    return 'disconnected.png';
+                } else {
+                    return this.getIconForParticipantNetworkStatus();
+                }
+            }
+        }
+    }
+
+    getIconForParticipantNetworkStatus() {
+        switch (this.participant.participantHertBeatHealth.heartbeatHealth) {
+            case HeartbeatHealth.Good:
+                return 'good-signal.png';
+            case HeartbeatHealth.Bad:
+                return 'bad-signal.png';
+            case HeartbeatHealth.Poor:
+                return 'poor-signal.png';
+            case HeartbeatHealth.None:
+                return 'incompatible-browser-signal.png';
+        }
+    }
+
+    isUnsupportedBrowser(browserName: string) {
+        return browserName.toLowerCase() === 'ms-edge' || browserName.toLowerCase() === 'safari';
+    }
+
+    setGraphVisibility(visible: boolean) {
+        this.displayGraph = visible;
+    }
 }

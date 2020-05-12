@@ -1,7 +1,20 @@
 <div class="govuk-grid-row">
-  <div id="p-row-{{participant.id}}" class="govuk-grid-column-one-half" title="{{participant.displayName}}" *ngIf="!participant.isJudge">
-    <img id="network-status-icon" src="/assets/images/{{getParticipantNetworkStatus()}}"
-         (click)="showParticipantGraph()"
-         alt="Open instant messaging chat window arrow" />
+  <div id="p-row-{{ participant.id }}" class="govuk-grid-column-one-half" *ngIf="!participant.isJudge">
+    <img
+      id="network-status-icon"
+      src="/assets/images/{{ getParticipantNetworkStatus() }}"
+      (mouseover)="showParticipantGraph($event)"
+      (mouseout)="setGraphVisibility(false)"
+      (mousemove)="updateGraphPosition($event)"
+      alt="Open instant messaging chat window arrow"
+    />
+
+    <div *ngIf="displayGraph" #graphContainer class="graph-container" (mouseleave)="setGraphVisibility(false)">
+      <app-monitoring-graph
+        [pakagesLostData]="packageLostArray"
+        [participantGraphInfo]="monitoringParticipant"
+        (closeGraph)="setGraphVisibility(false)"
+      ></app-monitoring-graph>
+    </div>
   </div>
 </div>

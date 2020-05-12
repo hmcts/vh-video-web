@@ -9,7 +9,7 @@ import { VHODashboardHelper } from '../helper';
 @Component({
     selector: 'app-tasks-table',
     templateUrl: './tasks-table.component.html',
-    styleUrls: ['./tasks-table.component.scss']
+    styleUrls: ['./tasks-table.component.scss', '../vho-global-styles.scss']
 })
 export class TasksTableComponent implements OnInit {
     taskDivWidth: number;
@@ -80,5 +80,13 @@ export class TasksTableComponent implements OnInit {
         const taskToUpdate = this.tasks.find(x => x.id === updatedTask.id);
         const index = this.tasks.indexOf(taskToUpdate);
         this.tasks[index] = updatedTask;
+    }
+
+    usernameWithoutDomain(username: string) {
+        if (username) {
+            return username.split('@')[0];
+        } else {
+            return null;
+        }
     }
 }

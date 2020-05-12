@@ -186,6 +186,9 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.didTestComplete = false;
         const conferenceAlias = 'testcall2';
         const tokenOptions = btoa(`${this.token.expires_on};${this.selfTestParticipantId};${this.token.token}`);
+        if (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1) {
+            this.pexipAPI.h264_enabled = false;
+        }
         this.pexipAPI.makeCall(this.selfTestPexipNode, `${conferenceAlias};${tokenOptions}`, this.selfTestParticipantId, this.maxBandwidth);
     }
 
@@ -255,11 +258,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             let reason: SelfTestFailureReason;
             if (this.testCallResult && this.testCallResult.score === TestScore.Bad) {
                 reason = SelfTestFailureReason.BadScore;
-            } else if (!this.testCallResult) {
-                reason = SelfTestFailureReason.IncompleteTest;
-            }
-
-            if (reason) {
                 await this.raiseFailedSelfTest(reason);
             }
         }

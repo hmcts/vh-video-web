@@ -8,3 +8,6 @@
           (load)="judgeURLChanged();" title="Judge view of the hearing room">
   </iframe>
 </div>
+<div *ngIf="showAudioRecordingAlert">
+    <app-audio-alert (alertClose)="closeAlert($event)"></app-audio-alert>
+</div>

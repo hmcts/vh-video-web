@@ -7,7 +7,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 @Component({
     selector: 'app-unread-messages',
     templateUrl: './unread-messages.component.html',
-    styleUrls: ['./unread-messages.component.scss']
+    styleUrls: ['./unread-messages.component.scss', '../vho-global-styles.scss']
 })
 export class UnreadMessagesComponent implements OnInit, OnDestroy {
     @Input() conferenceId: string;

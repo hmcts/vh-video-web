@@ -1,4 +1,4 @@
-﻿using AcceptanceTests.Common.PageObject.Helpers;
+using AcceptanceTests.Common.PageObject.Helpers;
 using OpenQA.Selenium;
 
 namespace VideoWeb.AcceptanceTests.Pages
@@ -16,6 +16,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By ProblemsTitle = CommonLocators.ElementContainingText("Problems with your equipment?");
         public static By PleaseCallTheVhoText = CommonLocators.ElementContainingText("Please call the video hearings team");
         public static By PreferredCameraVideo = By.Id("preferredCameraStream");
-        public static By SkipLink = By.Id("continue-link");
+        public static By ContinueButton = By.Id("continue-btn");
     }
 }

@@ -1,15 +1,15 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { ChartDataSets, Chart } from 'chart.js';
+import { Component, Input, OnInit } from '@angular/core';
+import { Chart, ChartDataSets } from 'chart.js';
 import { Color, Label } from 'ng2-charts';
-import { MonitorGraphService } from '../services/monitor-graph.service';
+import { graphLabel, GraphSettings } from '../services/models/graph-settings';
 import { PackageLost } from '../services/models/package-lost';
-import { GraphSettings, graphLabel } from '../services/models/graph-settings';
 import { ParticipantGraphInfo } from '../services/models/participant-graph-info';
+import { MonitorGraphService } from '../services/monitor-graph.service';
 
 @Component({
     selector: 'app-monitoring-graph',
     templateUrl: './monitoring-graph.component.html',
-    styleUrls: ['./monitoring-graph.component.scss']
+    styleUrls: ['./monitoring-graph.component.scss', '../vho-global-styles.scss']
 })
 export class MonitoringGraphComponent implements OnInit {
     @Input('pakagesLostData')
@@ -19,9 +19,6 @@ export class MonitoringGraphComponent implements OnInit {
 
     @Input()
     participantGraphInfo: ParticipantGraphInfo;
-
-    @Output()
-    closeGraph: EventEmitter<boolean> = new EventEmitter<boolean>();
 
     packagesLostValues: number[] = [];
     lineChartData: ChartDataSets[] = [];
@@ -90,9 +87,5 @@ export class MonitoringGraphComponent implements OnInit {
             return graphLabel.Bad;
         }
         return graphLabel.Good;
-    }
-
-    close() {
-        this.closeGraph.emit(true);
     }
 }

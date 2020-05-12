@@ -1,8 +1,8 @@
-@import "~govuk-frontend/govuk/all";
+@import '~govuk-frontend/govuk/all';
 
 .vh-popup {
   margin: 0;
-  background: #fff;
+  background: govuk-colour('white');
   border-radius: 0px;
   position: relative;
   transition: all 2s ease-in-out;
@@ -12,11 +12,8 @@
 }
 
 .vh-popup-overlay {
-  position: fixed;
-  top: 25%;
-  bottom: 10%;
-  left: 25%;
-  right: 0;
+  background: govuk-colour('white');
+  position: relative;
 }
 
 .vh-popup-small {
@@ -24,10 +21,9 @@
   min-width: 500px !important;
 }
 
-
 .graph-title {
-  background-color: gray;
-  color: #fff;
+  background-color: govuk-colour('dark-grey');
+  color: govuk-colour('white');
 }
 
 .graph-panel {
@@ -38,21 +34,20 @@
   text-align: left;
 }
 
-
 .graph-footer-yellow {
-  background-color: #ffab00;
+  background-color: govuk-colour('yellow');
 }
 
 .graph-footer-green {
-  background-color: #009900;
+  background-color: govuk-colour('green');
 }
 
 .graph-footer-red {
-  background-color: #ff3300;
+  background-color: govuk-colour('red');
 }
 
 .graph-footer-gray {
-  background-color: gray;
+  background-color: govuk-colour('dark-grey');
 }
 
 .vh-text-panel {
@@ -64,7 +59,7 @@
 }
 
 .vh-c {
-  color: white;
+  color: govuk-colour('white');
 }
 
 .vh-center-panel {
@@ -76,17 +71,3 @@
   width: 100%;
   margin-top: 30px;
 }
-
-.vh-close-popup {
-  float: right;
-  vertical-align: top;
-  margin-top: 0;
-  margin-right: 5px;
-  text-decoration: none;
-  color: white;
-}
-.vh-close-popup:active {
-  background-color: gray !important;
-  color: #fff;
-}
-

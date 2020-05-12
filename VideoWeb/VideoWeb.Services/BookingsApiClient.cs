@@ -367,6 +367,25 @@ namespace VideoWeb.Services.Bookings
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<BookingsResponse> GetHearingsByTypesAsync(System.Collections.Generic.IEnumerable<int> types, string cursor, int? limit, System.Threading.CancellationToken cancellationToken);
     
+        /// <summary>Gets a list of hearing by case number</summary>
+        /// <param name="caseNumber">case number to search by</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<System.Collections.Generic.List<HearingsByCaseNumberResponse>> GetHearingsByCaseNumberAsync(string caseNumber);
+    
+        /// <summary>Gets a list of hearing by case number</summary>
+        /// <param name="caseNumber">case number to search by</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        System.Collections.Generic.List<HearingsByCaseNumberResponse> GetHearingsByCaseNumber(string caseNumber);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Gets a list of hearing by case number</summary>
+        /// <param name="caseNumber">case number to search by</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<System.Collections.Generic.List<HearingsByCaseNumberResponse>> GetHearingsByCaseNumberAsync(string caseNumber, System.Threading.CancellationToken cancellationToken);
+    
         /// <summary>Get all hearing venues available for booking</summary>
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
@@ -2264,6 +2283,103 @@ namespace VideoWeb.Services.Bookings
             }
         }
     
+        /// <summary>Gets a list of hearing by case number</summary>
+        /// <param name="caseNumber">case number to search by</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<HearingsByCaseNumberResponse>> GetHearingsByCaseNumberAsync(string caseNumber)
+        {
+            return GetHearingsByCaseNumberAsync(caseNumber, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Gets a list of hearing by case number</summary>
+        /// <param name="caseNumber">case number to search by</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public System.Collections.Generic.List<HearingsByCaseNumberResponse> GetHearingsByCaseNumber(string caseNumber)
+        {
+            return System.Threading.Tasks.Task.Run(async () => await GetHearingsByCaseNumberAsync(caseNumber, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Gets a list of hearing by case number</summary>
+        /// <param name="caseNumber">case number to search by</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<HearingsByCaseNumberResponse>> GetHearingsByCaseNumberAsync(string caseNumber, System.Threading.CancellationToken cancellationToken)
+        {
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/audiorecording/casenumber?");
+            if (caseNumber != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("caseNumber") + "=").Append(System.Uri.EscapeDataString(ConvertToString(caseNumber, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<HearingsByCaseNumberResponse>>(response_, headers_).ConfigureAwait(false);
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == "400") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new BookingsApiException<ProblemDetails>("Bad Request", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new BookingsApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new BookingsApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+            
+                        return default(System.Collections.Generic.List<HearingsByCaseNumberResponse>);
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
         /// <summary>Get all hearing venues available for booking</summary>
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
@@ -3966,6 +4082,54 @@ namespace VideoWeb.Services.Bookings
         /// Will be null for the last page.</summary>
         [Newtonsoft.Json.JsonProperty("next_page_url", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Next_page_url { get; set; }
+    
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+    
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+    
+    
+    }
+    
+    /// <summary>hearing information queried by case number</summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class HearingsByCaseNumberResponse 
+    {
+        /// <summary>Hearing Id</summary>
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid Id { get; set; }
+    
+        /// <summary>The date and time for a hearing</summary>
+        [Newtonsoft.Json.JsonProperty("scheduled_date_time", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime Scheduled_date_time { get; set; }
+    
+        /// <summary>The name of the hearing venue</summary>
+        [Newtonsoft.Json.JsonProperty("hearing_venue_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Hearing_venue_name { get; set; }
+    
+        /// <summary>The case number</summary>
+        [Newtonsoft.Json.JsonProperty("case_number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Case_number { get; set; }
+    
+        /// <summary>The case name</summary>
+        [Newtonsoft.Json.JsonProperty("case_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Case_name { get; set; }
+    
+        /// <summary>The courtroom account</summary>
+        [Newtonsoft.Json.JsonProperty("courtroom_account", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Courtroom_account { get; set; }
+    
+        /// <summary>The courtroom account name</summary>
+        [Newtonsoft.Json.JsonProperty("courtroom_account_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Courtroom_account_name { get; set; }
+    
+        /// <summary>The hearing room name at the hearing venue</summary>
+        [Newtonsoft.Json.JsonProperty("hearing_room_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Hearing_room_name { get; set; }
     
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     

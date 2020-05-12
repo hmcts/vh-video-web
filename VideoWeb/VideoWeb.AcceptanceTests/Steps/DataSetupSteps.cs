@@ -62,7 +62,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"I have another hearing located in (.*)")]
         public void GivenIHaveAHearingInLocation(string location)
         {
-            GivenIHaveAHearing(30, location);
+            GivenIHaveAHearing(0, location);
             GetTheNewConferenceDetails();
         }
 
@@ -94,7 +94,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private void SendTheHearingRequest(BookNewHearingRequest request)
         {
             var hearingResponse = _c.Apis.BookingsApi.CreateHearing(request);
-            hearingResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+            hearingResponse.StatusCode.Should().Be(HttpStatusCode.Created, $"Hearing not created with error '{hearingResponse.Content}'");
             var hearing = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(hearingResponse.Content);
             hearing.Should().NotBeNull();
             _c.Test.Hearing = hearing;
@@ -121,7 +121,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             };
 
             var response = _c.Apis.BookingsApi.ConfirmHearingToCreateConference(_c.Test.NewHearingId, updateRequest);
-            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent, $"Conference not created with error '{response.Content}'");
             response = _c.Apis.VideoApi.PollForConferenceResponse(_c.Test.NewHearingId);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);

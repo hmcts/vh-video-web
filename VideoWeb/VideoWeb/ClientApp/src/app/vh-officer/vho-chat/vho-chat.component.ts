@@ -13,7 +13,7 @@ import { ConferenceUnreadMessageCount } from './vho-conference-unread_message-co
 @Component({
     selector: 'app-vho-chat',
     templateUrl: './vho-chat.component.html',
-    styleUrls: ['./vho-chat.component.scss']
+    styleUrls: ['./vho-chat.component.scss', '../vho-global-styles.scss']
 })
 export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDestroy {
     sectionDivWidth: number;
@@ -44,7 +44,7 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         this.initForm();
         this.chatHubSubscription = this.setupChatSubscription();
         this.loading = true;
-        this.retrieveChatForConference().then((messages) => {
+        this.retrieveChatForConference().then(messages => {
             this.messages = messages;
             this.loading = false;
         });

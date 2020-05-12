@@ -1,75 +1,151 @@
-import { ParticipantStatus, ParticipantForUserResponse } from 'src/app/services/clients/api-client';
+import { fakeAsync, tick } from '@angular/core/testing';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { ConferenceForVhOfficerResponse, ParticipantHeartbeatResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { ParticipantNetworkStatusComponent } from './participant-network-status.component';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
-import { ParticipantHeartbeat, HeartbeatHealth } from '../../services/models/participant-heartbeat';
+import { ParticipantNetworkStatusComponent } from './participant-network-status.component';
+import { ElementRef } from '@angular/core';
 
 describe('ParticipantNetworkStatusComponent', () => {
+    let component: ParticipantNetworkStatusComponent;
+    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+    const logger: Logger = new MockLogger();
+    let conference: ConferenceForVhOfficerResponse;
+    let participant: ParticipantSummary;
 
-  const component = new ParticipantNetworkStatusComponent();
+    let mockGraphContainer: HTMLDivElement;
 
-  it('should return "good signal" image', () => {
-    const p = new ConferenceTestData().getConferenceFuture().participants.map(x => new ParticipantSummary(x))[0];
-    p.status = ParticipantStatus.Available;
-    p.participantHertBeatHealth = new ParticipantHeartbeat('1111-1111-1111-1111', '1111-1111-1111-1111', HeartbeatHealth.Good, 'Chrome', '80.0.3987.132');
-    component.participant = p;
-    expect(component.getParticipantNetworkStatus()).toBe('good-signal.png');
-  });
+    let mouseEvent: MouseEvent;
 
-  it('should return "bad signal" image', () => {
-    const p = new ConferenceTestData().getConferenceFuture().participants.map(x => new ParticipantSummary(x))[0];
-    p.status = ParticipantStatus.Available;
-    p.participantHertBeatHealth = new ParticipantHeartbeat('1111-1111-1111-1111', '1111-1111-1111-1111', HeartbeatHealth.Bad, 'Chrome', '80.0.3987.132');
-    component.participant = p;
-    expect(component.getParticipantNetworkStatus()).toBe('bad-signal.png');
-  });
+    const hearbeatResponse = new ParticipantHeartbeatResponse({
+        browser_name: 'Chrome',
+        browser_version: '80.0.3987.132',
+        recent_packet_loss: 78,
+        timestamp: new Date(new Date().toUTCString())
+    });
 
-  it('should return "poor signal" image', () => {
-    const p = new ConferenceTestData().getConferenceFuture().participants.map(x => new ParticipantSummary(x))[0];
-    p.status = ParticipantStatus.Available;
-    p.participantHertBeatHealth = new ParticipantHeartbeat('1111-1111-1111-1111', '1111-1111-1111-1111', HeartbeatHealth.Poor, 'Chrome', '80.0.3987.132');
-    component.participant = p;
-    expect(component.getParticipantNetworkStatus()).toBe('poor-signal.png');
-  });
+    beforeAll(() => {
+        mouseEvent = document.createEvent('MouseEvent');
+        mouseEvent.initMouseEvent('mousemove', true, true, window, 0, 0, 0, 80, 20, false, false, false, false, 0, null);
 
-  it('should return "not signed in" class', () => {
-    const p = new ConferenceTestData().getConferenceFuture().participants.map(x => new ParticipantSummary(x))[0];
-    p.participantHertBeatHealth = undefined;
+        conference = new ConferenceTestData().getConferenceNow();
+        participant = new ParticipantSummary(conference.participants[0]);
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getParticipantHeartbeats']);
+    });
 
-    component.participant = p;
+    beforeEach(() => {
+        videoWebServiceSpy.getParticipantHeartbeats.and.returnValue(Promise.resolve([hearbeatResponse]));
+        component = new ParticipantNetworkStatusComponent(videoWebServiceSpy, logger);
+        component.conferenceId = conference.id;
+        component.participant = participant;
 
-    expect(component.getParticipantNetworkStatus()).toBe('not-signed-in.png');
+        videoWebServiceSpy.getParticipantHeartbeats.calls.reset();
 
-    p.status = ParticipantStatus.Disconnected;
-    component.participant = p;
-    expect(component.getParticipantNetworkStatus()).toBe('disconnected.png');
-  });
+        mockGraphContainer = document.createElement('div');
+    });
 
-  it('should return "disconnected" class', () => {
-    const p = new ConferenceTestData().getConferenceFuture().participants.map(x => new ParticipantSummary(x))[0];
-    p.participantHertBeatHealth = new ParticipantHeartbeat('1111-1111-1111-1111', '1111-1111-1111-1111', HeartbeatHealth.None, 'Chrome', '80.0.3987.132');
-    p.status = ParticipantStatus.Disconnected;
-    component.participant = p;
+    it('should not show grow on init', () => {
+        component.ngOnInit();
+        expect(component.displayGraph).toBeFalsy();
+    });
 
-    expect(component.getParticipantNetworkStatus()).toBe('disconnected.png');
-  });
+    it('should not get hearbeat history if graph already displayed', async () => {
+        component.displayGraph = true;
+        component.loading = false;
+        await component.showParticipantGraph(mouseEvent);
+        expect(videoWebServiceSpy.getParticipantHeartbeats).toHaveBeenCalledTimes(0);
+    });
 
-  it('should return "non compatible browser" image', () => {
-    const p = new ConferenceTestData().getConferenceFuture().participants.map(x => new ParticipantSummary(x))[0];
-    p.participantHertBeatHealth = new ParticipantHeartbeat('1111-1111-1111-1111', '1111-1111-1111-1111', HeartbeatHealth.None, 'Safari', '13.0');
-    component.participant = p;
-    expect(component.getParticipantNetworkStatus()).toBe('incompatible-browser-signal.png');
+    it('should not get hearbeat history if graph already loading', async () => {
+        component.displayGraph = false;
+        component.loading = true;
+        await component.showParticipantGraph(mouseEvent);
+        expect(videoWebServiceSpy.getParticipantHeartbeats).toHaveBeenCalledTimes(0);
+    });
 
-    p.participantHertBeatHealth = new ParticipantHeartbeat('1111-1111-1111-1111', '1111-1111-1111-1111', HeartbeatHealth.None, 'Edge', '38.14393');
-    component.participant = p;
-    expect(component.getParticipantNetworkStatus()).toBe('incompatible-browser-signal.png');
-  });
-  it('should emit event with ParticipantSummary on the click', () => {
-    const participant = new ParticipantSummary(new ParticipantForUserResponse({ id: '1111-2222-3333' }));
-    component.participant = participant;
-    spyOn(component.showMonitorGraph, 'emit');
-    component.showParticipantGraph();
-    expect(component.showMonitorGraph.emit).toHaveBeenCalled();
-    expect(component.showMonitorGraph.emit).toHaveBeenCalledWith(participant);
-  });
+    it('should log error when unable to get heartbeat data', fakeAsync(() => {
+        const error = { error: 'failed to find data', error_code: 404 };
+        videoWebServiceSpy.getParticipantHeartbeats.and.callFake(() => Promise.reject(error));
+        const spy = spyOn(logger, 'error');
+        component.packageLostArray = undefined;
+
+        component.showParticipantGraph(mouseEvent);
+        tick();
+        expect(component.loading).toBeFalsy();
+        expect(component.displayGraph).toBeFalsy();
+        expect(spy.calls.mostRecent().args[0]).toMatch(`Failed to get heartbeat history for particpant`);
+        expect(spy.calls.mostRecent().args[1]).toBe(error);
+        expect(component.packageLostArray).toBeUndefined();
+    }));
+
+    it('should show monitoring graph for selected participant', async () => {
+        component.displayGraph = false;
+        await component.showParticipantGraph(mouseEvent);
+        expect(component.monitoringParticipant).toBeDefined();
+        expect(component.monitoringParticipant.name).toBe(participant.displayName);
+        expect(component.monitoringParticipant.status).toBe(participant.status);
+        expect(component.monitoringParticipant.representee).toBe(participant.representee);
+        expect(videoWebServiceSpy.getParticipantHeartbeats).toHaveBeenCalled();
+    });
+
+    it('should update graph container location on mouse move', () => {
+        component.graphContainer = new ElementRef(mockGraphContainer);
+        component.updateGraphPosition(mouseEvent);
+
+        const expectedTop = mouseEvent.clientY + 30 + 'px';
+        const expectedLeft = mouseEvent.clientX - 350 + 'px';
+        expect(mockGraphContainer.style.top).toBe(expectedTop);
+        expect(mockGraphContainer.style.left).toBe(expectedLeft);
+    });
+
+    const networkStatusTestCases = [
+        { status: ParticipantStatus.Available, health: HeartbeatHealth.Good, browser: 'Chrome', expected: 'good-signal.png' },
+        { status: ParticipantStatus.Available, health: HeartbeatHealth.Bad, browser: 'Chrome', expected: 'bad-signal.png' },
+        { status: ParticipantStatus.Available, health: HeartbeatHealth.Poor, browser: 'Chrome', expected: 'poor-signal.png' },
+        { status: ParticipantStatus.Disconnected, health: HeartbeatHealth.None, browser: 'Chrome', expected: 'disconnected.png' },
+        {
+            status: ParticipantStatus.Available,
+            health: HeartbeatHealth.None,
+            browser: 'Safari',
+            expected: 'incompatible-browser-signal.png'
+        },
+        { status: ParticipantStatus.Available, health: HeartbeatHealth.None, browser: 'Edge', expected: 'incompatible-browser-signal.png' }
+    ];
+
+    networkStatusTestCases.forEach(test => {
+        it(`should return ${test.expected} when participant is ${test.status} and heartbeat is ${test.health} with on ${test.browser}`, () => {
+            const p = new ConferenceTestData().getConferenceFuture().participants.map(x => new ParticipantSummary(x))[0];
+            p.status = test.status;
+            p.participantHertBeatHealth = new ParticipantHeartbeat(
+                '1111-1111-1111-1111',
+                '1111-1111-1111-1111',
+                test.health,
+                test.browser,
+                '80.0.3987.132'
+            );
+            component.participant = p;
+            expect(component.getParticipantNetworkStatus()).toBe(test.expected);
+        });
+    });
+
+    it('should return "not signed in" class', () => {
+        const p = new ConferenceTestData().getConferenceFuture().participants.map(x => new ParticipantSummary(x))[0];
+        p.participantHertBeatHealth = undefined;
+
+        component.participant = p;
+
+        expect(component.getParticipantNetworkStatus()).toBe('not-signed-in.png');
+
+        p.status = ParticipantStatus.Disconnected;
+        component.participant = p;
+        expect(component.getParticipantNetworkStatus()).toBe('disconnected.png');
+    });
+
+    it('should return not-signed-in when no participant defined', () => {
+        component.participant = undefined;
+        expect(component.getParticipantNetworkStatus()).toBe('not-signed-in.png');
+    });
 });
