@@ -1,1 +1,18 @@
-<p>admin-hearing works!</p>
+<div class="govuk-grid-row">
+  <div id="participant-status-table" class="govuk-grid-column-one-quarter govuk-!-padding-0">
+    <app-participant-status [conferenceId]="hearing.id"></app-participant-status>
+  </div>
+  <div id="vho-admin-view" class="govuk-grid-column-three-quarters govuk-!-padding-0">
+    <iframe
+      id="admin-frame"
+      [src]="adminIframe"
+      allowfullscreen
+      webkitallowfullscreen
+      mozallowfullscreen
+      title="Admin overview of the hearings"
+    ></iframe>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <app-tasks-table [conferenceId]="hearing.id"></app-tasks-table>
+</div>

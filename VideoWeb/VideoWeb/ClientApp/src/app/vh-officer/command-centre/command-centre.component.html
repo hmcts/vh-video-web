@@ -22,7 +22,9 @@
     </app-vho-hearing-list>
   </div>
   <div class="selected-menu-content" [ngSwitch]="selectedMenu">
-    <app-admin-hearing *ngSwitchCase="menuOption.Hearing"></app-admin-hearing>
+    <ng-container *ngSwitchCase="menuOption.Hearing">
+      <app-admin-hearing *ngIf="selectedHearing" [hearing]="selectedHearing"></app-admin-hearing>
+    </ng-container>
 
     <app-admin-im *ngSwitchCase="menuOption.Message"></app-admin-im>
 

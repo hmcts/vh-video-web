@@ -16,7 +16,7 @@
 .conference-delayed,
 .conference-not-ready {
   background-color: govuk-colour('red');
-  color: govuk-colour('white');
+  color: govuk-colour('white') !important;
   font-weight: bold;
 }
 

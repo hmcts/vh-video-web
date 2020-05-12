@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { Hearing } from 'src/app/shared/models/hearing';
+import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-admin-hearing',
@@ -6,7 +8,17 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./admin-hearing.component.scss']
 })
 export class AdminHearingComponent implements OnInit {
-    constructor() {}
+    @Input() hearing: Hearing;
+    adminIframe: SafeResourceUrl;
+    constructor(public sanitizer: DomSanitizer) {}
 
-    ngOnInit() {}
+    ngOnInit() {
+        this.sanitiseAndLoadIframe();
+    }
+
+    private sanitiseAndLoadIframe() {
+        const adminUri = this.hearing.getConference().admin_i_frame_uri;
+
+        this.adminIframe = this.sanitizer.bypassSecurityTrustResourceUrl(adminUri);
+    }
 }
