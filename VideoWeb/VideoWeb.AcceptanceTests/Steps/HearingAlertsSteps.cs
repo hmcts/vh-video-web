@@ -14,6 +14,7 @@ using VideoWeb.AcceptanceTests.Configuration;
 using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.Common.Extensions;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
@@ -200,7 +201,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var timePlusAMinute = _c.TimeZone.Adjust(DateTime.Now).AddMinutes(1).ToString(DateFormats.AlertMessageTimestamp);
             var actionedDetails = _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.TaskActionedBy(_c.Test.TaskId)).Text.Trim();
             actionedDetails.Should().ContainAny(time, timeMinusAMinute, timePlusAMinute);
-            actionedDetails.ToLower().Should().Contain(_c.CurrentUser.Username.ToLower());
+            actionedDetails.ToLower().Should().Contain(_c.CurrentUser.Username.WithoutDomain().ToLower());
         }
 
         private Guid GetClerkParticipantId()
