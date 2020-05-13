@@ -1,6 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Hearing } from 'src/app/shared/models/hearing';
-import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-admin-hearing',
@@ -9,7 +9,7 @@ import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 })
 export class AdminHearingComponent implements OnInit {
     @Input() hearing: Hearing;
-    adminIframe: SafeResourceUrl;
+    adminIframeUrl: SafeResourceUrl;
     constructor(public sanitizer: DomSanitizer) {}
 
     ngOnInit() {
@@ -19,6 +19,6 @@ export class AdminHearingComponent implements OnInit {
     private sanitiseAndLoadIframe() {
         const adminUri = this.hearing.getConference().admin_i_frame_uri;
 
-        this.adminIframe = this.sanitizer.bypassSecurityTrustResourceUrl(adminUri);
+        this.adminIframeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(adminUri);
     }
 }

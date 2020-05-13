@@ -25,6 +25,7 @@ import { CommandCentreComponent } from './command-centre/command-centre.componen
 import { CommandCentreMenuComponent } from './command-centre-menu/command-centre-menu.component';
 import { AdminImComponent } from './admin-im/admin-im.component';
 import { AdminHearingComponent } from './admin-hearing/admin-hearing.component';
+import { AdminImListComponent } from './admin-im-list/admin-im-list.component';
 
 @NgModule({
     declarations: [
@@ -43,7 +44,8 @@ import { AdminHearingComponent } from './admin-hearing/admin-hearing.component';
         CommandCentreComponent,
         CommandCentreMenuComponent,
         AdminImComponent,
-        AdminHearingComponent
+        AdminHearingComponent,
+        AdminImListComponent
     ],
     imports: [
         CommonModule,

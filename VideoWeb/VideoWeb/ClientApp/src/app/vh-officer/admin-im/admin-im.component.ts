@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Hearing } from 'src/app/shared/models/hearing';
 
 @Component({
     selector: 'app-admin-im',
     templateUrl: './admin-im.component.html',
-    styleUrls: ['./admin-im.component.scss']
+    styleUrls: ['./admin-im.component.scss', '../vho-global-styles.scss']
 })
-export class AdminImComponent implements OnInit {
-    constructor() {}
+export class AdminImComponent {
+    @Input() hearing: Hearing;
 
-    ngOnInit() {}
+    constructor() {}
 }

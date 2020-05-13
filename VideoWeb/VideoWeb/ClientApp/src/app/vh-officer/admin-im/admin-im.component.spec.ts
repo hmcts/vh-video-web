@@ -1,24 +1,15 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { ConferenceResponseVho } from 'src/app/services/clients/api-client';
+import { Hearing } from 'src/app/shared/models/hearing';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { AdminImComponent } from './admin-im.component';
 
 describe('AdminImComponent', () => {
     let component: AdminImComponent;
-    let fixture: ComponentFixture<AdminImComponent>;
-
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-            declarations: [AdminImComponent]
-        }).compileComponents();
-    }));
+    let conference: ConferenceResponseVho;
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(AdminImComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
-
-    it('should create', () => {
-        expect(component).toBeTruthy();
+        conference = new ConferenceTestData().getConferenceDetailNow();
+        component = new AdminImComponent();
+        component.hearing = new Hearing(conference);
     });
 });

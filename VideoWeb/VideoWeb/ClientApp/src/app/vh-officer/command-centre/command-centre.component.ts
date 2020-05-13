@@ -46,7 +46,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.selectedMenu = this.menuOption.Hearing;
+        this.selectedMenu = this.menuOption.Message;
         this.screenHelper.enableFullScreen(true);
         this.getConferenceForSelectedAllocations();
     }
