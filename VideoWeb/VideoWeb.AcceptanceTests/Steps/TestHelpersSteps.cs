@@ -23,7 +23,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void GivenIRemoveAllHearingsWithTheJudge(string judgeUsername)
         {
             judgeUsername.Should().Contain("@");
-            judgeUsername.ToLower().Should().ContainAny("automation", "manual", "test");
+            judgeUsername.ToLower().Should().ContainAny("automation", "manual", "performance", "test");
             var response = _c.Apis.BookingsApi.GetHearingsForUsername(judgeUsername);
             var hearings = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingDetailsResponse>>(response.Content);
             if (hearings == null) return;
@@ -31,6 +31,36 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 _c.Apis.BookingsApi.DeleteHearing(hearing.Id);
             }
+        }
+
+        [Given(@"I remove all hearings with partial case name '(.*)'")]
+        public void GivenIRemoveAllHearingsWithPartialCaseName(string partialCaseName)
+        {
+            partialCaseName.Should().NotBeNullOrWhiteSpace();
+            partialCaseName.ToLower().Should().ContainAny("automation", "manual", "performance", "test");
+            const int limit = 10;
+            var response = _c.Apis.BookingsApi.GetHearingsByAnyCaseType(limit);
+            var bookings = RequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(response.Content);
+            var hearings = GetListOfAllHearings(bookings);
+            foreach (var hearing in hearings)
+            {
+                if (hearing.Hearing_name.ToLower().Contains(partialCaseName.ToLower()))
+                {
+                    _c.Apis.BookingsApi.DeleteHearing(hearing.Hearing_id);
+                }
+            }
+        }
+
+        private static IEnumerable<BookingsHearingResponse> GetListOfAllHearings(BookingsResponse bookings)
+        {
+            var hearings = new List<BookingsHearingResponse>();
+
+            foreach (var bookedHearing in bookings.Hearings)
+            {
+                hearings.AddRange(bookedHearing.Hearings);
+            }
+
+            return hearings;
         }
 
         [Given(@"I remove all conferences for today containing the case name '(.*)'")]
