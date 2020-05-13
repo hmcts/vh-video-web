@@ -81,4 +81,12 @@ export class TasksTableComponent implements OnInit {
         const index = this.tasks.indexOf(taskToUpdate);
         this.tasks[index] = updatedTask;
     }
+
+    usernameWithoutDomain(username: string) {
+        if (username) {
+            return username.split('@')[0];
+        } else {
+            return null;
+        }
+    }
 }

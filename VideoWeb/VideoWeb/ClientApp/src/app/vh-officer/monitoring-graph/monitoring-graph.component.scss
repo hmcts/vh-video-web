@@ -71,16 +71,3 @@
   width: 100%;
   margin-top: 30px;
 }
-
-.vh-close-popup {
-  float: right;
-  vertical-align: top;
-  margin-top: 0;
-  margin-right: 5px;
-  text-decoration: none;
-  color: govuk-colour('white');
-}
-.vh-close-popup:active {
-  background-color: govuk-colour('dark-grey') !important;
-  color: govuk-colour('white');
-}

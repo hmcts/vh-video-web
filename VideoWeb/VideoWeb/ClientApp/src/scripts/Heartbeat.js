@@ -169,13 +169,11 @@
       body: heartbeat
     };
     if (this.token !== "none") {
-      request.headers.Authorization = `Bearer ${this.token}`;
+      request.headers.Authorization = this.token;
     }
 
     fetch(url, request)
-      .then(function (response) {
-        // console.log(response.json());
-      }
+      .then(function (response) { }
       );
   };
 
