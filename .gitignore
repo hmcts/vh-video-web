@@ -333,11 +333,6 @@ TESTS.xml
 *.feature.cs
 
 # Local environment settings files
-/VideoWeb/VideoWeb.AcceptanceTests/appsettings.preview.json
-/VideoWeb/VideoWeb.AcceptanceTests/appsettings.local.json
-/VideoWeb/VideoWeb.AcceptanceTests/appsettings.localapis.json
-/VideoWeb/VideoWeb.AcceptanceTests/appsettings.dev.json
-/VideoWeb/VideoWeb.AcceptanceTests/appsettings.aat.json
 /VideoWeb/VideoWeb.AcceptanceTests/Configuration/Environments/
 
 # Config for NuGet

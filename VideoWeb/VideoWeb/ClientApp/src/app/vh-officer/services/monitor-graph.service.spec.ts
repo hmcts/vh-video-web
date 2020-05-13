@@ -71,5 +71,13 @@ describe('MonitorGraphService', () => {
     expect(isNaN(result[result.length - 1])).toBe(true);
     expect(isNaN(result[0])).toBe(true);
   });
+  it('should adjust start time now to be in interval of 5 seconds', () => {
+      const data = GraphTestData.getDataWithUnsupportedBrowser();
+      const beforeStartTime = service.timestampNow;
+      const result = service.transferPackagesLost(data);
+      expect(result.length).toBe(GraphSettings.MAX_RECORDS);
+      expect(service.timestampNow).toBeGreaterThanOrEqual(beforeStartTime);
+  });
+
 });
 
