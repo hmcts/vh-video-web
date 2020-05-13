@@ -59,6 +59,8 @@ import { HearingStatusComponent } from './hearing-status/hearing-status.componen
         NgMultiSelectDropDownModule.forRoot()
     ],
     providers: [HearingsFilterOptionsService, ParticipantStatusReader, VHODashboardHelper],
-    exports: [MonitoringGraphComponent]
+    exports: [MonitoringGraphComponent,
+        HearingHeaderComponent,
+        HearingStatusComponent]
 })
 export class VhOfficerModule {}

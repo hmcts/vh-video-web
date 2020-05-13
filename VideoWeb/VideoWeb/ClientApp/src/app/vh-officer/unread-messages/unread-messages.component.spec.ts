@@ -77,4 +77,14 @@ describe('UnreadMessagesComponent', () => {
 
         expect(component.unreadCount).toBe(unreadCountResponse.number_of_unread_messages);
     });
+
+    it('should return empty image if no unread messages', () => {
+        component.unreadCount = 1;
+        expect(component.getIMStatus()).toBe('IM_icon.png');
+    });
+
+    it('should return IM image if there are unread messages', () => {
+        component.unreadCount = 0;
+        expect(component.getIMStatus()).toBe('IM-empty.png');
+    });
 });

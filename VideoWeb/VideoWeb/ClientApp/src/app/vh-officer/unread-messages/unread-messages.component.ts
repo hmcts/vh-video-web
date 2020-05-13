@@ -43,4 +43,8 @@ export class UnreadMessagesComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.messagesSubscription$.unsubscribe();
     }
+
+    getIMStatus(): string {
+        return this.unreadCount > 0 ? 'IM_icon.png' : 'IM-empty.png';
+    }
 }

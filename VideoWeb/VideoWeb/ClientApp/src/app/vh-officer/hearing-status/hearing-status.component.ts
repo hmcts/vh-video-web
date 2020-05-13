@@ -7,11 +7,11 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class HearingStatusComponent implements OnInit {
 
-  @Input() hearingStatus: string;
+  @Input() conferenceStatus: string;
   status: string;
   constructor() { }
 
   ngOnInit() {
-    this.status = this.hearingStatus.toLowerCase();
+    this.status = this.conferenceStatus.toLowerCase();
   }
 }

@@ -22,4 +22,8 @@ describe('HearingStatusComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+  it('should initalise data', async () => {
+    component.ngOnInit();
+    expect(component.status).not.toBeNull();
+  });
 });
