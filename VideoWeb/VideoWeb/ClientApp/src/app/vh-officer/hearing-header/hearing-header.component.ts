@@ -1,24 +1,15 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { ConferenceResponse } from 'src/app/services/clients/api-client';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { Logger } from 'src/app/services/logging/logger-base';
+import { Component, Input } from '@angular/core';
+import { Hearing } from 'src/app/shared/models/hearing';
 
 @Component({
   selector: 'app-hearing-header',
   templateUrl: './hearing-header.component.html',
   styleUrls: ['./hearing-header.component.scss']
 })
-export class HearingHeaderComponent implements OnInit {
+export class HearingHeaderComponent {
 
-  @Input() conferenceId: string;
-  conference: ConferenceResponse;
+  @Input() hearing: Hearing;
 
-  constructor(private videoWebService: VideoWebService, private logger: Logger) { }
+  constructor() { }
 
-  ngOnInit() {
-    this.videoWebService
-      .getConferenceByIdVHO(this.conferenceId)
-      .then(response => (this.conference = response))
-      .catch(err => this.logger.error(`Failed to get conference data for ${this.conferenceId}`, err));
-  }
 }

@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ClipboardService } from 'ngx-clipboard';
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
-import { ConferenceStatus } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, ConferenceResponseVho } from 'src/app/services/clients/api-client';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
+import { Hearing } from 'src/app/shared/models/hearing';
 
 @Component({
     selector: 'app-vho-hearing-list',
@@ -86,5 +87,10 @@ export class VhoHearingListComponent implements OnInit {
 
     getParticipantsForConference(conference: HearingSummary): ParticipantSummary[] {
         return conference.getParticipants();
+    }
+
+    mapToHearing(conference: HearingSummary): Hearing {
+        const hearing = new ConferenceResponseVho({ scheduled_date_time: conference.scheduledDateTime, status: conference.status });
+        return new Hearing(hearing);
     }
 }

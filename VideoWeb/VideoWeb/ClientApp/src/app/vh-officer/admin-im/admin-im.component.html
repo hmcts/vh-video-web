@@ -1,5 +1,8 @@
 <div class="govuk-grid-row govuk-body-s">
   <div id="im-participant-list" class="govuk-grid-column-one-third">
+    <div class="govuk-grid-column-full govuk-!-padding-top-4">
+      <app-hearing-header [hearing]="hearing"></app-hearing-header>
+    </div>
     <app-admin-im-list [hearing]="hearing"></app-admin-im-list>
   </div>
 

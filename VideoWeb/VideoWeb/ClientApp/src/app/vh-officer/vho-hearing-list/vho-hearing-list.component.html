@@ -42,20 +42,7 @@
 
               <div class="govuk-grid-column-one-half right-side">
                 <div class="govuk-grid-row">
-                  <span
-                    id="{{ conference.id }}-status"
-                    class="govuk-!-padding-1 govuk-body-s"
-                    style="margin-top: 5px;"
-                    [ngClass]="{
-                      'conference-ready': isOnTime(conference),
-                      'conference-delayed': isDelayed(conference),
-                      'conference-suspended': isSuspended(conference),
-                      'conference-paused': isPaused(conference),
-                      'conference-in-session': isInSession(conference),
-                      'conference-closed': isClosed(conference)
-                    }"
-                    >{{ getConferenceStatusText(conference) }}</span
-                  >
+                  <app-hearing-status [hearing]="mapToHearing(conference)"></app-hearing-status>
 
                   <span
                     class="govuk-!-padding-1 govuk-!-margin-left-2 report-conference govuk-body-s tooltip-wrapper"

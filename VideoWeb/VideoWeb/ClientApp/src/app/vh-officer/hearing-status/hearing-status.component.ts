@@ -1,17 +1,13 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Hearing } from 'src/app/shared/models/hearing';
 
 @Component({
   selector: 'app-hearing-status',
   templateUrl: './hearing-status.component.html',
   styleUrls: ['./hearing-status.component.scss']
 })
-export class HearingStatusComponent implements OnInit {
+export class HearingStatusComponent {
 
-  @Input() conferenceStatus: string;
-  status: string;
+  @Input() hearing: Hearing;
   constructor() { }
-
-  ngOnInit() {
-    this.status = this.conferenceStatus.toLowerCase();
-  }
 }

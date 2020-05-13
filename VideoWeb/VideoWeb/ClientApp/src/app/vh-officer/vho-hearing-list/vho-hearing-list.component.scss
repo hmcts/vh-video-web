@@ -8,42 +8,6 @@
   width: 10%;
 }
 
-.status-badge {
-  font-size: 0.7em;
-}
-
-.conference-suspended,
-.conference-delayed,
-.conference-not-ready {
-  background-color: govuk-colour('red');
-  color: govuk-colour('white') !important;
-  font-weight: bold;
-}
-
-.conference-in-session {
-  background-color: govuk-colour('blue');
-  color: govuk-colour('white');
-  font-weight: bold;
-}
-
-.conference-paused {
-  background-color: govuk-colour('yellow');
-  color: govuk-colour('black');
-  font-weight: bold;
-}
-
-.conference-ready {
-  background-color: govuk-colour('green');
-  color: govuk-colour('white');
-  font-weight: bold;
-}
-
-.conference-closed {
-  background-color: govuk-colour('black');
-  color: govuk-colour('white');
-  font-weight: bold;
-}
-
 .selected-conference {
   background: govuk-colour('light-grey');
   border-left: 12px solid govuk-colour('black');

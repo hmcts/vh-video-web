@@ -1,7 +1,7 @@
-<div class="govuk-grid-row" *ngIf="conference">
+<div class="govuk-grid-row">
     <div class="half-left">
-        <h4 class="govuk-heading-s">{{ conference.case_name }}</h4>
+        <h4 class="govuk-heading-s">{{ hearing.caseName }}</h4>
     </div>
 
-    <app-hearing-status [conferenceStatus]="conference.status"></app-hearing-status>
+    <app-hearing-status [hearing]="hearing"></app-hearing-status>
 </div>

@@ -14,28 +14,28 @@
     font-weight: 600;
     font-size: 14px;    
 }
-.notstarted {
+.conference-notstarted {
     border: 2px solid govuk-colour("black");
     color: govuk-colour("black");
 }
-.closed {
+.conference-closed {
     border: 2px solid govuk-colour("black");
     color: govuk-colour("black");
 }
-.suspended {
+.conference-suspended {
     border: 2px solid govuk-colour("red");
     color: govuk-colour("white");
     background-color: govuk-colour("red");
 } 
-.paused {
+.conference-paused {
     border: 2px solid  govuk-colour("blue");
     color:  govuk-colour("blue");
 }
-.insession {
+.conference-in-session {
     border: 2px solid govuk-colour("green");
     color: govuk-colour("green");
 }
-.delayed {
+.conference-delayed {
     border: 2px solid govuk-colour("yellow");
     color: govuk-colour("black");
     background: govuk-colour("yellow");
