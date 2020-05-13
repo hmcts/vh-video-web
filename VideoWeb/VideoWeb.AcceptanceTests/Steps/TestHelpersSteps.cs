@@ -38,6 +38,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void GivenIRemoveAllHearingsWithPartialCaseName(string partialCaseNameOrNumber)
         {
             partialCaseNameOrNumber.Should().NotBeNullOrWhiteSpace();
+            partialCaseNameOrNumber.Should().NotBeEmpty();
             partialCaseNameOrNumber.ToLower().Should().ContainAny("automation", "manual", "performance", "test");
             const int limit = 10;
             RemoveWithCaseNameOrNumber(partialCaseNameOrNumber, limit);
