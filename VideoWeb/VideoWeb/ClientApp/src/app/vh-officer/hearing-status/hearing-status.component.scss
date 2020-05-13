@@ -1,0 +1,42 @@
+@import '~govuk-frontend/govuk/all';
+.status {
+    grid-column: 4/span 2;
+    grid-row: 5/5;
+    justify-self: start;
+    align-self: center;
+}
+.status-button {
+    padding: 3px 8px 3px 8px;
+    border-radius: 2px;
+    font-family: "GDS Transport", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 600;
+    font-size: 14px;    
+}
+.notstarted {
+    border: 2px solid govuk-colour("black");
+    color: govuk-colour("black");
+}
+.closed {
+    border: 2px solid govuk-colour("black");
+    color: govuk-colour("black");
+}
+.suspended {
+    border: 2px solid govuk-colour("red");
+    color: govuk-colour("white");
+    background-color: govuk-colour("red");
+} 
+.paused {
+    border: 2px solid  govuk-colour("blue");
+    color:  govuk-colour("blue");
+}
+.insession {
+    border: 2px solid govuk-colour("green");
+    color: govuk-colour("green");
+}
+.delayed {
+    border: 2px solid govuk-colour("yellow");
+    color: govuk-colour("black");
+    background: govuk-colour("yellow");
+}
