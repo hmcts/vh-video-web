@@ -5,19 +5,19 @@
 }
 
 .participant-not-signed-in {
-  color: govuk-colour('dark-grey');
+  color: govuk-colour('dark-grey') !important;
 }
 
 .participant-disconnected {
-  color: govuk-colour('red');
+  color: govuk-colour('red') !important;
 }
 
 .participant-available {
-  color: govuk-colour('green');
+  color: govuk-colour('green') !important;
 }
 
 .participant-default-status {
-  color: govuk-colour('black');
+  color: govuk-colour('black') !important;
 }
 
 #network-status-icon {

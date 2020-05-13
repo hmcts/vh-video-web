@@ -1,10 +1,9 @@
-import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, TaskResponse, TaskType } from 'src/app/services/clients/api-client';
 import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
-import { VHODashboardHelper } from '../helper';
 
 @Component({
     selector: 'app-tasks-table',
@@ -12,26 +11,15 @@ import { VHODashboardHelper } from '../helper';
     styleUrls: ['./tasks-table.component.scss', '../vho-global-styles.scss']
 })
 export class TasksTableComponent implements OnInit {
-    taskDivWidth: number;
     loading: boolean;
 
     @Input() conferenceId: string;
     tasks: TaskResponse[];
     conference: ConferenceResponse;
 
-    @HostListener('window:resize')
-    onResize() {
-        this.updateDivWidthForTasks();
-    }
-    constructor(
-        private videoWebService: VideoWebService,
-        private dashboardHelper: VHODashboardHelper,
-        private logger: Logger,
-        private eventbus: EventBusService
-    ) {}
+    constructor(private videoWebService: VideoWebService, private logger: Logger, private eventbus: EventBusService) {}
 
     ngOnInit() {
-        this.updateDivWidthForTasks();
         this.loading = true;
         this.retrieveConference(this.conferenceId)
             .then(async conference => {
@@ -42,10 +30,6 @@ export class TasksTableComponent implements OnInit {
             .catch(err => {
                 this.logger.error(`Failed to init tasks list for conference ${this.conferenceId}`, err);
             });
-    }
-
-    updateDivWidthForTasks(): void {
-        this.taskDivWidth = this.dashboardHelper.getWidthAvailableForConference();
     }
 
     getOriginName(task: TaskResponse): string {
