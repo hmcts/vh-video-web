@@ -12,14 +12,14 @@
 
 @media (min-width: 1500px) {
   .pending-alert-text {
-    color: govuk-colour('red');
+    color: govuk-colour('red') !important;
     font-weight: bold;
   }
 }
 
 @media (max-width: 1500px) {
   .pending-alert-text {
-    color: govuk-colour('red');
+    color: govuk-colour('red') !important;
     font-weight: bold;
     padding-left: 20px;
   }
@@ -51,7 +51,7 @@
 }
 
 .task-completed {
-  color: govuk-colour('mid-grey');
+  color: govuk-colour('mid-grey') !important;
 }
 
 .task-list {

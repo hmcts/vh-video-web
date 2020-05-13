@@ -1,30 +1,30 @@
-@import "~govuk-frontend/govuk/all";
+@import '~govuk-frontend/govuk/all';
 
 .participant-status-header {
-  background: govuk-colour("light-grey");
+  background: govuk-colour('light-grey') !important;
 }
 
 .participant-not-signed-in {
-  color: govuk-colour("dark-grey");
+  color: govuk-colour('dark-grey') !important;
 }
 
 .participant-disconnected {
-  color: govuk-colour("red");
+  color: govuk-colour('red') !important;
 }
 
 .participant-available {
-  color: govuk-colour("green");
+  color: govuk-colour('green') !important;
 }
 
 .participant-default-status {
-  color: govuk-colour("black");
+  color: govuk-colour('black') !important;
 }
 
 .tooltip-wrapper {
   /*position: relative;*/
   display: inline-block;
   text-decoration: underline;
-  color: $govuk-link-colour;
+  color: $govuk-link-colour !important;
   margin-left: 10px;
 }
 
@@ -35,7 +35,7 @@
 .tooltip-wrapper .tooltip {
   visibility: hidden;
   width: 300px;
-  background-color: govuk-colour("white");
+  background-color: govuk-colour('white');
   color: $govuk-text-colour;
   padding: 0 25px 25px 25px;
 
@@ -48,11 +48,11 @@
   -ms-transform: translateY(10px);
   -o-transform: translateY(10px);
   transform: translateY(10px);
-  -webkit-transition: all .25s ease-out;
-  -moz-transition: all .25s ease-out;
-  -ms-transition: all .25s ease-out;
-  -o-transition: all .25s ease-out;
-  transition: all .25s ease-out;
+  -webkit-transition: all 0.25s ease-out;
+  -moz-transition: all 0.25s ease-out;
+  -ms-transition: all 0.25s ease-out;
+  -o-transition: all 0.25s ease-out;
+  transition: all 0.25s ease-out;
   -webkit-box-shadow: 2px 2px 6px $govuk-border-colour;
   -moz-box-shadow: 2px 2px 6px $govuk-border-colour;
   -ms-box-shadow: 2px 2px 6px $govuk-border-colour;
@@ -66,7 +66,7 @@
 }
 
 .tooltip-wrapper .tooltip::after {
-  content: " ";
+  content: ' ';
   position: absolute;
   bottom: 100%;
   /* At the bottom of the tooltip */
