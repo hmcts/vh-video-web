@@ -15,9 +15,14 @@ describe('AdminImListComponent', () => {
         component.hearing = hearing;
     });
 
-    it('should populate list of participants to IM on init', () => {
+    it('should populate list of participants to IM on init (only judge)', () => {
         component.ngOnInit();
         expect(component.imParticipants.length).toBe(1);
+    });
+
+    it('should populate list of participants to IM on init', () => {
+        component.initImParticipants(false);
+        expect(component.imParticipants.length).toBe(hearing.participants.length);
     });
 
     it('should return false when current participant is not set', () => {
