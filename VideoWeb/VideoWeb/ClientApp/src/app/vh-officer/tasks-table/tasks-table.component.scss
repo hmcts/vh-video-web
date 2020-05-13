@@ -4,17 +4,29 @@
   background: govuk-colour('light-grey');
 }
 
-.pending-alert-text {
-  color: govuk-colour('red');
-  font-weight: bold;
+@media (min-width: 1500px) {
+  .pending-alert-text {
+    color: govuk-colour('red');
+    font-weight: bold;
+  }
+}
+
+@media (max-width: 1500px) {
+  .pending-alert-text {
+    color: govuk-colour('red');
+    font-weight: bold;
+    padding-left: 20px;
+  }
 }
 
 .task-checkbox-and-time {
   width: 12%;
+  max-width: fit-content;
 }
 
 .task-body {
   width: 18%;
+  max-width: fit-content;
   padding: 7px 0px;
 }
 
@@ -26,6 +38,10 @@
 .task-updated {
   width: 55%;
   padding: 7px 0px;
+}
+
+.updated-time {
+  float: right;
 }
 
 .task-completed {
