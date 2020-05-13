@@ -40,7 +40,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             partialCaseNameOrNumber.Should().NotBeNullOrWhiteSpace();
             partialCaseNameOrNumber.Should().NotBeEmpty();
             partialCaseNameOrNumber.ToLower().Should().ContainAny("automation", "manual", "performance", "test");
-            const int limit = 10;
+            const int limit = 1000;
             RemoveWithCaseNameOrNumber(partialCaseNameOrNumber, limit);
         }
 
