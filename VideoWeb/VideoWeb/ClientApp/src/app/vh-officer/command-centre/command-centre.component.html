@@ -26,7 +26,9 @@
       <app-admin-hearing *ngIf="selectedHearing" [hearing]="selectedHearing"></app-admin-hearing>
     </ng-container>
 
-    <app-admin-im *ngSwitchCase="menuOption.Message"></app-admin-im>
+    <ng-container *ngSwitchCase="menuOption.Message">
+      <app-admin-im *ngIf="selectedHearing" [hearing]="selectedHearing"></app-admin-im>
+    </ng-container>
 
     <div *ngSwitchDefault>
       <div class="govuk-grid-row govuk-!-padding-3">

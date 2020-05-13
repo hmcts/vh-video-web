@@ -7,25 +7,19 @@ import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { TasksTestData } from 'src/app/testing/mocks/data/tasks-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { VHODashboardHelper } from '../helper';
 import { TasksTableComponent } from './tasks-table.component';
 
 describe('TasksTableComponent', () => {
     let component: TasksTableComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    let dashboardHelper: jasmine.SpyObj<VHODashboardHelper>;
     let eventBusServiceSpy: jasmine.SpyObj<EventBusService>;
     const conference = new ConferenceTestData().getConferenceDetailFuture();
     const allTasks = new TasksTestData().getTestData();
     const completedTask = new TasksTestData().getCompletedTask();
-    const fakeDivWidth = 300;
     let logger: MockLogger;
 
     beforeAll(() => {
         eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit']);
-        dashboardHelper = jasmine.createSpyObj<VHODashboardHelper>('VHODashboardHelper', ['getWidthAvailableForConference']);
-        dashboardHelper.getWidthAvailableForConference.and.returnValue(fakeDivWidth);
-
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getConferenceByIdVHO',
             'getTasksForConference',
@@ -39,7 +33,7 @@ describe('TasksTableComponent', () => {
     });
 
     beforeEach(() => {
-        component = new TasksTableComponent(videoWebServiceSpy, dashboardHelper, logger, eventBusServiceSpy);
+        component = new TasksTableComponent(videoWebServiceSpy, logger, eventBusServiceSpy);
         component.conferenceId = conference.id;
         component.conference = Object.assign(conference);
         // 1 To-Do & 2 Done
@@ -53,7 +47,6 @@ describe('TasksTableComponent', () => {
         component.conference = undefined;
         component.ngOnInit();
         tick();
-        expect(component.taskDivWidth).toBe(fakeDivWidth);
         expect(component.loading).toBeFalsy();
         expect(component.conference).toEqual(conference);
         expect(component.tasks.length).toBeGreaterThan(0);
@@ -69,19 +62,12 @@ describe('TasksTableComponent', () => {
         component.ngOnInit();
         tick();
 
-        expect(component.taskDivWidth).toBe(fakeDivWidth);
         expect(component.loading).toBeTruthy();
         expect(spy.calls.mostRecent().args[0]).toMatch(`Failed to init tasks list for conference`);
         expect(spy.calls.mostRecent().args[1]).toBe(error);
         expect(component.tasks).toBeUndefined();
         expect(component.conference).toBeUndefined();
     }));
-
-    it('should update div width on page resize', () => {
-        component.taskDivWidth = 1000;
-        component.onResize();
-        expect(component.taskDivWidth).toBe(fakeDivWidth);
-    });
 
     it('should set task to done', () => {
         const task = component.tasks.filter(x => x.status === TaskStatus.ToDo)[0];

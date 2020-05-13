@@ -25,6 +25,7 @@ import { CommandCentreComponent } from './command-centre/command-centre.componen
 import { CommandCentreMenuComponent } from './command-centre-menu/command-centre-menu.component';
 import { AdminImComponent } from './admin-im/admin-im.component';
 import { AdminHearingComponent } from './admin-hearing/admin-hearing.component';
+import { AdminImListComponent } from './admin-im-list/admin-im-list.component';
 import { HearingHeaderComponent } from './hearing-header/hearing-header.component';
 import { HearingStatusComponent } from './hearing-status/hearing-status.component';
 
@@ -46,6 +47,7 @@ import { HearingStatusComponent } from './hearing-status/hearing-status.componen
         CommandCentreMenuComponent,
         AdminImComponent,
         AdminHearingComponent,
+        AdminImListComponent,
         HearingHeaderComponent,
         HearingStatusComponent
     ],

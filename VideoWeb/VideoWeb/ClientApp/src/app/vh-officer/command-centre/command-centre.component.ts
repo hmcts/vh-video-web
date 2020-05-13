@@ -12,6 +12,10 @@ import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { VhoStorageKeys } from '../services/models/session-keys';
 import { MenuOption } from '../models/menus-options';
+import { EventsService } from 'src/app/services/events.service';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { ConferenceHelper } from 'src/app/shared/conference-helper';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 
 @Component({
     selector: 'app-command-centre',
@@ -28,6 +32,8 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     selectedMenu: MenuOption;
 
     conferencesSubscription: Subscription;
+    eventHubSubscriptions: Subscription = new Subscription();
+
     conferences: HearingSummary[];
     selectedHearing: Hearing;
 
@@ -37,6 +43,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     constructor(
         private videoWebService: VideoWebService,
         private errorService: ErrorService,
+        private eventService: EventsService,
         private logger: Logger,
         private router: Router,
         private screenHelper: ScreenHelper
@@ -48,13 +55,98 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.selectedMenu = this.menuOption.Hearing;
         this.screenHelper.enableFullScreen(true);
+        this.setupEventHubSubscribers();
         this.getConferenceForSelectedAllocations();
     }
 
     ngOnDestroy(): void {
         this.screenHelper.enableFullScreen(false);
+        clearInterval(this.interval);
         if (this.conferencesSubscription) {
             this.conferencesSubscription.unsubscribe();
+        }
+        this.eventHubSubscriptions.unsubscribe();
+    }
+
+    setupEventHubSubscribers() {
+        this.logger.debug('Subscribing to conference status changes...');
+        this.eventHubSubscriptions.add(
+            this.eventService.getHearingStatusMessage().subscribe(message => {
+                this.handleConferenceStatusChange(message);
+            })
+        );
+
+        this.logger.debug('Subscribing to participant status changes...');
+        this.eventHubSubscriptions.add(
+            this.eventService.getParticipantStatusMessage().subscribe(message => {
+                this.handleParticipantStatusChange(message);
+            })
+        );
+
+        this.logger.debug('Subscribing to EventHub disconnects');
+        this.eventHubSubscriptions.add(
+            this.eventService.getServiceDisconnected().subscribe(async reconnectionAttempt => {
+                if (reconnectionAttempt <= 6) {
+                    this.logger.info(`EventHub disconnection for vh officer`);
+                    await this.refreshConferenceDataDuringDisconnect();
+                } else {
+                    this.errorService.goToServiceError('Your connection was lost');
+                }
+            })
+        );
+
+        this.logger.debug('Subscribing to EventHub reconnects');
+        this.eventHubSubscriptions.add(
+            this.eventService.getServiceReconnected().subscribe(async () => {
+                this.logger.info(`EventHub reconnected for vh officer`);
+                await this.refreshConferenceDataDuringDisconnect();
+            })
+        );
+
+        this.eventService.start();
+    }
+
+    onConferenceSelected(conference: ConferenceForVhOfficerResponse) {
+        this.logger.info(`Conference ${conference.id} selected`);
+        if (!this.isCurrentConference(conference.id)) {
+            this.clearSelectedConference();
+            this.retrieveConferenceDetails(conference.id);
+        }
+    }
+
+    handleConferenceStatusChange(message: ConferenceStatusMessage) {
+        const conference = this.conferences.find(c => c.id === message.conferenceId);
+        if (!conference) {
+            return false;
+        }
+        conference.status = message.status;
+        if (this.isCurrentConference(message.conferenceId)) {
+            this.selectedHearing.getConference().status = message.status;
+        }
+    }
+
+    handleParticipantStatusChange(message: ParticipantStatusMessage): any {
+        const participantInList = ConferenceHelper.findParticipantInConferences(
+            this.conferences.map(x => x.getConference()),
+            message.participantId
+        );
+        // update in list
+        if (participantInList) {
+            participantInList.status = message.status;
+        }
+
+        // update for hearing page
+        if (this.isCurrentConference(message.conferenceId)) {
+            const participantToUpdate = this.selectedHearing.participants.find(x => x.id === message.participantId);
+            participantToUpdate.base.status = message.status;
+        }
+    }
+
+    async refreshConferenceDataDuringDisconnect() {
+        this.logger.warn('EventHub refresh pending...');
+        this.retrieveHearingsForVhOfficer(true);
+        if (this.selectedHearing) {
+            await this.retrieveConferenceDetails(this.selectedHearing.id);
         }
     }
 
@@ -92,16 +184,8 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         }, 30000);
     }
 
-    onConferenceSelected(conference: ConferenceForVhOfficerResponse) {
-        this.logger.info(`Conference ${conference.id} selected`);
-        if (!this.isCurrentConference(conference)) {
-            this.clearSelectedConference();
-            this.retrieveConferenceDetails(conference.id);
-        }
-    }
-
-    isCurrentConference(conference: ConferenceForVhOfficerResponse): boolean {
-        return this.selectedHearing != null && this.selectedHearing.getConference().id === conference.id;
+    isCurrentConference(conferenceId: string): boolean {
+        return this.selectedHearing != null && this.selectedHearing.getConference().id === conferenceId;
     }
 
     clearSelectedConference() {
