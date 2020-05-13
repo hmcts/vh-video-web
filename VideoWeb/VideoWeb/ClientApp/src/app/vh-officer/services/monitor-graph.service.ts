@@ -58,11 +58,18 @@ export class MonitorGraphService {
 
   transferPackagesLost(values: PackageLost[]): number[] {
     let packagesLostValues: GraphData[] = [];
-    const graphPoints = Array(GraphSettings.MAX_RECORDS).fill(NaN);
+      const graphPoints = Array(GraphSettings.MAX_RECORDS).fill(NaN);
+
 
     this.timestampNow = new Date(Date.now()).getTime();
 
-    if (values && values.length > 0) {
+      if (values && values.length > 0) {
+
+      // adjust start time to be in tune with the heartbeat interval 5 seconds
+      const lastBeat = values[values.length - 1];
+      const differenceInSeconds = (this.timestampNow - lastBeat.timestamp) % this.HEARTBEAT_INTERVAL;
+
+      this.timestampNow = this.timestampNow - differenceInSeconds;
 
       packagesLostValues = values.map(x => this.getPointValue(x));
     }

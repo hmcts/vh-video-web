@@ -161,15 +161,23 @@ namespace VideoWeb.EventHub.Hub
                 return true;
             }
             
-            var conference = await _conferenceCache.GetOrAddConferenceAsync
-            (
-                conferenceId, 
-                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
-            );
+            try
+            {
+                var conference = await _conferenceCache.GetOrAddConferenceAsync
+                (
+                    conferenceId,
+                    () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
+                );
 
-            return conference
-                .GetJudge().Username
-                .Equals(Context.UserIdentifier, StringComparison.InvariantCultureIgnoreCase);
+                return conference
+                    .GetJudge().Username
+                    .Equals(Context.UserIdentifier, StringComparison.InvariantCultureIgnoreCase);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occured when retrieving conference");
+                return false;
+            }
         }
 
         public async Task SendHeartbeat(Guid conferenceId, Guid participantId, Heartbeat heartbeat)
