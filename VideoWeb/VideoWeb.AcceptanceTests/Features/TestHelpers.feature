@@ -9,11 +9,11 @@ Scenario: Remove Hearings by Judge Username
 
 @Ignore
 Scenario: Remove Hearings by partial case name
-	Given I remove all hearings with partial case name 'Perf-Test''
+	Given I remove all hearings with partial case name 'Perf-Test'
 
 @Ignore
 Scenario: Remove Hearings by partial case number
-	Given I remove all hearings with partial case number 'Perf-Test''
+	Given I remove all hearings with partial case number 'Perf-Test'
 
 @Ignore
 Scenario: Remove Conferences

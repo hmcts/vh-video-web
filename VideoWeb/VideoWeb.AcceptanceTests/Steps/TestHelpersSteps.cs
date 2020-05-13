@@ -34,7 +34,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Given(@"I remove all hearings with partial case name '(.*)'")]
-        [Given(@"I remove all hearings with partial case number '(.*)''")]
+        [Given(@"I remove all hearings with partial case number '(.*)'")]
         public void GivenIRemoveAllHearingsWithPartialCaseName(string partialCaseNameOrNumber)
         {
             partialCaseNameOrNumber.Should().NotBeNullOrWhiteSpace();
