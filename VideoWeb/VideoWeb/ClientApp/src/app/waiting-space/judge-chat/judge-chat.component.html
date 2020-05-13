@@ -11,7 +11,7 @@
       </span>
     </span>
   </div>
-  <div *ngIf="showChat">
+  <div [hidden]='!showChat'>
     <div id="chat-list" #scrollMe [scrollTop]="scrollMe.scrollHeight"
       class="govuk-!-padding-2 govuk-!-padding-left-4 chat-window">
       <div *ngIf="loading" class="govuk-body">Loading...</div>
