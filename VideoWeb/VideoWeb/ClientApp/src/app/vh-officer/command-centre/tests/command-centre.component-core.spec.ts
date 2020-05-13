@@ -1,21 +1,23 @@
+import { discardPeriodicTasks, fakeAsync, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
+import { of, throwError } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { ConferenceResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
+import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ScreenHelper } from 'src/app/shared/screen-helper';
 import { TestFixtureHelper } from 'src/app/testing/Helper/test-fixture-helper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { CommandCentreComponent } from './command-centre.component';
-import { Hearing } from 'src/app/shared/models/hearing';
-import { ConferenceResponse } from 'src/app/services/clients/api-client';
-import { fakeAsync, discardPeriodicTasks, tick } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
-import { MenuOption } from '../models/menus-options';
+import { MenuOption } from '../../models/menus-options';
+import { CommandCentreComponent } from '../command-centre.component';
 
-describe('CommandCentreComponent', () => {
+describe('CommandCentreComponent - Core', () => {
     let component: CommandCentreComponent;
 
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
@@ -24,7 +26,8 @@ describe('CommandCentreComponent', () => {
     const conferences = new ConferenceTestData().getVhoTestData();
     const hearings = conferences.map(c => new HearingSummary(c));
     let errorService: jasmine.SpyObj<ErrorService>;
-
+    let eventsService: jasmine.SpyObj<EventsService>;
+    const mockEventService = new MockEventsService();
     let router: jasmine.SpyObj<Router>;
 
     const conferenceDetail = new ConferenceTestData().getConferenceDetailFuture();
@@ -45,6 +48,18 @@ describe('CommandCentreComponent', () => {
             'handleApiError',
             'returnHomeIfUnauthorised'
         ]);
+
+        eventsService = jasmine.createSpyObj<EventsService>('EventsService', [
+            'start',
+            'getHearingStatusMessage',
+            'getParticipantStatusMessage',
+            'getServiceDisconnected',
+            'getServiceReconnected'
+        ]);
+        eventsService.getHearingStatusMessage.and.returnValue(mockEventService.hearingStatusSubject.asObservable());
+        eventsService.getParticipantStatusMessage.and.returnValue(mockEventService.participantStatusSubject.asObservable());
+        eventsService.getServiceDisconnected.and.returnValue(mockEventService.eventHubDisconnectSubject.asObservable());
+        eventsService.getServiceReconnected.and.returnValue(mockEventService.eventHubReconnectSubject.asObservable());
     });
 
     afterAll(() => {
@@ -56,7 +71,7 @@ describe('CommandCentreComponent', () => {
         videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(of(conferences));
         videoWebServiceSpy.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
 
-        component = new CommandCentreComponent(videoWebServiceSpy, errorService, logger, router, screenHelper);
+        component = new CommandCentreComponent(videoWebServiceSpy, errorService, eventsService, logger, router, screenHelper);
         component.conferences = hearings;
         screenHelper.enableFullScreen.calls.reset();
         videoWebServiceSpy.getConferenceByIdVHO.calls.reset();
@@ -100,7 +115,7 @@ describe('CommandCentreComponent', () => {
     it('should return true when current conference is selected', () => {
         const currentConference = conferences[0];
         component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
-        expect(component.isCurrentConference(currentConference)).toBeTruthy();
+        expect(component.isCurrentConference(currentConference.id)).toBeTruthy();
     });
 
     it('should handle api error when retrieving conference list fails', fakeAsync(() => {

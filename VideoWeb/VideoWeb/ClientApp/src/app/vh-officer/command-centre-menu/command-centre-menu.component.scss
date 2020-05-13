@@ -1,9 +1,13 @@
 @import '~govuk-frontend/govuk/all';
 //TABS
 
-.tab {
+.tabcontainer {
   overflow: hidden;
   float: right;
+}
+
+.tab {
+  overflow: hidden;
 }
 
 .tab button {
