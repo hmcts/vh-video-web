@@ -34,17 +34,24 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Given(@"I remove all hearings with partial case name '(.*)'")]
-        public void GivenIRemoveAllHearingsWithPartialCaseName(string partialCaseName)
+        [Given(@"I remove all hearings with partial case number '(.*)''")]
+        public void GivenIRemoveAllHearingsWithPartialCaseName(string partialCaseNameOrNumber)
         {
-            partialCaseName.Should().NotBeNullOrWhiteSpace();
-            partialCaseName.ToLower().Should().ContainAny("automation", "manual", "performance", "test");
+            partialCaseNameOrNumber.Should().NotBeNullOrWhiteSpace();
+            partialCaseNameOrNumber.ToLower().Should().ContainAny("automation", "manual", "performance", "test");
             const int limit = 10;
+            RemoveWithCaseNameOrNumber(partialCaseNameOrNumber, limit);
+        }
+
+        private void RemoveWithCaseNameOrNumber(string partialString, int limit)
+        {
             var response = _c.Apis.BookingsApi.GetHearingsByAnyCaseType(limit);
             var bookings = RequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(response.Content);
             var hearings = GetListOfAllHearings(bookings);
             foreach (var hearing in hearings)
             {
-                if (hearing.Hearing_name.ToLower().Contains(partialCaseName.ToLower()))
+                if (hearing.Hearing_name.ToLower().Contains(partialString.ToLower()) ||
+                    hearing.Hearing_number.ToLower().Contains(partialString.ToLower()))
                 {
                     _c.Apis.BookingsApi.DeleteHearing(hearing.Hearing_id);
                 }
