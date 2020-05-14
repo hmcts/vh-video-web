@@ -1,33 +1,25 @@
+import { Observable } from 'rxjs';
 import {
-    ConferenceForIndividualResponse,
-    ConferenceResponse,
-    ConferenceEventRequest,
-    TaskResponse,
     AddMediaEventRequest,
+    AddSelfTestFailureEventRequest,
+    ChatResponse,
+    ConferenceEventRequest,
+    ConferenceForIndividualResponse,
+    ConferenceForJudgeResponse,
+    ConferenceResponse,
+    HearingVenueResponse,
+    SelfTestPexipResponse,
     TestCallScoreResponse,
     TokenResponse,
-    AddSelfTestFailureEventRequest,
-    UpdateParticipantStatusEventRequest,
-    SelfTestPexipResponse,
-    HearingVenueResponse,
-    ChatResponse,
-    ConferenceForVhOfficerResponse,
-    ParticipantHeartbeatResponse,
-    ConferenceForJudgeResponse,
     UpdateParticipantRequest,
-    ConferenceResponseVho
+    UpdateParticipantStatusEventRequest
 } from '../clients/api-client';
-import { Observable } from 'rxjs';
 export interface IVideoWebApiService {
     getConferencesForJudge(): Observable<ConferenceForJudgeResponse[]>;
     getConferencesForIndividual(): Observable<ConferenceForIndividualResponse[]>;
-    getConferencesForVHOfficer(venueNames: string[]): Observable<ConferenceForVhOfficerResponse[]>;
-    getConferenceByIdVHO(conferenceId: string): Promise<ConferenceResponseVho>;
     getConferenceById(conferenceId: string): Promise<ConferenceResponse>;
     sendEvent(request: ConferenceEventRequest): Promise<void>;
     raiseMediaEvent(conferenceId: string, addMediaEventRequest: AddMediaEventRequest): Promise<void>;
-    getTasksForConference(conferenceId: string): Promise<TaskResponse[]>;
-    completeTask(conferenceId: string, taskId: number): Promise<TaskResponse>;
     getTestCallScore(conferenceId: string, participantId: string): Promise<TestCallScoreResponse>;
     getIndependentTestCallScore(participantId: string): Promise<TestCallScoreResponse>;
     getSelfTestToken(participantId: string): Promise<TokenResponse>;
@@ -38,6 +30,5 @@ export interface IVideoWebApiService {
     getObfuscatedName(displayName: string): string;
     getHearingVenues(): Promise<HearingVenueResponse[]>;
     getConferenceChatHistory(conferenceId: string): Promise<ChatResponse[]>;
-    getParticipantHeartbeats(conferenceId: string, participantId: string): Promise<ParticipantHeartbeatResponse[]>;
     updateParticipantDetails(conferenceId: string, participantId: string, updateParticipantRequest: UpdateParticipantRequest);
 }

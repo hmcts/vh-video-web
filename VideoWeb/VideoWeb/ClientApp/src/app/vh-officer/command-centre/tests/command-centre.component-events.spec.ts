@@ -16,11 +16,12 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { CommandCentreComponent } from '../command-centre.component';
+import { VhoQueryService } from 'src/app/services/vho-query-service.service';
 
 describe('CommandCentreComponent - Events', () => {
     let component: CommandCentreComponent;
 
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+    let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
     let screenHelper: jasmine.SpyObj<ScreenHelper>;
     let errorService: jasmine.SpyObj<ErrorService>;
     let eventsService: jasmine.SpyObj<EventsService>;
@@ -42,10 +43,7 @@ describe('CommandCentreComponent - Events', () => {
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
         screenHelper = jasmine.createSpyObj<ScreenHelper>('ScreenHelper', ['enableFullScreen']);
 
-        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
-            'getConferencesForVHOfficer',
-            'getConferenceByIdVHO'
-        ]);
+        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getConferencesForVHOfficer', 'getConferenceByIdVHO']);
 
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
             'goToServiceError',
@@ -72,14 +70,14 @@ describe('CommandCentreComponent - Events', () => {
     });
 
     beforeEach(() => {
-        videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(of(conferences));
-        videoWebServiceSpy.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
+        vhoQueryService.getConferencesForVHOfficer.and.returnValue(of(conferences));
+        vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
 
-        component = new CommandCentreComponent(videoWebServiceSpy, errorService, eventsService, logger, router, screenHelper);
+        component = new CommandCentreComponent(vhoQueryService, errorService, eventsService, logger, router, screenHelper);
         component.conferences = hearings;
         component.selectedHearing = hearing;
         screenHelper.enableFullScreen.calls.reset();
-        videoWebServiceSpy.getConferenceByIdVHO.calls.reset();
+        vhoQueryService.getConferenceByIdVHO.calls.reset();
     });
 
     it('should update hearing status when conference status message is received', () => {
@@ -175,6 +173,6 @@ describe('CommandCentreComponent - Events', () => {
         component.selectedHearing = null;
         await component.refreshConferenceDataDuringDisconnect();
 
-        expect(videoWebServiceSpy.getConferenceByIdVHO).toHaveBeenCalledTimes(0);
+        expect(vhoQueryService.getConferenceByIdVHO).toHaveBeenCalledTimes(0);
     });
 });

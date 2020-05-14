@@ -27,10 +27,11 @@ import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/par
 import { ParticipantStatusMessage } from '../../services/models/participant-status-message';
 import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
 import { VhoHearingsComponent } from './vho-hearings.component';
+import { VhoQueryService } from 'src/app/services/vho-query-service.service';
 
 describe('VhoHearingsComponent', () => {
     let component: VhoHearingsComponent;
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+    let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
     let eventsService: jasmine.SpyObj<EventsService>;
     let domSanitizerSpy: jasmine.SpyObj<DomSanitizer>;
     const logger: Logger = new MockLogger();
@@ -47,7 +48,7 @@ describe('VhoHearingsComponent', () => {
         TestFixtureHelper.setupVenues();
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
 
-        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
+        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', [
             'getConferencesForVHOfficer',
             'getConferenceByIdVHO',
             'getParticipantHeartbeats'
@@ -77,10 +78,10 @@ describe('VhoHearingsComponent', () => {
     });
 
     beforeEach(() => {
-        videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(of(conferences));
-        videoWebServiceSpy.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
+        vhoQueryService.getConferencesForVHOfficer.and.returnValue(of(conferences));
+        vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
 
-        component = new VhoHearingsComponent(videoWebServiceSpy, domSanitizerSpy, errorService, eventsService, logger, router);
+        component = new VhoHearingsComponent(vhoQueryService, domSanitizerSpy, errorService, eventsService, logger, router);
         component.conferences = hearings;
         component.conferencesAll = conferences;
     });
@@ -463,7 +464,7 @@ describe('VhoHearingsComponent', () => {
 
     it('should not be full screen if there are no hearings', () => {
         spyOn(component, 'enableFullScreen');
-        videoWebServiceSpy.getConferencesForVHOfficer.and.returnValue(of([]));
+        vhoQueryService.getConferencesForVHOfficer.and.returnValue(of([]));
         component.retrieveHearingsForVhOfficer(true);
         expect(component.enableFullScreen).toHaveBeenCalledWith(false);
     });
