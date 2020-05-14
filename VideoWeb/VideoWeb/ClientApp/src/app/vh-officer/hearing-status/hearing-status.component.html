@@ -1,8 +1,5 @@
 <div class="half-right">
-  <div
-    style="float: right; margin-right: 12px;"
-    class="status status-button"
-    [ngClass]="{
+  <div class="status status-button status-position" [ngClass]="{
       'conference-notstarted': hearing.isNotStarted(),
       'conference-ready': hearing.isReadyToStart(),
       'conference-delayed': hearing.isDelayed(),
@@ -10,8 +7,7 @@
       'conference-paused': hearing.isPaused(),
       'conference-in-session': hearing.isInSession(),
       'conference-closed': hearing.isClosed()
-    }"
-  >
+    }">
     {{ getConferenceStatusText() }}
   </div>
 </div>
