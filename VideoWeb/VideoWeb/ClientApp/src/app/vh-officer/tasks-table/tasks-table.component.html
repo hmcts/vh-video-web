@@ -21,14 +21,14 @@
     <div class="govuk-grid-column-one-quarter task-body">
       <p
         id="{{ task.id }}-type"
-        class="govuk-body govuk-body-s pending-alert-text govuk-!-padding-right-2"
+        class="govuk-body govuk-body-s pending-alert-text govuk-!-padding-right-2 govuk-!-padding-top-2"
         [ngClass]="{ 'task-completed': task.status === 'Done' }"
       >
         {{ task.body }}
       </p>
     </div>
     <div class="govuk-grid-column-one-quarter task-origin">
-      <p id="{{ task.id }}-from-user" class="govuk-body-s" [ngClass]="{ 'task-completed': task.status === 'Done' }">
+      <p id="{{ task.id }}-from-user" class="govuk-body-s govuk-!-padding-top-2" [ngClass]="{ 'task-completed': task.status === 'Done' }">
         {{ getOriginName(task) }}
       </p>
     </div>
