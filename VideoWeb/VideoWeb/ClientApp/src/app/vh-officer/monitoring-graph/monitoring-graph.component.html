@@ -37,12 +37,12 @@
         'graph-footer-gray': lastPackageLostValue === 'disconnected'
       }"
     >
-      <span class="govuk-body-s vh-text-panel" id="signal-strength" [ngClass]="{ 'vh-c': lastPackageLostValue !== 'poor' }">
+      <span class="govuk-body-s vh-text-panel" id="signal-strength" [ngClass]="{ 'vh-c': lastPackageLostValue !== 'poor' }" style="color: white;">
         {{ participantGraphInfo.status }}: {{ lastPackageLostValue }} signal
       </span>
     </div>
     <div class="govuk-grid-row graph-panel graph-footer-gray" *ngIf="showUnsupportedBrowser">
-      <span class="govuk-body-s vh-c vh-text-panel" id="signal-unsupported">
+      <span class="govuk-body-s vh-c vh-text-panel" id="signal-unsupported" style="color: white;">
         {{ participantGraphInfo.status }}: no network quality information
       </span>
     </div>
