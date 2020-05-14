@@ -17,12 +17,7 @@
   outline: none;
   cursor: pointer;
   transition: 0.3s;
-  font-family: 'GDS Transport', Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-weight: 400;
-  font-size: 18px;
-  line-height: 1.11111;
+  @include govuk-font(19, $weight: 'regular', $line-height: 1.11111);
   margin-top: 0;
 }
 

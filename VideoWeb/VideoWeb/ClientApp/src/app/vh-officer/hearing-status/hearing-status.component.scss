@@ -9,8 +9,6 @@
   @include govuk-font(14, $weight: 'bold', $tabular: false, $line-height: false);
   padding: 3px 8px 3px 8px;
   border-radius: 2px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   float: right;
   margin-right: 12px;
 }
