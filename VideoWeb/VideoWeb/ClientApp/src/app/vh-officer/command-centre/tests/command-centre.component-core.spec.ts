@@ -57,12 +57,14 @@ describe('CommandCentreComponent - Core', () => {
             'getHearingStatusMessage',
             'getParticipantStatusMessage',
             'getServiceDisconnected',
-            'getServiceReconnected'
+            'getServiceReconnected',
+            'getHeartbeat'
         ]);
         eventsService.getHearingStatusMessage.and.returnValue(mockEventService.hearingStatusSubject.asObservable());
         eventsService.getParticipantStatusMessage.and.returnValue(mockEventService.participantStatusSubject.asObservable());
         eventsService.getServiceDisconnected.and.returnValue(mockEventService.eventHubDisconnectSubject.asObservable());
         eventsService.getServiceReconnected.and.returnValue(mockEventService.eventHubReconnectSubject.asObservable());
+        eventsService.getHeartbeat.and.returnValue(mockEventService.participantHeartbeat.asObservable());
     });
 
     afterAll(() => {

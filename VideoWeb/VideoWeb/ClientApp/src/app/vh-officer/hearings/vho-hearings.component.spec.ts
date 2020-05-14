@@ -3,7 +3,6 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { of } from 'rxjs';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceForVhOfficerResponse,
     ConferenceResponse,
@@ -15,6 +14,7 @@ import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { VhoQueryService } from 'src/app/services/vho-query-service.service';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { ExtendedConferenceStatus } from 'src/app/shared/models/hearings-filter';
@@ -27,7 +27,6 @@ import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/par
 import { ParticipantStatusMessage } from '../../services/models/participant-status-message';
 import { VhoHearingListComponent } from '../vho-hearing-list/vho-hearing-list.component';
 import { VhoHearingsComponent } from './vho-hearings.component';
-import { VhoQueryService } from 'src/app/services/vho-query-service.service';
 
 describe('VhoHearingsComponent', () => {
     let component: VhoHearingsComponent;
@@ -68,7 +67,7 @@ describe('VhoHearingsComponent', () => {
         eventsService.getParticipantStatusMessage.and.returnValue(mockEventService.participantStatusSubject.asObservable());
         eventsService.getServiceDisconnected.and.returnValue(mockEventService.eventHubDisconnectSubject.asObservable());
         eventsService.getServiceReconnected.and.returnValue(mockEventService.eventHubReconnectSubject.asObservable());
-        eventsService.getHeartbeat.and.returnValue(mockEventService.hearingStatusSubject.asObservable());
+        eventsService.getHeartbeat.and.returnValue(mockEventService.participantHeartbeat.asObservable());
 
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
             'goToServiceError',

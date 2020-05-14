@@ -36,8 +36,6 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
     }
 
     async ngOnInit() {
-        console.log(this.hearing);
-        console.log(this.participant);
         this.logger.debug(`[ChatHub VHO] starting chat for ${this.hearing.id}`);
         this.initForm();
         this.chatHubSubscription = this.setupChatSubscription();

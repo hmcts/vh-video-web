@@ -6,6 +6,7 @@ import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { ParticipantHeartbeat } from 'src/app/services/models/participant-heartbeat';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoQueryService } from 'src/app/services/vho-query-service.service';
@@ -36,6 +37,9 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     hearings: HearingSummary[];
     selectedHearing: Hearing;
+
+    // this tracks heartbeats and pushes them back into a hearing summary object on each subscribe
+    participantsHeartBeat: Map<string, ParticipantHeartbeat> = new Map<string, ParticipantHeartbeat>();
 
     loadingData: boolean;
 
@@ -102,6 +106,14 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             })
         );
 
+        this.eventHubSubscriptions.add(
+            this.eventService.getHeartbeat().subscribe(heartbeat => {
+                this.logger.info(`Participant Network Heartbeat Captured`);
+                this.persistHeartbeat(heartbeat);
+                this.handleHeartbeat(heartbeat);
+            })
+        );
+
         this.eventService.start();
     }
 
@@ -125,10 +137,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): any {
-        const participantInList = ConferenceHelper.findParticipantInConferences(
-            this.hearings.map(x => x.getConference()),
-            message.participantId
-        );
+        const participantInList = ConferenceHelper.findParticipantInHearings(this.hearings, message.conferenceId, message.participantId);
         // update in list
         if (participantInList) {
             participantInList.status = message.status;
@@ -139,6 +148,22 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             const participantToUpdate = this.selectedHearing.participants.find(x => x.id === message.participantId);
             participantToUpdate.base.status = message.status;
         }
+    }
+
+    handleHeartbeat(heartBeat: ParticipantHeartbeat) {
+        const participantInList = ConferenceHelper.findParticipantInHearings(
+            this.hearings,
+            heartBeat.conferenceId,
+            heartBeat.participantId
+        );
+
+        if (participantInList) {
+            participantInList.participantHertBeatHealth = heartBeat;
+        }
+    }
+
+    persistHeartbeat(heartbeat: ParticipantHeartbeat) {
+        this.participantsHeartBeat[heartbeat.participantId] = heartbeat;
     }
 
     async refreshConferenceDataDuringDisconnect() {
@@ -153,8 +178,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.loadVenueSelection();
         this.queryService.startQuery(this.venueAllocations);
         this.retrieveHearingsForVhOfficer(true);
-
-        // this.setupConferenceInterval();
     }
 
     loadVenueSelection(): void {
@@ -167,7 +190,13 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.conferencesSubscription = this.queryService.getConferencesForVHOfficer(this.venueAllocations).subscribe(
             async (data: ConferenceForVhOfficerResponse[]) => {
                 this.logger.debug('Successfully retrieved hearings for VHO');
-                this.hearings = data.map(c => new HearingSummary(c));
+                this.hearings = data.map(c => {
+                    const h = new HearingSummary(c);
+                    h.getParticipants().forEach(p => {
+                        p.participantHertBeatHealth = this.participantsHeartBeat[p.id];
+                    });
+                    return h;
+                });
                 this.loadingData = false;
             },
             error => {

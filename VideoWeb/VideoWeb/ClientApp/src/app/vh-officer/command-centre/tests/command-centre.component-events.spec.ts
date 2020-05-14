@@ -17,6 +17,7 @@ import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { CommandCentreComponent } from '../command-centre.component';
 import { VhoQueryService } from 'src/app/services/vho-query-service.service';
+import { ParticipantHeartbeat, HeartbeatHealth } from 'src/app/services/models/participant-heartbeat';
 
 describe('CommandCentreComponent - Events', () => {
     let component: CommandCentreComponent;
@@ -61,12 +62,14 @@ describe('CommandCentreComponent - Events', () => {
             'getHearingStatusMessage',
             'getParticipantStatusMessage',
             'getServiceDisconnected',
-            'getServiceReconnected'
+            'getServiceReconnected',
+            'getHeartbeat'
         ]);
         eventsService.getHearingStatusMessage.and.returnValue(mockEventService.hearingStatusSubject.asObservable());
         eventsService.getParticipantStatusMessage.and.returnValue(mockEventService.participantStatusSubject.asObservable());
         eventsService.getServiceDisconnected.and.returnValue(mockEventService.eventHubDisconnectSubject.asObservable());
         eventsService.getServiceReconnected.and.returnValue(mockEventService.eventHubReconnectSubject.asObservable());
+        eventsService.getHeartbeat.and.returnValue(mockEventService.participantHeartbeat.asObservable());
     });
 
     afterAll(() => {
@@ -179,5 +182,18 @@ describe('CommandCentreComponent - Events', () => {
         await component.refreshConferenceDataDuringDisconnect();
 
         expect(vhoQueryService.getConferenceByIdVHO).toHaveBeenCalledTimes(0);
+    });
+
+    it('should update participant heartbeat', async () => {
+        const testHearing = component.hearings[0];
+        const heartBeat = new ParticipantHeartbeat(
+            testHearing.id,
+            testHearing.getParticipants()[0].id,
+            HeartbeatHealth.Good,
+            'Chrome',
+            '80.0.3987.132'
+        );
+        mockEventService.participantHeartbeat.next(heartBeat);
+        expect(component.hearings[0].getParticipants()[0].participantHertBeatHealth).toBe(heartBeat);
     });
 });
