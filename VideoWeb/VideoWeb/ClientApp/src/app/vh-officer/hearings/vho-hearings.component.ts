@@ -2,7 +2,6 @@ import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceForVhOfficerResponse,
     HearingVenueResponse,
@@ -14,6 +13,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { VhoQueryService } from 'src/app/services/vho-query-service.service';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -61,7 +61,7 @@ export class VhoHearingsComponent implements OnInit, OnDestroy {
     }
 
     constructor(
-        private videoWebService: VideoWebService,
+        private videoWebService: VhoQueryService,
         public sanitizer: DomSanitizer,
         private errorService: ErrorService,
         private eventService: EventsService,

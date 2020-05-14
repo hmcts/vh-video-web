@@ -27,6 +27,7 @@ import { VhOfficerRoutingModule } from './vh-officer-routing.module';
 import { VhoChatComponent } from './vho-chat/vho-chat.component';
 import { VhoHearingListComponent } from './vho-hearing-list/vho-hearing-list.component';
 import { VhoHearingsFilterComponent } from './vho-herings-filter/vho-hearings-filter.component';
+import { VhoQueryService } from '../services/vho-query-service.service';
 
 @NgModule({
     declarations: [
@@ -51,7 +52,7 @@ import { VhoHearingsFilterComponent } from './vho-herings-filter/vho-hearings-fi
         HearingStatusComponent
     ],
     imports: [CommonModule, SharedModule, ChartsModule, ClipboardModule, VhOfficerRoutingModule, NgMultiSelectDropDownModule.forRoot()],
-    providers: [HearingsFilterOptionsService, ParticipantStatusReader, VHODashboardHelper],
+    providers: [HearingsFilterOptionsService, ParticipantStatusReader, VHODashboardHelper, VhoQueryService],
     exports: [MonitoringGraphComponent, HearingHeaderComponent, HearingStatusComponent]
 })
 export class VhOfficerModule {}

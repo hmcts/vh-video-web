@@ -8,10 +8,11 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { TasksTestData } from 'src/app/testing/mocks/data/tasks-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { TasksTableComponent } from './tasks-table.component';
+import { VhoQueryService } from 'src/app/services/vho-query-service.service';
 
 describe('TasksTableComponent', () => {
     let component: TasksTableComponent;
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+    let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
     let eventBusServiceSpy: jasmine.SpyObj<EventBusService>;
     const conference = new ConferenceTestData().getConferenceDetailFuture();
     const allTasks = new TasksTestData().getTestData();
@@ -20,20 +21,20 @@ describe('TasksTableComponent', () => {
 
     beforeAll(() => {
         eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit']);
-        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
+        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', [
             'getConferenceByIdVHO',
             'getTasksForConference',
             'completeTask'
         ]);
-        videoWebServiceSpy.getConferenceByIdVHO.and.returnValue(Promise.resolve(conference));
-        videoWebServiceSpy.getTasksForConference.and.callFake(() => Promise.resolve(allTasks));
-        videoWebServiceSpy.completeTask.and.returnValue(Promise.resolve(completedTask));
+        vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conference));
+        vhoQueryService.getTasksForConference.and.callFake(() => Promise.resolve(allTasks));
+        vhoQueryService.completeTask.and.returnValue(Promise.resolve(completedTask));
 
         logger = new MockLogger();
     });
 
     beforeEach(() => {
-        component = new TasksTableComponent(videoWebServiceSpy, logger, eventBusServiceSpy);
+        component = new TasksTableComponent(vhoQueryService, logger, eventBusServiceSpy);
         component.conferenceId = conference.id;
         component.conference = Object.assign(conference);
         // 1 To-Do & 2 Done
@@ -54,7 +55,7 @@ describe('TasksTableComponent', () => {
 
     it('should log error when unable to init', fakeAsync(() => {
         const error = { error: 'failed to find conference', error_code: 404 };
-        videoWebServiceSpy.getConferenceByIdVHO.and.callFake(() => Promise.reject(error));
+        vhoQueryService.getConferenceByIdVHO.and.callFake(() => Promise.reject(error));
         const spy = spyOn(logger, 'error');
         component.tasks = undefined;
         component.conference = undefined;
@@ -136,7 +137,7 @@ describe('TasksTableComponent', () => {
     it('should throw error when task cannot complete', async () => {
         component.tasks = new TasksTestData().getTestData();
         const error = { error: 'service error' };
-        videoWebServiceSpy.completeTask.and.callFake(() => Promise.reject(error));
+        vhoQueryService.completeTask.and.callFake(() => Promise.reject(error));
         const task = component.tasks.find(x => x.status === TaskStatus.ToDo);
 
         await component.completeTask(task);

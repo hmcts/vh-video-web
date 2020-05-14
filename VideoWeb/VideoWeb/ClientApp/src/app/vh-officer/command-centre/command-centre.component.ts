@@ -1,21 +1,21 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { ConferenceForVhOfficerResponse, HearingVenueResponse } from 'src/app/services/clients/api-client';
+import { ErrorService } from 'src/app/services/error.service';
+import { EventsService } from 'src/app/services/events.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { SessionStorage } from 'src/app/services/session-storage';
+import { VhoQueryService } from 'src/app/services/vho-query-service.service';
+import { ConferenceHelper } from 'src/app/shared/conference-helper';
+import { Hearing } from 'src/app/shared/models/hearing';
+import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ScreenHelper } from 'src/app/shared/screen-helper';
-import { ConferenceForVhOfficerResponse, HearingVenueResponse } from 'src/app/services/clients/api-client';
-import { SessionStorage } from 'src/app/services/session-storage';
-import { Subscription } from 'rxjs';
-import { HearingSummary } from 'src/app/shared/models/hearing-summary';
-import { Hearing } from 'src/app/shared/models/hearing';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ErrorService } from 'src/app/services/error.service';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { VhoStorageKeys } from '../services/models/session-keys';
 import { MenuOption } from '../models/menus-options';
-import { EventsService } from 'src/app/services/events.service';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { ConferenceHelper } from 'src/app/shared/conference-helper';
-import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { VhoStorageKeys } from '../services/models/session-keys';
 
 @Component({
     selector: 'app-command-centre',
@@ -37,11 +37,10 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     conferences: HearingSummary[];
     selectedHearing: Hearing;
 
-    interval: NodeJS.Timer;
     loadingData: boolean;
 
     constructor(
-        private videoWebService: VideoWebService,
+        private queryService: VhoQueryService,
         private errorService: ErrorService,
         private eventService: EventsService,
         private logger: Logger,
@@ -60,8 +59,8 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.queryService.stopQuery();
         this.screenHelper.enableFullScreen(false);
-        clearInterval(this.interval);
         if (this.conferencesSubscription) {
             this.conferencesSubscription.unsubscribe();
         }
@@ -152,7 +151,9 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     getConferenceForSelectedAllocations() {
         this.loadVenueSelection();
+        this.queryService.startQuery(this.venueAllocations);
         this.retrieveHearingsForVhOfficer(true);
+
         // this.setupConferenceInterval();
     }
 
@@ -163,7 +164,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     retrieveHearingsForVhOfficer(reload: boolean) {
         this.loadingData = reload;
-        this.conferencesSubscription = this.videoWebService.getConferencesForVHOfficer(this.venueAllocations).subscribe(
+        this.conferencesSubscription = this.queryService.getConferencesForVHOfficer(this.venueAllocations).subscribe(
             async (data: ConferenceForVhOfficerResponse[]) => {
                 this.logger.debug('Successfully retrieved hearings for VHO');
                 this.conferences = data.map(c => new HearingSummary(c));
@@ -177,13 +178,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         );
     }
 
-    setupConferenceInterval() {
-        clearInterval(this.interval);
-        this.interval = setInterval(() => {
-            this.retrieveHearingsForVhOfficer(false);
-        }, 30000);
-    }
-
     isCurrentConference(conferenceId: string): boolean {
         return this.selectedHearing != null && this.selectedHearing.getConference().id === conferenceId;
     }
@@ -194,7 +188,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     async retrieveConferenceDetails(conferenceId: string) {
         try {
-            const conference = await this.videoWebService.getConferenceByIdVHO(conferenceId);
+            const conference = await this.queryService.getConferenceByIdVHO(conferenceId);
             this.selectedHearing = new Hearing(conference);
         } catch (error) {
             this.logger.error(`There was an error when selecting conference ${conferenceId}`, error);

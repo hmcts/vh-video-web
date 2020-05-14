@@ -1,7 +1,7 @@
-import { Component, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { VhoQueryService } from 'src/app/services/vho-query-service.service';
 import { HeartbeatHealth } from '../../services/models/participant-heartbeat';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { PackageLost } from '../services/models/package-lost';
@@ -24,7 +24,7 @@ export class ParticipantNetworkStatusComponent implements OnInit {
     @ViewChild('graphContainer', { static: false })
     graphContainer: ElementRef;
 
-    constructor(private videoWebService: VideoWebService, private logger: Logger) {}
+    constructor(private vhoQuery: VhoQueryService, private logger: Logger) {}
     ngOnInit(): void {
         this.displayGraph = false;
         this.packageLostArray = [];
@@ -37,7 +37,7 @@ export class ParticipantNetworkStatusComponent implements OnInit {
         }
         try {
             this.loading = true;
-            const heartbeatHistory = await this.videoWebService.getParticipantHeartbeats(this.conferenceId, this.participant.id);
+            const heartbeatHistory = await this.vhoQuery.getParticipantHeartbeats(this.conferenceId, this.participant.id);
 
             this.loading = false;
             this.packageLostArray = heartbeatHistory.map(x => {

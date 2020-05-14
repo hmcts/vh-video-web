@@ -1,10 +1,10 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { TaskCompleted } from 'src/app/on-the-day/models/task-completed';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { TaskResponse, TaskStatus } from 'src/app/services/clients/api-client';
 import { EventBusService, VHEventType } from 'src/app/services/event-bus.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { VhoQueryService } from 'src/app/services/vho-query-service.service';
 
 @Component({
     selector: 'app-pending-tasks',
@@ -17,11 +17,11 @@ export class PendingTasksComponent implements OnInit, OnDestroy {
     taskSubscription$: Subscription;
     tasks: TaskResponse[];
 
-    constructor(private videoWebService: VideoWebService, private eventbus: EventBusService, private logger: Logger) {}
+    constructor(private queryService: VhoQueryService, private eventbus: EventBusService, private logger: Logger) {}
 
     ngOnInit() {
         this.setupSubscribers();
-        this.videoWebService
+        this.queryService
             .getTasksForConference(this.conferenceId)
             .then(tasks => (this.tasks = tasks))
             .catch(err => this.logger.error(`Failed to get tasks for ${this.conferenceId}`, err));

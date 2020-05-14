@@ -8,10 +8,11 @@ import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/par
 import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { ParticipantNetworkStatusComponent } from './participant-network-status.component';
 import { ElementRef } from '@angular/core';
+import { VhoQueryService } from 'src/app/services/vho-query-service.service';
 
 describe('ParticipantNetworkStatusComponent', () => {
     let component: ParticipantNetworkStatusComponent;
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+    let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
     const logger: Logger = new MockLogger();
     let conference: ConferenceForVhOfficerResponse;
     let participant: ParticipantSummary;
@@ -33,16 +34,16 @@ describe('ParticipantNetworkStatusComponent', () => {
 
         conference = new ConferenceTestData().getConferenceNow();
         participant = new ParticipantSummary(conference.participants[0]);
-        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getParticipantHeartbeats']);
+        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getParticipantHeartbeats']);
     });
 
     beforeEach(() => {
-        videoWebServiceSpy.getParticipantHeartbeats.and.returnValue(Promise.resolve([hearbeatResponse]));
-        component = new ParticipantNetworkStatusComponent(videoWebServiceSpy, logger);
+        vhoQueryService.getParticipantHeartbeats.and.returnValue(Promise.resolve([hearbeatResponse]));
+        component = new ParticipantNetworkStatusComponent(vhoQueryService, logger);
         component.conferenceId = conference.id;
         component.participant = participant;
 
-        videoWebServiceSpy.getParticipantHeartbeats.calls.reset();
+        vhoQueryService.getParticipantHeartbeats.calls.reset();
 
         mockGraphContainer = document.createElement('div');
     });
@@ -56,19 +57,19 @@ describe('ParticipantNetworkStatusComponent', () => {
         component.displayGraph = true;
         component.loading = false;
         await component.showParticipantGraph(mouseEvent);
-        expect(videoWebServiceSpy.getParticipantHeartbeats).toHaveBeenCalledTimes(0);
+        expect(vhoQueryService.getParticipantHeartbeats).toHaveBeenCalledTimes(0);
     });
 
     it('should not get hearbeat history if graph already loading', async () => {
         component.displayGraph = false;
         component.loading = true;
         await component.showParticipantGraph(mouseEvent);
-        expect(videoWebServiceSpy.getParticipantHeartbeats).toHaveBeenCalledTimes(0);
+        expect(vhoQueryService.getParticipantHeartbeats).toHaveBeenCalledTimes(0);
     });
 
     it('should log error when unable to get heartbeat data', fakeAsync(() => {
         const error = { error: 'failed to find data', error_code: 404 };
-        videoWebServiceSpy.getParticipantHeartbeats.and.callFake(() => Promise.reject(error));
+        vhoQueryService.getParticipantHeartbeats.and.callFake(() => Promise.reject(error));
         const spy = spyOn(logger, 'error');
         component.packageLostArray = undefined;
 
@@ -88,7 +89,7 @@ describe('ParticipantNetworkStatusComponent', () => {
         expect(component.monitoringParticipant.name).toBe(participant.displayName);
         expect(component.monitoringParticipant.status).toBe(participant.status);
         expect(component.monitoringParticipant.representee).toBe(participant.representee);
-        expect(videoWebServiceSpy.getParticipantHeartbeats).toHaveBeenCalled();
+        expect(vhoQueryService.getParticipantHeartbeats).toHaveBeenCalled();
     });
 
     it('should update graph container location on mouse move', () => {

@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, TaskResponse, TaskType } from 'src/app/services/clients/api-client';
 import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { VhoQueryService } from 'src/app/services/vho-query-service.service';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
 
 @Component({
@@ -17,7 +17,7 @@ export class TasksTableComponent implements OnInit {
     tasks: TaskResponse[];
     conference: ConferenceResponse;
 
-    constructor(private videoWebService: VideoWebService, private logger: Logger, private eventbus: EventBusService) {}
+    constructor(private vhoQueryService: VhoQueryService, private logger: Logger, private eventbus: EventBusService) {}
 
     ngOnInit() {
         this.loading = true;
@@ -42,16 +42,16 @@ export class TasksTableComponent implements OnInit {
     }
 
     retrieveConference(conferenceId): Promise<ConferenceResponse> {
-        return this.videoWebService.getConferenceByIdVHO(conferenceId);
+        return this.vhoQueryService.getConferenceByIdVHO(conferenceId);
     }
 
     retrieveTasksForConference(conferenceId: string): Promise<TaskResponse[]> {
-        return this.videoWebService.getTasksForConference(conferenceId);
+        return this.vhoQueryService.getTasksForConference(conferenceId);
     }
 
     async completeTask(task: TaskResponse) {
         try {
-            const updatedTask = await this.videoWebService.completeTask(this.conference.id, task.id);
+            const updatedTask = await this.vhoQueryService.completeTask(this.conference.id, task.id);
             this.updateTask(updatedTask);
             const payload = new TaskCompleted(this.conference.id, task.id);
             this.eventbus.emit(new EmitEvent(VHEventType.TaskCompleted, payload));
