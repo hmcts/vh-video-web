@@ -1,10 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ClipboardService } from 'ngx-clipboard';
-import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
-import { ConferenceStatus, ConferenceResponseVho } from 'src/app/services/clients/api-client';
+import { ConferenceResponseVho, ConferenceStatus } from 'src/app/services/clients/api-client';
+import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
-import { Hearing } from 'src/app/shared/models/hearing';
 
 @Component({
     selector: 'app-vho-hearing-list',
@@ -16,10 +15,6 @@ export class VhoHearingListComponent implements OnInit {
     @Output() selectedConference = new EventEmitter<HearingSummary>();
 
     currentConference: HearingSummary;
-
-    scrollConfig: PerfectScrollbarConfigInterface = {
-        suppressScrollX: true
-    };
 
     constructor(private clipboardService: ClipboardService) {}
 

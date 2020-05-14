@@ -1,8 +1,7 @@
 import { ClipboardService } from 'ngx-clipboard';
-import { ConferenceStatus, ParticipantForUserResponse } from 'src/app/services/clients/api-client';
+import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { HearingSummary } from '../../shared/models/hearing-summary';
-import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { VhoHearingListComponent } from './vho-hearing-list.component';
 
 describe('VhoHearingListComponent', () => {
@@ -62,10 +61,6 @@ describe('VhoHearingListComponent', () => {
         component.selectConference(conference);
         expect(component.selectedConference.emit).toHaveBeenCalledWith(conference);
         expect(component.currentConference).toBe(conference);
-    });
-
-    it('should set configuration for scrollbar to suppress scroll x', () => {
-        expect(component.scrollConfig.suppressScrollX).toBe(true);
     });
 
     it('should return true when conference is suspended', () => {
