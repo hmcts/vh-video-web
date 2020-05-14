@@ -1,8 +1,6 @@
 <div class="govuk-grid-row govuk-body-s govuk-!-padding-top-3">
   <div id="im-participant-list" class="govuk-grid-column-one-third">
-    <div class="govuk-grid-column-full govuk-!-padding-top-4">
-      <app-hearing-header [hearing]="hearing"></app-hearing-header>
-    </div>
+    <app-hearing-header [hearing]="hearing"></app-hearing-header>
     <app-admin-im-list [hearing]="hearing" (selectedParticipant)="onParticipantSelected($event)"></app-admin-im-list>
   </div>
 
