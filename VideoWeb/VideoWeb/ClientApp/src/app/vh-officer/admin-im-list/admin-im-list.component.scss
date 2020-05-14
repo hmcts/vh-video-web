@@ -61,12 +61,7 @@
 
 #list-item {
   color: govuk-colour('black');
-  font-family: 'GDS Transport', Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 1.11111;
+  @include govuk-font(16, $weight: 'regular', $line-height: 1.11111);
   margin-top: 0;
 }
 
@@ -76,12 +71,8 @@
 
 .list-item.unavailable {
   color: govuk-colour('dark-grey');
-  font-family: 'GDS Transport', Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 1.11111;
+  @include govuk-font(16, $weight: 'regular', $line-height: 1.11111);
+
   margin-top: 0;
 }
 
