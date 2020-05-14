@@ -48,7 +48,9 @@ export abstract class ChatBaseComponent {
 
         // ignore if already received message
         if (this.messages.findIndex((m) => m.id === message.id) > -1) {
-            this.logger.debug(`[ChatHub] message already been processed ${JSON.stringify(message)}`);
+            const logInfo = Object.assign({}, message);
+            delete logInfo.message;
+            this.logger.debug(`[ChatHub] message already been processed ${JSON.stringify(logInfo)}`);
             return;
         }
 
