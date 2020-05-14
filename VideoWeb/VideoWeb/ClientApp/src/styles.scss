@@ -106,7 +106,6 @@ $govuk-global-styles: true;
 #master-container.fullscreen {
   @include govuk-width-container(9999px);
   margin-left: 10px !important;
-  margin-right: 10px !important;
 }
 
 .half-left {
