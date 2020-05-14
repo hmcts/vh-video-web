@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security;
@@ -137,6 +138,7 @@ namespace VideoWeb
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                IdentityModelEventSource.ShowPII = true;
             }
             else
             {
@@ -182,9 +184,10 @@ namespace VideoWeb
 
         private static void AddPolicies(AuthorizationOptions options)
         {
-            options.DefaultPolicy = new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser().AddAuthenticationSchemes("default")
-                .Build();
+            options.AddPolicy("Default", new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .AddAuthenticationSchemes("Default")
+                .Build());
 
             options.AddPolicy("EventHubUser", new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
