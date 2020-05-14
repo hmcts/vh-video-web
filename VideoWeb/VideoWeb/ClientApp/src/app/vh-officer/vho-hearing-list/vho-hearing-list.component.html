@@ -1,7 +1,7 @@
-<div id="list-column" class="govuk-grid-column-full govuk-!-padding-0">
+<div id="list-column" class="govuk-grid-column-full govuk-!-padding-left-3">
   <dl id="conferences-list" class="govuk-summary-list">
     <div
-      class="govuk-summary-list__row govuk-!-padding-0"
+      class="govuk-summary-list__row"
       [ngClass]="{ 'selected-conference': isCurrentConference(conference) }"
       *ngFor="let conference of conferences"
       (click)="selectConference(conference)"
