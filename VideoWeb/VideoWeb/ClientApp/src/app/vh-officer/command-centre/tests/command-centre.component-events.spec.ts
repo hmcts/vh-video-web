@@ -43,7 +43,12 @@ describe('CommandCentreComponent - Events', () => {
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
         screenHelper = jasmine.createSpyObj<ScreenHelper>('ScreenHelper', ['enableFullScreen']);
 
-        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getConferencesForVHOfficer', 'getConferenceByIdVHO']);
+        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', [
+            'startQuery',
+            'stopQuery',
+            'getConferencesForVHOfficer',
+            'getConferenceByIdVHO'
+        ]);
 
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
             'goToServiceError',
@@ -74,7 +79,7 @@ describe('CommandCentreComponent - Events', () => {
         vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
 
         component = new CommandCentreComponent(vhoQueryService, errorService, eventsService, logger, router, screenHelper);
-        component.conferences = hearings;
+        component.hearings = hearings;
         component.selectedHearing = hearing;
         screenHelper.enableFullScreen.calls.reset();
         vhoQueryService.getConferenceByIdVHO.calls.reset();
@@ -82,12 +87,12 @@ describe('CommandCentreComponent - Events', () => {
 
     it('should update hearing status when conference status message is received', () => {
         component.setupEventHubSubscribers();
-        component.conferences[0].status = ConferenceStatus.InSession;
+        component.hearings[0].status = ConferenceStatus.InSession;
         const message = new ConferenceStatusMessage(conferences[0].id, ConferenceStatus.Paused);
 
         mockEventService.hearingStatusSubject.next(message);
 
-        expect(component.conferences[0].status).toBe(message.status);
+        expect(component.hearings[0].status).toBe(message.status);
     });
 
     it('should selected hearing status when conference status message is received for currently selected conference', () => {
@@ -112,15 +117,15 @@ describe('CommandCentreComponent - Events', () => {
         const conferenceId = hearing.id;
         const participant = hearing.getParticipants()[0];
 
-        component.conferences[1].getConference().id = conferenceId;
-        component.conferences[1].getParticipants()[1].base.id = participant.id;
+        component.hearings[1].getConference().id = conferenceId;
+        component.hearings[1].getParticipants()[1].base.id = participant.id;
 
         participant.status = ParticipantStatus.Joining;
         const message = new ParticipantStatusMessage(participant.id, participant.username, conferenceId, ParticipantStatus.Available);
 
         mockEventService.participantStatusSubject.next(message);
 
-        expect(component.conferences[1].getParticipants()[1].status).toBe(message.status);
+        expect(component.hearings[1].getParticipants()[1].status).toBe(message.status);
         expect(component.selectedHearing.participants[0].status).toBe(message.status);
     });
 

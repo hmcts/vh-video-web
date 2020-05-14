@@ -39,7 +39,12 @@ describe('CommandCentreComponent - Core', () => {
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
         screenHelper = jasmine.createSpyObj<ScreenHelper>('ScreenHelper', ['enableFullScreen']);
 
-        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getConferencesForVHOfficer', 'getConferenceByIdVHO']);
+        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', [
+            'startQuery',
+            'stopQuery',
+            'getConferencesForVHOfficer',
+            'getConferenceByIdVHO'
+        ]);
 
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
             'goToServiceError',
@@ -70,21 +75,21 @@ describe('CommandCentreComponent - Core', () => {
         vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
 
         component = new CommandCentreComponent(vhoQueryService, errorService, eventsService, logger, router, screenHelper);
-        component.conferences = hearings;
+        component.hearings = hearings;
         screenHelper.enableFullScreen.calls.reset();
         vhoQueryService.getConferenceByIdVHO.calls.reset();
     });
 
     it('should go fullscreen on init', fakeAsync(() => {
         component.loadingData = false;
-        component.conferences = undefined;
+        component.hearings = undefined;
         component.conferencesSubscription = undefined;
 
         component.ngOnInit();
         discardPeriodicTasks();
 
         expect(screenHelper.enableFullScreen).toHaveBeenCalledWith(true);
-        expect(component.conferences.length).toBeGreaterThan(0);
+        expect(component.hearings.length).toBeGreaterThan(0);
         expect(component.conferencesSubscription).toBeDefined();
     }));
 
