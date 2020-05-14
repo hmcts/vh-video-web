@@ -18,7 +18,7 @@
 
 <div class="govuk-grid-row">
   <div class="conference-list">
-    <app-vho-hearing-list #conferenceList [conferences]="conferences" (selectedConference)="onConferenceSelected($event)">
+    <app-vho-hearing-list #conferenceList [conferences]="hearings" (selectedConference)="onConferenceSelected($event)">
     </app-vho-hearing-list>
   </div>
   <div class="selected-menu-content" [ngSwitch]="selectedMenu">

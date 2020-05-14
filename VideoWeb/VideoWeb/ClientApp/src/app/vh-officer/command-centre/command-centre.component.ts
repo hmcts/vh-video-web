@@ -34,7 +34,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     conferencesSubscription: Subscription;
     eventHubSubscriptions: Subscription = new Subscription();
 
-    conferences: HearingSummary[];
+    hearings: HearingSummary[];
     selectedHearing: Hearing;
 
     loadingData: boolean;
@@ -114,7 +114,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
-        const conference = this.conferences.find(c => c.id === message.conferenceId);
+        const conference = this.hearings.find(c => c.id === message.conferenceId);
         if (!conference) {
             return false;
         }
@@ -126,7 +126,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): any {
         const participantInList = ConferenceHelper.findParticipantInConferences(
-            this.conferences.map(x => x.getConference()),
+            this.hearings.map(x => x.getConference()),
             message.participantId
         );
         // update in list
@@ -167,7 +167,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.conferencesSubscription = this.queryService.getConferencesForVHOfficer(this.venueAllocations).subscribe(
             async (data: ConferenceForVhOfficerResponse[]) => {
                 this.logger.debug('Successfully retrieved hearings for VHO');
-                this.conferences = data.map(c => new HearingSummary(c));
+                this.hearings = data.map(c => new HearingSummary(c));
                 this.loadingData = false;
             },
             error => {

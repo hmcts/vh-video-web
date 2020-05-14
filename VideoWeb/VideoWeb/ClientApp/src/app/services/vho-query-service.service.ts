@@ -35,18 +35,7 @@ export class VhoQueryService {
 
     async runQuery() {
         const conferences = await this.apiClient.getConferencesForVhOfficer(this.venueNames).toPromise();
-        if (!this.vhoConferences) {
-            this.vhoConferences = conferences;
-        } else {
-            conferences.forEach(c => {
-                const conferenceIndex = this.findIndexByProperty(this.vhoConferences, 'id', c.id);
-                if (conferenceIndex > -1) {
-                    this.vhoConferences[conferenceIndex].init(c);
-                } else {
-                    this.vhoConferences.push(c);
-                }
-            });
-        }
+        this.vhoConferences = conferences;
         this.vhoConferencesSubject.next(this.vhoConferences);
     }
 
@@ -68,14 +57,5 @@ export class VhoQueryService {
 
     getParticipantHeartbeats(conferenceId: string, participantId: string): Promise<ParticipantHeartbeatResponse[]> {
         return this.apiClient.getHeartbeatDataForParticipant(conferenceId, participantId).toPromise();
-    }
-
-    private findIndexByProperty(data, key, value) {
-        for (let i = 0; i < data.length; i++) {
-            if (data[i][key] === value) {
-                return i;
-            }
-        }
-        return -1;
     }
 }
