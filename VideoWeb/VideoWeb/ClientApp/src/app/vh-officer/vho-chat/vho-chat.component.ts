@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
@@ -7,7 +7,8 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
-import { VHODashboardHelper } from '../helper';
+import { Hearing } from 'src/app/shared/models/hearing';
+import { Participant } from 'src/app/shared/models/participant';
 import { ConferenceUnreadMessageCount } from './vho-conference-unread_message-count.model';
 
 @Component({
@@ -16,17 +17,13 @@ import { ConferenceUnreadMessageCount } from './vho-conference-unread_message-co
     styleUrls: ['./vho-chat.component.scss', '../vho-global-styles.scss']
 })
 export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDestroy {
-    sectionDivWidth: number;
     newMessageBody: FormControl;
     private chatHubSubscription: Subscription;
     loading: boolean;
 
+    @Input() hearing: Hearing;
+    @Input() participant: Participant;
     @Output() unreadMessageCount = new EventEmitter<ConferenceUnreadMessageCount>();
-
-    @HostListener('window:resize')
-    onResize() {
-        this.updateDivWidthForSection();
-    }
 
     constructor(
         protected videoWebService: VideoWebService,
@@ -39,8 +36,9 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
     }
 
     async ngOnInit() {
+        console.log(this.hearing);
+        console.log(this.participant);
         this.logger.debug(`[ChatHub VHO] starting chat for ${this.hearing.id}`);
-        this.updateDivWidthForSection();
         this.initForm();
         this.chatHubSubscription = this.setupChatSubscription();
         this.loading = true;
@@ -52,10 +50,6 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
 
     initForm() {
         this.newMessageBody = new FormControl(null, [Validators.required, Validators.minLength(1), Validators.maxLength(256)]);
-    }
-
-    updateDivWidthForSection(): void {
-        this.sectionDivWidth = new VHODashboardHelper().getWidthAvailableForConference();
     }
 
     sendMessage(messageBody: string) {

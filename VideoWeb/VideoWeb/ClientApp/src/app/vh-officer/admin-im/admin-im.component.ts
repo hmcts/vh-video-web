@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { Participant } from 'src/app/shared/models/participant';
 
 @Component({
     selector: 'app-admin-im',
@@ -9,5 +10,10 @@ import { Hearing } from 'src/app/shared/models/hearing';
 export class AdminImComponent {
     @Input() hearing: Hearing;
 
+    currentParticipant;
     constructor() {}
+
+    onParticipantSelected(participant: Participant) {
+        this.currentParticipant = participant;
+    }
 }

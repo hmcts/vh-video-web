@@ -1,12 +1,13 @@
-@import "~govuk-frontend/govuk/all";
+@import '~govuk-frontend/govuk/all';
 
-.chat-header {
-  background: govuk-colour("light-grey");
+.participant-name {
+  float: right;
+  margin-right: 30px;
 }
 
 .chat-window {
-  height: 200px;
-  width: inherit;
+  height: 400px;
+  width: 100%;
 }
 
 .own-message {
@@ -22,8 +23,8 @@
   float: right;
 }
 
-.other-message>p {
-  color: govuk-colour("blue");
+.other-message > p {
+  color: govuk-colour('blue');
 }
 
 .chat-message {
@@ -61,6 +62,6 @@
 
 ::-webkit-scrollbar-thumb {
   border-radius: 4px;
-  background-color: rgba(0, 0, 0, .5);
-  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+  background-color: rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
 }

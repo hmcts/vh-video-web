@@ -1,11 +1,13 @@
 @import '~govuk-frontend/govuk/all';
 
 .vh-width-main {
-  width: 90%;
+  width: 85% !important;
+  padding-left: 0px !important;
+  padding-right: 5px !important;
 }
 
 .vh-width-traffic {
-  width: 10%;
+  width: 10% !important;
 }
 
 .selected-conference {

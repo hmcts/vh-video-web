@@ -23,11 +23,11 @@
   </div>
   <div class="selected-menu-content" [ngSwitch]="selectedMenu">
     <ng-container *ngSwitchCase="menuOption.Hearing">
-      <app-admin-hearing *ngIf="selectedHearing" [hearing]="selectedHearing"></app-admin-hearing>
+      <app-admin-hearing *ngIf="selectedHearing; else nohearing" [hearing]="selectedHearing"></app-admin-hearing>
     </ng-container>
 
     <ng-container *ngSwitchCase="menuOption.Message">
-      <app-admin-im *ngIf="selectedHearing" [hearing]="selectedHearing"></app-admin-im>
+      <app-admin-im *ngIf="selectedHearing; else nohearing" [hearing]="selectedHearing"></app-admin-im>
     </ng-container>
 
     <div *ngSwitchDefault>
@@ -39,3 +39,11 @@
     </div>
   </div>
 </div>
+
+<ng-template #nohearing>
+  <div class="govuk-grid-row govuk-!-padding-3">
+    <div class="govuk-grid-column-full">
+      <h2 class="govuk-heading-l">Select a hearing</h2>
+    </div>
+  </div>
+</ng-template>

@@ -1,12 +1,13 @@
 <div
   *ngFor="let participant of imParticipants"
+  (click)="selectParticipant(participant)"
   class="im-list"
   [ngClass]="{
     'im-list-top': participant.isJudge,
-    'selected-conference': isCurrentParticipant(participant)
+    'selected-participant': isCurrentParticipant(participant)
   }"
 >
-  <div class="im-icon">im</div>
+  <div class="im-icon"><app-unread-messages [conferenceId]="hearing.id"></app-unread-messages></div>
   <div *ngIf="participant.isJudge" class="judge-icon"><img src="assets/images/black_crest.png" height="20px" /></div>
   <div class="name list-item" [ngClass]="participant.status === participantStatus.Available ? 'available' : 'unavailable'">
     {{ participant.displayName }}

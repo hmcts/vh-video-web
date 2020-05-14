@@ -3,10 +3,16 @@
     <div class="govuk-grid-column-full govuk-!-padding-top-4">
       <app-hearing-header [hearing]="hearing"></app-hearing-header>
     </div>
-    <app-admin-im-list [hearing]="hearing"></app-admin-im-list>
+    <app-admin-im-list [hearing]="hearing" (selectedParticipant)="onParticipantSelected($event)"></app-admin-im-list>
   </div>
 
   <div id="chat-window" class="govuk-grid-column-two-thirds">
-    chat window goes here!
+    <ng-container *ngIf="hearing && currentParticipant; else noParticipant">
+      <app-vho-chat [hearing]="hearing" [participant]="currentParticipant"></app-vho-chat>
+    </ng-container>
   </div>
 </div>
+
+<ng-template #noParticipant>
+  <h4 class="govuk-heading-s">Select a participant</h4>
+</ng-template>
