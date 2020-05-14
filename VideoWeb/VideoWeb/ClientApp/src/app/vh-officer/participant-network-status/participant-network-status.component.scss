@@ -26,11 +26,23 @@
   cursor: pointer;
 }
 
+.graph-container:before {
+  content: '';
+  width: 20px;
+  height: 20px;
+  background: govuk-colour('dark-grey');
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+}
+
 .graph-container {
-  z-index: 1;
+  z-index: 99;
   position: fixed;
-  background: govuk-colour('black');
+  border-radius: 3px;
+  background: govuk-colour('white');
   width: auto;
-  color: white;
-  margin-top: -1.8vw;
+  height: auto;
+  // margin-top: -1.8vw;
 }
