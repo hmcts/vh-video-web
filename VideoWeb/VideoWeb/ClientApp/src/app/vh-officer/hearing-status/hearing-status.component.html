@@ -1,13 +1,17 @@
 <div class="half-right">
-    <div style="float:right; margin-right:12px;" class="status status-button" [ngClass]="{
-        'conference-notstarted':hearing.isNotStarted(),
-        'conference-ready': hearing.isReadyToStart(),
-        'conference-delayed': hearing.isDelayed(),
-        'conference-suspended': hearing.isSuspended(),
-        'conference-paused': hearing.isPaused(),
-        'conference-in-session': hearing.isInSession(),
-        'conference-closed':hearing.isClosed()
-      }">
-        {{ hearing.status }}
-    </div>
+  <div
+    style="float: right; margin-right: 12px;"
+    class="status status-button"
+    [ngClass]="{
+      'conference-notstarted': hearing.isNotStarted(),
+      'conference-ready': hearing.isReadyToStart(),
+      'conference-delayed': hearing.isDelayed(),
+      'conference-suspended': hearing.isSuspended(),
+      'conference-paused': hearing.isPaused(),
+      'conference-in-session': hearing.isInSession(),
+      'conference-closed': hearing.isClosed()
+    }"
+  >
+    {{ getConferenceStatusText() }}
+  </div>
 </div>
