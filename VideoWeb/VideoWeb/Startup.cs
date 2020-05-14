@@ -74,11 +74,11 @@ namespace VideoWeb
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                }).AddPolicyScheme(JwtBearerDefaults.AuthenticationScheme, "handler", options =>
+                }).AddPolicyScheme(JwtBearerDefaults.AuthenticationScheme, "Handler", options =>
                     options.ForwardDefaultSelector = context =>
                         context.Request.Path.StartsWithSegments("/callback")
-                            ? "Callback" : "default")
-                .AddJwtBearer("default", options =>
+                            ? "Callback" : "Default")
+                .AddJwtBearer("Default", options =>
                 {
                     options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}";
                     options.TokenValidationParameters.ValidateLifetime = true;
