@@ -8,7 +8,7 @@
   }"
 >
   <div class="im-icon"><app-unread-messages [conferenceId]="hearing.id"></app-unread-messages></div>
-  <div *ngIf="participant.isJudge" class="judge-icon"><img src="assets/images/black_crest.png" height="20px" /></div>
+  <div *ngIf="participant.isJudge" class="judge-icon"><img src="assets/images/black_crest.png" height="20px" alt="judge-icon"/></div>
   <div class="name list-item" [ngClass]="participant.status === participantStatus.Available ? 'available' : 'unavailable'">
     {{ participant.displayName }}
   </div>

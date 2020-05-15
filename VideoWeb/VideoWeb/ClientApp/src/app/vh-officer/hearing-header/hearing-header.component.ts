@@ -3,8 +3,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 
 @Component({
   selector: 'app-hearing-header',
-  templateUrl: './hearing-header.component.html',
-  styleUrls: ['./hearing-header.component.scss']
+  templateUrl: './hearing-header.component.html'
 })
 export class HearingHeaderComponent {
 
