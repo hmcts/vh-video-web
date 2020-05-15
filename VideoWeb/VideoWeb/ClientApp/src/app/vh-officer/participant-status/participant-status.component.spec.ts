@@ -8,9 +8,6 @@ import { MockLogger } from '../../testing/mocks/MockLogger';
 import { EventsService } from '../../services/events.service';
 import { ParticipantStatusReader } from '../../shared/models/participant-status-reader';
 import { MockEventsService } from '../../testing/mocks/MockEventService';
-import { of } from 'rxjs';
-import { VhoHearingsComponent } from '../hearings/vho-hearings.component';
-import { TestFixtureHelper } from '../../testing/Helper/test-fixture-helper';
 import { ParticipantContactDetails } from '../../shared/models/participant-contact-details';
 import { ParticipantStatusMessage } from '../../services/models/participant-status-message';
 
