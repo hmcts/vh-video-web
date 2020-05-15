@@ -4,16 +4,22 @@
   background: govuk-colour('light-grey');
 }
 
+.task-header-body {
+  padding: govuk-spacing(2);
+  padding-left: govuk-spacing(4) !important;
+  margin-bottom: 3px;
+}
+
 @media (min-width: 1500px) {
   .pending-alert-text {
-    color: govuk-colour('red');
+    color: govuk-colour('red') !important;
     font-weight: bold;
   }
 }
 
 @media (max-width: 1500px) {
   .pending-alert-text {
-    color: govuk-colour('red');
+    color: govuk-colour('red') !important;
     font-weight: bold;
     padding-left: 20px;
   }
@@ -45,7 +51,7 @@
 }
 
 .task-completed {
-  color: govuk-colour('mid-grey');
+  color: govuk-colour('mid-grey') !important;
 }
 
 .task-list {

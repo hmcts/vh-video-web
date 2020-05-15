@@ -1,51 +1,18 @@
 @import '~govuk-frontend/govuk/all';
 
 .vh-width-main {
-  width: 90%;
+  width: 85% !important;
+  padding-left: 0px !important;
+  padding-right: 5px !important;
 }
 
 .vh-width-traffic {
-  width: 10%;
-}
-
-.status-badge {
-  font-size: 0.7em;
-}
-
-.conference-suspended,
-.conference-delayed,
-.conference-not-ready {
-  background-color: govuk-colour('red');
-  color: govuk-colour('white');
-  font-weight: bold;
-}
-
-.conference-in-session {
-  background-color: govuk-colour('blue');
-  color: govuk-colour('white');
-  font-weight: bold;
-}
-
-.conference-paused {
-  background-color: govuk-colour('yellow');
-  color: govuk-colour('black');
-  font-weight: bold;
-}
-
-.conference-ready {
-  background-color: govuk-colour('green');
-  color: govuk-colour('white');
-  font-weight: bold;
-}
-
-.conference-closed {
-  background-color: govuk-colour('black');
-  color: govuk-colour('white');
-  font-weight: bold;
+  width: 10% !important;
 }
 
 .selected-conference {
   background: govuk-colour('light-grey');
+  border-left: 12px solid govuk-colour('black');
 }
 
 .report-conference {

@@ -1,11 +1,1 @@
-<div
-  class="notification-badge govuk-grid-column-full"
-  [ngClass]="{ 'has-messages': unreadCount > 0, 'no-messages': unreadCount === 0 }"
->
-  <span
-    id="{{ conferenceId }}-unread-messages"
-    class="notification-badge-counter"
-    [ngClass]="{ 'has-messages': unreadCount > 0, 'no-messages': unreadCount === 0 }"
-    ></span
-  >
-</div>
+<img class="im-image" id="instant-messages" src="/assets/images/{{ getIMStatus() }}" alt="instant-message-icon" />

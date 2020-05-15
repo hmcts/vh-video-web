@@ -7,39 +7,34 @@ import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { TasksTestData } from 'src/app/testing/mocks/data/tasks-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { VHODashboardHelper } from '../helper';
 import { TasksTableComponent } from './tasks-table.component';
+import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 
 describe('TasksTableComponent', () => {
     let component: TasksTableComponent;
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    let dashboardHelper: jasmine.SpyObj<VHODashboardHelper>;
+    let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
     let eventBusServiceSpy: jasmine.SpyObj<EventBusService>;
     const conference = new ConferenceTestData().getConferenceDetailFuture();
     const allTasks = new TasksTestData().getTestData();
     const completedTask = new TasksTestData().getCompletedTask();
-    const fakeDivWidth = 300;
     let logger: MockLogger;
 
     beforeAll(() => {
         eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit']);
-        dashboardHelper = jasmine.createSpyObj<VHODashboardHelper>('VHODashboardHelper', ['getWidthAvailableForConference']);
-        dashboardHelper.getWidthAvailableForConference.and.returnValue(fakeDivWidth);
-
-        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
+        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', [
             'getConferenceByIdVHO',
             'getTasksForConference',
             'completeTask'
         ]);
-        videoWebServiceSpy.getConferenceByIdVHO.and.returnValue(Promise.resolve(conference));
-        videoWebServiceSpy.getTasksForConference.and.callFake(() => Promise.resolve(allTasks));
-        videoWebServiceSpy.completeTask.and.returnValue(Promise.resolve(completedTask));
+        vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conference));
+        vhoQueryService.getTasksForConference.and.callFake(() => Promise.resolve(allTasks));
+        vhoQueryService.completeTask.and.returnValue(Promise.resolve(completedTask));
 
         logger = new MockLogger();
     });
 
     beforeEach(() => {
-        component = new TasksTableComponent(videoWebServiceSpy, dashboardHelper, logger, eventBusServiceSpy);
+        component = new TasksTableComponent(vhoQueryService, logger, eventBusServiceSpy);
         component.conferenceId = conference.id;
         component.conference = Object.assign(conference);
         // 1 To-Do & 2 Done
@@ -53,7 +48,6 @@ describe('TasksTableComponent', () => {
         component.conference = undefined;
         component.ngOnInit();
         tick();
-        expect(component.taskDivWidth).toBe(fakeDivWidth);
         expect(component.loading).toBeFalsy();
         expect(component.conference).toEqual(conference);
         expect(component.tasks.length).toBeGreaterThan(0);
@@ -61,7 +55,7 @@ describe('TasksTableComponent', () => {
 
     it('should log error when unable to init', fakeAsync(() => {
         const error = { error: 'failed to find conference', error_code: 404 };
-        videoWebServiceSpy.getConferenceByIdVHO.and.callFake(() => Promise.reject(error));
+        vhoQueryService.getConferenceByIdVHO.and.callFake(() => Promise.reject(error));
         const spy = spyOn(logger, 'error');
         component.tasks = undefined;
         component.conference = undefined;
@@ -69,19 +63,12 @@ describe('TasksTableComponent', () => {
         component.ngOnInit();
         tick();
 
-        expect(component.taskDivWidth).toBe(fakeDivWidth);
         expect(component.loading).toBeTruthy();
         expect(spy.calls.mostRecent().args[0]).toMatch(`Failed to init tasks list for conference`);
         expect(spy.calls.mostRecent().args[1]).toBe(error);
         expect(component.tasks).toBeUndefined();
         expect(component.conference).toBeUndefined();
     }));
-
-    it('should update div width on page resize', () => {
-        component.taskDivWidth = 1000;
-        component.onResize();
-        expect(component.taskDivWidth).toBe(fakeDivWidth);
-    });
 
     it('should set task to done', () => {
         const task = component.tasks.filter(x => x.status === TaskStatus.ToDo)[0];
@@ -150,7 +137,7 @@ describe('TasksTableComponent', () => {
     it('should throw error when task cannot complete', async () => {
         component.tasks = new TasksTestData().getTestData();
         const error = { error: 'service error' };
-        videoWebServiceSpy.completeTask.and.callFake(() => Promise.reject(error));
+        vhoQueryService.completeTask.and.callFake(() => Promise.reject(error));
         const task = component.tasks.find(x => x.status === TaskStatus.ToDo);
 
         await component.completeTask(task);

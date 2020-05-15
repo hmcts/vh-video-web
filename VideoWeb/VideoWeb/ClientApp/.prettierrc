@@ -7,7 +7,7 @@
     "htmlWhitespaceSensitivity": "css",
     "overrides": [
         {
-            "files": ["*.html", "*.scss"],
+            "files": ["*.html", "*.scss", "*.json"],
             "options": {
                 "tabWidth": 2
             }
