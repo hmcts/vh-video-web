@@ -15,8 +15,8 @@ export class VhoQueryService {
     private vhoConferencesSubject: BehaviorSubject<ConferenceForVhOfficerResponse[]>;
     private vhoConferences: ConferenceForVhOfficerResponse[] = [];
 
-    private intervalId: NodeJS.Timer;
-    private venueNames: string[];
+    interval: NodeJS.Timer;
+    venueNames: string[];
     constructor(private apiClient: ApiClient) {
         this.vhoConferencesSubject = new BehaviorSubject(this.vhoConferences);
     }
@@ -30,7 +30,7 @@ export class VhoQueryService {
     }
 
     stopQuery() {
-        clearInterval(this.intervalId);
+        clearInterval(this.interval);
     }
 
     async runQuery() {
@@ -40,6 +40,7 @@ export class VhoQueryService {
     }
 
     getConferencesForVHOfficer(venueNames: string[]): Observable<ConferenceForVhOfficerResponse[]> {
+        this.venueNames = venueNames;
         return this.vhoConferencesSubject.asObservable();
     }
 

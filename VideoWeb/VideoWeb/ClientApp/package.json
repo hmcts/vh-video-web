@@ -55,8 +55,9 @@
     "@angular/cli": "^8.3.25",
     "@angular/compiler-cli": "^8.2.14",
     "@angular/language-service": "^8.2.14",
+    "@testpossessed/ts-data-builder": "^1.0.1",
     "@types/applicationinsights-js": "^1.0.9",
-    "@types/jasmine": "^2.8.16",
+    "@types/jasmine": "^3.5.10",
     "@types/jasminewd2": "^2.0.8",
     "@types/node": "~8.10.59",
     "codelyzer": "^5.0.1",
@@ -70,7 +71,7 @@
     "karma-jasmine-html-reporter": "^1.5.2",
     "karma-junit-reporter": "^2.0.1",
     "node-sass": "^4.13.1",
-    "puppeteer": "^2.1.1",
+    "puppeteer": "^3.0.4",
     "typescript": "~3.5.3"
   },
   "optionalDependencies": {

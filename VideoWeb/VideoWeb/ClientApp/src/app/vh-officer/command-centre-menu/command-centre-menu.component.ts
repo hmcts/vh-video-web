@@ -15,7 +15,6 @@ export class CommandCentreMenuComponent implements OnInit {
 
     ngOnInit() {
         this.currentMenu = MenuOption.Hearing;
-        this.logger.debug(this.currentMenu);
     }
 
     displayHearing(): void {
