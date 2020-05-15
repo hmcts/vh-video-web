@@ -12,4 +12,13 @@ describe('AdminImComponent', () => {
         component = new AdminImComponent();
         component.hearing = new Hearing(conference);
     });
+
+    it('should update current participan on select', () => {
+        component.currentParticipant = null;
+        const participant = component.hearing.participants[0];
+
+        component.onParticipantSelected(participant);
+
+        expect(component.currentParticipant).toBe(participant);
+    });
 });
