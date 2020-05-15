@@ -28,7 +28,7 @@
     "@hmcts/frontend": "^0.0.41-alpha",
     "@microsoft/signalr": "^3.1.2",
     "@nguniversal/module-map-ngfactory-loader": "8.2.6",
-    "@popperjs/core": "^2.1.0",
+    "@popperjs/core": "^2.3.3",
     "@types/webrtc": "^0.0.26",
     "adal-angular4": "^3.0.16",
     "applicationinsights-js": "^1.0.21",
