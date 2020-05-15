@@ -1,14 +1,14 @@
 <div class="govuk-grid-row">
   <div class="half-left">
-    <p class="govuk-body-l">Instant Messages</p>
+    <p id="im-header-title" class="govuk-body-l">Instant Messages</p>
   </div>
 
   <div class="half-right">
-    <h4 class="govuk-heading-s participant-name">{{ participant.displayName }}</h4>
+    <h4 id="im-header-pname" class="govuk-heading-s participant-name">{{ participant.displayName }}</h4>
   </div>
 </div>
 
-<div id="chat-list" #scrollMe [scrollTop]="scrollMe.scrollHeight" class="govuk-!-padding-2 govuk-!-padding-left-4" class="chat-window">
+<div id="chat-list" #scrollMe [scrollTop]="scrollMe.scrollHeight" class="govuk-grid-row chat-window">
   <div *ngIf="loading" class="govuk-body">Loading...</div>
   <div *ngFor="let message of messages" class="govuk-grid-row message-container">
     <div class="govuk-grid-column-full" [ngClass]="message.is_user ? 'own-message' : 'other-message'">
@@ -21,4 +21,6 @@
   </div>
 </div>
 
-<app-chat-input-box (submittedMessage)="sendMessage($event)"></app-chat-input-box>
+<div id="im-send-message" class="govuk-grid-row">
+  <app-chat-input-box (submittedMessage)="sendMessage($event)"></app-chat-input-box>
+</div>

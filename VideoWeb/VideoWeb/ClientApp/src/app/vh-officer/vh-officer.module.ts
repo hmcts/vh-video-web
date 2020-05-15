@@ -12,7 +12,6 @@ import { CommandCentreMenuComponent } from './command-centre-menu/command-centre
 import { CommandCentreComponent } from './command-centre/command-centre.component';
 import { HearingHeaderComponent } from './hearing-header/hearing-header.component';
 import { HearingStatusComponent } from './hearing-status/hearing-status.component';
-import { VhoHearingsComponent } from './hearings/vho-hearings.component';
 import { VHODashboardHelper } from './helper';
 import { MonitoringGraphComponent } from './monitoring-graph/monitoring-graph.component';
 import { ParticipantInfoTooltipComponent } from './participant-info-tooltip/participant-info-tooltip.component';
@@ -31,7 +30,6 @@ import { VhoQueryService } from './services/vho-query-service.service';
 
 @NgModule({
     declarations: [
-        VhoHearingsComponent,
         TasksTableComponent,
         VhoHearingListComponent,
         ParticipantStatusComponent,
