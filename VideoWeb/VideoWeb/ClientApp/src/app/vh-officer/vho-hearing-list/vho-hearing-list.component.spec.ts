@@ -61,4 +61,15 @@ describe('VhoHearingListComponent', () => {
         component.copyToClipboard(hearing);
         expect(clipboardServiceSpy.copyFromContent).toHaveBeenCalledWith(conference.id);
     });
+
+    it('should map summary to full dto', () => {
+        const conference = new ConferenceTestData().getConferenceFuture();
+        const summary = new HearingSummary(conference);
+
+        const result = component.mapToHearing(summary);
+
+        expect(result).toBeDefined();
+        expect(result.scheduledStartTime).toEqual(summary.scheduledDateTime);
+        expect(result.status).toEqual(summary.status);
+    });
 });

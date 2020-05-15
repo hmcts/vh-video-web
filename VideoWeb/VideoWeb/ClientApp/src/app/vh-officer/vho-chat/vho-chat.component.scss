@@ -7,7 +7,10 @@
 
 .chat-window {
   height: 400px;
-  width: 100%;
+  border: 1px solid govuk-colour('light-grey');
+  clear: both;
+  margin-right: 0px !important;
+  margin-left: -5px !important;
 }
 
 .own-message {
@@ -49,10 +52,12 @@
 
 #chat-list {
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .message-container {
   width: inherit;
+  margin: 0px 2px !important;
 }
 
 ::-webkit-scrollbar {

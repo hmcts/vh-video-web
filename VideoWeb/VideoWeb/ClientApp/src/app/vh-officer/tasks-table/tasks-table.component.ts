@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ConferenceResponse, TaskResponse, TaskType } from 'src/app/services/clients/api-client';
 import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { VhoQueryService } from 'src/app/services/vho-query-service.service';
+import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
 
 @Component({

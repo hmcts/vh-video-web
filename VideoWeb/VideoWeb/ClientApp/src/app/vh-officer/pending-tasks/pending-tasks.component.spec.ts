@@ -1,14 +1,13 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { TaskCompleted } from 'src/app/on-the-day/models/task-completed';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { TaskResponse } from 'src/app/services/clients/api-client';
 import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { TasksTestData } from 'src/app/testing/mocks/data/tasks-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { VhoQueryService } from '../services/vho-query-service.service';
 import { PendingTasksComponent } from './pending-tasks.component';
-import { VhoQueryService } from 'src/app/services/vho-query-service.service';
 
 describe('PendingTasksComponent', () => {
     let component: PendingTasksComponent;

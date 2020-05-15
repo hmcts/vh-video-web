@@ -1,11 +1,11 @@
 import { discardPeriodicTasks, fakeAsync, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { VhoQueryService } from 'src/app/services/vho-query-service.service';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -16,6 +16,7 @@ import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MenuOption } from '../../models/menus-options';
 import { CommandCentreComponent } from '../command-centre.component';
+import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 
 describe('CommandCentreComponent - Core', () => {
     let component: CommandCentreComponent;

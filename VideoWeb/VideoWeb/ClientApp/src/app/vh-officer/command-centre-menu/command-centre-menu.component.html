@@ -2,10 +2,7 @@
   <div class="tab tab--left">
     <button [ngClass]="{ active: currentMenu === 'Hearing' }" (click)="displayHearing()">Hearings</button>
   </div>
-  <div class="tab tab--middle">
-    <button [ngClass]="{ active: currentMenu === 'Message' }" (click)="displayMessages()">Messages</button>
-  </div>
   <div class="tab tab--right">
-    <button [ngClass]="{ active: currentMenu === 'Announcement' }" (click)="displayAnnouncements()">Announcements</button>
+    <button [ngClass]="{ active: currentMenu === 'Message' }" (click)="displayMessages()">Messages</button>
   </div>
 </div>

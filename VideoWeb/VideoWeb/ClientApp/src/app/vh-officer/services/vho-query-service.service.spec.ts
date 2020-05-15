@@ -1,7 +1,7 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
-import { ConferenceTestData } from '../testing/mocks/data/conference-test-data';
-import { ApiClient } from './clients/api-client';
+import { ConferenceTestData } from '../../testing/mocks/data/conference-test-data';
+import { ApiClient } from '../../services/clients/api-client';
 import { VhoQueryService } from './vho-query-service.service';
 
 describe('VhoQueryService', () => {

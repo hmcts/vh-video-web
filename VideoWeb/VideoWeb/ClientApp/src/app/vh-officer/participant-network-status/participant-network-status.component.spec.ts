@@ -2,11 +2,11 @@ import { ElementRef } from '@angular/core';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { ConferenceForVhOfficerResponse, ParticipantHeartbeatResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { VhoQueryService } from 'src/app/services/vho-query-service.service';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
+import { VhoQueryService } from '../services/vho-query-service.service';
 import { ParticipantNetworkStatusComponent } from './participant-network-status.component';
 
 describe('ParticipantNetworkStatusComponent', () => {
