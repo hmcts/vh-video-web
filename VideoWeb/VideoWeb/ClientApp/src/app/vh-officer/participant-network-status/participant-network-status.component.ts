@@ -21,6 +21,8 @@ export class ParticipantNetworkStatusComponent implements OnInit {
     monitoringParticipant: ParticipantGraphInfo;
     packageLostArray: PackageLost[];
 
+    timeout: NodeJS.Timer;
+
     @ViewChild('graphContainer', { static: false })
     graphContainer: ElementRef;
 
@@ -28,6 +30,18 @@ export class ParticipantNetworkStatusComponent implements OnInit {
     ngOnInit(): void {
         this.displayGraph = false;
         this.packageLostArray = [];
+    }
+
+    onMouseEnter($event: MouseEvent) {
+        const self = this;
+        this.timeout = setTimeout(async function () {
+            await self.showParticipantGraph($event);
+        }, 500);
+    }
+
+    onMouseExit($event: MouseEvent) {
+        clearTimeout(this.timeout);
+        this.setGraphVisibility(false);
     }
 
     async showParticipantGraph($event: MouseEvent) {

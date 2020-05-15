@@ -1,14 +1,13 @@
-import { fakeAsync, tick } from '@angular/core/testing';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { ElementRef } from '@angular/core';
+import { fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
 import { ConferenceForVhOfficerResponse, ParticipantHeartbeatResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { ParticipantNetworkStatusComponent } from './participant-network-status.component';
-import { ElementRef } from '@angular/core';
-import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 
 describe('ParticipantNetworkStatusComponent', () => {
     let component: ParticipantNetworkStatusComponent;
@@ -148,5 +147,28 @@ describe('ParticipantNetworkStatusComponent', () => {
     it('should return not-signed-in when no participant defined', () => {
         component.participant = undefined;
         expect(component.getParticipantNetworkStatus()).toBe('not-signed-in.png');
+    });
+
+    it('should set timer on mouse enter', fakeAsync(() => {
+        const timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
+        component.timeout = null;
+        spyOn(window, 'setTimeout').and.returnValue(timer);
+
+        component.onMouseEnter(mouseEvent);
+        flushMicrotasks();
+
+        expect(setTimeout).toHaveBeenCalled();
+        expect(component.timeout).toBeDefined();
+    }));
+
+    it('should clear timer on mouse exit', () => {
+        const timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
+        component.timeout = timer;
+        spyOn(window, 'clearTimeout');
+
+        component.onMouseExit(mouseEvent);
+
+        expect(clearTimeout).toHaveBeenCalled();
+        expect(component.displayGraph).toBeFalsy();
     });
 });
