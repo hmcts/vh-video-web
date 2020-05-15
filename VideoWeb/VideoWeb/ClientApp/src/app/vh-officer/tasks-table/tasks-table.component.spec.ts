@@ -8,7 +8,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { TasksTestData } from 'src/app/testing/mocks/data/tasks-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { TasksTableComponent } from './tasks-table.component';
-import { VhoQueryService } from 'src/app/services/vho-query-service.service';
+import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 
 describe('TasksTableComponent', () => {
     let component: TasksTableComponent;

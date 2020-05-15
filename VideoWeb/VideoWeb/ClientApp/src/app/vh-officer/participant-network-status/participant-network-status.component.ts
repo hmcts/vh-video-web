@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { VhoQueryService } from 'src/app/services/vho-query-service.service';
+import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { HeartbeatHealth } from '../../services/models/participant-heartbeat';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { PackageLost } from '../services/models/package-lost';

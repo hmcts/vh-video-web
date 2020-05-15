@@ -6,7 +6,7 @@ import {
     ConferenceResponseVho,
     TaskResponse,
     ParticipantHeartbeatResponse
-} from './clients/api-client';
+} from '../../services/clients/api-client';
 
 @Injectable({
     providedIn: 'root'

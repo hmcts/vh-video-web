@@ -14,7 +14,7 @@ import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
-import { VhoQueryService } from 'src/app/services/vho-query-service.service';
+import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { ExtendedConferenceStatus } from 'src/app/shared/models/hearings-filter';

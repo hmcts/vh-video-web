@@ -16,7 +16,7 @@ import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MenuOption } from '../../models/menus-options';
 import { CommandCentreComponent } from '../command-centre.component';
-import { VhoQueryService } from 'src/app/services/vho-query-service.service';
+import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 
 describe('CommandCentreComponent - Core', () => {
     let component: CommandCentreComponent;

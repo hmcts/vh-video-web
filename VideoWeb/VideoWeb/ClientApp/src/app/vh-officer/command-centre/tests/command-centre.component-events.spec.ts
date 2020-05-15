@@ -16,7 +16,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { CommandCentreComponent } from '../command-centre.component';
-import { VhoQueryService } from 'src/app/services/vho-query-service.service';
+import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { ParticipantHeartbeat, HeartbeatHealth } from 'src/app/services/models/participant-heartbeat';
 
 describe('CommandCentreComponent - Events', () => {

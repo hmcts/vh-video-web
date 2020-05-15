@@ -9,7 +9,7 @@ import { ConferenceStatusMessage } from 'src/app/services/models/conference-stat
 import { ParticipantHeartbeat } from 'src/app/services/models/participant-heartbeat';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { SessionStorage } from 'src/app/services/session-storage';
-import { VhoQueryService } from 'src/app/services/vho-query-service.service';
+import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { ConferenceHelper } from 'src/app/shared/conference-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';

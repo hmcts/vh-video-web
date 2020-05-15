@@ -5,7 +5,7 @@ import { throwError } from 'rxjs';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { VhoQueryService } from 'src/app/services/vho-query-service.service';
+import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { VhoHearingsComponent } from './vho-hearings.component';
 
