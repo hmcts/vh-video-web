@@ -3,8 +3,7 @@
   (click)="selectParticipant(participant)"
   class="im-list"
   [ngClass]="{
-    'im-list-top': participant.isJudge,
-    'selected-participant': isCurrentParticipant(participant)
+    'im-list-top': participant.isJudge
   }"
 >
   <div class="im-icon"><app-unread-messages [conferenceId]="hearing.id"></app-unread-messages></div>

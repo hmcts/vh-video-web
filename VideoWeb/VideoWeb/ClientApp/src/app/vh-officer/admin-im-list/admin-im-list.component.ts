@@ -30,10 +30,6 @@ export class AdminImListComponent implements OnInit {
         }
     }
 
-    isCurrentParticipant(participant: Participant) {
-        return this.currentParticipant != null && this.currentParticipant.id === participant.id;
-    }
-
     selectParticipant(participant: Participant) {
         this.currentParticipant = participant;
         this.selectedParticipant.emit(participant);

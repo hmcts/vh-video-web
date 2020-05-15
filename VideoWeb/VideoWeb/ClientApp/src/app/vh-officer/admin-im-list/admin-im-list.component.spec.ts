@@ -25,24 +25,6 @@ describe('AdminImListComponent', () => {
         expect(component.imParticipants.length).toBe(hearing.participants.length);
     });
 
-    it('should return false when current participant is not set', () => {
-        const participant = hearing.participants[0];
-        component.currentParticipant = null;
-        expect(component.isCurrentParticipant(participant)).toBeFalsy();
-    });
-
-    it('should return false when participant is not the same as current', () => {
-        const participant = hearing.participants[0];
-        component.currentParticipant = hearing.participants[1];
-        expect(component.isCurrentParticipant(participant)).toBeFalsy();
-    });
-
-    it('should return true when participant is the same as current', () => {
-        const participant = hearing.participants[0];
-        component.currentParticipant = participant;
-        expect(component.isCurrentParticipant(participant)).toBeTruthy();
-    });
-
     it('should update and emit selected participant on select', () => {
         component.currentParticipant = null;
         spyOn(component.selectedParticipant, 'emit');
