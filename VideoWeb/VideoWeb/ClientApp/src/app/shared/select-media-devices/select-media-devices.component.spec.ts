@@ -25,7 +25,7 @@ describe('SelectMediaDevicesComponent', () => {
             'getStreamForCam',
             'getStreamForMic'
         ]);
-        userMediaStreamServiceSpy.requestAccess.and.returnValue(true);
+        userMediaStreamServiceSpy.requestAccess.and.returnValue(Promise.resolve(true));
 
         TestBed.configureTestingModule({
             imports: [FormsModule, ReactiveFormsModule],

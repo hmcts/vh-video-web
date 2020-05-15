@@ -106,7 +106,7 @@ describe('ParticipantHearingsComponent with conferences for user', () => {
 
     it('should navigate to judge waiting room when conference is selected', () => {
         const router = TestBed.get(Router);
-        spyOn(router, 'navigate').and.callFake(() => {});
+        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         const conference = conferences[0];
         component.onConferenceSelected(conference);
         expect(videoWebServiceSpy.setActiveIndividualConference).toHaveBeenCalledWith(conference);
@@ -115,7 +115,7 @@ describe('ParticipantHearingsComponent with conferences for user', () => {
 
     it('should go to equipment check without conference id', () => {
         const router = TestBed.get(Router);
-        spyOn(router, 'navigate').and.callFake(() => {});
+        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         component.goToEquipmentCheck();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.EquipmentCheck]);
     });

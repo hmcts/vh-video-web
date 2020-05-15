@@ -54,7 +54,7 @@ describe('TasksTableComponent', () => {
     }));
 
     it('should log error when unable to init', fakeAsync(() => {
-        const error = { error: 'failed to find conference', error_code: 404 };
+        const error = new Error('failed to find conference');
         vhoQueryService.getConferenceByIdVHO.and.callFake(() => Promise.reject(error));
         const spy = spyOn(logger, 'error');
         component.tasks = undefined;

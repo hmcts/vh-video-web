@@ -48,7 +48,7 @@ describe('PendingTasksComponent', () => {
     it('should log error when unable to init', fakeAsync(() => {
         // reset to override before each
         component.tasks = undefined;
-        const error = { error: 'failed to find conference', error_code: 404 };
+        const error = new Error('failed to find conference');
         vhoQueryService.getTasksForConference.and.callFake(() => Promise.reject(error));
         const spy = spyOn(logger, 'error');
         component.ngOnInit();

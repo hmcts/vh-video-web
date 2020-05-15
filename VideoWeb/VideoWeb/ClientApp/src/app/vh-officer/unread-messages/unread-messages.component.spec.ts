@@ -1,13 +1,12 @@
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-
-import { UnreadMessagesComponent } from './unread-messages.component';
-import { EventsService } from 'src/app/services/events.service';
+import { fakeAsync, tick } from '@angular/core/testing';
+import { Guid } from 'guid-typescript';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { UnreadAdminMessageResponse } from 'src/app/services/clients/api-client';
+import { EventsService } from 'src/app/services/events.service';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { UnreadAdminMessageResponse } from 'src/app/services/clients/api-client';
-import { Guid } from 'guid-typescript';
+import { UnreadMessagesComponent } from './unread-messages.component';
 
 describe('UnreadMessagesComponent', () => {
     let component: UnreadMessagesComponent;
@@ -48,7 +47,7 @@ describe('UnreadMessagesComponent', () => {
     }));
 
     it('should log error when unable to init', fakeAsync(() => {
-        const error = { error: 'failed to find conference', error_code: 404 };
+        const error = new Error('failed to find conference');
         videoWebServiceSpy.getUnreadAdminMessageCountForConference.and.callFake(() => Promise.reject(error));
         const spy = spyOn(logger, 'error');
         component.ngOnInit();

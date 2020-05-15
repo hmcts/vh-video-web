@@ -32,7 +32,7 @@ describe('JudgeHearingListComponent with no conferences for user', () => {
             'raiseParticipantEvent'
         ]);
         videoWebServiceSpy.getConferencesForJudge.and.returnValue(of(noConferences));
-        videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
+        videoWebServiceSpy.raiseParticipantEvent.and.returnValue(Promise.resolve());
 
         TestBed.configureTestingModule({
             imports: [RouterTestingModule, SharedModule],
@@ -72,7 +72,7 @@ describe('JudgeHearingListComponent with conferences for user', () => {
             'raiseParticipantEvent'
         ]);
         videoWebServiceSpy.getConferencesForJudge.and.returnValue(of(conferences));
-        videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
+        videoWebServiceSpy.raiseParticipantEvent.and.returnValue(Promise.resolve());
 
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],
@@ -109,7 +109,7 @@ describe('JudgeHearingListComponent with conferences for user', () => {
     });
 
     it('should navigate to judge waiting room when conference is selected', () => {
-        spyOn(router, 'navigate').and.callFake(() => {});
+        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         const conference = conferences[0];
         component.onConferenceSelected(conference);
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeWaitingRoom, conference.id]);
@@ -120,7 +120,7 @@ describe('JudgeHearingListComponent with conferences for user', () => {
         const conference = conferences[0];
         const message = new ConferenceStatusMessage(conference.id, ConferenceStatus.Closed);
         eventsService.hearingStatusSubject.next(message);
-        const updatedConference = component.conferences.find((x) => x.id === conference.id);
+        const updatedConference = component.conferences.find(x => x.id === conference.id);
         expect(updatedConference.status).toBe(message.status);
     });
 
@@ -144,7 +144,7 @@ describe('JudgeHearingListComponent with service error', () => {
             'raiseParticipantEvent'
         ]);
         videoWebServiceSpy.getConferencesForJudge.and.returnValue(throwError({ status: 401, isApiException: true }));
-        videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
+        videoWebServiceSpy.raiseParticipantEvent.and.returnValue(Promise.resolve());
 
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],
