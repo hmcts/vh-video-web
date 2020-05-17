@@ -106,4 +106,8 @@ export class HearingSummary extends HearingBase {
     getDurationAsText(): string {
         return this.timeReader.getDurationAsText(this.conference.scheduled_duration);
     }
+
+    get startedDateTime(): Date {
+        return this.conference.started_date_time;
+    }
 }

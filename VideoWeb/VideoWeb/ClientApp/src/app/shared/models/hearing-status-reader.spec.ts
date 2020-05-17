@@ -62,31 +62,31 @@ describe('HearingTimeReader', () => {
     it('should return 1 hour and 30 minutes when duration is 90 minutes', () => {
         const duration = 90;
         const result = timereader.getDurationAsText(duration);
-        expect(result).toBe('1 hour and 30 minutes');
+        expect(result).toBe('1h 30m');
     });
 
     it('should return 2 hours and 30 minutes when duration is 150 minutes', () => {
         const duration = 150;
         const result = timereader.getDurationAsText(duration);
-        expect(result).toBe('2 hours and 30 minutes');
+        expect(result).toBe('2h 30m');
     });
 
     it('should return 1 hour when duration is 60 minutes', () => {
         const duration = 60;
         const result = timereader.getDurationAsText(duration);
-        expect(result).toBe('1 hour');
+        expect(result).toBe('1h');
     });
 
     it('should return 25 minutes when duration is 25 minutes', () => {
         const duration = 25;
         const result = timereader.getDurationAsText(duration);
-        expect(result).toBe('25 minutes');
+        expect(result).toBe('25m');
     });
 
     it('should return 1 minute when duration is 1 minute', () => {
         const duration = 1;
         const result = timereader.getDurationAsText(duration);
-        expect(result).toBe('1 minute');
+        expect(result).toBe('1m');
     });
 
     it('should return false when current is more 30 minutes from start time', () => {

@@ -19,6 +19,7 @@ describe('HearingSummary', () => {
         expect(hearing.scheduledStartTime).toEqual(c.scheduled_date_time);
         expect(hearing.scheduledEndTime).toBeDefined();
         expect(hearing.hearingVenueName).toBe(c.hearing_venue_name);
+        expect(hearing.startedDateTime).toEqual(c.started_date_time);
     });
 
     it('should get applicant rep', () => {
@@ -69,6 +70,6 @@ describe('HearingSummary', () => {
         const c = new ConferenceTestData().getConferenceFuture();
         c.scheduled_duration = 30;
         const hearing = new HearingSummary(c);
-        expect(hearing.getDurationAsText()).toBe('30 minutes');
+        expect(hearing.getDurationAsText()).toBe('30m');
     });
 });

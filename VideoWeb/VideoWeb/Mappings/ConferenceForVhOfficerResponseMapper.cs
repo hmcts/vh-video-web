@@ -20,7 +20,8 @@ namespace VideoWeb.Mappings
                 ScheduledDuration = conference.Scheduled_duration,
                 Status = Enum.Parse<ConferenceStatus>(conference.Status.ToString()),
                 HearingVenueName = conference.Hearing_venue_name,
-                Participants = ParticipantForUserResponseMapper.MapParticipants(conference.Participants)
+                Participants = ParticipantForUserResponseMapper.MapParticipants(conference.Participants),
+                StartedDateTime = conference.Started_date_time
             };
             return response;
         }

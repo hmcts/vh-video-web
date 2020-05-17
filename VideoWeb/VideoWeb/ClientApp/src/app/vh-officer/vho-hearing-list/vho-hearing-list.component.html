@@ -1,3 +1,37 @@
+<div id="conference-list" class="govuk-!-padding-3">
+  <div class="vhList govuk-!-padding-top-2" [ngClass]="{ 'selected-conference': isCurrentConference(conference) }"
+    *ngFor="let conference of conferences" (click)="selectConference(conference)">
+
+    <div class="copy-box copyIDbox" id="copyUID" style="display: none; top: 572px; left: 241px;">Copy hearing ID to clipboard</div>
+    <div class="shareIcon">
+      <img id="copy-conference-id" class="icons" src="/assets/images/share.png" alt="copy-conference-id-icon" />
+    </div>    
+    <div class="time listItem" id="{{ conference.id }}-time">{{ conference.scheduledDateTime | date: 'HH:mm' }}</div>
+    <div class="started listItemGreySmall" id="{{ conference.id }}-started">started</div>
+    <div class="startedTime listItemGreySmall" id="{{ conference.id }}-startedTime">{{ conference.startedDateTime | date: 'HH:mm' }}</div>
+    <div class="ended listItemGreySmall" id="{{ conference.id }}-ended">ended</div>
+    <div class="endedTime listItemGreySmall" id="{{ conference.id }}-endTime">{{ conference.scheduledStartTime | date: 'HH:mm' }}</div>
+    <div class="title listItemBig" id="{{ conference.id }}-case-name">{{ conference.caseName }}</div>
+    <div class="listed listItemGrey" id="{{ conference.id }}-case-duration">{{ getDuration(conference) }}</div>
+    <div class="crest"><img src="/assets/images/black_crest.png" class="icons" alt="crest-icon"></div>
+    <div class="ref listItemGreySmall" id="{{ conference.id }}-case-number">{{ conference.caseNumber }}</div>
+    <div class="judge listItemBold" id="{{ conference.id }}-judge">O Sterling</div>
+    <div class="venue listItem" id="{{ conference.id }}-venue">{{ conference.hearingVenueName }}</div>
+    <div class="alert"><app-pending-tasks [conferenceId]="conference.id"></app-pending-tasks></div>
+    <div class="message"><app-unread-messages [conferenceId]="conference.id"></app-unread-messages></div>
+    <div class="status" id="{{ conference.id }}-status"><app-hearing-status [hearing]="mapToHearing(conference)"></app-hearing-status></div>
+
+    <div class="pIcon1"><img src="/assets/images/grey_question.png" width="16px" style="cursor:pointer;" onmouseover="openSignalBoxA1();" onmouseout="closeSignalBox();"></div>
+    <div class="pIcon2"><img src="/assets/images/yellow_tick.png" width="18px" style="cursor:pointer;" onmouseover="openSignalBoxA2();" onmouseout="closeSignalBox();"></div>
+    <div class="pIcon3"><img src="/assets/images/green_tick.png" width="16px" style="cursor:pointer;" onmouseover="openSignalBoxA3();" onmouseout="closeSignalBox();"></div>
+    <div class="pIcon4"><img src="/assets/images/yellow_tick.png" width="18px" style="cursor:pointer;" onmouseover="openSignalBoxA4();" onmouseout="closeSignalBox();"></div>
+    <div class="pIcon5"><img src="/assets/images/grey_question.png" width="16px" style="cursor:pointer;" onmouseover="openSignalBoxA5();" onmouseout="closeSignalBox();"></div>    
+
+    <div class="line"><hr></div>    
+  </div>
+</div>
+
+
 <div id="list-column" class="govuk-grid-column-full govuk-!-padding-left-3">
   <dl id="conferences-list" class="govuk-summary-list">
     <div

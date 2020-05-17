@@ -134,3 +134,210 @@
 .vh-col {
   padding: 0;
 }
+
+// conference-list 
+.vhList {
+  display: grid;
+  grid-template-columns: 30px 40px 60px 20px auto 20px;
+  grid-template-rows: auto;
+  grid-gap: 1px 8px;
+  margin: -15px -15px 5px -15px;
+  padding: 15px 15px 0px 15px;
+}
+.selected {
+  background-color: #f8f8f8;
+  border-left: 8px solid #0b0c0d;
+}
+.shareIcon {
+  grid-column: 1/1;
+  grid-row: 1/1;
+  justify-self: start;
+  align-self: start;
+}
+.icons {
+  width: 17px;
+  height: 20px;
+}
+.time {
+  grid-column: 2/2;
+  grid-row: 1/1;
+  justify-self: start;
+}
+.listItem {
+  color: govuk-colour("black");
+  font-family: "GDS Transport", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.11111;
+  margin-top: 0;
+}
+.listItemGreySmall {
+  color: govuk-colour("dark-grey");
+  font-family: "GDS Transport", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.11111;
+  margin-top: 0;
+}
+.started {
+  grid-column: 2/2;
+  grid-row: 2/2;
+  justify-self: start;
+  align-self: start;
+}
+.startedTime {
+  grid-column: 3/3;
+  grid-row: 2/2;
+  justify-self: start;
+  align-self: start;
+}
+.ended {
+  grid-column: 2/2;
+  grid-row: 3/3;
+  justify-self: start;
+  align-self: start;
+}
+.endedTime {
+  grid-column: 3/3;
+  grid-row: 3/3;
+  justify-self: start;
+  align-self: start;
+}
+.listItemBig {
+  color: govuk-colour("black");
+  font-family: "GDS Transport", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.11111;
+  margin-top: 0;
+}
+.title {
+  grid-column: 4/span 2;
+  grid-row: 1/1;
+  justify-self: start;
+}
+.listItemGrey {
+  color: govuk-colour("dark-grey");
+  font-family: "GDS Transport", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.11111;
+  margin-top: 0;
+}
+.listed {
+  grid-column: 3/3;
+  grid-row: 1/1;
+  justify-self: start;
+}
+.crest {
+  grid-column: 4/4;
+  grid-row: 3/3;
+  justify-self: start;
+  align-self: start;
+}
+.ref {
+  grid-column: 4/span 2;
+  grid-row: 2/2;
+  justify-self: start;
+}
+.listItemBold {
+  color: govuk-colour("black");
+  font-family: "GDS Transport", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.11111;
+  margin-top: 0;
+}
+.judge {
+  grid-column: 5/5;
+  grid-row: 3/3;
+  justify-self: start;
+  align-self: center;
+}
+.venue {
+  grid-column: 4/span 2;
+  grid-row: 4/4;
+  justify-self: start;
+}
+.alert {
+  grid-column: 1/1;
+  grid-row: 5/5;
+  align-self: start;
+  justify-self: start;
+}
+.message {
+  grid-column: 2/2;
+  grid-row: 5/5;
+  align-self: center;
+  justify-self: start;
+}
+.line {
+  grid-column: 1/7;
+  grid-row: 6/6;
+}
+.status {
+  grid-column: 4/span 2;
+  grid-row: 5/5;
+  justify-self: start;
+  align-self: center;
+}
+.pIcon1 {
+  grid-column: 6/6;
+  grid-row: 1/1;
+  justify-self: end;
+}
+.pIcon2 {
+  grid-column: 6/6;
+  grid-row: 2/2;
+  justify-self: end;
+}
+.pIcon3 {
+  grid-column: 6/6;
+  grid-row: 3/3;
+  justify-self: end;
+}
+.pIcon4 {
+  grid-column: 6/6;
+  grid-row: 4/4;
+  justify-self: end;
+}
+.pIcon5 {
+  grid-column: 6/6;
+  grid-row: 5/5;
+  justify-self: end;
+}
+.copy-box {
+  display: none;
+  top: 557px;
+  left: 139px;
+}
+.copyIDbox {
+  font-family: "GDS Transport", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 14px;
+  color: govuk-colour("white");
+  width: auto;
+  height: auto;
+  z-index: 99;
+  box-shadow: 0 7px 11px 0px rgba(0, 0, 0, 0.3);
+  background:govuk-colour("blue");
+  z-index: 99;
+  border: 1px solidgovuk-colour("blue");
+  border-radius: 2px;
+  position: absolute;
+  top: 127px;
+  left: 42px;
+  padding: 8px;
+}
