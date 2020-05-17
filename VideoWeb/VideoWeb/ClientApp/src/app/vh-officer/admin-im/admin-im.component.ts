@@ -10,7 +10,7 @@ import { Participant } from 'src/app/shared/models/participant';
 export class AdminImComponent {
     @Input() hearing: Hearing;
 
-    currentParticipant;
+    currentParticipant: Participant;
     constructor() {}
 
     onParticipantSelected(participant: Participant) {

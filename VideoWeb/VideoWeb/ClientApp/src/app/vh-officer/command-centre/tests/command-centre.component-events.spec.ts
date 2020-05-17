@@ -1,12 +1,12 @@
 import { Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { of } from 'rxjs';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponseVho, ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { HeartbeatHealth, ParticipantHeartbeat } from 'src/app/services/models/participant-heartbeat';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
@@ -15,9 +15,8 @@ import { TestFixtureHelper } from 'src/app/testing/Helper/test-fixture-helper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { CommandCentreComponent } from '../command-centre.component';
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
-import { ParticipantHeartbeat, HeartbeatHealth } from 'src/app/services/models/participant-heartbeat';
+import { CommandCentreComponent } from '../command-centre.component';
 
 describe('CommandCentreComponent - Events', () => {
     let component: CommandCentreComponent;
@@ -195,5 +194,19 @@ describe('CommandCentreComponent - Events', () => {
         );
         mockEventService.participantHeartbeat.next(heartBeat);
         expect(component.hearings[0].getParticipants()[0].participantHertBeatHealth).toBe(heartBeat);
+    });
+
+    it('should gracefully handle participant heartbeat not in list', () => {
+        const testHearing = component.hearings[0];
+        const heartBeat = new ParticipantHeartbeat(
+            testHearing.id,
+            Guid.create().toString(),
+            HeartbeatHealth.Good,
+            'Chrome',
+            '80.0.3987.132'
+        );
+        mockEventService.participantHeartbeat.next(heartBeat);
+
+        expect(component).toBeTruthy();
     });
 });

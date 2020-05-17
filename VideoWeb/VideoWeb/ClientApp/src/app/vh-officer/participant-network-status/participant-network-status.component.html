@@ -3,8 +3,8 @@
     <img
       id="network-status-icon"
       src="/assets/images/{{ getParticipantNetworkStatus() }}"
-      (mouseover)="showParticipantGraph($event)"
-      (mouseout)="setGraphVisibility(false)"
+      (mouseover)="onMouseEnter($event)"
+      (mouseout)="onMouseExit()"
       (mousemove)="updateGraphPosition($event)"
       alt="Open instant messaging chat window arrow"
     />
