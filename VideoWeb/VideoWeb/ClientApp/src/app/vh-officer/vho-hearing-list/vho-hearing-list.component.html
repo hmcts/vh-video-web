@@ -10,7 +10,7 @@
     <div class="started listItemGreySmall" id="{{ conference.id }}-started">started</div>
     <div class="startedTime listItemGreySmall" id="{{ conference.id }}-startedTime">{{ conference.startedDateTime | date: 'HH:mm' }}</div>
     <div class="ended listItemGreySmall" id="{{ conference.id }}-ended">ended</div>
-    <div class="endedTime listItemGreySmall" id="{{ conference.id }}-endTime">{{ conference.scheduledStartTime | date: 'HH:mm' }}</div>
+    <div class="endedTime listItemGreySmall" id="{{ conference.id }}-endTime">{{ conference.endedDateTime | date: 'HH:mm' }}</div>
     <div class="title listItemBig" id="{{ conference.id }}-case-name">{{ conference.caseName }}</div>
     <div class="listed listItemGrey" id="{{ conference.id }}-case-duration">{{ getDuration(conference) }}</div>
     <div class="crest"><img src="/assets/images/black_crest.png" class="icons" alt="crest-icon"></div>

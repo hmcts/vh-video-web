@@ -8,6 +8,7 @@ import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.s
 import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { ParticipantNetworkStatusComponent } from './participant-network-status.component';
+import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 
 describe('ParticipantNetworkStatusComponent', () => {
     let component: ParticipantNetworkStatusComponent;

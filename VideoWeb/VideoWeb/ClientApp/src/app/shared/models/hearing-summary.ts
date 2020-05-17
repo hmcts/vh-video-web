@@ -110,4 +110,8 @@ export class HearingSummary extends HearingBase {
     get startedDateTime(): Date {
         return this.conference.started_date_time;
     }
+
+    get endedDateTime(): Date {
+        return this.conference.scheduled_date_time;
+    }
 }
