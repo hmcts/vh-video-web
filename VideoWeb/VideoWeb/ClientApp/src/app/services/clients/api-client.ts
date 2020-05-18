@@ -2421,6 +2421,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
     participants?: ParticipantForUserResponse[] | undefined;
     hearing_venue_name?: string | undefined;
     started_date_time?: Date | undefined;
+    closed_date_time?: Date | undefined;
 
     constructor(data?: IConferenceForVhOfficerResponse) {
         if (data) {
@@ -2447,6 +2448,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
             }
             this.hearing_venue_name = _data["hearing_venue_name"];
             this.started_date_time = _data["started_date_time"] ? new Date(_data["started_date_time"].toString()) : <any>undefined;
+            this.closed_date_time = _data["closed_date_time"] ? new Date(_data["closed_date_time"].toString()) : <any>undefined;
         }
     }
 
@@ -2473,6 +2475,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
         }
         data["hearing_venue_name"] = this.hearing_venue_name;
         data["started_date_time"] = this.started_date_time ? this.started_date_time.toISOString() : <any>undefined;
+        data["closed_date_time"] = this.closed_date_time ? this.closed_date_time.toISOString() : <any>undefined;
         return data; 
     }
 }
@@ -2491,6 +2494,7 @@ export interface IConferenceForVhOfficerResponse {
     participants?: ParticipantForUserResponse[] | undefined;
     hearing_venue_name?: string | undefined;
     started_date_time?: Date | undefined;
+    closed_date_time?: Date | undefined;
 }
 
 /** Information about a participant in a conference */

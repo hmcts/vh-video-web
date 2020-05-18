@@ -55,5 +55,10 @@ namespace VideoWeb.Contract.Responses
         /// Started date time as UTC
         /// </summary>
         public DateTime? StartedDateTime { get; set; }
+
+        /// <summary>
+        /// Closed date time as UTC
+        /// </summary>
+        public DateTime? ClosedDateTime { get; set; }
     }
 }

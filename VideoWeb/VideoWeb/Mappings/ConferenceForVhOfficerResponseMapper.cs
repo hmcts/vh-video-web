@@ -21,7 +21,8 @@ namespace VideoWeb.Mappings
                 Status = Enum.Parse<ConferenceStatus>(conference.Status.ToString()),
                 HearingVenueName = conference.Hearing_venue_name,
                 Participants = ParticipantForUserResponseMapper.MapParticipants(conference.Participants),
-                StartedDateTime = conference.Started_date_time
+                StartedDateTime = conference.Started_date_time,
+                ClosedDateTime = conference.Closed_date_time
             };
             return response;
         }

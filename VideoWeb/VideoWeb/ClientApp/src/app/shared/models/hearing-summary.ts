@@ -112,7 +112,7 @@ export class HearingSummary extends HearingBase {
     }
 
     get endedDateTime(): Date {
-        return this.conference.scheduled_date_time;
+        return this.conference.closed_date_time;
     }
 
     get judgeName(): string {
