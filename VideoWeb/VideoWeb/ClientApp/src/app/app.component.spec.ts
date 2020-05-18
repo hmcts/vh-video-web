@@ -68,8 +68,8 @@ describe('AppComponent', () => {
             pageTrackerServiceSpy
         );
         deviceTypeServiceSpy.isSupportedBrowser.and.returnValue(true);
-        routerSpy.navigate.and.returnValue(true);
-        routerSpy.navigateByUrl.and.returnValue(true);
+        routerSpy.navigate.and.returnValue(Promise.resolve(true));
+        routerSpy.navigateByUrl.and.returnValue(Promise.resolve(true));
         routerSpy.navigate.calls.reset();
         routerSpy.navigateByUrl.calls.reset();
         profileServiceSpy.getUserProfile.calls.reset();

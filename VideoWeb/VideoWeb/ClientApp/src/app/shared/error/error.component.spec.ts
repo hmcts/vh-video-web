@@ -27,7 +27,7 @@ describe('ErrorComponent', () => {
     let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
 
     beforeEach(async(() => {
-        pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackNavigation', 'trackPreviousPage', 'getPreviousUrl']);
+        pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
         pageTrackerSpy.getPreviousUrl.and.returnValue('testurl');
 
         TestBed.configureTestingModule({
@@ -85,7 +85,7 @@ describe('ErrorComponent Refresh', () => {
     let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
 
     beforeEach(() => {
-        pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackNavigation', 'trackPreviousPage', 'getPreviousUrl']);
+        pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
         pageTrackerSpy.getPreviousUrl.and.returnValue('testurl');
 
         TestBed.configureTestingModule({

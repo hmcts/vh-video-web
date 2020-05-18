@@ -4,10 +4,10 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { configureTestSuite } from 'ng-bullet';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
-    TestCallScoreResponse,
-    TestScore,
     AddSelfTestFailureEventRequest,
-    SelfTestFailureReason
+    SelfTestFailureReason,
+    TestCallScoreResponse,
+    TestScore
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
@@ -16,11 +16,11 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MockUserMediaService } from 'src/app/testing/mocks/MockUserMediaService';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
+import { BackNavigationStubComponent } from 'src/app/testing/stubs/back-navigation-stub';
 import { ContactUsFoldingStubComponent } from 'src/app/testing/stubs/contact-us-stub';
 import { MicVisualiserStubComponent } from 'src/app/testing/stubs/mic-visualiser-stub';
 import { SelectMediaDevicesStubComponent } from 'src/app/testing/stubs/select-media-devices-stub';
 import { SelfTestComponent } from './self-test.component';
-import { BackNavigationStubComponent } from 'src/app/testing/stubs/back-navigation-stub';
 
 describe('SelfTestComponent', () => {
     let component: SelfTestComponent;
@@ -38,7 +38,7 @@ describe('SelfTestComponent', () => {
             'getStreamForCam',
             'getStreamForMic'
         ]);
-        userMediaStreamServiceSpy.requestAccess.and.returnValue(true);
+        userMediaStreamServiceSpy.requestAccess.and.returnValue(Promise.resolve(true));
 
         pexipSpy = jasmine.createSpyObj('pexipAPI', ['onSetup', 'connect', 'onConnect', 'onError', 'onDisconnect', 'makeCall']);
 
@@ -68,7 +68,7 @@ describe('SelfTestComponent', () => {
         component.participant = component.conference.participants[0];
         userMediaService = TestBed.get(UserMediaService);
         videoWebService = TestBed.get(VideoWebService);
-        spyOn(component, 'call').and.callFake(() => {});
+        spyOn(component, 'call').and.callFake(() => Promise.resolve());
         spyOn(component, 'disconnect').and.callFake(() => {});
         fixture.detectChanges();
     });
@@ -124,17 +124,17 @@ describe('SelfTestComponent', () => {
         expect(videoWebService.raiseSelfTestFailureEvent).toHaveBeenCalledTimes(0);
     });
     it('should retrive self test score for conference and participant', async () => {
-      spyOn(videoWebService, 'getTestCallScore');
-      component.conference = new ConferenceTestData().getConferenceNow();
-      component.participant = component.conference.participants[0];
-      await component.retrieveSelfTestScore();
-      expect(videoWebService.getTestCallScore).toHaveBeenCalledTimes(1);
+        spyOn(videoWebService, 'getTestCallScore');
+        component.conference = new ConferenceTestData().getConferenceNow();
+        component.participant = component.conference.participants[0];
+        await component.retrieveSelfTestScore();
+        expect(videoWebService.getTestCallScore).toHaveBeenCalledTimes(1);
     });
     it('should retrive independent self test score as a conference and participant are null', async () => {
-      spyOn(videoWebService, 'getIndependentTestCallScore');
-      component.conference = null;
-      component.participant = null;
-      await component.retrieveSelfTestScore();
-      expect(videoWebService.getIndependentTestCallScore).toHaveBeenCalledTimes(1);
+        spyOn(videoWebService, 'getIndependentTestCallScore');
+        component.conference = null;
+        component.participant = null;
+        await component.retrieveSelfTestScore();
+        expect(videoWebService.getIndependentTestCallScore).toHaveBeenCalledTimes(1);
     });
 });

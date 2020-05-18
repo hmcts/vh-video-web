@@ -5,13 +5,13 @@ import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { configureTestSuite } from 'ng-bullet';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { DeclarationComponent } from './declaration.component';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { Logger } from 'src/app/services/logging/logger-base';
 
 describe('DeclarationComponent Tests', () => {
     let component: DeclarationComponent;
@@ -67,14 +67,14 @@ describe('DeclarationComponent Tests', () => {
     });
 
     it('should not go to waiting room when form is invalid', () => {
-        spyOn(router, 'navigate').and.callFake(() => {});
+        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         checkboxControl.setValue(false);
         component.onSubmit();
         expect(router.navigate).toHaveBeenCalledTimes(0);
     });
 
     it('should go to waiting room when form is valid', () => {
-        spyOn(router, 'navigate').and.callFake(() => {});
+        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         checkboxControl.setValue(true);
         component.onSubmit();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.ParticipantWaitingRoom, conference.id]);

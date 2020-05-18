@@ -1,5 +1,5 @@
 import { ElementRef } from '@angular/core';
-import { fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
+import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { ConferenceForVhOfficerResponse, ParticipantHeartbeatResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -67,7 +67,7 @@ describe('ParticipantNetworkStatusComponent', () => {
     });
 
     it('should log error when unable to get heartbeat data', fakeAsync(() => {
-        const error = { error: 'failed to find data', error_code: 404 };
+        const error = new Error('failed to find data');
         vhoQueryService.getParticipantHeartbeats.and.callFake(() => Promise.reject(error));
         const spy = spyOn(logger, 'error');
         component.packageLostArray = undefined;

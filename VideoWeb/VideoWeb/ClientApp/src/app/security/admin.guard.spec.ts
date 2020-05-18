@@ -21,7 +21,7 @@ describe('AdminGuard', () => {
 
     it('should not be able to activate component if role is not VHOfficer', async(async () => {
         const profile = new UserProfileResponse({ role: Role.Judge });
-        profileServiceSpy.getUserProfile.and.returnValue(profile);
+        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         const result = await guard.canActivate(null, null);
         expect(result).toBeFalsy();
         expect(router.navigate).toHaveBeenCalledWith(['/home']);
@@ -29,7 +29,7 @@ describe('AdminGuard', () => {
 
     it('should be able to activate component if role is VHOfficer', async(async () => {
         const profile = new UserProfileResponse({ role: Role.VideoHearingsOfficer });
-        profileServiceSpy.getUserProfile.and.returnValue(profile);
+        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         const result = await guard.canActivate(null, null);
         expect(result).toBeTruthy();
     }));
