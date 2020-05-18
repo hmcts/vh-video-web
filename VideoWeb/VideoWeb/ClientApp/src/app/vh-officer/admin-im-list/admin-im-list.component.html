@@ -1,0 +1,25 @@
+<div
+  *ngFor="let participant of imParticipants"
+  (click)="selectParticipant(participant)"
+  class="im-list"
+  [ngClass]="{
+    'im-list-top': participant.isJudge
+  }"
+>
+  <div class="im-icon"><app-unread-messages [conferenceId]="hearing.id"></app-unread-messages></div>
+  <div *ngIf="participant.isJudge" class="judge-icon"><img src="assets/images/black_crest.png" height="20px" alt="judge-icon"/></div>
+  <div class="name list-item" [ngClass]="participant.status === participantStatus.Available ? 'available' : 'unavailable'">
+    {{ participant.displayName }}
+  </div>
+
+  <ng-container *ngIf="participant.role === roles.Representative">
+    <div class="rep list-item">Representing</div>
+    <div class="repname list-item">{{ participant.representee }}</div>
+  </ng-container>
+
+  <ng-container *ngIf="participant.status !== participantStatus.Available">
+    <div class="pStatus list-item unavailable small">Unavailable</div>
+  </ng-container>
+
+  <div class="rowsplitter"><hr /></div>
+</div>

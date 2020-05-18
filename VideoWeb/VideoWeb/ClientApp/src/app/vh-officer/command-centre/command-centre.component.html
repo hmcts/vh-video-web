@@ -1,0 +1,49 @@
+<div class="govuk-grid-row menu" style="clear: both;">
+  <div class="half-left">
+    <input
+      type="button"
+      value="Change venues"
+      (click)="goBackToVenueSelection()"
+      id="change-venue-allocation-btn"
+      class="govuk-button govuk-button--black"
+    />
+  </div>
+
+  <div class="half-right">
+    <app-command-centre-menu (selectedMenu)="onMenuSelected($event)"></app-command-centre-menu>
+  </div>
+</div>
+
+<div class="vho-line-border"></div>
+
+<div class="govuk-grid-row">
+  <div class="conference-list">
+    <app-vho-hearing-list #conferenceList [conferences]="hearings" (selectedConference)="onConferenceSelected($event)">
+    </app-vho-hearing-list>
+  </div>
+  <div class="selected-menu-content" [ngSwitch]="selectedMenu">
+    <ng-container *ngSwitchCase="menuOption.Hearing">
+      <app-admin-hearing *ngIf="selectedHearing; else nohearing" [hearing]="selectedHearing"></app-admin-hearing>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="menuOption.Message">
+      <app-admin-im *ngIf="selectedHearing; else nohearing" [hearing]="selectedHearing"></app-admin-im>
+    </ng-container>
+
+    <div *ngSwitchDefault>
+      <div class="govuk-grid-row govuk-!-padding-3">
+        <div class="govuk-grid-column-full">
+          <h2 class="govuk-heading-l">Select a hearing</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #nohearing>
+  <div class="govuk-grid-row govuk-!-padding-3">
+    <div class="govuk-grid-column-full">
+      <h2 class="govuk-heading-l">Select a hearing</h2>
+    </div>
+  </div>
+</ng-template>

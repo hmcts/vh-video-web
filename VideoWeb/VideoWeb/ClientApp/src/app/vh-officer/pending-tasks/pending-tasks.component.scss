@@ -5,8 +5,8 @@
   font-weight: bold;
 }
 .alert-badge {
-  position: absolute;
-  font-weight: bold;
+  position: relative;
+    font-weight: bold;
 }
 
 .alert-badge[data-badge]:after {

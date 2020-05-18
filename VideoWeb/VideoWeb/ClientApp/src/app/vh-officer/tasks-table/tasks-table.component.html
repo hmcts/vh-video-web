@@ -1,7 +1,7 @@
-<div class="task-header" [style.width.px]="taskDivWidth">
-  <span class="govuk-!-padding-2 govuk-!-padding-left-4 govuk-heading-s">Alerts for this hearing</span>
+<div class="task-header">
+  <span class="task-header-body govuk-heading-s">Alerts for this hearing</span>
 </div>
-<div id="tasks-list" style="overflow: auto; height: xyz;" class="task-list" [style.width.px]="taskDivWidth">
+<div id="tasks-list" style="overflow: auto; height: xyz;" class="task-list">
   <div *ngFor="let task of tasks" class="govuk-grid-row govuk-!-margin-0">
     <div class="govuk-grid-column-one-quarter task-checkbox-and-time govuk-!-padding-right-0">
       <div class="govuk-checkboxes__item">
@@ -21,14 +21,14 @@
     <div class="govuk-grid-column-one-quarter task-body">
       <p
         id="{{ task.id }}-type"
-        class="govuk-body govuk-body-s pending-alert-text govuk-!-padding-right-2"
+        class="govuk-body govuk-body-s pending-alert-text govuk-!-padding-right-2 govuk-!-padding-top-2"
         [ngClass]="{ 'task-completed': task.status === 'Done' }"
       >
         {{ task.body }}
       </p>
     </div>
     <div class="govuk-grid-column-one-quarter task-origin">
-      <p id="{{ task.id }}-from-user" class="govuk-body-s" [ngClass]="{ 'task-completed': task.status === 'Done' }">
+      <p id="{{ task.id }}-from-user" class="govuk-body-s govuk-!-padding-top-2" [ngClass]="{ 'task-completed': task.status === 'Done' }">
         {{ getOriginName(task) }}
       </p>
     </div>

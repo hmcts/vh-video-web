@@ -1,10 +1,9 @@
-import { Component, HostListener, Input, OnInit } from '@angular/core';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { Component, Input, OnInit } from '@angular/core';
 import { ConferenceResponse, TaskResponse, TaskType } from 'src/app/services/clients/api-client';
 import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
-import { VHODashboardHelper } from '../helper';
 
 @Component({
     selector: 'app-tasks-table',
@@ -12,26 +11,15 @@ import { VHODashboardHelper } from '../helper';
     styleUrls: ['./tasks-table.component.scss', '../vho-global-styles.scss']
 })
 export class TasksTableComponent implements OnInit {
-    taskDivWidth: number;
     loading: boolean;
 
     @Input() conferenceId: string;
     tasks: TaskResponse[];
     conference: ConferenceResponse;
 
-    @HostListener('window:resize')
-    onResize() {
-        this.updateDivWidthForTasks();
-    }
-    constructor(
-        private videoWebService: VideoWebService,
-        private dashboardHelper: VHODashboardHelper,
-        private logger: Logger,
-        private eventbus: EventBusService
-    ) {}
+    constructor(private vhoQueryService: VhoQueryService, private logger: Logger, private eventbus: EventBusService) {}
 
     ngOnInit() {
-        this.updateDivWidthForTasks();
         this.loading = true;
         this.retrieveConference(this.conferenceId)
             .then(async conference => {
@@ -44,10 +32,6 @@ export class TasksTableComponent implements OnInit {
             });
     }
 
-    updateDivWidthForTasks(): void {
-        this.taskDivWidth = this.dashboardHelper.getWidthAvailableForConference();
-    }
-
     getOriginName(task: TaskResponse): string {
         if (task.type !== TaskType.Hearing) {
             const participantTask = this.conference.participants.find(x => x.id === task.origin_id);
@@ -58,16 +42,16 @@ export class TasksTableComponent implements OnInit {
     }
 
     retrieveConference(conferenceId): Promise<ConferenceResponse> {
-        return this.videoWebService.getConferenceByIdVHO(conferenceId);
+        return this.vhoQueryService.getConferenceByIdVHO(conferenceId);
     }
 
     retrieveTasksForConference(conferenceId: string): Promise<TaskResponse[]> {
-        return this.videoWebService.getTasksForConference(conferenceId);
+        return this.vhoQueryService.getTasksForConference(conferenceId);
     }
 
     async completeTask(task: TaskResponse) {
         try {
-            const updatedTask = await this.videoWebService.completeTask(this.conference.id, task.id);
+            const updatedTask = await this.vhoQueryService.completeTask(this.conference.id, task.id);
             this.updateTask(updatedTask);
             const payload = new TaskCompleted(this.conference.id, task.id);
             this.eventbus.emit(new EmitEvent(VHEventType.TaskCompleted, payload));

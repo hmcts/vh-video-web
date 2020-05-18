@@ -1,3 +1,4 @@
+import { builder } from '@testpossessed/ts-data-builder';
 import { Guid } from 'guid-typescript';
 import * as moment from 'moment';
 import {
@@ -7,6 +8,7 @@ import {
     ConferenceStatus,
     ParticipantContactDetailsResponseVho,
     ParticipantForUserResponse,
+    ParticipantHeartbeatResponse,
     ParticipantResponseVho,
     ParticipantStatus,
     Role,
@@ -415,5 +417,15 @@ export class ConferenceTestData {
             m.is_user = m.from.toLocaleLowerCase() === loggedInUser.toLocaleLowerCase();
         });
         return messages;
+    }
+
+    getParticipantHeartbeatResponse() {
+        return builder
+            .createListOfSize<ParticipantHeartbeatResponse>(3)
+            .with((h, i) => (h.timestamp = new Date()))
+            .with((h, i) => (h.browser_name = 'Chrome'))
+            .with((h, i) => (h.browser_version = '84.1.0'))
+            .with((h, i) => (h.recent_packet_loss = 4))
+            .build();
     }
 }

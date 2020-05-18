@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security;
@@ -73,11 +74,11 @@ namespace VideoWeb
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                }).AddPolicyScheme(JwtBearerDefaults.AuthenticationScheme, "handler", options =>
+                }).AddPolicyScheme(JwtBearerDefaults.AuthenticationScheme, "Handler", options =>
                     options.ForwardDefaultSelector = context =>
                         context.Request.Path.StartsWithSegments("/callback")
-                            ? "Callback" : "default")
-                .AddJwtBearer("default", options =>
+                            ? "Callback" : "Default")
+                .AddJwtBearer("Default", options =>
                 {
                     options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}";
                     options.TokenValidationParameters.ValidateLifetime = true;
@@ -137,6 +138,7 @@ namespace VideoWeb
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                IdentityModelEventSource.ShowPII = true;
             }
             else
             {
@@ -186,9 +188,10 @@ namespace VideoWeb
 
         private static void AddPolicies(AuthorizationOptions options)
         {
-            options.DefaultPolicy = new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser().AddAuthenticationSchemes("default")
-                .Build();
+            options.AddPolicy("Default", new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .AddAuthenticationSchemes("Default")
+                .Build());
 
             options.AddPolicy("EventHubUser", new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()

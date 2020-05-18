@@ -51,15 +51,11 @@ describe('VhoChatComponent', () => {
 
         component.conference = conference;
         component.messages = new ConferenceTestData().getChatHistory('vho.user@hearings.net', conference.id);
-        spyOn(component, 'updateDivWidthForSection').and.callFake(() => {
-            component.sectionDivWidth = 100;
-        });
     });
 
     it('should get chat history and subscribe', fakeAsync(() => {
         component.ngOnInit();
         tick();
-        expect(component.sectionDivWidth).toBe(100);
         expect(component.newMessageBody).toBeDefined();
         expect(component.newMessageBody.pristine).toBeTruthy();
         expect(component.loading).toBeFalsy();

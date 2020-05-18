@@ -6,21 +6,17 @@ import {
     ApiClient,
     ChatResponse,
     ConferenceEventRequest,
-    ConferenceForJudgeResponse,
     ConferenceForIndividualResponse,
-    ConferenceForVhOfficerResponse,
+    ConferenceForJudgeResponse,
     ConferenceResponse,
     HearingVenueResponse,
-    ParticipantHeartbeatResponse,
+    ParticipantContactDetailsResponseVho,
     SelfTestPexipResponse,
-    TaskResponse,
     TestCallScoreResponse,
     TokenResponse,
-    UpdateParticipantStatusEventRequest,
+    UnreadAdminMessageResponse,
     UpdateParticipantRequest,
-    ConferenceResponseVho,
-    ParticipantContactDetailsResponseVho,
-    UnreadAdminMessageResponse
+    UpdateParticipantStatusEventRequest
 } from '../clients/api-client';
 import { ConferenceLite } from '../models/conference-lite';
 import { SessionStorage } from '../session-storage';
@@ -45,14 +41,6 @@ export class VideoWebService implements IVideoWebApiService {
         return this.apiClient.getConferencesForIndividual();
     }
 
-    getConferencesForVHOfficer(venueNames: string[]): Observable<ConferenceForVhOfficerResponse[]> {
-        return this.apiClient.getConferencesForVhOfficer(venueNames);
-    }
-
-    getConferenceByIdVHO(conferenceId: string): Promise<ConferenceResponseVho> {
-        return this.apiClient.getConferenceByIdVHO(conferenceId).toPromise();
-    }
-
     getConferenceById(conferenceId: string): Promise<ConferenceResponse> {
         return this.apiClient.getConferenceById(conferenceId).toPromise();
     }
@@ -63,14 +51,6 @@ export class VideoWebService implements IVideoWebApiService {
 
     raiseMediaEvent(conferenceId: string, addMediaEventRequest: AddMediaEventRequest): Promise<void> {
         return this.apiClient.addMediaEventToConference(conferenceId, addMediaEventRequest).toPromise();
-    }
-
-    getTasksForConference(conferenceId: string): Promise<TaskResponse[]> {
-        return this.apiClient.getTasks(conferenceId).toPromise();
-    }
-
-    completeTask(conferenceId: string, taskId: number): Promise<TaskResponse> {
-        return this.apiClient.completeTask(conferenceId, taskId).toPromise();
     }
 
     getTestCallScore(conferenceId: string, participantId: string): Promise<TestCallScoreResponse> {
@@ -115,10 +95,6 @@ export class VideoWebService implements IVideoWebApiService {
 
     getUnreadAdminMessageCountForConference(conferenceId: string): Promise<UnreadAdminMessageResponse> {
         return this.apiClient.getNumberOfUnreadAdminMessagesForConference(conferenceId).toPromise();
-    }
-
-    getParticipantHeartbeats(conferenceId: string, participantId: string): Promise<ParticipantHeartbeatResponse[]> {
-        return this.apiClient.getHeartbeatDataForParticipant(conferenceId, participantId).toPromise();
     }
 
     setActiveIndividualConference(conference: ConferenceForIndividualResponse) {

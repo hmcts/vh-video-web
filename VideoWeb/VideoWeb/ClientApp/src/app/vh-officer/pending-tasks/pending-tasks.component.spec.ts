@@ -8,10 +8,11 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { TasksTestData } from 'src/app/testing/mocks/data/tasks-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { PendingTasksComponent } from './pending-tasks.component';
+import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 
 describe('PendingTasksComponent', () => {
     let component: PendingTasksComponent;
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+    let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
     const eventbus = new EventBusService();
     const conference = new ConferenceTestData().getConferenceDetailFuture();
     // 1 To-Do & 2 Done
@@ -19,15 +20,15 @@ describe('PendingTasksComponent', () => {
     let logger: MockLogger;
 
     beforeAll(() => {
-        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getTasksForConference']);
-        videoWebServiceSpy.getTasksForConference.and.callFake(() => Promise.resolve(allTasks));
+        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getTasksForConference']);
+        vhoQueryService.getTasksForConference.and.callFake(() => Promise.resolve(allTasks));
 
         logger = new MockLogger();
     });
 
     beforeEach(() => {
         allTasks = new TasksTestData().getTestData();
-        component = new PendingTasksComponent(videoWebServiceSpy, eventbus, logger);
+        component = new PendingTasksComponent(vhoQueryService, eventbus, logger);
         component.conferenceId = conference.id;
         component.tasks = Object.assign(allTasks);
     });
@@ -48,7 +49,7 @@ describe('PendingTasksComponent', () => {
         // reset to override before each
         component.tasks = undefined;
         const error = { error: 'failed to find conference', error_code: 404 };
-        videoWebServiceSpy.getTasksForConference.and.callFake(() => Promise.reject(error));
+        vhoQueryService.getTasksForConference.and.callFake(() => Promise.reject(error));
         const spy = spyOn(logger, 'error');
         component.ngOnInit();
         tick();
