@@ -20,6 +20,8 @@ describe('HearingSummary', () => {
         expect(hearing.scheduledEndTime).toBeDefined();
         expect(hearing.hearingVenueName).toBe(c.hearing_venue_name);
         expect(hearing.startedDateTime).toEqual(c.started_date_time);
+        expect(hearing.endedDateTime).toEqual(c.scheduled_date_time);
+        expect(hearing.judgeName).toEqual('Judge Fudge');
     });
 
     it('should get applicant rep', () => {
