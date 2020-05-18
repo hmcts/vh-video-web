@@ -53,7 +53,16 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 Title = scenario.ScenarioInfo.Title
             };
 
-            context.Driver = new DriverSetup(context.VideoWebConfig.SauceLabsConfiguration, driverOptions, sauceLabsOptions);
+            OpenQA.Selenium.Proxy proxy = null;
+            if (context.ZapConfiguration.SetUpProxy)
+            {
+                proxy = new OpenQA.Selenium.Proxy();
+                var proxySetting = $"{context.ZapConfiguration.ApiAddress}:{context.ZapConfiguration.ApiPort}";
+                proxy.HttpProxy = proxySetting;
+                proxy.SslProxy = proxySetting;
+            }
+
+            context.Driver = new DriverSetup(context.VideoWebConfig.SauceLabsConfiguration, driverOptions, sauceLabsOptions,proxy);
         }
 
         private static string GetBrowserAndVersion()

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using AcceptanceTests.Common.Configuration;
 using AcceptanceTests.Common.Configuration.Users;
 using AcceptanceTests.Common.Data.Time;
 using AcceptanceTests.Common.Driver;
@@ -17,5 +18,6 @@ namespace VideoWeb.AcceptanceTests.Helpers
         public VideoWebTokens Tokens { get; set; }
         public List<UserAccount> UserAccounts { get; set; }
         public VideoWebConfig VideoWebConfig { get; set; }
+        public ZapConfiguration ZapConfiguration { get; set; }
     }
 }
