@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using AcceptanceTests.Common.Api;
 using AcceptanceTests.Common.Configuration.Users;
 using AcceptanceTests.Common.Driver;
 using AcceptanceTests.Common.Driver.Browser;
@@ -54,7 +55,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             };
 
             OpenQA.Selenium.Proxy proxy = null;
-            if (context.ZapConfiguration.SetUpProxy)
+            if (Zap.SetupProxy)
             {
                 proxy = new OpenQA.Selenium.Proxy();
                 var proxySetting = $"{context.ZapConfiguration.ApiAddress}:{context.ZapConfiguration.ApiPort}";
