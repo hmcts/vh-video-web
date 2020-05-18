@@ -1,0 +1,31 @@
+@import '~govuk-frontend/govuk/all';
+
+.icons {
+    width: 17px;
+    height: 20px;
+}
+.copy-box {
+    display: none;
+    top: 557px;
+    left: 139px;
+  }
+.copyIDbox {
+    font-family: "GDS Transport", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-weight: 400;
+    font-size: 14px;
+    color: govuk-colour("white");
+    width: auto;
+    height: auto;
+    z-index: 99;
+    box-shadow: 0 7px 11px 0px rgba(0, 0, 0, 0.3);
+    background:govuk-colour("blue");
+    z-index: 99;
+    border: 1px solidgovuk-colour("blue");
+    border-radius: 2px;
+    position: absolute;
+    top: 127px;
+    left: 42px;
+    padding: 8px;
+}

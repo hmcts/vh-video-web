@@ -1,0 +1,13 @@
+<div>
+    <div #copyID class="copyIDbox" id="copyUID" [hidden]="displayTooltip">
+        {{ tooltip }}
+    </div>
+    <img 
+        id="copy-conference-id" 
+        class="icons" 
+        src="/assets/images/share.png" alt="copy-conference-id-icon"
+        (mouseover)="onMouseOver($event)" 
+        (mousemove)="onMouseOver($event)"
+        (mouseout)="onMouseOut()"
+        (click)="copyToClipboard(conference); $event.stopPropagation();" />
+</div>

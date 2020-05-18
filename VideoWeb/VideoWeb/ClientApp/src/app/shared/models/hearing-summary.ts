@@ -114,4 +114,8 @@ export class HearingSummary extends HearingBase {
     get endedDateTime(): Date {
         return this.conference.scheduled_date_time;
     }
+
+    get judgeName(): string {
+        return this.participants.find(x => x.role === Role.Judge).displayName;
+    }
 }

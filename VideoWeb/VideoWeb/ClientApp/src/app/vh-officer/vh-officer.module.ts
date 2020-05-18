@@ -27,6 +27,7 @@ import { VhoChatComponent } from './vho-chat/vho-chat.component';
 import { VhoHearingListComponent } from './vho-hearing-list/vho-hearing-list.component';
 import { VhoHearingsFilterComponent } from './vho-herings-filter/vho-hearings-filter.component';
 import { VhoQueryService } from './services/vho-query-service.service';
+import { CopyIdComponent } from './copy-id/copy-id.component';
 
 @NgModule({
     declarations: [
@@ -47,7 +48,8 @@ import { VhoQueryService } from './services/vho-query-service.service';
         AdminHearingComponent,
         AdminImListComponent,
         HearingHeaderComponent,
-        HearingStatusComponent
+        HearingStatusComponent,
+        CopyIdComponent
     ],
     imports: [CommonModule, SharedModule, ChartsModule, ClipboardModule, VhOfficerRoutingModule, NgMultiSelectDropDownModule.forRoot()],
     providers: [HearingsFilterOptionsService, ParticipantStatusReader, VHODashboardHelper, VhoQueryService],

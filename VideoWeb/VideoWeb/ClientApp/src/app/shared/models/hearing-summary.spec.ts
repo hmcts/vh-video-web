@@ -72,4 +72,12 @@ describe('HearingSummary', () => {
         const hearing = new HearingSummary(c);
         expect(hearing.getDurationAsText()).toBe('30m');
     });
+
+    it('should return judge name', () => {
+        const c = new ConferenceTestData().getConferenceFuture();
+        const judge = new HearingSummary(c).judge;
+        expect(judge).toBeDefined();
+        expect(judge.role).toBe(Role.Judge);
+        expect(judge.displayName).toBe('Judge Fudge');
+    });
 });

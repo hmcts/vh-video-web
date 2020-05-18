@@ -21,8 +21,8 @@
 }
 
 #network-status-icon {
-  width: 30px;
-  height: 30px;
+  width: 18px;
+  height: 18px;
   cursor: pointer;
 }
 
@@ -45,4 +45,35 @@
   width: auto;
   height: auto;
   // margin-top: -1.8vw;
+}
+
+.pIcon1 {
+  grid-column: 6/6;
+  grid-row: 1/1;
+  justify-self: end;
+}
+.pIcon2 {
+  grid-column: 6/6;
+  grid-row: 2/2;
+  justify-self: end;
+}
+.pIcon3 {
+  grid-column: 6/6;
+  grid-row: 3/3;
+  justify-self: end;
+}
+.pIcon4 {
+  grid-column: 6/6;
+  grid-row: 4/4;
+  justify-self: end;
+}
+.pIcon5 {
+  grid-column: 6/6;
+  grid-row: 5/5;
+  justify-self: end;
+}
+.pIcon6 {
+  grid-column: 6/6;
+  grid-row: 6/6;
+  justify-self: end;
 }

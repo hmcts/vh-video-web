@@ -87,7 +87,7 @@ describe('PendingTasksComponent', () => {
     });
 
     it('should return empty image if no pending alerts', () => {
-        component.tasks = Object.assign(null);
+        component.tasks = undefined;
         expect(component.pendingTasks).toBe(0);
         expect(component.getAlertStatus()).toBe('alert-empty.png');
     });
