@@ -10,11 +10,7 @@
     left: 139px;
   }
 .copyIDbox {
-    font-family: "GDS Transport", Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    font-weight: 400;
-    font-size: 14px;
+    @include govuk-font(14, $weight: 'bold', $tabular: false, $line-height: false);
     color: govuk-colour("white");
     width: auto;
     height: auto;
