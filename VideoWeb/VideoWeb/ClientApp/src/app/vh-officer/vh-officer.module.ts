@@ -29,7 +29,6 @@ import { VhoChatComponent } from './vho-chat/vho-chat.component';
 import { VhoHearingListComponent } from './vho-hearing-list/vho-hearing-list.component';
 import { VhoHearingsFilterComponent } from './vho-herings-filter/vho-hearings-filter.component';
 
-
 @NgModule({
     declarations: [
         TasksTableComponent,

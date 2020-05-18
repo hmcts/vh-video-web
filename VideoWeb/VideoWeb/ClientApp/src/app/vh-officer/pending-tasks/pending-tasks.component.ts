@@ -4,7 +4,7 @@ import { TaskCompleted } from 'src/app/on-the-day/models/task-completed';
 import { TaskResponse, TaskStatus } from 'src/app/services/clients/api-client';
 import { EventBusService, VHEventType } from 'src/app/services/event-bus.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
+import { VhoQueryService } from '../services/vho-query-service.service';
 
 @Component({
     selector: 'app-pending-tasks',
