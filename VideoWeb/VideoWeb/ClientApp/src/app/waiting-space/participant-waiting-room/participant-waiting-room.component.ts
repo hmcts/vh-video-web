@@ -483,7 +483,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     muteUnmuteCall() {
         if (this.pexipAPI) {
-            var muteAudio = this.pexipAPI.muteAudio();
+            const muteAudio = this.pexipAPI.muteAudio();
             this.logger.info('Participant mute status :' + muteAudio);
             this.audioMuted = !this.audioMuted;
         }
