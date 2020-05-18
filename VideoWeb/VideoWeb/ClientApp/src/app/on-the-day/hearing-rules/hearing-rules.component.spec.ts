@@ -51,7 +51,7 @@ describe('HearingRulesComponent', () => {
     });
 
     it('should navigate to declaration', () => {
-        spyOn(router, 'navigate').and.callFake(() => {});
+        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         component.goToDeclaration();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.Declaration, conference.id]);
     });

@@ -75,8 +75,8 @@ describe('AppComponent', () => {
         component = fixture.componentInstance;
         deviceTypeServiceSpy.isSupportedBrowser.and.returnValue(true);
         router = TestBed.get(Router);
-        spyOn(router, 'navigate').and.returnValue(true);
-        spyOn(router, 'navigateByUrl').and.returnValue(true);
+        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+        spyOn(router, 'navigateByUrl').and.returnValue(Promise.resolve(true));
     });
 
     it('should have a tag Skip to main content', async(() => {

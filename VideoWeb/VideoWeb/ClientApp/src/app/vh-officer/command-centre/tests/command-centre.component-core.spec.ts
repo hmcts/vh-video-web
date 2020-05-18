@@ -164,7 +164,7 @@ describe('CommandCentreComponent - Core', () => {
 
     it('should handle api error when retrieving conference details fails', fakeAsync(() => {
         const error = { status: 404, isApiException: true };
-        vhoQueryService.getConferenceByIdVHO.and.returnValue(throwError(error));
+        vhoQueryService.getConferenceByIdVHO.and.callFake(() => Promise.reject(error));
         errorService.handleApiError.and.callFake(() => {
             Promise.resolve(true);
         });
