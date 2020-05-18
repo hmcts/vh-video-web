@@ -148,7 +148,8 @@ namespace VideoWeb
                 app.UseHttpsRedirection();
             }
 
-            if (!env.IsDevelopment())
+            var zapScan = Configuration.GetValue<bool>("ZapScan");
+            if (!env.IsDevelopment() || zapScan)
             {
                 app.UseSpaStaticFiles();
             }
@@ -174,13 +175,9 @@ namespace VideoWeb
                 // To learn more about options for serving an Angular SPA from ASP.NET Core,
                 // see https://go.microsoft.com/fwlink/?linkid=864501
 
-                spa.Options.SourcePath = "ClientApp";
-
-                bool spaProxy = String.IsNullOrEmpty(Configuration["spaProxy"]) ? false : bool.Parse(Configuration["spaProxy"]);
-
-                if (spaProxy)
+                if (env.IsDevelopment() && !zapScan)
                 {
-                    string ngBaseUri = String.IsNullOrEmpty(Configuration["VhServices:VideoWebUrl"]) ? "http://localhost:4200/" : Configuration["VhServices:VideoWebUrl"];
+                    const string ngBaseUri = "http://localhost:4200/";
                     spa.UseProxyToSpaDevelopmentServer(ngBaseUri);
                 }
             });
