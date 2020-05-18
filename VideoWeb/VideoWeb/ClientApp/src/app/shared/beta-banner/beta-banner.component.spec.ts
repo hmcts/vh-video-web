@@ -5,7 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { UserProfileResponse, Role } from 'src/app/services/clients/api-client';
+import { Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -38,7 +38,7 @@ describe('BetaBannerComponent', () => {
     const conference = new ConferenceTestData().getConferenceDetailFuture();
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
-    videoWebServiceSpy.getConferenceById.and.returnValue(conference);
+    videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(conference));
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({

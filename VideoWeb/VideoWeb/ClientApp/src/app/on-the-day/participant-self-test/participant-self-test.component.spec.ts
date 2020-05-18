@@ -49,7 +49,7 @@ describe('ParticipantSelfTestComponent', () => {
     });
 
     it('should navigate to camera working screen', () => {
-        spyOn(router, 'navigate').and.callFake(() => {});
+        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         component.continueParticipantJourney();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.CameraWorking, conference.id]);
     });

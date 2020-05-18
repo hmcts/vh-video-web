@@ -33,7 +33,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     configureTestSuite(() => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'raiseParticipantEvent']);
-        videoWebServiceSpy.getConferenceById.and.returnValue(conference);
+        videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(conference));
         videoWebServiceSpy.raiseParticipantEvent.and.returnValue(Promise.resolve());
         judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService', [
             'raiseJudgeAvailableEvent',
@@ -87,7 +87,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         const pat = conference.participants[0];
         const message = new ParticipantStatusMessage(pat.id, pat.username, conference.id, ParticipantStatus.InConsultation);
         component.handleParticipantStatusChange(message);
-        const participant = component.conference.participants.find((x) => x.id === message.participantId);
+        const participant = component.conference.participants.find(x => x.id === message.participantId);
         expect(participant.status).toBe(message.status);
     });
 
@@ -137,27 +137,21 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     it('should navigate to hearing room with conference id', async () => {
-        spyOn(router, 'navigate').and.callFake(() => {
-            Promise.resolve(true);
-        });
+        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
         component.goToHearingPage();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeHearingRoom, component.conference.id]);
     });
 
     it('should navigate to check equipment with conference id', async () => {
-        spyOn(router, 'navigate').and.callFake(() => {
-            Promise.resolve(true);
-        });
+        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
         component.checkEquipment();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.EquipmentCheck, component.conference.id]);
     });
 
     it('should navigate to judge hearing list', async () => {
-        spyOn(router, 'navigate').and.callFake(() => {
-            Promise.resolve(true);
-        });
+        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
         component.goToJudgeHearingList();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeHearingList]);
@@ -174,7 +168,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         const message = eventService.nextJudgeStatusMessage;
         component.handleParticipantStatusChange(message);
-        const participant = component.conference.participants.find((x) => x.id === message.participantId);
+        const participant = component.conference.participants.find(x => x.id === message.participantId);
         expect(participant.status === message.status);
         expect(judgeEventServiceSpy.raiseJudgeAvailableEvent).toHaveBeenCalled();
     });
@@ -185,7 +179,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         const message = eventService.nextJudgeStatusMessage;
         component.handleParticipantStatusChange(message);
-        const participant = component.conference.participants.find((x) => x.id === message.participantId);
+        const participant = component.conference.participants.find(x => x.id === message.participantId);
         expect(participant.status === message.status);
         expect(judgeEventServiceSpy.raiseJudgeAvailableEvent).toHaveBeenCalled();
     });

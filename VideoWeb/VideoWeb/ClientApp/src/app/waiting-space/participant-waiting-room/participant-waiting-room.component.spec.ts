@@ -3,12 +3,15 @@ import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
-import { of, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
+import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus, ParticipantStatus, TokenResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
@@ -23,9 +26,6 @@ import {
 } from 'src/app/testing/stubs/participant-status-list-stub';
 import { Hearing } from '../../shared/models/hearing';
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room.component';
-import { pageUrls } from 'src/app/shared/page-url.constants';
-import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
-import { ConsultationService } from 'src/app/services/api/consultation.service';
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -45,7 +45,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         videoWebServiceSpy.getObfuscatedName.and.returnValue('test-obfs');
 
         videoWebServiceSpy.getJwToken.and.returnValue(
-            of(
+            Promise.resolve(
                 new TokenResponse({
                     expires_on: '2021',
                     token: 'token'
@@ -91,11 +91,11 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         });
         spyOn(component, 'setupPexipClient').and.callFake(() => Promise.resolve());
         spyOn(component, 'startEventHubSubscribers').and.callFake(() => {});
-        spyOn(component, 'getJwtokenAndConnectToPexip').and.callFake(() => {});
+        spyOn(component, 'getJwtokenAndConnectToPexip').and.callFake(() => Promise.resolve());
         component.heartbeat = jasmine.createSpyObj('heartbeat', ['kill']);
         component.conference = futureConference;
         component.hearing = new Hearing(futureConference);
-        component.participant = futureConference.participants.find((x) => x.username === 'chris.green@hearings.net');
+        component.participant = futureConference.participants.find(x => x.username === 'chris.green@hearings.net');
     });
 
     it('should create and display conference details', async () => {
@@ -115,7 +115,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     it('should update participant status', () => {
         const message = eventService.nextParticipantStatusMessage;
         component.handleParticipantStatusChange(message);
-        const participant = component.hearing.getConference().participants.find((x) => x.id === message.participantId);
+        const participant = component.hearing.getConference().participants.find(x => x.id === message.participantId);
         expect(participant.status).toBe(message.status);
     });
 

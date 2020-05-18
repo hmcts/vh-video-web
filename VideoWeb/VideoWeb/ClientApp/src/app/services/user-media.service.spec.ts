@@ -32,21 +32,22 @@ describe('UserMediaService', () => {
     it('should update device list if empty', inject([UserMediaService], async (service: UserMediaService) => {
         spyOn(service, 'updateAvailableDevicesList').and.callFake(() => {
             service.availableDeviceList = testData.getListOfDevices();
+            return Promise.resolve();
         });
         await service.checkDeviceListIsReady();
         expect(service.updateAvailableDevicesList).toHaveBeenCalled();
     }));
 
     it('should return true when multiple inputs are detected', inject([UserMediaService], async (service: UserMediaService) => {
-        spyOn(service, 'getListOfVideoDevices').and.returnValue(testData.getListOfCameras());
-        spyOn(service, 'getListOfMicrophoneDevices').and.returnValue(testData.getListOfMicrophones());
+        spyOn(service, 'getListOfVideoDevices').and.returnValue(Promise.resolve(testData.getListOfCameras()));
+        spyOn(service, 'getListOfMicrophoneDevices').and.returnValue(Promise.resolve(testData.getListOfMicrophones()));
         const multipleDevices = await service.hasMultipleDevices();
         expect(multipleDevices).toBeTruthy();
     }));
 
     it('should return false when single inputs are detected', inject([UserMediaService], async (service: UserMediaService) => {
-        spyOn(service, 'getListOfVideoDevices').and.returnValue(testData.getSingleCamera());
-        spyOn(service, 'getListOfMicrophoneDevices').and.returnValue(testData.getSingleMicrophone());
+        spyOn(service, 'getListOfVideoDevices').and.returnValue(Promise.resolve(testData.getSingleCamera()));
+        spyOn(service, 'getListOfMicrophoneDevices').and.returnValue(Promise.resolve(testData.getSingleMicrophone()));
         const multipleDevices = await service.hasMultipleDevices();
         expect(multipleDevices).toBeFalsy();
     }));
@@ -54,6 +55,7 @@ describe('UserMediaService', () => {
     it('should update the device list', inject([UserMediaService], async (service: UserMediaService) => {
         spyOn(service, 'updateAvailableDevicesList').and.callFake(() => {
             service.availableDeviceList = testData.getListOfDevices();
+            return Promise.resolve();
         });
         await service.updateAvailableDevicesList();
         expect(service.availableDeviceList.length).toBeGreaterThan(0);
