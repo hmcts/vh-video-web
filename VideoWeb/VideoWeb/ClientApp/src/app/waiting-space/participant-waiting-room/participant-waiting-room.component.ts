@@ -56,6 +56,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     isPrivateConsultation: boolean;
     selfViewOpen: boolean;
     isAdminConsultation: boolean;
+    audioMuted: boolean;
 
     clockSubscription: Subscription;
     errorCount: number;
@@ -477,6 +478,14 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         }
         if (this.hearing.isDelayed() || this.hearing.isSuspended()) {
             return 'hearing-delayed';
+        }
+    }
+
+    muteUnmuteCall() {
+        if (this.pexipAPI) {
+            var muteAudio = this.pexipAPI.muteAudio();
+            this.logger.info('Participant mute status :' + muteAudio);
+            this.audioMuted = !this.audioMuted;
         }
     }
 }

@@ -20,16 +20,22 @@
   </div>
 </div>
 <div class="govuk-grid-row" *ngIf="showSelfView">
-  <div class="govuk-grid-column-one-half" id="outgoingFeedDiv">
-    <button id="outgoingFeedButton" type="button" class="govuk-button govuk-button--secondary reduce-margin"
-      data-module="govuk-button" (click)="toggleView()">
-      {{ selfViewOpen ? 'Close' : 'Open' }} self-view
-    </button>
-    <video [ngClass]="{'showVideo': selfViewOpen, 'hideVideo': !selfViewOpen}" id="outgoingFeedVideo" [muted]="true"
-      [srcObject]="this.outgoingStream" autoplay height="auto">
-      Your browser does not support Video
-    </video>
-  </div>
+    <div class="govuk-grid-column-one-half" id="outgoingFeedDiv">
+        <button id="outgoingFeedButton" type="button" class="govuk-button govuk-button--secondary reduce-margin"
+                data-module="govuk-button" (click)="toggleView()">
+            {{ selfViewOpen ? 'Close' : 'Open' }} self-view
+        </button>
+        <button id="muteUnmuteButton"
+                class="govuk-button govuk-!-margin-top-3 govuk-!-margin-bottom-3" data-module="govuk-button"
+                type="button" (click)="muteUnmuteCall()" alt="Mute Microphone">
+            {{ audioMuted ? 'Unmute' : 'Mute' }} Microphone
+        </button>
+       
+        <video [ngClass]="{'showVideo': selfViewOpen, 'hideVideo': !selfViewOpen}" id="outgoingFeedVideo" [muted]="true"
+               [srcObject]="this.outgoingStream" autoplay height="auto">
+            Your browser does not support Video
+        </video>
+    </div>
 </div>
 
 <div *ngIf="!loadingData && hearing" class="govuk-grid-row">
