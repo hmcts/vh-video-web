@@ -1,4 +1,3 @@
-import { of } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { EventType, UpdateParticipantStatusEventRequest } from './clients/api-client';
@@ -7,7 +6,7 @@ import { JudgeEventService } from './judge-event.service';
 describe('JudgeEventService', () => {
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['raiseParticipantEvent']);
-    videoWebServiceSpy.raiseParticipantEvent.and.returnValue(of());
+    videoWebServiceSpy.raiseParticipantEvent.and.returnValue(Promise.resolve());
     const service = new JudgeEventService(videoWebServiceSpy, new MockLogger());
 
     it('should raise judge available event', () => {

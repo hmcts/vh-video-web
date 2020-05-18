@@ -66,7 +66,7 @@ describe('HearingListTableComponent', () => {
     it('should emit conference selected', () => {
         spyOn(component.selectedConference, 'emit');
         const conference = new ConferenceTestData().getConferenceFuture();
-        spyOn(router, 'navigate').and.callFake(() => {});
+        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         component.signIntoConference(conference);
         expect(component.selectedConference.emit).toHaveBeenCalledWith(conference);
     });
