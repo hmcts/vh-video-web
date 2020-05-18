@@ -81,7 +81,27 @@ export class ConferenceTestData {
             scheduled_duration: 50,
             status: ConferenceStatus.NotStarted,
             participants: this.getListOfParticipants(),
-            hearing_venue_name: 'Manchester'
+            hearing_venue_name: 'Manchester',
+            started_date_time: null
+        });
+        return conference;
+    }
+
+    getConferenceInSession(): ConferenceForVhOfficerResponse {
+        const futureDate = new Date(new Date().getTime());
+        futureDate.setUTCHours(futureDate.getUTCHours() + 26);
+        const conference = new ConferenceForVhOfficerResponse({
+            id: '612AB52C-BDA5-4F4D-95B8-3F49065219A6',
+            case_name: 'WM V T',
+            case_number: '0987UDIHH',
+            case_type: 'Financial Tax Remedy',
+            scheduled_date_time: futureDate,
+            scheduled_duration: 50,
+            status: ConferenceStatus.NotStarted,
+            participants: this.getListOfParticipants(),
+            hearing_venue_name: 'Manchester',
+            started_date_time: futureDate,
+            closed_date_time: null
         });
         return conference;
     }

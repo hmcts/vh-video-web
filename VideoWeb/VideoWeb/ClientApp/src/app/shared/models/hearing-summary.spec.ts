@@ -82,4 +82,18 @@ describe('HearingSummary', () => {
         expect(judge.role).toBe(Role.Judge);
         expect(judge.displayName).toBe('Judge Fudge');
     });
+
+    it('should return null started date time if hearing is not started', () => {
+        const c = new ConferenceTestData().getConferenceFuture();
+        const hearing = new HearingSummary(c);
+        expect(hearing.startedDateTime).toBeNull();
+        expect(hearing.endedDateTime).toBeNull();
+    });
+
+    it('should return null ended date time if hearing has started but not ended', () => {
+        const c = new ConferenceTestData().getConferenceInSession();
+        const hearing = new HearingSummary(c);
+        expect(hearing.startedDateTime).toEqual(c.started_date_time);
+        expect(hearing.endedDateTime).toBeNull();
+    });
 });
