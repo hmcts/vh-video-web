@@ -1,14 +1,13 @@
+import { ElementRef } from '@angular/core';
 import { fakeAsync, tick } from '@angular/core/testing';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceForVhOfficerResponse, ParticipantHeartbeatResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
+import { VhoQueryService } from '../services/vho-query-service.service';
 import { ParticipantNetworkStatusComponent } from './participant-network-status.component';
-import { ElementRef } from '@angular/core';
-import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 
 describe('ParticipantNetworkStatusComponent', () => {
     let component: ParticipantNetworkStatusComponent;
@@ -68,7 +67,7 @@ describe('ParticipantNetworkStatusComponent', () => {
     });
 
     it('should log error when unable to get heartbeat data', fakeAsync(() => {
-        const error = { error: 'failed to find data', error_code: 404 };
+        const error = new Error('failed to find data');
         vhoQueryService.getParticipantHeartbeats.and.callFake(() => Promise.reject(error));
         const spy = spyOn(logger, 'error');
         component.packageLostArray = undefined;

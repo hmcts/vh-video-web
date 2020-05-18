@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, async, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
@@ -15,9 +15,9 @@ import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockEventsNonHttpService, MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
-import { JudgeHearingPageComponent } from './judge-hearing-page.component';
-import { AudioAlertComponent } from '../audio-alert/audio-alert.component';
 import { AudioRecordingService } from '../../services/api/audio-recording.service';
+import { AudioAlertComponent } from '../audio-alert/audio-alert.component';
+import { JudgeHearingPageComponent } from './judge-hearing-page.component';
 
 describe('JudgeHearingPageComponent when conference in session', () => {
     let component: JudgeHearingPageComponent;
@@ -49,7 +49,7 @@ describe('JudgeHearingPageComponent when conference in session', () => {
                 { provide: AdalService, useClass: MockAdalService },
                 { provide: EventsService, useClass: MockEventsService },
                 { provide: Logger, useClass: MockLogger },
-                {provide: AudioRecordingService, useValue: audioRecordingServiceMock}
+                { provide: AudioRecordingService, useValue: audioRecordingServiceMock }
             ]
         });
     });
@@ -63,7 +63,7 @@ describe('JudgeHearingPageComponent when conference in session', () => {
         component = fixture.componentInstance;
         component.conference = conference;
 
-        spyOn(component, 'sanitiseIframeUrl').and.callFake(() => {});
+        spyOn(component, 'sanitiseIframeUrl').and.callFake(() => Promise.resolve());
     });
 
     it('should create', () => {
@@ -71,18 +71,14 @@ describe('JudgeHearingPageComponent when conference in session', () => {
     });
 
     it('should send judge to hearing list when conference is closed', () => {
-        spyOn(router, 'navigate').and.callFake(() => {
-            Promise.resolve(true);
-        });
+        spyOn(router, 'navigate').and.callFake(() => Promise.resolve(true));
         conference.status = ConferenceStatus.Closed;
         component.determineJudgeLocation();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeHearingList]);
     });
 
     it('should send judge to waiting room when conference is suspended', () => {
-        spyOn(router, 'navigate').and.callFake(() => {
-            Promise.resolve(true);
-        });
+        spyOn(router, 'navigate').and.callFake(() => Promise.resolve(true));
         spyOn(component, 'judgeURLChanged').and.callFake(() => {});
         const status = ConferenceStatus.Suspended;
         component.handleHearingStatusChange(status);
@@ -91,9 +87,7 @@ describe('JudgeHearingPageComponent when conference in session', () => {
     });
 
     it('should send judge to waiting room when conference is paused', () => {
-        spyOn(router, 'navigate').and.callFake(() => {
-            Promise.resolve(true);
-        });
+        spyOn(router, 'navigate').and.callFake(() => Promise.resolve(true));
         spyOn(component, 'judgeURLChanged').and.callFake(() => {});
         const status = ConferenceStatus.Paused;
         component.handleHearingStatusChange(status);
@@ -102,9 +96,7 @@ describe('JudgeHearingPageComponent when conference in session', () => {
     });
 
     it('should not send judge anywhere is conference is in session', () => {
-        spyOn(router, 'navigate').and.callFake(() => {
-            Promise.resolve(true);
-        });
+        spyOn(router, 'navigate').and.callFake(() => Promise.resolve(true));
         spyOn(component, 'judgeURLChanged').and.callFake(() => {});
         const status = ConferenceStatus.InSession;
         component.handleHearingStatusChange(status);
@@ -162,7 +154,7 @@ describe('JudgeHearingPageComponent when conference in session', () => {
         expect(component.continueWithNoRecording).toBeTruthy();
     });
     it('should retrieve audio recording stream and if no error then no alert', () => {
-        audioRecordingServiceMock.getAudioStreamInfo.and.returnValue(true);
+        audioRecordingServiceMock.getAudioStreamInfo.and.returnValue(Promise.resolve(true));
         const hearingId = '5256626262626';
         component.retrieveAudioStreamInfo(hearingId);
 
