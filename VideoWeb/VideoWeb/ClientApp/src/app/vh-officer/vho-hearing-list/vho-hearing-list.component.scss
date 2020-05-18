@@ -165,22 +165,12 @@
 }
 .listItem {
   color: govuk-colour("black");
-  font-family: "GDS Transport", Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 1.11111;
+  @include govuk-font(16, $weight: 'regular', $line-height: 1.11111);
   margin-top: 0;
 }
 .listItemGreySmall {
   color: govuk-colour("dark-grey");
-  font-family: "GDS Transport", Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 1.11111;
+  @include govuk-font(14, $weight: 'regular', $line-height: 1.11111);
   margin-top: 0;
 }
 .started {
@@ -209,12 +199,7 @@
 }
 .listItemBig {
   color: govuk-colour("black");
-  font-family: "GDS Transport", Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-weight: 700;
-  font-size: 18px;
-  line-height: 1.11111;
+  @include govuk-font(19, $weight: 'bold', $line-height: 1.11111);
   margin-top: 0;
 }
 .title {
@@ -224,12 +209,7 @@
 }
 .listItemGrey {
   color: govuk-colour("dark-grey");
-  font-family: "GDS Transport", Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 1.11111;
+  @include govuk-font(16, $weight: 'regular', $line-height: 1.11111);
   margin-top: 0;
 }
 .listed {
@@ -250,12 +230,7 @@
 }
 .listItemBold {
   color: govuk-colour("black");
-  font-family: "GDS Transport", Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-weight: 700;
-  font-size: 16px;
-  line-height: 1.11111;
+  @include govuk-font(16, $weight: 'bold', $line-height: 1.11111);
   margin-top: 0;
 }
 .judge {

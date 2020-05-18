@@ -4,12 +4,16 @@
 
     <div class="shareIcon"><app-copy-id [conference]="conference"></app-copy-id></div> 
     <div class="time listItem" id="{{ conference.id }}-time">{{ conference.scheduledDateTime | date: 'HH:mm' }}</div>
-    <div *ngIf="conference.startedDateTime" class="started listItemGreySmall" id="{{ conference.id }}-started">started</div>
-    <div *ngIf="conference.startedDateTime" class="startedTime listItemGreySmall" id="{{ conference.id }}-startedTime">{{ conference.startedDateTime | date: 'HH:mm' }}</div>
-    <div *ngIf="conference.endedDateTime" class="ended listItemGreySmall" id="{{ conference.id }}-ended">ended</div>
-    <div *ngIf="conference.endedDateTime" class="endedTime listItemGreySmall" id="{{ conference.id }}-endTime">{{ conference.endedDateTime | date: 'HH:mm' }}</div>
+    <ng-container *ngIf="conference.startedDateTime">
+      <div class="started listItemGreySmall" id="{{ conference.id }}-started">started</div>
+      <div class="startedTime listItemGreySmall" id="{{ conference.id }}-startedTime">{{ conference.startedDateTime | date: 'HH:mm' }}</div>
+    </ng-container>
+    <ng-container *ngIf="conference.endedDateTime">
+      <div class="ended listItemGreySmall" id="{{ conference.id }}-ended">ended</div>
+      <div class="endedTime listItemGreySmall" id="{{ conference.id }}-endTime">{{ conference.endedDateTime | date: 'HH:mm' }}</div>
+    </ng-container>
     <div class="title listItemBig" id="{{ conference.id }}-case-name">{{ conference.caseName }}</div>
-    <div class="listed listItemGrey" id="{{ conference.id }}-case-duration">{{ getDuration(conference) }}</div>
+    <div class="listed listItemGrey" id="{{ conference.id }}-duration">{{ getDuration(conference) }}</div>
     <div class="crest"><img src="/assets/images/black_crest.png" class="icons" alt="crest-icon"></div>
     <div class="ref listItemGreySmall" id="{{ conference.id }}-case-number">{{ conference.caseNumber }}</div>
     <div class="judge listItemBold" id="{{ conference.id }}-judge">{{ conference.judgeName }}</div>
