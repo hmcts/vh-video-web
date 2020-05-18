@@ -152,7 +152,7 @@ describe('ParticipantNetworkStatusComponent', () => {
     it('should set timer on mouse enter', fakeAsync(() => {
         const timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
         component.timeout = null;
-        spyOn(window, 'setTimeout').and.returnValue(timer);
+        spyOn(global, 'setTimeout').and.returnValue(timer);
 
         component.onMouseEnter(mouseEvent);
         flushMicrotasks();
@@ -164,8 +164,7 @@ describe('ParticipantNetworkStatusComponent', () => {
     it('should clear timer on mouse exit', () => {
         const timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
         component.timeout = timer;
-        spyOn(window, 'clearTimeout');
-
+        spyOn(global, 'clearTimeout');
         component.onMouseExit(mouseEvent);
 
         expect(clearTimeout).toHaveBeenCalled();

@@ -82,7 +82,8 @@ export class ConferenceTestData {
             status: ConferenceStatus.NotStarted,
             participants: this.getListOfParticipants(),
             hearing_venue_name: 'Manchester',
-            started_date_time: null
+            started_date_time: null,
+            closed_date_time: null
         });
         return conference;
     }
