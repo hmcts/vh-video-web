@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Chart, ChartDataSets } from 'chart.js';
+import { Chart, ChartDataSets, ChartType } from 'chart.js';
 import { Color, Label } from 'ng2-charts';
 import { graphLabel, GraphSettings } from '../services/models/graph-settings';
 import { PackageLost } from '../services/models/package-lost';
@@ -24,7 +24,7 @@ export class MonitoringGraphComponent implements OnInit {
     lineChartData: ChartDataSets[] = [];
     lineChartLabels: Label[] = [];
     lineChartLegend = false;
-    lineChartType = 'line';
+    lineChartType: ChartType = 'line';
     lineChartPlugins = [];
     lineChartColors: Color[] = GraphSettings.getlineChartColors();
 

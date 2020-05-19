@@ -37,7 +37,12 @@
         'graph-footer-gray': lastPackageLostValue === 'disconnected'
       }"
     >
-      <span class="govuk-body-s vh-text-panel" id="signal-strength" [ngClass]="{ 'vh-c': lastPackageLostValue !== 'poor' }" style="color: white;">
+      <span
+        class="govuk-body-s vh-text-panel"
+        id="signal-strength"
+        [ngClass]="{ 'vh-c': lastPackageLostValue !== 'poor' }"
+        style="color: white;"
+      >
         {{ participantGraphInfo.status }}: {{ lastPackageLostValue }} signal
       </span>
     </div>

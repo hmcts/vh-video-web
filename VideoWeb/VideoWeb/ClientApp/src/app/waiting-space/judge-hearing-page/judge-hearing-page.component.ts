@@ -1,7 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { Component, OnDestroy, OnInit, SecurityContext } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, ConferenceStatus, Role } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -9,7 +10,6 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 
 @Component({
     selector: 'app-judge-hearing-page',
@@ -19,7 +19,7 @@ import { AudioRecordingService } from 'src/app/services/api/audio-recording.serv
 export class JudgeHearingPageComponent implements OnInit, OnDestroy {
     loadingData: boolean;
     conference: ConferenceResponse;
-    selectedHearingUrl: SafeResourceUrl;
+    selectedHearingUrl: string;
     allowPermissions: string;
     judgeUri: string;
 
@@ -29,7 +29,6 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
     isRecording: boolean;
     continueWithNoRecording = false;
     showAudioRecordingAlert = false;
-
 
     constructor(
         private route: ActivatedRoute,
@@ -47,7 +46,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
 
     async ngOnInit() {
         this.getConference()
-            .then((conference) => {
+            .then(conference => {
                 this.conference = conference;
                 this.sanitiseIframeUrl();
                 this.loadingData = false;
@@ -56,7 +55,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
                     this.setupAudioRecordingInterval();
                 }
             })
-            .catch((error) => {
+            .catch(error => {
                 this.loadingData = false;
                 if (!this.errorService.returnHomeIfUnauthorised(error)) {
                     this.errorService.handleApiError(error);
@@ -78,7 +77,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
     }
 
     async sanitiseIframeUrl(): Promise<void> {
-        const judge = this.conference.participants.find((x) => x.role === Role.Judge);
+        const judge = this.conference.participants.find(x => x.role === Role.Judge);
         const encodedDisplayName = encodeURIComponent(judge.tiled_display_name);
 
         const preferredCam = await this.userMediaService.getPreferredCamera();
@@ -101,12 +100,12 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
         this.allowPermissions = `microphone ${iframeOrigin}; camera ${iframeOrigin};`;
 
         this.judgeUri = `${this.conference.judge_i_frame_uri}?display_name=${encodedDisplayName}&cam=${cam}&mic=${mic}`;
-        this.selectedHearingUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.judgeUri);
+        this.selectedHearingUrl = this.sanitizer.sanitize(SecurityContext.URL, this.judgeUri);
     }
 
     private setupSubscribers() {
         this.eventHubSubscriptions.add(
-            this.eventService.getHearingStatusMessage().subscribe((message) => {
+            this.eventService.getHearingStatusMessage().subscribe(message => {
                 this.handleHearingStatusChange(<ConferenceStatus>message.status);
             })
         );
@@ -142,7 +141,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
 
     determineJudgeLocation() {
         const conferenceStatus = this.conference.status;
-        const judge = this.conference.participants.find((x) => x.role === Role.Judge);
+        const judge = this.conference.participants.find(x => x.role === Role.Judge);
         const properties = {
             conferenceId: this.conference.id,
             user: judge.id
@@ -189,7 +188,6 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
                 this.showAudioRecordingAlert = true;
             }
         }
-
     }
 
     closeAlert(value) {
