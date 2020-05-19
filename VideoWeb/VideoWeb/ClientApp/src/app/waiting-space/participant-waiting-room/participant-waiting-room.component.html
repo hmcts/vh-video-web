@@ -24,22 +24,11 @@
     <button
       id="outgoingFeedButton"
       type="button"
-      class="govuk-button govuk-button--secondary reduce-margin"
+      class="govuk-button govuk-button--secondary reduce-margin govuk-!-margin-right-4"
       data-module="govuk-button"
       (click)="toggleView()"
     >
       {{ selfViewOpen ? 'Close' : 'Open' }} self-view
-    </button>
-    <button
-      id="muteUnmuteButton"
-      class="govuk-button govuk-!-margin-top-3 govuk-!-margin-bottom-3"
-      data-module="govuk-button"
-      type="button"
-      (click)="muteUnmuteCall()"
-      alt="Mute Microphone"
-      [ngClass]="audioMuted ? 'govuk-button--warning' : 'govuk-button'"
-    >
-      {{ audioMuted ? 'Unmute' : 'Mute' }} Microphone
     </button>
 
     <video
@@ -52,6 +41,25 @@
     >
       Your browser does not support Video
     </video>
+
+    <button
+      id="muteUnmuteButton"
+      class="govuk-button reduce-margin"
+      data-module="govuk-button"
+      type="button"
+      (click)="muteUnmuteCall()"
+      alt="Mute Microphone"
+      [ngClass]="audioMuted ? 'govuk-button--warning' : 'govuk-button'"
+    >
+      {{ audioMuted ? 'Unmute' : 'Mute' }} Microphone
+
+      <span *ngIf="!audioMuted" class="govuk-button__start-icon">
+        <img id="mute-microphone-img" class ="microphoneIcon" src="/assets/images/mic_on.png" alt="Mute Microphone" />
+      </span>
+      <span *ngIf="audioMuted" class="govuk-button__start-icon microphoneIcon">
+        <img id="unmute-microphone-img" class="microphoneIcon" src="/assets/images/mic_off.png" alt="Unmute Microphone" />
+      </span>
+    </button>
   </div>
 </div>
 
