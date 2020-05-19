@@ -44,7 +44,8 @@ namespace VideoWeb.AcceptanceTests.Hooks
             var driverOptions = new DriverOptions()
             {
                 TargetBrowser = context.VideoWebConfig.TestConfig.TargetBrowser,
-                TargetDevice = context.VideoWebConfig.TestConfig.TargetDevice
+                TargetDevice = context.VideoWebConfig.TestConfig.TargetDevice,
+                HeadlessMode = context.ZapConfiguration.HeadlessMode
             };
 
             var sauceLabsOptions = new SauceLabsOptions()
