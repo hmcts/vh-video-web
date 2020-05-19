@@ -22,7 +22,7 @@ describe('ConferenceGuard', () => {
 
     it('should be able to activate component', async(async () => {
         const response = new ConferenceResponse({ status: ConferenceStatus.NotStarted });
-        videoWebServiceSpy.getConferenceById.and.returnValue(response);
+        videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(response));
         const result = await guard.canActivate(activateRoute);
 
         expect(result).toBeTruthy();
@@ -30,7 +30,7 @@ describe('ConferenceGuard', () => {
 
     it('should not be able to activate component when conference closed', async () => {
         const response = new ConferenceResponse({ status: ConferenceStatus.Closed });
-        videoWebServiceSpy.getConferenceById.and.returnValue(response);
+        videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(response));
         const result = await guard.canActivate(activateRoute);
 
         expect(result).toBeFalsy();

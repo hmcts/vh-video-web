@@ -19,6 +19,9 @@ describe('HearingSummary', () => {
         expect(hearing.scheduledStartTime).toEqual(c.scheduled_date_time);
         expect(hearing.scheduledEndTime).toBeDefined();
         expect(hearing.hearingVenueName).toBe(c.hearing_venue_name);
+        expect(hearing.startedDateTime).toEqual(c.started_date_time);
+        expect(hearing.endedDateTime).toEqual(c.closed_date_time);
+        expect(hearing.judgeName).toEqual('Judge Fudge');
     });
 
     it('should get applicant rep', () => {
@@ -69,6 +72,28 @@ describe('HearingSummary', () => {
         const c = new ConferenceTestData().getConferenceFuture();
         c.scheduled_duration = 30;
         const hearing = new HearingSummary(c);
-        expect(hearing.getDurationAsText()).toBe('30 minutes');
+        expect(hearing.getDurationAsText()).toBe('30m');
+    });
+
+    it('should return judge name', () => {
+        const c = new ConferenceTestData().getConferenceFuture();
+        const judge = new HearingSummary(c).judge;
+        expect(judge).toBeDefined();
+        expect(judge.role).toBe(Role.Judge);
+        expect(judge.displayName).toBe('Judge Fudge');
+    });
+
+    it('should return null started date time if hearing is not started', () => {
+        const c = new ConferenceTestData().getConferenceFuture();
+        const hearing = new HearingSummary(c);
+        expect(hearing.startedDateTime).toBeNull();
+        expect(hearing.endedDateTime).toBeNull();
+    });
+
+    it('should return null ended date time if hearing has started but not ended', () => {
+        const c = new ConferenceTestData().getConferenceInSession();
+        const hearing = new HearingSummary(c);
+        expect(hearing.startedDateTime).toEqual(c.started_date_time);
+        expect(hearing.endedDateTime).toBeNull();
     });
 });

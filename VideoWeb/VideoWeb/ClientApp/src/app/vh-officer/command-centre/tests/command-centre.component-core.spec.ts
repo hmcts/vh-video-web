@@ -1,7 +1,6 @@
 import { discardPeriodicTasks, fakeAsync, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -15,8 +14,8 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MenuOption } from '../../models/menus-options';
+import { VhoQueryService } from '../../services/vho-query-service.service';
 import { CommandCentreComponent } from '../command-centre.component';
-import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 
 describe('CommandCentreComponent - Core', () => {
     let component: CommandCentreComponent;
@@ -164,7 +163,7 @@ describe('CommandCentreComponent - Core', () => {
 
     it('should handle api error when retrieving conference details fails', fakeAsync(() => {
         const error = { status: 404, isApiException: true };
-        vhoQueryService.getConferenceByIdVHO.and.returnValue(throwError(error));
+        vhoQueryService.getConferenceByIdVHO.and.callFake(() => Promise.reject(error));
         errorService.handleApiError.and.callFake(() => {
             Promise.resolve(true);
         });

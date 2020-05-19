@@ -53,7 +53,7 @@ describe('JudgeSelfTestComponent', () => {
     });
 
     it('should navigate to hearing list when equipment works', () => {
-        spyOn(router, 'navigateByUrl').and.callFake(() => {});
+        spyOn(router, 'navigateByUrl').and.callFake(() => Promise.resolve(true));
         component.equipmentWorksHandler();
         expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.JudgeHearingList);
     });

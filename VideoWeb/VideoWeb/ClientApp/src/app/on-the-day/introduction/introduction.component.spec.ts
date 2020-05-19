@@ -60,7 +60,7 @@ describe('IntroductionComponent', () => {
     });
 
     it('should navigate to equipment check', () => {
-        spyOn(router, 'navigate').and.callFake(() => {});
+        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         component.goToEquipmentCheck();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.EquipmentCheck, conference.id]);
     });

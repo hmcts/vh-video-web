@@ -1,16 +1,14 @@
-import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import {
     ApiClient,
     ConferenceForVhOfficerResponse,
     ConferenceResponseVho,
-    TaskResponse,
-    ParticipantHeartbeatResponse
-} from '../../services/clients/api-client';
+    ParticipantHeartbeatResponse,
+    TaskResponse
+} from 'src/app/services/clients/api-client';
+import { Injectable } from '@angular/core';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable()
 export class VhoQueryService {
     private vhoConferencesSubject: BehaviorSubject<ConferenceForVhOfficerResponse[]>;
     private vhoConferences: ConferenceForVhOfficerResponse[] = [];
