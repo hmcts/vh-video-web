@@ -21,19 +21,49 @@
 </div>
 <div class="govuk-grid-row" *ngIf="showSelfView">
   <div class="govuk-grid-column-one-half" id="outgoingFeedDiv">
-    <button id="outgoingFeedButton" type="button" class="govuk-button govuk-button--secondary reduce-margin"
-      data-module="govuk-button" (click)="toggleView()">
+    <button
+      id="outgoingFeedButton"
+      type="button"
+      class="govuk-button govuk-button--secondary reduce-margin govuk-!-margin-right-4"
+      data-module="govuk-button"
+      (click)="toggleView()"
+    >
       {{ selfViewOpen ? 'Close' : 'Open' }} self-view
     </button>
-    <video [ngClass]="{'showVideo': selfViewOpen, 'hideVideo': !selfViewOpen}" id="outgoingFeedVideo" [muted]="true"
-      [srcObject]="this.outgoingStream" autoplay height="auto">
+
+    <video
+      [ngClass]="{ showVideo: selfViewOpen, hideVideo: !selfViewOpen }"
+      id="outgoingFeedVideo"
+      [muted]="true"
+      [srcObject]="this.outgoingStream"
+      autoplay
+      height="auto"
+    >
       Your browser does not support Video
     </video>
+
+    <button
+      id="muteUnmuteButton"
+      class="govuk-button reduce-margin"
+      data-module="govuk-button"
+      type="button"
+      (click)="muteUnmuteCall()"
+      alt="Mute Microphone"
+      [ngClass]="audioMuted ? 'govuk-button--warning' : 'govuk-button'"
+    >
+      {{ audioMuted ? 'Unmute' : 'Mute' }} Microphone
+
+      <span *ngIf="!audioMuted" class="govuk-button__start-icon">
+        <img id="mute-microphone-img" class ="microphoneIcon" src="/assets/images/mic_on.png" alt="Mute Microphone" />
+      </span>
+      <span *ngIf="audioMuted" class="govuk-button__start-icon microphoneIcon">
+        <img id="unmute-microphone-img" class="microphoneIcon" src="/assets/images/mic_off.png" alt="Unmute Microphone" />
+      </span>
+    </button>
   </div>
 </div>
 
 <div *ngIf="!loadingData && hearing" class="govuk-grid-row">
-
   <div class="govuk-grid-column-full">
     <div class="govuk-!-padding-top-5">
       <h1 class="govuk-heading-xl govuk-!-padding-top-5">Your video hearing {{ getConferenceStatusText() }}</h1>
@@ -43,12 +73,11 @@
       <tbody class="govuk-table__body">
         <tr class="govuk-table__row">
           <td class="govuk-table__cell hearing-details-col1-width">
-            <strong>{{ hearing.caseName }}</strong> ({{ hearing.caseType }})
-            <span>case number</span>:
-            <strong>{{ hearing.caseNumber}}</strong>
+            <strong>{{ hearing.caseName }}</strong> ({{ hearing.caseType }}) <span>case number</span>:
+            <strong>{{ hearing.caseNumber }}</strong>
           </td>
           <td class="govuk-table__cell hearing-details-col2-width">
-            {{ hearing.scheduledStartTime| date: 'dd MMMM	yyyy' }}
+            {{ hearing.scheduledStartTime | date: 'dd MMMM	yyyy' }}
             <span class="govuk-!-font-weight-bold">
               {{ hearing.scheduledStartTime | date: 'HH:mm' }} to
               {{ hearing.scheduledEndTime | date: 'HH:mm' }}
@@ -61,14 +90,14 @@
 
   <div class="govuk-grid-column-two-thirds">
     <div
-      *ngIf="!showVideo && currentTime && ( hearing.isNotStarted() || hearing.isPaused() || hearing.isSuspended() || hearing.isClosed()  )"
-      class="govuk-panel" [ngClass]="getCurrentTimeClass()">
+      *ngIf="!showVideo && currentTime && (hearing.isNotStarted() || hearing.isPaused() || hearing.isSuspended() || hearing.isClosed())"
+      class="govuk-panel"
+      [ngClass]="getCurrentTimeClass()"
+    >
       <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="getCurrentTimeClass()">
-
         <div *ngIf="hearing.isOnTime()">
           <h2 class="govuk-heading-m white">Please wait</h2>
-          <p class="white">Your video hearing is scheduled to begin at {{ hearing.scheduledStartTime | date: 'HH:mm' }}
-          </p>
+          <p class="white">Your video hearing is scheduled to begin at {{ hearing.scheduledStartTime | date: 'HH:mm' }}</p>
         </div>
 
         <div *ngIf="hearing.isStarting()">
@@ -79,8 +108,7 @@
         <div *ngIf="hearing.isDelayed()">
           <h2 class="govuk-heading-m">We're really sorry your hearing is delayed</h2>
           <p>
-            Please stand by and one of the video hearing team will call you in the next 5 minutes on the number you
-            have given us.
+            Please stand by and one of the video hearing team will call you in the next 5 minutes on the number you have given us.
           </p>
         </div>
 
@@ -95,11 +123,10 @@
         <div *ngIf="hearing.isSuspended()">
           <h2 class="govuk-heading-m">We're having technical issues</h2>
           <p>
-            Please wait while we try to restart the hearing. All participants are affected. We'll call to update you
-            - there's no need to call us.
+            Please wait while we try to restart the hearing. All participants are affected. We'll call to update you - there's no need to
+            call us.
           </p>
         </div>
-
       </div>
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
@@ -111,7 +138,7 @@
           <div class="govuk-body" [ngClass]="getCurrentTimeClass()">
             <p class="govuk-!-margin-bottom-4" [ngClass]="getCurrentTimeClass()">The time now is:</p>
             <p class="govuk-panel__body govuk-!-margin-top-4 govuk-!-font-size-80" [ngClass]="getCurrentTimeClass()">
-              <strong>{{ currentTime | date:'HH:mm' }}</strong>
+              <strong>{{ currentTime | date: 'HH:mm' }}</strong>
             </p>
           </div>
         </div>
@@ -124,8 +151,7 @@
   </div>
 
   <div class="govuk-grid-column-one-third">
-    <app-individual-participant-status-list aria-label="list of participants in hearing"
-      [conference]="hearing.getConference()">
+    <app-individual-participant-status-list aria-label="list of participants in hearing" [conference]="hearing.getConference()">
     </app-individual-participant-status-list>
   </div>
 </div>
