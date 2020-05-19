@@ -5,8 +5,10 @@ import {
     ConferenceResponseVho,
     ParticipantHeartbeatResponse,
     TaskResponse
-} from '../../services/clients/api-client';
+} from 'src/app/services/clients/api-client';
+import { Injectable } from '@angular/core';
 
+@Injectable()
 export class VhoQueryService {
     private vhoConferencesSubject: BehaviorSubject<ConferenceForVhOfficerResponse[]>;
     private vhoConferences: ConferenceForVhOfficerResponse[] = [];
