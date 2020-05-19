@@ -394,7 +394,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             this.isPrivateConsultation = false;
             return;
         }
-        
+
         if (this.hearing.isInSession()) {
             this.logger.debug('Showing video because hearing is in session');
             this.showSelfView = true;
