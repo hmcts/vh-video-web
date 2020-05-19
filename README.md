@@ -66,6 +66,17 @@ npm run test
 
 This will execute the angular tests files with the --code-coverage parameter. Once the coverage files have been produced, enable the watch command for Coverage Gutters.
 
+###Branch name git hook will run on pre commit and control the standard for new branch name.
+
+The branch name should start with: feature/VIH-XXXX-branchName  (X - is digit).
+If git version is less than 2.9 the pre-commit file from the .githooks folder need copy to local .git/hooks folder.
+To change git hooks directory to directory under source control run (works only for git version 2.9 or greater) :
+$ git config core.hooksPath .githooks
+
+##Commit message 
+The commit message will be validated by prepare-commit-msg hook.
+The commit message format should start with : 'feature/VIH-XXXX : ' folowing by 8 or more characters description of commit, otherwise the warning message will be presented.
+
 ### Run Zap scan locally
 
 To run Zap scan locally update the following settings and run acceptance tests
@@ -83,16 +94,4 @@ Update following configuration under VideoWeb/VideoWeb.AcceptanceTests/appsettin
 "AzureAd:RedirectUri": "https://videoweb_ac/home"
 "AzureAd:PostLogoutRedirectUri": "https://videoweb_ac/logout"
 "ZapConfiguration:ZapScan": true
-
-###Branch name git hook will run on pre commit and control the standard for new branch name.
-
-The branch name should start with: feature/VIH-XXXX-branchName  (X - is digit).
-If git version is less than 2.9 the pre-commit file from the .githooks folder need copy to local .git/hooks folder.
-To change git hooks directory to directory under source control run (works only for git version 2.9 or greater) :
-$ git config core.hooksPath .githooks
-
-##Commit message 
-The commit message will be validated by prepare-commit-msg hook.
-The commit message format should start with : 'feature/VIH-XXXX : ' folowing by 8 or more characters description of commit, otherwise the warning message will be presented.
-
 
