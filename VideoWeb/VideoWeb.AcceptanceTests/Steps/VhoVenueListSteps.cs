@@ -32,8 +32,10 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void SelectVenues(string venues)
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesDropdown).Displayed.Should().BeTrue();
+            
             foreach (var venue in ConverterHelpers.ConvertStringIntoArray(venues))
             {
+                _browsers[_c.CurrentUser.Key].Driver.FindElement(VhoVenueAllocationPage.VenuesTextBox).SendKeys(venue);
                 _browsers[_c.CurrentUser.Key].ClickCheckbox(VhoVenueAllocationPage.VenueCheckbox(venue));
             }
         }

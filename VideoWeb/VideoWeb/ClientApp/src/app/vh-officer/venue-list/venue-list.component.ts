@@ -32,7 +32,7 @@ export class VenueListComponent implements OnInit {
     }
 
     get venuesSelected(): boolean {
-        return this.selectedVenues.length > 0;
+        return this.selectedVenues && this.selectedVenues.length > 0;
     }
 
     updateSelection() {
