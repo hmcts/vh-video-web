@@ -27,6 +27,8 @@ import {
 import { Hearing } from '../../shared/models/hearing';
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room.component';
 
+declare var PexRTC: any;
+
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
     let fixture: ComponentFixture<ParticipantWaitingRoomComponent>;
@@ -303,5 +305,18 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         await component.getConferenceClosedTime(conference.id);
 
         expect(component.conference.closed_date_time).toBeDefined();
+    });
+
+    it('should mute the participant when user opts to mute the call', () => {
+        component.pexipAPI = new PexRTC();
+        component.muteUnmuteCall();
+        expect(component.audioMuted).toBeTruthy();
+    });
+
+    it('should unmute the participant when user opts to turn off mute option', () => {
+        component.pexipAPI = new PexRTC();
+        component.muteUnmuteCall(); // Mute the call
+        component.muteUnmuteCall(); // Unmute the call
+        expect(component.audioMuted).toBeFalsy();
     });
 });
