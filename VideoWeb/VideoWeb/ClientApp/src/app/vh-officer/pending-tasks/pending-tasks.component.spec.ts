@@ -84,4 +84,15 @@ describe('PendingTasksComponent', () => {
         component.tasks = undefined;
         expect(component.pendingTasks).toBe(0);
     });
+
+    it('should return empty image if no pending alerts', () => {
+        component.tasks = undefined;
+        expect(component.pendingTasks).toBe(0);
+        expect(component.getAlertStatus()).toBe('alert-empty.png');
+    });
+
+    it('should return IM image if there are pending alerts', () => {
+        component.tasks = Object.assign(allTasks);
+        expect(component.getAlertStatus()).toBe('alert-full.png');
+    });
 });

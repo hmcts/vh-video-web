@@ -45,7 +45,7 @@ describe('VhoHearingListComponent', () => {
         const conference = new ConferenceTestData().getConferenceFuture();
         conference.scheduled_duration = 10;
         const hearing = new HearingSummary(conference);
-        expect(component.getDuration(hearing)).toBe('10 minutes');
+        expect(component.getDuration(hearing)).toBe('10m');
     });
 
     it('should get participants for conference', () => {

@@ -8,7 +8,7 @@ import { ParticipantSummary } from '../../shared/models/participant-summary';
 @Component({
     selector: 'app-vho-hearing-list',
     templateUrl: './vho-hearing-list.component.html',
-    styleUrls: ['./vho-hearing-list.component.scss', '../vho-global-styles.scss']
+    styleUrls: ['./vho-hearing-list.component.scss', '../vho-global-styles.scss', '../hearing-status/hearing-status.component.scss']
 })
 export class VhoHearingListComponent implements OnInit {
     @Input() conferences: HearingSummary[];

@@ -10,6 +10,7 @@ import { AdminImListComponent } from './admin-im-list/admin-im-list.component';
 import { AdminImComponent } from './admin-im/admin-im.component';
 import { CommandCentreMenuComponent } from './command-centre-menu/command-centre-menu.component';
 import { CommandCentreComponent } from './command-centre/command-centre.component';
+import { CopyIdComponent } from './copy-id/copy-id.component';
 import { HearingHeaderComponent } from './hearing-header/hearing-header.component';
 import { HearingStatusComponent } from './hearing-status/hearing-status.component';
 import { VHODashboardHelper } from './helper';
@@ -47,7 +48,8 @@ import { VhoHearingsFilterComponent } from './vho-herings-filter/vho-hearings-fi
         AdminHearingComponent,
         AdminImListComponent,
         HearingHeaderComponent,
-        HearingStatusComponent
+        HearingStatusComponent,
+        CopyIdComponent
     ],
     imports: [CommonModule, SharedModule, ChartsModule, ClipboardModule, VhOfficerRoutingModule, NgMultiSelectDropDownModule.forRoot()],
     providers: [HearingsFilterOptionsService, ParticipantStatusReader, VHODashboardHelper, VhoQueryService],

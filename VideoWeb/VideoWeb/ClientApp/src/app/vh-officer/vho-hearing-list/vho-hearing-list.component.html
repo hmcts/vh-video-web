@@ -1,78 +1,35 @@
-<div id="list-column" class="govuk-grid-column-full govuk-!-padding-left-3">
-  <dl id="conferences-list" class="govuk-summary-list">
-    <div
-      class="govuk-summary-list__row"
-      [ngClass]="{ 'selected-conference': isCurrentConference(conference) }"
-      *ngFor="let conference of conferences"
-      (click)="selectConference(conference)"
-    >
-      <dd id="{{ conference.id }}-summary" class="govuk-summary-list__value govuk-!-padding-left-4">
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-three-quarters vh-width-main govuk-!-padding-bottom-2">
-            <!-- time, case number-->
-            <div class="govuk-grid-row">
-              <div id="{{ conference.id }}-time" class="govuk-grid-column-one-half">
-                {{ conference.scheduledDateTime | date: 'HH:mm' }}
-              </div>
-              <div id="{{ conference.id }}-case-number" class="govuk-grid-column-one-half">
-                {{ conference.caseNumber }}
-              </div>
-            </div>
+<div id="conference-list" class="govuk-!-padding-3">
+  <div class="vhList govuk-!-padding-top-2" [ngClass]="{ 'selected-conference': isCurrentConference(conference) }"
+    *ngFor="let conference of conferences" (click)="selectConference(conference)" id="{{ conference.id }}-summary">
 
-            <!-- duration, case name-->
-            <div class="govuk-grid-row">
-              <div id="{{ conference.id }}-duration" class="govuk-grid-column-one-half">
-                {{ getDuration(conference) }}
-              </div>
-              <div id="{{ conference.id }}-case-name" class="govuk-grid-column-one-half">
-                {{ conference.caseName }}
-              </div>
-            </div>
+    <div class="shareIcon"><app-copy-id [conference]="conference"></app-copy-id></div> 
+    <div class="time listItem" id="{{ conference.id }}-time">{{ conference.scheduledDateTime | date: 'HH:mm' }}</div>
+    <ng-container *ngIf="conference.startedDateTime">
+      <div class="started listItemGreySmall" id="{{ conference.id }}-started">started</div>
+      <div class="startedTime listItemGreySmall" id="{{ conference.id }}-startedTime">{{ conference.startedDateTime | date: 'HH:mm' }}</div>
+    </ng-container>
+    <ng-container *ngIf="conference.endedDateTime">
+      <div class="ended listItemGreySmall" id="{{ conference.id }}-ended">ended</div>
+      <div class="endedTime listItemGreySmall" id="{{ conference.id }}-endTime">{{ conference.endedDateTime | date: 'HH:mm' }}</div>
+    </ng-container>
+    <div class="title listItemBig" id="{{ conference.id }}-case-name">{{ conference.caseName }}</div>
+    <div class="listed listItemGrey" id="{{ conference.id }}-duration">{{ getDuration(conference) }}</div>
+    <div class="crest"><img src="/assets/images/black_crest.png" class="icons" alt="crest-icon"></div>
+    <div class="ref listItemGreySmall" id="{{ conference.id }}-case-number">{{ conference.caseNumber }}</div>
+    <div class="judge listItemBold" id="{{ conference.id }}-judge">{{ conference.judgeName }}</div>
+    <div class="venue listItem" id="{{ conference.id }}-venue">{{ conference.hearingVenueName }}</div>
+    <div class="alert"><app-pending-tasks [conferenceId]="conference.id"></app-pending-tasks></div>
+    <div class="message"><app-unread-messages [conferenceId]="conference.id"></app-unread-messages></div>
+    <div class="status" id="{{ conference.id }}-status"><app-hearing-status [hearing]="mapToHearing(conference)"></app-hearing-status></div>
 
-            <!-- pending alerts/ unread messages, status/copy-->
-            <div class="govuk-grid-row govuk-!-padding-top-3">
-              <div class="govuk-grid-column-one-half">
-                <div class="govuk-grid-column-one-half">
-                  <app-pending-tasks [conferenceId]="conference.id"></app-pending-tasks>
-                </div>
-                <div class="govuk-grid-column-one-half right-side">
-                  <app-unread-messages [conferenceId]="conference.id"></app-unread-messages>
-                </div>
-              </div>
-
-              <div class="govuk-grid-column-one-half right-side">
-                <div class="govuk-grid-row" id="{{ conference.id }}-status">
-                  <app-hearing-status [hearing]="mapToHearing(conference)"></app-hearing-status>
-
-                  <span
-                    class="govuk-!-padding-1 govuk-!-margin-left-2 report-conference govuk-body-s tooltip-wrapper"
-                    (click)="copyToClipboard(conference); $event.stopPropagation()"
-                  >
-                    Copy UID
-                    <span id="tooltip-1" class="tooltip">
-                      <span class="govuk-grid-row">
-                        <span class="govuk-grid-column-half">
-                          <span>Hearing UID copied to clipboard</span>
-                        </span>
-                      </span>
-                    </span>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="govuk-grid-column-one-quarter vh-width-traffic">
-            <div class="govuk-grid-column-one-half right-side">
-              <app-participant-network-status
-                *ngFor="let participant of getParticipantsForConference(conference)"
-                [participant]="participant"
-                [conferenceId]="conference.id"
-              >
-              </app-participant-network-status>
-            </div>
-          </div>
-        </div>
-      </dd>
+    <div *ngFor="let participant of getParticipantsForConference(conference); index as i" class="pIcon{{i + 1}}">
+      <app-participant-network-status
+        [participant]="participant"
+        [conferenceId]="conference.id"
+      >
+      </app-participant-network-status>
     </div>
-  </dl>
+
+    <div class="line"><hr></div>    
+  </div>
 </div>

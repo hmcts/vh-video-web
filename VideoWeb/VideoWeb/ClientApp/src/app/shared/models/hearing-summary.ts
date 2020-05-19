@@ -106,4 +106,16 @@ export class HearingSummary extends HearingBase {
     getDurationAsText(): string {
         return this.timeReader.getDurationAsText(this.conference.scheduled_duration);
     }
+
+    get startedDateTime(): Date {
+        return this.conference.started_date_time;
+    }
+
+    get endedDateTime(): Date {
+        return this.conference.closed_date_time;
+    }
+
+    get judgeName(): string {
+        return this.participants.find(x => x.role === Role.Judge).displayName;
+    }
 }

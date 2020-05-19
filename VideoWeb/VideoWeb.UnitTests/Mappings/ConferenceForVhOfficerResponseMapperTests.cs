@@ -43,6 +43,8 @@ namespace VideoWeb.UnitTests.Mappings
             response.Status.ToString().Should().Be(conference.Status.ToString());
             response.HearingVenueName.Should().Be(conference.Hearing_venue_name);
             response.Participants.Count.Should().Be(participants.Count);
+            response.StartedDateTime.Should().Be(conference.Started_date_time);
+            response.ClosedDateTime.Should().Be(conference.Closed_date_time);
         }
     }
 }

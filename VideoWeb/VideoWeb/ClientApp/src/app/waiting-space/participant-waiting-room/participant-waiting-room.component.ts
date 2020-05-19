@@ -20,9 +20,9 @@ import { ConferenceStatusMessage } from 'src/app/services/models/conference-stat
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { Hearing } from '../../shared/models/hearing';
-import { HeartbeatModelMapper } from '../../shared/mappers/heartbeat-model-mapper';
 import { DeviceTypeService } from '../../services/device-type.service';
+import { HeartbeatModelMapper } from '../../shared/mappers/heartbeat-model-mapper';
+import { Hearing } from '../../shared/models/hearing';
 
 declare var PexRTC: any;
 declare var HeartbeatFactory: any;
@@ -143,7 +143,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     subscribeToClock(): void {
-        this.clockSubscription = this.clockService.getClock().subscribe((time) => {
+        this.clockSubscription = this.clockService.getClock().subscribe(time => {
             this.currentTime = time;
             this.checkIfHearingIsClosed();
             this.checkIfHearingIsStarting();
@@ -181,12 +181,12 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
                 this.hearing = new Hearing(data);
                 this.conference = this.hearing.getConference();
                 this.participant = data.participants.find(
-                    (x) => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
+                    x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
                 );
                 this.logger.info(`Participant waiting room : Conference Id: ${conferenceId} and participantId: ${this.participant.id},
           participant name : ${this.videoWebService.getObfuscatedName(this.participant.name)}`);
             })
-            .catch((error) => {
+            .catch(error => {
                 this.logger.error(`There was an error getting a conference ${conferenceId}`, error);
                 this.loadingData = false;
                 if (!this.errorService.returnHomeIfUnauthorised(error)) {
@@ -229,26 +229,26 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     startEventHubSubscribers() {
         this.logger.debug('Subscribing to conference status changes...');
-        this.eventService.getHearingStatusMessage().subscribe((message) => {
+        this.eventService.getHearingStatusMessage().subscribe(message => {
             this.handleConferenceStatusChange(message);
             this.updateShowVideo();
         });
 
         this.logger.debug('Subscribing to participant status changes...');
-        this.eventService.getParticipantStatusMessage().subscribe((message) => {
+        this.eventService.getParticipantStatusMessage().subscribe(message => {
             this.handleParticipantStatusChange(message);
             this.updateShowVideo();
         });
 
         this.logger.debug('Subscribing to admin consultation messages...');
-        this.eventService.getAdminConsultationMessage().subscribe((message) => {
+        this.eventService.getAdminConsultationMessage().subscribe(message => {
             if (message.answer && message.answer === ConsultationAnswer.Accepted) {
                 this.isAdminConsultation = true;
             }
         });
 
         this.logger.debug('Subscribing to EventHub disconnects');
-        this.eventService.getServiceDisconnected().subscribe((attemptNumber) => {
+        this.eventService.getServiceDisconnected().subscribe(attemptNumber => {
             this.handleEventHubDisconnection(attemptNumber);
         });
 
@@ -273,7 +273,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): any {
-        const participant = this.hearing.getConference().participants.find((p) => p.id === message.participantId);
+        const participant = this.hearing.getConference().participants.find(p => p.id === message.participantId);
         const isMe = participant.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase();
         participant.status = message.status;
         this.logger.info(
@@ -440,7 +440,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             this.conference = await this.videoWebService.getConferenceById(conferenceId);
             this.hearing = new Hearing(this.conference);
             this.participant = this.conference.participants.find(
-                (x) => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
+                x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
             );
             this.logger.info(
                 `Participant waiting room : Conference with id ${conferenceId} closed | Participant Id : ${this.participant.id}, ${this.participant.display_name}.`
