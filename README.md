@@ -71,7 +71,7 @@ This will execute the angular tests files with the --code-coverage parameter. On
 To run Zap scan locally update the following settings and run acceptance tests
 
 User Secrets:
-"VhServices:VideoWebUrl": "https://videoweb_ac/",
+"VhServices:VideoWebUrl": "https://videoweb_ac/"
 "VhServices:VideoWebApiUrl": "https://videoweb_ac/"
 
 Update following configuration under VideoWeb/VideoWeb/appsettings.json
@@ -84,7 +84,7 @@ Update following configuration under VideoWeb/VideoWeb.AcceptanceTests/appsettin
 "AzureAd:PostLogoutRedirectUri": "https://videoweb_ac/logout"
 "ZapConfiguration:ZapScan": true
 
-##Branch name git hook will run on pre commit and control the standard for new branch name.
+###Branch name git hook will run on pre commit and control the standard for new branch name.
 
 The branch name should start with: feature/VIH-XXXX-branchName  (X - is digit).
 If git version is less than 2.9 the pre-commit file from the .githooks folder need copy to local .git/hooks folder.
