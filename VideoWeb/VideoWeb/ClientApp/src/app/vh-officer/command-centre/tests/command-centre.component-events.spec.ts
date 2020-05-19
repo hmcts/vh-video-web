@@ -15,7 +15,7 @@ import { TestFixtureHelper } from 'src/app/testing/Helper/test-fixture-helper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
+import { VhoQueryService } from '../../services/vho-query-service.service';
 import { CommandCentreComponent } from '../command-centre.component';
 
 describe('CommandCentreComponent - Events', () => {

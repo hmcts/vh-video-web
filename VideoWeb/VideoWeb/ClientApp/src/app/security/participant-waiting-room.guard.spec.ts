@@ -22,7 +22,7 @@ describe('ParticipantWaitingRoomGuard', () => {
 
     it('should be able to activate component', async(async () => {
         const response = new ConferenceResponse({ status: ConferenceStatus.NotStarted });
-        videoWebServiceSpy.getConferenceById.and.returnValue(response);
+        videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(response));
         const result = await guard.canActivate(activateRoute);
 
         expect(result).toBeTruthy();
@@ -32,7 +32,7 @@ describe('ParticipantWaitingRoomGuard', () => {
         const date = new Date(new Date().toUTCString());
         date.setUTCMinutes(date.getUTCMinutes() - 32);
         const response = new ConferenceResponse({ status: ConferenceStatus.Closed, closed_date_time: date });
-        videoWebServiceSpy.getConferenceById.and.returnValue(response);
+        videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(response));
         const result = await guard.canActivate(activateRoute);
 
         expect(result).toBeFalsy();

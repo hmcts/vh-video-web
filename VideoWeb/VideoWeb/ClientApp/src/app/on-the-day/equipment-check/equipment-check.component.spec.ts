@@ -49,7 +49,7 @@ describe('EquipmentCheckComponent', () => {
     });
 
     it('should navigate to camera-and-microphone', () => {
-        spyOn(router, 'navigate').and.callFake(() => {});
+        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         component.goToCameraAndMicCheck();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.SwitchOnCameraMicrophone, conference.id]);
     });
