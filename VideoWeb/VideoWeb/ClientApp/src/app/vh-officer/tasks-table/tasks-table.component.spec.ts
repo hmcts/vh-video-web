@@ -1,14 +1,13 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { TaskCompleted } from 'src/app/on-the-day/models/task-completed';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { Role, TaskResponse, TaskStatus, TaskType } from 'src/app/services/clients/api-client';
 import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { TasksTestData } from 'src/app/testing/mocks/data/tasks-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { VhoQueryService } from '../services/vho-query-service.service';
 import { TasksTableComponent } from './tasks-table.component';
-import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 
 describe('TasksTableComponent', () => {
     let component: TasksTableComponent;
@@ -54,7 +53,7 @@ describe('TasksTableComponent', () => {
     }));
 
     it('should log error when unable to init', fakeAsync(() => {
-        const error = { error: 'failed to find conference', error_code: 404 };
+        const error = new Error('failed to find conference');
         vhoQueryService.getConferenceByIdVHO.and.callFake(() => Promise.reject(error));
         const spy = spyOn(logger, 'error');
         component.tasks = undefined;

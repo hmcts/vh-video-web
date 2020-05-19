@@ -21,7 +21,7 @@ describe('JudgeGuard', () => {
 
     it('should not be able to activate component if role is not Judge', async(async () => {
         const profile = new UserProfileResponse({ role: Role.VideoHearingsOfficer });
-        profileServiceSpy.getUserProfile.and.returnValue(profile);
+        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         const result = await guard.canActivate(null, null);
         expect(result).toBeFalsy();
         expect(router.navigate).toHaveBeenCalledWith(['/home']);
@@ -29,7 +29,7 @@ describe('JudgeGuard', () => {
 
     it('should be able to activate component if role is Judge', async(async () => {
         const profile = new UserProfileResponse({ role: Role.Judge });
-        profileServiceSpy.getUserProfile.and.returnValue(profile);
+        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         const result = await guard.canActivate(null, null);
         expect(result).toBeTruthy();
     }));

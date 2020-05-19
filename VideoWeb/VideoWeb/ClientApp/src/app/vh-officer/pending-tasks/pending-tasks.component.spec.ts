@@ -1,14 +1,13 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { TaskCompleted } from 'src/app/on-the-day/models/task-completed';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { TaskResponse } from 'src/app/services/clients/api-client';
 import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { TasksTestData } from 'src/app/testing/mocks/data/tasks-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { VhoQueryService } from '../services/vho-query-service.service';
 import { PendingTasksComponent } from './pending-tasks.component';
-import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 
 describe('PendingTasksComponent', () => {
     let component: PendingTasksComponent;
@@ -48,7 +47,7 @@ describe('PendingTasksComponent', () => {
     it('should log error when unable to init', fakeAsync(() => {
         // reset to override before each
         component.tasks = undefined;
-        const error = { error: 'failed to find conference', error_code: 404 };
+        const error = new Error('failed to find conference');
         vhoQueryService.getTasksForConference.and.callFake(() => Promise.reject(error));
         const spy = spyOn(logger, 'error');
         component.ngOnInit();
@@ -84,5 +83,16 @@ describe('PendingTasksComponent', () => {
     it('should return 0 when tasks are not defined', () => {
         component.tasks = undefined;
         expect(component.pendingTasks).toBe(0);
+    });
+
+    it('should return empty image if no pending alerts', () => {
+        component.tasks = undefined;
+        expect(component.pendingTasks).toBe(0);
+        expect(component.getAlertStatus()).toBe('alert-empty.png');
+    });
+
+    it('should return IM image if there are pending alerts', () => {
+        component.tasks = Object.assign(allTasks);
+        expect(component.getAlertStatus()).toBe('alert-full.png');
     });
 });
