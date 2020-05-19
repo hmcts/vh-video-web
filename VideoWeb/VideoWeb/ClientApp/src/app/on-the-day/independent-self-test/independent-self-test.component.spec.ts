@@ -1,20 +1,20 @@
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AdalService } from 'adal-angular4';
+import { configureTestSuite } from 'ng-bullet';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { pageUrls } from 'src/app/shared/page-url.constants';
+import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { ContactUsFoldingStubComponent } from 'src/app/testing/stubs/contact-us-stub';
 import { SelfTestStubComponent } from 'src/app/testing/stubs/self-test-stub';
 import { IndependentSelfTestComponent } from './independent-self-test.component';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { AdalService } from 'adal-angular4';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
-import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { pageUrls } from 'src/app/shared/page-url.constants';
-import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
-import { configureTestSuite } from 'ng-bullet';
 
 describe('IndependentSelfTestComponent', () => {
     let component: IndependentSelfTestComponent;
@@ -52,7 +52,7 @@ describe('IndependentSelfTestComponent', () => {
     });
 
     it('should navigate to hearing list when equipment works', () => {
-        spyOn(router, 'navigateByUrl').and.callFake(() => {});
+        spyOn(router, 'navigateByUrl').and.callFake(() => Promise.resolve(true));
         component.equipmentWorksHandler();
         expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.ParticipantHearingList);
     });

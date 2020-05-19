@@ -10,6 +10,7 @@ import { AdminImListComponent } from './admin-im-list/admin-im-list.component';
 import { AdminImComponent } from './admin-im/admin-im.component';
 import { CommandCentreMenuComponent } from './command-centre-menu/command-centre-menu.component';
 import { CommandCentreComponent } from './command-centre/command-centre.component';
+import { CopyIdComponent } from './copy-id/copy-id.component';
 import { HearingHeaderComponent } from './hearing-header/hearing-header.component';
 import { HearingStatusComponent } from './hearing-status/hearing-status.component';
 import { VHODashboardHelper } from './helper';
@@ -19,6 +20,7 @@ import { ParticipantNetworkStatusComponent } from './participant-network-status/
 import { ParticipantStatusComponent } from './participant-status/participant-status.component';
 import { PendingTasksComponent } from './pending-tasks/pending-tasks.component';
 import { HearingsFilterOptionsService } from './services/hearings-filter-options.service';
+import { VhoQueryService } from './services/vho-query-service.service';
 import { TasksTableComponent } from './tasks-table/tasks-table.component';
 import { UnreadMessagesComponent } from './unread-messages/unread-messages.component';
 import { VenueListComponent } from './venue-list/venue-list.component';
@@ -26,7 +28,6 @@ import { VhOfficerRoutingModule } from './vh-officer-routing.module';
 import { VhoChatComponent } from './vho-chat/vho-chat.component';
 import { VhoHearingListComponent } from './vho-hearing-list/vho-hearing-list.component';
 import { VhoHearingsFilterComponent } from './vho-herings-filter/vho-hearings-filter.component';
-import { VhoQueryService } from './services/vho-query-service.service';
 
 @NgModule({
     declarations: [
@@ -47,7 +48,8 @@ import { VhoQueryService } from './services/vho-query-service.service';
         AdminHearingComponent,
         AdminImListComponent,
         HearingHeaderComponent,
-        HearingStatusComponent
+        HearingStatusComponent,
+        CopyIdComponent
     ],
     imports: [CommonModule, SharedModule, ChartsModule, ClipboardModule, VhOfficerRoutingModule, NgMultiSelectDropDownModule.forRoot()],
     providers: [HearingsFilterOptionsService, ParticipantStatusReader, VHODashboardHelper, VhoQueryService],

@@ -1,7 +1,2 @@
-<div
-  class="govuk-grid-column-full"
-  id="{{ conferenceId }}--pending-tasks"
-  class="alert-badge has-alerts"
-  [ngClass]="{ 'has-alerts': pendingTasks > 0, 'no-alerts': pendingTasks === 0 }"
-  [attr.data-badge]="pendingTasks"
-></div>
+<img class="alert-image" id="{{ conferenceId }}--pending-tasks" src="/assets/images/{{ getAlertStatus() }}" alt="alerts-icon" />
+

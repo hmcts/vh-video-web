@@ -6,10 +6,10 @@ export class HearingTimeReader {
         const momDuration = moment.duration(duration, 'minutes');
         const h = momDuration.hours();
         const m = momDuration.minutes();
-        const hours = h === 1 ? `${h} hour` : `${h} hours`;
-        const minutes = m === 1 ? `${m} minute` : `${m} minutes`;
+        const hours = `${h}h`;
+        const minutes = `${m}m`;
         if (h > 0 && m > 0) {
-            return `${hours} and ${minutes}`;
+            return `${hours} ${minutes}`;
         } else if (h > 0 && m === 0) {
             return `${hours}`;
         } else {

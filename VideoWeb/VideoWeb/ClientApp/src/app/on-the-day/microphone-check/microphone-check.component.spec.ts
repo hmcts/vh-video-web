@@ -59,7 +59,7 @@ describe('MicrophoneCheckComponent', () => {
     });
 
     it('should invalidate form when "No" is selected', async () => {
-        spyOn(router, 'navigate').and.callFake(() => {});
+        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         component.equipmentCheck.setValue('No');
         component.equipmentCheck.markAsDirty();
         await component.onSubmit();
@@ -69,7 +69,7 @@ describe('MicrophoneCheckComponent', () => {
     });
 
     it('should validate form when "Yes" is selected', async () => {
-        spyOn(router, 'navigate').and.callFake(() => {});
+        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         component.equipmentCheck.setValue('Yes');
         component.equipmentCheck.markAsDirty();
         await component.onSubmit();
@@ -78,7 +78,7 @@ describe('MicrophoneCheckComponent', () => {
     });
 
     it('should allow equipment check when answered "No"', () => {
-        spyOn(router, 'navigate').and.callFake(() => {});
+        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         component.equipmentCheck.setValue('No');
         component.form.markAsDirty();
         component.checkEquipmentAgain();
@@ -87,7 +87,7 @@ describe('MicrophoneCheckComponent', () => {
     });
 
     it('should not allow equipment check when answered "Yes"', () => {
-        spyOn(router, 'navigate').and.callFake(() => {});
+        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         component.equipmentCheck.setValue('Yes');
         component.form.markAsDirty();
         component.checkEquipmentAgain();
