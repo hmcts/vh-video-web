@@ -27,8 +27,6 @@ import {
 import { Hearing } from '../../shared/models/hearing';
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room.component';
 
-declare var PexRTC: any;
-
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
     let fixture: ComponentFixture<ParticipantWaitingRoomComponent>;
@@ -36,6 +34,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let route: ActivatedRoute;
     let adalService: MockAdalService;
     let eventService: MockEventsService;
+    let pexipSpy: any;
     const futureConference = new ConferenceTestData().getConferenceDetailFuture();
     configureTestSuite(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
@@ -45,7 +44,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         ]);
         videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(futureConference));
         videoWebServiceSpy.getObfuscatedName.and.returnValue('test-obfs');
-
+        pexipSpy = jasmine.createSpyObj('pexipAPI', ['muteAudio', 'disconnect']);
         videoWebServiceSpy.getJwToken.and.returnValue(
             Promise.resolve(
                 new TokenResponse({
@@ -308,14 +307,17 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     });
 
     it('should mute the participant when user opts to mute the call', () => {
-        component.pexipAPI = new PexRTC();
+        pexipSpy.muteAudio.and.returnValue(true);
+        component.pexipAPI = pexipSpy;
         component.muteUnmuteCall();
         expect(component.audioMuted).toBeTruthy();
     });
 
     it('should unmute the participant when user opts to turn off mute option', () => {
-        component.pexipAPI = new PexRTC();
+        component.pexipAPI = pexipSpy;
+        pexipSpy.muteAudio.and.returnValue(true);
         component.muteUnmuteCall(); // Mute the call
+        pexipSpy.muteAudio.and.returnValue(false);
         component.muteUnmuteCall(); // Unmute the call
         expect(component.audioMuted).toBeFalsy();
     });
