@@ -1,6 +1,6 @@
 <div id="conference-list" class="govuk-!-padding-3">
   <div class="vhList govuk-!-padding-top-2" [ngClass]="{ 'selected-conference': isCurrentConference(conference) }"
-    *ngFor="let conference of conferences" (click)="selectConference(conference)">
+    *ngFor="let conference of conferences" (click)="selectConference(conference)" id="{{ conference.id }}-summary">
 
     <div class="shareIcon"><app-copy-id [conference]="conference"></app-copy-id></div> 
     <div class="time listItem" id="{{ conference.id }}-time">{{ conference.scheduledDateTime | date: 'HH:mm' }}</div>

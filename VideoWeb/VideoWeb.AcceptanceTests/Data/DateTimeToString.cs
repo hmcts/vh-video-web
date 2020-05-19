@@ -10,21 +10,21 @@ namespace VideoWeb.AcceptanceTests.Data
 
             if (timespan.Hours.Equals(0))
             {
-                listedFor = timespan.Minutes.Equals(1) ? $"{timespan.Minutes} minute" : $"{timespan.Minutes} minutes";
+                listedFor = $"{timespan.Minutes}m";
             }
             else
             {
-                listedFor = timespan.Hours.Equals(1) ? $"{timespan.Hours} hour" : $"{timespan.Hours} hours";
+                listedFor = $"{timespan.Hours}h";
             }
 
             if (timespan.Minutes.Equals(0) || timespan.Hours <= 0) return listedFor;
             if (timespan.Minutes.Equals(1))
             {
-                listedFor += $" and 1 minute";
+                listedFor += $" and 1m";
             }
             else
             {
-                listedFor += $" and {timespan.Minutes} minutes";
+                listedFor += $" and {timespan.Minutes}m";
             }
 
             return listedFor;
