@@ -16,6 +16,27 @@ Scenario: Participant has 1 or more hearings
 
 Scenario: Participant has a hearing more than 30 minutes in the future
 	Given I have a hearing in 31 minutes time
+  	Given I have a hearing in 31 minutes time
+    	Given I have a hearing in 31 minutes time
+      	Given I have a hearing in 31 minutes time
+        	Given I have a hearing in 31 minutes time
+          	Given I have a hearing in 31 minutes time
+            	Given I have a hearing in 31 minutes time
+              	Given I have a hearing in 31 minutes time
+                	Given I have a hearing in 31 minutes time
+                  	Given I have a hearing in 31 minutes time
+                    	Given I have a hearing in 31 minutes time
+                      	Given I have a hearing in 31 minutes time
+                        	Given I have a hearing in 31 minutes time
+                          	Given I have a hearing in 31 minutes time
+                            	Given I have a hearing in 31 minutes time
+                              	Given I have a hearing in 31 minutes time
+                                	Given I have a hearing in 31 minutes time
+                                  	Given I have a hearing in 31 minutes time
+                                    	Given I have a hearing in 31 minutes time
+                                      	Given I have a hearing in 31 minutes time
+                                        	Given I have a hearing in 31 minutes time
+                                          	Given I have a hearing in 31 minutes time
 	And a new browser is open for a Participant
 	When the user attempts to login with valid credentials
 	Then the user is on the Hearing List page

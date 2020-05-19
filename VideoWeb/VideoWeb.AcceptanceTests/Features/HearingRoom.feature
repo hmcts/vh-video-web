@@ -74,3 +74,16 @@ Scenario: Four participants join hearing
 	And the hearing status changed to Closed
 	When in Individual01's browser
 	Then the participants waiting room displays the closed status
+
+  @HearingTest @Smoketest-Extended @DisableLogging @AudioRecording
+Scenario: Audio Recording
+  Given I have a hearing with audio recording enabled
+  And the Individual01 user has progressed to the Waiting Room page for the existing hearing
+	And the Clerk user has progressed to the Waiting Room page for the existing hearing
+	When the Clerk starts the hearing
+	And the countdown finishes
+	And the Clerk is on the Hearing Room page for 20 seconds
+  When the Clerk clicks close
+	Then the user is on the Hearing List page
+	And the hearing status changed to Closed
+  And an audio recording of the hearing has been created

@@ -5019,6 +5019,9 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonProperty("scheduled_date_time", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTime Scheduled_date_time { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("started_date_time", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Started_date_time { get; set; }
+    
         [Newtonsoft.Json.JsonProperty("closed_date_time", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTime? Closed_date_time { get; set; }
     
@@ -5125,6 +5128,9 @@ namespace VideoWeb.Services.Video
     
         [Newtonsoft.Json.JsonProperty("scheduled_date_time", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTime Scheduled_date_time { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("started_date_time", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Started_date_time { get; set; }
     
         [Newtonsoft.Json.JsonProperty("closed_date_time", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTime? Closed_date_time { get; set; }
