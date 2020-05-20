@@ -53,7 +53,13 @@ namespace VideoWeb.AcceptanceTests.Hooks
             RegisterHearingServices(context);
             RegisterSauceLabsSettings(context);
             RunningAppsLocally(context);
+            RegisterZapSettings(context);
             await GenerateBearerTokens(context);
+        }
+
+        private void RegisterZapSettings(TestContext context)
+        {
+            context.ZapConfiguration = Options.Create(_configRoot.GetSection("ZapConfiguration").Get<ZapConfiguration>()).Value;
         }
 
         private void RegisterAzureSecrets(TestContext context)

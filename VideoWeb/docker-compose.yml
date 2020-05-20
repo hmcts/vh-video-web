@@ -1,0 +1,10 @@
+version: '3.4'
+
+services:
+  videoweb:
+    image: ${DOCKER_REGISTRY-}videoweb
+    build:
+      context: .
+      dockerfile: ./VideoWeb/Dockerfile
+      args:
+        - skip_client_build=false

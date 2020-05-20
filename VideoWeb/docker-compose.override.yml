@@ -1,0 +1,27 @@
+version: '3.4'
+
+services:
+  videoweb:
+    build:
+      args:
+        - skip_client_build=true
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+    ports:
+      - "5801:80"
+      - "5800:443"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  videoweb.angular:
+    image: ${DOCKER_REGISTRY-}videowebangular
+    build:
+      context: .
+      dockerfile: ./VideoWeb/ClientApp/Dockerfile
+    ports:
+      - "4200:4200" 
+      - "49153:49153"
+    volumes:
+      - ./VideoWeb/ClientApp:/app
