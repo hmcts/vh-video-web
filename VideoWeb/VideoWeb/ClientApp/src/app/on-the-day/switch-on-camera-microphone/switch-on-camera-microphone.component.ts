@@ -8,7 +8,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import 'webrtc-adapter';
 
 @Component({
     selector: 'app-switch-on-camera-microphone',
@@ -61,9 +60,7 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
         try {
             this.conference = await this.videoWebService.getConferenceById(this.conferenceId);
         } catch (error) {
-            if (!this.errorService.returnHomeIfUnauthorised(error)) {
-                this.errorService.handleApiError(error);
-            }
+            this.errorService.handleApiError(error);
         }
     }
 
@@ -79,18 +76,12 @@ export class SwitchOnCameraMicrophoneComponent implements OnInit {
     }
 
     goVideoTest() {
-        if (this.isJudge) {
-            if (this.conferenceId) {
-                this.router.navigate([pageUrls.JudgeSelfTestVideo, this.conferenceId]);
-            } else {
-                this.router.navigate([pageUrls.IndependentSelfTestVideo]);
-            }
+        if (this.isJudge && this.conferenceId) {
+            this.router.navigate([pageUrls.JudgeSelfTestVideo, this.conferenceId]);
+        } else if (!this.isJudge && this.conferenceId) {
+            this.router.navigate([pageUrls.ParticipantSelfTestVideo, this.conferenceId]);
         } else {
-            if (this.conferenceId) {
-                this.router.navigate([pageUrls.ParticipantSelfTestVideo, this.conferenceId]);
-            } else {
-                this.router.navigate([pageUrls.IndependentSelfTestVideo]);
-            }
+            this.router.navigate([pageUrls.IndependentSelfTestVideo]);
         }
     }
 

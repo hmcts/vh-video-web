@@ -6,6 +6,7 @@ import { ConferenceForIndividualResponse, UserProfileResponse } from 'src/app/se
 import { ErrorService } from 'src/app/services/error.service';
 import { ProfileService } from '../../services/api/profile.service';
 import { pageUrls } from '../../shared/page-url.constants';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 @Component({
     selector: 'app-participant-hearings',
@@ -23,13 +24,14 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
         private videoWebService: VideoWebService,
         private errorService: ErrorService,
         private router: Router,
-        private profileService: ProfileService
+        private profileService: ProfileService,
+        private logger: Logger
     ) {
         this.loadingData = true;
     }
 
     ngOnInit() {
-        this.profileService.getUserProfile().then((profile) => {
+        this.profileService.getUserProfile().then(profile => {
             this.profile = profile;
         });
         this.errorCount = 0;
@@ -41,6 +43,7 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
 
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
+        this.logger.debug('Clearing intervals and subscriptions for individual');
         clearInterval(this.interval);
         this.conferencesSubscription.unsubscribe();
     }
@@ -52,7 +55,8 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
                 this.loadingData = false;
                 this.conferences = data;
             },
-            (error) => {
+            error => {
+                this.logger.error('Error retrieving conferences for individual', error);
                 this.handleApiError(error);
             }
         );
