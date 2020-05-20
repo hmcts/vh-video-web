@@ -55,6 +55,6 @@ export class PendingTasksComponent implements OnInit, OnDestroy {
     }
 
     getAlertStatus(): string {
-        return this.tasks ? 'alert-full.png' : 'alert-empty.png';
+        return this.pendingTasks > 0 ? 'alert-full.png' : 'alert-empty.png';
     }
 }
