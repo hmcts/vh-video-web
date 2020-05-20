@@ -51,6 +51,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             RegisterTestUsers(context);
             RegisterDefaultData(context);
             RegisterHearingServices(context);
+            RegisterWowzaSettings(context);
             RegisterSauceLabsSettings(context);
             RunningAppsLocally(context);
             RegisterZapSettings(context);
@@ -112,6 +113,12 @@ namespace VideoWeb.AcceptanceTests.Hooks
         {
             context.VideoWebConfig.VhServices = Options.Create(_configRoot.GetSection("VhServices").Get<VideoWebVhServicesConfig>()).Value;
             ConfigurationManager.VerifyConfigValuesSet(context.VideoWebConfig.VhServices);
+        }
+
+        private void RegisterWowzaSettings(TestContext context)
+        {
+            context.VideoWebConfig.Wowza = Options.Create(_configRoot.GetSection("WowzaConfiguration").Get<WowzaConfiguration>()).Value;
+            ConfigurationManager.VerifyConfigValuesSet(context.VideoWebConfig.Wowza);
         }
 
         private void RegisterSauceLabsSettings(TestContext context)

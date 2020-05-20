@@ -188,7 +188,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             }
             catch (StaleElementReferenceException e)
             {
-                Console.WriteLine(e);
+                NUnit.Framework.TestContext.WriteLine(e);
                 return false;
             }
         }
