@@ -30,7 +30,6 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
     continueWithNoRecording = false;
     showAudioRecordingAlert = false;
 
-
     constructor(
         private route: ActivatedRoute,
         private router: Router,
@@ -47,16 +46,16 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
 
     async ngOnInit() {
         this.getConference()
-            .then((conference) => {
+            .then(conference => {
                 this.conference = conference;
                 this.sanitiseIframeUrl();
                 this.loadingData = false;
                 this.setupSubscribers();
                 if (this.conference.audio_recording_required) {
-                    this.setupAudioRecordingInterval();
+                    setTimeout(() => this.setupAudioRecordingInterval(), 60000);
                 }
             })
-            .catch((error) => {
+            .catch(error => {
                 this.loadingData = false;
                 if (!this.errorService.returnHomeIfUnauthorised(error)) {
                     this.errorService.handleApiError(error);
@@ -78,7 +77,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
     }
 
     async sanitiseIframeUrl(): Promise<void> {
-        const judge = this.conference.participants.find((x) => x.role === Role.Judge);
+        const judge = this.conference.participants.find(x => x.role === Role.Judge);
         const encodedDisplayName = encodeURIComponent(judge.tiled_display_name);
 
         const preferredCam = await this.userMediaService.getPreferredCamera();
@@ -106,7 +105,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
 
     private setupSubscribers() {
         this.eventHubSubscriptions.add(
-            this.eventService.getHearingStatusMessage().subscribe((message) => {
+            this.eventService.getHearingStatusMessage().subscribe(message => {
                 this.handleHearingStatusChange(<ConferenceStatus>message.status);
             })
         );
@@ -142,7 +141,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
 
     determineJudgeLocation() {
         const conferenceStatus = this.conference.status;
-        const judge = this.conference.participants.find((x) => x.role === Role.Judge);
+        const judge = this.conference.participants.find(x => x.role === Role.Judge);
         const properties = {
             conferenceId: this.conference.id,
             user: judge.id
@@ -172,24 +171,29 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
     }
 
     setupAudioRecordingInterval() {
-        this.interval = setInterval(() => {
-            this.retrieveAudioStreamInfo(this.conference.hearing_ref_id);
+        this.interval = setInterval(async () => {
+            await this.retrieveAudioStreamInfo(this.conference.hearing_ref_id);
         }, 10000);
     }
 
-    async retrieveAudioStreamInfo(hearingId) {
-        this.logger.debug(`retrieve audio stream info for ${hearingId}`);
+    async retrieveAudioStreamInfo(hearingId): Promise<void> {
+        this.logger.debug(`**** retrieve audio stream info for ${hearingId}`);
         try {
             const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId);
+            this.logger.debug('**** Got response: recording: ' + audioStreamWorking);
+
             if (!audioStreamWorking && !this.continueWithNoRecording) {
+                this.logger.debug('**** not recording, show alert');
                 this.showAudioRecordingAlert = true;
             }
         } catch (error) {
+            this.logger.debug('**** Got error: ' + JSON.stringify(error));
+
             if (!this.continueWithNoRecording) {
+                this.logger.debug('**** showAudioRecordingAlert FROM catch');
                 this.showAudioRecordingAlert = true;
             }
         }
-
     }
 
     closeAlert(value) {
