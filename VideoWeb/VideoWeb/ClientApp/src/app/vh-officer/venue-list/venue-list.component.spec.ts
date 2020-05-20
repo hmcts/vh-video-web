@@ -29,6 +29,12 @@ describe('VenueListComponent', () => {
         venueSessionStorage.clear();
     });
 
+    it('should retrieve and populate venues on init', async () => {
+        expect(component.venues).toBeUndefined();
+        await component.ngOnInit();
+        expect(component.venues).toBeDefined();
+    });
+
     it('should update storage with selection', () => {
         const selection = [venues[0]];
         component.selectedVenues = selection;
@@ -37,46 +43,6 @@ describe('VenueListComponent', () => {
         expect(result.length).toBe(selection.length);
         expect(result[0].id).toBe(selection[0].id);
         expect(result[0].name).toBe(selection[0].name);
-    });
-
-    it('should not update storage when no venues are selected', () => {
-        const selection = [];
-        component.selectedVenues = selection;
-
-        component.updateSelection();
-        expect(venueSessionStorage.get()).toEqual(null);
-    });
-
-    it('should retrieve and populate venues on init', async () => {
-        expect(component.venues).toBeUndefined();
-        await component.ngOnInit();
-        expect(component.venues).toBeDefined();
-    });
-
-    it('should set all venues onSelectAll', () => {
-        component.venues = venues;
-        component.onSelectAll();
-        expect(component.selectedVenues).toEqual(venues);
-    });
-
-    it('should add venue to list on select', () => {
-        component.venues = venues;
-        component.onItemSelect(venues[0]);
-        expect(component.selectedVenues.length).toBe(1);
-    });
-
-    it('should not add venue to list on select when venue already in list', () => {
-        const venue = venues[0];
-        component.venues = venues;
-        component.selectedVenues = [venue];
-        component.onItemSelect(venue);
-        expect(component.selectedVenues.length).toBe(1);
-    });
-
-    it('should remove venue from list on deselect', () => {
-        component.selectedVenues = venues;
-        component.onItemDeselect(venues[0]);
-        expect(component.selectedVenues.length).toBe(venues.length - 1);
     });
 
     it('should navigate to admin hearing list', () => {
