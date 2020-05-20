@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using AcceptanceTests.Common.Api;
 using AcceptanceTests.Common.Configuration.Users;
 using AcceptanceTests.Common.Driver;
 using AcceptanceTests.Common.Driver.Browser;
@@ -43,7 +44,8 @@ namespace VideoWeb.AcceptanceTests.Hooks
             var driverOptions = new DriverOptions()
             {
                 TargetBrowser = context.VideoWebConfig.TestConfig.TargetBrowser,
-                TargetDevice = context.VideoWebConfig.TestConfig.TargetDevice
+                TargetDevice = context.VideoWebConfig.TestConfig.TargetDevice,
+                HeadlessMode = context.ZapConfiguration.HeadlessMode
             };
 
             var sauceLabsOptions = new SauceLabsOptions()
@@ -53,7 +55,16 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 Title = scenario.ScenarioInfo.Title
             };
 
-            context.Driver = new DriverSetup(context.VideoWebConfig.SauceLabsConfiguration, driverOptions, sauceLabsOptions);
+            OpenQA.Selenium.Proxy proxy = null;
+            if (Zap.SetupProxy)
+            {
+                proxy = new OpenQA.Selenium.Proxy();
+                var proxySetting = $"{context.ZapConfiguration.ApiAddress}:{context.ZapConfiguration.ApiPort}";
+                proxy.HttpProxy = proxySetting;
+                proxy.SslProxy = proxySetting;
+            }
+
+            context.Driver = new DriverSetup(context.VideoWebConfig.SauceLabsConfiguration, driverOptions, sauceLabsOptions,proxy);
         }
 
         private static string GetBrowserAndVersion()
