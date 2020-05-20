@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
+import { NgSelectModule } from '@ng-select/ng-select';
 import { ChartsModule } from 'ng2-charts';
 import { ClipboardModule } from 'ngx-clipboard';
 import { ParticipantStatusReader } from '../shared/models/participant-status-reader';
@@ -51,7 +51,7 @@ import { VhoHearingsFilterComponent } from './vho-herings-filter/vho-hearings-fi
         HearingStatusComponent,
         CopyIdComponent
     ],
-    imports: [CommonModule, SharedModule, ChartsModule, ClipboardModule, VhOfficerRoutingModule, NgMultiSelectDropDownModule.forRoot()],
+    imports: [CommonModule, SharedModule, ChartsModule, ClipboardModule, VhOfficerRoutingModule, NgSelectModule],
     providers: [HearingsFilterOptionsService, ParticipantStatusReader, VHODashboardHelper, VhoQueryService],
     exports: [MonitoringGraphComponent, HearingHeaderComponent, HearingStatusComponent]
 })

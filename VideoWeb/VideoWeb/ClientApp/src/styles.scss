@@ -2,6 +2,7 @@ $govuk-global-styles: true;
 
 @import '~govuk-frontend/govuk/all';
 @import '~@hmcts/frontend/all';
+@import '~@ng-select/ng-select/themes/default.theme.css';
 
 .grey-btn {
   background-color: govuk-colour('light-grey');
