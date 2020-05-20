@@ -134,7 +134,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser.Key].Refresh();
             Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser.Key], _c.Test.Conference.Id);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id)).Click();
+            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser.Key]);
             Tasks.TasksListShouldBeEmpty(_c, EventType.Close);
         }
@@ -145,7 +145,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Refresh();
             _browsers[_c.CurrentUser.Key].Driver.WaitForAngular();
             Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser.Key], _c.Test.Conference.Id);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.StatusBadge(_c.Test.Conference.Id)).Text.Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.StatusBadge(_c.Test.Conference.Id)).Text.Trim().Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
             _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser.Key]);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
