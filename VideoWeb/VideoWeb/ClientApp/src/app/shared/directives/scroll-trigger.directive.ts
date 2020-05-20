@@ -1,4 +1,5 @@
-import { Directive, HostListener, EventEmitter, Output, ElementRef } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, HostListener, Output } from '@angular/core';
+import { ScrolledEvent, ScrolledFooter } from '../models/scrolled-event';
 import { WindowScrolling } from './window-scrolling';
 
 @Directive({
@@ -8,8 +9,8 @@ export class ScrollTriggerDirective {
     lastScrollPosition = 0;
     margin = 30;
 
-    @Output() scrolledPast = new EventEmitter<any>();
-    @Output() scrollFooter = new EventEmitter<any>();
+    @Output() scrolledPast = new EventEmitter<ScrolledEvent>();
+    @Output() scrollFooter = new EventEmitter<ScrolledFooter>();
 
     constructor(private element: ElementRef, private scroll: WindowScrolling) {}
 
@@ -32,15 +33,15 @@ export class ScrollTriggerDirective {
     onWindowScroll() {
         const currentScrollPosition = this.getScreenBottom();
         const isFooter = this.checkOffset(currentScrollPosition);
-        this.scrollFooter.emit({ footer: isFooter });
+        this.scrollFooter.emit(new ScrolledFooter(isFooter));
         const hasScrolledUp = currentScrollPosition < this.lastScrollPosition;
         if (hasScrolledUp) {
             if (this.hasScrolledPastElementUp(currentScrollPosition)) {
-                this.scrolledPast.emit({ makeVisible: true });
+                this.scrolledPast.emit(new ScrolledEvent(true));
             }
         } else {
             if (this.hasScrolledPastElementBottom(currentScrollPosition)) {
-                this.scrolledPast.emit({ makeVisible: false });
+                this.scrolledPast.emit(new ScrolledEvent(false));
             }
         }
         this.lastScrollPosition = currentScrollPosition;

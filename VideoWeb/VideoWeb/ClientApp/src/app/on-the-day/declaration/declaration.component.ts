@@ -19,7 +19,6 @@ export class DeclarationComponent implements OnInit {
     }
 
     ngOnInit() {
-        console.log(this.route);
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
     }
 
