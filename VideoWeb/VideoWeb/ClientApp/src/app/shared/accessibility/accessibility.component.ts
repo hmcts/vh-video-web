@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { ScrolledFooter, ScrolledEvent } from '../models/scrolled-event';
+import { Component } from '@angular/core';
+import { ScrolledEvent, ScrolledFooter } from '../models/scrolled-event';
 
 @Component({
     selector: 'app-accessibility',
