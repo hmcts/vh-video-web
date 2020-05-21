@@ -1,8 +1,8 @@
 <div class="tabcontainer">
   <div class="tab tab--left">
-    <button [ngClass]="{ active: currentMenu === 'Hearing' }" (click)="displayHearing()">Hearings</button>
+    <button id="hearingsTabButton" [ngClass]="{ active: currentMenu === 'Hearing' }" (click)="displayHearing()">Hearings</button>
   </div>
   <div class="tab tab--right">
-    <button [ngClass]="{ active: currentMenu === 'Message' }" (click)="displayMessages()">Messages</button>
+    <button id="messagesTabButton" [ngClass]="{ active: currentMenu === 'Message' }" (click)="displayMessages()">Messages</button>
   </div>
 </div>

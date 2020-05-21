@@ -29,11 +29,26 @@ namespace VideoWeb.AcceptanceTests.Steps
             _messages = new List<ChatMessage>();
         }
 
+        [Given(@"the VHO selects the Hearings tab")]
+        public void GivenTheVideoHearingsOfficerSelectsTheHearingsTab()
+        {
+            SelectTheHearing();
+            SelectTheHearingsTab();
+        }
+
+        [Given(@"the VHO selects the Messages tab")]
+        public void GivenTheVideoHearingsOfficerSelectsTheMessagesTab()
+        {
+            SelectTheHearing();
+            SelectTheMessagesTab();
+        }
+
         [When(@"the Video Hearings Officer instant messages the Clerk")]
         public void TheVhoInstantMessagesTheClerk()
         {
             _browserSteps.GivenInTheUsersBrowser("Video Hearings Officer");
             SelectTheHearing();
+            SelectTheMessagesTab();
             SendNewMessage();
         }
 
@@ -88,6 +103,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Refresh();
             NotificationAppears(1).Should().BeTrue("Notification appeared");
             SelectTheHearing();
+            SelectTheMessagesTab();
         }
 
         [When(@"the participants send (.*) messages to each other")]
@@ -110,6 +126,16 @@ namespace VideoWeb.AcceptanceTests.Steps
         private void SelectTheHearing()
         {
             _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
+        }
+
+        private void SelectTheHearingsTab()
+        {
+            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.HearingsTabButton);
+        }
+
+        private void SelectTheMessagesTab()
+        {
+            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.MessagesTabButton);
         }
 
         private void SendNewMessage()

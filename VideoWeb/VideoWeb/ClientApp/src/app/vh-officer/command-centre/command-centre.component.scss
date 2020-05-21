@@ -25,3 +25,7 @@
 .selected-menu-content {
   @include govuk-grid-column(two-thirds);
 }
+
+.title {
+    @extend %govuk-heading-m;
+}

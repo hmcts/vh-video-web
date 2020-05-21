@@ -15,12 +15,12 @@ namespace VideoWeb.AcceptanceTests.Hooks
             if (!scenario.ScenarioInfo.Tags.Contains("AudioRecording")) return;
             if (context?.VideoWebConfig == null) return;
             if (context.Test.NewHearingId == Guid.Empty) return;
-            var wowza = new WowzaManager()
+            var storage = new AzureStorageManager()
                 .SetStorageAccountName(context.VideoWebConfig.Wowza.StorageAccountName)
                 .SetStorageAccountKey(context.VideoWebConfig.Wowza.StorageAccountKey)
                 .SetStorageContainerName(context.VideoWebConfig.Wowza.StorageContainerName)
                 .CreateBlobClient(context.Test.NewHearingId);
-            wowza.RemoveAudioFileFromStorage();
+            storage.RemoveAudioFileFromStorage();
         }
     }
 }

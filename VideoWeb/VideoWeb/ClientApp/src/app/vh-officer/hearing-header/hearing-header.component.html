@@ -1,6 +1,6 @@
 <div class="govuk-grid-row">
   <div class="half-left">
-    <h4 id="header-{{ hearing.id }}-case-name" class="govuk-heading-s">{{ hearing.caseName }}</h4>
+    <h1 id="header-{{ hearing.id }}-case-name" class="govuk-heading-s">{{ hearing.caseName }}</h1>
   </div>
-  <div class="half-right"><app-hearing-status [hearing]="hearing"></app-hearing-status></div>
+  <div id="{{ hearing.id }}-hearing-status-header" class="half-right"><app-hearing-status [hearing]="hearing"></app-hearing-status></div>
 </div>
