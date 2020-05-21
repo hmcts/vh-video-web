@@ -56,7 +56,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Video Hearings Officer user should see a (.*) notification")]
         public void ThenTheVideoHearingsOfficerUserShouldSeeANotification(string notification)
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.StatusBadge(_c.Test.Conference.Id)).Text.Should().Be(notification);
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.StatusBadge(_c.Test.Conference.Id)).Text.Trim().Should().Be(notification);
         }
 
         [Then(@"the closedDate attribute should be populated")]

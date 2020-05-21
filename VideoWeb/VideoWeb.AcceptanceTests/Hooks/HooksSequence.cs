@@ -13,6 +13,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         LogResultHooks = 9,
         TearDownBrowserHooks = 10,
         StopEdgeChromiumServer = 11,
-        RemoveDataHooks = 12
+        RemoveAudioFiles = 12,
+        RemoveDataHooks = 13
     }
 }

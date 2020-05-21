@@ -66,7 +66,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             GetTheNewConferenceDetails();
         }
 
-        [Given(@"I have a hearing with audio recording")]
+        [Given(@"I have a hearing with audio recording enabled")]
         public void GivenIHaveAHearingWihAudioRecording()
         {
             var request = new HearingRequestBuilder()
@@ -77,6 +77,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .Build();
 
             SendTheHearingRequest(request);
+            GetTheNewConferenceDetails();
         }
 
         public void GivenIHaveAHearing(int minutes = 0, string location = "Birmingham Civil and Family Justice Centre")

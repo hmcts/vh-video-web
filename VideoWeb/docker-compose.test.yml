@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:
+  videoweb:
+    container_name: videoweb_ac
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+    ports:
+      - "5801:80"
+      - "5800:443"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  zapapi:
+    image: sspublicsbox.azurecr.io/secops/zaproxy
+    container_name: zapapi
+    volumes:
+      - ./VideoWeb.AcceptanceTests/zapapi-config.xml:/home/zap/.ZAP/config.xml
+    ports:
+      - "8080:8080"

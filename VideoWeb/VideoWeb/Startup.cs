@@ -145,9 +145,11 @@ namespace VideoWeb
                 app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+                app.UseHttpsRedirection();
             }
 
-            if (!env.IsDevelopment())
+            var zapScan = Configuration.GetValue<bool>("ZapScan");
+            if (!env.IsDevelopment() || zapScan)
             {
                 app.UseSpaStaticFiles();
             }
@@ -155,7 +157,6 @@ namespace VideoWeb
             app.UseRouting();
             app.UseAuthorization();
             app.UseAuthentication();
-            app.UseHttpsRedirection();
             app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseEndpoints(endpoints =>
@@ -174,7 +175,7 @@ namespace VideoWeb
                 // To learn more about options for serving an Angular SPA from ASP.NET Core,
                 // see https://go.microsoft.com/fwlink/?linkid=864501
 
-                if (env.IsDevelopment())
+                if (env.IsDevelopment() && !zapScan)
                 {
                     const string ngBaseUri = "http://localhost:4200/";
                     spa.UseProxyToSpaDevelopmentServer(ngBaseUri);

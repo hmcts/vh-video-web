@@ -1,0 +1,22 @@
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1
+ARG BUILD_CONFIGURATION=Debug
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENV ASPNETCORE_URLS=http://+:80
+ENV DOTNET_USE_POLLING_FILE_WATCHER=true
+EXPOSE 80
+
+WORKDIR /src
+COPY ["VideoWeb/VideoWeb.csproj", "VideoWeb/"]
+COPY ["VideoWeb.Common/VideoWeb.Common.csproj", "VideoWeb.Common/"]
+COPY ["VideoWeb.Contract/VideoWeb.Contract.csproj", "VideoWeb.Contract/"]
+COPY ["VideoWeb.EventHub/VideoWeb.EventHub.csproj", "VideoWeb.EventHub/"]
+COPY ["VideoWeb.Services/VideoWeb.Services.csproj", "VideoWeb.Services/"]
+
+RUN dotnet restore "VideoWeb/VideoWeb.csproj"
+COPY . .
+WORKDIR "/src/VideoWeb"
+RUN dotnet build --no-restore "VideoWeb.csproj" -c $BUILD_CONFIGURATION
+
+RUN echo "exec dotnet run --no-build --no-launch-profile -c $BUILD_CONFIGURATION --" > /entrypoint.sh
+
+ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]

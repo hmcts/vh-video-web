@@ -1,4 +1,4 @@
-﻿using AcceptanceTests.Common.Configuration;
+using AcceptanceTests.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
 
 namespace VideoWeb.AcceptanceTests.Configuration
@@ -10,5 +10,6 @@ namespace VideoWeb.AcceptanceTests.Configuration
         public VideoWebTestConfig TestConfig { get; set; }
         public VideoWebVhServicesConfig VhServices { get; set; }
         public SauceLabsSettingsConfig SauceLabsConfiguration { get; set; }
+        public WowzaConfiguration Wowza { get; set; }
     }
 }

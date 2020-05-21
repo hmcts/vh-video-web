@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using AcceptanceTests.Common.Api.Helpers;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.Driver.Support;
@@ -10,6 +11,8 @@ using OpenQA.Selenium;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using AudioRecordingResponse = VideoWeb.Services.Video.HearingAudioRecordingResponse;
+
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -67,6 +70,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _c.Test.JudgeInIframe = false;
         }
 
+        [When(@"the Clerk is on the Hearing Room page for (.*) seconds")]
         [Then(@"the Clerk is on the Hearing Room page for (.*) seconds")]
         public void ThenTheUserIsOnTheHearingRoomPageForSeconds(int seconds)
         {
@@ -123,6 +127,15 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserSteps.GivenInTheUsersBrowser(user);
             SwitchToParticipantContent();
             new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser.Key]).Feed(HearingRoomPage.ParticipantIncomingVideo);
+        }
+
+        [Then(@"an audio recording of the hearing has been created")]
+        public void ThenAnAudioRecordingOfTheHearingHasBeenCreated()
+        {
+            var response = _c.Apis.VideoApi.GetAudioRecordingLink(_c.Test.NewHearingId);
+            var audioLink = RequestHelper.DeserialiseSnakeCaseJsonToResponse<AudioRecordingResponse>(response.Content);
+            audioLink.Should().NotBeNull();
+            audioLink.Audio_file_link.ToLower().Should().Contain(_c.Test.NewHearingId.ToString().ToLower());
         }
 
         public void ProgressToNextPage()
