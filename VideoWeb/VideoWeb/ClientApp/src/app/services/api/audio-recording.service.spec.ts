@@ -13,4 +13,12 @@ describe('AudioRecordingService', () => {
 
         expect(apiClient.getAudioStreamInfo).toHaveBeenCalled();
     });
+
+    it('should call api endpoint to delete audio recording applicaion', () => {
+        apiClient.stopAudioRecording.and.returnValue(of());
+
+        service.stopAudioRecording('111111111');
+
+        expect(apiClient.stopAudioRecording).toHaveBeenCalled();
+    });
 });

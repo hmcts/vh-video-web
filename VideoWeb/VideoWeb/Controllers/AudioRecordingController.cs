@@ -43,5 +43,27 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
+
+        [HttpDelete("audiostreams/{hearingId}")]
+        [SwaggerOperation(OperationId = "StopAudioRecording")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> StopAudioRecordingAsync(Guid hearingId)
+        {
+            _logger.LogDebug("StopAudioRecording");
+
+            try
+            {
+                await _videoApiClient.DeleteAudioApplicationAsync(hearingId);
+
+                return Ok();
+            }
+            catch (VideoApiException e)
+            {
+                _logger.LogError(e, $"Unable to stop audio recording for hearingId: {hearingId}");
+                return StatusCode(e.StatusCode, e.Response);
+            }
+        }
+
     }
 }
