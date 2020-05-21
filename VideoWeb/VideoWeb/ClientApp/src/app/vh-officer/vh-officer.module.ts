@@ -27,7 +27,7 @@ import { VenueListComponent } from './venue-list/venue-list.component';
 import { VhOfficerRoutingModule } from './vh-officer-routing.module';
 import { VhoChatComponent } from './vho-chat/vho-chat.component';
 import { VhoHearingListComponent } from './vho-hearing-list/vho-hearing-list.component';
-import { VhoHearingsFilterComponent } from './vho-herings-filter/vho-hearings-filter.component';
+import { VhoHearingsFilterComponent } from "./vho-hearings-filter/vho-hearings-filter.component";
 
 @NgModule({
     declarations: [
