@@ -6,18 +6,16 @@ import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { AppComponent } from './app.component';
 import { ConfigService } from './services/api/config.service';
-import { ClientSettingsResponse, UserProfileResponse, Role } from './services/clients/api-client';
+import { ProfileService } from './services/api/profile.service';
+import { ClientSettingsResponse, Role, UserProfileResponse } from './services/clients/api-client';
 import { DeviceTypeService } from './services/device-type.service';
+import { LocationService } from './services/location.service';
 import { Logger } from './services/logging/logger-base';
-import { pageUrls } from './shared/page-url.constants';
+import { PageTrackerService } from './services/page-tracker.service';
 import { MockLogger } from './testing/mocks/MockLogger';
+import { BetaBannerStubComponent } from './testing/stubs/beta-banner-stub';
 import { FooterStubComponent } from './testing/stubs/footer-stub';
 import { HeaderStubComponent } from './testing/stubs/header-stub';
-import { ProfileService } from './services/api/profile.service';
-import { BetaBannerStubComponent } from './testing/stubs/beta-banner-stub';
-import { LocationService } from './services/location.service';
-import { ErrorService } from './services/error.service';
-import { PageTrackerService } from './services/page-tracker.service';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;

@@ -57,9 +57,7 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
             this.loadingData = false;
         } catch (error) {
             this.loadingData = false;
-            if (!this.errorService.returnHomeIfUnauthorised(error)) {
-                this.errorService.handleApiError(error);
-            }
+            this.errorService.handleApiError(error);
         }
     }
 
@@ -111,13 +109,13 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
 
     setupEventHubSubscribers() {
         this.eventHubSubscriptions.add(
-            this.eventService.getHearingStatusMessage().subscribe((message) => {
+            this.eventService.getHearingStatusMessage().subscribe(message => {
                 this.handleHearingStatusChange(message.status);
             })
         );
 
         this.eventHubSubscriptions.add(
-            this.eventService.getParticipantStatusMessage().subscribe((message) => {
+            this.eventService.getParticipantStatusMessage().subscribe(message => {
                 this.handleParticipantStatusChange(message);
             })
         );
@@ -143,7 +141,7 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): any {
         const status = message.status;
-        const participant = this.conference.participants.find((p) => p.id === message.participantId);
+        const participant = this.conference.participants.find(p => p.id === message.participantId);
         if (participant) {
             participant.status = status;
         }

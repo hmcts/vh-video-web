@@ -1,5 +1,4 @@
 import * as moment from 'moment';
-import { configureTestSuite } from 'ng-bullet';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { HearingListTableComponent } from './hearing-list-table.component';
 
