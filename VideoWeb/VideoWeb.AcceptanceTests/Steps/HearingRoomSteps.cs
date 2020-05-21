@@ -11,7 +11,7 @@ using OpenQA.Selenium;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using AudioRecordingResponse = VideoWeb.Services.Video.HearingAudioRecordingResponse;
+using AudioRecordingResponse = VideoWeb.Services.Video.AudioRecordingResponse;
 
 
 namespace VideoWeb.AcceptanceTests.Steps
