@@ -12,6 +12,7 @@ import { LocationService } from './services/location.service';
 import { pageUrls } from './shared/page-url.constants';
 import { PageTrackerService } from './services/page-tracker.service';
 import { MockAdalService } from './testing/mocks/MockAdalService';
+import { of } from 'rxjs';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -47,7 +48,9 @@ describe('AppComponent', () => {
 
         locationServiceSpy = jasmine.createSpyObj<LocationService>('LocationService', ['getCurrentUrl', 'getCurrentPathName']);
 
-        routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate', 'navigateByUrl']);
+        routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate', 'navigateByUrl'], {
+            events: of()
+        });
         errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError', 'goToUnauthorised']);
         titleServiceSpy = jasmine.createSpyObj<Title>('Title', ['getTitle', 'setTitle']);
 
