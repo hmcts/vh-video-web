@@ -32,7 +32,10 @@ describe('JudgeHearingPageComponent when conference in session', () => {
 
     configureTestSuite(() => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
-        audioRecordingServiceMock = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
+        audioRecordingServiceMock = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo', 'stopAudioRecording']);
+        audioRecordingServiceMock.stopAudioRecording.and.callThrough();
+
+
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],
             declarations: [JudgeHearingPageComponent, AudioAlertComponent],
@@ -159,5 +162,11 @@ describe('JudgeHearingPageComponent when conference in session', () => {
         component.retrieveAudioStreamInfo(hearingId);
 
         expect(component.showAudioRecordingAlert).toBeFalsy();
+    });
+    it('should stop audio recording', () => {
+        component.conference.audio_recording_required = true;
+        component.conference.hearing_ref_id = '1234567';
+        component.stopAudioRecording();
+        expect(audioRecordingServiceMock.stopAudioRecording).toHaveBeenCalled();
     });
 });

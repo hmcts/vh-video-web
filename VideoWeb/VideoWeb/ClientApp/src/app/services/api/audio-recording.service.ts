@@ -12,4 +12,9 @@ export class AudioRecordingService {
     getAudioStreamInfo(hearingId: string): Promise<boolean> {
         return this.apiClient.getAudioStreamInfo(hearingId).toPromise();
     }
+
+    stopAudioRecording(hearingId: string): Promise<void> {
+        return this.apiClient.stopAudioRecording(hearingId).toPromise();
+    }
+
 }
