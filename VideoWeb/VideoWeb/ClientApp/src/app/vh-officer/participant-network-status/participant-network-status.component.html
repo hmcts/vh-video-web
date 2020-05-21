@@ -1,6 +1,7 @@
 <div id="p-row-{{ participant.id }}" *ngIf="!participant.isJudge">
   <img
-    id="network-status-icon"
+    id="{{ participant.id }}-network-status-icon"
+    class="network-status-icon"
     src="/assets/images/{{ getParticipantNetworkStatus() }}"
     (mouseover)="onMouseEnter($event)"
     (mouseout)="onMouseExit($event)"

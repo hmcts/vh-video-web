@@ -18,153 +18,153 @@ namespace VideoWeb.Services.Video
     public partial interface IVideoApiClient
     {
         /// <summary>Gets the audio application info for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to retrieve the audio application info</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<AudioApplicationInfoResponse> GetAudioApplicationAsync(System.Guid hearingId);
     
         /// <summary>Gets the audio application info for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to retrieve the audio application info</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         AudioApplicationInfoResponse GetAudioApplication(System.Guid hearingId);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Gets the audio application info for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to retrieve the audio application info</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<AudioApplicationInfoResponse> GetAudioApplicationAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Creates the audio application for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to create the audio application info</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task CreateAudioApplicationAsync(System.Guid hearingId);
     
         /// <summary>Creates the audio application for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to create the audio application info</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         void CreateAudioApplication(System.Guid hearingId);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Creates the audio application for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to create the audio application info</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task CreateAudioApplicationAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Deletes the audio application for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording application</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteAudioApplicationAsync(System.Guid hearingId);
     
         /// <summary>Deletes the audio application for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording application</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         void DeleteAudioApplication(System.Guid hearingId);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Deletes the audio application for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording application</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteAudioApplicationAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Creates the audio application and associated stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to create the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task CreateAudioApplicationWithStreamAsync(System.Guid hearingId);
     
         /// <summary>Creates the audio application and associated stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to create the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         void CreateAudioApplicationWithStream(System.Guid hearingId);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Creates the audio application and associated stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to create the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task CreateAudioApplicationWithStreamAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Gets the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to get the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<AudioStreamInfoResponse> GetAudioStreamInfoAsync(System.Guid hearingId);
     
         /// <summary>Gets the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to get the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         AudioStreamInfoResponse GetAudioStreamInfo(System.Guid hearingId);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Gets the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to get the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<AudioStreamInfoResponse> GetAudioStreamInfoAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Creates the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to create the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task CreateAudioStreamAsync(System.Guid hearingId);
     
         /// <summary>Creates the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to create the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         void CreateAudioStream(System.Guid hearingId);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Creates the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to create the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task CreateAudioStreamAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Deletes the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteAudioStreamAsync(System.Guid hearingId);
     
         /// <summary>Deletes the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         void DeleteAudioStream(System.Guid hearingId);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Deletes the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task DeleteAudioStreamAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Gets the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <summary>Gets the audio stream for monitoring the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to monitor the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<AudioStreamMonitoringInfo> GetAudioStreamMonitoringInfoAsync(System.Guid hearingId);
     
-        /// <summary>Gets the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <summary>Gets the audio stream for monitoring the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to monitor the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         AudioStreamMonitoringInfo GetAudioStreamMonitoringInfo(System.Guid hearingId);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Gets the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <summary>Gets the audio stream for monitoring the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to monitor the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<AudioStreamMonitoringInfo> GetAudioStreamMonitoringInfoAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
@@ -173,20 +173,20 @@ namespace VideoWeb.Services.Video
         /// <param name="hearingId">The hearing id.</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<HearingAudioRecordingResponse> GetAudioRecordingLinkAsync(System.Guid hearingId);
+        System.Threading.Tasks.Task<AudioRecordingResponse> GetAudioRecordingLinkAsync(System.Guid hearingId);
     
         /// <summary>Get the audio recording link for a given hearing.</summary>
         /// <param name="hearingId">The hearing id.</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        HearingAudioRecordingResponse GetAudioRecordingLink(System.Guid hearingId);
+        AudioRecordingResponse GetAudioRecordingLink(System.Guid hearingId);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get the audio recording link for a given hearing.</summary>
         /// <param name="hearingId">The hearing id.</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<HearingAudioRecordingResponse> GetAudioRecordingLinkAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<AudioRecordingResponse> GetAudioRecordingLinkAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Request to book a conference</summary>
         /// <param name="body">Details of a conference</param>
@@ -792,7 +792,7 @@ namespace VideoWeb.Services.Video
         partial void ProcessResponse(System.Net.Http.HttpClient client, System.Net.Http.HttpResponseMessage response);
     
         /// <summary>Gets the audio application info for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to retrieve the audio application info</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task<AudioApplicationInfoResponse> GetAudioApplicationAsync(System.Guid hearingId)
@@ -801,7 +801,7 @@ namespace VideoWeb.Services.Video
         }
     
         /// <summary>Gets the audio application info for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to retrieve the audio application info</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public AudioApplicationInfoResponse GetAudioApplication(System.Guid hearingId)
@@ -811,7 +811,7 @@ namespace VideoWeb.Services.Video
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Gets the audio application info for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to retrieve the audio application info</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task<AudioApplicationInfoResponse> GetAudioApplicationAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
@@ -888,7 +888,7 @@ namespace VideoWeb.Services.Video
         }
     
         /// <summary>Creates the audio application for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to create the audio application info</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task CreateAudioApplicationAsync(System.Guid hearingId)
@@ -897,7 +897,7 @@ namespace VideoWeb.Services.Video
         }
     
         /// <summary>Creates the audio application for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to create the audio application info</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public void CreateAudioApplication(System.Guid hearingId)
@@ -907,7 +907,7 @@ namespace VideoWeb.Services.Video
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Creates the audio application for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to create the audio application info</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task CreateAudioApplicationAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
@@ -999,7 +999,7 @@ namespace VideoWeb.Services.Video
         }
     
         /// <summary>Deletes the audio application for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording application</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task DeleteAudioApplicationAsync(System.Guid hearingId)
@@ -1008,7 +1008,7 @@ namespace VideoWeb.Services.Video
         }
     
         /// <summary>Deletes the audio application for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording application</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public void DeleteAudioApplication(System.Guid hearingId)
@@ -1018,7 +1018,7 @@ namespace VideoWeb.Services.Video
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Deletes the audio application for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording application</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task DeleteAudioApplicationAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
@@ -1091,7 +1091,7 @@ namespace VideoWeb.Services.Video
         }
     
         /// <summary>Creates the audio application and associated stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to create the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task CreateAudioApplicationWithStreamAsync(System.Guid hearingId)
@@ -1100,7 +1100,7 @@ namespace VideoWeb.Services.Video
         }
     
         /// <summary>Creates the audio application and associated stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to create the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public void CreateAudioApplicationWithStream(System.Guid hearingId)
@@ -1110,7 +1110,7 @@ namespace VideoWeb.Services.Video
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Creates the audio application and associated stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to create the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task CreateAudioApplicationWithStreamAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
@@ -1202,7 +1202,7 @@ namespace VideoWeb.Services.Video
         }
     
         /// <summary>Gets the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to get the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task<AudioStreamInfoResponse> GetAudioStreamInfoAsync(System.Guid hearingId)
@@ -1211,7 +1211,7 @@ namespace VideoWeb.Services.Video
         }
     
         /// <summary>Gets the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to get the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public AudioStreamInfoResponse GetAudioStreamInfo(System.Guid hearingId)
@@ -1221,7 +1221,7 @@ namespace VideoWeb.Services.Video
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Gets the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to get the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task<AudioStreamInfoResponse> GetAudioStreamInfoAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
@@ -1298,7 +1298,7 @@ namespace VideoWeb.Services.Video
         }
     
         /// <summary>Creates the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to create the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task CreateAudioStreamAsync(System.Guid hearingId)
@@ -1307,7 +1307,7 @@ namespace VideoWeb.Services.Video
         }
     
         /// <summary>Creates the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to create the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public void CreateAudioStream(System.Guid hearingId)
@@ -1317,7 +1317,7 @@ namespace VideoWeb.Services.Video
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Creates the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to create the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task CreateAudioStreamAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
@@ -1409,7 +1409,7 @@ namespace VideoWeb.Services.Video
         }
     
         /// <summary>Deletes the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task DeleteAudioStreamAsync(System.Guid hearingId)
@@ -1418,7 +1418,7 @@ namespace VideoWeb.Services.Video
         }
     
         /// <summary>Deletes the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public void DeleteAudioStream(System.Guid hearingId)
@@ -1428,7 +1428,7 @@ namespace VideoWeb.Services.Video
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Deletes the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <param name="hearingId">The HearingRefId of the conference to stop the audio stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task DeleteAudioStreamAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
@@ -1500,8 +1500,8 @@ namespace VideoWeb.Services.Video
             }
         }
     
-        /// <summary>Gets the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <summary>Gets the audio stream for monitoring the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to monitor the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task<AudioStreamMonitoringInfo> GetAudioStreamMonitoringInfoAsync(System.Guid hearingId)
@@ -1509,8 +1509,8 @@ namespace VideoWeb.Services.Video
             return GetAudioStreamMonitoringInfoAsync(hearingId, System.Threading.CancellationToken.None);
         }
     
-        /// <summary>Gets the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <summary>Gets the audio stream for monitoring the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to monitor the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public AudioStreamMonitoringInfo GetAudioStreamMonitoringInfo(System.Guid hearingId)
@@ -1519,8 +1519,8 @@ namespace VideoWeb.Services.Video
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Gets the audio stream for the conference by hearingId</summary>
-        /// <param name="hearingId">The HearingRefId of the conference to stop the audio recording stream</param>
+        /// <summary>Gets the audio stream for monitoring the conference by hearingId</summary>
+        /// <param name="hearingId">The HearingRefId of the conference to monitor the audio recording stream</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task<AudioStreamMonitoringInfo> GetAudioStreamMonitoringInfoAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
@@ -1600,7 +1600,7 @@ namespace VideoWeb.Services.Video
         /// <param name="hearingId">The hearing id.</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<HearingAudioRecordingResponse> GetAudioRecordingLinkAsync(System.Guid hearingId)
+        public System.Threading.Tasks.Task<AudioRecordingResponse> GetAudioRecordingLinkAsync(System.Guid hearingId)
         {
             return GetAudioRecordingLinkAsync(hearingId, System.Threading.CancellationToken.None);
         }
@@ -1609,7 +1609,7 @@ namespace VideoWeb.Services.Video
         /// <param name="hearingId">The hearing id.</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public HearingAudioRecordingResponse GetAudioRecordingLink(System.Guid hearingId)
+        public AudioRecordingResponse GetAudioRecordingLink(System.Guid hearingId)
         {
             return System.Threading.Tasks.Task.Run(async () => await GetAudioRecordingLinkAsync(hearingId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
@@ -1619,7 +1619,7 @@ namespace VideoWeb.Services.Video
         /// <param name="hearingId">The hearing id.</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<HearingAudioRecordingResponse> GetAudioRecordingLinkAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<AudioRecordingResponse> GetAudioRecordingLinkAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)
                 throw new System.ArgumentNullException("hearingId");
@@ -1656,7 +1656,7 @@ namespace VideoWeb.Services.Video
                         var status_ = ((int)response_.StatusCode).ToString();
                         if (status_ == "200") 
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<HearingAudioRecordingResponse>(response_, headers_).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<AudioRecordingResponse>(response_, headers_).ConfigureAwait(false);
                             return objectResponse_.Object;
                         }
                         else
@@ -1678,7 +1678,7 @@ namespace VideoWeb.Services.Video
                             throw new VideoApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
-                        return default(HearingAudioRecordingResponse);
+                        return default(AudioRecordingResponse);
                     }
                     finally
                     {
@@ -4800,7 +4800,7 @@ namespace VideoWeb.Services.Video
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
-    public partial class HearingAudioRecordingResponse 
+    public partial class AudioRecordingResponse 
     {
         [Newtonsoft.Json.JsonProperty("audio_file_link", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Audio_file_link { get; set; }
