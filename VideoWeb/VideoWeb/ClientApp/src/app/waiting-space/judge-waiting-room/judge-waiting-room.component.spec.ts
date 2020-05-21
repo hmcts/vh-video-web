@@ -33,8 +33,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
 
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'raiseParticipantEvent']);
-        videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
-        videoWebService.raiseParticipantEvent.and.returnValue(Promise.resolve());
+
         judgeEventService = jasmine.createSpyObj<JudgeEventService>('JudgeEventService', [
             'raiseJudgeAvailableEvent',
             'raiseJudgeUnavailableEvent'
@@ -58,6 +57,9 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     beforeEach(fakeAsync(() => {
+        videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
+        videoWebService.raiseParticipantEvent.and.returnValue(Promise.resolve());
+
         judgeEventService.raiseJudgeUnavailableEvent.calls.reset();
         judgeEventService.raiseJudgeAvailableEvent.calls.reset();
         errorService.handleApiError.calls.reset();
