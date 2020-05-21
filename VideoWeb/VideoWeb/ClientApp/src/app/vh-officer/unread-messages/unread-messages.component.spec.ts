@@ -7,6 +7,8 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { UnreadMessagesComponent } from './unread-messages.component';
+import { InstantMessage } from '../../services/models/instant-message';
+import { of } from 'rxjs';
 
 describe('UnreadMessagesComponent', () => {
     let component: UnreadMessagesComponent;
@@ -21,9 +23,10 @@ describe('UnreadMessagesComponent', () => {
     });
 
     beforeAll(() => {
-        eventsService = jasmine.createSpyObj<EventsService>('EventsService', ['start', 'getAdminAnsweredChat']);
+        eventsService = jasmine.createSpyObj<EventsService>('EventsService', ['start', 'getAdminAnsweredChat', 'getChatMessage']);
 
         eventsService.getAdminAnsweredChat.and.returnValue(mockEventService.adminAnsweredChatSubject.asObservable());
+        eventsService.getChatMessage.and.returnValue(mockEventService.messageSubject.asObservable());
 
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getUnreadAdminMessageCountForConference']);
         videoWebServiceSpy.getUnreadAdminMessageCountForConference.and.callFake(() => Promise.resolve(unreadCountResponse));
@@ -85,5 +88,13 @@ describe('UnreadMessagesComponent', () => {
     it('should return IM image if there are unread messages', () => {
         component.unreadCount = 0;
         expect(component.getIMStatus()).toBe('IM-empty.png');
+    });
+    it('should reset unread message counter when judge send a message', () => {
+        component.unreadCount = unreadCountResponse.number_of_unread_messages;
+        component.conferenceId = '12345';
+        component.setupSubscribers();
+        mockEventService.messageSubject.next(new InstantMessage({ conferenceId: '12345' }));
+
+        expect(component.unreadCount).toBe(unreadCountResponse.number_of_unread_messages + 1);
     });
 });
