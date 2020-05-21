@@ -1,5 +1,5 @@
 <div>
-    <div #copyID class="copyIDbox" [hidden]="displayTooltip">
+    <div #copyID class="copyIDbox" *ngIf="displayTooltip">
         {{ tooltip }}
     </div>
     <img 

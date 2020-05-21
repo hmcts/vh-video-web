@@ -29,7 +29,7 @@ describe('CopyIdComponent', () => {
 
     it('should hide the tooltip on mouse out event', () => {
         component.onMouseOut();
-        expect(component.displayTooltip).toBe(true);
+        expect(component.displayTooltip).toBe(false);
     });
 
     it('should show the tooltip on mouse over event', () => {
@@ -41,7 +41,7 @@ describe('CopyIdComponent', () => {
         expect(copyID.style.top).toBe(expectedTop);
         expect(copyID.style.left).toBe(expectedLeft);
 
-        expect(component.displayTooltip).toBe(false);
+        expect(component.displayTooltip).toBe(true);
         expect(component.tooltip).toBe('Copy hearing ID to clipboard');
     });
 
@@ -58,7 +58,7 @@ describe('CopyIdComponent', () => {
         const hearing = new HearingSummary(conference);
         component.copyToClipboard(hearing);
         expect(clipboardServiceSpy.copyFromContent).toHaveBeenCalledWith(hearing.id);
-        expect(component.displayTooltip).toBe(false);
+        expect(component.displayTooltip).toBe(true);
         expect(component.tooltip).toBe('Hearing ID copied to clipboard');
     });
 });

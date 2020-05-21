@@ -16,11 +16,12 @@ export class CopyIdComponent implements OnInit {
     constructor(private clipboardService: ClipboardService) {}
 
     ngOnInit(): void {
-        this.displayTooltip = true;
+        this.displayTooltip = false;
         this.tooltip = 'Copy hearing ID to clipboard';
     }
 
     onMouseOver($event: MouseEvent): void {
+        this.setTooltipVisibility(true);
         if (!this.copyID) {
             return;
         }
@@ -30,17 +31,16 @@ export class CopyIdComponent implements OnInit {
 
         elem.style.top = y - 15 + 'px';
         elem.style.left = x + 20 + 'px';
-        this.setTooltipVisibility(false);
     }
 
     copyToClipboard(conference: HearingSummary) {
         this.clipboardService.copyFromContent(conference.id);
         this.tooltip = 'Hearing ID copied to clipboard';
-        this.setTooltipVisibility(false);
+        this.setTooltipVisibility(true);
     }
 
     onMouseOut(): void {
-        this.setTooltipVisibility(true);
+        this.setTooltipVisibility(false);
     }
 
     setTooltipVisibility(visible: boolean) {

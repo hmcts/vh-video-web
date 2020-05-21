@@ -170,4 +170,15 @@ describe('ParticipantNetworkStatusComponent', () => {
         expect(clearTimeout).toHaveBeenCalled();
         expect(component.displayGraph).toBeFalsy();
     });
+
+    it('should set graph container location near icon on mouse move', () => {
+        component.graphContainer = new ElementRef(mockGraphContainer);
+        component.updateGraphPosition(mouseEvent);
+        component.ngAfterContentChecked();
+
+        const expectedTop = mouseEvent.clientY + 30 + 'px';
+        const expectedLeft = mouseEvent.clientX - 350 + 'px';
+        expect(mockGraphContainer.style.top).toBe(expectedTop);
+        expect(mockGraphContainer.style.left).toBe(expectedLeft);
+    });
 });
