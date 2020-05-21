@@ -94,7 +94,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenThePageShouldBeAccessibleApartFromAMissingHeader()
         {
             var axeResult = new AxeBuilder(_browsers[_c.CurrentUser.Key].Driver)
-                .DisableRules("page-has-heading-one","image-redundant-alt").Analyze();
+                .DisableRules("page-has-heading-one").Analyze();
             axeResult.Violations.Should().BeEmpty();
         }
     }
