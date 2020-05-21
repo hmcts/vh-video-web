@@ -1,9 +1,8 @@
-import { Input } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { UserProfileResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { InstantMessage } from 'src/app/services/models/instant-message';
@@ -12,10 +11,6 @@ import { Hearing } from 'src/app/shared/models/hearing';
 export abstract class ChatBaseComponent {
     protected hearing: Hearing;
     messages: InstantMessage[];
-
-    @Input() set conference(conference: ConferenceResponse) {
-        this.hearing = new Hearing(conference);
-    }
 
     constructor(
         protected videoWebService: VideoWebService,
@@ -31,7 +26,7 @@ export abstract class ChatBaseComponent {
     setupChatSubscription(): Subscription {
         this.logger.debug('[ChatHub] Subscribing to chat messages');
         const sub = this.eventService.getChatMessage().subscribe({
-            next: async (message) => {
+            next: async message => {
                 await this.handleIncomingMessage(message);
             }
         });
@@ -47,7 +42,7 @@ export abstract class ChatBaseComponent {
         }
 
         // ignore if already received message
-        if (this.messages.findIndex((m) => m.id === message.id) > -1) {
+        if (this.messages.findIndex(m => m.id === message.id) > -1) {
             const logInfo = Object.assign({}, message);
             delete logInfo.message;
             this.logger.debug(`[ChatHub] message already been processed ${JSON.stringify(logInfo)}`);
@@ -89,7 +84,7 @@ export abstract class ChatBaseComponent {
     handleIncomingOtherMessage() {}
 
     async retrieveChatForConference(): Promise<InstantMessage[]> {
-        this.messages = (await this.videoWebService.getConferenceChatHistory(this.hearing.id)).map((m) => {
+        this.messages = (await this.videoWebService.getConferenceChatHistory(this.hearing.id)).map(m => {
             const im = new InstantMessage(m);
             im.conferenceId = this.hearing.id;
             return im;

@@ -1,57 +1,56 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { AdalService } from 'adal-angular4';
-import { configureTestSuite } from 'ng-bullet';
+import { FormBuilder } from '@angular/forms';
+import { convertToParamMap, Router } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ConferenceLite } from 'src/app/services/models/conference-lite';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MicrophoneCheckComponent } from './microphone-check.component';
+import { SelfTestFailureReason, AddSelfTestFailureEventRequest } from 'src/app/services/clients/api-client';
 
 describe('MicrophoneCheckComponent', () => {
     let component: MicrophoneCheckComponent;
-    let fixture: ComponentFixture<MicrophoneCheckComponent>;
-    let router: Router;
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    const conference = new ConferenceTestData().getConferenceDetailFuture();
-    const confLite = new ConferenceLite(conference.id, conference.case_number);
+    const conference = new ConferenceTestData().getConferenceDetailNow();
 
-    configureTestSuite(() => {
+    let router: jasmine.SpyObj<Router>;
+    const activatedRoute: any = { snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
+    const formBuilder = new FormBuilder();
+    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+    const mockAdalService = new MockAdalService();
+    let adalService;
+    let errorService: jasmine.SpyObj<ErrorService>;
+    const logger: Logger = new MockLogger();
+
+    beforeAll(() => {
+        adalService = mockAdalService;
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getActiveIndividualConference',
             'raiseSelfTestFailureEvent'
         ]);
-        videoWebServiceSpy.getActiveIndividualConference.and.returnValue(confLite);
-        TestBed.configureTestingModule({
-            imports: [RouterTestingModule, SharedModule],
-            declarations: [MicrophoneCheckComponent],
-            providers: [
-                {
-                    provide: ActivatedRoute,
-                    useValue: {
-                        snapshot: {
-                            paramMap: convertToParamMap({ conferenceId: conference.id })
-                        }
-                    }
-                },
-                { provide: AdalService, useClass: MockAdalService },
-                { provide: VideoWebService, useValue: videoWebServiceSpy },
-                { provide: Logger, useClass: MockLogger }
-            ]
-        });
+
+        router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+
+        errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
+            'goToServiceError',
+            'handleApiError',
+            'returnHomeIfUnauthorised'
+        ]);
     });
 
-    beforeEach(async () => {
-        fixture = TestBed.createComponent(MicrophoneCheckComponent);
-        component = fixture.componentInstance;
-        router = TestBed.get(Router);
-        fixture.detectChanges();
-        await fixture.whenStable();
+    beforeEach(() => {
+        component = new MicrophoneCheckComponent(
+            router,
+            activatedRoute,
+            formBuilder,
+            videoWebServiceSpy,
+            adalService,
+            errorService,
+            logger
+        );
+        router.navigate.calls.reset();
+        component.ngOnInit();
     });
 
     it('should default no selected values', () => {
@@ -59,17 +58,19 @@ describe('MicrophoneCheckComponent', () => {
     });
 
     it('should invalidate form when "No" is selected', async () => {
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+        const payload = new AddSelfTestFailureEventRequest({
+            self_test_failure_reason: SelfTestFailureReason.Microphone
+        });
         component.equipmentCheck.setValue('No');
         component.equipmentCheck.markAsDirty();
         await component.onSubmit();
         expect(component.form.valid).toBeFalsy();
-        expect(router.navigate).toHaveBeenCalledTimes(1);
+        expect(videoWebServiceSpy.raiseSelfTestFailureEvent.calls.mostRecent().args[0]).toBe(conference.id);
+        expect(videoWebServiceSpy.raiseSelfTestFailureEvent.calls.mostRecent().args[1]).toEqual(payload);
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.GetHelp]);
     });
 
     it('should validate form when "Yes" is selected', async () => {
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         component.equipmentCheck.setValue('Yes');
         component.equipmentCheck.markAsDirty();
         await component.onSubmit();
@@ -78,7 +79,6 @@ describe('MicrophoneCheckComponent', () => {
     });
 
     it('should allow equipment check when answered "No"', () => {
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         component.equipmentCheck.setValue('No');
         component.form.markAsDirty();
         component.checkEquipmentAgain();
@@ -87,7 +87,6 @@ describe('MicrophoneCheckComponent', () => {
     });
 
     it('should not allow equipment check when answered "Yes"', () => {
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         component.equipmentCheck.setValue('Yes');
         component.form.markAsDirty();
         component.checkEquipmentAgain();
@@ -110,15 +109,23 @@ describe('MicrophoneCheckComponent', () => {
     });
 
     it('should log error when self test event cannot be raised', async () => {
-        videoWebServiceSpy.raiseSelfTestFailureEvent.and.callFake(() => Promise.reject({ status: 401, isApiException: false }));
-        const logger = TestBed.get(Logger);
-        spyOn(logger, 'error');
-
+        const error = new Error('unit test error');
+        videoWebServiceSpy.raiseSelfTestFailureEvent.and.callFake(() => Promise.reject(error));
+        const logSpy = spyOn(logger, 'error');
         component.form.markAsDirty();
         component.equipmentCheck.setValue('No');
 
         await component.onSubmit();
 
-        expect(logger.error).toHaveBeenCalledTimes(1);
+        expect(logSpy.calls.mostRecent().args[0]).toMatch('Failed to raise "SelfTestFailureEvent"');
+        expect(logSpy.calls.mostRecent().args[1]).toBe(error);
+    });
+
+    it('should return "Microphone" for equipment check', () => {
+        expect(component.getEquipmentCheck()).toBe('Microphone');
+    });
+
+    it('should return "Microphone" for self test reason', () => {
+        expect(component.getFailureReason()).toBe(SelfTestFailureReason.Microphone);
     });
 });

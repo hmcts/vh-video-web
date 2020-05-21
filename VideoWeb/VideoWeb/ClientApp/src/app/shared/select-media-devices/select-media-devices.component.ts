@@ -29,7 +29,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     ) {}
 
     async ngOnInit() {
-        await this.requestMedia().then(() => {
+        return this.requestMedia().then(() => {
             this.updateDeviceList().then(async () => {
                 this.selectedMediaDevicesForm = await this.initNewDeviceSelectionForm();
                 this.subscribeToDeviceSelectionChange();

@@ -66,8 +66,11 @@ describe('CommandCentreComponent - Core', () => {
         eventsService.getHeartbeat.and.returnValue(mockEventService.participantHeartbeat.asObservable());
     });
 
-    afterAll(() => {
+    afterEach(() => {
         component.ngOnDestroy();
+    });
+
+    afterAll(() => {
         TestFixtureHelper.clearVenues();
     });
 

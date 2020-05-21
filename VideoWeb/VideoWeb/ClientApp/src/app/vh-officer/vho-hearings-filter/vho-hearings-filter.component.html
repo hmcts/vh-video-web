@@ -41,7 +41,7 @@
       <hr />
       <div class="govuk-grid-column-one-half vh-mt20">
         <input type="button" value="Apply filters" (click)="applyFilters()" id="applyFilter" class="govuk-button"
-          [disabled]="disableFilterApply ? 'disabled' : false" />
+          [disabled]="disableFilterApply" />
       </div>
       <div class="govuk-grid-column-one-half vh-mt30" style="align-content:center;">
         <a href="javascript:void(0);" class="govuk-link" (click)="clearFilters()">Clear filters</a>

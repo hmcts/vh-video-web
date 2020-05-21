@@ -1,7 +1,6 @@
-import { TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
+import { of } from 'rxjs';
 import { AppComponent } from './app.component';
 import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
@@ -9,8 +8,8 @@ import { ClientSettingsResponse, Role, UserProfileResponse } from './services/cl
 import { DeviceTypeService } from './services/device-type.service';
 import { ErrorService } from './services/error.service';
 import { LocationService } from './services/location.service';
-import { pageUrls } from './shared/page-url.constants';
 import { PageTrackerService } from './services/page-tracker.service';
+import { pageUrls } from './shared/page-url.constants';
 import { MockAdalService } from './testing/mocks/MockAdalService';
 
 describe('AppComponent', () => {
@@ -47,7 +46,9 @@ describe('AppComponent', () => {
 
         locationServiceSpy = jasmine.createSpyObj<LocationService>('LocationService', ['getCurrentUrl', 'getCurrentPathName']);
 
-        routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate', 'navigateByUrl']);
+        routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate', 'navigateByUrl'], {
+            events: of()
+        });
         errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError', 'goToUnauthorised']);
         titleServiceSpy = jasmine.createSpyObj<Title>('Title', ['getTitle', 'setTitle']);
 

@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, HostListener, OnDestroy, OnInit, Input } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
@@ -7,6 +7,7 @@ import { ChatResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
+import { Hearing } from 'src/app/shared/models/hearing';
 
 @Component({
     selector: 'app-judge-chat',
@@ -18,6 +19,8 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
     unreadMessageCount: number;
     loading: boolean;
     private chatHubSubscription: Subscription;
+
+    @Input() hearing: Hearing;
 
     constructor(
         protected videoWebService: VideoWebService,
@@ -34,7 +37,7 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
         this.showChat = false;
         this.unreadMessageCount = 0;
         this.loading = true;
-        this.retrieveChatForConference().then((messages) => {
+        this.retrieveChatForConference().then(messages => {
             this.chatHubSubscription = this.setupChatSubscription();
             this.unreadMessageCount = this.getCountSinceUsersLastMessage(messages);
             this.loading = false;
@@ -83,7 +86,7 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
         reversedMessages.sort((a: ChatResponse, b: ChatResponse) => {
             return b.timestamp.getTime() - a.timestamp.getTime();
         });
-        const index = reversedMessages.findIndex((x) => x.is_user);
+        const index = reversedMessages.findIndex(x => x.is_user);
         if (index < 0) {
             return reversedMessages.length;
         } else {
