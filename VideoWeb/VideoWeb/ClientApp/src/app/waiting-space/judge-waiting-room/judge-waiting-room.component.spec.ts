@@ -1,75 +1,81 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { configureTestSuite } from 'ng-bullet';
-import { ConfigService } from 'src/app/services/api/config.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { JudgeEventService } from 'src/app/services/judge-event.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { JudgeChatStubComponent } from 'src/app/testing/stubs/judge-chat-stub.component';
-import { JudgeParticipantStatusListStubComponent } from 'src/app/testing/stubs/participant-status-list-stub';
 import { JudgeWaitingRoomComponent } from './judge-waiting-room.component';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
-    let fixture: ComponentFixture<JudgeWaitingRoomComponent>;
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    let route: ActivatedRoute;
-    let router: Router;
-    let conference: ConferenceResponse;
-    let eventService: MockEventsService;
-    let judgeEventServiceSpy: jasmine.SpyObj<JudgeEventService>;
+    const conference = new ConferenceTestData().getConferenceDetailFuture();
 
-    configureTestSuite(() => {
-        conference = new ConferenceTestData().getConferenceDetailFuture();
-        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'raiseParticipantEvent']);
-        videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(conference));
-        videoWebServiceSpy.raiseParticipantEvent.and.returnValue(Promise.resolve());
-        judgeEventServiceSpy = jasmine.createSpyObj<JudgeEventService>('JudgeEventService', [
+    const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
+
+    let videoWebService: jasmine.SpyObj<VideoWebService>;
+    let router: jasmine.SpyObj<Router>;
+    let eventsService: jasmine.SpyObj<EventsService>;
+    const mockEventService = new MockEventsService();
+    let errorService: jasmine.SpyObj<ErrorService>;
+    const logger: Logger = new MockLogger();
+    let judgeEventService: jasmine.SpyObj<JudgeEventService>;
+
+    beforeAll(() => {
+        router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'raiseParticipantEvent']);
+
+        judgeEventService = jasmine.createSpyObj<JudgeEventService>('JudgeEventService', [
             'raiseJudgeAvailableEvent',
             'raiseJudgeUnavailableEvent'
         ]);
 
-        TestBed.configureTestingModule({
-            imports: [SharedModule, RouterTestingModule],
-            declarations: [JudgeWaitingRoomComponent, JudgeParticipantStatusListStubComponent, JudgeChatStubComponent],
-            providers: [
-                {
-                    provide: ActivatedRoute,
-                    useValue: {
-                        snapshot: {
-                            paramMap: convertToParamMap({ conferenceId: conference.id })
-                        }
-                    }
-                },
-                { provide: VideoWebService, useValue: videoWebServiceSpy },
-                { provide: ConfigService, useClass: MockConfigService },
-                { provide: EventsService, useClass: MockEventsService },
-                { provide: Logger, useClass: MockLogger },
-                { provide: JudgeEventService, useValue: judgeEventServiceSpy }
-            ]
-        });
+        errorService = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError', 'goToUnauthorised']);
+
+        eventsService = jasmine.createSpyObj<EventsService>('EventsService', [
+            'start',
+            'getHearingStatusMessage',
+            'getParticipantStatusMessage',
+            'getServiceDisconnected',
+            'getServiceReconnected',
+            'getHeartbeat'
+        ]);
+        eventsService.getHearingStatusMessage.and.returnValue(mockEventService.hearingStatusSubject.asObservable());
+        eventsService.getParticipantStatusMessage.and.returnValue(mockEventService.participantStatusSubject.asObservable());
+        eventsService.getServiceDisconnected.and.returnValue(mockEventService.eventHubDisconnectSubject.asObservable());
+        eventsService.getServiceReconnected.and.returnValue(mockEventService.eventHubReconnectSubject.asObservable());
+        eventsService.getHeartbeat.and.returnValue(mockEventService.participantHeartbeat.asObservable());
     });
 
-    beforeEach(async () => {
-        eventService = TestBed.get(EventsService);
-        route = TestBed.get(ActivatedRoute);
-        router = TestBed.get(Router);
-        fixture = TestBed.createComponent(JudgeWaitingRoomComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-        await fixture.whenStable();
-    });
+    beforeEach(fakeAsync(() => {
+        videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
+        videoWebService.raiseParticipantEvent.and.returnValue(Promise.resolve());
+
+        judgeEventService.raiseJudgeUnavailableEvent.calls.reset();
+        judgeEventService.raiseJudgeAvailableEvent.calls.reset();
+        errorService.handleApiError.calls.reset();
+
+        component = new JudgeWaitingRoomComponent(
+            activatedRoute,
+            router,
+            videoWebService,
+            eventsService,
+            errorService,
+            logger,
+            judgeEventService
+        );
+        component.ngOnInit();
+        flushMicrotasks();
+    }));
 
     it('should create and display conference details', async () => {
         expect(component).toBeTruthy();
@@ -137,51 +143,45 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     it('should navigate to hearing room with conference id', async () => {
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-
         component.goToHearingPage();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeHearingRoom, component.conference.id]);
     });
 
     it('should navigate to check equipment with conference id', async () => {
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-
         component.checkEquipment();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.EquipmentCheck, component.conference.id]);
     });
 
     it('should navigate to judge hearing list', async () => {
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-
         component.goToJudgeHearingList();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeHearingList]);
     });
 
     it('should raise judge avaliable event', () => {
         component.ngOnInit();
-        expect(judgeEventServiceSpy.raiseJudgeAvailableEvent).toHaveBeenCalled();
+        expect(judgeEventService.raiseJudgeAvailableEvent).toHaveBeenCalled();
     });
 
     it('should call the raiseJudgeAvailable event when judge is disconnected and conference is paused', async () => {
         const conferenceStatus = ConferenceStatus.Paused;
         component.handleHearingStatusChange(conferenceStatus);
 
-        const message = eventService.nextJudgeStatusMessage;
+        const message = mockEventService.nextJudgeStatusMessage;
         component.handleParticipantStatusChange(message);
         const participant = component.conference.participants.find(x => x.id === message.participantId);
         expect(participant.status === message.status);
-        expect(judgeEventServiceSpy.raiseJudgeAvailableEvent).toHaveBeenCalled();
+        expect(judgeEventService.raiseJudgeAvailableEvent).toHaveBeenCalled();
     });
 
     it('should call the raiseJudgeAvailable event when conference is suspended', async () => {
         const conferenceStatus = ConferenceStatus.Suspended;
         component.handleHearingStatusChange(conferenceStatus);
 
-        const message = eventService.nextJudgeStatusMessage;
+        const message = mockEventService.nextJudgeStatusMessage;
         component.handleParticipantStatusChange(message);
         const participant = component.conference.participants.find(x => x.id === message.participantId);
         expect(participant.status === message.status);
-        expect(judgeEventServiceSpy.raiseJudgeAvailableEvent).toHaveBeenCalled();
+        expect(judgeEventService.raiseJudgeAvailableEvent).toHaveBeenCalled();
     });
 
     it('should return "hearingSuspended" true when conference status is suspended', () => {
@@ -205,20 +205,20 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     it('should get latest conference on eventhub disconnect', () => {
-        eventService.eventHubDisconnectSubject.next(1);
-        expect(videoWebServiceSpy.getConferenceById).toHaveBeenCalled();
+        mockEventService.eventHubDisconnectSubject.next(1);
+        expect(videoWebService.getConferenceById).toHaveBeenCalled();
     });
 
     it('should get latest conference on eventhub disconnect', () => {
-        eventService.eventHubReconnectSubject.next();
-        expect(videoWebServiceSpy.getConferenceById).toHaveBeenCalled();
+        mockEventService.eventHubReconnectSubject.next();
+        expect(videoWebService.getConferenceById).toHaveBeenCalled();
     });
 
     it('should update hearing status when message received', () => {
         component.conference.status = ConferenceStatus.InSession;
         const message = new ConferenceStatusMessage(conference.id, ConferenceStatus.Paused);
 
-        eventService.hearingStatusSubject.next(message);
+        mockEventService.hearingStatusSubject.next(message);
 
         expect(component.conference.status).toBe(message.status);
     });
@@ -228,8 +228,32 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.conference.participants[0].status = ParticipantStatus.Available;
         const message = new ParticipantStatusMessage(participant.id, participant.username, conference.id, ParticipantStatus.InConsultation);
 
-        eventService.participantStatusSubject.next(message);
+        mockEventService.participantStatusSubject.next(message);
 
         expect(component.conference.participants[0].status).toBe(message.status);
+    });
+
+    it('should post judge unavailable when leaving waiting room', () => {
+        component.ngOnDestroy();
+        expect(judgeEventService.raiseJudgeUnavailableEvent).toHaveBeenCalled();
+    });
+
+    it('should handle error when get conference fails', async () => {
+        const error = { status: 401, isApiException: true };
+        videoWebService.getConferenceById.and.rejectWith(error);
+
+        await component.getConference();
+
+        expect(errorService.handleApiError).toHaveBeenCalledWith(error);
+    });
+
+    it('should return false when unable to raise judge unavailable event', async () => {
+        const error = { status: 401, isApiException: true };
+        judgeEventService.raiseJudgeUnavailableEvent.and.rejectWith(error);
+        component.hearing = new Hearing(conference);
+
+        const result = await component.postEventJudgeUnvailableStatus();
+
+        expect(result).toBeFalsy();
     });
 });

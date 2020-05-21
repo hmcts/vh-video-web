@@ -374,7 +374,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     call() {
-        console.warn('calling pexip');
+        this.logger.warn('calling pexip');
         const pexipNode = this.hearing.getConference().pexip_node_uri;
         const conferenceAlias = this.hearing.getConference().participant_uri;
         const displayName = this.participant.tiled_display_name;

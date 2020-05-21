@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { ConferenceResponse } from 'src/app/services/clients/api-client';
+import { Hearing } from 'src/app/shared/models/hearing';
 @Component({ selector: 'app-judge-chat', template: '' })
 export class JudgeChatStubComponent {
     @Input()
-    conference: ConferenceResponse;
+    hearing: Hearing;
 }

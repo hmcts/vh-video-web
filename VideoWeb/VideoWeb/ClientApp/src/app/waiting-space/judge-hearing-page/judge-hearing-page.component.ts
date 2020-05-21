@@ -1,7 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { Component, OnDestroy, OnInit, SecurityContext } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, ConferenceStatus, Role } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -9,7 +10,6 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 
 @Component({
     selector: 'app-judge-hearing-page',
@@ -19,7 +19,7 @@ import { AudioRecordingService } from 'src/app/services/api/audio-recording.serv
 export class JudgeHearingPageComponent implements OnInit, OnDestroy {
     loadingData: boolean;
     conference: ConferenceResponse;
-    selectedHearingUrl: SafeResourceUrl;
+    selectedHearingUrl: string;
     allowPermissions: string;
     judgeUri: string;
 
@@ -100,7 +100,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
         this.allowPermissions = `microphone ${iframeOrigin}; camera ${iframeOrigin};`;
 
         this.judgeUri = `${this.conference.judge_i_frame_uri}?display_name=${encodedDisplayName}&cam=${cam}&mic=${mic}`;
-        this.selectedHearingUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.judgeUri);
+        this.selectedHearingUrl = this.sanitizer.sanitize(SecurityContext.URL, this.judgeUri);
     }
 
     private setupSubscribers() {
@@ -148,6 +148,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
         };
 
         if (conferenceStatus === ConferenceStatus.Closed) {
+            this.stopAudioRecording();
             this.logger.event(`Conference closed, navigating back to hearing list`, properties);
             return this.router.navigate([pageUrls.JudgeHearingList]);
         }
@@ -201,4 +202,18 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
         this.continueWithNoRecording = true;
         clearInterval(this.interval);
     }
+
+    async stopAudioRecording() {
+        if (this.conference.audio_recording_required) {
+
+            this.logger.event(`[Judge WR] - stop audio recording for hearing ${this.conference.hearing_ref_id}`);
+
+            try {
+                await this.audioRecordingService.stopAudioRecording(this.conference.hearing_ref_id);
+            } catch (error) {
+                this.logger.error(`[Judge WR] - failed to stop audio recording for hearing ${this.conference.hearing_ref_id}`, error);
+            }
+        }
+    }
+
 }

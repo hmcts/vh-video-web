@@ -11,6 +11,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { pageUrls } from 'src/app/shared/page-url.constants';
+import { ScreenHelper } from 'src/app/shared/screen-helper';
 
 @Component({
     selector: 'app-judge-hearing-list',
@@ -38,13 +39,14 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         private router: Router,
         private profileService: ProfileService,
         private logger: Logger,
-        private eventsService: EventsService
+        private eventsService: EventsService,
+        private screenHelper: ScreenHelper
     ) {
         this.loadingData = true;
     }
 
     ngOnInit() {
-        this.profileService.getUserProfile().then((profile) => {
+        this.profileService.getUserProfile().then(profile => {
             this.profile = profile;
         });
         this.retrieveHearingsForUser();
@@ -59,7 +61,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         this.logger.debug('Clearing intervals and subscriptions for Judge/Clerk');
         clearInterval(this.interval);
         this.conferencesSubscription.unsubscribe();
-        this.enableFullScreen(false);
+        this.screenHelper.enableFullScreen(false);
         this.eventHubSubscriptions.unsubscribe();
     }
 
@@ -69,12 +71,12 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
                 this.loadingData = false;
                 this.conferences = data;
                 if (this.conferences.length > 0) {
-                    this.enableFullScreen(true);
+                    this.screenHelper.enableFullScreen(true);
                 }
             },
-            (error) => {
+            error => {
                 this.loadingData = false;
-                this.enableFullScreen(false);
+                this.screenHelper.enableFullScreen(false);
                 this.errorService.handleApiError(error);
             }
         );
@@ -97,29 +99,17 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         this.router.navigate([pageUrls.EquipmentCheck]);
     }
 
-    enableFullScreen(fullScreen: boolean) {
-        const masterContainer = document.getElementById('master-container');
-        if (!masterContainer) {
-            return;
-        }
-
-        if (fullScreen) {
-            masterContainer.classList.add('fullscreen');
-        } else {
-            masterContainer.classList.remove('fullscreen');
-        }
-    }
-
     setupSubscribers() {
         this.eventHubSubscriptions.add(
-            this.eventsService.getHearingStatusMessage().subscribe((message) => {
+            this.eventsService.getHearingStatusMessage().subscribe(message => {
                 this.handleConferenceStatusChange(message);
             })
         );
+        this.eventsService.start();
     }
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
-        const conference = this.conferences.find((c) => c.id === message.conferenceId);
+        const conference = this.conferences.find(c => c.id === message.conferenceId);
         conference.status = message.status;
     }
 }

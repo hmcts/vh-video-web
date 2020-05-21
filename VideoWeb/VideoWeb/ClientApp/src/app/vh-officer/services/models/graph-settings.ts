@@ -1,3 +1,6 @@
+import { ChartOptions } from 'chart.js';
+import { Color } from 'ng2-charts';
+
 export const graphLabel = {
     Poor: 'poor',
     Bad: 'bad',
@@ -8,8 +11,8 @@ export const graphLabel = {
 export class GraphSettings {
     static MAX_RECORDS = 180;
 
-    static getLineChartOptions() {
-        return {
+    static getLineChartOptions(): ChartOptions {
+        const options: ChartOptions = {
             scales: {
                 yAxes: [
                     {
@@ -50,9 +53,11 @@ export class GraphSettings {
                 enabled: false
             }
         };
+
+        return options;
     }
 
-    static getlineChartColors() {
+    static getlineChartColors(): Color[] {
         return [
             {
                 borderColor: '#ffab00',

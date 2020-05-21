@@ -1,41 +1,25 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { configureTestSuite } from 'ng-bullet';
 import { HeaderComponent } from './header.component';
+import { topMenuItems } from './topMenuItems';
 
 describe('HeaderComponent', () => {
     let component: HeaderComponent;
-    let fixture: ComponentFixture<HeaderComponent>;
+    let router: jasmine.SpyObj<Router>;
 
-    const router = {
-        navigate: jasmine.createSpy('navigate')
-    };
-
-    configureTestSuite(() => {
-        TestBed.configureTestingModule({
-            declarations: [HeaderComponent],
-            providers: [{ provide: Router, useValue: router }]
-        });
+    beforeAll(() => {
+        router = jasmine.createSpyObj<Router>('Router', ['navigate', 'navigateByUrl']);
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(HeaderComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
-
-    it('should create the head component', () => {
-        expect(component).toBeTruthy();
+        component = new HeaderComponent(router);
     });
 
     it('header component should have top menu items', () => {
-        component.topMenuItems = [];
         component.ngOnInit();
-        expect(component.topMenuItems.length).toBeGreaterThan(0);
+        expect(component.topMenuItems).toEqual(topMenuItems);
     });
 
     it('selected top menu item has active property set to true, others item active set to false', () => {
-        component.topMenuItems = [];
         component.ngOnInit();
         component.selectMenuItem(0);
         expect(component.topMenuItems[0].active).toBeTruthy();

@@ -42,7 +42,6 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         private adalService: AdalService,
         private consultationService: ConsultationService,
         private eventService: EventsService,
-
         private modalService: ModalService,
         private logger: Logger,
         private videoWebService: VideoWebService
@@ -62,7 +61,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         this.callRingingSound.load();
         this.callRingingSound.addEventListener(
             'ended',
-            function() {
+            function () {
                 this.play();
             },
             false

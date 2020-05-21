@@ -9,8 +9,8 @@ describe('AdminHearingComponent', () => {
     const conferenceDetail = new ConferenceTestData().getConferenceDetailFuture();
     const hearing = new Hearing(conferenceDetail);
     beforeAll(() => {
-        domSanitizerSpy = jasmine.createSpyObj<DomSanitizer>('DomSanitizer', ['bypassSecurityTrustResourceUrl']);
-        domSanitizerSpy.bypassSecurityTrustResourceUrl.and.returnValue('test-url');
+        domSanitizerSpy = jasmine.createSpyObj<DomSanitizer>('DomSanitizer', ['sanitize']);
+        domSanitizerSpy.sanitize.and.returnValue('test-url');
     });
 
     beforeEach(() => {
@@ -20,6 +20,6 @@ describe('AdminHearingComponent', () => {
 
     it('should sanitise iframe uri on init', () => {
         component.ngOnInit();
-        expect(component.adminIframeUrl).toBeDefined();
+        expect(component.adminIframeUrl).toBe('test-url');
     });
 });

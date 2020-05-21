@@ -1,30 +1,14 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import * as moment from 'moment';
-import { configureTestSuite } from 'ng-bullet';
-import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { HearingListTableComponent } from './hearing-list-table.component';
 
 describe('HearingListTableComponent', () => {
     let component: HearingListTableComponent;
-    let fixture: ComponentFixture<HearingListTableComponent>;
-    let router: Router;
-
-    configureTestSuite(() => {
-        TestBed.configureTestingModule({
-            imports: [RouterTestingModule],
-            declarations: [HearingListTableComponent]
-        });
-    });
+    const testData = new ConferenceTestData();
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(HearingListTableComponent);
-        component = fixture.componentInstance;
-        component.conferences = new ConferenceTestData().getTestData();
-        router = TestBed.get(Router);
-        fixture.detectChanges();
+        component = new HearingListTableComponent();
+        component.conferences = testData.getTestData();
     });
 
     it('should not show sign in when start time is more 30 minutes from start time', () => {
@@ -66,7 +50,6 @@ describe('HearingListTableComponent', () => {
     it('should emit conference selected', () => {
         spyOn(component.selectedConference, 'emit');
         const conference = new ConferenceTestData().getConferenceFuture();
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         component.signIntoConference(conference);
         expect(component.selectedConference.emit).toHaveBeenCalledWith(conference);
     });

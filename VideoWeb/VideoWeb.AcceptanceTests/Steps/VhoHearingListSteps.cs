@@ -31,8 +31,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ProgressToNextPage()
         {
             Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser.Key], _c.Test.Conference.Id);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id)).Click();
+            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser.Key]);
+            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.HearingsTabButton);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
         }
 

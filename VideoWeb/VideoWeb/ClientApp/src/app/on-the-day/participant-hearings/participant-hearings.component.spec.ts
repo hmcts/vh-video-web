@@ -1,168 +1,119 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { configureTestSuite } from 'ng-bullet';
-import { of, throwError } from 'rxjs';
+import { of, Subscription, throwError } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { HearingListTableStubComponent } from 'src/app/testing/stubs/hearing-list-table-stub';
 import { ProfileService } from '../../services/api/profile.service';
-import { ConferenceForIndividualResponse, UserProfileResponse, Role } from '../../services/clients/api-client';
-import { PluraliseTextPipe } from '../../shared/pipes/pluraliseText.pipe';
+import { Role, UserProfileResponse } from '../../services/clients/api-client';
 import { ParticipantHearingsComponent } from './participant-hearings.component';
 
-const profile = new UserProfileResponse({
-    role: Role.Individual,
-    display_name: 'Display name',
-    first_name: 'test',
-    last_name: 'unit'
-});
-
-let profileServiceSpy: jasmine.SpyObj<ProfileService>;
-profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
-
-describe('ParticipantHearingsComponent with no conferences for user', () => {
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-
+describe('ParticipantHearingList', () => {
     let component: ParticipantHearingsComponent;
-    let fixture: ComponentFixture<ParticipantHearingsComponent>;
-    const noConferences: ConferenceForIndividualResponse[] = [];
 
-    beforeEach(() => {
-        profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
-        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForIndividual']);
-        videoWebServiceSpy.getConferencesForIndividual.and.returnValue(of(noConferences));
-
-        TestBed.configureTestingModule({
-            imports: [RouterTestingModule, SharedModule],
-            declarations: [ParticipantHearingsComponent, HearingListTableStubComponent, PluraliseTextPipe],
-            providers: [
-                { provide: VideoWebService, useValue: videoWebServiceSpy },
-                { provide: ProfileService, useValue: profileServiceSpy },
-                { provide: Logger, useClass: MockLogger }
-            ]
-        });
+    const mockProfile: UserProfileResponse = new UserProfileResponse({
+        display_name: 'John Doe',
+        first_name: 'John',
+        last_name: 'Doe',
+        role: Role.Individual
     });
 
-    beforeEach(() => {
-        fixture = TestBed.createComponent(ParticipantHearingsComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
-    });
-
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
-
-    it('should show no hearings message', () => {
-        expect(component.hasHearings()).toBeFalsy();
-    });
-});
-
-describe('ParticipantHearingsComponent with conferences for user', () => {
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    let component: ParticipantHearingsComponent;
-    let fixture: ComponentFixture<ParticipantHearingsComponent>;
     const conferences = new ConferenceTestData().getTestData();
 
-    configureTestSuite(() => {
-        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
+    let videoWebService: jasmine.SpyObj<VideoWebService>;
+    let errorService: jasmine.SpyObj<ErrorService>;
+    let router: jasmine.SpyObj<Router>;
+    let profileService: jasmine.SpyObj<ProfileService>;
+    const logger: Logger = new MockLogger();
+
+    beforeAll(() => {
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getConferencesForIndividual',
             'setActiveIndividualConference'
         ]);
-        videoWebServiceSpy.getConferencesForIndividual.and.returnValue(of(conferences));
 
-        TestBed.configureTestingModule({
-            imports: [RouterTestingModule, SharedModule],
-            declarations: [ParticipantHearingsComponent, HearingListTableStubComponent, PluraliseTextPipe],
-            providers: [
-                { provide: VideoWebService, useValue: videoWebServiceSpy },
-                { provide: ProfileService, useValue: profileServiceSpy },
-                { provide: Logger, useClass: MockLogger }
-            ]
-        });
+        errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
+            'goToServiceError',
+            'handleApiError',
+            'returnHomeIfUnauthorised'
+        ]);
+
+        profileService = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
+
+        profileService.getUserProfile.and.returnValue(Promise.resolve(mockProfile));
+
+        router = jasmine.createSpyObj<Router>('Router', ['navigate']);
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(ParticipantHearingsComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
+        component = new ParticipantHearingsComponent(videoWebService, errorService, router, profileService, logger);
+        component.conferences = conferences;
+        videoWebService.getConferencesForIndividual.and.returnValue(of(conferences));
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
+    it('should handle api error with error service when unable to retrieve hearings for individual', fakeAsync(() => {
+        videoWebService.getConferencesForIndividual.and.returnValue(throwError({ status: 401, isApiException: true }));
+        component.retrieveHearingsForUser();
+        expect(component.loadingData).toBeFalsy();
+        expect(errorService.handleApiError).toHaveBeenCalled();
+    }));
+
+    it('should not skip redirect to error page when failed more than 3 times', () => {
+        const error = { status: 401, isApiException: true };
+        component.errorCount = 3;
+        component.handleApiError(error);
+        expect(errorService.handleApiError).toHaveBeenCalledWith(error);
     });
 
-    it('should list hearings', () => {
+    it('should show no hearings message when individual has no conferences', fakeAsync(() => {
+        videoWebService.getConferencesForIndividual.and.returnValue(of([]));
+
+        component.retrieveHearingsForUser();
+        flushMicrotasks();
+
+        expect(component.hasHearings()).toBeFalsy();
+    }));
+
+    it('should retrieve conferences and setup interval on init', fakeAsync(() => {
+        component.conferences = null;
+        const interval = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
+        spyOn(global, 'setInterval').and.returnValue(interval);
+
+        component.ngOnInit();
+        flushMicrotasks();
+
+        expect(component.profile).toBe(mockProfile);
+        expect(component.conferences).toBe(conferences);
+        expect(setInterval).toHaveBeenCalled();
+        expect(component.interval).toBe(interval);
+    }));
+
+    it('should show hearings when judge has conferences', () => {
+        component.conferences = conferences;
         expect(component.hasHearings()).toBeTruthy();
     });
 
-    it('should navigate to judge waiting room when conference is selected', () => {
-        const router = TestBed.get(Router);
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    it('should navigate to introduction page when conference is selected', () => {
         const conference = conferences[0];
         component.onConferenceSelected(conference);
-        expect(videoWebServiceSpy.setActiveIndividualConference).toHaveBeenCalledWith(conference);
+        expect(videoWebService.setActiveIndividualConference).toHaveBeenCalledWith(conference);
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.Introduction, conference.id]);
     });
 
     it('should go to equipment check without conference id', () => {
-        const router = TestBed.get(Router);
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         component.goToEquipmentCheck();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.EquipmentCheck]);
     });
-});
 
-describe('ParticipantHearingsComponent with service error', () => {
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    let component: ParticipantHearingsComponent;
-    let fixture: ComponentFixture<ParticipantHearingsComponent>;
-    let errorServiceSpy: jasmine.SpyObj<ErrorService>;
-    const apiError = { status: 401, isApiException: true };
-
-    configureTestSuite(() => {
-        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForIndividual']);
-        videoWebServiceSpy.getConferencesForIndividual.and.returnValue(throwError(apiError));
-        profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
-
-        errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError']);
-        errorServiceSpy.handleApiError.and.callFake(() => {});
-
-        TestBed.configureTestingModule({
-            imports: [RouterTestingModule, SharedModule],
-            declarations: [ParticipantHearingsComponent, HearingListTableStubComponent, PluraliseTextPipe],
-            providers: [
-                { provide: VideoWebService, useValue: videoWebServiceSpy },
-                { provide: ProfileService, useValue: profileServiceSpy },
-                { provide: Logger, useClass: MockLogger },
-                { provide: ErrorService, useValue: errorServiceSpy }
-            ]
-        });
-    });
-
-    beforeEach(() => {
-        fixture = TestBed.createComponent(ParticipantHearingsComponent);
-        component = fixture.componentInstance;
-    });
-
-    it('should handle api error with error service', () => {
-        component.retrieveHearingsForUser();
-        expect(component.loadingData).toBeFalsy();
-        expect(errorServiceSpy.handleApiError).toHaveBeenCalledWith(apiError, true);
-    });
-
-    it('should not skip redirect to error page when failed more than 3 times', () => {
-        component.errorCount = 3;
-        component.retrieveHearingsForUser();
-        expect(errorServiceSpy.handleApiError).toHaveBeenCalledWith(apiError);
+    it('should clear subscriptions and intervals on destroy', () => {
+        spyOn(window, 'clearInterval');
+        const interval = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
+        component.interval = interval;
+        component.conferencesSubscription = new Subscription();
+        component.ngOnDestroy();
+        expect(clearInterval).toHaveBeenCalledWith(interval);
     });
 });

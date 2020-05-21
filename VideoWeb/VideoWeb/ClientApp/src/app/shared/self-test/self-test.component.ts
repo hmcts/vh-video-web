@@ -108,7 +108,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         }
     }
 
-    async changeDevices() {
+    changeDevices() {
         this.disconnect();
         this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
         this.displayDeviceChangeModal = true;

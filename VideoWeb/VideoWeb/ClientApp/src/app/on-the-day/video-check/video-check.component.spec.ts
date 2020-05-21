@@ -1,13 +1,10 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { AdalService } from 'adal-angular4';
-import { configureTestSuite } from 'ng-bullet';
+import { FormBuilder } from '@angular/forms';
+import { convertToParamMap, Router } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceLite } from 'src/app/services/models/conference-lite';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
@@ -15,47 +12,45 @@ import { VideoCheckComponent } from './video-check.component';
 
 describe('VideoCheckComponent', () => {
     let component: VideoCheckComponent;
-    let fixture: ComponentFixture<VideoCheckComponent>;
-    let router: Router;
-
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    const conference = new ConferenceTestData().getConferenceDetailFuture();
+    const conference = new ConferenceTestData().getConferenceDetailNow();
     const confLite = new ConferenceLite(conference.id, conference.case_number);
+    let router: jasmine.SpyObj<Router>;
+    const activatedRoute: any = { snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
+    const formBuilder = new FormBuilder();
+    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+    const mockAdalService = new MockAdalService();
+    let adalService;
+    let errorService: jasmine.SpyObj<ErrorService>;
+    const logger: Logger = new MockLogger();
 
-    configureTestSuite(() => {
+    beforeAll(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getActiveIndividualConference',
             'raiseSelfTestFailureEvent'
         ]);
         videoWebServiceSpy.getActiveIndividualConference.and.returnValue(confLite);
-        TestBed.configureTestingModule({
-            imports: [RouterTestingModule, SharedModule],
-            declarations: [VideoCheckComponent],
-            providers: [
-                {
-                    provide: ActivatedRoute,
-                    useValue: {
-                        snapshot: {
-                            paramMap: convertToParamMap({ conferenceId: conference.id })
-                        }
-                    }
-                },
-                { provide: AdalService, useClass: MockAdalService },
-                { provide: VideoWebService, useValue: videoWebServiceSpy },
-                { provide: Logger, useClass: MockLogger }
-            ]
-        });
+        adalService = mockAdalService;
+
+        router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+
+        errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
+            'goToServiceError',
+            'handleApiError',
+            'returnHomeIfUnauthorised'
+        ]);
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(VideoCheckComponent);
-        component = fixture.componentInstance;
-        router = TestBed.get(Router);
-        fixture.detectChanges();
+        component = new VideoCheckComponent(router, activatedRoute, formBuilder, videoWebServiceSpy, adalService, errorService, logger);
+        router.navigate.calls.reset();
+        component.ngOnInit();
+    });
+
+    it('should default no selected values', () => {
+        expect(component.form.pristine).toBeTruthy();
     });
 
     it('should invalidate form when "No" is selected', async () => {
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         component.equipmentCheck.setValue('No');
         component.equipmentCheck.markAsDirty();
         await component.onSubmit();
@@ -65,7 +60,6 @@ describe('VideoCheckComponent', () => {
     });
 
     it('should validate form when "Yes" is selected', async () => {
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         component.equipmentCheck.setValue('Yes');
         component.equipmentCheck.markAsDirty();
         await component.onSubmit();
@@ -74,7 +68,6 @@ describe('VideoCheckComponent', () => {
     });
 
     it('should allow equipment check when answered "No"', () => {
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         component.equipmentCheck.setValue('No');
         component.form.markAsDirty();
         component.checkEquipmentAgain();
@@ -83,7 +76,6 @@ describe('VideoCheckComponent', () => {
     });
 
     it('should not allow equipment check when answered "Yes"', () => {
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         component.equipmentCheck.setValue('Yes');
         component.form.markAsDirty();
         component.checkEquipmentAgain();

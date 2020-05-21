@@ -42,7 +42,7 @@ export class VhoHearingListComponent implements OnInit {
     }
 
     mapToHearing(conference: HearingSummary): Hearing {
-        const hearing = new ConferenceResponseVho({ scheduled_date_time: conference.scheduledDateTime, status: conference.status });
+        const hearing = new ConferenceResponseVho({ id: conference.id, scheduled_date_time: conference.scheduledDateTime, status: conference.status });
         return new Hearing(hearing);
     }
 }

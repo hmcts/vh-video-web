@@ -4,7 +4,7 @@ Feature: Hearing Status
 	I want to be able to see an overview of the status of all hearings
 
 @VIH-4195 @Smoketest-Extended
-Scenario Outline: Video Hearings Officer views hearing status
+Scenario Outline: VHO views hearing status
 	Given I have a hearing in 2 minutes time
 	And I have another hearing
 	And the hearing status changes to <Status>
@@ -23,7 +23,7 @@ Scenario Outline: Video Hearings Officer views hearing status
 	| Suspended   | 
 
 @VIH-4195
-Scenario: Video Hearings Officer views closed hearings
+Scenario: VHO views closed hearings
 	Given I have a hearing
 	And the hearing status changes to Closed
 	And a new browser is open for a Video Hearings Officer

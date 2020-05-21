@@ -1,56 +1,33 @@
-import { DebugElement } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { configureTestSuite } from 'ng-bullet';
-import { Logger } from 'src/app/services/logging/logger-base';
+import { convertToParamMap, Router } from '@angular/router';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { BackNavigationStubComponent } from 'src/app/testing/stubs/back-navigation-stub';
-import { ContactUsFoldingStubComponent } from 'src/app/testing/stubs/contact-us-stub';
 import { EquipmentCheckComponent } from './equipment-check.component';
 
 describe('EquipmentCheckComponent', () => {
     let component: EquipmentCheckComponent;
-    let fixture: ComponentFixture<EquipmentCheckComponent>;
-    let debugElement: DebugElement;
-    let router: Router;
-    const conference = new ConferenceTestData().getConferenceDetailFuture();
+    const conference = new ConferenceTestData().getConferenceDetailNow();
 
-    configureTestSuite(() => {
-        TestBed.configureTestingModule({
-            declarations: [EquipmentCheckComponent, ContactUsFoldingStubComponent, BackNavigationStubComponent],
-            imports: [ReactiveFormsModule, FormsModule, RouterTestingModule],
-            providers: [
-                {
-                    provide: ActivatedRoute,
-                    useValue: {
-                        snapshot: {
-                            paramMap: convertToParamMap({ conferenceId: conference.id })
-                        }
-                    }
-                },
-                { provide: Logger, useClass: MockLogger }
-            ]
-        });
+    let router: jasmine.SpyObj<Router>;
+    const activatedRoute: any = { snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
 
-        fixture = TestBed.createComponent(EquipmentCheckComponent);
-        debugElement = fixture.debugElement;
-        component = debugElement.componentInstance;
-        router = TestBed.get(Router);
+    beforeAll(() => {
+        router = jasmine.createSpyObj<Router>('Router', ['navigate']);
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(EquipmentCheckComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
+        component = new EquipmentCheckComponent(router, activatedRoute);
+        router.navigate.calls.reset();
+        component.ngOnInit();
     });
 
-    it('should navigate to camera-and-microphone', () => {
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    it('should navigate to camera-and-microphone with conference id', () => {
         component.goToCameraAndMicCheck();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.SwitchOnCameraMicrophone, conference.id]);
+    });
+
+    it('should navigate to camera-and-microphone without conference id', () => {
+        component.conferenceId = null;
+        component.goToCameraAndMicCheck();
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.SwitchOnCameraMicrophone]);
     });
 });

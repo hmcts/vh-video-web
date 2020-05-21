@@ -1,24 +1,15 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { configureTestSuite } from 'ng-bullet';
+import { vhContactDetails } from '../contact-information';
 import { ContactUsComponent } from './contact-us.component';
 
 describe('ContactUsComponent', () => {
     let component: ContactUsComponent;
-    let fixture: ComponentFixture<ContactUsComponent>;
-
-    configureTestSuite(() => {
-        TestBed.configureTestingModule({
-            declarations: [ContactUsComponent]
-        });
-    });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(ContactUsComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
+        component = new ContactUsComponent();
     });
 
-    it('should create contact us component', () => {
-        expect(component).toBeTruthy();
+    it('should init contact details', () => {
+        expect(component.contact.phone).toBe(vhContactDetails.phone);
+        expect(component.contact.email).toBe(vhContactDetails.adminEmail);
     });
 });
