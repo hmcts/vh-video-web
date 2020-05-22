@@ -4,7 +4,7 @@ import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
-import { InstantMessage } from 'src/app/services/models/instant-message';
+import { InstantMessage, ExtendMessageInfo } from 'src/app/services/models/instant-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
@@ -72,7 +72,8 @@ describe('VhoChatComponent', () => {
             id: Guid.create().toString(),
             from: username,
             message: 'test message',
-            timestamp: new Date()
+            timestamp: new Date(),
+            isJudge: true
         });
         mockEventsService.messageSubject.next(instantMessage);
         flushMicrotasks();
@@ -87,7 +88,8 @@ describe('VhoChatComponent', () => {
             id: Guid.create().toString(),
             from: username,
             message: 'test message',
-            timestamp: new Date()
+            timestamp: new Date(),
+            isJudge: true
         });
         const messageCount = component.messages.length;
         await component.handleIncomingMessage(instantMessage);
@@ -104,7 +106,8 @@ describe('VhoChatComponent', () => {
             id: Guid.create().toString(),
             from: otherUsername,
             message: 'test message',
-            timestamp: new Date()
+            timestamp: new Date(),
+            isJudge: true
         });
         const messageCount = component.messages.length;
         await component.handleIncomingMessage(chatResponse);
@@ -112,12 +115,22 @@ describe('VhoChatComponent', () => {
         expect(component.messages.length).toBeGreaterThan(messageCount);
     });
 
-    it('should get first name when message from user not in conference', async () => {
+    it('should get first name and is Judge flag when message from user not in conference', async () => {
         const username = 'vhofficer.hearings.net';
         const expectedFirstName = mockProfileService.mockProfile.first_name;
-        const from = await component.assignMessageFrom(username);
-        expect(from).toBe(expectedFirstName);
+        const expectedInfo = new ExtendMessageInfo(expectedFirstName, false);
+        const messageInfo = await component.assignMessageFrom(username);
+        expect(messageInfo).toEqual(expectedInfo);
     });
+
+    it('should get first name and is Judge flag when message from judge', async () => {
+        const username = 'judge.fudge@hearings.net';
+        const expectedFirstName = component.hearing.participants[2].displayName;
+        const expectedInfo = new ExtendMessageInfo(expectedFirstName, true);
+        const messageInfo = await component.assignMessageFrom(username);
+        expect(messageInfo).toEqual(expectedInfo);
+    });
+
 
     it('should send message to hub', () => {
         const message = 'test';

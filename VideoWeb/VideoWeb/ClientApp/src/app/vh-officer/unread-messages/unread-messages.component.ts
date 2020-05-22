@@ -33,7 +33,7 @@ export class UnreadMessagesComponent implements OnInit, OnDestroy {
         );
         this.messagesSubscription$.add(
             this.eventsService.getChatMessage().subscribe(message => {
-                if (message.conferenceId === this.conferenceId) {
+                if (message.conferenceId === this.conferenceId && message.isJudge) {
                     this.logger.info(`an admin has message`);
                     this.unreadCount++;
                 }

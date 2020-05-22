@@ -3,10 +3,10 @@ import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, UserProfileResponse, Role } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { InstantMessage } from 'src/app/services/models/instant-message';
+import { InstantMessage, ExtendMessageInfo } from 'src/app/services/models/instant-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 
 export abstract class ChatBaseComponent {
@@ -60,7 +60,9 @@ export abstract class ChatBaseComponent {
             message.from = 'You';
             message.is_user = true;
         } else {
-            message.from = await this.assignMessageFrom(from);
+            const userInfo = await this.assignMessageFrom(from);
+            message.from = userInfo.from;
+            message.isJudge = userInfo.isJudge;
             message.is_user = false;
             this.handleIncomingOtherMessage();
         }
@@ -68,13 +70,13 @@ export abstract class ChatBaseComponent {
         this.messages.push(message);
     }
 
-    async assignMessageFrom(username: string): Promise<string> {
+    async assignMessageFrom(username: string): Promise<ExtendMessageInfo> {
         const participant = this.hearing.getParticipantByUsername(username);
         if (participant) {
-            return participant.displayName;
+            return new ExtendMessageInfo(participant.displayName, participant.isJudge);
         } else {
             const profile = await this.getProfileForUser(username);
-            return profile.first_name;
+            return new ExtendMessageInfo(profile.first_name, profile.role === Role.Judge);
         }
     }
 

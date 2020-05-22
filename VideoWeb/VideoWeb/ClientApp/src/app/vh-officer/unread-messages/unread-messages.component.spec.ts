@@ -93,8 +93,16 @@ describe('UnreadMessagesComponent', () => {
         component.unreadCount = unreadCountResponse.number_of_unread_messages;
         component.conferenceId = '12345';
         component.setupSubscribers();
-        mockEventService.messageSubject.next(new InstantMessage({ conferenceId: '12345' }));
+        mockEventService.messageSubject.next(new InstantMessage({ conferenceId: '12345', isJudge: true }));
 
         expect(component.unreadCount).toBe(unreadCountResponse.number_of_unread_messages + 1);
+    });
+    it('should not increase unread message counter when admin send a message', () => {
+        component.unreadCount = unreadCountResponse.number_of_unread_messages;
+        component.conferenceId = '12345';
+        component.setupSubscribers();
+        mockEventService.messageSubject.next(new InstantMessage({ conferenceId: '12345', isJudge: false }));
+
+        expect(component.unreadCount).toBe(unreadCountResponse.number_of_unread_messages);
     });
 });

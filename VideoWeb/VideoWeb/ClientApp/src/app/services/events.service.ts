@@ -109,10 +109,10 @@ export class EventsService {
 
     this.connection.on(
       'ReceiveMessage',
-      (conferenceId: string, from: string, message: string, timestamp: Date, messageUuid: string) => {
+      (conferenceId: string, from: string, message: string, timestamp: Date, messageUuid: string, isJudge: boolean) => {
         const date = new Date(timestamp);
-        const chat = new InstantMessage({conferenceId, id: messageUuid, from, message, timestamp: date});
-        this.logger.event('ReceiveMessage received', { conferenceId, id: messageUuid, from, timestamp: date });
+        const chat = new InstantMessage({conferenceId, id: messageUuid, from, message, timestamp: date, isJudge: isJudge});
+        this.logger.event('ReceiveMessage received', { conferenceId, id: messageUuid, from, timestamp: date, isJudge: isJudge });
         this.messageSubject.next(chat);
       }
     );

@@ -33,6 +33,10 @@ namespace VideoWeb.UnitTests.Hub
             
             var message = "test message";
 
+            Claims = new ClaimsPrincipalBuilder().WithRole(Role.Judge).Build();
+            HubCallerContextMock.Setup(x => x.User).Returns(Claims);
+
+
             var mockClient = new Mock<IEventHubClient>();
             EventHubClientMock.Setup(x => x.Group(conferenceId.ToString())).Returns(mockClient.Object);
 
@@ -40,7 +44,7 @@ namespace VideoWeb.UnitTests.Hub
 
             mockClient.Verify(
                 x =>
-                    x.ReceiveMessage(conferenceId, username, message, It.IsAny<DateTime>(), It.IsAny<Guid>()),
+                    x.ReceiveMessage(conferenceId, username, message, It.IsAny<DateTime>(), It.IsAny<Guid>(), true),
                 Times.Once);
         }
 
@@ -75,7 +79,7 @@ namespace VideoWeb.UnitTests.Hub
 
             mockClient.Verify(
                 x =>
-                    x.ReceiveMessage(conferenceId, It.IsAny<string>(), message, It.IsAny<DateTime>(), It.IsAny<Guid>()),
+                    x.ReceiveMessage(conferenceId, It.IsAny<string>(), message, It.IsAny<DateTime>(), It.IsAny<Guid>(), false),
                 Times.Once);
         }
 
@@ -107,7 +111,7 @@ namespace VideoWeb.UnitTests.Hub
 
             mockClient.Verify(
                 x =>
-                    x.ReceiveMessage(conferenceId, It.IsAny<string>(), message, It.IsAny<DateTime>(), It.IsAny<Guid>()),
+                    x.ReceiveMessage(conferenceId, It.IsAny<string>(), message, It.IsAny<DateTime>(), It.IsAny<Guid>(), false),
                 Times.Never);
         }
     }
