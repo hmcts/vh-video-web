@@ -17,6 +17,7 @@ import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { VhoQueryService } from '../../services/vho-query-service.service';
 import { CommandCentreComponent } from '../command-centre.component';
+import { EventBusService } from 'src/app/services/event-bus.service';
 
 describe('CommandCentreComponent - Events', () => {
     let component: CommandCentreComponent;
@@ -26,6 +27,7 @@ describe('CommandCentreComponent - Events', () => {
     let errorService: jasmine.SpyObj<ErrorService>;
     let eventsService: jasmine.SpyObj<EventsService>;
     let router: jasmine.SpyObj<Router>;
+    let eventBusServiceSpy: jasmine.SpyObj<EventBusService>;
 
     const logger: Logger = new MockLogger();
     const mockEventService = new MockEventsService();
@@ -69,6 +71,8 @@ describe('CommandCentreComponent - Events', () => {
         eventsService.getServiceDisconnected.and.returnValue(mockEventService.eventHubDisconnectSubject.asObservable());
         eventsService.getServiceReconnected.and.returnValue(mockEventService.eventHubReconnectSubject.asObservable());
         eventsService.getHeartbeat.and.returnValue(mockEventService.participantHeartbeat.asObservable());
+
+        eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
     });
 
     afterAll(() => {
@@ -80,7 +84,7 @@ describe('CommandCentreComponent - Events', () => {
         vhoQueryService.getConferencesForVHOfficer.and.returnValue(of(conferences));
         vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
 
-        component = new CommandCentreComponent(vhoQueryService, errorService, eventsService, logger, router, screenHelper);
+        component = new CommandCentreComponent(vhoQueryService, errorService, eventsService, logger, router, screenHelper, eventBusServiceSpy);
         component.hearings = hearings;
         component.selectedHearing = hearing;
         screenHelper.enableFullScreen.calls.reset();
