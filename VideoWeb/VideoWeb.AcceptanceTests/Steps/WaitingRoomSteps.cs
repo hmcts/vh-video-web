@@ -208,6 +208,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 ThenTheUserCanSeeInformationAboutTheirCase();
             }
         }
+
         private void CheckParticipantsAreStillConnected()
         {
             foreach (var user in _browsers.Keys.Select(lastname => _c.Test.ConferenceParticipants.First(x => x.Name.ToLower().Contains(lastname.ToLower()))).Where(user => !user.User_role.Equals(UserRole.Judge)))

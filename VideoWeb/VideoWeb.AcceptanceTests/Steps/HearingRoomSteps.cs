@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using AcceptanceTests.Common.Api.Helpers;
 using AcceptanceTests.Common.Driver.Browser;
@@ -11,6 +12,7 @@ using OpenQA.Selenium;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.Services.Video;
 using AudioRecordingResponse = VideoWeb.Services.Video.AudioRecordingResponse;
 
 
@@ -138,22 +140,25 @@ namespace VideoWeb.AcceptanceTests.Steps
             audioLink.Audio_file_link.ToLower().Should().Contain(_c.Test.NewHearingId.ToString().ToLower());
         }
 
-        [Then(@"the VHO can see that all the participants are in the Waiting Room")]
-        public void ThenTheVHOCanSeeThatAllTheParticipantsAreInTheWaitingRoom()
+        [Then(@"the VHO can see that (.*) is in the Waiting Room")]
+        public void ThenTheVHOCanSeeThatAllTheParticipantsAreInTheWaitingRoom(string lastname)
         {
             SwitchToTheVhoIframe();
-
+            var participantId = _c.Test.Conference.Participants.First(x => x.Name.ToLower().Contains(lastname.ToLower())).Id;
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantInWaitingRoom(participantId)).Displayed.Should().BeTrue();
             SwitchToDefaultContent();
         }
 
-        [Then(@"the VHO can see that all the participants are in the Hearing Room")]
-        public void ThenTheVHOCanSeeThatAllTheParticipantsAreInTheHearingRoom()
+        [Then(@"the VHO can see that the Judge and (.*) participants are in the Hearing Room")]
+        public void ThenTheVHOCanSeeThatAllTheParticipantsAreInTheHearingRoom(string lastname)
         {
             SwitchToTheVhoIframe();
-
+            var judgeId = _c.Test.Conference.Participants.First(x => x.User_role == UserRole.Judge).Id;
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantInHearingRoom(judgeId)).Displayed.Should().BeTrue();
+            var participantId = _c.Test.Conference.Participants.First(x => x.Name.ToLower().Contains(lastname.ToLower())).Id;
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantInHearingRoom(participantId)).Displayed.Should().BeTrue();
             SwitchToDefaultContent();
         }
-
 
         public void ProgressToNextPage()
         {
@@ -171,7 +176,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private void SwitchToTheVhoIframe()
         {
-            _browsers[_c.CurrentUser.Key].Driver.SwitchTo().Frame(HearingRoomPage.VhoIframeId);
+            _browsers[_c.CurrentUser.Key].Driver.SwitchTo().Frame(AdminPanelPage.AdminIframeId);
         }
 
         private void SwitchToParticipantContent()

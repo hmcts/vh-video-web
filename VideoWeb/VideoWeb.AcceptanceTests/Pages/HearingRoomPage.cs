@@ -5,7 +5,6 @@ namespace VideoWeb.AcceptanceTests.Pages
     public static class HearingRoomPage
     {
         public const string JudgeIframeId = "judgeIframe";
-        public const string VhoIframeId = "judgeIframe";
         public static By TechnicalIssues = By.Id("technicalIssuesButton");
         public static By PauseButton = By.Id("pauseButton");
         public static By CloseButton = By.Id("closeButton");
