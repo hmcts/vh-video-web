@@ -111,6 +111,6 @@ Scenario: VHO Monitors Hearing
   When the Clerk clicks close
 	Then the user is on the Hearing List page
   When in the Video Hearings Officer's browser
-  Then the VHO can see the Clerk status is Unavailable
+  Then the VHO can see the Clerk status is Disconnected
   And the VHO can see the status of participant Individual01 is Available
   And the VHO can see that Individual01 is in the Waiting Room
