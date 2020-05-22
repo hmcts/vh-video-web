@@ -87,3 +87,30 @@ Scenario: Audio Recording
 	Then the user is on the Hearing List page
 	And the hearing status changed to Closed
   And an audio recording of the hearing has been created
+
+@HearingTest @Smoketest-Extended @DisableLogging
+Scenario: VHO Monitors Hearing
+  Given the Video Hearings Officer user has progressed to the VHO Hearing List page
+	Then the VHO can see the Clerk status is Unavailable
+  And the VHO can see the participants statuses are Not Signed In
+  Given the Individual01 user has progressed to the Waiting Room page for the existing hearing
+	And the Clerk user has progressed to the Waiting Room page for the existing hearing
+  And in the Video Hearings Officer's browser
+  Then the VHO can see the Clerk status is Available
+  And the VHO can see the status of participant Individual01 is Available
+  And the VHO can see that Individual01 is in the Waiting Room
+  When in the Clerk's browser
+  And the Clerk starts the hearing
+	And the countdown finishes
+  And the Clerk is on the Hearing Room page for 20 seconds
+  And in the Video Hearings Officer's browser
+  Then the VHO can see the Clerk status is In Hearing
+  And the VHO can see the status of participant Individual01 is In Hearing
+  And the VHO can see that the Judge and Individual01 participants are in the Hearing Room
+  When in the Clerk's browser
+  When the Clerk clicks close
+	Then the user is on the Hearing List page
+  When in the Video Hearings Officer's browser
+  Then the VHO can see the Clerk status is Unavailable
+  And the VHO can see the status of participant Individual01 is Available
+  And the VHO can see that Individual01 is in the Waiting Room

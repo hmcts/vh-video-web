@@ -4,19 +4,20 @@
   </div>
 
   <div class="govuk-grid-column-three-quarters">
-    <ng-select
-      id="venue-allocation-list"
-      [items]="venues"
-      [multiple]="true"
-      bindLabel="name"
-      placeholder="Choose lists"
-      [(ngModel)]="selectedVenues"
-      (change)="updateSelection()"
-    >
-      <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-        <input id="venue-{{ index }}" type="checkbox" [ngModel]="item$.selected" /> {{ item.name }}
-      </ng-template>
-    </ng-select>
+      <ng-select id="venue-allocation-list"
+                 class="custom"
+                 aria-label="Venue allocation list"
+                 [items]="venues"
+                 [multiple]="true"
+                 bindLabel="name"
+                 placeholder="Choose lists"
+                 [(ngModel)]="selectedVenues"
+                 (change)="updateSelection()">
+
+          <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
+              <input id="venue-{{ index }}" type="checkbox" [ngModel]="item$.selected" attr.aria-label="Venue name {{ item.name }}" /> {{ item.name }}
+          </ng-template>
+      </ng-select>
   </div>
   <div class="govuk-grid-column-one-quarter">
     <input
