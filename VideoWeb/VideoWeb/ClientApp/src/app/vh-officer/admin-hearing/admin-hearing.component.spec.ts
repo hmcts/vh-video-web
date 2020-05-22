@@ -9,8 +9,8 @@ describe('AdminHearingComponent', () => {
     const conferenceDetail = new ConferenceTestData().getConferenceDetailFuture();
     const hearing = new Hearing(conferenceDetail);
     beforeAll(() => {
-        domSanitizerSpy = jasmine.createSpyObj<DomSanitizer>('DomSanitizer', ['sanitize']);
-        domSanitizerSpy.sanitize.and.returnValue('test-url');
+        domSanitizerSpy = jasmine.createSpyObj<DomSanitizer>('DomSanitizer', ['bypassSecurityTrustResourceUrl']);
+        domSanitizerSpy.bypassSecurityTrustResourceUrl.and.returnValue('test-url');
     });
 
     beforeEach(() => {
