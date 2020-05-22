@@ -211,13 +211,22 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private void CheckParticipantsAreStillConnected()
         {
-            foreach (var user in _browsers.Keys.Select(lastname => _c.Test.ConferenceParticipants.First(x => x.Name.ToLower().Contains(lastname.ToLower()))).Where(user => user.User_role != UserRole.Judge && user.User_role != UserRole.VideoHearingsOfficer))
+            var loggedInParticipants = LoggedInParticipants(_browsers.Keys, _c.Test.ConferenceParticipants);
+            foreach (var user in loggedInParticipants)
             {
+                if ((user.User_role == UserRole.Judge)) continue;
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ParticipantStatus(user.Id));
                 _browsers[_c.CurrentUser.Key].ScrollTo(ClerkWaitingRoomPage.ParticipantStatus(user.Id));
                 _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ParticipantStatus(user.Id)).Text.ToUpper().Trim()
                     .Should().Be("CONNECTED");
             }
+        }
+
+        private static IEnumerable<ParticipantDetailsResponse> LoggedInParticipants(Dictionary<string, UserBrowser>.KeyCollection browsersKeys, IReadOnlyCollection<ParticipantDetailsResponse> allParticipants)
+        {
+            var participants = (from user in browsersKeys where allParticipants.Any(x => x.Name.ToLower().Contains(user.ToLower())) select allParticipants.First(x => x.Name.ToLower().Contains(user.ToLower()))).ToList();
+            participants.Should().NotBeNullOrEmpty();
+            return participants;
         }
     }
 }
