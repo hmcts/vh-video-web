@@ -2,12 +2,10 @@ import { ChatResponse, IChatResponse } from '../clients/api-client';
 
 export interface IInstantMessage extends IChatResponse {
     conferenceId?: string;
-    isJudge?: boolean;
 }
 
 export class InstantMessage extends ChatResponse {
     conferenceId: string;
-    isJudge: boolean;
 
     constructor(data?: IInstantMessage) {
         super(data);
@@ -19,15 +17,4 @@ export class InstantMessage extends ChatResponse {
             }
         }
     }
-}
-
-export class ExtendMessageInfo {
-
-    constructor(from: string, isJudge: boolean) {
-        this.from = from;
-        this.isJudge = isJudge;
-    }
-
-    from: string;
-    isJudge: boolean;
 }

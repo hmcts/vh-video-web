@@ -127,11 +127,6 @@ namespace VideoWeb.EventHub.Hub
             return Context.User.IsInRole(Role.VideoHearingsOfficer.DescriptionAttr());
         }
 
-        private bool IsJudgeAsync()
-        {
-            return Context.User.IsInRole(Role.Judge.DescriptionAttr());
-        }
-
         private async Task<string> GetObfuscatedUsernameAsync(string username)
         {
             return await _userProfileService.GetObfuscatedUsernameAsync(username);
@@ -140,14 +135,13 @@ namespace VideoWeb.EventHub.Hub
         public async Task SendMessage(Guid conferenceId, string message)
         {
             var isAdmin = IsVhOfficerAsync();
-            var isJudge = IsJudgeAsync();
             var isAllowed = await IsAllowedToSendMessageAsync(conferenceId, isAdmin);
             if (!isAllowed) return;
             var from = Context.User.Identity.Name;
             var timestamp = DateTime.UtcNow;
 
             await Clients.Group(conferenceId.ToString())
-                .ReceiveMessage(conferenceId, from, message, timestamp, Guid.NewGuid(), isJudge);
+                .ReceiveMessage(conferenceId, from, message, timestamp, Guid.NewGuid());
             await _videoApiClient.AddInstantMessageToConferenceAsync(conferenceId, new AddInstantMessageRequest
             {
                 From = from,

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ClipboardService } from 'ngx-clipboard';
-import { ConferenceResponseVho } from 'src/app/services/clients/api-client';
+import { ConferenceResponseVho, ParticipantResponseVho } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
@@ -16,9 +16,9 @@ export class VhoHearingListComponent implements OnInit {
 
     currentConference: HearingSummary;
 
-    constructor(private clipboardService: ClipboardService) {}
+    constructor(private clipboardService: ClipboardService) { }
 
-    ngOnInit() {}
+    ngOnInit() { }
 
     isCurrentConference(conference: HearingSummary): boolean {
         return this.currentConference != null && this.currentConference.id === conference.id;
@@ -43,6 +43,16 @@ export class VhoHearingListComponent implements OnInit {
 
     mapToHearing(conference: HearingSummary): Hearing {
         const hearing = new ConferenceResponseVho({ id: conference.id, scheduled_date_time: conference.scheduledDateTime, status: conference.status });
+        return new Hearing(hearing);
+    }
+
+    mapToHearingWithParticipants(conference: HearingSummary): Hearing {
+        const participants = conference.getParticipants()
+            .map(x => new ParticipantResponseVho({ id: x.id, name: x.displayName, username: x.username, role: x.role }));
+        const hearing = new ConferenceResponseVho({
+            id: conference.id, scheduled_date_time: conference.scheduledDateTime,
+            status: conference.status, participants: participants
+        });
         return new Hearing(hearing);
     }
 }

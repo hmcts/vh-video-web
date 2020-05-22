@@ -9,6 +9,7 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { UnreadMessagesComponent } from './unread-messages.component';
 import { InstantMessage } from '../../services/models/instant-message';
 import { of } from 'rxjs';
+import { Hearing } from '../../shared/models/hearing';
 
 describe('UnreadMessagesComponent', () => {
     let component: UnreadMessagesComponent;
@@ -37,6 +38,8 @@ describe('UnreadMessagesComponent', () => {
     beforeEach(() => {
         component = new UnreadMessagesComponent(videoWebServiceSpy, eventsService, logger);
         component.conferenceId = conference.id;
+
+        component.hearing = new Hearing(conference);
     });
 
     afterAll(() => {
@@ -93,7 +96,9 @@ describe('UnreadMessagesComponent', () => {
         component.unreadCount = unreadCountResponse.number_of_unread_messages;
         component.conferenceId = '12345';
         component.setupSubscribers();
-        mockEventService.messageSubject.next(new InstantMessage({ conferenceId: '12345', isJudge: true }));
+        mockEventService.messageSubject.next(new InstantMessage({
+            conferenceId: '12345', from: 'judge.fudge@hearings.net'
+        }));
 
         expect(component.unreadCount).toBe(unreadCountResponse.number_of_unread_messages + 1);
     });
@@ -101,7 +106,9 @@ describe('UnreadMessagesComponent', () => {
         component.unreadCount = unreadCountResponse.number_of_unread_messages;
         component.conferenceId = '12345';
         component.setupSubscribers();
-        mockEventService.messageSubject.next(new InstantMessage({ conferenceId: '12345', isJudge: false }));
+        mockEventService.messageSubject.next(new InstantMessage({
+            conferenceId: '12345', from: 'james.green123@hearings.net'
+        }));
 
         expect(component.unreadCount).toBe(unreadCountResponse.number_of_unread_messages);
     });
