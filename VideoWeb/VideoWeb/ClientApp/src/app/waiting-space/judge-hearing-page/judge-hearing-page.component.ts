@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit, SecurityContext } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
@@ -19,7 +19,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 export class JudgeHearingPageComponent implements OnInit, OnDestroy {
     loadingData: boolean;
     conference: ConferenceResponse;
-    selectedHearingUrl: string;
+    selectedHearingUrl: SafeResourceUrl;
     allowPermissions: string;
     judgeUri: string;
 
@@ -100,7 +100,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
         this.allowPermissions = `microphone ${iframeOrigin}; camera ${iframeOrigin};`;
 
         this.judgeUri = `${this.conference.judge_i_frame_uri}?display_name=${encodedDisplayName}&cam=${cam}&mic=${mic}`;
-        this.selectedHearingUrl = this.sanitizer.sanitize(SecurityContext.URL, this.judgeUri);
+        this.selectedHearingUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.judgeUri);
     }
 
     private setupSubscribers() {
