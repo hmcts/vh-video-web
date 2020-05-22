@@ -138,6 +138,23 @@ namespace VideoWeb.AcceptanceTests.Steps
             audioLink.Audio_file_link.ToLower().Should().Contain(_c.Test.NewHearingId.ToString().ToLower());
         }
 
+        [Then(@"the VHO can see that all the participants are in the Waiting Room")]
+        public void ThenTheVHOCanSeeThatAllTheParticipantsAreInTheWaitingRoom()
+        {
+            SwitchToTheVhoIframe();
+
+            SwitchToDefaultContent();
+        }
+
+        [Then(@"the VHO can see that all the participants are in the Hearing Room")]
+        public void ThenTheVHOCanSeeThatAllTheParticipantsAreInTheHearingRoom()
+        {
+            SwitchToTheVhoIframe();
+
+            SwitchToDefaultContent();
+        }
+
+
         public void ProgressToNextPage()
         {
             SwitchToTheJudgeIFrame();
@@ -152,12 +169,22 @@ namespace VideoWeb.AcceptanceTests.Steps
             _c.Test.JudgeInIframe = true;
         }
 
+        private void SwitchToTheVhoIframe()
+        {
+            _browsers[_c.CurrentUser.Key].Driver.SwitchTo().Frame(HearingRoomPage.VhoIframeId);
+        }
+
         private void SwitchToParticipantContent()
         {
             if (!_browsers[_c.CurrentUser.Key].IsDisplayed(HearingRoomPage.ParticipantIncomingVideo))
             {
-                _browsers[_c.CurrentUser.Key].Driver.SwitchTo().DefaultContent();
+                SwitchToDefaultContent();
             }
+        }
+
+        private void SwitchToDefaultContent()
+        {
+            _browsers[_c.CurrentUser.Key].Driver.SwitchTo().DefaultContent();
         }
     }
 }

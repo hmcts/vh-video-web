@@ -9,6 +9,7 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Assertions;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.Services.Video;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -49,6 +50,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserSteps.GivenInTheUsersBrowser("Video Hearings Officer");
             SelectTheHearing();
             SelectTheMessagesTab();
+            SelectTheParticipant();
             SendNewMessage();
         }
 
@@ -96,14 +98,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             int.Parse(newMessagesCount).Should().BePositive();
         }
 
-        [Then(@"the Video Hearings Officer can see the notification for the message")]
-        public void ThenTheVideoHearingsOfficerCanSeeTheNotificationForTheMessage()
+        [When(@"the Video Hearings Officer navigates to the message")]
+        public void ThenTheVideoHearingsOfficerNavigatesToTheMessage()
         {
             _browserSteps.GivenInTheUsersBrowser("Video Hearings Officer");
-            _browsers[_c.CurrentUser.Key].Refresh();
-            NotificationAppears(1).Should().BeTrue("Notification appeared");
             SelectTheHearing();
             SelectTheMessagesTab();
+            SelectTheParticipant();
         }
 
         [When(@"the participants send (.*) messages to each other")]
@@ -138,6 +139,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.MessagesTabButton);
         }
 
+        private void SelectTheParticipant()
+        {
+            var judgeParticipantId = _c.Test.Conference.Participants.First(x => x.User_role == UserRole.Judge).Id;
+            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.SelectParticipantToMessage(judgeParticipantId));
+        }
+
         private void SendNewMessage()
         {
             var sender = _c.CurrentUser.Role.ToLower().Equals("clerk")? _c.CurrentUser.DisplayName : _c.CurrentUser.Firstname;
@@ -158,33 +165,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             var chatMessages = new GetChatMessages(_browsers[_c.CurrentUser.Key]).WaitFor(_messages.Count).Fetch();
             chatMessages.Count.Should().Be(_messages.Count);
             AssertChatMessage.AssertAll(_messages, chatMessages);
-        }
-
-        private bool NotificationAppears(int expected)
-        {
-            for (var i = 0; i < Timeout; i++)
-            {
-                var newMessagesCount = GetNotificationText().Trim();
-                if (int.Parse(newMessagesCount).Equals(expected))
-                {
-                    return true;
-                }
-                Thread.Sleep(TimeSpan.FromSeconds(1));
-            }
-            return false;
-        }
-
-        private string GetNotificationText()
-        {
-            try
-            {
-                return _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(VhoHearingListPage.UnreadMessagesBadge(_c.Test.NewConferenceId)).Text;
-            }
-            catch (Exception e)
-            {
-                NUnit.Framework.TestContext.WriteLine(e);
-                return string.Empty;
-            }
         }
     }
 }
