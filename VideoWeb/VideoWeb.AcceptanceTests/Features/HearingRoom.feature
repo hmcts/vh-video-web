@@ -88,7 +88,7 @@ Scenario: Audio Recording
 	And the hearing status changed to Closed
   And an audio recording of the hearing has been created
 
-@HearingTest @Smoketest-Extended @DisableLogging @AudioRecording
+@HearingTest @Smoketest-Extended @DisableLogging
 Scenario: VHO Monitors Hearing
   Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	Then the VHO can see the Clerk status is Unavailable
