@@ -16,7 +16,7 @@ export class JudgeHearingTableComponent implements OnInit {
 
     @Input() set conferences(conferences: ConferenceForJudgeResponse[]) {
         this.conferenceForJudgeResponse = conferences;
-        this.hearings = conferences.map((c) => new JudgeHearingSummary(c));
+        this.hearings = conferences.map(c => new JudgeHearingSummary(c));
     }
 
     @Output() selectedConference = new EventEmitter<ConferenceForJudgeResponse>();
@@ -24,20 +24,20 @@ export class JudgeHearingTableComponent implements OnInit {
     constructor(private logger: Logger) {}
 
     ngOnInit() {
-        this.hearings = this.conferenceForJudgeResponse.map((c) => new HearingSummary(c));
+        this.hearings = this.conferenceForJudgeResponse.map(c => new HearingSummary(c));
     }
 
     getRepresentative(participants: ParticipantSummary[]): ParticipantSummary {
-        return participants.find((x) => x.representee !== null && x.representee.trim() !== '');
+        return participants.find(x => x.representee && x.representee.trim() !== '');
     }
 
     getIndividual(participants: ParticipantSummary[]): ParticipantSummary {
-        return participants.find((x) => x.representee === null || x.representee.trim() === '');
+        return participants.find(x => !x.representee || x.representee.trim() === '');
     }
 
     signIntoConference(hearing: JudgeHearingSummary) {
         this.logger.info(`selected conference to sign into: ${hearing.id}`);
-        const conference = this.conferenceForJudgeResponse.find((x) => x.id === hearing.id);
+        const conference = this.conferenceForJudgeResponse.find(x => x.id === hearing.id);
         this.selectedConference.emit(conference);
     }
 

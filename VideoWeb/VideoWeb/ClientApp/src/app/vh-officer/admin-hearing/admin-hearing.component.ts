@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { Component, Input, OnInit, SecurityContext } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Hearing } from 'src/app/shared/models/hearing';
 
 @Component({
@@ -9,7 +9,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 })
 export class AdminHearingComponent implements OnInit {
     @Input() hearing: Hearing;
-    adminIframeUrl: SafeResourceUrl;
+    adminIframeUrl: string;
     constructor(public sanitizer: DomSanitizer) {}
 
     ngOnInit() {
@@ -19,6 +19,6 @@ export class AdminHearingComponent implements OnInit {
     private sanitiseAndLoadIframe() {
         const adminUri = this.hearing.getConference().admin_i_frame_uri;
 
-        this.adminIframeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(adminUri);
+        this.adminIframeUrl = this.sanitizer.sanitize(SecurityContext.URL, adminUri);
     }
 }

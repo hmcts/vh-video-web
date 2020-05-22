@@ -26,16 +26,23 @@ import { Participant } from 'src/app/shared/models/participant';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
+import { ModalService } from 'src/app/services/modal.service';
 
 describe('IndividualParticipantStatusListComponent', () => {
     let component: IndividualParticipantStatusListComponent;
-    let fixture: ComponentFixture<IndividualParticipantStatusListComponent>;
-    let adalService: MockAdalService;
-    let eventService: MockEventsService;
-    let conference: ConferenceResponse;
+    const mockAdalService = new MockAdalService();
+    let adalService;
     let consultationService: jasmine.SpyObj<ConsultationService>;
+    let eventsService: jasmine.SpyObj<EventsService>;
+    const mockEventService = new MockEventsService();
+    const logger: Logger = new MockLogger();
+    let videoWebService: jasmine.SpyObj<VideoWebService>;
+    let modalService: jasmine.SpyObj<ModalService>;
+    let conference: ConferenceResponse;
 
-    configureTestSuite(() => {
+    beforeAll(() => {
+        adalService = mockAdalService;
+
         consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', [
             'raiseConsultationRequest',
             'respondToConsultationRequest',
@@ -47,34 +54,37 @@ describe('IndividualParticipantStatusListComponent', () => {
         consultationService.leaveConsultation.and.callFake(() => Promise.resolve());
         consultationService.respondToAdminConsultationRequest.and.callFake(() => Promise.resolve());
 
-        TestBed.configureTestingModule({
-            imports: [SharedModule],
-            declarations: [IndividualParticipantStatusListComponent],
-            providers: [
-                { provide: AdalService, useClass: MockAdalService },
-                { provide: ConfigService, useClass: MockConfigService },
-                { provide: EventsService, useClass: MockEventsService },
-                { provide: Logger, useClass: MockLogger },
-                { provide: ConsultationService, useValue: consultationService },
-                { provide: VideoWebService, useClass: MockVideoWebService }
-            ]
-        });
-        adalService = TestBed.get(AdalService);
-        eventService = TestBed.get(EventsService);
+        eventsService = jasmine.createSpyObj<EventsService>('EventsService', [
+            'start',
+            'getConsultationMessage',
+            'getParticipantStatusMessage',
+            'getAdminConsultationMessage'
+        ]);
+
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName']);
+        videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
+
+        modalService = jasmine.createSpyObj<ModalService>('ModalService', ['open', 'close']);
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(IndividualParticipantStatusListComponent);
-        component = fixture.componentInstance;
+        component = new IndividualParticipantStatusListComponent(
+            adalService,
+            consultationService,
+            eventsService,
+            modalService,
+            logger,
+            videoWebService
+        );
         conference = new ConferenceTestData().getConferenceDetailFuture();
         component.conference = conference;
 
         spyOn(component, 'initCallRingingSound');
         spyOn(component, 'setupSubscribers');
-        fixture.detectChanges();
     });
 
     it('should create', () => {
+        component.ngOnInit();
         expect(component).toBeTruthy();
         expect(component.judge).toBeDefined();
         expect(component.nonJugdeParticipants).toBeDefined();

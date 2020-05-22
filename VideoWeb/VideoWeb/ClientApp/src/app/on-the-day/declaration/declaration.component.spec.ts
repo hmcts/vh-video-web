@@ -1,80 +1,51 @@
-import { DebugElement } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AbstractControl } from '@angular/forms';
-import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { configureTestSuite } from 'ng-bullet';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { Logger } from 'src/app/services/logging/logger-base';
+import { AbstractControl, FormBuilder } from '@angular/forms';
+import { convertToParamMap, Router } from '@angular/router';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { DeclarationComponent } from './declaration.component';
 
 describe('DeclarationComponent Tests', () => {
     let component: DeclarationComponent;
-    let fixture: ComponentFixture<DeclarationComponent>;
-    let checkboxControl: AbstractControl;
-    let debugElement: DebugElement;
-    let router: Router;
-    const conference = new ConferenceTestData().getConferenceDetailFuture();
+    const conference = new ConferenceTestData().getConferenceDetailNow();
 
-    configureTestSuite(() => {
-        TestBed.configureTestingModule({
-            declarations: [DeclarationComponent],
-            imports: [RouterTestingModule, SharedModule],
-            providers: [
-                {
-                    provide: ActivatedRoute,
-                    useValue: {
-                        snapshot: {
-                            paramMap: convertToParamMap({ conferenceId: conference.id })
-                        }
-                    }
-                },
-                { provide: VideoWebService, useClass: MockVideoWebService },
-                { provide: Logger, useClass: MockLogger }
-            ]
-        });
+    let router: jasmine.SpyObj<Router>;
+    const activatedRoute: any = { snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
+    const formBuilder = new FormBuilder();
+
+    let checkboxControl: AbstractControl;
+
+    beforeAll(() => {
+        router = jasmine.createSpyObj<Router>('Router', ['navigate']);
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(DeclarationComponent);
-        debugElement = fixture.debugElement;
-        component = fixture.componentInstance;
-        router = TestBed.get(Router);
-        component.ngOnInit();
+        router.navigate.calls.reset();
+        component = new DeclarationComponent(router, activatedRoute, formBuilder);
         checkboxControl = component.declarationForm.controls['declare'];
-        fixture.detectChanges();
+        component.ngOnInit();
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
+    it('should init conference id on init', () => {
+        expect(component.conferenceId).toBe(conference.id);
     });
 
     it('should invalidate form when declaration is not checked', () => {
-        expect(checkboxControl.valid).toBeFalsy();
         checkboxControl.setValue(false);
         expect(component.declarationForm.valid).toBeFalsy();
     });
 
     it('should validate form when declaration is checked', () => {
-        expect(checkboxControl.valid).toBeFalsy();
         checkboxControl.setValue(true);
         expect(component.declarationForm.valid).toBeTruthy();
     });
 
     it('should not go to waiting room when form is invalid', () => {
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         checkboxControl.setValue(false);
         component.onSubmit();
         expect(router.navigate).toHaveBeenCalledTimes(0);
     });
 
     it('should go to waiting room when form is valid', () => {
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         checkboxControl.setValue(true);
         component.onSubmit();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.ParticipantWaitingRoom, conference.id]);

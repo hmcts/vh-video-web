@@ -11,7 +11,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By HearingTime(Guid conferenceId) => By.Id($"{conferenceId:D}-time");
         public static By ListedFor(Guid conferenceId) => By.Id($"{conferenceId:D}-duration");
         public static By NumberOfAlerts(Guid conferenceId) => By.Id($"{conferenceId:D}--pending-tasks");
-        public static By StatusBadge(Guid conferenceId) => By.Id($"{conferenceId:D}-status");
+        public static By StatusBadge(Guid conferenceId) => By.Id($"{conferenceId:D}-hearing-status");
         public static By UnreadMessagesBadge(Guid conferenceId) => By.Id($"{conferenceId:D}-unread-messages");
         public static By SelectHearingButton(Guid conferenceId) => By.Id($"{conferenceId:D}-summary");
         public static By ParticipantContactLink(Guid participantId) => By.Id($"participant-contact-details-link-{participantId:D}");
@@ -19,5 +19,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By ParticipantContactEmail(Guid participantId) => By.Id($"tooltip-email-{participantId:D}");
         public static By ParticipantContactPhone(Guid participantId) => By.Id($"tooltip-contact-phone-{participantId:D}");
         public static By FiltersButton = By.Id("filterButton");
+        public static By HearingsTabButton = By.Id("hearingsTabButton");
+        public static By MessagesTabButton = By.Id("messagesTabButton");
     }
 }

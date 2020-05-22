@@ -6,6 +6,7 @@ import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
@@ -23,6 +24,7 @@ describe('JudgeChatComponent', () => {
     let adalService: MockAdalService;
     let profileService: MockProfileService;
     const conference = new ConferenceTestData().getConferenceDetailFuture();
+    const hearing = new Hearing(conference);
     const judgeUsername = 'judge.fudge@hearings.net';
     const videoWebService = new MockVideoWebService();
     videoWebService.username = judgeUsername;
@@ -49,7 +51,7 @@ describe('JudgeChatComponent', () => {
 
         fixture = TestBed.createComponent(JudgeChatComponent);
         component = fixture.componentInstance;
-        component.conference = conference;
+        component.hearing = hearing;
         component.messages = new ConferenceTestData().getChatHistory(judgeUsername, conference.id);
         fixture.detectChanges();
     });
@@ -148,7 +150,7 @@ describe('JudgeChatComponent', () => {
 
     it('should map to InstantMessage', async () => {
         const messages = await component.retrieveChatForConference();
-        const messagesWithId = messages.filter((x) => x.id);
+        const messagesWithId = messages.filter(x => x.id);
         expect(messagesWithId.length).toBe(messages.length);
     });
 

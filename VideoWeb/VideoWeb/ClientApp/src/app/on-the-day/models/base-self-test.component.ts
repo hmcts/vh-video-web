@@ -46,24 +46,19 @@ export abstract class BaseSelfTestComponent implements OnInit {
         this.testInProgress = false;
     }
 
-    getConference(): void {
+    async getConference(): Promise<void> {
         this.logger.debug(`retrieving conference ${this.conferenceId}`);
-        this.videoWebService.getConferenceById(this.conferenceId).then(
-            (response) => {
-                this.logger.debug(`retrieved conference ${this.conferenceId} successfully`);
-                this.loadingData = false;
-                this.conference = response;
-                this.participant = response.participants.find(
-                    (x) => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
-                );
-            },
-            (error) => {
-                this.loadingData = false;
-                if (!this.errorService.returnHomeIfUnauthorised(error)) {
-                    this.errorService.handleApiError(error);
-                }
-            }
-        );
+        try {
+            this.conference = await this.videoWebService.getConferenceById(this.conferenceId);
+            this.logger.debug(`retrieved conference ${this.conferenceId} successfully`);
+            this.participant = this.conference.participants.find(
+                x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
+            );
+            this.loadingData = false;
+        } catch (error) {
+            this.loadingData = false;
+            this.errorService.handleApiError(error);
+        }
     }
 
     async getPexipConfig(): Promise<void> {
@@ -73,9 +68,7 @@ export abstract class BaseSelfTestComponent implements OnInit {
             this.logger.debug(`retrieved pexip configuration successfully`);
             this.logger.debug('Self test Pexip cofig: ' + JSON.stringify(this.selfTestPexipConfig));
         } catch (error) {
-            if (!this.errorService.returnHomeIfUnauthorised(error)) {
-                this.errorService.handleApiError(error);
-            }
+            this.errorService.handleApiError(error);
         }
     }
 

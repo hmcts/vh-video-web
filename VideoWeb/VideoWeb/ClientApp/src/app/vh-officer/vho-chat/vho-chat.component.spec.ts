@@ -11,6 +11,7 @@ import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MockProfileService } from 'src/app/testing/mocks/MockProfileService';
 import { VhoChatComponent } from './vho-chat.component';
+import { Hearing } from 'src/app/shared/models/hearing';
 
 describe('VhoChatComponent', () => {
     let component: VhoChatComponent;
@@ -22,10 +23,12 @@ describe('VhoChatComponent', () => {
     const mockEventsService = new MockEventsService();
     let adalService;
     let conference: ConferenceResponse;
+    let hearing: Hearing;
 
     beforeAll(() => {
         adalService = mockAdalService;
         conference = new ConferenceTestData().getConferenceDetailFuture();
+        hearing = new Hearing(conference);
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceChatHistory']);
         eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', ['start', 'getChatMessage', 'sendMessage']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', [
@@ -49,7 +52,7 @@ describe('VhoChatComponent', () => {
 
         component = new VhoChatComponent(videoWebServiceSpy, profileServiceSpy, eventsServiceSpy, new MockLogger(), adalService);
 
-        component.conference = conference;
+        component.hearing = hearing;
         component.messages = new ConferenceTestData().getChatHistory('vho.user@hearings.net', conference.id);
     });
 

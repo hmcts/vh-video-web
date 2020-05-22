@@ -16,6 +16,7 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MenuOption } from '../../models/menus-options';
 import { VhoQueryService } from '../../services/vho-query-service.service';
 import { CommandCentreComponent } from '../command-centre.component';
+import { EventBusService } from 'src/app/services/event-bus.service';
 
 describe('CommandCentreComponent - Core', () => {
     let component: CommandCentreComponent;
@@ -29,6 +30,7 @@ describe('CommandCentreComponent - Core', () => {
     let eventsService: jasmine.SpyObj<EventsService>;
     const mockEventService = new MockEventsService();
     let router: jasmine.SpyObj<Router>;
+    let eventBusServiceSpy: jasmine.SpyObj<EventBusService>;
 
     const conferenceDetail = new ConferenceTestData().getConferenceDetailFuture();
 
@@ -64,10 +66,15 @@ describe('CommandCentreComponent - Core', () => {
         eventsService.getServiceDisconnected.and.returnValue(mockEventService.eventHubDisconnectSubject.asObservable());
         eventsService.getServiceReconnected.and.returnValue(mockEventService.eventHubReconnectSubject.asObservable());
         eventsService.getHeartbeat.and.returnValue(mockEventService.participantHeartbeat.asObservable());
+
+        eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
+    });
+
+    afterEach(() => {
+        component.ngOnDestroy();
     });
 
     afterAll(() => {
-        component.ngOnDestroy();
         TestFixtureHelper.clearVenues();
     });
 
@@ -75,7 +82,7 @@ describe('CommandCentreComponent - Core', () => {
         vhoQueryService.getConferencesForVHOfficer.and.returnValue(of(conferences));
         vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
 
-        component = new CommandCentreComponent(vhoQueryService, errorService, eventsService, logger, router, screenHelper);
+        component = new CommandCentreComponent(vhoQueryService, errorService, eventsService, logger, router, screenHelper, eventBusServiceSpy);
         component.hearings = hearings;
         screenHelper.enableFullScreen.calls.reset();
         vhoQueryService.getConferenceByIdVHO.calls.reset();

@@ -24,20 +24,14 @@ export class IntroductionComponent implements OnInit {
         private logger: Logger
     ) {}
 
-    ngOnInit() {
-        this.getConference();
+    async ngOnInit() {
+        return this.getConference();
     }
 
     async getConference() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-        try {
-            this.conference = this.videoWebService.getActiveIndividualConference();
-            this.postParticipantJoiningStatus();
-        } catch (error) {
-            if (!this.errorService.returnHomeIfUnauthorised(error)) {
-                this.errorService.handleApiError(error);
-            }
-        }
+        this.conference = this.videoWebService.getActiveIndividualConference();
+        await this.postParticipantJoiningStatus();
     }
 
     goToEquipmentCheck() {
@@ -54,6 +48,7 @@ export class IntroductionComponent implements OnInit {
             );
         } catch (error) {
             this.logger.error('Failed to raise "UpdateParticipantStatusEventRequest"', error);
+            this.errorService.handleApiError(error);
         }
     }
 }
