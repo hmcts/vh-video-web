@@ -17,6 +17,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ScreenHelper } from 'src/app/shared/screen-helper';
 import { MenuOption } from '../models/menus-options';
 import { VhoStorageKeys } from '../services/models/session-keys';
+import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-bus.service';
 
 @Component({
     selector: 'app-command-centre',
@@ -49,7 +50,8 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         private eventService: EventsService,
         private logger: Logger,
         private router: Router,
-        private screenHelper: ScreenHelper
+        private screenHelper: ScreenHelper,
+        private eventbus: EventBusService
     ) {
         this.loadingData = false;
         this.venueAllocationStorage = new SessionStorage<HearingVenueResponse[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
@@ -196,6 +198,9 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
                     });
                     return h;
                 });
+                if (this.selectedHearing) {
+                    this.eventbus.emit(new EmitEvent(VHEventType.PageRefreshed, null));
+                }
                 this.loadingData = false;
             },
             error => {
