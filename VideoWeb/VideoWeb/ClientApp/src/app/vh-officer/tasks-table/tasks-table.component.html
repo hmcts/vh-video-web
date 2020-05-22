@@ -33,10 +33,10 @@
       </p>
     </div>
     <div class="govuk-grid-column-one-quarter task-updated">
-      <span id="{{ task.id }}-actioned-by" class="govuk-body-s" [ngClass]="{ 'task-completed': task.status === 'Done' }">
+      <p id="{{ task.id }}-actioned-by" class="govuk-body-s govuk-!-padding-top-2" [ngClass]="{ 'task-completed': task.status === 'Done' }">
         <span>{{ usernameWithoutDomain(task.updated_by) }}</span>
         <span class="updated-time">{{ task.updated | date: 'HH:mm' }}</span>
-      </span>
+      </p>
     </div>
   </div>
 </div>
