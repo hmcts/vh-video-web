@@ -2,7 +2,7 @@ import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { UserProfileResponse } from 'src/app/services/clients/api-client';
+import { UserProfileResponse, Role } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { InstantMessage, ExtendMessageInfo } from 'src/app/services/models/instant-message';
