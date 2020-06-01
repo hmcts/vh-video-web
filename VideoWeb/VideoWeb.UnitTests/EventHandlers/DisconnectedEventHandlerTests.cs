@@ -40,5 +40,32 @@ namespace VideoWeb.UnitTests.EventHandlers
                 x => x.ParticipantStatusMessage(participantForEvent.Id, participantForEvent.Username, conference.Id, ParticipantState.Disconnected),
                 Times.Exactly(participantCount));
         }
+        
+        [Test]
+        public async Task Should_send_not_signed_in_messages_to_participants_and_service_bus_on_participant_disconnect()
+        {
+            _eventHandler = new DisconnectedEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
+                VideoApiClientMock.Object);
+
+            var conference = TestConference;
+            var participantCount = conference.Participants.Count + 1; // plus one for admin
+            var participantForEvent = conference.Participants.First(x => x.Role == Role.Judge);
+            var callbackEvent = new CallbackEvent
+            {
+                EventType = EventType.Disconnected,
+                EventId = Guid.NewGuid().ToString(),
+                ParticipantId = participantForEvent.Id,
+                ConferenceId = conference.Id,
+                Reason = "Unexpected drop",
+                TimeStampUtc = DateTime.UtcNow
+            };
+
+            await _eventHandler.HandleAsync(callbackEvent);
+
+            // Verify messages sent to event hub clients
+            EventHubClientMock.Verify(
+                x => x.ParticipantStatusMessage(participantForEvent.Id, participantForEvent.Username, conference.Id, ParticipantState.NotSignedIn),
+                Times.Exactly(participantCount));
+        }
     }
 }
