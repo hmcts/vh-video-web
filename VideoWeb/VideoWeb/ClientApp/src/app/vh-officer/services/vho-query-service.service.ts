@@ -22,7 +22,7 @@ export class VhoQueryService {
     startQuery(venueNames: string[]) {
         this.venueNames = venueNames;
         this.runQuery();
-        setInterval(async () => {
+        this.interval = setInterval(async () => {
             this.runQuery();
         }, 30000);
     }
