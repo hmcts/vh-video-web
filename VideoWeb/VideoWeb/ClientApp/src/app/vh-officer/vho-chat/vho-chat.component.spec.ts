@@ -107,7 +107,7 @@ describe('VhoChatComponent', () => {
             id: Guid.create().toString(),
             from: otherUsername,
             message: 'test message',
-            timestamp: new Date(),
+            timestamp: new Date()
         });
         const messageCount = component.messages.length;
         await component.handleIncomingMessage(chatResponse);
