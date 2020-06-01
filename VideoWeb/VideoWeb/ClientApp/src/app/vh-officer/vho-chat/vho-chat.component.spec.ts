@@ -75,7 +75,7 @@ describe('VhoChatComponent', () => {
             id: Guid.create().toString(),
             from: username,
             message: 'test message',
-            timestamp: new Date()
+            timestamp: new Date(),
         });
         mockEventsService.messageSubject.next(instantMessage);
         flushMicrotasks();
@@ -90,7 +90,7 @@ describe('VhoChatComponent', () => {
             id: Guid.create().toString(),
             from: username,
             message: 'test message',
-            timestamp: new Date()
+            timestamp: new Date(),
         });
         const messageCount = component.messages.length;
         await component.handleIncomingMessage(instantMessage);
@@ -115,12 +115,20 @@ describe('VhoChatComponent', () => {
         expect(component.messages.length).toBeGreaterThan(messageCount);
     });
 
-    it('should get first name when message from user not in conference', async () => {
+    it('should get first name and is Judge flag when message from user not in conference', async () => {
         const username = 'vhofficer.hearings.net';
         const expectedFirstName = mockProfileService.mockProfile.first_name;
-        const from = await component.assignMessageFrom(username);
-        expect(from).toBe(expectedFirstName);
+        const messageInfo = await component.assignMessageFrom(username);
+        expect(messageInfo).toEqual(expectedFirstName);
     });
+
+    it('should get first name and is Judge flag when message from judge', async () => {
+        const username = 'judge.fudge@hearings.net';
+        const expectedFirstName = component.hearing.participants[2].displayName;
+        const messageInfo = await component.assignMessageFrom(username);
+        expect(messageInfo).toEqual(expectedFirstName);
+    });
+
 
     it('should send message to hub', () => {
         const message = 'test';

@@ -19,7 +19,7 @@
     <div class="judge listItemBold" id="{{ conference.id }}-judge">{{ conference.judgeName }}</div>
     <div class="venue listItem" id="{{ conference.id }}-venue">{{ conference.hearingVenueName }}</div>
     <div class="alert"><app-pending-tasks [conferenceId]="conference.id"></app-pending-tasks></div>
-    <div class="message"><app-unread-messages [conferenceId]="conference.id"></app-unread-messages></div>
+    <div class="message"><app-unread-messages [hearing]="mapToHearingWithParticipants(conference)"></app-unread-messages></div>
     <div id="{{ conference.id }}-hearing-status" class="status"><app-hearing-status [hearing]="mapToHearing(conference)"></app-hearing-status></div>
 
     <div *ngFor="let participant of getParticipantsForConference(conference); index as i" class="pIcon{{i + 1}}">
