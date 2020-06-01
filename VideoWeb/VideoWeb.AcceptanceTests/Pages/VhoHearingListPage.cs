@@ -21,5 +21,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By FiltersButton = By.Id("filterButton");
         public static By HearingsTabButton = By.Id("hearingsTabButton");
         public static By MessagesTabButton = By.Id("messagesTabButton");
+        public static By SelectParticipantToMessage(Guid participantId) => By.Id($"{participantId:D}-unread-messages-image");
     }
 }

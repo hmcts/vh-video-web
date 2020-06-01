@@ -1,26 +1,29 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { ConferenceResponse, TaskResponse, TaskType } from 'src/app/services/clients/api-client';
 import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { TaskCompleted } from '../../on-the-day/models/task-completed';
 import { VhoQueryService } from '../services/vho-query-service.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-tasks-table',
     templateUrl: './tasks-table.component.html',
     styleUrls: ['./tasks-table.component.scss', '../vho-global-styles.scss']
 })
-export class TasksTableComponent implements OnInit {
+export class TasksTableComponent implements OnInit, OnDestroy {
     loading: boolean;
 
     @Input() conferenceId: string;
     tasks: TaskResponse[];
     conference: ConferenceResponse;
+    taskSubscription$: Subscription;
 
-    constructor(private vhoQueryService: VhoQueryService, private logger: Logger, private eventbus: EventBusService) {}
+    constructor(private vhoQueryService: VhoQueryService, private logger: Logger, private eventbus: EventBusService) { }
 
     ngOnInit() {
         this.loading = true;
+        this.setupSubscribers();
         this.retrieveConference(this.conferenceId)
             .then(async conference => {
                 this.conference = conference;
@@ -71,6 +74,22 @@ export class TasksTableComponent implements OnInit {
             return username.split('@')[0];
         } else {
             return null;
+        }
+    }
+
+    setupSubscribers() {
+        this.taskSubscription$ = this.eventbus.on<TaskCompleted>(VHEventType.PageRefreshed, () =>
+            this.handlePageRefresh()
+        );
+    }
+
+    async handlePageRefresh() {
+        this.tasks = await this.retrieveTasksForConference(this.conference.id);
+    }
+
+    ngOnDestroy(): void {
+        if (this.taskSubscription$) {
+            this.taskSubscription$.unsubscribe();
         }
     }
 }
