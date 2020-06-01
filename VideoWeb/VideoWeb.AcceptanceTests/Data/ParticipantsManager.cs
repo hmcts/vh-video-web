@@ -44,5 +44,12 @@ namespace VideoWeb.AcceptanceTests.Data
         {
             return char.ToUpper(userRole[0]) + userRole.Substring(1);
         }
+
+        public static List<ParticipantDetailsResponse> GetParticipantFromLastname(List<ParticipantDetailsResponse> hearingParticipants, string lastname)
+        {
+            var participant = hearingParticipants.FindAll(x => x.Name.ToLower().Contains(lastname.ToLower()));
+            participant.Should().NotBeNullOrEmpty($"No participants with lastname {lastname} found");
+            return participant;
+        }
     }
 }

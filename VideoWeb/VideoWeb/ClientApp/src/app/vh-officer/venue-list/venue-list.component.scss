@@ -4,3 +4,7 @@
 #venue-allocation-list {
   @extend .govuk-body;
 }
+
+.ng-select.custom ::ng-deep .ng-placeholder {
+    color: govuk-colour('black');
+}

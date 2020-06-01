@@ -56,6 +56,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             CheckParticipantStatus(participantStatus, ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, userType));
         }
 
+        [Then(@"the VHO can see the status of participant (.*) is (.*)")]
+        public void ThenTheParticipantStatusIs(string user, string participantStatus)
+        {
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
+            CheckParticipantStatus(participantStatus, ParticipantsManager.GetParticipantFromLastname(_c.Test.ConferenceParticipants, user));
+        }
+
         [Then(@"the users status has updated to (.*)")]
         public void ThenTheParticipantStatusWillBeUpdatedTo(ParticipantState expectedState)
         {
