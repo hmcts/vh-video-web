@@ -16,17 +16,15 @@ export class UnreadMessagesComponent implements OnInit, OnDestroy {
 
     messagesSubscription$: Subscription = new Subscription();
     unreadCount: number;
-    conferenceId: string;
     constructor(private videoWebService: VideoWebService, private eventsService: EventsService, private logger: Logger) { }
 
     ngOnInit() {
-        this.conferenceId = this.hearing.id;
         this.unreadCount = 0;
         this.setupSubscribers();
         this.videoWebService
-            .getUnreadAdminMessageCountForConference(this.conferenceId)
+            .getUnreadAdminMessageCountForConference(this.hearing.id)
             .then(response => (this.unreadCount = response.number_of_unread_messages))
-            .catch(err => this.logger.error(`Failed to get unread vho messages for ${this.conferenceId}`, err));
+            .catch(err => this.logger.error(`Failed to get unread vho messages for ${this.hearing.id}`, err));
     }
 
     setupSubscribers() {
@@ -40,7 +38,7 @@ export class UnreadMessagesComponent implements OnInit, OnDestroy {
         this.messagesSubscription$.add(
             this.eventsService.getChatMessage().subscribe(message => {
                 this.logger.info(`an admin has message`);
-                if (this.conferenceId === message.conferenceId && this.messageFromParticipant(message)) {
+                if (this.hearing.id === message.conferenceId && this.messageFromParticipant(message)) {
                     this.unreadCount++;
                 }
             })
@@ -54,7 +52,7 @@ export class UnreadMessagesComponent implements OnInit, OnDestroy {
 
 
     resetConferenceUnreadCounter(conferenceId: string) {
-        if (this.conferenceId === conferenceId) {
+        if (this.hearing.id === conferenceId) {
             this.unreadCount = 0;
         }
     }

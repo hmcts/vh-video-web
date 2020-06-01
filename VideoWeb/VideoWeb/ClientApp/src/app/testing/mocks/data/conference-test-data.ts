@@ -403,7 +403,7 @@ export class ConferenceTestData {
             id: Guid.create().toString(),
             from: 'vho.user@hearings.net',
             message: 'test message from vho',
-            timestamp: moment(now).subtract(3, 'minutes').toDate(),
+            timestamp: moment(now).subtract(3, 'minutes').toDate()
         });
 
         const message2 = new InstantMessage({
@@ -411,7 +411,7 @@ export class ConferenceTestData {
             id: Guid.create().toString(),
             from: 'judge.fudge@hearings.net',
             message: 'test message from judge',
-            timestamp: moment(now).subtract(5, 'minutes').toDate(),
+            timestamp: moment(now).subtract(5, 'minutes').toDate()
         });
 
         const message3 = new InstantMessage({
@@ -419,7 +419,7 @@ export class ConferenceTestData {
             id: Guid.create().toString(),
             from: 'vho.user@hearings.net',
             message: 'test message from vho 2',
-            timestamp: moment(now).subtract(8, 'minutes').toDate(),
+            timestamp: moment(now).subtract(8, 'minutes').toDate()
         });
 
         const message4 = new InstantMessage({
@@ -427,7 +427,7 @@ export class ConferenceTestData {
             id: Guid.create().toString(),
             from: 'vho.user@hearings.net',
             message: 'test message from vho 3',
-            timestamp: moment(now).subtract(10, 'minutes').toDate(),
+            timestamp: moment(now).subtract(10, 'minutes').toDate()
         });
 
         messages.push(message1);

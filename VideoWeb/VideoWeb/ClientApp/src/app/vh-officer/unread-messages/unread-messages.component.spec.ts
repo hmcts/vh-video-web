@@ -37,7 +37,6 @@ describe('UnreadMessagesComponent', () => {
 
     beforeEach(() => {
         component = new UnreadMessagesComponent(videoWebServiceSpy, eventsService, logger);
-        component.conferenceId = conference.id;
 
         component.hearing = new Hearing(conference);
     });
@@ -94,20 +93,18 @@ describe('UnreadMessagesComponent', () => {
     });
     it('should reset unread message counter when judge send a message', () => {
         component.unreadCount = unreadCountResponse.number_of_unread_messages;
-        component.conferenceId = '12345';
         component.setupSubscribers();
         mockEventService.messageSubject.next(new InstantMessage({
-            conferenceId: '12345', from: 'judge.fudge@hearings.net'
+            conferenceId: conference.id, from: 'judge.fudge@hearings.net'
         }));
 
         expect(component.unreadCount).toBe(unreadCountResponse.number_of_unread_messages + 1);
     });
     it('should not increase unread message counter when admin send a message', () => {
         component.unreadCount = unreadCountResponse.number_of_unread_messages;
-        component.conferenceId = '12345';
         component.setupSubscribers();
         mockEventService.messageSubject.next(new InstantMessage({
-            conferenceId: '12345', from: 'james.green123@hearings.net'
+            conferenceId: conference.id, from: 'james.green123@hearings.net'
         }));
 
         expect(component.unreadCount).toBe(unreadCountResponse.number_of_unread_messages);

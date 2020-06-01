@@ -41,18 +41,17 @@ export class VhoHearingListComponent implements OnInit {
         return conference.getParticipants();
     }
 
-    mapToHearing(conference: HearingSummary): Hearing {
-        const hearing = new ConferenceResponseVho({ id: conference.id, scheduled_date_time: conference.scheduledDateTime, status: conference.status });
+    mapToHearing(conference: HearingSummary, participants: ParticipantResponseVho[] = null): Hearing {
+        const hearing = new ConferenceResponseVho({
+            id: conference.id, scheduled_date_time: conference.scheduledDateTime, status: conference.status,
+            participants: participants
+        });
         return new Hearing(hearing);
     }
 
     mapToHearingWithParticipants(conference: HearingSummary): Hearing {
         const participants = conference.getParticipants()
             .map(x => new ParticipantResponseVho({ id: x.id, name: x.displayName, username: x.username, role: x.role }));
-        const hearing = new ConferenceResponseVho({
-            id: conference.id, scheduled_date_time: conference.scheduledDateTime,
-            status: conference.status, participants: participants
-        });
-        return new Hearing(hearing);
+        return this.mapToHearing(conference, participants);
     }
 }
