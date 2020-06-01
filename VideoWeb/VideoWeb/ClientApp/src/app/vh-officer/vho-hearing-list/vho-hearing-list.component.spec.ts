@@ -58,4 +58,15 @@ describe('VhoHearingListComponent', () => {
         expect(result.scheduledStartTime).toEqual(summary.scheduledDateTime);
         expect(result.status).toEqual(summary.status);
     });
+    it('should map summary to full dto with participants', () => {
+        const conference = new ConferenceTestData().getConferenceFuture();
+        const summary = new HearingSummary(conference);
+
+        const result = component.mapToHearingWithParticipants(summary);
+
+        expect(result).toBeDefined();
+        expect(result.scheduledStartTime).toEqual(summary.scheduledDateTime);
+        expect(result.status).toEqual(summary.status);
+        expect(result.participants.length).toBeGreaterThan(0);
+    });
 });

@@ -94,12 +94,12 @@ describe('JudgeChatComponent', () => {
         expect(component.unreadMessageCount).toBe(0);
     });
 
-    it('should get first name when message from user not in conference', async () => {
+    it('should get first name and flag isJudge when message from user not in conference', async () => {
         await fixture.whenStable();
         const username = 'vhofficer.hearings.net';
         const expectedFirstName = profileService.mockProfile.first_name;
-        const from = await component.assignMessageFrom(username);
-        expect(from).toBe(expectedFirstName);
+        const messageInfo = await component.assignMessageFrom(username);
+        expect(messageInfo).toEqual(expectedFirstName);
     });
 
     it('should call api when local cache does not have user profile', async () => {
@@ -107,8 +107,9 @@ describe('JudgeChatComponent', () => {
         const username = 'vhofficer.hearings.net';
         spyOn(profileService, 'checkCacheForProfileByUsername').and.returnValue(null);
         const expectedFirstName = profileService.mockProfile.first_name;
-        const from = await component.assignMessageFrom(username);
-        expect(from).toBe(expectedFirstName);
+
+        const messageInfo = await component.assignMessageFrom(username);
+        expect(messageInfo).toEqual(expectedFirstName);
     });
 
     it('should reset unread counter to number of messages since judge replied', () => {
