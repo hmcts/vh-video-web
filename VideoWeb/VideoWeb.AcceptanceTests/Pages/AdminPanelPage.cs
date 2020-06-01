@@ -1,5 +1,4 @@
 using System;
-using AcceptanceTests.Common.PageObject.Helpers;
 using OpenQA.Selenium;
 
 namespace VideoWeb.AcceptanceTests.Pages
@@ -7,7 +6,6 @@ namespace VideoWeb.AcceptanceTests.Pages
     public static class AdminPanelPage
     {
         public const string AdminIframeId = "admin-frame";
-        public static By AlertsHeader = CommonLocators.ElementContainingText("Alerts for this hearing");
         public static By ParticipantStatusTable = By.Id("participant-status-table");
         public static By ParticipantStatus(Guid participantId) => By.Id($"participant-status-{participantId}");
         public static By ParticipantInIframe(string displayName) => By.XPath($"//b[contains(text(),'{displayName}')]");
@@ -22,5 +20,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By TaskCreatedDate(long taskId) => By.Id($"{taskId:D}-created-date");
         public static By TaskDetails(long taskId) => By.Id($"{taskId:D}-type");
         public static By TaskFromUser(long taskId) => By.Id($"{taskId:D}-from-user");
+        public static By ParticipantInWaitingRoom(Guid participantId) => By.Id($"{participantId}-WaitingRoom");
+        public static By ParticipantInHearingRoom(Guid participantId) => By.Id($"{participantId}-HearingRoom");
     }
 }
