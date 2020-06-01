@@ -19,7 +19,7 @@ describe('TasksTableComponent', () => {
     let logger: MockLogger;
 
     beforeAll(() => {
-        eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit']);
+        eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
         vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', [
             'getConferenceByIdVHO',
             'getTasksForConference',
@@ -40,6 +40,10 @@ describe('TasksTableComponent', () => {
         component.tasks = Object.assign(allTasks);
 
         eventBusServiceSpy.emit.calls.reset();
+    });
+
+    afterEach(() => {
+        component.ngOnDestroy();
     });
 
     it('should get tasks on init', fakeAsync(() => {
@@ -154,5 +158,20 @@ describe('TasksTableComponent', () => {
         const username = null;
         const reult = component.usernameWithoutDomain(username);
         expect(reult).toBeNull();
+    });
+
+    it('should handle page refresh on notification', () => {
+        component.ngOnInit();
+        eventBusServiceSpy.emit(new EmitEvent<TaskCompleted>(VHEventType.TaskCompleted, null));
+        expect(component.tasks).not.toBeNull();
+        component.ngOnDestroy();
+    });
+
+    it('should emit task completed', async () => {
+        const eventbus = new EventBusService();
+        component = new TasksTableComponent(vhoQueryService, logger, eventbus);
+        component.ngOnInit();
+        eventbus.emit(new EmitEvent<TaskCompleted>(VHEventType.PageRefreshed, null));
+        expect(component.tasks).not.toBeNull();
     });
 });
