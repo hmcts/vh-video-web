@@ -28,7 +28,7 @@ namespace VideoWeb.EventHub.Handlers
 
         private async Task PublishParticipantDisconnectMessage()
         {
-            var participantState = ParticipantState.Disconnected;
+            var participantState = SourceParticipant.IsJudge() ? ParticipantState.NotSignedIn : ParticipantState.Disconnected;
             await PublishParticipantStatusMessage(participantState).ConfigureAwait(false);
         }
     }
