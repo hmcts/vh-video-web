@@ -57,9 +57,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
             })
             .catch(error => {
                 this.loadingData = false;
-                if (!this.errorService.returnHomeIfUnauthorised(error)) {
-                    this.errorService.handleApiError(error);
-                }
+                this.errorService.handleApiError(error);
             });
     }
 
@@ -205,7 +203,6 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
 
     async stopAudioRecording() {
         if (this.conference.audio_recording_required) {
-
             this.logger.event(`[Judge WR] - stop audio recording for hearing ${this.conference.hearing_ref_id}`);
 
             try {
@@ -215,5 +212,4 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
             }
         }
     }
-
 }
