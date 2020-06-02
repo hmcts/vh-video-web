@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using AcceptanceTests.Common.Driver.Browser;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
@@ -16,7 +15,6 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public class InstantMessagingSteps
     {
-        private const int Timeout = 60;
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly BrowserSteps _browserSteps;
