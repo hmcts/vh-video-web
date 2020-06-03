@@ -92,7 +92,7 @@ Scenario: Audio Recording
 Scenario: VHO Monitors Hearing
   Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	Then the VHO can see the Clerk status is Unavailable
-  And the VHO can see the participants statuses are Not Signed In
+  And the VHO can see the participants statuses are Not signed in
   Given the Individual01 user has progressed to the Waiting Room page for the existing hearing
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
   And in the Video Hearings Officer's browser
@@ -104,8 +104,8 @@ Scenario: VHO Monitors Hearing
 	And the countdown finishes
   And the Clerk is on the Hearing Room page for 20 seconds
   And in the Video Hearings Officer's browser
-  Then the VHO can see the Clerk status is In Hearing
-  And the VHO can see the status of participant Individual01 is In Hearing
+  Then the VHO can see the Clerk status is In hearing
+  And the VHO can see the status of participant Individual01 is In hearing
   And the VHO can see that the Judge and Individual01 participants are in the Hearing Room
   When in the Clerk's browser
   When the Clerk clicks close
