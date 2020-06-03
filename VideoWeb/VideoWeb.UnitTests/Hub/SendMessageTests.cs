@@ -17,6 +17,7 @@ namespace VideoWeb.UnitTests.Hub
         public async Task Should_send_message_to_conference_group_if_user_is_judge()
         {
             var username = "john@doe.com";
+            var toUsername = "recipient@test.com";
             var conferenceId = Guid.NewGuid();
             var participants = Builder<Participant>.CreateListOfSize(2)
                 .TheFirst(1).With(x => x.Role = Role.Judge).With(x => x.Username = username)
@@ -36,11 +37,11 @@ namespace VideoWeb.UnitTests.Hub
             var mockClient = new Mock<IEventHubClient>();
             EventHubClientMock.Setup(x => x.Group(conferenceId.ToString())).Returns(mockClient.Object);
 
-            await Hub.SendMessage(conferenceId, message);
+            await Hub.SendMessage(conferenceId, message, toUsername);
 
             mockClient.Verify(
                 x =>
-                    x.ReceiveMessage(conferenceId, username, message, It.IsAny<DateTime>(), It.IsAny<Guid>()),
+                    x.ReceiveMessage(conferenceId, username, toUsername, message, It.IsAny<DateTime>(), It.IsAny<Guid>()),
                 Times.Once);
         }
 
@@ -48,6 +49,7 @@ namespace VideoWeb.UnitTests.Hub
         public async Task Should_send_message_to_conference_group_if_user_is_vho()
         {
             var username = "john@doe.com";
+            var toUsername = "recipient@test.com";
             var conferenceId = Guid.NewGuid();
             var participants = Builder<Participant>.CreateListOfSize(2)
                 .TheFirst(1).With(x => x.Role = Role.Individual).With(x => x.Username = username)
@@ -71,11 +73,11 @@ namespace VideoWeb.UnitTests.Hub
 
             EventHubClientMock.Setup(x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
                 .Returns(mockClient.Object);
-            await Hub.SendMessage(conferenceId, message);
+            await Hub.SendMessage(conferenceId, message, toUsername);
 
             mockClient.Verify(
                 x =>
-                    x.ReceiveMessage(conferenceId, It.IsAny<string>(), message, It.IsAny<DateTime>(), It.IsAny<Guid>()),
+                    x.ReceiveMessage(conferenceId, It.IsAny<string>(), toUsername, message, It.IsAny<DateTime>(), It.IsAny<Guid>()),
                 Times.Once);
         }
 
@@ -84,6 +86,7 @@ namespace VideoWeb.UnitTests.Hub
         {
             var judgeUsername = "judge@hmcts.net";
             var username = "john@doe.com";
+            var toUsername = "recipient@test.com";
             var conferenceId = Guid.NewGuid();
             var participants = Builder<Participant>.CreateListOfSize(2)
                 .TheFirst(1).With(x => x.Role = Role.Judge).With(x => x.Username = judgeUsername)
@@ -103,11 +106,11 @@ namespace VideoWeb.UnitTests.Hub
             var mockClient = new Mock<IEventHubClient>();
             EventHubClientMock.Setup(x => x.Group(conferenceId.ToString())).Returns(mockClient.Object);
 
-            await Hub.SendMessage(conferenceId, message);
+            await Hub.SendMessage(conferenceId, toUsername, message);
 
             mockClient.Verify(
                 x =>
-                    x.ReceiveMessage(conferenceId, It.IsAny<string>(), message, It.IsAny<DateTime>(), It.IsAny<Guid>()),
+                    x.ReceiveMessage(conferenceId, It.IsAny<string>(), toUsername,message, It.IsAny<DateTime>(), It.IsAny<Guid>()),
                 Times.Never);
         }
     }

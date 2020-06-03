@@ -8,9 +8,10 @@ namespace VideoWeb.Contract.Responses
         {
             Id = Guid.NewGuid();
         }
-        
+
         public Guid Id { get; }
         public string From { get; set; }
+        public string To { get; set; }
         public string Message { get; set; }
         public DateTime Timestamp { get; set; }
         public bool IsUser { get; set; }

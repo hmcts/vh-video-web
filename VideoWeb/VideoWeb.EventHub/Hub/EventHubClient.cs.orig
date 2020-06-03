@@ -142,6 +142,11 @@ namespace VideoWeb.EventHub.Hub
 
             if (isAdmin)
             {
+<<<<<<< HEAD
+                From = from,
+                Message_text = message
+            });
+=======
                 await Clients.Group(conferenceId.ToString())
                     .ReceiveMessage(conferenceId, from, to, message, timestamp, Guid.NewGuid());
             }
@@ -158,6 +163,7 @@ namespace VideoWeb.EventHub.Hub
             //     From = from,
             //     Message_text = message
             // });
+>>>>>>> WIP
 
             if (isAdmin)
             {

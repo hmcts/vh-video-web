@@ -1,20 +1,19 @@
-import { ComponentFixture, fakeAsync, tick } from '@angular/core/testing';
+import { fakeAsync, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
+import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { MockProfileService } from 'src/app/testing/mocks/MockProfileService';
 import { JudgeChatComponent } from './judge-chat.component';
 
 describe('JudgeChatComponent', () => {
     let component: JudgeChatComponent;
-    let fixture: ComponentFixture<JudgeChatComponent>;
     let conference: ConferenceResponse;
     let hearing: Hearing;
 
@@ -22,10 +21,26 @@ describe('JudgeChatComponent', () => {
     const judgeUsername = 'judge.fudge@hearings.net';
     let eventsService: jasmine.SpyObj<EventsService>;
     let profileService: jasmine.SpyObj<ProfileService>;
-    const mockProfileService = new MockProfileService();
     const mockAdalService = new MockAdalService();
     const mockEventsService = new MockEventsService();
     let adalService;
+    const imHelper = new ImHelper();
+
+    const judgeProfile: UserProfileResponse = new UserProfileResponse({
+        display_name: 'Judge Fudge',
+        first_name: 'Judge',
+        last_name: 'Fudge',
+        role: Role.Judge,
+        username: 'judge.fudge@hearings.net'
+    });
+
+    const adminProfile: UserProfileResponse = new UserProfileResponse({
+        display_name: 'Test Admin',
+        first_name: 'Test',
+        last_name: 'Admin',
+        role: Role.VideoHearingsOfficer,
+        username: 'admin@test.com'
+    });
 
     beforeAll(() => {
         adalService = mockAdalService;
@@ -33,7 +48,11 @@ describe('JudgeChatComponent', () => {
         hearing = new Hearing(conference);
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceChatHistory']);
         eventsService = jasmine.createSpyObj<EventsService>('EventsService', ['start', 'getChatMessage', 'sendMessage']);
-        profileService = jasmine.createSpyObj<ProfileService>('ProfileService', ['checkCacheForProfileByUsername', 'getProfileByUsername']);
+        profileService = jasmine.createSpyObj<ProfileService>('ProfileService', [
+            'checkCacheForProfileByUsername',
+            'getProfileByUsername',
+            'getUserProfile'
+        ]);
     });
 
     beforeEach(() => {
@@ -41,13 +60,14 @@ describe('JudgeChatComponent', () => {
         const chatHistory = new ConferenceTestData().getChatHistory(mockAdalService.userInfo.userName, conference.id);
 
         profileService.checkCacheForProfileByUsername.and.returnValue(null);
-        profileService.getProfileByUsername.and.resolveTo(mockProfileService.mockProfile);
+        profileService.getProfileByUsername.and.resolveTo(adminProfile);
+        profileService.getUserProfile.and.resolveTo(judgeProfile);
         videoWebService.getConferenceChatHistory.and.resolveTo(chatHistory);
 
         eventsService.getChatMessage.and.returnValue(mockEventsService.messageSubject.asObservable());
 
-        component = new JudgeChatComponent(videoWebService, profileService, eventsService, new MockLogger(), adalService);
-
+        component = new JudgeChatComponent(videoWebService, profileService, eventsService, new MockLogger(), adalService, imHelper);
+        component.loggedInUserProfile = judgeProfile;
         component.hearing = hearing;
         component.messages = new ConferenceTestData().getChatHistory('vho.user@hearings.net', conference.id);
     });
@@ -99,17 +119,10 @@ describe('JudgeChatComponent', () => {
         expect(component.unreadMessageCount).toBe(0);
     });
 
-    it('should get first name and flag isJudge when message from user not in conference', async () => {
-        const username = 'vhofficer.hearings.net';
-        const expectedFirstName = mockProfileService.mockProfile.first_name;
-        const messageInfo = await component.assignMessageFrom(username);
-        expect(messageInfo).toEqual(expectedFirstName);
-    });
-
     it('should call api when local cache does not have user profile', async () => {
-        const username = 'vhofficer.hearings.net';
+        const username = adminProfile.username;
         profileService.checkCacheForProfileByUsername.and.returnValue(null);
-        const expectedFirstName = mockProfileService.mockProfile.first_name;
+        const expectedFirstName = adminProfile.first_name;
 
         const messageInfo = await component.assignMessageFrom(username);
         expect(messageInfo).toEqual(expectedFirstName);
@@ -157,6 +170,6 @@ describe('JudgeChatComponent', () => {
     it('should send message to hub', () => {
         const message = 'test';
         component.sendMessage(message);
-        expect(eventsService.sendMessage).toHaveBeenCalledWith(conference.id, message);
+        expect(eventsService.sendMessage).toHaveBeenCalledWith(conference.id, message, null);
     });
 });

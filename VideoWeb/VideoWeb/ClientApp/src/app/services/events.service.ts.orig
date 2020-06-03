@@ -17,6 +17,10 @@ import { Heartbeat } from '../shared/models/heartbeat';
     providedIn: 'root'
 })
 export class EventsService {
+<<<<<<< HEAD
+    waitTimeBase = 1000;
+=======
+>>>>>>> WIP
     connection: signalR.HubConnection;
     connectionStarted: boolean;
     attemptingConnection: boolean;
@@ -62,7 +66,11 @@ export class EventsService {
                     this.registerHandlers();
                 })
                 .catch(async err => {
+<<<<<<< HEAD
                     this.logger.warn(`Failed to connect to EventHub ${err}`);
+=======
+                    this.logger.error('Failed to connect to EventHub', err);
+>>>>>>> WIP
                     this.onEventHubErrorOrClose(err);
                     await this.delay(5000);
                     this.start();
@@ -109,9 +117,15 @@ export class EventsService {
 
         this.connection.on(
             'ReceiveMessage',
+<<<<<<< HEAD
+            (conferenceId: string, from: string, message: string, timestamp: Date, messageUuid: string) => {
+                const date = new Date(timestamp);
+                const chat = new InstantMessage({ conferenceId, id: messageUuid, from, message, timestamp: date });
+=======
             (conferenceId: string, from: string, to: string, message: string, timestamp: Date, messageUuid: string) => {
                 const date = new Date(timestamp);
                 const chat = new InstantMessage({ conferenceId, id: messageUuid, to, from, message, timestamp: date });
+>>>>>>> WIP
                 this.logger.event('ReceiveMessage received', { conferenceId, id: messageUuid, from, timestamp: date });
                 this.messageSubject.next(chat);
             }
@@ -187,6 +201,13 @@ export class EventsService {
         return this.hearingStatusSubject.asObservable();
     }
 
+<<<<<<< HEAD
+    getHelpMessage(): Observable<HelpMessage> {
+        return this.helpMessageSubject.asObservable();
+    }
+
+=======
+>>>>>>> WIP
     getConsultationMessage(): Observable<ConsultationMessage> {
         return this.consultationMessageSubject.asObservable();
     }
@@ -207,8 +228,13 @@ export class EventsService {
         return this.participantHeartbeat.asObservable();
     }
 
+<<<<<<< HEAD
+    async sendMessage(conferenceId: string, message: string) {
+        await this.connection.send('SendMessage', conferenceId, message);
+=======
     async sendMessage(conferenceId: string, message: string, to: string) {
         await this.connection.send('SendMessage', conferenceId, message, to);
+>>>>>>> WIP
     }
 
     async sendHeartbeat(conferenceId: string, participantId: string, heartbeat: Heartbeat) {

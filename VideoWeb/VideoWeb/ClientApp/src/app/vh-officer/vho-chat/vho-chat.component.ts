@@ -7,6 +7,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
+import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
 import { ConferenceUnreadMessageCount } from './vho-conference-unread_message-count.model';
@@ -30,16 +31,17 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         protected profileService: ProfileService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected adalService: AdalService
+        protected adalService: AdalService,
+        protected imHelper: ImHelper
     ) {
-        super(videoWebService, profileService, eventService, logger, adalService);
+        super(videoWebService, profileService, eventService, logger, adalService, imHelper);
     }
 
-    async ngOnInit() {
+    ngOnInit() {
         this.logger.debug(`[ChatHub VHO] starting chat for ${this.hearing.id}`);
         this.initForm();
-        this.chatHubSubscription = this.setupChatSubscription();
         this.loading = true;
+        this.setupChatSubscription().then(sub => (this.chatHubSubscription = sub));
         this.retrieveChatForConference().then(messages => {
             this.messages = messages;
             this.loading = false;
@@ -50,12 +52,8 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         this.newMessageBody = new FormControl(null, [Validators.required, Validators.minLength(1), Validators.maxLength(256)]);
     }
 
-    sendMessage(messageBody: string) {
-        this.eventService.sendMessage(this.hearing.id, messageBody);
-    }
-
-    getMessageWindow(): HTMLElement {
-        return document.getElementById('chat-list');
+    async sendMessage(messageBody: string) {
+        await this.eventService.sendMessage(this.hearing.id, messageBody, this.participant.username);
     }
 
     @HostListener('window:beforeunload')

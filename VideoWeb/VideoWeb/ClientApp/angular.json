@@ -38,7 +38,7 @@
               "src/scripts/init-script.js",
               "node_modules/chart.js/dist/Chart.js"
             ],
-            "aot": true
+            "aot": false
           },
           "configurations": {
             "production": {
@@ -53,6 +53,7 @@
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
+              "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true

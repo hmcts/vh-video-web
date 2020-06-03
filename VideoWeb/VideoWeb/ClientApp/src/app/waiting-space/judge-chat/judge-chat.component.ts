@@ -8,6 +8,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { ImHelper } from 'src/app/shared/im-helper';
 
 @Component({
     selector: 'app-judge-chat',
@@ -15,10 +16,13 @@ import { Hearing } from 'src/app/shared/models/hearing';
     styleUrls: ['./judge-chat.component.scss']
 })
 export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnDestroy, AfterViewChecked {
+    private chatHubSubscription: Subscription;
+
     showChat: boolean;
     unreadMessageCount: number;
     loading: boolean;
-    private chatHubSubscription: Subscription;
+
+    lastAdminUsername: string;
 
     @Input() hearing: Hearing;
 
@@ -27,9 +31,10 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
         protected profileService: ProfileService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected adalService: AdalService
+        protected adalService: AdalService,
+        protected imHelper: ImHelper
     ) {
-        super(videoWebService, profileService, eventService, logger, adalService);
+        super(videoWebService, profileService, eventService, logger, adalService, imHelper);
     }
 
     ngOnInit() {
@@ -37,8 +42,8 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
         this.showChat = false;
         this.unreadMessageCount = 0;
         this.loading = true;
+        this.setupChatSubscription().then(sub => (this.chatHubSubscription = sub));
         this.retrieveChatForConference().then(messages => {
-            this.chatHubSubscription = this.setupChatSubscription();
             this.unreadMessageCount = this.getCountSinceUsersLastMessage(messages);
             this.loading = false;
             this.messages = messages;
@@ -51,12 +56,9 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
         }
     }
 
-    sendMessage(messageBody: string) {
-        this.eventService.sendMessage(this.hearing.id, messageBody);
-    }
-
-    getMessageWindow(): HTMLElement {
-        return document.getElementById('chat-list');
+    async sendMessage(messageBody: string) {
+        const toUser = this.lastAdminUsername ? this.lastAdminUsername : this.DEFAULT_ADMIN_USERNAME;
+        await this.eventService.sendMessage(this.hearing.id, messageBody, toUser);
     }
 
     @HostListener('window:beforeunload')
@@ -74,6 +76,11 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
     handleIncomingOtherMessage() {
         if (!this.showChat) {
             this.unreadMessageCount++;
+        }
+        const lastMessage = this.messages[this.messages.length - 1];
+        if (!lastMessage.is_user) {
+            // if message not from user (i.e. judge) then sent from admin
+            this.lastAdminUsername = lastMessage.from;
         }
     }
 

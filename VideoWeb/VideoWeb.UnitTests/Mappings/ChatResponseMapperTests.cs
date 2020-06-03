@@ -14,7 +14,7 @@ namespace VideoWeb.UnitTests.Mappings
         {
             const string username = "john@doe.com";
             const string fromDisplayName = "Johnny";
-            
+
             var message = new InstantMessageResponse
             {
                 From = username,
@@ -23,8 +23,9 @@ namespace VideoWeb.UnitTests.Mappings
             };
 
             var response = ChatResponseMapper.MapToResponseModel(message, fromDisplayName, true);
-            
+
             response.From.Should().Be(fromDisplayName);
+            response.To.Should().Be(string.Empty);
             response.Message.Should().Be(message.Message_text);
             response.Timestamp.Should().Be(message.Time_stamp);
             response.IsUser.Should().BeTrue();

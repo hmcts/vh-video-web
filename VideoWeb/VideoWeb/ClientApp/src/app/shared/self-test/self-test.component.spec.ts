@@ -84,7 +84,10 @@ describe('SelfTestComponent', () => {
         component.conference = conference;
         component.participant = component.conference.participants[0];
         component.selfTestPexipConfig = pexipConfig;
-        component.token = new TokenResponse({ expires_on: '1234567', token: '123456789' });
+        component.token = new TokenResponse({
+            expires_on: '02.06.2020-21:06Z',
+            token: '3a9643611de98e66979bf9519c33fc8d28c39100a4cdc29aaf1b6041b9e16e45'
+        });
 
         videoWebService.raiseSelfTestFailureEvent.calls.reset();
         videoWebService.getTestCallScore.calls.reset();
