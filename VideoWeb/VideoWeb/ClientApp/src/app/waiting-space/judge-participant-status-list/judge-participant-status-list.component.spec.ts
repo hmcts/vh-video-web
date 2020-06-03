@@ -78,13 +78,13 @@ describe('JudgeParticipantStatusListComponent', () => {
 
     const participantStatusTestCases = [
         { status: ParticipantStatus.Available, expected: 'Connected' },
-        { status: ParticipantStatus.InConsultation, expected: 'In Consultation' },
+        { status: ParticipantStatus.InConsultation, expected: 'In consultation' },
         { status: ParticipantStatus.InHearing, expected: 'Connected' },
         { status: ParticipantStatus.Disconnected, expected: 'Disconnected' },
         { status: ParticipantStatus.Joining, expected: 'Joining' },
-        { status: ParticipantStatus.NotSignedIn, expected: 'Not Signed In' },
-        { status: ParticipantStatus.UnableToJoin, expected: 'Unable To Join' },
-        { status: ParticipantStatus.None, expected: 'Not Signed In' }
+        { status: ParticipantStatus.NotSignedIn, expected: 'Not signed in' },
+        { status: ParticipantStatus.UnableToJoin, expected: 'Unable to join' },
+        { status: ParticipantStatus.None, expected: 'Not signed in' }
     ];
 
     participantStatusTestCases.forEach(test => {

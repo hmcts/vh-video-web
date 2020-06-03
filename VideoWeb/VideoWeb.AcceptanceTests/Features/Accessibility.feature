@@ -95,7 +95,8 @@ Scenario: Hearing Room page accessibility
   And the Clerk clicks close
 	Then the user is on the Hearing List page
 
-@Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
+# Ignoring this test until we can upgrade to Angular 9. See VIH-6032 for more details
+@Ignore @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
 Scenario: Venue List page accessibility
 	Given the Video Hearings Officer user has progressed to the VHO Venue List page
 	Then the page should be accessible 
