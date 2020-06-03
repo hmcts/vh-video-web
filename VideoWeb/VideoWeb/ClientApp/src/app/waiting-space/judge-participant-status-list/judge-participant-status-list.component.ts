@@ -48,7 +48,9 @@ export class JudgeParticipantStatusListComponent implements OnInit {
     }
 
     private camelToSpaced(word: string) {
-        return word.split(/(?=[A-Z])/).join(' ');
+        const splitWord = word.split(/(?=[A-Z])/).join(' ');
+        const lowcaseWord = splitWord.toLowerCase();
+        return lowcaseWord.charAt(0).toUpperCase() + lowcaseWord.slice(1);
   }
 
   getParticipantStatusCss(participant: ParticipantResponse): string {
