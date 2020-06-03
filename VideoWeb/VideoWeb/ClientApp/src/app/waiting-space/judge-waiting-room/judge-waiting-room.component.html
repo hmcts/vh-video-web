@@ -33,48 +33,54 @@
 </div>
 
 <div *ngIf="!loadingData && conference" class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl" [ngClass]="hearingSuspended() ? 'text-highlight-red' : ''">
-            {{ getConferenceStatusText() }}
-        </h1>
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl" [ngClass]="hearingSuspended() ? 'text-highlight-red' : ''">
+      {{ getConferenceStatusText() }}
+    </h1>
 
-        <h2 class="govuk-heading-m" *ngIf="isNotStarted()">Is everyone connected?</h2>
+    <h2 class="govuk-heading-m" *ngIf="isNotStarted()">Is everyone connected?</h2>
 
-        <p class="govuk-body govuk-!-margin-bottom-3" *ngIf="isNotStarted()">
-            If any participants are not connected, you must call the video hearings team on <strong>0300 303 0655</strong> before you start the
-            hearing.
-        </p>
+    <p class="govuk-body govuk-!-margin-bottom-3" *ngIf="isNotStarted()">
+      If any participants are not connected, you must call the video hearings team on <strong>0300 303 0655</strong> before you start the
+      hearing.
+    </p>
 
-        <p class="govuk-body govuk-!-margin-bottom-3" *ngIf="hearingPaused()">
-            Please call the video hearings team on <strong>0300 303 0655</strong> if you're having problems. We'll update the participants.
-        </p>
+    <p class="govuk-body govuk-!-margin-bottom-3" *ngIf="hearingPaused()">
+      Please call the video hearings team on <strong>0300 303 0655</strong> if you're having problems. We'll update the participants.
+    </p>
 
-        <p class="govuk-body govuk-!-margin-bottom-3" *ngIf="hearingSuspended()">
-            The video hearings team has been alerted and we're informing the participants. Please call us now on <strong>0300 303 0655</strong>.
-        </p>
+    <p class="govuk-body govuk-!-margin-bottom-3" *ngIf="hearingSuspended()">
+      The video hearings team has been alerted and we're informing the participants. Please call us now on <strong>0300 303 0655</strong>.
+    </p>
 
-        <p class="govuk-body govuk-body govuk-!-margin-bottom-6 govuk-!-margin-top-6">
-            <span class="govuk-button__start-icon">
-                <img id="recording-on-img" class="audio-icon" src="/assets/images/{{ conference.audio_recording_required ? 'audio_on' : 'audio_off' }}.png"
-                     alt="Recording {{ conference.audio_recording_required ? 'on' : 'off' }} image" />
-            </span>
-            <strong class="govuk-!-padding-1">
-                The audio of this hearing is  {{ conference.audio_recording_required ? '' : 'NOT' }} being recorded.
-            </strong>
-        </p>
+    <p class="govuk-body govuk-body govuk-!-margin-bottom-6 govuk-!-margin-top-6">
+      <span class="govuk-button__start-icon">
+        <img
+          id="recording-on-img"
+          class="audio-icon"
+          src="/assets/images/{{ conference.audio_recording_required ? 'audio_on' : 'audio_off' }}.png"
+          alt="Recording {{ conference.audio_recording_required ? 'on' : 'off' }} image"
+        />
+      </span>
+      <strong class="govuk-!-padding-1">
+        The audio of this hearing is {{ conference.audio_recording_required ? '' : 'NOT' }} being recorded.
+      </strong>
+    </p>
 
-        <div>
-            <button *ngIf="isNotStarted()" type="submit" class="govuk-button govuk-button--start" (click)="goToHearingPage()">
-                Start video hearing
-            </button>
-            <button *ngIf="hearingPaused() || hearingSuspended()"
-                    type="submit"
-                    class="govuk-button govuk-button--start"
-                    (click)="goToHearingPage()">
-                Resume video hearing
-            </button>
-        </div>
+    <div>
+      <button *ngIf="isNotStarted()" type="submit" class="govuk-button govuk-button--start" (click)="goToHearingPage()">
+        Start video hearing
+      </button>
+      <button
+        *ngIf="hearingPaused() || hearingSuspended()"
+        type="submit"
+        class="govuk-button govuk-button--start"
+        (click)="goToHearingPage()"
+      >
+        Resume video hearing
+      </button>
     </div>
+  </div>
 
   <div class="govuk-grid-column-one-third">
     <app-judge-participant-status-list aria-label="list of participants in hearing" [conference]="conference">
