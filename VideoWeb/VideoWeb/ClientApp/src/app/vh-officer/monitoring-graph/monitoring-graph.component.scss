@@ -1,16 +1,5 @@
 @import '~govuk-frontend/govuk/all';
 
-.vh-popup {
-  margin: 0;
-  background: govuk-colour('white');
-  border-radius: 0px;
-  position: relative;
-  transition: all 2s ease-in-out;
-  box-shadow: 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 8px 0 rgba(0, 0, 0, 0.1);
-  z-index: 1;
-  width: 50%;
-}
-
 .vh-popup-overlay {
   background: govuk-colour('white');
   position: relative;
