@@ -27,7 +27,7 @@ namespace VideoWeb.EventHub.Hub
         private readonly IConferenceCache _conferenceCache;
         private readonly IHeartbeatRequestMapper _heartbeatRequestMapper;
 
-        public EventHub(IUserProfileService userProfileService, IVideoApiClient videoApiClient, 
+        public EventHub(IUserProfileService userProfileService, IVideoApiClient videoApiClient,
             ILogger<EventHub> logger, IConferenceCache conferenceCache, IHeartbeatRequestMapper heartbeatRequestMapper)
         {
             _userProfileService = userProfileService;
@@ -53,7 +53,7 @@ namespace VideoWeb.EventHub.Hub
         {
             var conferences = await GetConferencesForUser(isAdmin);
             var tasks = conferences.Select(c => Groups.AddToGroupAsync(Context.ConnectionId, c.Id.ToString())).ToArray();
-            
+
             await Task.WhenAll(tasks);
         }
 
@@ -78,7 +78,7 @@ namespace VideoWeb.EventHub.Hub
             }
             else
             {
-                _logger.LogCritical(exception, $"Disconnected from chat hub server-side: {userName} ");
+                _logger.LogWarning(exception, $"There was an error when disconnecting from chat hub server-side: {userName}");
             }
 
             var isAdmin = IsVhOfficerAsync();
@@ -104,7 +104,7 @@ namespace VideoWeb.EventHub.Hub
         {
             var conferences = await GetConferencesForUser(isAdmin);
             var tasks = conferences.Select(c => Groups.RemoveFromGroupAsync(Context.ConnectionId, c.Id.ToString())).ToArray();
-            
+
             await Task.WhenAll(tasks);
         }
 
@@ -147,7 +147,7 @@ namespace VideoWeb.EventHub.Hub
                 From = from,
                 Message_text = message
             });
-            
+
             if (isAdmin)
             {
                 await Clients.Group(VhOfficersGroupName).AdminAnsweredChat(conferenceId);
@@ -160,7 +160,7 @@ namespace VideoWeb.EventHub.Hub
             {
                 return true;
             }
-            
+
             try
             {
                 var conference = await _conferenceCache.GetOrAddConferenceAsync
@@ -186,7 +186,7 @@ namespace VideoWeb.EventHub.Hub
             {
                 await Clients.Group(VhOfficersGroupName).ReceiveHeartbeat
                 (
-                    conferenceId, participantId, _heartbeatRequestMapper.MapToHealth(heartbeat), 
+                    conferenceId, participantId, _heartbeatRequestMapper.MapToHealth(heartbeat),
                     heartbeat.BrowserName, heartbeat.BrowserVersion
                 );
 
