@@ -6,14 +6,14 @@ Feature: Participant Status
 @VIH-4500 @Smoketest-Extended
 Scenario Outline: Participants status updates
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
-	Then the VHO can see the participants statuses are Not Signed In
+	Then the VHO can see the participants statuses are Not signed in
 	When the participants statuses are <Status>
 	Then the VHO can see the participants statuses have updated to <Status>
 	Examples: 
 	| Status		      |
 	| Joining         |
-	| In Hearing      |
-	| In Consultation |
+	| In hearing      |
+	| In consultation |
 	| Available       |
 	| Disconnected    |
 
@@ -26,13 +26,13 @@ Scenario Outline: Clerk status updates
   Examples: 
   | Status       |
 	| Available    |
-  | In Hearing   |
+  | In hearing   |
   | Disconnected |
   
 @VIH-5431
 Scenario: Clerk in another hearing
   Given I have a hearing
-  And the clerk status is In Hearing
+  And the clerk status is In hearing
 	And I have another hearing
   And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
   Then the VHO can see the clerk status is In another hearing

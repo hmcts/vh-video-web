@@ -8,13 +8,13 @@ export class ParticipantStatusReader {
     switch (status) {
       case ParticipantStatus.None:
       case ParticipantStatus.NotSignedIn:
-        return 'Not Signed In';
+        return 'Not signed in';
       case ParticipantStatus.InConsultation:
-        return 'In Consultation';
+        return 'In consultation';
       case ParticipantStatus.InHearing:
-        return 'In Hearing';
+        return 'In hearing';
       case ParticipantStatus.UnableToJoin:
-        return 'Unable to Join';
+        return 'Unable to join';
       default:
         return status;
     }
@@ -29,7 +29,7 @@ export class ParticipantStatusReader {
       case ParticipantStatus.UnableToJoin:
         return this.unavailableText;
       case ParticipantStatus.InHearing:
-        return 'In Hearing';
+        return 'In hearing';
 
       default:
         return status;
