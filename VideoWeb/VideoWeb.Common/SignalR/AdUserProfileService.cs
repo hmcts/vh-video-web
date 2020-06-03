@@ -6,6 +6,7 @@ namespace VideoWeb.Common.SignalR
     public interface IUserProfileService
     {
         Task<string> GetObfuscatedUsernameAsync(string username);
+        Task<UserProfile> GetUserAsync(string username);
     }
 
     public class AdUserProfileService : IUserProfileService

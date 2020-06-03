@@ -66,9 +66,9 @@ export abstract class ChatBaseComponent {
             message.is_user = true;
         } else {
             message = await this.verifySender(message);
+            this.handleIncomingOtherMessage(message);
         }
         this.messages.push(message);
-        this.handleIncomingOtherMessage();
     }
 
     async verifySender(message: InstantMessage): Promise<InstantMessage> {
@@ -97,7 +97,7 @@ export abstract class ChatBaseComponent {
         return await this.profileService.getProfileByUsername(username);
     }
 
-    handleIncomingOtherMessage() {}
+    handleIncomingOtherMessage(messsage: InstantMessage) {}
 
     async retrieveChatForConference(): Promise<InstantMessage[]> {
         this.messages = (await this.videoWebService.getConferenceChatHistory(this.hearing.id)).map(m => {

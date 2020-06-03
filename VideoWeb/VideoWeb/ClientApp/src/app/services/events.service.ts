@@ -117,6 +117,16 @@ export class EventsService {
             }
         );
 
+        // this.connection.on(
+        //     'ReceiveMessage',
+        //     (conferenceId: string, from: string, message: string, timestamp: Date, messageUuid: string) => {
+        //         const date = new Date(timestamp);
+        //         const chat = new InstantMessage({ conferenceId, id: messageUuid, from, message, timestamp: date });
+        //         this.logger.event('ReceiveMessage received', { conferenceId, id: messageUuid, from, timestamp: date });
+        //         this.messageSubject.next(chat);
+        //     }
+        // );
+
         this.connection.on('AdminAnsweredChat', (conferenceId: string) => {
             this.logger.event('AdminAnsweredChat received', conferenceId);
             this.adminAnsweredChatSubject.next(conferenceId);

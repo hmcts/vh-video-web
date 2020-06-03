@@ -9,6 +9,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ImHelper } from 'src/app/shared/im-helper';
+import { InstantMessage } from 'src/app/services/models/instant-message';
 
 @Component({
     selector: 'app-judge-chat',
@@ -73,14 +74,14 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
         this.showChat = !this.showChat;
     }
 
-    handleIncomingOtherMessage() {
+    handleIncomingOtherMessage(message: InstantMessage) {
         if (!this.showChat) {
             this.unreadMessageCount++;
         }
-        const lastMessage = this.messages[this.messages.length - 1];
-        if (!lastMessage.is_user) {
+
+        if (!message.is_user) {
             // if message not from user (i.e. judge) then sent from admin
-            this.lastAdminUsername = lastMessage.from;
+            this.lastAdminUsername = message.from;
         }
     }
 

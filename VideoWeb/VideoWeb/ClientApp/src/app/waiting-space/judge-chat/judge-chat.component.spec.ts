@@ -11,6 +11,7 @@ import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { JudgeChatComponent } from './judge-chat.component';
+import { InstantMessage } from 'src/app/services/models/instant-message';
 
 describe('JudgeChatComponent', () => {
     let component: JudgeChatComponent;
@@ -106,17 +107,70 @@ describe('JudgeChatComponent', () => {
     });
 
     it('should increment unread message counter when window is closed', () => {
+        const adminUsername = 'admin@user.com';
         component.showChat = false;
         component.unreadMessageCount = 0;
-        component.handleIncomingOtherMessage();
+        const message: InstantMessage = new InstantMessage({
+            conferenceId: conference.id,
+            from: conference.participants[0].username,
+            to: conference.participants[1].username,
+            id: Guid.create().toString(),
+            is_user: false,
+            message: 'test auto',
+            timestamp: new Date()
+        });
+        component.handleIncomingOtherMessage(message);
         expect(component.unreadMessageCount).toBeGreaterThan(0);
     });
 
     it('should not increment unread message counter when window is open', () => {
         component.showChat = true;
         component.unreadMessageCount = 0;
-        component.handleIncomingOtherMessage();
+        const message: InstantMessage = new InstantMessage({
+            conferenceId: conference.id,
+            from: conference.participants[0].username,
+            to: conference.participants[1].username,
+            id: Guid.create().toString(),
+            is_user: false,
+            message: 'test auto',
+            timestamp: new Date()
+        });
+        component.handleIncomingOtherMessage(message);
         expect(component.unreadMessageCount).toBe(0);
+    });
+
+    it('should not update admin username when message if from self', () => {
+        const message: InstantMessage = new InstantMessage({
+            conferenceId: conference.id,
+            from: conference.participants[0].username,
+            to: conference.participants[1].username,
+            id: Guid.create().toString(),
+            is_user: true,
+            message: 'test auto',
+            timestamp: new Date()
+        });
+        component.handleIncomingOtherMessage(message);
+        expect(component.lastAdminUsername).toBeUndefined();
+
+        const originalUsername = 'original@test.com';
+        component.lastAdminUsername = originalUsername;
+        component.handleIncomingOtherMessage(message);
+        expect(component.lastAdminUsername).toBe(originalUsername);
+    });
+
+    it('should not update admin username when message if from admin', () => {
+        const adminUsername = adminProfile.username;
+        const message: InstantMessage = new InstantMessage({
+            conferenceId: conference.id,
+            from: adminUsername,
+            to: conference.participants[1].username,
+            id: Guid.create().toString(),
+            is_user: false,
+            message: 'test auto',
+            timestamp: new Date()
+        });
+        component.handleIncomingOtherMessage(message);
+        expect(component.lastAdminUsername).toBe(adminUsername);
     });
 
     it('should call api when local cache does not have user profile', async () => {
@@ -170,6 +224,6 @@ describe('JudgeChatComponent', () => {
     it('should send message to hub', () => {
         const message = 'test';
         component.sendMessage(message);
-        expect(eventsService.sendMessage).toHaveBeenCalledWith(conference.id, message, null);
+        expect(eventsService.sendMessage).toHaveBeenCalledWith(conference.id, message, component.DEFAULT_ADMIN_USERNAME);
     });
 });

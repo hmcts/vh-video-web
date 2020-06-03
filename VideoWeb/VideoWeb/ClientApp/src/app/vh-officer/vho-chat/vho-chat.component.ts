@@ -52,8 +52,8 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         this.newMessageBody = new FormControl(null, [Validators.required, Validators.minLength(1), Validators.maxLength(256)]);
     }
 
-    async sendMessage(messageBody: string) {
-        await this.eventService.sendMessage(this.hearing.id, messageBody, this.participant.username);
+    sendMessage(messageBody: string) {
+        this.eventService.sendMessage(this.hearing.id, messageBody, this.participant.username);
     }
 
     @HostListener('window:beforeunload')

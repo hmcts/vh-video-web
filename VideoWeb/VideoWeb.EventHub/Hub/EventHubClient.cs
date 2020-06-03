@@ -9,10 +9,10 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Extensions;
 using VideoWeb.Common.Models;
 using VideoWeb.Common.SignalR;
+using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Mappers;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
-using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.EventHub.Hub
 {
@@ -20,6 +20,7 @@ namespace VideoWeb.EventHub.Hub
     public class EventHub : Hub<IEventHubClient>
     {
         public static string VhOfficersGroupName => "VhOfficers";
+        public static string DefaultAdminName => "Admin";
 
         private readonly IUserProfileService _userProfileService;
         private readonly ILogger<EventHub> _logger;
@@ -41,7 +42,7 @@ namespace VideoWeb.EventHub.Hub
         {
             var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name);
             _logger.LogTrace($"Connected to event hub server-side: {userName} ");
-            var isAdmin = IsVhOfficerAsync();
+            var isAdmin = IsVhOfficer();
 
             await AddUserToUserGroup(isAdmin);
             await AddUserToConferenceGroups(isAdmin);
@@ -51,8 +52,10 @@ namespace VideoWeb.EventHub.Hub
 
         private async Task AddUserToConferenceGroups(bool isAdmin)
         {
-            var conferences = await GetConferencesForUser(isAdmin);
-            var tasks = conferences.Select(c => Groups.AddToGroupAsync(Context.ConnectionId, c.Id.ToString())).ToArray();
+            if (!isAdmin) return;
+            var conferences = await GetConferencesForAdmin();
+            var tasks = conferences.Select(c => Groups.AddToGroupAsync(Context.ConnectionId, c.Id.ToString()))
+                .ToArray();
 
             await Task.WhenAll(tasks);
         }
@@ -65,13 +68,13 @@ namespace VideoWeb.EventHub.Hub
             }
             else
             {
-                await Groups.AddToGroupAsync(Context.ConnectionId, Context.UserIdentifier);
+                await Groups.AddToGroupAsync(Context.ConnectionId, Context.User.Identity.Name.ToLowerInvariant());
             }
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name);
+            var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name.ToLowerInvariant());
             if (exception == null)
             {
                 _logger.LogInformation($"Disconnected from chat hub server-side: {userName} ");
@@ -81,7 +84,7 @@ namespace VideoWeb.EventHub.Hub
                 _logger.LogWarning(exception, $"There was an error when disconnecting from chat hub server-side: {userName}");
             }
 
-            var isAdmin = IsVhOfficerAsync();
+            var isAdmin = IsVhOfficer();
             await RemoveUserFromUserGroup(isAdmin);
             await RemoveUserFromConferenceGroups(isAdmin);
 
@@ -96,33 +99,26 @@ namespace VideoWeb.EventHub.Hub
             }
             else
             {
-                await Groups.RemoveFromGroupAsync(Context.ConnectionId, Context.UserIdentifier);
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, Context.User.Identity.Name.ToLowerInvariant());
             }
         }
 
         private async Task RemoveUserFromConferenceGroups(bool isAdmin)
-        {
-            var conferences = await GetConferencesForUser(isAdmin);
+        { 
+            if (!isAdmin) return;
+            var conferences = await GetConferencesForAdmin();
             var tasks = conferences.Select(c => Groups.RemoveFromGroupAsync(Context.ConnectionId, c.Id.ToString())).ToArray();
 
             await Task.WhenAll(tasks);
         }
 
-        private async Task<IEnumerable<ConferenceForAdminResponse>> GetConferencesForUser(bool isAdmin)
+        private async Task<IEnumerable<ConferenceForAdminResponse>> GetConferencesForAdmin()
         {
             var conferences = await _videoApiClient.GetConferencesTodayForAdminAsync(null);
-            if (isAdmin)
-            {
-                return conferences;
-            }
-
-            return conferences.Where(c =>
-                c.Participants.Any(
-                    p => p.User_role == UserRole.Judge
-                         && p.Username.Equals(Context.UserIdentifier, StringComparison.InvariantCultureIgnoreCase)));
+            return conferences;
         }
 
-        private bool IsVhOfficerAsync()
+        private bool IsVhOfficer()
         {
             return Context.User.IsInRole(Role.VideoHearingsOfficer.DescriptionAttr());
         }
@@ -134,61 +130,88 @@ namespace VideoWeb.EventHub.Hub
 
         public async Task SendMessage(Guid conferenceId, string message, string to)
         {
-            var isAdmin = IsVhOfficerAsync();
-            var isAllowed = await IsAllowedToSendMessageAsync(conferenceId, isAdmin);
-            if (!isAllowed) return;
+            // this determines if the message is from admin
+            var isSenderAdmin = IsVhOfficer();
+            // only admins and participants in the conference can send or receive a message within a conference channel
             var from = Context.User.Identity.Name;
+            var participantUsername = isSenderAdmin ? to : from;
+            var isAllowed = await IsAllowedToSendMessageAsync(conferenceId, isSenderAdmin, participantUsername);
+            if (!isAllowed) return;
+
+            
             var timestamp = DateTime.UtcNow;
 
-            if (isAdmin)
-            {
-                await Clients.Group(conferenceId.ToString())
-                    .ReceiveMessage(conferenceId, from, to, message, timestamp, Guid.NewGuid());
-            }
-            else
-            {
-                var participantId = Guid.NewGuid();
-                await Clients.Group(participantId.ToString())
-                    .ReceiveMessage(conferenceId, from, to, message, timestamp, Guid.NewGuid());
-            }
-            await Clients.Group(conferenceId.ToString())
-                .ReceiveMessage(conferenceId, from, to, message, timestamp, Guid.NewGuid());
-            // await _videoApiClient.AddInstantMessageToConferenceAsync(conferenceId, new AddInstantMessageRequest
-            // {
-            //     From = from,
-            //     Message_text = message
-            // });
+            // send to admin channel
 
-            if (isAdmin)
+            await SendToAdmin(conferenceId, message, to, @from, timestamp);
+
+            // determine participant username
+            var conference = await GetConference(conferenceId);
+            
+
+            await SendToParticipant(conferenceId, message, to, conference, participantUsername, @from, timestamp);
+            await _videoApiClient.AddInstantMessageToConferenceAsync(conferenceId, new AddInstantMessageRequest
+            {
+                From = from,
+                To = to,
+                Message_text = message
+            });
+
+            if (isSenderAdmin)
             {
                 await Clients.Group(VhOfficersGroupName).AdminAnsweredChat(conferenceId);
             }
         }
 
-        private async Task<bool> IsAllowedToSendMessageAsync(Guid conferenceId, bool isAdmin)
+        private async Task SendToParticipant(Guid conferenceId, string message, string to, Conference conference,
+            string participantUsername, string @from, DateTime timestamp)
         {
-            if (isAdmin)
-            {
-                return true;
-            }
+            var participant = conference.Participants.Single(x =>
+                x.Username.Equals(participantUsername, StringComparison.InvariantCultureIgnoreCase));
 
+            await Clients.Group(participant.Username.ToLowerInvariant())
+                .ReceiveMessage(conferenceId, @from, to, message, timestamp, Guid.NewGuid());
+        }
+
+        private async Task SendToAdmin(Guid conferenceId, string message, string to, string @from, DateTime timestamp)
+        {
+            await Clients.Group(conferenceId.ToString())
+                .ReceiveMessage(conferenceId, @from, to, message, timestamp, Guid.NewGuid());
+        }
+
+        private async Task<bool> IsAllowedToSendMessageAsync(Guid conferenceId, bool isAdmin, string participantUsername)
+        {
+            // participant check first belongs to conference
+            Participant participant;
             try
             {
-                var conference = await _conferenceCache.GetOrAddConferenceAsync
-                (
-                    conferenceId,
-                    () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
-                );
+                var conference = await GetConference(conferenceId);
 
-                return conference
-                    .GetJudge().Username
-                    .Equals(Context.UserIdentifier, StringComparison.InvariantCultureIgnoreCase);
+                participant = conference.Participants.SingleOrDefault(x =>
+                    x.Username.Equals(participantUsername, StringComparison.InvariantCultureIgnoreCase));
+
+                if (participant == null)
+                {
+                    throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occured when retrieving conference");
+                _logger.LogError(ex, "Error occured when validating send message");
                 return false;
             }
+            // only judge and participants can send messages at present
+            return isAdmin || participant.IsJudge();
+        }
+
+        private async Task<Conference> GetConference(Guid conferenceId)
+        {
+            var conference = await _conferenceCache.GetOrAddConferenceAsync
+            (
+                conferenceId,
+                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
+            );
+            return conference;
         }
 
         public async Task SendHeartbeat(Guid conferenceId, Guid participantId, Heartbeat heartbeat)

@@ -10,6 +10,7 @@ namespace VideoWeb.Mappings
             var response = new ChatResponse
             {
                 From = fromDisplayName,
+                To = message.To,
                 Message = message.Message_text,
                 Timestamp = message.Time_stamp,
                 IsUser = isUser

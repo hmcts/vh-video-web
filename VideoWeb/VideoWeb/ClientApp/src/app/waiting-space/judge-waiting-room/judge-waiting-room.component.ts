@@ -56,6 +56,7 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
             this.hearing = new Hearing(this.conference);
             this.loadingData = false;
         } catch (error) {
+            this.logger.error(`[Judge WR] - Failed to get conference ${conferenceId}`, error);
             this.loadingData = false;
             this.errorService.handleApiError(error);
         }
