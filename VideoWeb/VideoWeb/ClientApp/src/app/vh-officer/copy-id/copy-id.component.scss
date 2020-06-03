@@ -4,11 +4,7 @@
     width: 17px;
     height: 20px;
 }
-.copy-box {
-    display: none;
-    top: 557px;
-    left: 139px;
-  }
+
 .copyIDbox {
     @include govuk-font(14, $weight: 'regular', $tabular: false, $line-height: false);
     color: govuk-colour("white");
