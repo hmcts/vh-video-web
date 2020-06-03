@@ -53,6 +53,20 @@
       The video hearings team has been alerted and we're informing the participants. Please call us now on <strong>0300 303 0655</strong>.
     </p>
 
+    <p class="govuk-body govuk-body govuk-!-margin-bottom-6 govuk-!-margin-top-6">
+      <span class="govuk-button__start-icon">
+        <img
+          id="recording-on-img"
+          class="audio-icon"
+          src="/assets/images/{{ conference.audio_recording_required ? 'audio_on' : 'audio_off' }}.png"
+          alt="Recording {{ conference.audio_recording_required ? 'on' : 'off' }} image"
+        />
+      </span>
+      <strong class="govuk-!-padding-1">
+        The audio of this hearing is {{ conference.audio_recording_required ? '' : 'NOT' }} being recorded.
+      </strong>
+    </p>
+
     <div>
       <button *ngIf="isNotStarted()" type="submit" class="govuk-button govuk-button--start" (click)="goToHearingPage()">
         Start video hearing
