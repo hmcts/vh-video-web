@@ -72,6 +72,7 @@
     "karma-jasmine-html-reporter": "^1.5.4",
     "karma-junit-reporter": "^2.0.1",
     "node-sass": "^4.13.1",
+    "prettier": "2.0.5",
     "puppeteer": "^3.0.4",
     "typescript": "~3.5.3"
   },
