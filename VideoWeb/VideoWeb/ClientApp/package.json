@@ -16,7 +16,7 @@
     "prettify:default": "npx prettier -c \"src\\app\\**\\*.*\"",
     "prettify-fix": "run-script-os",
     "prettify-fix:nix": "npx prettier --write 'src/app/**/*.*'",
-    "prettify-fix:default": "npx prettier --write 'src\\app\\**\\*.*'",
+    "prettify-fix:default": "npx prettier --write \"src\\app\\**\\*.*\"",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect"
   },

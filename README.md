@@ -49,11 +49,11 @@ ng lint VideoWeb --fix
 
 ## Styling Client App
 
-Verify the source code passes linting. To quickly fix linting issues, execute the following command from the 'ClientApp' directory in a terminal
+Verify the source code passes linting. To quickly identify linting issues, execute the following command from the 'ClientApp' directory in a terminal
 
 ```bash
 npm install
-npx prettier -c "src/app/**/*.*"
+npm run prettify
 ```
 
 ### Applying Client App Styles
@@ -61,7 +61,7 @@ npx prettier -c "src/app/**/*.*"
 Use the command below to apply prettier after installation packages
 
 ```bash
-npx prettier --write "src/app/**/*.*"
+npm run prettify-fix
 ```
 
 ## Running Tests with Code Coverage with VS Code
