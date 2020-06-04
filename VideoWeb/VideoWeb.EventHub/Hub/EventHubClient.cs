@@ -42,7 +42,7 @@ namespace VideoWeb.EventHub.Hub
         {
             var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name);
             _logger.LogTrace($"Connected to event hub server-side: {userName} ");
-            var isAdmin = IsVhOfficer();
+            var isAdmin = IsSenderAdmin();
 
             await AddUserToUserGroup(isAdmin);
             await AddUserToConferenceGroups(isAdmin);
@@ -84,7 +84,7 @@ namespace VideoWeb.EventHub.Hub
                 _logger.LogWarning(exception, $"There was an error when disconnecting from chat hub server-side: {userName}");
             }
 
-            var isAdmin = IsVhOfficer();
+            var isAdmin = IsSenderAdmin();
             await RemoveUserFromUserGroup(isAdmin);
             await RemoveUserFromConferenceGroups(isAdmin);
 
@@ -118,7 +118,7 @@ namespace VideoWeb.EventHub.Hub
             return conferences;
         }
 
-        private bool IsVhOfficer()
+        private bool IsSenderAdmin()
         {
             return Context.User.IsInRole(Role.VideoHearingsOfficer.DescriptionAttr());
         }
@@ -131,11 +131,12 @@ namespace VideoWeb.EventHub.Hub
         public async Task SendMessage(Guid conferenceId, string message, string to)
         {
             // this determines if the message is from admin
-            var isSenderAdmin = IsVhOfficer();
+            var isSenderAdmin = IsSenderAdmin();
+            var isRecipientAdmin = await IsRecipientAdmin(to);
             // only admins and participants in the conference can send or receive a message within a conference channel
             var from = Context.User.Identity.Name;
             var participantUsername = isSenderAdmin ? to : from;
-            var isAllowed = await IsAllowedToSendMessageAsync(conferenceId, isSenderAdmin, participantUsername);
+            var isAllowed = await IsAllowedToSendMessageAsync(conferenceId, isSenderAdmin, isRecipientAdmin, participantUsername);
             if (!isAllowed) return;
 
             
@@ -147,7 +148,6 @@ namespace VideoWeb.EventHub.Hub
 
             // determine participant username
             var conference = await GetConference(conferenceId);
-            
 
             await SendToParticipant(conferenceId, message, to, conference, participantUsername, @from, timestamp);
             await _videoApiClient.AddInstantMessageToConferenceAsync(conferenceId, new AddInstantMessageRequest
@@ -161,6 +161,16 @@ namespace VideoWeb.EventHub.Hub
             {
                 await Clients.Group(VhOfficersGroupName).AdminAnsweredChat(conferenceId);
             }
+        }
+
+        private async Task<bool> IsRecipientAdmin(string recipientUsername)
+        {
+            if (recipientUsername.Equals(DefaultAdminName, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return true;
+            }
+            var user =  await _userProfileService.GetUserAsync(recipientUsername);
+            return user!=null &&  user.User_role.Equals("VHOfficer", StringComparison.InvariantCultureIgnoreCase);
         }
 
         private async Task SendToParticipant(Guid conferenceId, string message, string to, Conference conference,
@@ -179,8 +189,36 @@ namespace VideoWeb.EventHub.Hub
                 .ReceiveMessage(conferenceId, @from, to, message, timestamp, Guid.NewGuid());
         }
 
-        private async Task<bool> IsAllowedToSendMessageAsync(Guid conferenceId, bool isAdmin, string participantUsername)
+        private bool IsConversationBetweenAdminAndParticipant(bool isSenderAdmin, bool isRecipientAdmin)
         {
+            try
+            {
+                if (isSenderAdmin && isRecipientAdmin)
+                {
+                    throw new InvalidInstantMessageException("Admins are not allowed to IM each other");
+                }
+
+                if (!isSenderAdmin && !isRecipientAdmin)
+                {
+                    throw new InvalidInstantMessageException("Participants are not allowed to IM each other");
+                }
+            }
+            catch (InvalidInstantMessageException e)
+            {
+                _logger.LogError(e, "IM rules violated. Communication attempted between participants");
+                return false;
+            }
+
+            return true;
+        }
+
+        private async Task<bool> IsAllowedToSendMessageAsync(Guid conferenceId, bool isSenderAdmin,
+            bool isRecipientAdmin, string participantUsername)
+        {
+            if (!IsConversationBetweenAdminAndParticipant(isSenderAdmin, isRecipientAdmin))
+            {
+                return false;
+            }
             // participant check first belongs to conference
             Participant participant;
             try
@@ -200,8 +238,9 @@ namespace VideoWeb.EventHub.Hub
                 _logger.LogError(ex, "Error occured when validating send message");
                 return false;
             }
+
             // only judge and participants can send messages at present
-            return isAdmin || participant.IsJudge();
+            return isSenderAdmin || participant.IsJudge();
         }
 
         private async Task<Conference> GetConference(Guid conferenceId)
