@@ -18,8 +18,7 @@ import { Heartbeat } from '../shared/models/heartbeat';
 })
 export class EventsService {
     connection: signalR.HubConnection;
-    connectionStarted: boolean;
-    attemptingConnection: boolean;
+
     private participantStatusSubject = new Subject<ParticipantStatusMessage>();
     private hearingStatusSubject = new Subject<ConferenceStatusMessage>();
     private helpMessageSubject = new Subject<HelpMessage>();
@@ -35,7 +34,6 @@ export class EventsService {
 
     constructor(private adalService: AdalService, private logger: Logger) {
         this.reconnectionAttempt = 0;
-        this.connectionStarted = false;
         this.connection = new signalR.HubConnectionBuilder()
             .configureLogging(signalR.LogLevel.Debug)
             .withAutomaticReconnect([0, 2000, 5000, 10000, 15000, 20000, 30000])
@@ -46,15 +44,12 @@ export class EventsService {
     }
 
     start() {
-        if (!this.connectionStarted && !this.attemptingConnection) {
+        if (!this.isConnectedToHub) {
             this.reconnectionAttempt++;
-            this.attemptingConnection = true;
             return this.connection
                 .start()
                 .then(() => {
                     this.reconnectionAttempt = 0;
-                    this.connectionStarted = true;
-                    this.attemptingConnection = false;
                     this.logger.info('Successfully connected to EventHub');
                     this.connection.onreconnecting(error => this.onEventHubReconnecting(error));
                     this.connection.onreconnected(() => this.onEventHubReconnected());
@@ -68,6 +63,13 @@ export class EventsService {
                     this.start();
                 });
         }
+    }
+
+    get isConnectedToHub(): boolean {
+        return (
+            this.connection.state === signalR.HubConnectionState.Connected ||
+            this.connection.state === signalR.HubConnectionState.Connecting
+        );
     }
 
     private registerHandlers(): void {
@@ -112,20 +114,10 @@ export class EventsService {
             (conferenceId: string, from: string, to: string, message: string, timestamp: Date, messageUuid: string) => {
                 const date = new Date(timestamp);
                 const chat = new InstantMessage({ conferenceId, id: messageUuid, to, from, message, timestamp: date });
-                this.logger.event('ReceiveMessage received', { conferenceId, id: messageUuid, from, timestamp: date });
+                this.logger.event('ReceiveMessage received', chat);
                 this.messageSubject.next(chat);
             }
         );
-
-        // this.connection.on(
-        //     'ReceiveMessage',
-        //     (conferenceId: string, from: string, message: string, timestamp: Date, messageUuid: string) => {
-        //         const date = new Date(timestamp);
-        //         const chat = new InstantMessage({ conferenceId, id: messageUuid, from, message, timestamp: date });
-        //         this.logger.event('ReceiveMessage received', { conferenceId, id: messageUuid, from, timestamp: date });
-        //         this.messageSubject.next(chat);
-        //     }
-        // );
 
         this.connection.on('AdminAnsweredChat', (conferenceId: string) => {
             this.logger.event('AdminAnsweredChat received', conferenceId);
@@ -161,8 +153,6 @@ export class EventsService {
         this.logger.info('Attempting to reconnect to EventHub: attempt #' + this.reconnectionAttempt);
         if (error) {
             this.logger.error('Error during reconnect to EventHub', error);
-            this.connectionStarted = false;
-            this.attemptingConnection = false;
             this.eventHubDisconnectSubject.next(this.reconnectionAttempt);
         }
     }
@@ -176,8 +166,6 @@ export class EventsService {
     private onEventHubErrorOrClose(error: Error) {
         const message = error ? 'EventHub connection closed' : 'EventHub connection error';
         this.logger.error(message, error);
-        this.connectionStarted = false;
-        this.attemptingConnection = false;
         this.eventHubDisconnectSubject.next(this.reconnectionAttempt);
     }
 
