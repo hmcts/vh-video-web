@@ -129,14 +129,14 @@ describe('VhoChatComponent', () => {
     it('should get first name and is Judge flag when message from user not in conference', async () => {
         const username = 'vhofficer.hearings.net';
         const expectedFirstName = mockProfileService.mockProfile.first_name;
-        const messageInfo = await component.assignMessageFrom(username);
+        const messageInfo = await component.getDisplayNameForSender(username);
         expect(messageInfo).toEqual(expectedFirstName);
     });
 
     it('should get first name and is Judge flag when message from judge', async () => {
         const username = 'judge.fudge@hearings.net';
         const expectedFirstName = component.hearing.participants[2].displayName;
-        const messageInfo = await component.assignMessageFrom(username);
+        const messageInfo = await component.getDisplayNameForSender(username);
         expect(messageInfo).toEqual(expectedFirstName);
     });
 

@@ -12,7 +12,8 @@
     "test-once-ci": "ng test --browsers=ChromeHeadless --watch=false --code-coverage",
     "lint": "ng lint",
     "snyk-protect": "snyk protect",
-    "prepare": "npm run snyk-protect"
+    "prepare": "npm run snyk-protect",
+    "update-api-client": "nswag run"
   },
   "private": true,
   "dependencies": {

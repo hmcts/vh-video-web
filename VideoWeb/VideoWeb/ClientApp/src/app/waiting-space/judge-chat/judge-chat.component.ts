@@ -23,8 +23,6 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
     unreadMessageCount: number;
     loading: boolean;
 
-    lastAdminUsername: string;
-
     @Input() hearing: Hearing;
 
     constructor(
@@ -58,8 +56,7 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
     }
 
     async sendMessage(messageBody: string) {
-        const toUser = this.lastAdminUsername ? this.lastAdminUsername : this.DEFAULT_ADMIN_USERNAME;
-        await this.eventService.sendMessage(this.hearing.id, messageBody, toUser);
+        await this.eventService.sendMessage(this.hearing.id, messageBody, this.DEFAULT_ADMIN_USERNAME);
     }
 
     @HostListener('window:beforeunload')
@@ -77,11 +74,6 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
     handleIncomingOtherMessage(message: InstantMessage) {
         if (!this.showChat) {
             this.unreadMessageCount++;
-        }
-
-        if (!message.is_user) {
-            // if message not from user (i.e. judge) then sent from admin
-            this.lastAdminUsername = message.from;
         }
     }
 

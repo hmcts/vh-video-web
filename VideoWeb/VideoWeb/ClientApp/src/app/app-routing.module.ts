@@ -12,7 +12,7 @@ export const routes: Routes = [
     {
         canActivate: [AdminGuard],
         path: 'admin',
-        loadChildren: () => import('./vh-officer/vh-officer.module').then((m) => m.VhOfficerModule)
+        loadChildren: () => import('./vh-officer/vh-officer.module').then(m => m.VhOfficerModule)
     },
     { path: 'events/:conferenceId', component: SendVideoEventsComponent },
     { path: `${pageUrls.Home}`, component: HomeComponent, canActivate: [AuthGuard] },

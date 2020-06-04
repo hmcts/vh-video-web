@@ -90,7 +90,8 @@ namespace VideoWeb
             services.AddScoped<ITokenProvider, TokenProvider>();
             services.AddScoped<ICustomJwtTokenProvider, CustomJwtTokenProvider>();
             services.AddScoped<IHashGenerator, HashGenerator>();
-            services.AddScoped<IUserProfileService, AdUserProfileService>();
+            services.AddScoped<AdUserProfileService>();
+            services.AddScoped<IUserProfileService, CachedProfileService>();
             services.AddScoped<IConferenceCache, DistributedConferenceCache>();
             services.AddScoped<IMessageDecoder, MessageFromDecoder>();
             services.AddScoped<IHeartbeatRequestMapper, HeartbeatRequestMapper>();

@@ -3248,10 +3248,16 @@ export interface IHealthCheckResponse {
 }
 
 export class ChatResponse implements IChatResponse {
+    /** Message UUID */
     readonly id?: string;
+    /** Username of sender */
     from?: string | undefined;
+    from_display_name?: string | undefined;
+    /** Username of recipient */
     to?: string | undefined;
+    /** Body of message */
     message?: string | undefined;
+    /** Time of message */
     timestamp?: Date;
     is_user?: boolean;
 
@@ -3268,6 +3274,7 @@ export class ChatResponse implements IChatResponse {
         if (_data) {
             (<any>this).id = _data["id"];
             this.from = _data["from"];
+            this.from_display_name = _data["from_display_name"];
             this.to = _data["to"];
             this.message = _data["message"];
             this.timestamp = _data["timestamp"] ? new Date(_data["timestamp"].toString()) : <any>undefined;
@@ -3286,6 +3293,7 @@ export class ChatResponse implements IChatResponse {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["from"] = this.from;
+        data["from_display_name"] = this.from_display_name;
         data["to"] = this.to;
         data["message"] = this.message;
         data["timestamp"] = this.timestamp ? this.timestamp.toISOString() : <any>undefined;
@@ -3295,10 +3303,16 @@ export class ChatResponse implements IChatResponse {
 }
 
 export interface IChatResponse {
+    /** Message UUID */
     id?: string;
+    /** Username of sender */
     from?: string | undefined;
+    from_display_name?: string | undefined;
+    /** Username of recipient */
     to?: string | undefined;
+    /** Body of message */
     message?: string | undefined;
+    /** Time of message */
     timestamp?: Date;
     is_user?: boolean;
 }

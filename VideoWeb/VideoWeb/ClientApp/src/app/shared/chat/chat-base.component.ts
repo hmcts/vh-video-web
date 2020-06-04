@@ -49,9 +49,6 @@ export abstract class ChatBaseComponent {
 
         // // ignore if message is not for user
         const from = message.from.toUpperCase();
-        // if (!this.imHelper.isImForUser(message, this.hearing, this.loggedInUserProfile)) {
-        //     return;
-        // }
 
         // ignore if already received message
         if (this.messages.findIndex(m => m.id === message.id) > -1) {
@@ -62,7 +59,7 @@ export abstract class ChatBaseComponent {
         }
         const username = this.adalService.userInfo.userName.toUpperCase();
         if (from === username) {
-            message.from = 'You';
+            message.from_display_name = 'You';
             message.is_user = true;
         } else {
             message = await this.verifySender(message);
@@ -73,13 +70,13 @@ export abstract class ChatBaseComponent {
 
     async verifySender(message: InstantMessage): Promise<InstantMessage> {
         if (message.from !== this.DEFAULT_ADMIN_USERNAME) {
-            message.from = await this.assignMessageFrom(message.from);
+            message.from_display_name = await this.getDisplayNameForSender(message.from);
         }
         message.is_user = false;
         return message;
     }
 
-    async assignMessageFrom(username: string): Promise<string> {
+    async getDisplayNameForSender(username: string): Promise<string> {
         const participant = this.hearing.getParticipantByUsername(username);
         if (participant) {
             return participant.displayName;

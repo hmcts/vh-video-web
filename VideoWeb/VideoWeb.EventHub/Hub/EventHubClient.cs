@@ -134,7 +134,7 @@ namespace VideoWeb.EventHub.Hub
             var isSenderAdmin = IsSenderAdmin();
             var isRecipientAdmin = await IsRecipientAdmin(to);
             // only admins and participants in the conference can send or receive a message within a conference channel
-            var from = Context.User.Identity.Name;
+            var from = Context.User.Identity.Name.ToLowerInvariant();
             var participantUsername = isSenderAdmin ? to : from;
             var isAllowed = await IsAllowedToSendMessageAsync(conferenceId, isSenderAdmin, isRecipientAdmin, participantUsername);
             if (!isAllowed) return;

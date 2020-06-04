@@ -26,7 +26,8 @@ namespace VideoWeb.UnitTests.Mappings
 
             var response = ChatResponseMapper.MapToResponseModel(message, fromDisplayName, true);
 
-            response.From.Should().Be(fromDisplayName);
+            response.From.Should().Be(senderUsername);
+            response.FromDisplayName.Should().Be(fromDisplayName);
             response.To.Should().Be(message.To);
             response.Message.Should().Be(message.Message_text);
             response.Timestamp.Should().Be(message.Time_stamp);
