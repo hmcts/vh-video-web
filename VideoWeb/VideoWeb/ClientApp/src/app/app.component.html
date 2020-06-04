@@ -6,9 +6,14 @@
   <app-header [loggedIn]="loggedIn"></app-header>
 
   <div class="govuk-width-container" id="master-container">
-
-    <main #maincontent class="govuk-main-wrapper app-width-container--wide" id="main-content" role="main" tabindex="-1"
-      [ngClass]="!loggedIn ? 'pad-unactivated-router' : ''">
+    <main
+      #maincontent
+      class="govuk-main-wrapper app-width-container--wide"
+      id="main-content"
+      role="main"
+      tabindex="-1"
+      [ngClass]="!loggedIn ? 'pad-unactivated-router' : ''"
+    >
       <app-beta-banner *ngIf="loggedIn" [isRepresentativeOrIndividual]="isRepresentativeOrIndividual"></app-beta-banner>
       <router-outlet></router-outlet>
     </main>

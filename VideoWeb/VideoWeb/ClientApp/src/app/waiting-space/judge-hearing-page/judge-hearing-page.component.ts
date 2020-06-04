@@ -14,7 +14,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 @Component({
     selector: 'app-judge-hearing-page',
     templateUrl: './judge-hearing-page.component.html',
-    styleUrls: ['./judge-hearing-page.component.css']
+    styleUrls: ['./judge-hearing-page.component.scss']
 })
 export class JudgeHearingPageComponent implements OnInit, OnDestroy {
     loadingData: boolean;

@@ -5,17 +5,18 @@
 </div>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-
     <div *ngIf="!userPrompted">
       <h1 class="govuk-heading-xl">Use your camera and microphone</h1>
       <p class="govuk-body govuk-!-margin-top-9 govuk-!-margin-bottom-9">
-        Switch on your camera and microphone to watch the video.</p>
+        Switch on your camera and microphone to watch the video.
+      </p>
     </div>
 
     <div *ngIf="userPrompted && mediaAccepted">
       <h1 class="govuk-heading-xl">Your camera and microphone are switched on</h1>
       <p class="govuk-body govuk-!-margin-top-9 govuk-!-margin-bottom-9">
-        Your camera and microphone are switched on. You can now continue to the video.</p>
+        Your camera and microphone are switched on. You can now continue to the video.
+      </p>
     </div>
 
     <div *ngIf="userPrompted && !mediaAccepted && !isJudge">
@@ -37,16 +38,28 @@
         Please unblock the camera and microphone or call us if there is a problem.
       </p>
 
-      <h3 class="govuk-heading-m govuk-!-margin-bottom-7">Helpline: {{contact.phone}}</h3>
+      <h3 class="govuk-heading-m govuk-!-margin-bottom-7">Helpline: {{ contact.phone }}</h3>
     </div>
 
-    <button *ngIf="!userPrompted" id="switch-on-btn" class="govuk-button govuk-!-margin-bottom-9"
-      data-module="govuk-button" (click)="requestMedia()" alt="Request camera and microphone">
+    <button
+      *ngIf="!userPrompted"
+      id="switch-on-btn"
+      class="govuk-button govuk-!-margin-bottom-9"
+      data-module="govuk-button"
+      (click)="requestMedia()"
+      alt="Request camera and microphone"
+    >
       Switch on
     </button>
 
-    <button *ngIf="userPrompted && mediaAccepted" id="watch-video-btn" class="govuk-button govuk-!-margin-bottom-9"
-      data-module="govuk-button" (click)="goVideoTest()" alt="Request camera and microphone">
+    <button
+      *ngIf="userPrompted && mediaAccepted"
+      id="watch-video-btn"
+      class="govuk-button govuk-!-margin-bottom-9"
+      data-module="govuk-button"
+      (click)="goVideoTest()"
+      alt="Request camera and microphone"
+    >
       Watch the video
     </button>
 

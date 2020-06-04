@@ -8,12 +8,7 @@
     <h1 class="govuk-heading-xl">Could you see and hear the video clearly?</h1>
 
     <form [formGroup]="form" class="govuk-form-group" (ngSubmit)="onSubmit()">
-
-      <div [ngClass]="showError()
-        ? 'govuk-form-group--error'
-        : 'govuk-form-group'
-        ">
-
+      <div [ngClass]="showError() ? 'govuk-form-group--error' : 'govuk-form-group'">
         <div *ngIf="showError()" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
           Select if the image and sound were clear
@@ -27,31 +22,54 @@
           </legend>
           <div class="govuk-radios govuk-!-margin-top-5">
             <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="video-yes" formControlName="equipmentCheck" name="equipmentCheck"
-                type="radio" value="Yes">
+              <input
+                class="govuk-radios__input"
+                id="video-yes"
+                formControlName="equipmentCheck"
+                name="equipmentCheck"
+                type="radio"
+                value="Yes"
+              />
               <label class="govuk-label govuk-radios__label" for="video-yes">
                 Yes
               </label>
             </div>
             <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="video-no" formControlName="equipmentCheck" name="equipmentCheck"
-                type="radio" value="No">
+              <input
+                class="govuk-radios__input"
+                id="video-no"
+                formControlName="equipmentCheck"
+                name="equipmentCheck"
+                type="radio"
+                value="No"
+              />
               <label class="govuk-label govuk-radios__label" for="video-no">
                 No
               </label>
-
             </div>
           </div>
         </fieldset>
       </div>
       <div class="govuk-!-margin-top-6">
-        <button id="continue-btn" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" type="button"
-          (click)="onSubmit()" alt="video Check">
+        <button
+          id="continue-btn"
+          class="govuk-button govuk-!-margin-right-1"
+          data-module="govuk-button"
+          type="button"
+          (click)="onSubmit()"
+          alt="video Check"
+        >
           Continue
         </button>
 
-        <button id="check-equipment-btn" class="govuk-button govuk-button--secondary" data-module="govuk-button"
-          type="button" (click)="checkEquipmentAgain()" alt="video Check">
+        <button
+          id="check-equipment-btn"
+          class="govuk-button govuk-button--secondary"
+          data-module="govuk-button"
+          type="button"
+          (click)="checkEquipmentAgain()"
+          alt="video Check"
+        >
           Check my equipment again
         </button>
       </div>

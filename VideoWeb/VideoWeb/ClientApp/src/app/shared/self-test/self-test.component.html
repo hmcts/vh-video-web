@@ -13,36 +13,38 @@
     <p class="govuk-body-l">Please wait to be connected...</p>
   </div>
   <div *ngIf="displayFeed" class="govuk-grid-column-full">
-    <video *ngIf="streamsActive" id="incomingStream" [srcObject]="this.incomingStream" autoplay width="65%"
-      height="auto">
+    <video *ngIf="streamsActive" id="incomingStream" [srcObject]="this.incomingStream" autoplay width="65%" height="auto">
       Your browser does not support video
     </video>
   </div>
 </div>
 
 <div class="govuk-grid-row">
-
   <div class="govuk-grid-column-one-quarter">
-    <video *ngIf="streamsActive" id="outgoingStream" [muted]="true" [srcObject]="this.outgoingStream" autoplay
-      width="270" height="auto">
+    <video *ngIf="streamsActive" id="outgoingStream" [muted]="true" [srcObject]="this.outgoingStream" autoplay width="270" height="auto">
       Your browser does not support video
     </video>
   </div>
 
   <div class="govuk-grid-column-full">
-    <app-mic-visualiser *ngIf="displayFeed && streamsActive && preferredMicrophoneStream"
-      [stream]="preferredMicrophoneStream" [incomingStream]="incomingStream"></app-mic-visualiser>
+    <app-mic-visualiser
+      *ngIf="displayFeed && streamsActive && preferredMicrophoneStream"
+      [stream]="preferredMicrophoneStream"
+      [incomingStream]="incomingStream"
+    ></app-mic-visualiser>
   </div>
-
 </div>
 
 <div class="govuk-grid-row">
   <div *ngIf="hasMultipleDevices" class="govuk-grid-column-full govuk-!-margin-bottom-6">
-    <a id="change-device-link" href="javascript:void(0);" role="button" (click)="changeDevices()"
-      class="govuk-link">Change
-      camera or microphone</a>
+    <a id="change-device-link" href="javascript:void(0);" role="button" (click)="changeDevices()" class="govuk-link"
+      >Change camera or microphone</a
+    >
   </div>
 </div>
 
-<app-select-media-devices *ngIf="displayDeviceChangeModal" (cancelMediaDeviceChange)="onMediaDeviceChangeCancelled()"
-  (acceptMediaDeviceChange)="onMediaDeviceChangeAccepted($event)"></app-select-media-devices>
+<app-select-media-devices
+  *ngIf="displayDeviceChangeModal"
+  (cancelMediaDeviceChange)="onMediaDeviceChangeCancelled()"
+  (acceptMediaDeviceChange)="onMediaDeviceChangeAccepted($event)"
+></app-select-media-devices>
