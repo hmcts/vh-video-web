@@ -10,7 +10,7 @@
     "test": "ng test --code-coverage",
     "test-once": "ng test --watch=false --code-coverage",
     "test-once-ci": "ng test --browsers=ChromeHeadless --watch=false --code-coverage",
-    "lint": "ng lint",
+    "lint": "ng lint && npm run prettify",
     "prettify": "npx prettier -c 'src/app/**/*.ts'",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect"
