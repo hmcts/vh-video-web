@@ -37,12 +37,12 @@ export class UserMediaService {
 
     async getListOfVideoDevices(): Promise<UserMediaDevice[]> {
         await this.checkDeviceListIsReady();
-        return this.availableDeviceList.filter((x) => x.kind === 'videoinput');
+        return this.availableDeviceList.filter(x => x.kind === 'videoinput');
     }
 
     async getListOfMicrophoneDevices(): Promise<UserMediaDevice[]> {
         await this.checkDeviceListIsReady();
-        return this.availableDeviceList.filter((x) => x.kind === 'audioinput');
+        return this.availableDeviceList.filter(x => x.kind === 'audioinput');
     }
 
     async checkDeviceListIsReady() {
@@ -64,13 +64,13 @@ export class UserMediaService {
             updatedDevices = await navigator.mediaDevices.enumerateDevices();
         }
 
-        updatedDevices = updatedDevices.filter((x) => x.deviceId !== 'default' && x.kind !== 'audiooutput');
+        updatedDevices = updatedDevices.filter(x => x.deviceId !== 'default' && x.kind !== 'audiooutput');
         this.availableDeviceList = Array.from(
             updatedDevices,
-            (device) => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)
+            device => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)
         );
 
-        stream.getTracks().forEach((track) => {
+        stream.getTracks().forEach(track => {
             track.stop();
         });
         this.connectedDevices.next(this.availableDeviceList);
@@ -98,7 +98,7 @@ export class UserMediaService {
 
         await this.checkDeviceListIsReady();
 
-        const stillConnected = this.availableDeviceList.find((x) => x.label === device.label);
+        const stillConnected = this.availableDeviceList.find(x => x.label === device.label);
         if (stillConnected) {
             return device;
         } else {

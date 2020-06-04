@@ -16,9 +16,7 @@ export class HearingListTableComponent {
 
     getSignInDate(conference: ConferenceForIndividualResponse): string {
         const today = moment.utc().dayOfYear();
-        const scheduledDate = moment(conference.scheduled_date_time)
-            .utc()
-            .dayOfYear();
+        const scheduledDate = moment(conference.scheduled_date_time).utc().dayOfYear();
 
         if (today >= scheduledDate) {
             return 'Today';
@@ -29,9 +27,7 @@ export class HearingListTableComponent {
     }
 
     getSignInTime(conference: ConferenceForIndividualResponse): Date {
-        return moment(conference.scheduled_date_time)
-            .subtract(30, 'minute')
-            .toDate();
+        return moment(conference.scheduled_date_time).subtract(30, 'minute').toDate();
     }
 
     canStartHearing(conference: ConferenceForIndividualResponse) {

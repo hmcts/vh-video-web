@@ -19,7 +19,7 @@ export class TasksTableComponent implements OnInit, OnDestroy {
     conference: ConferenceResponse;
     taskSubscription$: Subscription;
 
-    constructor(private vhoQueryService: VhoQueryService, private logger: Logger, private eventbus: EventBusService) { }
+    constructor(private vhoQueryService: VhoQueryService, private logger: Logger, private eventbus: EventBusService) {}
 
     ngOnInit() {
         this.loading = true;
@@ -78,9 +78,7 @@ export class TasksTableComponent implements OnInit, OnDestroy {
     }
 
     setupSubscribers() {
-        this.taskSubscription$ = this.eventbus.on<TaskCompleted>(VHEventType.PageRefreshed, () =>
-            this.handlePageRefresh()
-        );
+        this.taskSubscription$ = this.eventbus.on<TaskCompleted>(VHEventType.PageRefreshed, () => this.handlePageRefresh());
     }
 
     async handlePageRefresh() {

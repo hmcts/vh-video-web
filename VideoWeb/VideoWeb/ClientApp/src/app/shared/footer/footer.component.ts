@@ -15,7 +15,7 @@ export class FooterComponent implements OnInit {
     hideLinksForUnsupportedBrowser = false;
 
     constructor(private router: Router) {
-        this.router.events.pipe(filter((event: RouterEvent) => event instanceof NavigationEnd)).subscribe((x) => {
+        this.router.events.pipe(filter((event: RouterEvent) => event instanceof NavigationEnd)).subscribe(x => {
             this.hideContactUs();
             this.hideLinks();
         });

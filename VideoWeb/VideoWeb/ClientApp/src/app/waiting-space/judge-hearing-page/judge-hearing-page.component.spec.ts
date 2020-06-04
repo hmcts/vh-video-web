@@ -32,9 +32,11 @@ describe('JudgeHearingPageComponent when conference in session', () => {
 
     configureTestSuite(() => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
-        audioRecordingServiceMock = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo', 'stopAudioRecording']);
+        audioRecordingServiceMock = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', [
+            'getAudioStreamInfo',
+            'stopAudioRecording'
+        ]);
         audioRecordingServiceMock.stopAudioRecording.and.callThrough();
-
 
         TestBed.configureTestingModule({
             imports: [SharedModule, RouterTestingModule],

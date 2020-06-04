@@ -75,7 +75,7 @@ describe('VhoChatComponent', () => {
             id: Guid.create().toString(),
             from: username,
             message: 'test message',
-            timestamp: new Date(),
+            timestamp: new Date()
         });
         mockEventsService.messageSubject.next(instantMessage);
         flushMicrotasks();
@@ -90,7 +90,7 @@ describe('VhoChatComponent', () => {
             id: Guid.create().toString(),
             from: username,
             message: 'test message',
-            timestamp: new Date(),
+            timestamp: new Date()
         });
         const messageCount = component.messages.length;
         await component.handleIncomingMessage(instantMessage);
@@ -128,7 +128,6 @@ describe('VhoChatComponent', () => {
         const messageInfo = await component.assignMessageFrom(username);
         expect(messageInfo).toEqual(expectedFirstName);
     });
-
 
     it('should send message to hub', () => {
         const message = 'test';

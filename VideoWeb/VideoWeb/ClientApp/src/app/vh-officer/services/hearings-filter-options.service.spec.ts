@@ -20,8 +20,8 @@ describe('HearingFilterOptionsService', () => {
     });
     it('should count selected filter options', async () => {
         const filter = await component.getFilter();
-        filter.statuses.forEach((x) => (x.selected = true));
-        filter.alerts.forEach((x) => (x.selected = true));
+        filter.statuses.forEach(x => (x.selected = true));
+        filter.alerts.forEach(x => (x.selected = true));
         const count = component.countOptions(filter);
 
         // we know statuses otions 6, alerts options 4, number the locations options is dynamic
