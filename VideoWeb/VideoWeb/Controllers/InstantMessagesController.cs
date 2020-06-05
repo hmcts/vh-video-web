@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Castle.Core.Internal;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
@@ -38,17 +39,19 @@ namespace VideoWeb.Controllers
         /// Get all the instant messages for a conference
         /// </summary>
         /// <param name="conferenceId">Id of the conference</param>
+        /// <param name="participantUsername">the participant in the conference</param>
         /// <returns>List of instant messages</returns>
-        [HttpGet("{conferenceId}/instantmessages")]
+        [HttpGet("{conferenceId}/instantmessages/participant/{participantUsername}")]
         [SwaggerOperation(OperationId = "GetConferenceInstantMessageHistory")]
-        [ProducesResponseType(typeof(List<ChatResponse>), (int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetConferenceInstantMessageHistoryAsync(Guid conferenceId)
+        [ProducesResponseType(typeof(List<ChatResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetConferenceInstantMessageHistoryAsync(Guid conferenceId, string participantUsername)
         {
             _logger.LogDebug($"GetMessages for {conferenceId}");
             try
             {
-                var messages = await _videoApiClient.GetInstantMessageHistoryAsync(conferenceId);
+                var messages = 
+                    await _videoApiClient.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername);
                 if (!messages.Any())
                 {
                     return Ok(new List<ChatResponse>());
@@ -73,6 +76,7 @@ namespace VideoWeb.Controllers
         [HttpGet("{conferenceId}/instantmessages/unread/vho")]
         [SwaggerOperation(OperationId = "GetNumberOfUnreadAdminMessagesForConference")]
         [ProducesResponseType(typeof(UnreadAdminMessageResponse), (int)HttpStatusCode.OK)]
+        [AllowAnonymous]
         public async Task<IActionResult> GetUnreadMessagesForVideoOfficerAsync(Guid conferenceId)
         {
             _logger.LogDebug($"GetMessages for {conferenceId}");
@@ -87,6 +91,44 @@ namespace VideoWeb.Controllers
                 var conference = await _conferenceCache.GetOrAddConferenceAsync
                 (
                     conferenceId, 
+                    () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
+                );
+
+                var response = UnreadAdminMessageResponseMapper.MapToResponseModel(conference, messages);
+                return Ok(response);
+            }
+            catch (VideoApiException e)
+            {
+                _logger.LogError(e, $"Unable to get messages for conference {conferenceId}");
+                return StatusCode(e.StatusCode, e.Response);
+            }
+        }
+
+        /// <summary>
+        /// Get number of unread messages for a participant
+        /// </summary>
+        /// <param name="conferenceId">Id of the conference</param>
+        /// <param name="participantUsername">the participant in the conference</param>
+        /// <returns>Number of unread message</returns>
+        [HttpGet("{conferenceId}/instantmessages/unread/participant/{participantUsername}")]
+        [SwaggerOperation(OperationId = "GetNumberOfUnreadAdminMessagesForConferenceByParticipant")]
+        [ProducesResponseType(typeof(UnreadAdminMessageResponse), (int)HttpStatusCode.OK)]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetUnreadMessagesForParticipantAsync(Guid conferenceId, string participantUsername)
+        {
+            _logger.LogDebug($"GetMessages for {conferenceId}");
+            try
+            {
+                var messages = 
+                    await _videoApiClient.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername);
+                if (messages.IsNullOrEmpty())
+                {
+                    return Ok(new UnreadAdminMessageResponse());
+                }
+
+                var conference = await _conferenceCache.GetOrAddConferenceAsync
+                (
+                    conferenceId,
                     () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
                 );
 
