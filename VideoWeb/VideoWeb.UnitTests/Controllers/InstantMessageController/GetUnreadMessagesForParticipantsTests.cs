@@ -26,7 +26,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
                 (int)HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
-            VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
+            VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername))
                 .ThrowsAsync(apiException);
 
             var result = await Controller.GetUnreadMessagesForParticipantAsync(conferenceId, participantUsername);
@@ -39,7 +39,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
         {
             var conferenceId = Guid.NewGuid();
             var participantUsername = "individual participant";
-            VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
+            VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername))
                 .ReturnsAsync(new List<InstantMessageResponse>());
 
             var result = await Controller.GetUnreadMessagesForParticipantAsync(conferenceId, participantUsername);
@@ -51,7 +51,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
         }
 
         [Test]
-        public async Task should_return_okay_code_and_number_of_unread_messages_since_vho_responded_last_to_judge()
+        public async Task should_return_okay_code_and_number_of_unread_messages_since_vho_responded_last_for_judge()
         {
             var conference = InitConference();
             var messages = InitMessages(conference);
@@ -60,11 +60,11 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
 
-            VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conference.Id))
+            var judgeParticipant = conference.Participants.Single(x => x.Role == Role.Judge);
+            VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conference.Id, judgeParticipant.Username))
                 .ReturnsAsync(messages);
 
             // check judge messages
-            var judgeParticipant = conference.Participants.Single(x => x.Role == Role.Judge);
             var result = await Controller.GetUnreadMessagesForParticipantAsync(conference.Id, judgeParticipant.Username);
 
             var typedResult = (OkObjectResult)result;
@@ -74,20 +74,20 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
         }
 
         [Test]
-        public async Task should_return_okay_code_and_number_of_unread_messages_since_vho_responded_last_to_representative()
+        public async Task should_return_okay_code_and_number_of_unread_messages_since_vho_responded_last_for_representative()
         {
             var conference = InitConference();
-            var messages = InitMessages(conference);
+            var messages = InitMessagesRepresentative(conference);
             ConferenceCache
                 .Setup(x => x.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
 
-            VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conference.Id))
+            var representativeParticipant = conference.Participants.First(x => x.Role == Role.Representative);
+            VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conference.Id, representativeParticipant.Username))
                 .ReturnsAsync(messages);
 
-            // check individual messages
-            var representativeParticipant = conference.Participants.First(x => x.Role == Role.Representative);
+            // check representative messages
             var result = await Controller.GetUnreadMessagesForParticipantAsync(conference.Id, representativeParticipant.Username);
 
             var typedResult = (OkObjectResult)result;
@@ -113,28 +113,36 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
         private static List<InstantMessageResponse> InitMessages(Conference conference)
         {
             var judge = conference.Participants.Single(x => x.Role == Role.Judge);
-            var individual = conference.Participants.First(x => x.Role == Role.Individual);
+            const string vho1Username = "vho1@hmcts.net";
+
+            return new List<InstantMessageResponse>
+            {
+                new InstantMessageResponse
+                    {From = vho1Username, Message_text = "message 01 to judge", To = judge.Username, Time_stamp = DateTime.UtcNow.AddMinutes(-1)},
+                new InstantMessageResponse
+                    {From = judge.Username, Message_text = "judge reply to vho1", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-2)},
+                new InstantMessageResponse
+                    {From = judge.Username, Message_text = "are we ready to start the hearing", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-3)},
+                new InstantMessageResponse
+                    {From = vho1Username, Message_text = "yes all participants present to start", To = judge.Username, Time_stamp = DateTime.UtcNow.AddMinutes(-4)},
+            };
+        }
+
+        private static List<InstantMessageResponse> InitMessagesRepresentative(Conference conference)
+        {
             var representative = conference.Participants.Single(x => x.Role == Role.Representative);
             const string vho1Username = "vho1@hmcts.net";
 
             return new List<InstantMessageResponse>
             {
                 new InstantMessageResponse
-                    {From = vho1Username, Message_text = "message 01 to individual", To = individual.Username, Time_stamp = DateTime.UtcNow.AddMinutes(-1)},
+                    {From = vho1Username, Message_text = "message 01 to representative", To = representative.Username, Time_stamp = DateTime.UtcNow.AddMinutes(-1)},
                 new InstantMessageResponse
-                    {From = vho1Username, Message_text = "message 01 to representative", To = representative.Username, Time_stamp = DateTime.UtcNow.AddMinutes(-2)},
+                    {From = representative.Username, Message_text = "representative reply to vho1", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-2)},
                 new InstantMessageResponse
-                    {From = vho1Username, Message_text = "message 01 to judge", To = judge.Username, Time_stamp = DateTime.UtcNow.AddMinutes(-3)},
+                    {From = representative.Username, Message_text = "we are ready", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-3)},
                 new InstantMessageResponse
-                    {From = individual.Username, Message_text = "individual reply to vho1", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-4)},
-                new InstantMessageResponse
-                    {From = representative.Username, Message_text = "rep reply to vho1", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-5)},
-                new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge reply to vho1", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-6)},
-                new InstantMessageResponse
-                    {From = judge.Username, Message_text = "are we ready to start the hearing", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-7)},
-                new InstantMessageResponse
-                    {From = vho1Username, Message_text = "yes all participants present to start", To = judge.Username, Time_stamp = DateTime.UtcNow.AddMinutes(-8)},
+                    {From = vho1Username, Message_text = "okay, hearing will start shortly", To = representative.Username, Time_stamp = DateTime.UtcNow.AddMinutes(-4)},
             };
         }
     }

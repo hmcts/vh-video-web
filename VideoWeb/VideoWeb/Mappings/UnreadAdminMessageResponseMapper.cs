@@ -33,7 +33,8 @@ namespace VideoWeb.Mappings
 
         private static bool IsNonParticipantMessage(Conference conference, InstantMessageResponse message)
         {
-            return !conference.Participants.Any(p => p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase));
+            return !conference.Participants.Any(p => p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase) || 
+                p.Username.Equals(message.To, StringComparison.InvariantCultureIgnoreCase));
         }
     }
 }

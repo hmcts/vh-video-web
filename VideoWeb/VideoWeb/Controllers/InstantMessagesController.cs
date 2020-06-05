@@ -36,7 +36,7 @@ namespace VideoWeb.Controllers
         }
 
         /// <summary>
-        /// Get all the instant messages for a conference
+        /// Get all the instant messages for a conference by participant user name
         /// </summary>
         /// <param name="conferenceId">Id of the conference</param>
         /// <param name="participantUsername">the participant in the conference</param>
