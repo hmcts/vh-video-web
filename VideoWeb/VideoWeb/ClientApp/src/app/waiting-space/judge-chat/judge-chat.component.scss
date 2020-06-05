@@ -38,26 +38,6 @@
   background: govuk-colour('white');
 }
 
-.own-message {
-  padding-top: 10px;
-  padding-left: 25px;
-  text-align: left;
-}
-
-.other-message {
-  padding-top: 10px;
-  text-align: right;
-}
-
-.other-message-body {
-  text-align: justify;
-  float: right;
-}
-
-.other-message>p {
-  color: govuk-colour('blue');
-}
-
 .notification-badge {
   position: absolute;
   margin-left: 20px;
@@ -80,20 +60,10 @@
 }
 
 #chat-list {
-  overflow-y: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .message-container {
   width: 100%;
-}
-
-::-webkit-scrollbar {
-  -webkit-appearance: none;
-  width: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  border-radius: 5px;
-  background-color: rgba(0, 0, 0, 0.5);
-  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
 }

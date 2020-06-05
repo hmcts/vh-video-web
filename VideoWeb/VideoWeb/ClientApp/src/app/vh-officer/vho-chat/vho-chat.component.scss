@@ -13,27 +13,6 @@
   margin-left: -5px !important;
 }
 
-.own-message {
-  text-align: left;
-}
-
-.other-message {
-  text-align: right;
-}
-
-.other-message-body {
-  text-align: justify;
-  float: right;
-}
-
-.other-message > p {
-  color: govuk-colour('blue');
-}
-
-.chat-message {
-  white-space: pre-wrap;
-}
-
 .chat-input-group {
   display: flex;
 }
@@ -51,22 +30,6 @@
 }
 
 #chat-list {
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
-}
-
-.message-container {
-  width: inherit;
-  margin: 0px 2px !important;
-}
-
-::-webkit-scrollbar {
-  -webkit-appearance: none;
-  width: 7px;
-}
-
-::-webkit-scrollbar-thumb {
-  border-radius: 4px;
-  background-color: rgba(0, 0, 0, 0.5);
-  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
 }
