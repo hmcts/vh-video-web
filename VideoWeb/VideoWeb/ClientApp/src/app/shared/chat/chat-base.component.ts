@@ -7,23 +7,29 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { ImHelper } from '../im-helper';
 
 export abstract class ChatBaseComponent {
     protected hearing: Hearing;
     messages: InstantMessage[];
+    loggedInUserProfile: UserProfileResponse;
 
-    constructor(
+    DEFAULT_ADMIN_USERNAME = 'Admin';
+    protected constructor(
         protected videoWebService: VideoWebService,
         protected profileService: ProfileService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected adalService: AdalService
+        protected adalService: AdalService,
+        protected imHelper: ImHelper
     ) {}
 
     abstract sendMessage(messageBody: string): void;
-    abstract getMessageWindow(): HTMLElement;
 
-    setupChatSubscription(): Subscription {
+    async setupChatSubscription(): Promise<Subscription> {
+        if (!this.loggedInUserProfile) {
+            this.loggedInUserProfile = await this.profileService.getUserProfile();
+        }
         this.logger.debug('[ChatHub] Subscribing to chat messages');
         const sub = this.eventService.getChatMessage().subscribe({
             next: async message => {
@@ -31,7 +37,7 @@ export abstract class ChatBaseComponent {
             }
         });
 
-        this.eventService.start();
+        await this.eventService.start();
         return sub;
     }
 
@@ -41,6 +47,9 @@ export abstract class ChatBaseComponent {
             return;
         }
 
+        // // ignore if message is not for user
+        const from = message.from.toUpperCase();
+
         // ignore if already received message
         if (this.messages.findIndex(m => m.id === message.id) > -1) {
             const logInfo = Object.assign({}, message);
@@ -48,22 +57,26 @@ export abstract class ChatBaseComponent {
             this.logger.debug(`[ChatHub] message already been processed ${JSON.stringify(logInfo)}`);
             return;
         }
-
-        const from = message.from.toUpperCase();
         const username = this.adalService.userInfo.userName.toUpperCase();
         if (from === username) {
-            message.from = 'You';
+            message.from_display_name = 'You';
             message.is_user = true;
         } else {
-            message.from = await this.assignMessageFrom(from);
-            message.is_user = false;
-            this.handleIncomingOtherMessage();
+            message = await this.verifySender(message);
+            this.handleIncomingOtherMessage(message);
         }
-
         this.messages.push(message);
     }
 
-    async assignMessageFrom(username: string): Promise<string> {
+    async verifySender(message: InstantMessage): Promise<InstantMessage> {
+        if (message.from !== this.DEFAULT_ADMIN_USERNAME) {
+            message.from_display_name = await this.getDisplayNameForSender(message.from);
+        }
+        message.is_user = false;
+        return message;
+    }
+
+    async getDisplayNameForSender(username: string): Promise<string> {
         const participant = this.hearing.getParticipantByUsername(username);
         if (participant) {
             return participant.displayName;
@@ -81,7 +94,7 @@ export abstract class ChatBaseComponent {
         return await this.profileService.getProfileByUsername(username);
     }
 
-    handleIncomingOtherMessage() {}
+    handleIncomingOtherMessage(messsage: InstantMessage) {}
 
     async retrieveChatForConference(): Promise<InstantMessage[]> {
         this.messages = (await this.videoWebService.getConferenceChatHistory(this.hearing.id)).map(m => {

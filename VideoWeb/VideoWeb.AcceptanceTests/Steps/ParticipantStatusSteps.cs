@@ -34,8 +34,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 {"Available", new AvailableStrategy()},
                 {"Disconnected", new DisconnectedStrategy()},
-                {"In Consultation", new InConsultationStrategy()},
-                {"In Hearing", new InHearingStrategy()},
+                {"In consultation", new InConsultationStrategy()},
+                {"In hearing", new InHearingStrategy()},
                 {"Joining", new JoiningStrategy()}
             };
             var participants = ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, userType);

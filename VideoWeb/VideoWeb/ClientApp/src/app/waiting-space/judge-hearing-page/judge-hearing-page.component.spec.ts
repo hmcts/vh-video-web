@@ -1,89 +1,102 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { AdalService } from 'adal-angular4';
-import { configureTestSuite } from 'ng-bullet';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
+import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { UserMediaService } from 'src/app/services/user-media.service';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { SharedModule } from 'src/app/shared/shared.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
-import { MockEventsNonHttpService, MockEventsService } from 'src/app/testing/mocks/MockEventService';
+import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
+import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { AudioRecordingService } from '../../services/api/audio-recording.service';
-import { AudioAlertComponent } from '../audio-alert/audio-alert.component';
 import { JudgeHearingPageComponent } from './judge-hearing-page.component';
+import { fakeAsync } from '@angular/core/testing';
 
-describe('JudgeHearingPageComponent when conference in session', () => {
+describe('JudgeHearingPageComponent', () => {
     let component: JudgeHearingPageComponent;
-    let fixture: ComponentFixture<JudgeHearingPageComponent>;
-    const videoWebServiceMock = new MockVideoWebService();
-    let router: Router;
-    let conference: ConferenceResponse;
-    let adalService: MockAdalService;
-    let eventService: MockEventsNonHttpService;
-    let errorService: ErrorService;
+    const conference = new ConferenceTestData().getConferenceDetailFuture();
+    const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
+
+    let router: jasmine.SpyObj<Router>;
+    let videoWebService: jasmine.SpyObj<VideoWebService>;
+    let eventsService: jasmine.SpyObj<EventsService>;
+    let domSanitizer: jasmine.SpyObj<DomSanitizer>;
+    let errorService: jasmine.SpyObj<ErrorService>;
+    let userMediaService: jasmine.SpyObj<UserMediaService>;
+
+    const mediaDeviceTestData = new MediaDeviceTestData();
+    const mockEventService = new MockEventsService();
+    const logger: Logger = new MockLogger();
+
     let audioRecordingServiceMock: jasmine.SpyObj<AudioRecordingService>;
 
-    configureTestSuite(() => {
-        conference = new ConferenceTestData().getConferenceDetailFuture();
+    beforeAll(() => {
+        router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+        audioRecordingServiceMock = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', [
+            'getAudioStreamInfo',
+            'stopAudioRecording'
+        ]);
+
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
+        videoWebService.getConferenceById.and.resolveTo(conference);
+        eventsService = jasmine.createSpyObj<EventsService>('EventsService', [
+            'getHearingStatusMessage',
+            'getServiceDisconnected',
+            'getServiceReconnected'
+        ]);
+        eventsService.getHearingStatusMessage.and.returnValue(mockEventService.hearingStatusSubject.asObservable());
+        eventsService.getServiceReconnected.and.returnValue(mockEventService.eventHubReconnectSubject.asObservable());
+        eventsService.getServiceReconnected.and.returnValue(mockEventService.eventHubReconnectSubject.asObservable());
+
+        userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', ['getPreferredCamera', 'getPreferredMicrophone'], {
+            connectedDevices: new BehaviorSubject(mediaDeviceTestData.getListOfDevices())
+        });
+
+        userMediaService.getPreferredCamera.and.resolveTo(mediaDeviceTestData.getListOfCameras()[0]);
+        userMediaService.getPreferredMicrophone.and.resolveTo(mediaDeviceTestData.getListOfMicrophones()[0]);
+
+        domSanitizer = jasmine.createSpyObj<DomSanitizer>('DomSanitizer', ['bypassSecurityTrustResourceUrl']);
+        domSanitizer.bypassSecurityTrustResourceUrl.and.returnValue('test-url');
+
+        errorService = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError']);
+
         audioRecordingServiceMock = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', [
             'getAudioStreamInfo',
             'stopAudioRecording'
         ]);
         audioRecordingServiceMock.stopAudioRecording.and.callThrough();
-
-        TestBed.configureTestingModule({
-            imports: [SharedModule, RouterTestingModule],
-            declarations: [JudgeHearingPageComponent, AudioAlertComponent],
-            providers: [
-                {
-                    provide: ActivatedRoute,
-                    useValue: {
-                        snapshot: {
-                            paramMap: convertToParamMap({ conferenceId: conference.id })
-                        }
-                    }
-                },
-                { provide: VideoWebService, useValue: videoWebServiceMock },
-                { provide: AdalService, useClass: MockAdalService },
-                { provide: EventsService, useClass: MockEventsService },
-                { provide: Logger, useClass: MockLogger },
-                { provide: AudioRecordingService, useValue: audioRecordingServiceMock }
-            ]
-        });
     });
 
     beforeEach(async () => {
-        adalService = TestBed.get(AdalService);
-        eventService = TestBed.get(EventsService);
-        errorService = TestBed.get(ErrorService);
-        router = TestBed.get(Router);
-        fixture = TestBed.createComponent(JudgeHearingPageComponent);
-        component = fixture.componentInstance;
+        component = new JudgeHearingPageComponent(
+            activatedRoute,
+            router,
+            videoWebService,
+            eventsService,
+            domSanitizer,
+            errorService,
+            userMediaService,
+            logger,
+            audioRecordingServiceMock
+        );
         component.conference = conference;
 
-        spyOn(component, 'sanitiseIframeUrl').and.callFake(() => Promise.resolve());
-    });
-
-    it('should create', () => {
-        expect(component).toBeTruthy();
+        videoWebService.getConferenceById.calls.reset();
+        router.navigate.calls.reset();
+        errorService.handleApiError.calls.reset();
     });
 
     it('should send judge to hearing list when conference is closed', () => {
-        spyOn(router, 'navigate').and.callFake(() => Promise.resolve(true));
         conference.status = ConferenceStatus.Closed;
         component.determineJudgeLocation();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeHearingList]);
     });
 
     it('should send judge to waiting room when conference is suspended', () => {
-        spyOn(router, 'navigate').and.callFake(() => Promise.resolve(true));
         spyOn(component, 'judgeURLChanged').and.callFake(() => {});
         const status = ConferenceStatus.Suspended;
         component.handleHearingStatusChange(status);
@@ -92,7 +105,6 @@ describe('JudgeHearingPageComponent when conference in session', () => {
     });
 
     it('should send judge to waiting room when conference is paused', () => {
-        spyOn(router, 'navigate').and.callFake(() => Promise.resolve(true));
         spyOn(component, 'judgeURLChanged').and.callFake(() => {});
         const status = ConferenceStatus.Paused;
         component.handleHearingStatusChange(status);
@@ -101,7 +113,6 @@ describe('JudgeHearingPageComponent when conference in session', () => {
     });
 
     it('should not send judge anywhere is conference is in session', () => {
-        spyOn(router, 'navigate').and.callFake(() => Promise.resolve(true));
         spyOn(component, 'judgeURLChanged').and.callFake(() => {});
         const status = ConferenceStatus.InSession;
         component.handleHearingStatusChange(status);
@@ -110,12 +121,11 @@ describe('JudgeHearingPageComponent when conference in session', () => {
     });
 
     it('should get conference and determine location when eventhub connection disconnects', async () => {
-        spyOn(videoWebServiceMock, 'getConferenceById');
         spyOn(component, 'determineJudgeLocation');
 
         await component.refreshConferenceDataDuringDisconnect();
 
-        expect(videoWebServiceMock.getConferenceById).toHaveBeenCalled();
+        expect(videoWebService.getConferenceById).toHaveBeenCalled();
         expect(component.determineJudgeLocation).toHaveBeenCalled();
     });
 
@@ -129,14 +139,11 @@ describe('JudgeHearingPageComponent when conference in session', () => {
 
     it('should return home if user not authorised', async () => {
         component.conference = undefined;
-        spyOn(videoWebServiceMock, 'getConferenceById').and.callFake(() => Promise.reject({ status: 401, isApiException: false }));
-        spyOn(errorService, 'returnHomeIfUnauthorised');
-        spyOn(errorService, 'handleApiError');
+        videoWebService.getConferenceById.and.rejectWith({ status: 401, isApiException: false });
 
         await component.ngOnInit();
 
         expect(component.conference).toBeUndefined();
-        expect(errorService.returnHomeIfUnauthorised).toBeTruthy();
         expect(errorService.handleApiError).toHaveBeenCalledTimes(0);
     });
     it('should retrieve audio recording stream and if an error then alert judge', () => {
@@ -170,5 +177,15 @@ describe('JudgeHearingPageComponent when conference in session', () => {
         component.conference.hearing_ref_id = '1234567';
         component.stopAudioRecording();
         expect(audioRecordingServiceMock.stopAudioRecording).toHaveBeenCalled();
+    });
+
+    it('should clear subscriptions and intervals on destroy', () => {
+        spyOn(window, 'clearInterval');
+        const interval = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
+        component.interval = interval;
+        component.eventHubSubscriptions = new Subscription();
+        component.ngOnDestroy();
+
+        expect(clearInterval).toHaveBeenCalledWith(interval);
     });
 });

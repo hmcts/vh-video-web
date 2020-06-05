@@ -57,9 +57,7 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
             })
             .catch(error => {
                 this.loadingData = false;
-                if (!this.errorService.returnHomeIfUnauthorised(error)) {
-                    this.errorService.handleApiError(error);
-                }
+                this.errorService.handleApiError(error);
             });
     }
 

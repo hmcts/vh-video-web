@@ -1,0 +1,27 @@
+@import '~govuk-frontend/govuk/all';
+
+.message-container {
+  width: inherit;
+  margin: 0px 2px !important;
+}
+
+.own-message {
+  text-align: left;
+}
+
+.other-message {
+  text-align: right;
+}
+
+.other-message-body {
+  text-align: justify;
+  float: right;
+}
+
+.other-message > p {
+  color: govuk-colour('blue');
+}
+
+.chat-message {
+  white-space: pre-wrap;
+}

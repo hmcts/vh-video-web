@@ -75,7 +75,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
             var responseModel = typedResult.Value as List<ChatResponse>;
-            responseModel?.Count(x => x.From == "You").Should().Be(2);
+            responseModel?.Count(x => x.FromDisplayName == "You").Should().Be(2);
         }
 
         [Test]

@@ -53,7 +53,8 @@ Verify the source code passes linting. To quickly fix linting issues, execute th
 
 ```bash
 npm install
-npx prettier -c "src/app/**/*.*"
+npx prettier -c "src/app/**/*.ts"
+npx prettier --write "src/app/**/*.ts"
 ```
 
 ### Applying Client App Styles
@@ -61,7 +62,7 @@ npx prettier -c "src/app/**/*.*"
 Use the command below to apply prettier after installation packages
 
 ```bash
-npx prettier --write "src/app/**/*.*"
+npx prettier --write "src/app/**/*.ts"
 ```
 
 ## Running Tests with Code Coverage with VS Code
