@@ -196,6 +196,7 @@ extends:
   template: stages\dotnet-package.yml@templates
   parameters:
     coreProjectPath: VideoWeb/VideoWeb
+    nodeProjectPath: VideoWeb/VideoWeb/ClientApp
     PackageApp: ${{ parameters.PackageApp }}
     PackageAcceptanceTests: ${{ parameters.PackageACTests }}
     packageManagers:
