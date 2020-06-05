@@ -503,6 +503,28 @@ namespace VideoWeb.Services.Video
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task RemoveInstantMessagesAsync(System.Guid conferenceId, System.Threading.CancellationToken cancellationToken);
     
+        /// <summary>Get all the chat messages for a conference</summary>
+        /// <param name="conferenceId">Id of the conference</param>
+        /// <param name="participantUsername">instant messages for the participant user name</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<System.Collections.Generic.List<InstantMessageResponse>> GetInstantMessageHistoryForParticipantAsync(System.Guid conferenceId, string participantUsername);
+    
+        /// <summary>Get all the chat messages for a conference</summary>
+        /// <param name="conferenceId">Id of the conference</param>
+        /// <param name="participantUsername">instant messages for the participant user name</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Collections.Generic.List<InstantMessageResponse> GetInstantMessageHistoryForParticipant(System.Guid conferenceId, string participantUsername);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Get all the chat messages for a conference</summary>
+        /// <param name="conferenceId">Id of the conference</param>
+        /// <param name="participantUsername">instant messages for the participant user name</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<System.Collections.Generic.List<InstantMessageResponse>> GetInstantMessageHistoryForParticipantAsync(System.Guid conferenceId, string participantUsername, System.Threading.CancellationToken cancellationToken);
+    
         /// <summary>Get list of closed conferences with instant messages (closed over 30 minutes ago)</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
@@ -3363,6 +3385,109 @@ namespace VideoWeb.Services.Video
             }
         }
     
+        /// <summary>Get all the chat messages for a conference</summary>
+        /// <param name="conferenceId">Id of the conference</param>
+        /// <param name="participantUsername">instant messages for the participant user name</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<InstantMessageResponse>> GetInstantMessageHistoryForParticipantAsync(System.Guid conferenceId, string participantUsername)
+        {
+            return GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Get all the chat messages for a conference</summary>
+        /// <param name="conferenceId">Id of the conference</param>
+        /// <param name="participantUsername">instant messages for the participant user name</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public System.Collections.Generic.List<InstantMessageResponse> GetInstantMessageHistoryForParticipant(System.Guid conferenceId, string participantUsername)
+        {
+            return System.Threading.Tasks.Task.Run(async () => await GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Get all the chat messages for a conference</summary>
+        /// <param name="conferenceId">Id of the conference</param>
+        /// <param name="participantUsername">instant messages for the participant user name</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<InstantMessageResponse>> GetInstantMessageHistoryForParticipantAsync(System.Guid conferenceId, string participantUsername, System.Threading.CancellationToken cancellationToken)
+        {
+            if (conferenceId == null)
+                throw new System.ArgumentNullException("conferenceId");
+    
+            if (participantUsername == null)
+                throw new System.ArgumentNullException("participantUsername");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/{conferenceId}/instantMessages/{participantUsername}");
+            urlBuilder_.Replace("{conferenceId}", System.Uri.EscapeDataString(ConvertToString(conferenceId, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{participantUsername}", System.Uri.EscapeDataString(ConvertToString(participantUsername, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<InstantMessageResponse>>(response_, headers_).ConfigureAwait(false);
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == "404") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new VideoApiException<ProblemDetails>("Not Found", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new VideoApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new VideoApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+            
+                        return default(System.Collections.Generic.List<InstantMessageResponse>);
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
         /// <summary>Get list of closed conferences with instant messages (closed over 30 minutes ago)</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
@@ -5440,6 +5565,9 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonProperty("time_stamp", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTime Time_stamp { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("to", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string To { get; set; }
+    
     
     }
     
@@ -5452,6 +5580,10 @@ namespace VideoWeb.Services.Video
     
         [Newtonsoft.Json.JsonProperty("message_text", Required = Newtonsoft.Json.Required.AllowNull)]
         public string Message_text { get; set; }
+    
+        /// <summary>Username of the receiver</summary>
+        [Newtonsoft.Json.JsonProperty("to", Required = Newtonsoft.Json.Required.AllowNull)]
+        public string To { get; set; }
     
     
     }
