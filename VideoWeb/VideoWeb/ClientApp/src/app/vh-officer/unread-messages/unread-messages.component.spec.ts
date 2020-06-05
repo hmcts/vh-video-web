@@ -163,4 +163,14 @@ describe('UnreadMessagesComponent', () => {
         );
         expect(component.unreadCount).toBe(expectedCount);
     });
+
+    it('should return zero when conference has no IMs', () => {
+        unreadConferenceResponse = new UnreadInstantMessageConferenceCountResponse({
+            number_of_unread_messages_conference: []
+        });
+        component.unreadMessages = unreadConferenceResponse.number_of_unread_messages_conference;
+
+        expect(component.unreadCount).toBe(0);
+        expect(component.getIMStatus()).toBe('IM-empty.png');
+    });
 });

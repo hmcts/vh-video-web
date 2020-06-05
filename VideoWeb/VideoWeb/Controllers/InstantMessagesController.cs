@@ -83,7 +83,7 @@ namespace VideoWeb.Controllers
                 var messages = await _videoApiClient.GetInstantMessageHistoryAsync(conferenceId);
                 if (messages.IsNullOrEmpty())
                 {
-                    return Ok(new UnreadAdminMessageResponse());
+                    return Ok(new UnreadInstantMessageConferenceCountResponse());
                 }
 
                 var conference = await _conferenceCache.GetOrAddConferenceAsync
@@ -93,7 +93,14 @@ namespace VideoWeb.Controllers
                 );
 
                 var response = UnreadAdminMessageResponseMapper.MapToResponseModel(conference, messages);
-                return Ok(response);
+                var conferenceResponse = new UnreadInstantMessageConferenceCountResponse
+                {
+                    NumberOfUnreadMessagesConference = new List<UnreadAdminMessageResponse>()
+                    {
+                        response
+                    }
+                };
+                return Ok(conferenceResponse);
             }
             catch (VideoApiException e)
             {

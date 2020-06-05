@@ -31,6 +31,9 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
     }
 
     get unreadCount(): number {
+        if (!Array.isArray(this.unreadMessages) || this.unreadMessages.length < 1) {
+            return 0;
+        }
         const unreadTotal: number = this.unreadMessages.map(m => m.number_of_unread_messages).reduce((a, b) => a + b);
         return unreadTotal;
     }
