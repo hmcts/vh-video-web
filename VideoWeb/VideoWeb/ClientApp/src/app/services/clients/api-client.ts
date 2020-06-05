@@ -2188,9 +2188,9 @@ export enum ConferenceStatus {
 }
 
 export enum Role {
+    VideoHearingsOfficer = "VideoHearingsOfficer",
     None = "None",
     CaseAdmin = "CaseAdmin",
-    VideoHearingsOfficer = "VideoHearingsOfficer",
     HearingFacilitationSupport = "HearingFacilitationSupport",
     Judge = "Judge",
     Individual = "Individual",
