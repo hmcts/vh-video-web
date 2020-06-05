@@ -19,7 +19,7 @@ import { ConferenceUnreadMessageCount } from './vho-conference-unread_message-co
 })
 export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDestroy {
     newMessageBody: FormControl;
-    private chatHubSubscription: Subscription;
+    chatHubSubscription: Subscription;
     loading: boolean;
 
     @Input() hearing: Hearing;

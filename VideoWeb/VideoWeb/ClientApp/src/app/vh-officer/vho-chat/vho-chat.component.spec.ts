@@ -1,18 +1,19 @@
-import { fakeAsync, tick, flush, flushMicrotasks } from '@angular/core/testing';
+import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { InstantMessage } from 'src/app/services/models/instant-message';
+import { ImHelper } from 'src/app/shared/im-helper';
+import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MockProfileService } from 'src/app/testing/mocks/MockProfileService';
 import { VhoChatComponent } from './vho-chat.component';
-import { Hearing } from 'src/app/shared/models/hearing';
-import { ImHelper } from 'src/app/shared/im-helper';
+import { Subscription } from 'rxjs';
 
 describe('VhoChatComponent', () => {
     let component: VhoChatComponent;
@@ -111,7 +112,7 @@ describe('VhoChatComponent', () => {
 
     it('should set from to display name whem message is from other user', async () => {
         const username = conference.participants[0].username;
-        const otherUsername = conference.participants[1].username;
+        const otherUsername = component.DEFAULT_ADMIN_USERNAME;
         adalService.userInfo.userName = username;
         const chatResponse = new InstantMessage({
             conferenceId: conference.id,
@@ -126,23 +127,39 @@ describe('VhoChatComponent', () => {
         expect(component.messages.length).toBeGreaterThan(messageCount);
     });
 
-    it('should get first name and is Judge flag when message from user not in conference', async () => {
-        const username = 'vhofficer.hearings.net';
-        const expectedFirstName = mockProfileService.mockProfile.first_name;
-        const messageInfo = await component.getDisplayNameForSender(username);
-        expect(messageInfo).toEqual(expectedFirstName);
-    });
-
-    it('should get first name and is Judge flag when message from judge', async () => {
-        const username = 'judge.fudge@hearings.net';
-        const expectedFirstName = component.hearing.participants[2].displayName;
-        const messageInfo = await component.getDisplayNameForSender(username);
-        expect(messageInfo).toEqual(expectedFirstName);
-    });
-
     it('should send message to hub', () => {
         const message = 'test';
         component.sendMessage(message);
         expect(eventsServiceSpy.sendMessage).toHaveBeenCalledWith(conference.id, message, component.participant.username);
+    });
+
+    it('should use profile from cache', async () => {
+        profileServiceSpy.checkCacheForProfileByUsername.and.returnValue(mockProfileService.mockProfile);
+        const result = await component.getDisplayNameForSender('vho.user@hearings.net');
+        expect(result).toEqual(mockProfileService.mockProfile.first_name);
+    });
+
+    it('should use participant name when message is not from admin', async () => {
+        const judgeUsername = hearing.judge.username;
+        const adminUsername = 'admin@test.com';
+        adalService.userInfo.userName = judgeUsername;
+        const instantMessage = new InstantMessage({
+            conferenceId: conference.id,
+            id: Guid.create().toString(),
+            from: judgeUsername,
+            to: adminUsername,
+            message: 'test message',
+            timestamp: new Date()
+        });
+        profileServiceSpy.checkCacheForProfileByUsername.and.returnValue(mockProfileService.mockProfile);
+        const result = await component.verifySender(instantMessage);
+        expect(result.from_display_name).toEqual(hearing.judge.displayName);
+    });
+
+    it('should clear subscription on destroy', async () => {
+        const sub = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
+        component.chatHubSubscription = sub;
+        component.ngOnDestroy();
+        expect(component.chatHubSubscription.unsubscribe).toHaveBeenCalled();
     });
 });
