@@ -29,6 +29,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.FirstName.Should().Be(profile.First_name);
             response.LastName.Should().Be(profile.Last_name);
             response.DisplayName.Should().Be(profile.Display_name);
+            response.Username.Should().Be(profile.User_name);
         }
         
         [Test]

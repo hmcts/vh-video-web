@@ -13,7 +13,6 @@ import { CommandCentreComponent } from './command-centre/command-centre.componen
 import { CopyIdComponent } from './copy-id/copy-id.component';
 import { HearingHeaderComponent } from './hearing-header/hearing-header.component';
 import { HearingStatusComponent } from './hearing-status/hearing-status.component';
-import { VHODashboardHelper } from './helper';
 import { MonitoringGraphComponent } from './monitoring-graph/monitoring-graph.component';
 import { ParticipantInfoTooltipComponent } from './participant-info-tooltip/participant-info-tooltip.component';
 import { ParticipantNetworkStatusComponent } from './participant-network-status/participant-network-status.component';
@@ -52,7 +51,7 @@ import { VhoHearingsFilterComponent } from './vho-hearings-filter/vho-hearings-f
         CopyIdComponent
     ],
     imports: [CommonModule, SharedModule, ChartsModule, ClipboardModule, VhOfficerRoutingModule, NgSelectModule],
-    providers: [HearingsFilterOptionsService, ParticipantStatusReader, VHODashboardHelper, VhoQueryService],
+    providers: [HearingsFilterOptionsService, ParticipantStatusReader, VhoQueryService],
     exports: [MonitoringGraphComponent, HearingHeaderComponent, HearingStatusComponent]
 })
 export class VhOfficerModule {}

@@ -25,6 +25,7 @@ import { SelfTestComponent } from './self-test/self-test.component';
 import { SharedRoutingModule } from './shared-routing.module';
 import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-browser.component';
 import { ScreenHelper } from './screen-helper';
+import { ChatBodyWindowComponent } from './chat-body-window/chat-body-window.component';
 
 @NgModule({
     imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, SharedRoutingModule, DeviceDetectorModule.forRoot()],
@@ -47,7 +48,8 @@ import { ScreenHelper } from './screen-helper';
         AccessibilityComponent,
         ScrollTriggerDirective,
         BackNavigationComponent,
-        ChatInputBoxComponent
+        ChatInputBoxComponent,
+        ChatBodyWindowComponent
     ],
     providers: [WindowScrolling, ScreenHelper],
     exports: [
@@ -68,7 +70,8 @@ import { ScreenHelper } from './screen-helper';
         BetaBannerComponent,
         ScrollTriggerDirective,
         BackNavigationComponent,
-        ChatInputBoxComponent
+        ChatInputBoxComponent,
+        ChatBodyWindowComponent
     ]
 })
 export class SharedModule {}
