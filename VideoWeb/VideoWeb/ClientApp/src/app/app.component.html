@@ -3,7 +3,7 @@
   <div role="navigation">
     <a href="javascript:void(0)" class="govuk-skip-link" (click)="skipToContent()">Skip to main content</a>
   </div>
-  <app-header [loggedIn]="loggedIn"></app-header>
+  <app-header class="govuk-!-display-none-print" [loggedIn]="loggedIn"></app-header>
 
   <div class="govuk-width-container" id="master-container">
     <main
@@ -19,5 +19,5 @@
     </main>
   </div>
 
-  <app-footer></app-footer>
+  <app-footer class="govuk-!-display-none-print"></app-footer>
 </div>

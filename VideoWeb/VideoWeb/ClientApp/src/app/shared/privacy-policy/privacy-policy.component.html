@@ -5,7 +5,7 @@
   <div class="govuk-grid-column-full">
     <h2 class="govuk-heading-l">Our privacy policy for video hearings</h2>
 
-    <button class="govuk-button non-printable" (click)="printPage()" type="button">Print</button>
+    <button class="govuk-button govuk-!-display-none-print" (click)="printPage()" type="button">Print</button>
 
     <p class="govuk-body">The video hearings service is managed by HM Courts and Tribunals Service (HMCTS).</p>
     <p class="govuk-body">
@@ -38,7 +38,7 @@
       <li>the login details you use to access the video hearings service</li>
       <li>
         information about how you use this service, like your IP address and the web browser you use. We do this by using
-        <a href="http://www.aboutcookies.org.uk/managing-cookies" target="_blank">cookies</a>.
+        <a href="http://www.aboutcookies.org.uk/managing-cookies" rel="noopener noreferrer" target="_blank">cookies</a>.
       </li>
     </ul>
 
@@ -72,7 +72,8 @@
     <ul class="govuk-list govuk-list--bullet">
       <li>
         <span>complete a form to make a</span>
-        <a target="_blank" href="https://www.gov.uk/government/publications/request-your-personal-data-from-moj"> subject access request</a
+        <a target="_blank" href="https://www.gov.uk/government/publications/request-your-personal-data-from-moj" rel="noopener noreferrer">
+          subject access request</a
         >.
         <span> Your request goes to the MoJ as data controller</span>
       </li>

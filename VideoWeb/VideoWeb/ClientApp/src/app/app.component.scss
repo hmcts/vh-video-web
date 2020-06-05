@@ -8,13 +8,6 @@
   }
 }
 
-@media print {
-  app-header,
-  app-footer {
-    visibility: hidden;
-  }
-}
-
 .govuk-main-wrapper {
   outline: none;
   padding: 0px;
