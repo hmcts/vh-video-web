@@ -3,9 +3,9 @@ using System;
 namespace VideoWeb.EventHub.Exceptions
 {
 #pragma warning disable S3925 // "ISerializable" should be implemented correctly
-    public class ConferenceNotFoundException : Exception
+    public class InvalidInstantMessageException : Exception
     {
-        public ConferenceNotFoundException(Guid conferenceId) : base($"Conference {conferenceId} does not exist")
+        public InvalidInstantMessageException(string message) : base(message)
         {
         }
     }

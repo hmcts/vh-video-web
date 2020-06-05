@@ -12,7 +12,7 @@ namespace VideoWeb.EventHub.Hub
         Task ConsultationMessage(Guid conferenceId, string requestedBy, string requestedFor, string result);
         Task AdminConsultationMessage(Guid conferenceId, RoomType room, string requestedFor, ConsultationAnswer? answer = null);
         Task HelpMessage(Guid conferenceId, string participantName);
-        Task ReceiveMessage(Guid conferenceId, string from, string message, DateTime timestamp, Guid messageUuid);
+        Task ReceiveMessage(Guid conferenceId, string from, string to, string message, DateTime timestamp, Guid messageUuid);
         Task AdminAnsweredChat(Guid conferenceId);
         Task ReceiveHeartbeat(Guid conferenceId, Guid participantId, HeartbeatHealth heartbeatHealth, string browserName, string browserVersion);
     }

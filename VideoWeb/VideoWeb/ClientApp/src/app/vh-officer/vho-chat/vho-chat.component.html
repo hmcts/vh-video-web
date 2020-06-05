@@ -10,15 +10,7 @@
 
 <div id="chat-list" #scrollMe [scrollTop]="scrollMe.scrollHeight" class="govuk-grid-row chat-window">
   <div *ngIf="loading" class="govuk-body">Loading...</div>
-  <div *ngFor="let message of messages" class="govuk-grid-row message-container">
-    <div class="govuk-grid-column-full" [ngClass]="message.is_user ? 'own-message' : 'other-message'">
-      <p class="govuk-body govuk-!-margin-bottom-2">
-        <span class="govuk-!-font-weight-bold govuk-!-margin-right-2">{{ message.from }}</span
-        >({{ message.timestamp | date: 'shortTime' }})
-      </p>
-      <p class="govuk-body chat-message" [ngClass]="message.is_user ? '' : 'other-message-body'">{{ message.message }}</p>
-    </div>
-  </div>
+  <app-chat-body-window [messages]="messages"></app-chat-body-window>
 </div>
 
 <div id="im-send-message" class="govuk-grid-row">

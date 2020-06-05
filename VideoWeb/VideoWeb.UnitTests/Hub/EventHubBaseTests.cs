@@ -98,5 +98,11 @@ namespace VideoWeb.UnitTests.Hub
                 .Where(x => x.Participants.Any(p => p.Username == Claims.Identity.Name))
                 .Select(c => c.Id.ToString()).ToArray();
         }
+        
+        protected void UpdateUserIdentity(ClaimsPrincipal claims)
+        {
+            HubCallerContextMock.Setup(x => x.User).Returns(claims);
+            HubCallerContextMock.Setup(x => x.UserIdentifier).Returns(claims.Identity.Name);
+        }
     }
 }

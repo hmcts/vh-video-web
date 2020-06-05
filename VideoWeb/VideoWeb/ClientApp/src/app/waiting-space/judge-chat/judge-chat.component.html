@@ -1,32 +1,28 @@
 <div class="judge-chat-window govuk-!-margin-right-9">
   <div class="chat-header" (click)="toggleChatDisplay()">
-    <span class="govuk-heading-s govuk-!-padding-3 chat-header-text">Message video hearings officer
-      <span *ngIf="!showChat && unreadMessageCount" id="unread-messages" class="notification-badge"
-        [attr.data-badge]="unreadMessageCount"></span>
+    <span class="govuk-heading-s govuk-!-padding-3 chat-header-text"
+      >Message video hearings officer
+      <span
+        *ngIf="!showChat && unreadMessageCount"
+        id="unread-messages"
+        class="notification-badge"
+        [attr.data-badge]="unreadMessageCount"
+      ></span>
       <span class="chevron">
-        <img id="open-chat-arrow" *ngIf="!showChat" src="/assets/images/IM-open-arrow.png"
-          alt="Open instant messaging chat window arrow" />
-        <img id="close-chat-arrow" *ngIf="showChat" src="/assets/images/IM-close-arrow.png"
-          alt="Close instant messaging chat window arrow" />
+        <img id="open-chat-arrow" *ngIf="!showChat" src="/assets/images/IM-open-arrow.png" alt="Open instant messaging chat window arrow" />
+        <img
+          id="close-chat-arrow"
+          *ngIf="showChat"
+          src="/assets/images/IM-close-arrow.png"
+          alt="Close instant messaging chat window arrow"
+        />
       </span>
     </span>
   </div>
-  <div [hidden]='!showChat'>
-    <div id="chat-list" #scrollMe [scrollTop]="scrollMe.scrollHeight"
-      class="govuk-!-padding-2 govuk-!-padding-left-4 chat-window">
+  <div [hidden]="!showChat">
+    <div id="chat-list" #scrollMe [scrollTop]="scrollMe.scrollHeight" class="govuk-!-padding-2 govuk-!-padding-left-4 chat-window">
       <div *ngIf="loading" class="govuk-body">Loading...</div>
-      <div *ngFor="let message of messages" class="govuk-grid-row message-container">
-
-        <div class="govuk-grid-column-full" [ngClass]="(message.is_user)?'own-message':'other-message'">
-          <p class="govuk-body govuk-!-margin-bottom-2">
-            <span
-              class="govuk-!-font-weight-bold govuk-!-margin-right-2">{{message.from}}</span>({{message.timestamp | date:'shortTime' }})
-          </p>
-          <p class="govuk-body chat-message" [ngClass]="(message.is_user)?'':'other-message-body'">{{message.message}}
-          </p>
-        </div>
-
-      </div>
+      <app-chat-body-window [messages]="messages"></app-chat-body-window>
     </div>
 
     <app-chat-input-box (submittedMessage)="sendMessage($event)"></app-chat-input-box>

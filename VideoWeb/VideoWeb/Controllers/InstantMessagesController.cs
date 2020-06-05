@@ -120,16 +120,16 @@ namespace VideoWeb.Controllers
             foreach (var message in messages)
             {
                 var isUser = _messageDecoder.IsMessageFromUser(message, username);
-                string from;
+                string fromDisplayName;
                 if (isUser)
                 {
-                    from = "You";
+                    fromDisplayName = "You";
                 }
                 else
                 {
-                    from = await _messageDecoder.GetMessageOriginatorAsync(conference, message);
+                    fromDisplayName = await _messageDecoder.GetMessageOriginatorAsync(conference, message);
                 }
-                var mapped = ChatResponseMapper.MapToResponseModel(message, from, isUser);
+                var mapped = ChatResponseMapper.MapToResponseModel(message, fromDisplayName, isUser);
                 response.Add(mapped);
             }
 
