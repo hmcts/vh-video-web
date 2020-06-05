@@ -7,7 +7,8 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings
 {
-    public static class UnreadAdminMessageResponseMapper{
+    public static class UnreadAdminMessageResponseMapper
+    {
         public static UnreadAdminMessageResponse MapToResponseModel(Conference conference, IList<InstantMessageResponse> messageResponses)
         {
             var response = new UnreadAdminMessageResponse
@@ -16,7 +17,7 @@ namespace VideoWeb.Mappings
             };
             return response;
         }
-        
+
         private static int MapMessages(Conference conference,
             IList<InstantMessageResponse> messageResponses)
         {
@@ -33,7 +34,7 @@ namespace VideoWeb.Mappings
 
         private static bool IsNonParticipantMessage(Conference conference, InstantMessageResponse message)
         {
-            return !conference.Participants.Any(p => p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase) || 
+            return !conference.Participants.Any(p => p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase) ||
                 p.Username.Equals(message.To, StringComparison.InvariantCultureIgnoreCase));
         }
     }
