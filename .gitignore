@@ -338,3 +338,5 @@ TESTS.xml
 # Config for NuGet
 nuget.config
 
+.DS_Store
+*.orig
