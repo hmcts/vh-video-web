@@ -23,7 +23,6 @@
     <div id="chat-list" #scrollMe [scrollTop]="scrollMe.scrollHeight" class="govuk-!-padding-2 govuk-!-padding-left-4 chat-window">
       <div *ngIf="loading" class="govuk-body">Loading...</div>
       <app-chat-body-window [messages]="messages"></app-chat-body-window>
-          <p class="govuk-body chat-message" [ngClass]="message.is_user ? '' : 'other-message-body'">{{ message.message }}</p>
     </div>
 
     <app-chat-input-box (submittedMessage)="sendMessage($event)"></app-chat-input-box>
