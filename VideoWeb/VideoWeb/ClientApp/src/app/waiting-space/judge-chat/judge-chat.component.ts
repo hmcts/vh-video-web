@@ -42,7 +42,7 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
         this.unreadMessageCount = 0;
         this.loading = true;
         this.setupChatSubscription().then(sub => (this.chatHubSubscription = sub));
-        this.retrieveChatForConference().then(messages => {
+        this.retrieveChatForConference(this.adalService.userInfo.userName.toLowerCase()).then(messages => {
             this.unreadMessageCount = this.getCountSinceUsersLastMessage(messages);
             this.loading = false;
             this.messages = messages;

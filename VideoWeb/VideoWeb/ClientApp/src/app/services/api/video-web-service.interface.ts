@@ -29,6 +29,6 @@ export interface IVideoWebApiService {
     getPexipConfig(): Promise<SelfTestPexipResponse>;
     getObfuscatedName(displayName: string): string;
     getHearingVenues(): Promise<HearingVenueResponse[]>;
-    getConferenceChatHistory(conferenceId: string): Promise<ChatResponse[]>;
+    getConferenceChatHistory(conferenceId: string, participantUsername: string): Promise<ChatResponse[]>;
     updateParticipantDetails(conferenceId: string, participantId: string, updateParticipantRequest: UpdateParticipantRequest);
 }

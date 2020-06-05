@@ -42,7 +42,7 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         this.initForm();
         this.loading = true;
         this.setupChatSubscription().then(sub => (this.chatHubSubscription = sub));
-        this.retrieveChatForConference().then(messages => {
+        this.retrieveChatForConference(this.participant.username).then(messages => {
             this.messages = messages;
             this.loading = false;
         });

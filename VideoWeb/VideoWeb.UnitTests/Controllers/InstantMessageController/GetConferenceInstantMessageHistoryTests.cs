@@ -25,7 +25,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername))
                 .ReturnsAsync(messages);
 
-            var result = await Controller.GetConferenceInstantMessageHistoryAsync(conferenceId, participantUsername);
+            var result = await Controller.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername);
             var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
             var responseModel = typedResult.Value as List<ChatResponse>;
@@ -42,7 +42,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername))
                 .ReturnsAsync(messages);
 
-            var result = await Controller.GetConferenceInstantMessageHistoryAsync(conferenceId, participantUsername);
+            var result = await Controller.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername);
             var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
             var responseModel = typedResult.Value as List<ChatResponse>;
@@ -63,7 +63,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, loggedInUser))
                 .ReturnsAsync(messages);
 
-            var result = await Controller.GetConferenceInstantMessageHistoryAsync(conferenceId, loggedInUser);
+            var result = await Controller.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, loggedInUser);
 
             MessageDecoder.Verify(x => x.IsMessageFromUser(
                     It.Is<InstantMessageResponse>(m => m.From == loggedInUser), loggedInUser),
@@ -90,7 +90,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername))
                 .ThrowsAsync(apiException);
 
-            var result = await Controller.GetConferenceInstantMessageHistoryAsync(conferenceId, participantUsername);
+            var result = await Controller.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername);
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
         }

@@ -16,7 +16,8 @@ import {
     TokenResponse,
     UnreadAdminMessageResponse,
     UpdateParticipantRequest,
-    UpdateParticipantStatusEventRequest
+    UpdateParticipantStatusEventRequest,
+    UnreadInstantMessageConferenceCountResponse
 } from '../clients/api-client';
 import { ConferenceLite } from '../models/conference-lite';
 import { SessionStorage } from '../session-storage';
@@ -89,12 +90,30 @@ export class VideoWebService implements IVideoWebApiService {
         return this.apiClient.getHearingVenues().toPromise();
     }
 
-    getConferenceChatHistory(conferenceId: string): Promise<ChatResponse[]> {
-        return this.apiClient.getConferenceInstantMessageHistory(conferenceId).toPromise();
+    /**
+     * Get the chat history where sender/reciver is from/to given username in a conference
+     * @param conferenceId conference Id
+     * @param participantUsername participant's username to filter chat history
+     */
+    getConferenceChatHistory(conferenceId: string, participantUsername: string): Promise<ChatResponse[]> {
+        return this.apiClient.getConferenceInstantMessageHistoryForParticipant(conferenceId, participantUsername).toPromise();
     }
 
-    getUnreadAdminMessageCountForConference(conferenceId: string): Promise<UnreadAdminMessageResponse> {
+    /**
+     * Get a total of unread messages betwen admin and all partcipants in a conference
+     * @param conferenceId conference id
+     */
+    getUnreadMessageCountForConference(conferenceId: string): Promise<UnreadInstantMessageConferenceCountResponse> {
         return this.apiClient.getNumberOfUnreadAdminMessagesForConference(conferenceId).toPromise();
+    }
+
+    /**
+     * Get the total of unread message between an admin and given username
+     * @param conferenceId conference id
+     * @param participantUsername participant's username to filter chat history
+     */
+    getUnreadMessagesForParticipant(conferenceId: string, participantUsername: string): Promise<UnreadAdminMessageResponse> {
+        return this.apiClient.getNumberOfUnreadAdminMessagesForConferenceByParticipant(conferenceId, participantUsername).toPromise();
     }
 
     setActiveIndividualConference(conference: ConferenceForIndividualResponse) {

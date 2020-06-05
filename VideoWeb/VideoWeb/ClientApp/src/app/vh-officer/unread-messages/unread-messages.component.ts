@@ -1,67 +1,59 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { UnreadAdminMessageResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from '../../shared/models/hearing';
-import { InstantMessage } from '../../services/models/instant-message';
+import { UnreadMessagesComponentBase } from '../unread-messages-shared/unread-message-base.component';
 
 @Component({
     selector: 'app-unread-messages',
-    templateUrl: './unread-messages.component.html',
-    styleUrls: ['./unread-messages.component.scss']
+    templateUrl: '../unread-messages-shared/unread-messages.component.html',
+    styleUrls: ['../unread-messages-shared/unread-messages.component.scss']
 })
-export class UnreadMessagesComponent implements OnInit, OnDestroy {
+export class UnreadMessagesComponent extends UnreadMessagesComponentBase implements OnInit, OnDestroy {
     @Input() hearing: Hearing;
 
     messagesSubscription$: Subscription = new Subscription();
-    unreadCount: number;
-    constructor(private videoWebService: VideoWebService, private eventsService: EventsService, private logger: Logger) { }
+    unreadMessages: UnreadAdminMessageResponse[];
+
+    constructor(private videoWebService: VideoWebService, protected eventsService: EventsService, protected logger: Logger) {
+        super(eventsService, logger);
+    }
 
     ngOnInit() {
-        this.unreadCount = 0;
         this.setupSubscribers();
         this.videoWebService
-            .getUnreadAdminMessageCountForConference(this.hearing.id)
-            .then(response => (this.unreadCount = response.number_of_unread_messages))
+            .getUnreadMessageCountForConference(this.hearing.id)
+            .then(response => (this.unreadMessages = response.number_of_unread_messages_conference))
             .catch(err => this.logger.error(`Failed to get unread vho messages for ${this.hearing.id}`, err));
     }
 
-    setupSubscribers() {
-        this.messagesSubscription$.add(
-            this.eventsService.getAdminAnsweredChat().subscribe(message => {
-                this.logger.info(`an admin has answered`);
-                this.resetConferenceUnreadCounter(message);
-            })
-        );
-
-        this.messagesSubscription$.add(
-            this.eventsService.getChatMessage().subscribe(message => {
-                this.logger.info(`an admin has message`);
-                if (this.hearing.id === message.conferenceId && this.messageFromParticipant(message)) {
-                    this.unreadCount++;
-                }
-            })
-        );
-        this.eventsService.start();
+    get unreadCount(): number {
+        const unreadTotal: number = this.unreadMessages.map(m => m.number_of_unread_messages).reduce((a, b) => a + b);
+        return unreadTotal;
     }
 
-    private messageFromParticipant(message: InstantMessage): boolean {
-        return this.hearing.participants.map(p => p.username.toUpperCase()).includes(message.from.toUpperCase());
+    getHearing(): Hearing {
+        return this.hearing;
     }
 
-
-    resetConferenceUnreadCounter(conferenceId: string) {
+    resetUnreadCounter(conferenceId: string, participantUsername: string): void {
         if (this.hearing.id === conferenceId) {
-            this.unreadCount = 0;
+            const messageCount = this.unreadMessages.find(x => x.participant_username.toLowerCase() === participantUsername.toLowerCase());
+            messageCount.number_of_unread_messages = 0;
+        }
+    }
+
+    incrementUnreadCounter(conferenceId: string, participantUsername: string): void {
+        if (this.hearing.id === conferenceId) {
+            const messageCount = this.unreadMessages.find(x => x.participant_username.toLowerCase() === participantUsername.toLowerCase());
+            messageCount.number_of_unread_messages++;
         }
     }
 
     ngOnDestroy(): void {
-        this.messagesSubscription$.unsubscribe();
-    }
-
-    getIMStatus(): string {
-        return this.unreadCount > 0 ? 'IM_icon.png' : 'IM-empty.png';
+        this.clearMessageSubscription();
     }
 }
