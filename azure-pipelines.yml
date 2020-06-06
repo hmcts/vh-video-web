@@ -45,7 +45,7 @@ parameters:
     secret: true
   - name: VhServices:UserApiUrl
     value: $(user_api_url)
-  - name: VhServices:UserApiUrl
+  - name: VhServices:UserApiResourceId
     value: vh-user-api-identifieruris
     secret: true
   - name: VhServices:BookingsApiUrl
