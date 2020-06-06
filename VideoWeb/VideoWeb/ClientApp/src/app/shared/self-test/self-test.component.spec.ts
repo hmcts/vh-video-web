@@ -182,9 +182,6 @@ describe('SelfTestComponent', () => {
     it('should not raise failed self test event when test is incomplete', async () => {
         component.testCallResult = null;
         await component.ngOnDestroy();
-        const request = new AddSelfTestFailureEventRequest({
-            self_test_failure_reason: SelfTestFailureReason.IncompleteTest
-        });
         expect(videoWebService.raiseSelfTestFailureEvent).not.toHaveBeenCalled();
     });
 

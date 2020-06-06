@@ -14,7 +14,6 @@ import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { AudioRecordingService } from '../../services/api/audio-recording.service';
 import { JudgeHearingPageComponent } from './judge-hearing-page.component';
-import { fakeAsync } from '@angular/core/testing';
 
 describe('JudgeHearingPageComponent', () => {
     let component: JudgeHearingPageComponent;

@@ -8,7 +8,6 @@ import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { UnreadMessagesComponent } from './unread-messages.component';
 import { InstantMessage } from '../../services/models/instant-message';
-import { of } from 'rxjs';
 import { Hearing } from '../../shared/models/hearing';
 
 describe('UnreadMessagesComponent', () => {

@@ -1,15 +1,15 @@
-import { ParticipantStatus, Role } from 'src/app/services/clients/api-client';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { ParticipantStatusComponent } from './participant-status.component';
+import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { Participant } from 'src/app/shared/models/participant';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { VideoWebService } from '../../services/api/video-web.service';
 import { ErrorService } from '../../services/error.service';
-import { MockLogger } from '../../testing/mocks/MockLogger';
 import { EventsService } from '../../services/events.service';
+import { ParticipantStatusMessage } from '../../services/models/participant-status-message';
+import { ParticipantContactDetails } from '../../shared/models/participant-contact-details';
 import { ParticipantStatusReader } from '../../shared/models/participant-status-reader';
 import { MockEventsService } from '../../testing/mocks/MockEventService';
-import { ParticipantContactDetails } from '../../shared/models/participant-contact-details';
-import { ParticipantStatusMessage } from '../../services/models/participant-status-message';
+import { MockLogger } from '../../testing/mocks/MockLogger';
+import { ParticipantStatusComponent } from './participant-status.component';
 
 describe('ParticipantStatusComponent', () => {
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;

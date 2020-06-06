@@ -10,25 +10,7 @@
 ></app-self-test>
 
 <div *ngIf="!showEquipmentFaultMessage" class="govuk-!-margin-top-6">
-  <button
-    id="equipment-works-btn"
-    class="govuk-button govuk-!-margin-right-4"
-    data-module="govuk-button"
-    (click)="equipmentWorksHandler()"
-    alt="Equipment is working and return to hearing list"
-  >
-    Equipment is working
-  </button>
-
-  <button
-    id="equipment-faulty-btn"
-    class="govuk-button govuk-button--warning"
-    data-module="govuk-button"
-    (click)="equipmentFaultyHandler()"
-    alt="Equipment is faulty and notify admin"
-  >
-    Equipment is faulty
-  </button>
+  <app-self-test-actions (equipmentWorked)="equipmentWorksHandler()" (equipmentBroken)="equipmentFaultyHandler()"></app-self-test-actions>
 </div>
 
 <div *ngIf="showEquipmentFaultMessage" class="govuk-!-margin-top-6">
