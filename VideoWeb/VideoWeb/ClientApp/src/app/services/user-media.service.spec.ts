@@ -114,4 +114,10 @@ describe('UserMediaService', () => {
         expect(navigator.mediaDevices.getUserMedia).toHaveBeenCalled();
         expect(service.connectedDevices.next).toHaveBeenCalledWith(service.availableDeviceList);
     });
+
+    it('should throw error when media api is not available', async () => {
+        service.navigator.mediaDevices.enumerateDevices = null;
+        const message = 'enumerateDevices() not supported.';
+        await expectAsync(service.updateAvailableDevicesList()).toBeRejectedWithError(message);
+    });
 });
