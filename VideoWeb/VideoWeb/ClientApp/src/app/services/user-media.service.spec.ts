@@ -82,10 +82,29 @@ describe('UserMediaService', () => {
     it('should get cached device if still connected', inject([UserMediaService], async (service: UserMediaService) => {
         const sessionStorage = new SessionStorage<UserMediaDevice>(service.PREFERRED_CAMERA_KEY);
         service.availableDeviceList = testData.getListOfDevices();
-        const cachedDevice = testData.getListOfDevices()[0];
-        service.updatePreferredCamera(cachedDevice);
+        const cachedCamDevice = testData.getListOfCameras()[0];
+        service.updatePreferredCamera(cachedCamDevice);
+
         const result = await service.getCachedDeviceIfStillConnected(sessionStorage);
 
-        expect(result.deviceId).toBe(cachedDevice.deviceId);
+        expect(result.deviceId).toBe(cachedCamDevice.deviceId);
+    }));
+
+    it('should update cache with preferred cam', inject([UserMediaService], async (service: UserMediaService) => {
+        const sessionStorage = new SessionStorage<UserMediaDevice>(service.PREFERRED_CAMERA_KEY);
+        sessionStorage.clear();
+        service.availableDeviceList = testData.getListOfDevices();
+        const cachedDevice = testData.getListOfCameras()[0];
+        service.updatePreferredCamera(cachedDevice);
+        expect(sessionStorage.get().deviceId).toBe(cachedDevice.deviceId);
+    }));
+
+    it('should update cache with preferred mic', inject([UserMediaService], async (service: UserMediaService) => {
+        const sessionStorage = new SessionStorage<UserMediaDevice>(service.PREFERRED_MICROPHONE_KEY);
+        sessionStorage.clear();
+        service.availableDeviceList = testData.getListOfDevices();
+        const cachedDevice = testData.getListOfMicrophones()[0];
+        service.updatePreferredMicrophone(cachedDevice);
+        expect(sessionStorage.get().deviceId).toBe(cachedDevice.deviceId);
     }));
 });
