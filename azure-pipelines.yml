@@ -76,11 +76,11 @@ parameters:
 
   # Kinly
   - name: KinlyConfiguration:CallbackSecret
-    value: $(CallbackSecret)
+    value: $(CallbackKey)
   - name: KinlyConfiguration:ApiSecret
-    value: $(KinlyApiSecret)
+    value: $(KinlyApiKey)
   - name: KinlyConfiguration:SelfTestApiSecret
-    value: $(SelfTestApiSecret)
+    value: $(SelfTestApiKey)
 
   # SauceLabs
   - name: Saucelabs:Username
@@ -131,11 +131,11 @@ parameters:
 
   # Kinly
   - name: KinlyConfiguration:CallbackSecret
-    value: $(CallbackSecret)
+    value: $(CallbackKey)
   - name: KinlyConfiguration:ApiSecret
-    value: $(KinlyApiSecret)
+    value: $(KinlyApiKey)
   - name: KinlyConfiguration:SelfTestApiSecret
-    value: $(SelfTestApiSecret)
+    value: $(SelfTestApiKey)
 
   # VhServices
   - name: VhServices:BookingsApiResourceId
