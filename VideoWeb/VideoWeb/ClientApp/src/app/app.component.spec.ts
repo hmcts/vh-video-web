@@ -1,6 +1,8 @@
+import { ElementRef } from '@angular/core';
+import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
-import { Router, Event, NavigationEnd, ActivatedRoute, convertToParamMap } from '@angular/router';
-import { of, Subject, Subscription } from 'rxjs';
+import { ActivatedRoute, convertToParamMap, Event, NavigationEnd, Router } from '@angular/router';
+import { Subject, Subscription } from 'rxjs';
 import { AppComponent } from './app.component';
 import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
@@ -11,8 +13,6 @@ import { LocationService } from './services/location.service';
 import { PageTrackerService } from './services/page-tracker.service';
 import { pageUrls } from './shared/page-url.constants';
 import { MockAdalService } from './testing/mocks/MockAdalService';
-import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
-import { ElementRef } from '@angular/core';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
