@@ -1,4 +1,4 @@
-import { fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
+import { fakeAsync, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { TaskCompleted } from 'src/app/on-the-day/models/task-completed';
 import { Role, TaskResponse, TaskStatus, TaskType } from 'src/app/services/clients/api-client';
