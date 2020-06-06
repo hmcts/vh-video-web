@@ -12,6 +12,6 @@ declare const require: any;
 getTestBed().initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
 // Then we find all the tests.
 // const context = require.context('./', true, /vho-chat\.component\.spec\.ts$/);
-const context = require.context('./', true, /user-media\.service\.spec\.ts$/);
+const context = require.context('./', true, /\.spec\.ts$/);
 // And load the modules.
 context.keys().map(context);

@@ -164,6 +164,7 @@ describe('JudgeHearingPageComponent', () => {
         component.closeAlert(true);
         expect(component.continueWithNoRecording).toBeTruthy();
     });
+
     it('should retrieve audio recording stream and if no error then no alert', () => {
         audioRecordingServiceMock.getAudioStreamInfo.and.returnValue(Promise.resolve(true));
         const hearingId = '5256626262626';
@@ -171,6 +172,7 @@ describe('JudgeHearingPageComponent', () => {
 
         expect(component.showAudioRecordingAlert).toBeFalsy();
     });
+
     it('should stop audio recording', () => {
         component.conference.audio_recording_required = true;
         component.conference.hearing_ref_id = '1234567';

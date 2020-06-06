@@ -34,6 +34,11 @@ describe('SelfTestComponent', () => {
     let conference: ConferenceResponse;
     const mediaTestData = new MediaDeviceTestData();
 
+    const token = new TokenResponse({
+        expires_on: '02.06.2020-21:06Z',
+        token: '3a9643611de98e66979bf9519c33fc8d28c39100a4cdc29aaf1b6041b9e16e45'
+    });
+
     beforeAll(() => {
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getSelfTestToken',
@@ -84,14 +89,13 @@ describe('SelfTestComponent', () => {
         component.conference = conference;
         component.participant = component.conference.participants[0];
         component.selfTestPexipConfig = pexipConfig;
-        component.token = new TokenResponse({
-            expires_on: '02.06.2020-21:06Z',
-            token: '3a9643611de98e66979bf9519c33fc8d28c39100a4cdc29aaf1b6041b9e16e45'
-        });
+        component.token = token;
 
+        spyOn(component, 'setupPexipClient').and.callFake(() => (component.pexipAPI = pexipSpy));
         videoWebService.raiseSelfTestFailureEvent.calls.reset();
         videoWebService.getTestCallScore.calls.reset();
         videoWebService.getIndependentTestCallScore.calls.reset();
+        videoWebService.getSelfTestToken.and.resolveTo(token);
     });
 
     it('should use participant id if provided', () => {

@@ -1,4 +1,4 @@
-import { fakeAsync, tick } from '@angular/core/testing';
+import { fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { TaskCompleted } from 'src/app/on-the-day/models/task-completed';
 import { Role, TaskResponse, TaskStatus, TaskType } from 'src/app/services/clients/api-client';
@@ -154,7 +154,7 @@ describe('TasksTableComponent', () => {
         expect(reult).toBe('test');
     });
 
-    it('should return username without domain', () => {
+    it('should return null when username is not provided', () => {
         const username = null;
         const reult = component.usernameWithoutDomain(username);
         expect(reult).toBeNull();
@@ -167,11 +167,12 @@ describe('TasksTableComponent', () => {
         component.ngOnDestroy();
     });
 
-    it('should emit task completed', async () => {
+    it('should emit task completed', () => {
         const eventbus = new EventBusService();
         component = new TasksTableComponent(vhoQueryService, logger, eventbus);
-        component.ngOnInit();
+        component.conference = conference;
+        component.setupSubscribers();
         eventbus.emit(new EmitEvent<TaskCompleted>(VHEventType.PageRefreshed, null));
-        expect(component.tasks).not.toBeNull();
+        expect(vhoQueryService.getTasksForConference).toHaveBeenCalledWith(conference.id);
     });
 });
