@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import 'webrtc-adapter';
 import { UserMediaDevice } from '../shared/models/user-media-device';
-import { SessionStorage } from './session-storage';
 import { Logger } from './logging/logger-base';
-import { BehaviorSubject } from 'rxjs';
+import { SessionStorage } from './session-storage';
 
 @Injectable({
     providedIn: 'root'
@@ -46,7 +46,7 @@ export class UserMediaService {
     }
 
     async checkDeviceListIsReady() {
-        if (!this.availableDeviceList) {
+        if (!this.availableDeviceList || this.availableDeviceList.length === 0) {
             await this.updateAvailableDevicesList();
         }
     }
@@ -57,10 +57,10 @@ export class UserMediaService {
             throw new Error('enumerateDevices() not supported.');
         }
 
-        let updatedDevices: MediaDeviceInfo[];
+        let updatedDevices: MediaDeviceInfo[] = [];
+        const stream: MediaStream = await this.navigator.mediaDevices.getUserMedia({ audio: true, video: true });
 
-        const stream = await this.navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-        if (stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0) {
+        if (stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0) {
             updatedDevices = await navigator.mediaDevices.enumerateDevices();
         }
 
@@ -70,9 +70,11 @@ export class UserMediaService {
             device => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)
         );
 
-        stream.getTracks().forEach(track => {
-            track.stop();
-        });
+        if (stream) {
+            stream.getTracks().forEach(track => {
+                track.stop();
+            });
+        }
         this.connectedDevices.next(this.availableDeviceList);
     }
 
