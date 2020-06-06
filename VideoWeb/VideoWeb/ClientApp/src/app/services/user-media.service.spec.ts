@@ -11,7 +11,6 @@ describe('UserMediaService', () => {
     beforeEach(() => {
         service = new UserMediaService(new MockLogger());
         service.availableDeviceList = testData.getListOfDevices();
-        service.navigator;
     });
 
     it('should return only video devices', async () => {
