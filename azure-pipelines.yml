@@ -160,6 +160,7 @@ variables:
   - group: vh-video-web
   - group: vh-aat
   - group: vh test users
+  - group: Saucelabs
 
 trigger:
   branches:
@@ -242,6 +243,7 @@ extends:
       StrykerBreak: 75
       variables:
         - group: vh-wowza-dev
+        - group: KinlyConfiguration_Test
     ACTest: ${{ parameters.RunACTests }}
     releaseParameters:
       environment: Preview
