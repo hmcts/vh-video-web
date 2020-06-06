@@ -162,4 +162,11 @@ describe('VhoChatComponent', () => {
         component.ngOnDestroy();
         expect(component.chatHubSubscription.unsubscribe).toHaveBeenCalled();
     });
+
+    it('should get im history when input has been updated', () => {
+        const newParticipant = hearing.participants.filter(x => !x.isJudge)[0];
+        component.participant = newParticipant;
+
+        expect(videoWebServiceSpy.getConferenceChatHistory).toHaveBeenCalledWith(hearing.id, newParticipant.username);
+    });
 });

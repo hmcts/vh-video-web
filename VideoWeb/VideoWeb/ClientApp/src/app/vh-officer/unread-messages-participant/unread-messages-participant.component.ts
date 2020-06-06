@@ -37,6 +37,9 @@ export class UnreadMessagesParticipantComponent extends UnreadMessagesComponentB
     }
 
     get unreadCount(): number {
+        if (!this.unreadMessages) {
+            return 0;
+        }
         return this.unreadMessages.number_of_unread_messages;
     }
     getHearing(): Hearing {

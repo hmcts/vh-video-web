@@ -59,6 +59,13 @@ describe('UnreadMessagesParticipantComponent', () => {
         expect(component.unreadCount).toBe(expectedCount);
     }));
 
+    it('should return zero when unread message is not set', () => {
+        component.unreadMessages = undefined;
+
+        expect(component.unreadCount).toBe(0);
+        expect(component.getIMStatus()).toBe('IM-empty.png');
+    });
+
     it('should log error when unable to init', fakeAsync(() => {
         const error = new Error('failed to find conference');
         videoWebServiceSpy.getUnreadMessagesForParticipant.and.callFake(() => Promise.reject(error));
