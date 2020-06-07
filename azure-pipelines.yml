@@ -268,7 +268,7 @@ extends:
       appName: vh-video-web-$(environment)
       resourceGroup: vh-video-web-$(environment)
       appSettings: ${{ parameters.appSettings }}
-      testCaseFileter: TestCategory=smoketest
+      testCaseFilter: TestCategory=smoketest
       acceptanceTestSettings:
         - name: VhServices:VideoWebApiUrl
           value: $(video_web_url_staging)
