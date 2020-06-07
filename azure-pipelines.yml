@@ -263,7 +263,7 @@ extends:
       StrykerBreak: 75
     ACTest: ${{ parameters.RunACTests }}
     NodeTest: ${{ parameters.RunNodeTests }}
-    nodeParameters:
+    nodeTestParameters:
       coreProjectPath: VideoWeb/VideoWeb/ClientApp
 
     releaseParameters:
