@@ -265,6 +265,7 @@ extends:
       secrets_KeyVault: $(pr_Secret_KeyVault)
       secrets_Subscription: $(pr_Secret_Subscription)
       devOpsResource: vh_video_web
+      deploymentSlot: production
       appName: vh-video-web-$(environment)
       resourceGroup: vh-video-web-$(environment)
       appSettings: ${{ parameters.appSettings }}
