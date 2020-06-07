@@ -34,6 +34,11 @@ parameters:
   type: boolean
   default: true
 
+- name: RunNodeTests
+  displayName: Run Node Tests
+  type: boolean
+  default: true
+
 - name: testSettings
   type: object
   default:
@@ -257,6 +262,10 @@ extends:
         sonar.coverage.exclusions= **/Testing.Common/**, VideoWeb/Views/*, VideoWeb/Pages/*, VideoWeb.AcceptanceTests/*, **/VideoWeb.Services/**, **/ClientApp/src/scripts/*.js, **/ClientApp/src/app/testing/**, **/ClientApp/src/app/vh-officer/helper.ts, **/ClientApp/src/app/services/events.service.ts, **/ClientApp/src/app/send-video-events/send-video-events.component.ts, **/ClientApp/src/app/services/api/video-web.service.ts, **/ClientApp/src/app/waiting-space/analogue-clock/analogue-clock.component.ts
       StrykerBreak: 75
     ACTest: ${{ parameters.RunACTests }}
+    NodeTest: ${{ parameters.RunNodeTests }}
+    nodeParameters:
+      coreProjectPath: VideoWeb/VideoWeb/ClientApp
+
     releaseParameters:
       environment: Preview
 
