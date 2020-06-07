@@ -215,6 +215,8 @@ resources:
   - container: dotnetsdk-cipipeline
     image: sspublicsbox.azurecr.io/vh/dotnet-angular-cipipeline:3.1.102
     endpoint: sspublicsbox
+  - container: node
+    image: node:lts-alpine
 
 extends:
   template: stages\dotnet-package.yml@templates
