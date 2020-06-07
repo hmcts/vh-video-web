@@ -37,6 +37,10 @@ parameters:
 - name: testSettings
   type: object
   default:
+  - name: ConnectionStrings:SignalR
+    value: signalr-connection-str
+    secret: true
+
   # VhServices
   - name: VhServices:VideoApiUrl
     value: $(video_api_url)
@@ -57,6 +61,12 @@ parameters:
   # AzureAd
   - name: AzureAd:TenantId
     value: tenantid
+    secret: true
+  - name: AzureAd:ClientId
+    value: vh-video-web-appid
+    secret: true
+  - name: AzureAd:ClientSecret
+    value: vh-video-web-key
     secret: true
   - name: AzureAd:VhVideoApiResourceId
     value: vh-video-web-identifieruris
@@ -101,6 +111,9 @@ parameters:
   default:
   - name: ApplicationInsights:InstrumentationKey
     value: vh-core-infra-AppInsightsKey
+    secret: true
+  - name: ConnectionStrings:SignalR
+    value: signalr-connection-str
     secret: true
 
   # AzureAd
