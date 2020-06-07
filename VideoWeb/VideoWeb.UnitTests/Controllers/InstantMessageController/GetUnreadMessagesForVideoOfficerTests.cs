@@ -32,20 +32,21 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
         }
-        
+
         [Test]
         public async Task Should_return_okay_code_and_zero_unread_messages_when_there_is_no_im_history()
         {
             var conferenceId = Guid.NewGuid();
             VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
                 .ReturnsAsync(new List<InstantMessageResponse>());
-            
+
             var result = await Controller.GetUnreadMessagesForVideoOfficerAsync(conferenceId);
-            
-            var typedResult = (OkObjectResult) result;
+
+            var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
-            var responseModel = (UnreadAdminMessageResponse) typedResult.Value;
-            responseModel.NumberOfUnreadMessages.Should().Be(0);
+            var responseModel = (UnreadInstantMessageConferenceCountResponse)typedResult.Value;
+            // responseModel.NumberOfUnreadMessagesConference.Should().Be(0);
+            responseModel.NumberOfUnreadMessagesInConference.Should().BeNull();
         }
 
         [Test]
@@ -57,16 +58,17 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
                 .Setup(x => x.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
-            
+
             VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conference.Id))
                 .ReturnsAsync(messages);
-            
+
             var result = await Controller.GetUnreadMessagesForVideoOfficerAsync(conference.Id);
-            
-            var typedResult = (OkObjectResult) result;
+
+            var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
-            var responseModel = (UnreadAdminMessageResponse) typedResult.Value;
-            responseModel.NumberOfUnreadMessages.Should().BeGreaterThan(0);
+            var responseModel = (UnreadInstantMessageConferenceCountResponse)typedResult.Value;
+            // responseModel.NumberOfUnreadMessagesConference.Should().BeGreaterThan(0);
+            responseModel.NumberOfUnreadMessagesInConference.Should().NotBeNull();
         }
 
         private static Conference InitConference()

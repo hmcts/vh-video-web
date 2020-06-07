@@ -13,13 +13,13 @@ namespace VideoWeb.Mappings
         {
             var response = new UnreadAdminMessageResponse
             {
-                NumberOfUnreadMessages = MapMessages(conference, messageResponses)
+                NumberOfUnreadMessages = MapMessages(conference, messageResponses),
+                ParticipantUsername = null
             };
             return response;
         }
 
-        private static int MapMessages(Conference conference,
-            IList<InstantMessageResponse> messageResponses)
+        private static int MapMessages(Conference conference, IList<InstantMessageResponse> messageResponses)
         {
             if (messageResponses == null || !messageResponses.Any())
             {
@@ -28,14 +28,12 @@ namespace VideoWeb.Mappings
 
             messageResponses = messageResponses.OrderByDescending(x => x.Time_stamp).ToList();
             var vhoMessage = messageResponses.FirstOrDefault(m => IsNonParticipantMessage(conference, m));
-            return
-                vhoMessage == null ? messageResponses.Count() : messageResponses.IndexOf(vhoMessage);
+            return vhoMessage == null ? messageResponses.Count() : messageResponses.IndexOf(vhoMessage);
         }
 
         private static bool IsNonParticipantMessage(Conference conference, InstantMessageResponse message)
         {
-            return !conference.Participants.Any(p => p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase) ||
-                p.Username.Equals(message.To, StringComparison.InvariantCultureIgnoreCase));
+            return !conference.Participants.Any(p => p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase));
         }
     }
 }

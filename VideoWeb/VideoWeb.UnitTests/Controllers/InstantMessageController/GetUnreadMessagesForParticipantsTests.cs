@@ -71,6 +71,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             typedResult.Should().NotBeNull();
             var responseModel = (UnreadAdminMessageResponse)typedResult.Value;
             responseModel.NumberOfUnreadMessages.Should().BeGreaterThan(0);
+            responseModel.NumberOfUnreadMessages.Should().Be(2);
         }
 
         [Test]
@@ -94,6 +95,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             typedResult.Should().NotBeNull();
             var responseModel = (UnreadAdminMessageResponse)typedResult.Value;
             responseModel.NumberOfUnreadMessages.Should().BeGreaterThan(0);
+            responseModel.NumberOfUnreadMessages.Should().Be(3);
         }
 
         private static Conference InitConference()
@@ -118,13 +120,15 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             return new List<InstantMessageResponse>
             {
                 new InstantMessageResponse
-                    {From = vho1Username, Message_text = "message 01 to judge", To = judge.Username, Time_stamp = DateTime.UtcNow.AddMinutes(-1)},
+                    {From = judge.Username, Message_text = "judge -> vho - 03", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-1)},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge reply to vho1", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-2)},
+                    {From = judge.Username, Message_text = "judge -> vho - 02", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-2)},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "are we ready to start the hearing", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-3)},
+                    {From = vho1Username, Message_text = "vho -> judge - 02", To = judge.Username, Time_stamp = DateTime.UtcNow.AddMinutes(-3)},
                 new InstantMessageResponse
-                    {From = vho1Username, Message_text = "yes all participants present to start", To = judge.Username, Time_stamp = DateTime.UtcNow.AddMinutes(-4)},
+                    {From = judge.Username, Message_text = "judge -> vho - 01", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-4)},
+                new InstantMessageResponse
+                    {From = vho1Username, Message_text = "vho -> judge - 01", To = judge.Username, Time_stamp = DateTime.UtcNow.AddMinutes(-5)},
             };
         }
 
@@ -136,13 +140,13 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             return new List<InstantMessageResponse>
             {
                 new InstantMessageResponse
-                    {From = vho1Username, Message_text = "message 01 to representative", To = representative.Username, Time_stamp = DateTime.UtcNow.AddMinutes(-1)},
+                    {From = representative.Username, Message_text = "representative -> vho - 03", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-1)},
                 new InstantMessageResponse
-                    {From = representative.Username, Message_text = "representative reply to vho1", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-2)},
+                    {From = representative.Username, Message_text = "representative -> vho - 02", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-2)},
                 new InstantMessageResponse
-                    {From = representative.Username, Message_text = "we are ready", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-3)},
+                    {From = representative.Username, Message_text = "representative -> vho - 01", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-3)},
                 new InstantMessageResponse
-                    {From = vho1Username, Message_text = "okay, hearing will start shortly", To = representative.Username, Time_stamp = DateTime.UtcNow.AddMinutes(-4)},
+                    {From = vho1Username, Message_text = "vho -> representative - 01", To = representative.Username, Time_stamp = DateTime.UtcNow.AddMinutes(-4)},
             };
         }
     }

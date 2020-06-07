@@ -49,7 +49,7 @@ namespace VideoWeb.Controllers
             _logger.LogDebug($"GetMessages for {conferenceId}");
             try
             {
-                var messages = 
+                var messages =
                     await _videoApiClient.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername);
                 if (!messages.Any())
                 {
@@ -68,13 +68,13 @@ namespace VideoWeb.Controllers
         }
 
         /// <summary>
-        /// Get number of unread messages for  vho
+        /// Get number of unread messages for vho
         /// </summary>
         /// <param name="conferenceId">Id of the conference</param>
         /// <returns>Number of unread message</returns>
         [HttpGet("{conferenceId}/instantmessages/unread/vho")]
         [SwaggerOperation(OperationId = "GetNumberOfUnreadAdminMessagesForConference")]
-        [ProducesResponseType(typeof(UnreadAdminMessageResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(UnreadInstantMessageConferenceCountResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetUnreadMessagesForVideoOfficerAsync(Guid conferenceId)
         {
             _logger.LogDebug($"GetMessages for {conferenceId}");
@@ -83,16 +83,16 @@ namespace VideoWeb.Controllers
                 var messages = await _videoApiClient.GetInstantMessageHistoryAsync(conferenceId);
                 if (messages.IsNullOrEmpty())
                 {
-                    return Ok(new UnreadAdminMessageResponse());
+                    return Ok(new UnreadInstantMessageConferenceCountResponse());
                 }
-                
+
                 var conference = await _conferenceCache.GetOrAddConferenceAsync
                 (
-                    conferenceId, 
+                    conferenceId,
                     () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
                 );
 
-                var response = UnreadAdminMessageResponseMapper.MapToResponseModel(conference, messages);
+                var response = UnreadInstantMessageConferenceResponseMapper.MapToResponseModel(conference, messages);
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -116,7 +116,7 @@ namespace VideoWeb.Controllers
             _logger.LogDebug($"GetMessages for {conferenceId}");
             try
             {
-                var messages = 
+                var messages =
                     await _videoApiClient.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername);
                 if (messages.IsNullOrEmpty())
                 {
@@ -142,18 +142,18 @@ namespace VideoWeb.Controllers
         private async Task<List<ChatResponse>> MapMessages(IList<InstantMessageResponse> messages, Guid conferenceId)
         {
             var response = new List<ChatResponse>();
-            
+
             if (!messages.Any())
             {
                 return response;
             }
-            
+
             var conference = await _conferenceCache.GetOrAddConferenceAsync
             (
-                conferenceId, 
+                conferenceId,
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
             );
-            
+
             var username = User.Identity.Name;
 
             foreach (var message in messages)
