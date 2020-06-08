@@ -14,7 +14,7 @@ namespace VideoWeb.Mappings
         {
             var response = new UnreadInstantMessageConferenceCountResponse
             {
-                NumberOfUnreadMessagesInConference = MapMessages(conference, messageResponses)
+                NumberOfUnreadMessagesConference = MapMessages(conference, messageResponses)
             };
             return response;
         }

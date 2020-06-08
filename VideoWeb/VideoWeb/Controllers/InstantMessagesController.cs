@@ -93,14 +93,14 @@ namespace VideoWeb.Controllers
                 );
 
                 var response = UnreadInstantMessageConferenceResponseMapper.MapToResponseModel(conference, messages);
-                var conferenceResponse = new UnreadInstantMessageConferenceCountResponse
-                {
-                    NumberOfUnreadMessagesConference = new List<UnreadAdminMessageResponse>()
-                    {
-                        response
-                    }
-                };
-                return Ok(conferenceResponse);
+                //var conferenceResponse = new UnreadInstantMessageConferenceCountResponse
+                //{
+                //    NumberOfUnreadMessagesConference = new List<UnreadAdminMessageResponse>()
+                //    {
+                //        response
+                //    }
+                //};
+                return Ok(response);
             }
             catch (VideoApiException e)
             {
