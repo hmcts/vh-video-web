@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AcceptanceTests.Common.Configuration.Users;
 using AcceptanceTests.Common.Driver.Browser;
-using AcceptanceTests.Common.Driver.Support;
+using AcceptanceTests.Common.Driver.Enums;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
@@ -32,6 +32,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             var browser = new UserBrowser()
                 .SetBaseUrl(_c.VideoWebConfig.VhServices.VideoWebUrl)
+                .SetTargetDevice(_c.VideoWebConfig.TestConfig.TargetDevice)
                 .SetTargetBrowser(_c.VideoWebConfig.TestConfig.TargetBrowser)
                 .SetDriver(_c.Driver);
 

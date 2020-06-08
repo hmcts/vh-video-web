@@ -1,4 +1,4 @@
-using AcceptanceTests.Common.Driver.Support;
+using AcceptanceTests.Common.Driver.Enums;
 using NUnit.Framework;
 using TechTalk.SpecFlow;
 using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
