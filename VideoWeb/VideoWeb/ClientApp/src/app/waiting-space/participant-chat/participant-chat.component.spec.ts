@@ -10,11 +10,11 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { JudgeChatComponent } from './judge-chat.component';
+import { ParticipantChatComponent } from './participant-chat.component';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 
 describe('JudgeChatComponent', () => {
-    let component: JudgeChatComponent;
+    let component: ParticipantChatComponent;
     let conference: ConferenceResponse;
     let hearing: Hearing;
 
@@ -67,7 +67,7 @@ describe('JudgeChatComponent', () => {
 
         eventsService.getChatMessage.and.returnValue(mockEventsService.messageSubject.asObservable());
 
-        component = new JudgeChatComponent(videoWebService, profileService, eventsService, new MockLogger(), adalService, imHelper);
+        component = new ParticipantChatComponent(videoWebService, profileService, eventsService, new MockLogger(), adalService, imHelper);
         component.loggedInUserProfile = judgeProfile;
         component.hearing = hearing;
         component.messages = new ConferenceTestData().getChatHistory('vho.user@hearings.net', conference.id);
@@ -98,11 +98,12 @@ describe('JudgeChatComponent', () => {
     it('should reset unread counter when chat is opened', () => {
         const mockedDocElement = document.createElement('div');
         document.getElementById = jasmine.createSpy('chat-list').and.returnValue(mockedDocElement);
-
+        spyOn(component, 'scrollToBottom');
         component.unreadMessageCount = 5;
         component.showChat = true;
         component.ngAfterViewChecked();
 
+        expect(component.scrollToBottom).toHaveBeenCalled();
         expect(component.unreadMessageCount).toBe(0);
     });
 

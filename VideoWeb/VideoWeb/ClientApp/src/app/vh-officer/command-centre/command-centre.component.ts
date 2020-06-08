@@ -71,6 +71,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             this.conferencesSubscription.unsubscribe();
         }
         this.eventHubSubscriptions.unsubscribe();
+        // this.eventService.stop();
     }
 
     setupEventHubSubscribers() {

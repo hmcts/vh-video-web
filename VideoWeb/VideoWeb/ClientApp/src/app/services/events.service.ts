@@ -69,7 +69,8 @@ export class EventsService {
     get isConnectedToHub(): boolean {
         return (
             this.connection.state === signalR.HubConnectionState.Connected ||
-            this.connection.state === signalR.HubConnectionState.Connecting
+            this.connection.state === signalR.HubConnectionState.Connecting ||
+            this.connection.state === signalR.HubConnectionState.Reconnecting
         );
     }
 
@@ -166,7 +167,7 @@ export class EventsService {
     }
 
     private onEventHubErrorOrClose(error: Error) {
-        const message = error ? 'EventHub connection closed' : 'EventHub connection error';
+        const message = error ? 'EventHub connection error' : 'EventHub connection closed';
         this.logger.error(message, error);
         this.eventHubDisconnectSubject.next(this.reconnectionAttempt);
     }

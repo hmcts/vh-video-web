@@ -22,6 +22,7 @@ import {
 import { Hearing } from '../../shared/models/hearing';
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room.component';
 import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
+import { ParticipantChatStubComponent } from 'src/app/testing/stubs/participant-chat-stub.component';
 
 describe('ParticipantWaitingRoomComponent message and clock', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -35,7 +36,8 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
                 IndividualParticipantStatusListStubComponent,
                 AnalogueClockStubComponent,
                 JudgeParticipantStatusListStubComponent,
-                IndividualConsultationControlsStubComponent
+                IndividualConsultationControlsStubComponent,
+                ParticipantChatStubComponent
             ],
             providers: [
                 { provide: VideoWebService, useClass: MockVideoWebService },
@@ -61,7 +63,6 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
 
     it('should return delayed class when conference is delayed', () => {
         const conference = new ConferenceTestData().getConferenceDetailPast();
-        conference.scheduled_date_time = conference.scheduled_date_time;
         conference.status = ConferenceStatus.NotStarted;
         component.hearing = new Hearing(conference);
         expect(component.getCurrentTimeClass()).toBe('hearing-delayed');
