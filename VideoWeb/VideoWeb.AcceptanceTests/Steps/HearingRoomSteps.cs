@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading;
 using AcceptanceTests.Common.Api.Helpers;
 using AcceptanceTests.Common.Driver.Browser;
+using AcceptanceTests.Common.Driver.Enums;
 using AcceptanceTests.Common.Driver.Helpers;
-using AcceptanceTests.Common.Driver.Support;
 using AcceptanceTests.Common.Test.Helpers;
 using FluentAssertions;
 using OpenQA.Selenium;
@@ -47,8 +47,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the Clerk clicks pause")]
         public void WhenTheUserClicksPause()
         {
-            if (_c.VideoWebConfig.TestConfig.TargetBrowser != TargetBrowser.Firefox &&
-                _c.VideoWebConfig.TestConfig.TargetBrowser != TargetBrowser.MacFirefox)
+            if (_c.VideoWebConfig.TestConfig.TargetBrowser != TargetBrowser.Firefox)
             {
                 SwitchToTheJudgeIFrame();
             }
@@ -61,8 +60,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the Clerk clicks close")]
         public void WhenTheUserClicksClose()
         {
-            if (_c.VideoWebConfig.TestConfig.TargetBrowser != TargetBrowser.Firefox &&
-                _c.VideoWebConfig.TestConfig.TargetBrowser != TargetBrowser.MacFirefox)
+            if (_c.VideoWebConfig.TestConfig.TargetBrowser != TargetBrowser.Firefox)
             {
                 SwitchToTheJudgeIFrame();
             }
