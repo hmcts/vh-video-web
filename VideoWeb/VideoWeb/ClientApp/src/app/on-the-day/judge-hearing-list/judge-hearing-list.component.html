@@ -4,32 +4,33 @@
 
 <div id="hearing-list" *ngIf="!loadingData && hasHearings()">
   <div class="govuk-!-margin-top-5">
-    <h1 class="govuk-heading-xl">Video hearings for {{courtName}}</h1>
+    <h1 class="govuk-heading-xl">Video hearings for {{ courtName }}</h1>
   </div>
   <div class="govuk-!-margin-top-4">
-    <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button" (click)="goToEquipmentCheck()"
-      alt="Check equipment">Check equipment</button>
+    <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button" (click)="goToEquipmentCheck()" alt="Check equipment">
+      Check equipment
+    </button>
   </div>
   <div>
-    <p class="govuk-caption-xl">{{ today | date:'fullDate' }}</p>
+    <p class="govuk-caption-xl">{{ today | date: 'fullDate' }}</p>
   </div>
-  <app-judge-hearing-table [conferences]="conferences" (selectedConference)="onConferenceSelected($event)">
-  </app-judge-hearing-table>
+  <app-judge-hearing-table [conferences]="conferences" (selectedConference)="onConferenceSelected($event)"> </app-judge-hearing-table>
 </div>
 
 <div *ngIf="!loadingData && !hasHearings()">
-  <h1 class="govuk-heading-xl govuk-!-padding-top-5">Video hearings for {{courtName}}</h1>
+  <h1 class="govuk-heading-xl govuk-!-padding-top-5">Video hearings for {{ courtName }}</h1>
   <div class="govuk-!-margin-top-1">
-    <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button" (click)="goToEquipmentCheck()"
-      alt="Check equipment">Check equipment</button>
+    <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button" (click)="goToEquipmentCheck()" alt="Check equipment">
+      Check equipment
+    </button>
   </div>
-  <h2 class="govuk-heading-m"> You have no video hearings</h2>
-  <p class="govuk-body">If you are expecting to see details of your hearing listed here, please contact us using the
-    options below.</p>
+  <h2 class="govuk-heading-m">You have no video hearings</h2>
+  <p class="govuk-body">If you are expecting to see details of your hearing listed here, please contact us using the options below.</p>
 </div>
 
-<div id="contact-team" *ngIf="!loadingData" [ngClass]="{'contact-team' : hasHearings()}">
+<div id="contact-team" *ngIf="!loadingData" [ngClass]="{ 'contact-team': hasHearings() }">
   <h2 class="govuk-heading-m govuk-!-margin-top-8 govuk-!-margin-bottom-1">Do you need help?</h2>
-  <p class="govuk-body">Call the video hearings team on <span class="govuk-!-font-weight-bold">{{contact.phone}}</span>
+  <p class="govuk-body">
+    Call the video hearings team on <span class="govuk-!-font-weight-bold">{{ contact.phone }}</span>
   </p>
 </div>

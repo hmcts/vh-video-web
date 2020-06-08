@@ -19,7 +19,7 @@ export class AdminImListComponent implements OnInit {
     constructor() {}
 
     ngOnInit() {
-        this.initImParticipants(true);
+        this.initImParticipants(false);
     }
 
     initImParticipants(onlyJudge: boolean) {

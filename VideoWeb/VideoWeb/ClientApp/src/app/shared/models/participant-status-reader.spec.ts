@@ -12,7 +12,7 @@ describe('ParticipantStatusReader', () => {
         { status: ParticipantStatus.UnableToJoin, expected: 'Unable to join' }
     ];
 
-    testCasesForGetStatusAsText.forEach((testCase) => {
+    testCasesForGetStatusAsText.forEach(testCase => {
         it('should get status as text', () => {
             expect(reader.getStatusAsText(testCase.status)).toBe(testCase.expected);
         });
@@ -27,7 +27,7 @@ describe('ParticipantStatusReader', () => {
         { status: ParticipantStatus.Available, expected: 'Available' }
     ];
 
-    testCasesForgetStatusAsTextForJudge.forEach((testCase) => {
+    testCasesForgetStatusAsTextForJudge.forEach(testCase => {
         it('should get status as text for judge', () => {
             expect(reader.getStatusAsTextForJudge(testCase.status)).toBe(testCase.expected);
         });

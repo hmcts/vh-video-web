@@ -48,7 +48,7 @@ export class MicVisualiserComponent implements OnInit, OnDestroy {
         this.analyser.fftSize = 1024;
 
         this.rafId = requestAnimationFrame(this.tick.bind(this));
-  }
+    }
 
     processStream() {
         this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);

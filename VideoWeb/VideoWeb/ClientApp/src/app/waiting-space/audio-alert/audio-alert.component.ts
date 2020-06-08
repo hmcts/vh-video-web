@@ -8,8 +8,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 export class AudioAlertComponent implements OnInit {
     @Output() alertClose: EventEmitter<boolean> = new EventEmitter<boolean>();
 
-    ngOnInit() {
-    }
+    ngOnInit() {}
 
     closeAlert() {
         this.alertClose.emit(true);

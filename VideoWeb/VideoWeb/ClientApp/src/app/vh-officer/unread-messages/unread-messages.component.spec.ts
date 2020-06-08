@@ -1,15 +1,15 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { UnreadAdminMessageResponse } from 'src/app/services/clients/api-client';
+import { UnreadAdminMessageResponse, UnreadInstantMessageConferenceCountResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
+import { ConferenceMessageAnswered } from 'src/app/services/models/conference-message-answered';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { UnreadMessagesComponent } from './unread-messages.component';
 import { InstantMessage } from '../../services/models/instant-message';
-import { of } from 'rxjs';
 import { Hearing } from '../../shared/models/hearing';
+import { UnreadMessagesComponent } from './unread-messages.component';
 
 describe('UnreadMessagesComponent', () => {
     let component: UnreadMessagesComponent;
@@ -19,9 +19,7 @@ describe('UnreadMessagesComponent', () => {
     const mockEventService = new MockEventsService();
     let logger: MockLogger;
 
-    const unreadCountResponse = new UnreadAdminMessageResponse({
-        number_of_unread_messages: 5
-    });
+    let unreadConferenceResponse: UnreadInstantMessageConferenceCountResponse;
 
     beforeAll(() => {
         eventsService = jasmine.createSpyObj<EventsService>('EventsService', ['start', 'getAdminAnsweredChat', 'getChatMessage']);
@@ -29,15 +27,26 @@ describe('UnreadMessagesComponent', () => {
         eventsService.getAdminAnsweredChat.and.returnValue(mockEventService.adminAnsweredChatSubject.asObservable());
         eventsService.getChatMessage.and.returnValue(mockEventService.messageSubject.asObservable());
 
-        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getUnreadAdminMessageCountForConference']);
-        videoWebServiceSpy.getUnreadAdminMessageCountForConference.and.callFake(() => Promise.resolve(unreadCountResponse));
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getUnreadMessageCountForConference']);
 
         logger = new MockLogger();
     });
 
     beforeEach(() => {
-        component = new UnreadMessagesComponent(videoWebServiceSpy, eventsService, logger);
+        const unreadMessages = conference.participants.map(
+            p =>
+                new UnreadAdminMessageResponse({
+                    number_of_unread_messages: 5,
+                    participant_username: p.username
+                })
+        );
+        unreadConferenceResponse = new UnreadInstantMessageConferenceCountResponse({
+            number_of_unread_messages_conference: unreadMessages
+        });
+        videoWebServiceSpy.getUnreadMessageCountForConference.and.callFake(() => Promise.resolve(unreadConferenceResponse));
 
+        component = new UnreadMessagesComponent(videoWebServiceSpy, eventsService, logger);
+        component.unreadMessages = unreadMessages;
         component.hearing = new Hearing(conference);
     });
 
@@ -46,14 +55,16 @@ describe('UnreadMessagesComponent', () => {
     });
 
     it('should init unread message count', fakeAsync(() => {
+        const expectedCount = 5 * conference.participants.length;
+        component.unreadMessages = undefined;
         component.ngOnInit();
         tick();
-        expect(component.unreadCount).toBe(unreadCountResponse.number_of_unread_messages);
+        expect(component.unreadCount).toBe(expectedCount);
     }));
 
     it('should log error when unable to init', fakeAsync(() => {
         const error = new Error('failed to find conference');
-        videoWebServiceSpy.getUnreadAdminMessageCountForConference.and.callFake(() => Promise.reject(error));
+        videoWebServiceSpy.getUnreadMessageCountForConference.and.callFake(() => Promise.reject(error));
         const spy = spyOn(logger, 'error');
         component.ngOnInit();
         tick();
@@ -62,51 +73,104 @@ describe('UnreadMessagesComponent', () => {
     }));
 
     it('should reset conference unread counter when vho sends a message', () => {
-        component.resetConferenceUnreadCounter(conference.id);
-        expect(component.unreadCount).toBe(0);
+        const conferenceId = conference.id;
+        const participantUsername = conference.participants[0].username;
+        const expectedCount = 5 * (conference.participants.length - 1);
+        component.resetUnreadCounter(conferenceId, participantUsername);
+        expect(component.unreadCount).toBe(expectedCount);
     });
 
     it('should reset unread message counter when admin has answered', () => {
-        component.unreadCount = unreadCountResponse.number_of_unread_messages;
+        const conferenceId = conference.id;
+        const participantUsername = conference.participants[0].username;
+        const expectedCount = 5 * (conference.participants.length - 1);
         component.setupSubscribers();
-        mockEventService.adminAnsweredChatSubject.next(conference.id);
+        const payload = new ConferenceMessageAnswered(conferenceId, participantUsername);
 
-        expect(component.unreadCount).toBe(0);
+        mockEventService.adminAnsweredChatSubject.next(payload);
+
+        expect(component.unreadCount).toBe(expectedCount);
     });
 
     it('should not reset unread message counter when conference id does not exist', () => {
-        component.unreadCount = unreadCountResponse.number_of_unread_messages;
+        const conferenceId = Guid.create().toString();
+        const participantUsername = conference.participants[0].username;
+        const expectedCount = 5 * conference.participants.length;
         component.setupSubscribers();
-        mockEventService.adminAnsweredChatSubject.next(Guid.create().toString());
+        const payload = new ConferenceMessageAnswered(conferenceId, participantUsername);
 
-        expect(component.unreadCount).toBe(unreadCountResponse.number_of_unread_messages);
+        mockEventService.adminAnsweredChatSubject.next(payload);
+
+        expect(component.unreadCount).toBe(expectedCount);
     });
 
-    it('should return empty image if no unread messages', () => {
-        component.unreadCount = 1;
+    it('should return IM image if are unread messages', () => {
+        component.unreadMessages = [new UnreadAdminMessageResponse({ participant_username: 'test@1.com', number_of_unread_messages: 5 })];
         expect(component.getIMStatus()).toBe('IM_icon.png');
     });
 
-    it('should return IM image if there are unread messages', () => {
-        component.unreadCount = 0;
+    it('should return empty image if there are no unread messages', () => {
+        component.unreadMessages = [new UnreadAdminMessageResponse({ participant_username: 'test@1.com', number_of_unread_messages: 0 })];
         expect(component.getIMStatus()).toBe('IM-empty.png');
     });
-    it('should reset unread message counter when judge send a message', () => {
-        component.unreadCount = unreadCountResponse.number_of_unread_messages;
-        component.setupSubscribers();
-        mockEventService.messageSubject.next(new InstantMessage({
-            conferenceId: conference.id, from: 'judge.fudge@hearings.net'
-        }));
 
-        expect(component.unreadCount).toBe(unreadCountResponse.number_of_unread_messages + 1);
+    it('should increase unread count when non-admin sends a message', () => {
+        const conferenceId = conference.id;
+        const participantUsername = conference.participants[0].username;
+        const expectedCount = component.unreadCount + 1;
+        component.setupSubscribers();
+        mockEventService.messageSubject.next(
+            new InstantMessage({
+                conferenceId: conferenceId,
+                from: participantUsername
+            })
+        );
+        expect(component.unreadCount).toBe(expectedCount);
     });
-    it('should not increase unread message counter when admin send a message', () => {
-        component.unreadCount = unreadCountResponse.number_of_unread_messages;
-        component.setupSubscribers();
-        mockEventService.messageSubject.next(new InstantMessage({
-            conferenceId: conference.id, from: 'james.green123@hearings.net'
-        }));
 
-        expect(component.unreadCount).toBe(unreadCountResponse.number_of_unread_messages);
+    it('should not increase unread count when admin sends a message', () => {
+        const conferenceId = conference.id;
+        const participantUsername = 'admin@test.com';
+        const expectedCount = component.unreadCount;
+        component.setupSubscribers();
+        mockEventService.messageSubject.next(
+            new InstantMessage({
+                conferenceId,
+                from: participantUsername
+            })
+        );
+        expect(component.unreadCount).toBe(expectedCount);
+    });
+
+    it('should not increase unread count when message is for a different conference', () => {
+        const conferenceId = Guid.create().toString();
+        const participantUsername = conference.participants[0].username;
+        const expectedCount = component.unreadCount;
+        component.incrementUnreadCounter(conferenceId, participantUsername);
+        expect(component.unreadCount).toBe(expectedCount);
+    });
+
+    it('should not increase unread count when message is for participant not in conference', () => {
+        const conferenceId = conference.id;
+        const participantUsername = 'random@test.com';
+        const expectedCount = component.unreadCount;
+        component.setupSubscribers();
+        mockEventService.messageSubject.next(
+            new InstantMessage({
+                conferenceId: conferenceId,
+                from: participantUsername
+            })
+        );
+        expect(component.unreadCount).toBe(expectedCount);
+    });
+
+    it('should return zero when conference has no IMs', () => {
+        unreadConferenceResponse = new UnreadInstantMessageConferenceCountResponse({
+            number_of_unread_messages_conference: []
+        });
+        component.unreadMessages = unreadConferenceResponse.number_of_unread_messages_conference;
+
+        expect(component.unreadCount).toBe(0);
+        expect(component.getIMStatus()).toBe('IM-empty.png');
     });
 });

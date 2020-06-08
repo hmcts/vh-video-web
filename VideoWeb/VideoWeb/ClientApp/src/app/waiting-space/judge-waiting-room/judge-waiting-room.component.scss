@@ -3,9 +3,13 @@
 }
 
 .text-highlight-red {
-  color: govuk-colour("red");
+  color: govuk-colour('red');
 }
 
 .audio-icon {
-    height: 24px;
+  height: 24px;
+  padding-top: 1px;
+}
+.vh-left {
+  margin-left: 1px;
 }

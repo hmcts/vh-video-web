@@ -174,9 +174,9 @@ export class ConferenceTestData {
             scheduled_duration: 45,
             status: ConferenceStatus.NotStarted,
             participants: participants,
-            judge_i_frame_uri: 'judgeiframe@kinly..com',
-            participant_uri: 'participant@kinly..com',
-            pexip_node_uri: 'node@kinly..com',
+            judge_i_frame_uri: 'https://test.hearings.com/judge',
+            participant_uri: 'participant@kinly.com',
+            pexip_node_uri: 'node@kinly.com',
             hearing_venue_name: 'venue name'
         });
 
@@ -402,6 +402,7 @@ export class ConferenceTestData {
             conferenceId,
             id: Guid.create().toString(),
             from: 'vho.user@hearings.net',
+            from_display_name: 'VHO user',
             message: 'test message from vho',
             timestamp: moment(now).subtract(3, 'minutes').toDate()
         });
@@ -410,6 +411,7 @@ export class ConferenceTestData {
             conferenceId,
             id: Guid.create().toString(),
             from: 'judge.fudge@hearings.net',
+            from_display_name: 'Judge Fudge',
             message: 'test message from judge',
             timestamp: moment(now).subtract(5, 'minutes').toDate()
         });
@@ -418,6 +420,7 @@ export class ConferenceTestData {
             conferenceId,
             id: Guid.create().toString(),
             from: 'vho.user@hearings.net',
+            from_display_name: 'VHO user',
             message: 'test message from vho 2',
             timestamp: moment(now).subtract(8, 'minutes').toDate()
         });
@@ -426,6 +429,7 @@ export class ConferenceTestData {
             conferenceId,
             id: Guid.create().toString(),
             from: 'vho.user@hearings.net',
+            from_display_name: 'VHO user',
             message: 'test message from vho 3',
             timestamp: moment(now).subtract(10, 'minutes').toDate()
         });

@@ -26,6 +26,7 @@ import {
 } from 'src/app/testing/stubs/participant-status-list-stub';
 import { Hearing } from '../../shared/models/hearing';
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room.component';
+import { ParticipantChatStubComponent } from 'src/app/testing/stubs/participant-chat-stub.component';
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -61,7 +62,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
                 IndividualParticipantStatusListStubComponent,
                 AnalogueClockStubComponent,
                 JudgeParticipantStatusListStubComponent,
-                IndividualConsultationControlsStubComponent
+                IndividualConsultationControlsStubComponent,
+                ParticipantChatStubComponent
             ],
             providers: [
                 {

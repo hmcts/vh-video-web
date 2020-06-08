@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, HostListener, OnDestroy, OnInit, Input } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
@@ -6,19 +6,24 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ChatResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
+import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
 
 @Component({
-    selector: 'app-judge-chat',
-    templateUrl: './judge-chat.component.html',
-    styleUrls: ['./judge-chat.component.scss']
+    selector: 'app-participant-chat',
+    templateUrl: './participant-chat.component.html',
+    styleUrls: ['./participant-chat.component.scss']
 })
-export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnDestroy, AfterViewChecked {
+export class ParticipantChatComponent extends ChatBaseComponent implements OnInit, OnDestroy, AfterViewChecked {
+    private chatHubSubscription: Subscription;
+
     showChat: boolean;
     unreadMessageCount: number;
     loading: boolean;
-    private chatHubSubscription: Subscription;
+
+    @ViewChild('content', { static: false }) content: ElementRef;
 
     @Input() hearing: Hearing;
 
@@ -27,9 +32,10 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
         protected profileService: ProfileService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected adalService: AdalService
+        protected adalService: AdalService,
+        protected imHelper: ImHelper
     ) {
-        super(videoWebService, profileService, eventService, logger, adalService);
+        super(videoWebService, profileService, eventService, logger, adalService, imHelper);
     }
 
     ngOnInit() {
@@ -37,8 +43,8 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
         this.showChat = false;
         this.unreadMessageCount = 0;
         this.loading = true;
-        this.retrieveChatForConference().then(messages => {
-            this.chatHubSubscription = this.setupChatSubscription();
+        this.setupChatSubscription().then(sub => (this.chatHubSubscription = sub));
+        this.retrieveChatForConference(this.adalService.userInfo.userName.toLowerCase()).then(messages => {
             this.unreadMessageCount = this.getCountSinceUsersLastMessage(messages);
             this.loading = false;
             this.messages = messages;
@@ -48,15 +54,12 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
     ngAfterViewChecked(): void {
         if (this.showChat) {
             this.resetUnreadMessageCount();
+            this.scrollToBottom();
         }
     }
 
-    sendMessage(messageBody: string) {
-        this.eventService.sendMessage(this.hearing.id, messageBody);
-    }
-
-    getMessageWindow(): HTMLElement {
-        return document.getElementById('chat-list');
+    async sendMessage(messageBody: string) {
+        await this.eventService.sendMessage(this.hearing.id, messageBody, this.DEFAULT_ADMIN_USERNAME);
     }
 
     @HostListener('window:beforeunload')
@@ -71,7 +74,7 @@ export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnD
         this.showChat = !this.showChat;
     }
 
-    handleIncomingOtherMessage() {
+    handleIncomingOtherMessage(message: InstantMessage) {
         if (!this.showChat) {
             this.unreadMessageCount++;
         }

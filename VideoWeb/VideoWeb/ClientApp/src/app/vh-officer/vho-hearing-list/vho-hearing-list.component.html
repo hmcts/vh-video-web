@@ -1,8 +1,12 @@
 <div id="conference-list" class="govuk-!-padding-3">
-  <div class="vhList govuk-!-padding-top-2" [ngClass]="{ 'selected-conference': isCurrentConference(conference) }"
-    *ngFor="let conference of conferences" (click)="selectConference(conference)" id="{{ conference.id }}-summary">
-
-    <div class="shareIcon"><app-copy-id [conference]="conference"></app-copy-id></div> 
+  <div
+    class="vhList govuk-!-padding-top-2"
+    [ngClass]="{ 'selected-conference': isCurrentConference(conference) }"
+    *ngFor="let conference of conferences"
+    (click)="selectConference(conference)"
+    id="{{ conference.id }}-summary"
+  >
+    <div class="shareIcon"><app-copy-id [conference]="conference"></app-copy-id></div>
     <div class="time listItem" id="{{ conference.id }}-time">{{ conference.scheduledDateTime | date: 'HH:mm' }}</div>
     <ng-container *ngIf="conference.startedDateTime">
       <div class="started listItemGreySmall" id="{{ conference.id }}-started">started</div>
@@ -14,22 +18,20 @@
     </ng-container>
     <div class="title listItemBig" id="{{ conference.id }}-case-name">{{ conference.caseName }}</div>
     <div class="listed listItemGrey" id="{{ conference.id }}-duration">{{ getDuration(conference) }}</div>
-    <div class="crest"><img src="/assets/images/black_crest.png" class="icons" alt="crest-icon"></div>
+    <div class="crest"><img src="/assets/images/black_crest.png" class="icons" alt="crest-icon" /></div>
     <div class="ref listItemGreySmall" id="{{ conference.id }}-case-number">{{ conference.caseNumber }}</div>
     <div class="judge listItemBold" id="{{ conference.id }}-judge">{{ conference.judgeName }}</div>
     <div class="venue listItem" id="{{ conference.id }}-venue">{{ conference.hearingVenueName }}</div>
     <div class="alert"><app-pending-tasks [conferenceId]="conference.id"></app-pending-tasks></div>
     <div class="message"><app-unread-messages [hearing]="mapToHearingWithParticipants(conference)"></app-unread-messages></div>
-    <div id="{{ conference.id }}-hearing-status" class="status"><app-hearing-status [hearing]="mapToHearing(conference)"></app-hearing-status></div>
-
-    <div *ngFor="let participant of getParticipantsForConference(conference); index as i" class="pIcon{{i + 1}}">
-      <app-participant-network-status
-        [participant]="participant"
-        [conferenceId]="conference.id"
-      >
-      </app-participant-network-status>
+    <div id="{{ conference.id }}-hearing-status" class="status">
+      <app-hearing-status [hearing]="mapToHearing(conference)"></app-hearing-status>
     </div>
 
-    <div class="line"><hr></div>    
+    <div *ngFor="let participant of getParticipantsForConference(conference); index as i" class="pIcon{{ i + 1 }}">
+      <app-participant-network-status [participant]="participant" [conferenceId]="conference.id"> </app-participant-network-status>
+    </div>
+
+    <div class="line"><hr /></div>
   </div>
 </div>

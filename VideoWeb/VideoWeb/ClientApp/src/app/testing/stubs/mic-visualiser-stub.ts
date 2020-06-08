@@ -4,5 +4,4 @@ import { Component, Input } from '@angular/core';
 export class MicVisualiserStubComponent {
     @Input() stream: MediaStream;
     @Input() incomingStream: MediaStream;
-
 }

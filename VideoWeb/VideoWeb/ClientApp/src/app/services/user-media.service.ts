@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import 'webrtc-adapter';
 import { UserMediaDevice } from '../shared/models/user-media-device';
-import { SessionStorage } from './session-storage';
 import { Logger } from './logging/logger-base';
-import { BehaviorSubject } from 'rxjs';
+import { SessionStorage } from './session-storage';
 
 @Injectable({
     providedIn: 'root'
@@ -37,16 +37,16 @@ export class UserMediaService {
 
     async getListOfVideoDevices(): Promise<UserMediaDevice[]> {
         await this.checkDeviceListIsReady();
-        return this.availableDeviceList.filter((x) => x.kind === 'videoinput');
+        return this.availableDeviceList.filter(x => x.kind === 'videoinput');
     }
 
     async getListOfMicrophoneDevices(): Promise<UserMediaDevice[]> {
         await this.checkDeviceListIsReady();
-        return this.availableDeviceList.filter((x) => x.kind === 'audioinput');
+        return this.availableDeviceList.filter(x => x.kind === 'audioinput');
     }
 
     async checkDeviceListIsReady() {
-        if (!this.availableDeviceList) {
+        if (!this.availableDeviceList || this.availableDeviceList.length === 0) {
             await this.updateAvailableDevicesList();
         }
     }
@@ -57,22 +57,24 @@ export class UserMediaService {
             throw new Error('enumerateDevices() not supported.');
         }
 
-        let updatedDevices: MediaDeviceInfo[];
+        let updatedDevices: MediaDeviceInfo[] = [];
+        const stream: MediaStream = await this.navigator.mediaDevices.getUserMedia({ audio: true, video: true });
 
-        const stream = await this.navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-        if (stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0) {
+        if (stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0) {
             updatedDevices = await navigator.mediaDevices.enumerateDevices();
         }
 
-        updatedDevices = updatedDevices.filter((x) => x.deviceId !== 'default' && x.kind !== 'audiooutput');
+        updatedDevices = updatedDevices.filter(x => x.deviceId !== 'default' && x.kind !== 'audiooutput');
         this.availableDeviceList = Array.from(
             updatedDevices,
-            (device) => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)
+            device => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)
         );
 
-        stream.getTracks().forEach((track) => {
-            track.stop();
-        });
+        if (stream) {
+            stream.getTracks().forEach(track => {
+                track.stop();
+            });
+        }
         this.connectedDevices.next(this.availableDeviceList);
     }
 
@@ -98,7 +100,7 @@ export class UserMediaService {
 
         await this.checkDeviceListIsReady();
 
-        const stillConnected = this.availableDeviceList.find((x) => x.label === device.label);
+        const stillConnected = this.availableDeviceList.find(x => x.label === device.label);
         if (stillConnected) {
             return device;
         } else {

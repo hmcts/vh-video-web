@@ -5,24 +5,26 @@
 <div id="participant-status-list">
   <div *ngFor="let participant of participants" class="govuk-grid-row">
     <div class="govuk-grid-column-one-half">
-      <div id="participant-contact-details-link-{{participant.id}}" class="govuk-body-s tooltip-wrapper">
+      <div id="participant-contact-details-link-{{ participant.id }}" class="govuk-body-s tooltip-wrapper">
         <ng-container *ngIf="participant.isJudge; else individualName">
-          {{participant.displayName}}
+          {{ participant.displayName }}
         </ng-container>
         <ng-template #individualName>
-          {{participant.initialedName}}
+          {{ participant.initialedName }}
         </ng-template>
-        <div id="tooltip-{{participant.id}}" class="tooltip">
+        <div id="tooltip-{{ participant.id }}" class="tooltip">
           <app-participant-info-tooltip [participant]="participant"></app-participant-info-tooltip>
         </div>
       </div>
     </div>
 
     <div class="govuk-grid-column-one-half">
-      <p id="participant-status-{{participant.id}}"
-         class="govuk-body-s govuk-!-font-weight-bold"
-         [ngClass]="getParticipantStatusClass(participant.status)">
-        {{participant.statusText}}
+      <p
+        id="participant-status-{{ participant.id }}"
+        class="govuk-body-s govuk-!-font-weight-bold"
+        [ngClass]="getParticipantStatusClass(participant.status)"
+      >
+        {{ participant.statusText }}
       </p>
     </div>
   </div>

@@ -1,4 +1,4 @@
-@import "~govuk-frontend/govuk/all";
+@import '~govuk-frontend/govuk/all';
 
 #incomingFeed {
   position: fixed;
@@ -35,26 +35,26 @@
 }
 
 .hearing-on-time {
-  background-color: govuk-colour("blue");
-  color: govuk-colour("white");
+  background-color: govuk-colour('blue');
+  color: govuk-colour('white');
 }
 
 .hearing-near-start {
-  background-color: govuk-colour("black");
-  color: govuk-colour("white");
+  background-color: govuk-colour('black');
+  color: govuk-colour('white');
 }
 
 .hearing-delayed {
-  background-color: govuk-colour("yellow");
-  color: govuk-colour("black");
+  background-color: govuk-colour('yellow');
+  color: govuk-colour('black');
 }
 
 .govuk-heading-m.white {
-  color: govuk-colour("white");
+  color: govuk-colour('white');
 }
 
 .white {
-  color: govuk-colour("white");
+  color: govuk-colour('white');
 }
 
 .hearing-details-col1-width {
@@ -96,5 +96,5 @@
 }
 
 .microphoneIcon {
-    height: 18px;
+  height: 18px;
 }

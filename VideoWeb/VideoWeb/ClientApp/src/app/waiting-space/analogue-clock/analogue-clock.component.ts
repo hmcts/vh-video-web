@@ -20,7 +20,7 @@ export class AnalogueClockComponent implements OnInit {
     ngOnInit() {
         this.setCurrentTime();
 
-        this.clockService.getClock().subscribe((time) => {
+        this.clockService.getClock().subscribe(time => {
             this.currentTime = time;
             this.updateclock();
         });
