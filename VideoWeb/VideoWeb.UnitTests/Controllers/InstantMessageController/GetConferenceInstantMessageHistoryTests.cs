@@ -16,16 +16,16 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
 {
     public class GetConferenceInstantMessageHistoryTests : InstantMessageControllerTestBase
     {
-
         [Test]
         public async Task Should_return_okay_code_when_chat_history_is_found()
         {
             var conferenceId = Guid.NewGuid();
+            var participantUsername = "individual user";
             var messages = Builder<InstantMessageResponse>.CreateListOfSize(5).Build().ToList();
-            VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
+            VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername))
                 .ReturnsAsync(messages);
 
-            var result = await Controller.GetConferenceInstantMessageHistoryAsync(conferenceId);
+            var result = await Controller.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername);
             var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
             var responseModel = typedResult.Value as List<ChatResponse>;
@@ -37,11 +37,12 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
         public async Task Should_return_okay_code_when_chat_history_is_empty()
         {
             var conferenceId = Guid.NewGuid();
+            var participantUsername = "individual user";
             var messages = new List<InstantMessageResponse>();
-            VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
+            VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername))
                 .ReturnsAsync(messages);
 
-            var result = await Controller.GetConferenceInstantMessageHistoryAsync(conferenceId);
+            var result = await Controller.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername);
             var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
             var responseModel = typedResult.Value as List<ChatResponse>;
@@ -59,10 +60,10 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
                 .With(x => x.From = loggedInUser).TheNext(3)
                 .With(x => x.From = otherUsername)
                 .Build().ToList();
-            VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
+            VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, loggedInUser))
                 .ReturnsAsync(messages);
 
-            var result = await Controller.GetConferenceInstantMessageHistoryAsync(conferenceId);
+            var result = await Controller.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, loggedInUser);
 
             MessageDecoder.Verify(x => x.IsMessageFromUser(
                     It.Is<InstantMessageResponse>(m => m.From == loggedInUser), loggedInUser),
@@ -82,13 +83,14 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
         public async Task Should_return_exception()
         {
             var conferenceId = Guid.NewGuid();
+            var participantUsername = "individual user";
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
                 (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
-            VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
+            VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername))
                 .ThrowsAsync(apiException);
 
-            var result = await Controller.GetConferenceInstantMessageHistoryAsync(conferenceId);
+            var result = await Controller.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername);
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
         }

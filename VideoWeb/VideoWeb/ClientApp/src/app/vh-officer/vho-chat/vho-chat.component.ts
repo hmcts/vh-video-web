@@ -22,8 +22,22 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
     chatHubSubscription: Subscription;
     loading: boolean;
 
+    private _participant: Participant;
+
+    @Input() set participant(value: Participant) {
+        if (!this._participant) {
+            this._participant = value;
+        } else {
+            this._participant = value;
+            this.updateChatWindow();
+        }
+    }
+
+    get participant(): Participant {
+        return this._participant;
+    }
+
     @Input() hearing: Hearing;
-    @Input() participant: Participant;
     @Output() unreadMessageCount = new EventEmitter<ConferenceUnreadMessageCount>();
 
     constructor(
@@ -42,7 +56,11 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         this.initForm();
         this.loading = true;
         this.setupChatSubscription().then(sub => (this.chatHubSubscription = sub));
-        this.retrieveChatForConference().then(messages => {
+        this.updateChatWindow();
+    }
+
+    updateChatWindow() {
+        this.retrieveChatForConference(this.participant.username).then(messages => {
             this.messages = messages;
             this.loading = false;
         });

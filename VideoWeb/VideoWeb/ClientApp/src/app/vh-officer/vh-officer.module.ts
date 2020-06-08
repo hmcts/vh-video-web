@@ -21,6 +21,7 @@ import { PendingTasksComponent } from './pending-tasks/pending-tasks.component';
 import { HearingsFilterOptionsService } from './services/hearings-filter-options.service';
 import { VhoQueryService } from './services/vho-query-service.service';
 import { TasksTableComponent } from './tasks-table/tasks-table.component';
+import { UnreadMessagesParticipantComponent } from './unread-messages-participant/unread-messages-participant.component';
 import { UnreadMessagesComponent } from './unread-messages/unread-messages.component';
 import { VenueListComponent } from './venue-list/venue-list.component';
 import { VhOfficerRoutingModule } from './vh-officer-routing.module';
@@ -48,7 +49,8 @@ import { VhoHearingsFilterComponent } from './vho-hearings-filter/vho-hearings-f
         AdminImListComponent,
         HearingHeaderComponent,
         HearingStatusComponent,
-        CopyIdComponent
+        CopyIdComponent,
+        UnreadMessagesParticipantComponent
     ],
     imports: [CommonModule, SharedModule, ChartsModule, ClipboardModule, VhOfficerRoutingModule, NgSelectModule],
     providers: [HearingsFilterOptionsService, ParticipantStatusReader, VhoQueryService],

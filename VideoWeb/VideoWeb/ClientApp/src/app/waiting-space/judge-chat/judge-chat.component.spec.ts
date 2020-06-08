@@ -185,7 +185,7 @@ describe('JudgeChatComponent', () => {
     });
 
     it('should map to InstantMessage', async () => {
-        const messages = await component.retrieveChatForConference();
+        const messages = await component.retrieveChatForConference(judgeUsername);
         const messagesWithId = messages.filter(x => x.id);
         expect(messagesWithId.length).toBe(messages.length);
     });
