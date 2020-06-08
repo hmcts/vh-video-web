@@ -1,5 +1,4 @@
 <div *ngIf="conference">
-
   <h1 class="govuk-heading-l">Hearing Events</h1>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third">
@@ -22,12 +21,11 @@
   <h1 class="govuk-heading-l">Participant Events</h1>
 
   <div *ngFor="let pat of conference.participants" class="govuk-grid-row">
-    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+    <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
 
     <div class="govuk-grid-column-full">
-      <p class="govuk-heading-m">{{pat.display_name}}</p>
+      <p class="govuk-heading-m">{{ pat.display_name }}</p>
     </div>
-
 
     <div class="govuk-grid-column-one-quarter">
       <button type="button" class="govuk-button" (click)="joinHearing(pat)" data-module="govuk-button">
@@ -82,6 +80,5 @@
         VHO Consultation
       </button>
     </div>
-
   </div>
 </div>

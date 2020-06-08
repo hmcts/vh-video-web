@@ -50,7 +50,7 @@ export class HearingsFilterOptionsService {
     }
 
     private addStatuses(hearingsStatuses: ConferenceStatus[]) {
-        hearingsStatuses.forEach((conferenceStatus) => {
+        hearingsStatuses.forEach(conferenceStatus => {
             const description = this.setHearingsStatuses(conferenceStatus);
             const itemStatus = new StatusFilter(description, conferenceStatus, false);
             this.hearingsFilter.statuses.push(itemStatus);
@@ -59,7 +59,7 @@ export class HearingsFilterOptionsService {
     }
 
     private addAlerts(alerts: AlertsStatus[]) {
-        alerts.forEach((alert) => {
+        alerts.forEach(alert => {
             const itemAlert = this.setAlertStatuses(alert);
             this.hearingsFilter.alerts.push(itemAlert);
         });
@@ -121,7 +121,7 @@ export class HearingsFilterOptionsService {
 
     private count(options: ListFilter[]) {
         let countOptions = 0;
-        options.forEach((x) => {
+        options.forEach(x => {
             if (x.selected) {
                 countOptions++;
             }

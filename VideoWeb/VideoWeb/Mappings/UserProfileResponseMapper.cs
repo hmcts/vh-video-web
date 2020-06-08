@@ -11,7 +11,10 @@ namespace VideoWeb.Mappings
         {
             var response = new UserProfileResponse
             {
-                FirstName = profile.First_name, LastName = profile.Last_name, DisplayName = profile.Display_name
+                FirstName = profile.First_name, 
+                LastName = profile.Last_name, 
+                DisplayName = profile.Display_name,
+                Username = profile.User_name
             };
 
             var userRole = profile.User_role;

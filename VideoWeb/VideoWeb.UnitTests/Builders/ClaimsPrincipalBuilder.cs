@@ -25,7 +25,14 @@ namespace VideoWeb.UnitTests.Builders
             _claims.Add(new Claim(ClaimTypes.Role, role.EnumDataMemberAttr()));
             return this;
         }
-        
+
+        public ClaimsPrincipalBuilder WithUsername(string username)
+        {
+            var usernameClaimIndex = _claims.FindIndex(x => x.Type == ClaimTypes.Name);
+            _claims.RemoveAt(usernameClaimIndex);
+            return WithClaim(ClaimTypes.Name, username);
+        }
+
         public ClaimsPrincipalBuilder WithClaim(string claimType, string value)
         {
             _claims.Add(new Claim(claimType, value));

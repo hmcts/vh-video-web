@@ -1,4 +1,5 @@
 import { inject, TestBed } from '@angular/core/testing';
+import * as signalR from '@microsoft/signalr';
 import { AdalService } from 'adal-angular4';
 import { MockAdalService } from '../testing/mocks/MockAdalService';
 import { MockConfigService } from '../testing/mocks/MockConfigService';
@@ -23,12 +24,11 @@ describe('EventsService', () => {
         spyOn(service.connection, 'start').and.callFake(() => Promise.resolve());
         await service.start();
         expect(service.reconnectionAttempt).toBe(0);
-        expect(service.connectionStarted).toBeTruthy();
-        expect(service.attemptingConnection).toBeFalsy();
     }));
     it('should not start if connected', inject([EventsService], (service: EventsService) => {
+        const spy = spyOnProperty(service.connection, 'state').and.returnValue(signalR.HubConnectionState.Disconnected);
         spyOn(service.connection, 'start').and.callFake(() => {
-            service.connectionStarted = true;
+            spy.and.returnValue(signalR.HubConnectionState.Connected);
             return Promise.resolve();
         });
         service.start();

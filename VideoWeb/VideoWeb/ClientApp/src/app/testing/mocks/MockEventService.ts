@@ -8,6 +8,7 @@ import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { ChatResponse, ConferenceStatus, ConsultationAnswer, ParticipantStatus, RoomType } from '../../services/clients/api-client';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
+import { ConferenceMessageAnswered } from 'src/app/services/models/conference-message-answered';
 
 export class MockEventsService {
     nextParticipantStatusMessage: ParticipantStatusMessage;
@@ -28,13 +29,15 @@ export class MockEventsService {
     adminConsultationMessageSubject = new Subject<AdminConsultationMessage>();
     messageSubject = new Subject<InstantMessage>();
     participantHeartbeat = new Subject<ParticipantHeartbeat>();
-    adminAnsweredChatSubject = new Subject<string>();
+    adminAnsweredChatSubject = new Subject<ConferenceMessageAnswered>();
     eventHubDisconnectSubject = new Subject<number>();
     eventHubReconnectSubject = new Subject();
 
     constructor() {
         this.nextParticipantStatusMessage = new ParticipantStatusMessage(
-            '9F681318-4955-49AF-A887-DED64554429D', 'username', '9F681318-4955-49AF-A887-DED64554429D',
+            '9F681318-4955-49AF-A887-DED64554429D',
+            'username',
+            '9F681318-4955-49AF-A887-DED64554429D',
             ParticipantStatus.Available
         );
         this.nextHearingStatusMessage = new ConferenceStatusMessage('612AB52C-BDA5-4F4D-95B8-3F49065219A6', ConferenceStatus.InSession);
@@ -51,8 +54,12 @@ export class MockEventsService {
             'james.green@hearings.net',
             ConsultationAnswer.None
         );
-        this.nextJudgeStatusMessage = new ParticipantStatusMessage('9F681318-4955-49AF-A887-DED64554429T', 'username',
-          '9F681318-4955-49AF-A887-DED64554429D', ParticipantStatus.Disconnected);
+        this.nextJudgeStatusMessage = new ParticipantStatusMessage(
+            '9F681318-4955-49AF-A887-DED64554429T',
+            'username',
+            '9F681318-4955-49AF-A887-DED64554429D',
+            ParticipantStatus.Disconnected
+        );
         this.nextChatMessage = new ChatResponse({
             id: Guid.create().toString(),
             from: 'judge.fudge@hearings.net',
@@ -98,7 +105,7 @@ export class MockEventsService {
 
     sendMessage(conferenceId: string, message: string) {}
 
-    getAdminAnsweredChat(): Observable<string> {
+    getAdminAnsweredChat(): Observable<ConferenceMessageAnswered> {
         return this.adminAnsweredChatSubject.asObservable();
     }
 

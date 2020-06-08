@@ -20,6 +20,7 @@ import { ParticipantSelfTestComponent } from './participant-self-test/participan
 import { JudgeSelfTestComponent } from './judge-self-test/judge-self-test.component';
 import { IndependentSelfTestComponent } from './independent-self-test/independent-self-test.component';
 import { PluraliseTextPipe } from '../shared/pipes/pluraliseText.pipe';
+import { SelfTestActionsComponent } from './self-test-actions/self-test-actions.component';
 
 @NgModule({
     imports: [CommonModule, SharedModule, OnTheDayRoutingModule],
@@ -41,7 +42,8 @@ import { PluraliseTextPipe } from '../shared/pipes/pluraliseText.pipe';
         ParticipantSelfTestComponent,
         JudgeSelfTestComponent,
         IndependentSelfTestComponent,
-        PluraliseTextPipe
+        PluraliseTextPipe,
+        SelfTestActionsComponent
     ],
     exports: [DeclarationComponent]
 })

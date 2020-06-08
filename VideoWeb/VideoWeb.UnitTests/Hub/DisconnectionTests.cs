@@ -1,6 +1,8 @@
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 
@@ -23,7 +25,7 @@ namespace VideoWeb.UnitTests.Hub
         }
         
         [Test]
-        public async Task Should_unsubscribe_judge_from_conferences_they_are_assigned_to()
+        public async Task Should_not_unsubscribe_judge_from_conference_channels()
         {
             const int numOfConferences = 10;
             const int numOfConferencesWithUser = 2;
@@ -33,22 +35,23 @@ namespace VideoWeb.UnitTests.Hub
 
             GroupManagerMock.Verify(
                 x => x.RemoveFromGroupAsync(HubCallerContextMock.Object.ConnectionId, It.IsIn(conferenceIds),
-                    CancellationToken.None), Times.Exactly(numOfConferencesWithUser));
+                    CancellationToken.None), Times.Never);
         }
 
         [Test]
         public async Task Should_log_critical_when_exception_on_disconnect()
         {
-            const int numOfConferences = 10;
-            const int numOfConferencesWithUser = 2;
-            var conferenceIds = SetupJudgeConferences(numOfConferences, numOfConferencesWithUser);
-
             var exception = new InconclusiveException("Some test");
             await Hub.OnDisconnectedAsync(exception);
 
-            GroupManagerMock.Verify(
-                x => x.RemoveFromGroupAsync(HubCallerContextMock.Object.ConnectionId, It.IsIn(conferenceIds),
-                    CancellationToken.None), Times.Exactly(numOfConferencesWithUser));
+            LoggerMock.Verify(
+                x => x.Log(
+                    LogLevel.Warning,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((o, t) => o.ToString().StartsWith("There was an error when disconnecting from chat hub server-side")),
+                    exception,
+                    (Func<It.IsAnyType, Exception, string>) It.IsAny<object>()),
+                Times.Once);
         }
         
         [Test]
