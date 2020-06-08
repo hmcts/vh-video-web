@@ -142,6 +142,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             var conferencesForUser = (List<ConferenceForVhOfficerResponse>) typedResult.Value;
             conferencesForUser.Should().NotBeNullOrEmpty();
+            conferencesForUser.Should().BeInAscendingOrder(x => x.ClosedDateTime);
             var returnedIds = conferencesForUser.Select(x => x.Id).ToList();
             returnedIds.Should().Contain(expectedConferenceIds);
             var i = 1;

@@ -140,6 +140,7 @@ namespace VideoWeb.Controllers
         public async Task<ActionResult<ConferenceResponseVho>> GetConferenceByIdVHOAsync(Guid conferenceId)
         {
             _logger.LogDebug("GetConferenceById");
+            const string exceptionMessage = "User must be a VH Officer";
             if (conferenceId == Guid.Empty)
             {
                 _logger.LogWarning("Unable to get conference when id is not provided");
@@ -153,7 +154,7 @@ namespace VideoWeb.Controllers
             {
                 _logger.LogWarning($"Failed to get conference: ${conferenceId}, {User.Identity.Name} is not a VH officer");
                 
-                return Unauthorized("User must be a VH Officer");
+                return Unauthorized(exceptionMessage);
             }
 
             ConferenceDetailsResponse conference;
