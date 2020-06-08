@@ -13,7 +13,6 @@ namespace VideoWeb.UnitTests.Mappings
 {
     public class UnreadAdminMessageResponseMapperTests
     {
-
         [Test]
         public void Should_map_and_count_number_of_messages_since_vho_message()
         {

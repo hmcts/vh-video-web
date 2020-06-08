@@ -7,18 +7,19 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings
 {
-    public static class UnreadAdminMessageResponseMapper{
+    public static class UnreadAdminMessageResponseMapper
+    {
         public static UnreadAdminMessageResponse MapToResponseModel(Conference conference, IList<InstantMessageResponse> messageResponses)
         {
             var response = new UnreadAdminMessageResponse
             {
-                NumberOfUnreadMessages = MapMessages(conference, messageResponses)
+                NumberOfUnreadMessages = MapMessages(conference, messageResponses),
+                ParticipantUsername = conference.GetJudge().Username
             };
             return response;
         }
-        
-        private static int MapMessages(Conference conference,
-            IList<InstantMessageResponse> messageResponses)
+
+        private static int MapMessages(Conference conference, IList<InstantMessageResponse> messageResponses)
         {
             if (messageResponses == null || !messageResponses.Any())
             {
@@ -27,8 +28,7 @@ namespace VideoWeb.Mappings
 
             messageResponses = messageResponses.OrderByDescending(x => x.Time_stamp).ToList();
             var vhoMessage = messageResponses.FirstOrDefault(m => IsNonParticipantMessage(conference, m));
-            return
-                vhoMessage == null ? messageResponses.Count() : messageResponses.IndexOf(vhoMessage);
+            return vhoMessage == null ? messageResponses.Count() : messageResponses.IndexOf(vhoMessage);
         }
 
         private static bool IsNonParticipantMessage(Conference conference, InstantMessageResponse message)
