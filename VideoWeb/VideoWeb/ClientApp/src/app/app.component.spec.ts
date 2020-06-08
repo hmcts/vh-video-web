@@ -11,6 +11,7 @@ import { LocationService } from './services/location.service';
 import { PageTrackerService } from './services/page-tracker.service';
 import { pageUrls } from './shared/page-url.constants';
 import { MockAdalService } from './testing/mocks/MockAdalService';
+import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -23,7 +24,7 @@ describe('AppComponent', () => {
     let pageTrackerServiceSpy: jasmine.SpyObj<PageTrackerService>;
     const mockAdalService = new MockAdalService();
     let adalService;
-
+    let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
     const clientSettings = new ClientSettingsResponse({
         tenant_id: 'tenantid',
         client_id: 'clientid',
@@ -53,6 +54,9 @@ describe('AppComponent', () => {
         titleServiceSpy = jasmine.createSpyObj<Title>('Title', ['getTitle', 'setTitle']);
 
         pageTrackerServiceSpy = jasmine.createSpyObj('PageTrackerService', ['trackNavigation', 'trackPreviousPage']);
+
+        participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
+
     });
 
     beforeEach(() => {
@@ -66,7 +70,8 @@ describe('AppComponent', () => {
             titleServiceSpy,
             null,
             locationServiceSpy,
-            pageTrackerServiceSpy
+            pageTrackerServiceSpy,
+            participantStatusUpdateService
         );
         deviceTypeServiceSpy.isSupportedBrowser.and.returnValue(true);
         routerSpy.navigate.and.returnValue(Promise.resolve(true));

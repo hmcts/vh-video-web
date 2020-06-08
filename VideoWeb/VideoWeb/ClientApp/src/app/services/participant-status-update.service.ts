@@ -5,7 +5,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { Router } from '@angular/router';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 
-export const ParticipantPages: string[] = [
+export const participantPages: string[] = [
     pageUrls.Introduction,
     pageUrls.EquipmentCheck,
     pageUrls.SwitchOnCameraMicrophone,
@@ -26,7 +26,7 @@ export class ParticipantStatusUpdateService {
     async postParticipantStatus() {
         try {
             const urlCurrent = await this.router.url;
-            const params = urlCurrent.split('/')
+            const params = urlCurrent.split('/');
             if (params.length > 2 && this.checkRouter(params[1])) {
                 await this.videoWebService.raiseParticipantEvent(
                     params[2],
@@ -41,6 +41,6 @@ export class ParticipantStatusUpdateService {
     }
 
     private checkRouter(currentUrl: string): boolean {
-         return ParticipantPages.findIndex(x => x === currentUrl) > -1
+        return participantPages.findIndex(x => x === currentUrl) > -1;
     }
 }

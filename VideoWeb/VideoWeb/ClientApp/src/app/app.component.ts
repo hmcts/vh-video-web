@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, HostListener } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
@@ -12,6 +12,7 @@ import { ErrorService } from './services/error.service';
 import { LocationService } from './services/location.service';
 import { PageTrackerService } from './services/page-tracker.service';
 import { pageUrls } from './shared/page-url.constants';
+import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 
 @Component({
     selector: 'app-root',
@@ -41,7 +42,8 @@ export class AppComponent implements OnInit, OnDestroy {
         private titleService: Title,
         private activatedRoute: ActivatedRoute,
         private locationService: LocationService,
-        pageTracker: PageTrackerService
+        pageTracker: PageTrackerService,
+        private participantStatusUpdateService: ParticipantStatusUpdateService
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
@@ -144,5 +146,12 @@ export class AppComponent implements OnInit, OnDestroy {
                 this.skipLinkDiv.nativeElement.focus();
             })
         );
+    }
+
+    @HostListener('window:beforeunload', ['$event'])
+    async beforeunloadHandler($event: any) {
+        $event.preventDefault();
+        await this.participantStatusUpdateService.postParticipantStatus();
+        $event.returnValue = 'save';
     }
 }
