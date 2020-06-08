@@ -47,13 +47,13 @@ namespace VideoWeb.UnitTests.Hub
 
             await Hub.SendMessage(Conference.Id, message, toUsername);
             
-            AssertMessageSentToHubAndApi(fromUsername, toUsername, message);
+            AssertMessageSentToHubAndApi(fromUsername, toUsername, message, JudgeGroupChannel);
             AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id), Times.Never);
         }
 
         [Test]
         public async Task
-            should_not_send_message_to_admin_group_and_participant_group_when_individual_sends_message_to_default_admin()
+            should_send_message_to_admin_group_and_participant_group_when_individual_sends_message_to_default_admin()
         {
             SetupSendMessageTests();
             // setup claims to return individual username
@@ -66,7 +66,7 @@ namespace VideoWeb.UnitTests.Hub
 
             await Hub.SendMessage(Conference.Id, message, toUsername);
             
-            AssertMessageNotSentToHubOrApi(fromUsername, toUsername, message);
+            AssertMessageSentToHubAndApi(fromUsername, toUsername, message, IndividualGroupChannel);
             AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id), Times.Never);
         }
         
@@ -84,15 +84,15 @@ namespace VideoWeb.UnitTests.Hub
 
             await Hub.SendMessage(Conference.Id, message, toUsername);
             
-            AssertMessageSentToHubAndApi(fromUsername, toUsername, message);
+            AssertMessageSentToHubAndApi(fromUsername, toUsername, message, JudgeGroupChannel);
             AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id), Times.Never);
         }
         
         [Test]
-        public async Task should_not_send_message_to_admin_group_and_participant_group_when_individual_sends_message_to_admin()
+        public async Task should_send_message_to_admin_group_and_participant_group_when_individual_sends_message_to_admin()
         {
             SetupSendMessageTests();
-            // setup claims to return judge username
+            // setup claims to return individual username
             var claims = new ClaimsPrincipalBuilder().WithUsername(IndividualUsername).WithRole(Role.Individual).Build();
             UpdateUserIdentity(claims);
             
@@ -102,7 +102,7 @@ namespace VideoWeb.UnitTests.Hub
 
             await Hub.SendMessage(Conference.Id, message, toUsername);
             
-            AssertMessageNotSentToHubOrApi(fromUsername, toUsername, message);
+            AssertMessageSentToHubAndApi(fromUsername, toUsername, message, IndividualGroupChannel);
             AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id), Times.Never);
         }
 
@@ -120,7 +120,7 @@ namespace VideoWeb.UnitTests.Hub
 
             await Hub.SendMessage(Conference.Id, message, toUsername);
 
-            AssertMessageSentToHubAndApi(fromUsername, toUsername, message);
+            AssertMessageSentToHubAndApi(fromUsername, toUsername, message, JudgeGroupChannel);
             AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id), Times.Once);
         }
         
@@ -139,13 +139,14 @@ namespace VideoWeb.UnitTests.Hub
 
             await Hub.SendMessage(Conference.Id, message, toUsername);
             
-            AssertMessageNotSentToHubOrApi(fromUsername, toUsername, message);
+            AssertMessageNotSentToHubOrApi(fromUsername, toUsername, message, JudgeGroupChannel);
+            AssertMessageNotSentToHubOrApi(fromUsername, toUsername, message, IndividualGroupChannel);
             AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id), Times.Never);
         }
         
         [Test]
         public async Task
-            should_not_send_message_to_admin_group_and_participant_group_when_recipent_not_in_conference()
+            should_not_send_message_to_admin_group_and_participant_group_when_recipient_not_in_conference()
         {
             SetupSendMessageTests();
             // setup claims to return admin username
@@ -158,7 +159,8 @@ namespace VideoWeb.UnitTests.Hub
 
             await Hub.SendMessage(Conference.Id, message, toUsername);
 
-            AssertMessageNotSentToHubOrApi(fromUsername, toUsername, message);
+            AssertMessageNotSentToHubOrApi(fromUsername, toUsername, message, JudgeGroupChannel);
+            AssertMessageNotSentToHubOrApi(fromUsername, toUsername, message, IndividualGroupChannel);
             AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id), Times.Never);
         }
 
@@ -176,7 +178,8 @@ namespace VideoWeb.UnitTests.Hub
             
             await Hub.SendMessage(Conference.Id, message, toUsername);
 
-            AssertMessageNotSentToHubOrApi(fromUsername, toUsername, message);
+            AssertMessageNotSentToHubOrApi(fromUsername, toUsername, message, IndividualGroupChannel);
+            AssertMessageNotSentToHubOrApi(fromUsername, toUsername, message, RepresentativeGroupChannel);
             AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id), Times.Never);
             
             LoggerMock.Verify(
@@ -189,17 +192,18 @@ namespace VideoWeb.UnitTests.Hub
                 Times.Once);
         }
 
-        private void AssertMessageSentToHubAndApi(string fromUsername, string toUsername, string message)
+        private void AssertMessageSentToHubAndApi(string fromUsername, string toUsername, string message, Mock<IEventHubClient> userChannel)
         {
-            AssertMessageSentStatusToHubAndApi(fromUsername, toUsername,message, Times.Once());
+            AssertMessageSentStatusToHubAndApi(fromUsername, toUsername,message, userChannel,Times.Once());
         }
         
-        private void AssertMessageNotSentToHubOrApi(string fromUsername, string toUsername, string message)
+        private void AssertMessageNotSentToHubOrApi(string fromUsername, string toUsername, string message, Mock<IEventHubClient> userChannel)
         {
-            AssertMessageSentStatusToHubAndApi(fromUsername, toUsername,message, Times.Never());
+            AssertMessageSentStatusToHubAndApi(fromUsername, toUsername,message, userChannel, Times.Never());
         }
 
-        private void AssertMessageSentStatusToHubAndApi(string fromUsername, string toUsername, string message, Times times)
+        private void AssertMessageSentStatusToHubAndApi(string fromUsername, string toUsername, string message,
+            Mock<IEventHubClient> userChannel, Times times)
         {
             ConferenceGroupChannel.Verify(
                 x =>
@@ -207,7 +211,7 @@ namespace VideoWeb.UnitTests.Hub
                         It.IsAny<Guid>()),
                 times);
 
-            JudgeGroupChannel.Verify(
+            userChannel.Verify(
                 x =>
                     x.ReceiveMessage(Conference.Id, fromUsername, toUsername, message, It.IsAny<DateTime>(),
                         It.IsAny<Guid>()),
@@ -220,7 +224,7 @@ namespace VideoWeb.UnitTests.Hub
                     ))
                 , times);
         }
-        
+
         private void SetupSendMessageTests()
         {
             Conference = InitConference();

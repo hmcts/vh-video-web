@@ -220,12 +220,10 @@ namespace VideoWeb.EventHub.Hub
                 return false;
             }
             // participant check first belongs to conference
-            Participant participant;
             try
             {
                 var conference = await GetConference(conferenceId);
-
-                participant = conference.Participants.SingleOrDefault(x =>
+                var participant = conference.Participants.SingleOrDefault(x =>
                     x.Username.Equals(participantUsername, StringComparison.InvariantCultureIgnoreCase));
 
                 if (participant == null)
@@ -238,9 +236,7 @@ namespace VideoWeb.EventHub.Hub
                 _logger.LogError(ex, "Error occured when validating send message");
                 return false;
             }
-
-            // only judge and participants can send messages at present
-            return isSenderAdmin || participant.IsJudge();
+            return true;
         }
 
         private async Task<Conference> GetConference(Guid conferenceId)
