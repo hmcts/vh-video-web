@@ -3,16 +3,21 @@
   <div role="navigation">
     <a href="javascript:void(0)" class="govuk-skip-link" (click)="skipToContent()">Skip to main content</a>
   </div>
-  <app-header [loggedIn]="loggedIn"></app-header>
+  <app-header class="govuk-!-display-none-print" [loggedIn]="loggedIn"></app-header>
 
   <div class="govuk-width-container" id="master-container">
-
-    <main #maincontent class="govuk-main-wrapper app-width-container--wide" id="main-content" role="main" tabindex="-1"
-      [ngClass]="!loggedIn ? 'pad-unactivated-router' : ''">
+    <main
+      #maincontent
+      class="govuk-main-wrapper app-width-container--wide"
+      id="main-content"
+      role="main"
+      tabindex="-1"
+      [ngClass]="!loggedIn ? 'pad-unactivated-router' : ''"
+    >
       <app-beta-banner *ngIf="loggedIn" [isRepresentativeOrIndividual]="isRepresentativeOrIndividual"></app-beta-banner>
       <router-outlet></router-outlet>
     </main>
   </div>
 
-  <app-footer></app-footer>
+  <app-footer class="govuk-!-display-none-print"></app-footer>
 </div>

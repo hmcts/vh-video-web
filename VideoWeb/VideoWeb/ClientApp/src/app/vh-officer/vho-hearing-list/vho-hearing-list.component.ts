@@ -17,7 +17,7 @@ export class VhoHearingListComponent implements OnInit {
 
     constructor() {}
 
-    ngOnInit() { }
+    ngOnInit() {}
 
     isCurrentConference(conference: HearingSummary): boolean {
         return this.currentConference != null && this.currentConference.id === conference.id;
@@ -38,14 +38,17 @@ export class VhoHearingListComponent implements OnInit {
 
     mapToHearing(conference: HearingSummary, participants: ParticipantResponseVho[] = null): Hearing {
         const hearing = new ConferenceResponseVho({
-            id: conference.id, scheduled_date_time: conference.scheduledDateTime, status: conference.status,
+            id: conference.id,
+            scheduled_date_time: conference.scheduledDateTime,
+            status: conference.status,
             participants: participants
         });
         return new Hearing(hearing);
     }
 
     mapToHearingWithParticipants(conference: HearingSummary): Hearing {
-        const participants = conference.getParticipants()
+        const participants = conference
+            .getParticipants()
             .map(x => new ParticipantResponseVho({ id: x.id, name: x.displayName, username: x.username, role: x.role }));
         return this.mapToHearing(conference, participants);
     }

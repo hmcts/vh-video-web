@@ -1,6 +1,5 @@
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { Participant } from './participant';
-import { ParticipantStatus } from 'src/app/services/clients/api-client';
 
 describe('Participant', () => {
     it('should throw an error if passing an invlid type', () => {

@@ -13,7 +13,6 @@ import { BaseSelfTestComponent } from '../models/base-self-test.component';
     templateUrl: './participant-self-test.component.html'
 })
 export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
-
     constructor(
         private router: Router,
         protected route: ActivatedRoute,

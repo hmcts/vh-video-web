@@ -14,7 +14,6 @@ import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { AudioRecordingService } from '../../services/api/audio-recording.service';
 import { JudgeHearingPageComponent } from './judge-hearing-page.component';
-import { fakeAsync } from '@angular/core/testing';
 
 describe('JudgeHearingPageComponent', () => {
     let component: JudgeHearingPageComponent;
@@ -36,10 +35,13 @@ describe('JudgeHearingPageComponent', () => {
 
     beforeAll(() => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+        audioRecordingServiceMock = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', [
+            'getAudioStreamInfo',
+            'stopAudioRecording'
+        ]);
 
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
         videoWebService.getConferenceById.and.resolveTo(conference);
-
         eventsService = jasmine.createSpyObj<EventsService>('EventsService', [
             'getHearingStatusMessage',
             'getServiceDisconnected',
@@ -162,6 +164,7 @@ describe('JudgeHearingPageComponent', () => {
         component.closeAlert(true);
         expect(component.continueWithNoRecording).toBeTruthy();
     });
+
     it('should retrieve audio recording stream and if no error then no alert', () => {
         audioRecordingServiceMock.getAudioStreamInfo.and.returnValue(Promise.resolve(true));
         const hearingId = '5256626262626';
@@ -169,6 +172,7 @@ describe('JudgeHearingPageComponent', () => {
 
         expect(component.showAudioRecordingAlert).toBeFalsy();
     });
+
     it('should stop audio recording', () => {
         component.conference.audio_recording_required = true;
         component.conference.hearing_ref_id = '1234567';

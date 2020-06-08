@@ -1,12 +1,14 @@
 <div>
-    <div #copyID class="copyIDbox" [hidden]="displayTooltip">
-        {{ tooltip }}
-    </div>
-    <img 
-        class="icons" 
-        src="/assets/images/share.png" alt="copy-conference-id-icon"
-        (mouseover)="onMouseOver($event)" 
-        (mousemove)="onMouseOver($event)"
-        (mouseout)="onMouseOut()"
-        (click)="copyToClipboard(conference); $event.stopPropagation();" />
+  <div #copyID class="copyIDbox" [hidden]="displayTooltip">
+    {{ tooltip }}
+  </div>
+  <img
+    class="icons"
+    src="/assets/images/share.png"
+    alt="copy-conference-id-icon"
+    (mouseover)="onMouseOver($event)"
+    (mousemove)="onMouseOver($event)"
+    (mouseout)="onMouseOut()"
+    (click)="copyToClipboard(conference); $event.stopPropagation()"
+  />
 </div>

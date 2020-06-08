@@ -1,32 +1,23 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AdalService } from 'adal-angular4';
-import { configureTestSuite } from 'ng-bullet';
-import { of } from 'rxjs';
-import { ConfigService } from 'src/app/services/api/config.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
     ConferenceStatus,
+    ConsultationAnswer,
     ParticipantResponse,
     ParticipantStatus,
     Role,
-    ConsultationAnswer,
     RoomType
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { SharedModule } from 'src/app/shared/shared.module';
+import { ModalService } from 'src/app/services/modal.service';
+import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
+import { Participant } from 'src/app/shared/models/participant';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
-import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
-import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { IndividualParticipantStatusListComponent } from './individual-participant-status-list.component';
-import { Participant } from 'src/app/shared/models/participant';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
-import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
-import { ModalService } from 'src/app/services/modal.service';
 
 describe('IndividualParticipantStatusListComponent', () => {
     let component: IndividualParticipantStatusListComponent;
@@ -34,7 +25,6 @@ describe('IndividualParticipantStatusListComponent', () => {
     let adalService;
     let consultationService: jasmine.SpyObj<ConsultationService>;
     let eventsService: jasmine.SpyObj<EventsService>;
-    const mockEventService = new MockEventsService();
     const logger: Logger = new MockLogger();
     let videoWebService: jasmine.SpyObj<VideoWebService>;
     let modalService: jasmine.SpyObj<ModalService>;

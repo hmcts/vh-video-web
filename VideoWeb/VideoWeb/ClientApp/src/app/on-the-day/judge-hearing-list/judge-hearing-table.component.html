@@ -1,6 +1,5 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-
     <table class="govuk-table">
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
@@ -15,82 +14,107 @@
         <tr *ngFor="let hearing of hearings" id="judges-list" class="govuk-table__row">
           <!-- Time -->
           <td class="govuk-table__cell">
-            <p id="scheduled-datetime-{{ hearing.id }}" class="govuk-!-margin-0 govuk-!-padding-0">{{hearing.scheduledStartTime | date:'HH:mm'}} -
-              {{hearing.scheduledEndTime | date:'HH:mm'}}
+            <p id="scheduled-datetime-{{ hearing.id }}" class="govuk-!-margin-0 govuk-!-padding-0">
+              {{ hearing.scheduledStartTime | date: 'HH:mm' }} -
+              {{ hearing.scheduledEndTime | date: 'HH:mm' }}
             </p>
           </td>
 
           <!-- Judge-->
           <td class="govuk-table__cell">
-            <p id="judge-{{ hearing.id }}" class="govuk-!-margin-0 govuk-!-padding-0">{{hearing.judge.displayName}}</p>
+            <p id="judge-{{ hearing.id }}" class="govuk-!-margin-0 govuk-!-padding-0">{{ hearing.judge.displayName }}</p>
           </td>
 
           <!-- Hearing -->
           <td class="govuk-table__cell">
             <p id="case-name-{{ hearing.id }}" class="govuk-!-margin-0 govuk-!-padding-0 govuk-!-font-weight-bold">
-              {{hearing.caseName}}
+              {{ hearing.caseName }}
             </p>
             <p id="case-type-{{ hearing.id }}" class="govuk-!-margin-0">
-              {{hearing.caseType}}
+              {{ hearing.caseType }}
             </p>
             <p class="govuk-!-margin-0 govuk-!-padding-0">
-              Case number: <span id="case-number-{{ hearing.id }}" class="govuk-!-font-weight-bold">{{hearing.caseNumber}}</span>
+              Case number: <span id="case-number-{{ hearing.id }}" class="govuk-!-font-weight-bold">{{ hearing.caseNumber }}</span>
             </p>
           </td>
 
           <!-- Participant -->
           <td class="govuk-table__cell">
-
             <!-- Applicants -->
             <span *ngIf="getRepresentative(hearing.applicants)">
               <p class="govuk-!-margin-0 govuk-!-padding-0">
-                <span id="applicant-rep-display-name-{{ hearing.id }}" class="govuk-!-font-weight-bold">{{getRepresentative(hearing.applicants).displayName}}</span>
+                <span id="applicant-rep-display-name-{{ hearing.id }}" class="govuk-!-font-weight-bold">{{
+                  getRepresentative(hearing.applicants).displayName
+                }}</span>
                 <span class="govuk-hint govuk-!-margin-0">Representing</span>
-                <span id="applicant-rep-representee-{{ hearing.id }}" class="govuk-!-font-weight-bold">{{getRepresentative(hearing.applicants).representee}}</span>
+                <span id="applicant-rep-representee-{{ hearing.id }}" class="govuk-!-font-weight-bold">{{
+                  getRepresentative(hearing.applicants).representee
+                }}</span>
               </p>
             </span>
             <span *ngIf="!getRepresentative(hearing.applicants) && getIndividual(hearing.applicants)">
-              <p id="applicant-only-display-name-casegroup-{{ hearing.id }}" class="govuk-!-margin-0 govuk-!-padding-0 govuk-!-font-weight-bold">
-                {{getIndividual(hearing.applicants).displayName}} ({{getIndividual(hearing.applicants).caseGroup}})
+              <p
+                id="applicant-only-display-name-casegroup-{{ hearing.id }}"
+                class="govuk-!-margin-0 govuk-!-padding-0 govuk-!-font-weight-bold"
+              >
+                {{ getIndividual(hearing.applicants).displayName }} ({{ getIndividual(hearing.applicants).caseGroup }})
               </p>
             </span>
 
             <!-- Respondents -->
             <span *ngIf="getRepresentative(hearing.respondents)">
               <p class="govuk-!-margin-0 govuk-!-margin-top-3 govuk-!-padding-0">
-                <span id="respondent-rep-display-name-{{ hearing.id }}" class="govuk-!-font-weight-bold">{{getRepresentative(hearing.respondents).displayName}}</span>
+                <span id="respondent-rep-display-name-{{ hearing.id }}" class="govuk-!-font-weight-bold">{{
+                  getRepresentative(hearing.respondents).displayName
+                }}</span>
                 <span class="govuk-hint govuk-!-margin-0">Representing</span>
-                <span id="respondent-rep-representee-{{ hearing.id }}" class="govuk-!-font-weight-bold">{{getRepresentative(hearing.respondents).representee}}</span>
+                <span id="respondent-rep-representee-{{ hearing.id }}" class="govuk-!-font-weight-bold">{{
+                  getRepresentative(hearing.respondents).representee
+                }}</span>
               </p>
             </span>
             <span *ngIf="!getRepresentative(hearing.respondents) && getIndividual(hearing.respondents)">
-              <p id="respondent-only-display-name-case-group-{{ hearing.id }}" class="govuk-!-margin-0 govuk-!-margin-top-3 govuk-!-padding-0 govuk-!-font-weight-bold">
-                {{getIndividual(hearing.respondents).displayName}} ({{getIndividual(hearing.respondents).caseGroup}})
+              <p
+                id="respondent-only-display-name-case-group-{{ hearing.id }}"
+                class="govuk-!-margin-0 govuk-!-margin-top-3 govuk-!-padding-0 govuk-!-font-weight-bold"
+              >
+                {{ getIndividual(hearing.respondents).displayName }} ({{ getIndividual(hearing.respondents).caseGroup }})
               </p>
             </span>
-
           </td>
 
           <!-- Conference Status -->
           <td class="govuk-table__cell">
             <div *ngIf="!hearing.isClosed() && hearing.isReadyToStart()">
-              <button id="start-hearing-btn-{{ hearing.id }}"
-                class="govuk-button govuk-!-margin-top-3 govuk-!-margin-bottom-3" data-module="govuk-button"
-                type="button" (click)="signIntoConference(hearing)" alt="Sign into the conference">Select</button>
+              <button
+                id="start-hearing-btn-{{ hearing.id }}"
+                class="govuk-button govuk-!-margin-top-3 govuk-!-margin-bottom-3"
+                data-module="govuk-button"
+                type="button"
+                (click)="signIntoConference(hearing)"
+                alt="Sign into the conference"
+              >
+                Select
+              </button>
             </div>
             <div *ngIf="!hearing.isClosed() && !hearing.isReadyToStart()">
               Not ready to start
             </div>
             <div *ngIf="showConferenceStatus(hearing)" class="govuk-!-margin-top-3 govuk-!-margin-bottom-3">
               <span
-                id="hearing-status-{{ hearing.id }}" class="govuk-!-padding-top-1 govuk-!-padding-bottom-1 govuk-!-padding-right-2 govuk-!-padding-left-2"
-                [ngClass]="{'conference-closed': hearing.isClosed(), 'conference-paused': hearing.isPaused(),
-              'conference-suspended': hearing.isSuspended()}">{{hearing.status}}</span>
+                id="hearing-status-{{ hearing.id }}"
+                class="govuk-!-padding-top-1 govuk-!-padding-bottom-1 govuk-!-padding-right-2 govuk-!-padding-left-2"
+                [ngClass]="{
+                  'conference-closed': hearing.isClosed(),
+                  'conference-paused': hearing.isPaused(),
+                  'conference-suspended': hearing.isSuspended()
+                }"
+                >{{ hearing.status }}</span
+              >
             </div>
           </td>
         </tr>
       </tbody>
     </table>
-
   </div>
 </div>

@@ -1,11 +1,11 @@
-@import "~govuk-frontend/govuk/all";
+@import '~govuk-frontend/govuk/all';
 
 .available {
-  color: govuk-colour("green");
+  color: govuk-colour('green');
 }
 
 .label-status {
-  color: govuk-colour("white");
+  color: govuk-colour('white');
   padding: 3px 5px 3px 5px;
   font-weight: 600;
   font-size: 0.9rem;
@@ -13,25 +13,25 @@
 }
 
 .label-status--disconnected {
-  background-color: govuk-colour("red");
+  background-color: govuk-colour('red');
   text-transform: uppercase;
 }
 
 .label-status--not_signed_in,
 .label-status--unable_to_join {
-  background-color: govuk-colour("dark-grey");
+  background-color: govuk-colour('dark-grey');
   text-transform: uppercase;
 }
 
 .label-status--in_consultation {
-  background-color: govuk-colour("blue");
+  background-color: govuk-colour('blue');
   text-transform: uppercase;
 }
 
 .label-status--in_hearing,
 .label-status--available,
 .label-status--joining {
-  background-color: govuk-colour("green");
+  background-color: govuk-colour('green');
   text-transform: uppercase;
 }
 

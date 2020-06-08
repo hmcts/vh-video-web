@@ -1,8 +1,12 @@
 <div *ngIf="!conference && !participant" class="govuk-grid-column-full">
   <p class="govuk-body-l">Please wait to be connected...</p>
 </div>
-<app-self-test *ngIf="conference && participant && !hideSelfTest" [conference]="conference" [participant]="participant"
-  (testCompleted)="onSelfTestCompleted($event)"></app-self-test>
+<app-self-test
+  *ngIf="conference && participant && !hideSelfTest"
+  [conference]="conference"
+  [participant]="participant"
+  (testCompleted)="onSelfTestCompleted($event)"
+></app-self-test>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
@@ -13,12 +17,25 @@
 </div>
 
 <div class="govuk-!-margin-top-6">
-  <button id="continue-btn" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button"
-    (click)="continueParticipantJourney()" alt="Continue">Continue</button>
+  <button
+    id="continue-btn"
+    class="govuk-button govuk-!-margin-right-1"
+    data-module="govuk-button"
+    (click)="continueParticipantJourney()"
+    alt="Continue"
+  >
+    Continue
+  </button>
 
-  <button id="check-equipment-btn" class="govuk-button govuk-button--secondary" data-module="govuk-button"
-    (click)="restartTest()" alt="Watch the video again">
-    Watch the video again</button>
+  <button
+    id="check-equipment-btn"
+    class="govuk-button govuk-button--secondary"
+    data-module="govuk-button"
+    (click)="restartTest()"
+    alt="Watch the video again"
+  >
+    Watch the video again
+  </button>
 </div>
 
 <app-contact-us-folding></app-contact-us-folding>

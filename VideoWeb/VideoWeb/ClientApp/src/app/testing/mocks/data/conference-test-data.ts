@@ -174,9 +174,9 @@ export class ConferenceTestData {
             scheduled_duration: 45,
             status: ConferenceStatus.NotStarted,
             participants: participants,
-            judge_i_frame_uri: 'judgeiframe@kinly..com',
-            participant_uri: 'participant@kinly..com',
-            pexip_node_uri: 'node@kinly..com',
+            judge_i_frame_uri: 'https://test.hearings.com/judge',
+            participant_uri: 'participant@kinly.com',
+            pexip_node_uri: 'node@kinly.com',
             hearing_venue_name: 'venue name'
         });
 

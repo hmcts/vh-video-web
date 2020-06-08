@@ -84,7 +84,15 @@ describe('CommandCentreComponent - Events', () => {
         vhoQueryService.getConferencesForVHOfficer.and.returnValue(of(conferences));
         vhoQueryService.getConferenceByIdVHO.and.returnValue(Promise.resolve(conferenceDetail));
 
-        component = new CommandCentreComponent(vhoQueryService, errorService, eventsService, logger, router, screenHelper, eventBusServiceSpy);
+        component = new CommandCentreComponent(
+            vhoQueryService,
+            errorService,
+            eventsService,
+            logger,
+            router,
+            screenHelper,
+            eventBusServiceSpy
+        );
         component.hearings = hearings;
         component.selectedHearing = hearing;
         screenHelper.enableFullScreen.calls.reset();
