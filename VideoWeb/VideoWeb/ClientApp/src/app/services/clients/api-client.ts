@@ -827,15 +827,19 @@ export class ApiClient {
     }
 
     /**
-     * Get all the instant messages for a conference
+     * Get all the instant messages for a conference for a participant
      * @param conferenceId Id of the conference
+     * @param participantUsername the participant in the conference
      * @return Success
      */
-    getConferenceInstantMessageHistory(conferenceId: string): Observable<ChatResponse[]> {
-        let url_ = this.baseUrl + "/conferences/{conferenceId}/instantmessages";
+    getConferenceInstantMessageHistoryForParticipant(conferenceId: string, participantUsername: string): Observable<ChatResponse[]> {
+        let url_ = this.baseUrl + "/conferences/{conferenceId}/instantmessages/participant/{participantUsername}";
         if (conferenceId === undefined || conferenceId === null)
             throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace("{conferenceId}", encodeURIComponent("" + conferenceId));
+        if (participantUsername === undefined || participantUsername === null)
+            throw new Error("The parameter 'participantUsername' must be defined.");
+        url_ = url_.replace("{participantUsername}", encodeURIComponent("" + participantUsername));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -847,11 +851,11 @@ export class ApiClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetConferenceInstantMessageHistory(response_);
+            return this.processGetConferenceInstantMessageHistoryForParticipant(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetConferenceInstantMessageHistory(<any>response_);
+                    return this.processGetConferenceInstantMessageHistoryForParticipant(<any>response_);
                 } catch (e) {
                     return <Observable<ChatResponse[]>><any>_observableThrow(e);
                 }
@@ -860,7 +864,7 @@ export class ApiClient {
         }));
     }
 
-    protected processGetConferenceInstantMessageHistory(response: HttpResponseBase): Observable<ChatResponse[]> {
+    protected processGetConferenceInstantMessageHistoryForParticipant(response: HttpResponseBase): Observable<ChatResponse[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -902,7 +906,7 @@ export class ApiClient {
      * @param conferenceId Id of the conference
      * @return Success
      */
-    getNumberOfUnreadAdminMessagesForConference(conferenceId: string): Observable<UnreadAdminMessageResponse> {
+    getNumberOfUnreadAdminMessagesForConference(conferenceId: string): Observable<UnreadInstantMessageConferenceCountResponse> {
         let url_ = this.baseUrl + "/conferences/{conferenceId}/instantmessages/unread/vho";
         if (conferenceId === undefined || conferenceId === null)
             throw new Error("The parameter 'conferenceId' must be defined.");
@@ -924,6 +928,70 @@ export class ApiClient {
                 try {
                     return this.processGetNumberOfUnreadAdminMessagesForConference(<any>response_);
                 } catch (e) {
+                    return <Observable<UnreadInstantMessageConferenceCountResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<UnreadInstantMessageConferenceCountResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetNumberOfUnreadAdminMessagesForConference(response: HttpResponseBase): Observable<UnreadInstantMessageConferenceCountResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UnreadInstantMessageConferenceCountResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("Unauthorized", status, _responseText, _headers);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<UnreadInstantMessageConferenceCountResponse>(<any>null);
+    }
+
+    /**
+     * Get number of unread messages for a participant
+     * @param conferenceId Id of the conference
+     * @param participantUsername the participant in the conference
+     * @return Success
+     */
+    getNumberOfUnreadAdminMessagesForConferenceByParticipant(conferenceId: string, participantUsername: string): Observable<UnreadAdminMessageResponse> {
+        let url_ = this.baseUrl + "/conferences/{conferenceId}/instantmessages/unread/participant/{participantUsername}";
+        if (conferenceId === undefined || conferenceId === null)
+            throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace("{conferenceId}", encodeURIComponent("" + conferenceId));
+        if (participantUsername === undefined || participantUsername === null)
+            throw new Error("The parameter 'participantUsername' must be defined.");
+        url_ = url_.replace("{participantUsername}", encodeURIComponent("" + participantUsername));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetNumberOfUnreadAdminMessagesForConferenceByParticipant(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetNumberOfUnreadAdminMessagesForConferenceByParticipant(<any>response_);
+                } catch (e) {
                     return <Observable<UnreadAdminMessageResponse>><any>_observableThrow(e);
                 }
             } else
@@ -931,7 +999,7 @@ export class ApiClient {
         }));
     }
 
-    protected processGetNumberOfUnreadAdminMessagesForConference(response: HttpResponseBase): Observable<UnreadAdminMessageResponse> {
+    protected processGetNumberOfUnreadAdminMessagesForConferenceByParticipant(response: HttpResponseBase): Observable<UnreadAdminMessageResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2188,9 +2256,9 @@ export enum ConferenceStatus {
 }
 
 export enum Role {
+    VideoHearingsOfficer = "VideoHearingsOfficer",
     None = "None",
     CaseAdmin = "CaseAdmin",
-    VideoHearingsOfficer = "VideoHearingsOfficer",
     HearingFacilitationSupport = "HearingFacilitationSupport",
     Judge = "Judge",
     Individual = "Individual",
@@ -3318,6 +3386,7 @@ export interface IChatResponse {
 }
 
 export class UnreadAdminMessageResponse implements IUnreadAdminMessageResponse {
+    participant_username?: string | undefined;
     number_of_unread_messages?: number;
 
     constructor(data?: IUnreadAdminMessageResponse) {
@@ -3331,6 +3400,7 @@ export class UnreadAdminMessageResponse implements IUnreadAdminMessageResponse {
 
     init(_data?: any) {
         if (_data) {
+            this.participant_username = _data["participant_username"];
             this.number_of_unread_messages = _data["number_of_unread_messages"];
         }
     }
@@ -3344,13 +3414,59 @@ export class UnreadAdminMessageResponse implements IUnreadAdminMessageResponse {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["participant_username"] = this.participant_username;
         data["number_of_unread_messages"] = this.number_of_unread_messages;
         return data; 
     }
 }
 
 export interface IUnreadAdminMessageResponse {
+    participant_username?: string | undefined;
     number_of_unread_messages?: number;
+}
+
+export class UnreadInstantMessageConferenceCountResponse implements IUnreadInstantMessageConferenceCountResponse {
+    number_of_unread_messages_conference?: UnreadAdminMessageResponse[] | undefined;
+
+    constructor(data?: IUnreadInstantMessageConferenceCountResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["number_of_unread_messages_conference"])) {
+                this.number_of_unread_messages_conference = [] as any;
+                for (let item of _data["number_of_unread_messages_conference"])
+                    this.number_of_unread_messages_conference!.push(UnreadAdminMessageResponse.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): UnreadInstantMessageConferenceCountResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new UnreadInstantMessageConferenceCountResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.number_of_unread_messages_conference)) {
+            data["number_of_unread_messages_conference"] = [];
+            for (let item of this.number_of_unread_messages_conference)
+                data["number_of_unread_messages_conference"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IUnreadInstantMessageConferenceCountResponse {
+    number_of_unread_messages_conference?: UnreadAdminMessageResponse[] | undefined;
 }
 
 export enum EventType {

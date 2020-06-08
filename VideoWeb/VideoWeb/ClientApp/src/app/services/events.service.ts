@@ -12,6 +12,7 @@ import { InstantMessage } from './models/instant-message';
 import { ParticipantStatusMessage } from './models/participant-status-message';
 import { HeartbeatHealth, ParticipantHeartbeat } from './models/participant-heartbeat';
 import { Heartbeat } from '../shared/models/heartbeat';
+import { ConferenceMessageAnswered } from './models/conference-message-answered';
 
 @Injectable({
     providedIn: 'root'
@@ -26,7 +27,7 @@ export class EventsService {
     private adminConsultationMessageSubject = new Subject<AdminConsultationMessage>();
     private messageSubject = new Subject<InstantMessage>();
     private participantHeartbeat = new Subject<ParticipantHeartbeat>();
-    private adminAnsweredChatSubject = new Subject<string>();
+    private adminAnsweredChatSubject = new Subject<ConferenceMessageAnswered>();
     private eventHubDisconnectSubject = new Subject<number>();
     private eventHubReconnectSubject = new Subject();
 
@@ -119,9 +120,10 @@ export class EventsService {
             }
         );
 
-        this.connection.on('AdminAnsweredChat', (conferenceId: string) => {
-            this.logger.event('AdminAnsweredChat received', conferenceId);
-            this.adminAnsweredChatSubject.next(conferenceId);
+        this.connection.on('AdminAnsweredChat', (conferenceId: string, participantUsername: string) => {
+            const payload = new ConferenceMessageAnswered(conferenceId, participantUsername);
+            this.logger.event('AdminAnsweredChat received', payload);
+            this.adminAnsweredChatSubject.next(payload);
         });
 
         this.connection.on(
@@ -197,7 +199,7 @@ export class EventsService {
         return this.messageSubject.asObservable();
     }
 
-    getAdminAnsweredChat(): Observable<string> {
+    getAdminAnsweredChat(): Observable<ConferenceMessageAnswered> {
         return this.adminAnsweredChatSubject.asObservable();
     }
 

@@ -4,5 +4,9 @@ namespace VideoWeb.Contract.Responses
 { public class UnreadInstantMessageConferenceCountResponse
     {
         public List<UnreadAdminMessageResponse> NumberOfUnreadMessagesInConference { get; set; }
+        public UnreadInstantMessageConferenceCountResponse()
+        {
+            NumberOfUnreadMessagesConference = new List<UnreadAdminMessageResponse>();
+        }
     }
 }
