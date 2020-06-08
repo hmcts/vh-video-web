@@ -159,7 +159,7 @@ namespace VideoWeb.EventHub.Hub
 
             if (isSenderAdmin)
             {
-                await Clients.Group(VhOfficersGroupName).AdminAnsweredChat(conferenceId);
+                await Clients.Group(VhOfficersGroupName).AdminAnsweredChat(conferenceId, to.ToLower());
             }
         }
 

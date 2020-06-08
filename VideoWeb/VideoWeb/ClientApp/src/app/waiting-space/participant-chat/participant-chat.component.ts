@@ -12,11 +12,11 @@ import { ImHelper } from 'src/app/shared/im-helper';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 
 @Component({
-    selector: 'app-judge-chat',
-    templateUrl: './judge-chat.component.html',
-    styleUrls: ['./judge-chat.component.scss']
+    selector: 'app-participant-chat',
+    templateUrl: './participant-chat.component.html',
+    styleUrls: ['./participant-chat.component.scss']
 })
-export class JudgeChatComponent extends ChatBaseComponent implements OnInit, OnDestroy, AfterViewChecked {
+export class ParticipantChatComponent extends ChatBaseComponent implements OnInit, OnDestroy, AfterViewChecked {
     private chatHubSubscription: Subscription;
 
     showChat: boolean;

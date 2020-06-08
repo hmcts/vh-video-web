@@ -8,7 +8,7 @@
   </div>
 </div>
 
-<div id="chat-list" #scrollMe [scrollTop]="scrollMe.scrollHeight" class="govuk-grid-row chat-window">
+<div id="chat-list" class="govuk-grid-row chat-window">
   <div *ngIf="loading" class="govuk-body">Loading...</div>
   <app-chat-body-window [messages]="messages"></app-chat-body-window>
 </div>

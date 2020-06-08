@@ -48,7 +48,7 @@
       data-module="govuk-button"
       type="button"
       (click)="muteUnmuteCall()"
-      alt="Mute Microphone Button"
+      aria-label="Mute Microphone Button"
       [ngClass]="audioMuted ? 'govuk-button--warning' : 'govuk-button'"
     >
       {{ audioMuted ? 'Unmute' : 'Mute' }} microphone
@@ -158,3 +158,5 @@
 
 <app-individual-consultation-controls (cancelConsulation)="onConsultationCancelled()" *ngIf="showConsultationControls">
 </app-individual-consultation-controls>
+
+<app-participant-chat *ngIf="!loadingData && conference" [hearing]="hearing"></app-participant-chat>

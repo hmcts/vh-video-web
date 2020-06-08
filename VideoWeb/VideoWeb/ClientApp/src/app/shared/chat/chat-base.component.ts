@@ -42,21 +42,10 @@ export abstract class ChatBaseComponent {
     }
 
     async handleIncomingMessage(message: InstantMessage) {
-        // ignore if not for current conference
-        if (message.conferenceId !== this.hearing.id) {
+        if (!this.isMesageRecipientForUser(message)) {
             return;
         }
-
-        // // ignore if message is not for user
         const from = message.from.toUpperCase();
-
-        // ignore if already received message
-        if (this.messages.findIndex(m => m.id === message.id) > -1) {
-            const logInfo = Object.assign({}, message);
-            delete logInfo.message;
-            this.logger.debug(`[ChatHub] message already been processed ${JSON.stringify(logInfo)}`);
-            return;
-        }
         const username = this.adalService.userInfo.userName.toUpperCase();
         if (from === username) {
             message.from_display_name = 'You';
@@ -66,6 +55,21 @@ export abstract class ChatBaseComponent {
             this.handleIncomingOtherMessage(message);
         }
         this.messages.push(message);
+    }
+
+    isMesageRecipientForUser(message: InstantMessage): boolean {
+        // ignore if not for current conference or participant
+        if (message.conferenceId !== this.hearing.id) {
+            return false;
+        }
+        // ignore if already received message
+        if (this.messages.findIndex(m => m.id === message.id) > -1) {
+            const logInfo = Object.assign({}, message);
+            delete logInfo.message;
+            this.logger.debug(`[ChatHub] message already been processed ${JSON.stringify(logInfo)}`);
+            return false;
+        }
+        return this.imHelper.isImForUser(message, this.hearing, this.loggedInUserProfile);
     }
 
     async verifySender(message: InstantMessage): Promise<InstantMessage> {
