@@ -1,3 +1,4 @@
+import { ElementRef } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
@@ -24,6 +25,7 @@ export abstract class ChatBaseComponent {
         protected imHelper: ImHelper
     ) {}
 
+    abstract content: ElementRef;
     abstract sendMessage(messageBody: string): void;
 
     async setupChatSubscription(): Promise<Subscription> {
@@ -107,5 +109,11 @@ export abstract class ChatBaseComponent {
             return im;
         });
         return this.messages;
+    }
+
+    scrollToBottom() {
+        try {
+            this.content.nativeElement.scrollTop = this.content.nativeElement.scrollHeight;
+        } catch (err) {}
     }
 }

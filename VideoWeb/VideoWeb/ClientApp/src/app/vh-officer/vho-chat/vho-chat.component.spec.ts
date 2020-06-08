@@ -181,4 +181,10 @@ describe('VhoChatComponent', () => {
 
         expect(videoWebServiceSpy.getConferenceChatHistory).toHaveBeenCalledWith(hearing.id, newParticipant.username);
     });
+
+    it('should scroll to bottom of chat window after view has been checked', () => {
+        spyOn(component, 'scrollToBottom');
+        component.ngAfterViewChecked();
+        expect(component.scrollToBottom).toHaveBeenCalled();
+    });
 });

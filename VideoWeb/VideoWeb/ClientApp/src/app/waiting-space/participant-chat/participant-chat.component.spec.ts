@@ -98,11 +98,12 @@ describe('JudgeChatComponent', () => {
     it('should reset unread counter when chat is opened', () => {
         const mockedDocElement = document.createElement('div');
         document.getElementById = jasmine.createSpy('chat-list').and.returnValue(mockedDocElement);
-
+        spyOn(component, 'scrollToBottom');
         component.unreadMessageCount = 5;
         component.showChat = true;
         component.ngAfterViewChecked();
 
+        expect(component.scrollToBottom).toHaveBeenCalled();
         expect(component.unreadMessageCount).toBe(0);
     });
 

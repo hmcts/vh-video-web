@@ -1,4 +1,4 @@
-import { AfterViewChecked, Component, HostListener, OnDestroy, OnInit, Input } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
@@ -6,10 +6,10 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ChatResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
-import { Hearing } from 'src/app/shared/models/hearing';
-import { ImHelper } from 'src/app/shared/im-helper';
 import { InstantMessage } from 'src/app/services/models/instant-message';
+import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
+import { ImHelper } from 'src/app/shared/im-helper';
+import { Hearing } from 'src/app/shared/models/hearing';
 
 @Component({
     selector: 'app-participant-chat',
@@ -22,6 +22,8 @@ export class ParticipantChatComponent extends ChatBaseComponent implements OnIni
     showChat: boolean;
     unreadMessageCount: number;
     loading: boolean;
+
+    @ViewChild('content', { static: false }) content: ElementRef;
 
     @Input() hearing: Hearing;
 
@@ -52,6 +54,7 @@ export class ParticipantChatComponent extends ChatBaseComponent implements OnIni
     ngAfterViewChecked(): void {
         if (this.showChat) {
             this.resetUnreadMessageCount();
+            this.scrollToBottom();
         }
     }
 
