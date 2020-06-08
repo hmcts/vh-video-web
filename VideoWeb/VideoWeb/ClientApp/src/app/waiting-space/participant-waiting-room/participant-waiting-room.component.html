@@ -51,7 +51,7 @@
       alt="Mute Microphone Button"
       [ngClass]="audioMuted ? 'govuk-button--warning' : 'govuk-button'"
     >
-      {{ audioMuted ? 'Unmute' : 'Mute' }} microphone
+      {{ audioMuted ? 'Unmute' : 'Mute' }}
 
       <span *ngIf="!audioMuted" class="govuk-button__start-icon">
         <img id="mute-microphone-img" class="microphoneIcon" src="/assets/images/mic_on.png" alt="Mute Microphone Image" />
