@@ -1,4 +1,4 @@
 export class GraphData {
-  pointX: number;
-  pointY: number;
+    pointX: number;
+    pointY: number;
 }

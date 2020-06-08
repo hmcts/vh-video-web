@@ -16,7 +16,7 @@ export class UnreadMessagesComponent implements OnInit, OnDestroy {
 
     messagesSubscription$: Subscription = new Subscription();
     unreadCount: number;
-    constructor(private videoWebService: VideoWebService, private eventsService: EventsService, private logger: Logger) { }
+    constructor(private videoWebService: VideoWebService, private eventsService: EventsService, private logger: Logger) {}
 
     ngOnInit() {
         this.unreadCount = 0;
@@ -49,7 +49,6 @@ export class UnreadMessagesComponent implements OnInit, OnDestroy {
     private messageFromParticipant(message: InstantMessage): boolean {
         return this.hearing.participants.map(p => p.username.toUpperCase()).includes(message.from.toUpperCase());
     }
-
 
     resetConferenceUnreadCounter(conferenceId: string) {
         if (this.hearing.id === conferenceId) {

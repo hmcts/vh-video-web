@@ -1,21 +1,24 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <h2 id="unsupported" class="govuk-heading-l">You've signed in using an unsupported browser</h2>
-    <p class="govuk-body">
-      It looks like you've signed in using {{ browserName }}. Unfortunately this browser is not currently supported.
-    </p>
+    <p class="govuk-body">It looks like you've signed in using {{ browserName }}. Unfortunately this browser is not currently supported.</p>
     <div>
       <p class="govuk-body">Please sign out and sign in again using any of the following.</p>
       <ul class="govuk-list">
         <li *ngFor="let browser of supportedBrowsers">
           <div class="govuk-grid-column-full">
             <div class="govuk-grid-row">
-              <div class="govuk-grid-column-one-quarter" style="padding: 5px; width: 6%">
-                <img src="{{browser.iconPath}}" height="48" width="48" class="govuk-!-margin-right-2"
-                     alt="{{browser.name}} browser logo" />
+              <div class="govuk-grid-column-one-quarter" style="padding: 5px; width: 6%;">
+                <img
+                  src="{{ browser.iconPath }}"
+                  height="48"
+                  width="48"
+                  class="govuk-!-margin-right-2"
+                  alt="{{ browser.name }} browser logo"
+                />
               </div>
               <div class="govuk-grid-column-three-quarters" style="padding-top: 15px;">
-                <p>{{browser.name}}</p>
+                <p>{{ browser.name }}</p>
               </div>
             </div>
           </div>

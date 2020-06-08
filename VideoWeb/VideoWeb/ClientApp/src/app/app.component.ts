@@ -119,7 +119,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.subscriptions.add(
             this.router.events
                 .pipe(
-                    filter((event) => event instanceof NavigationEnd),
+                    filter(event => event instanceof NavigationEnd),
                     map(() => {
                         let child = this.activatedRoute.firstChild;
                         while (child.firstChild) {

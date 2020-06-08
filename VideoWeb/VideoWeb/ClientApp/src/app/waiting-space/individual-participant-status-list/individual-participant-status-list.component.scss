@@ -1,9 +1,9 @@
-@import "~govuk-frontend/govuk/all";
+@import '~govuk-frontend/govuk/all';
 
 .unavailable {
-    color: govuk-colour("red")
+  color: govuk-colour('red');
 }
 
 .available {
-    color: govuk-colour("green")
+  color: govuk-colour('green');
 }

@@ -1,7 +1,7 @@
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 
 export class MediaDeviceTestData {
-    getListOfDevices() {
+    getListOfDevices(): UserMediaDevice[] {
         let testData: Array<UserMediaDevice> = [];
         testData = testData.concat(this.getListOfCameras());
         testData = testData.concat(this.getListOfMicrophones());
@@ -13,7 +13,7 @@ export class MediaDeviceTestData {
         return testData;
     }
 
-    getListOfSingleCameraAndMicDevices() {
+    getListOfSingleCameraAndMicDevices(): UserMediaDevice[] {
         const testData: Array<UserMediaDevice> = [];
         testData.concat(this.getSingleCamera());
         testData.concat(this.getSingleMicrophone());

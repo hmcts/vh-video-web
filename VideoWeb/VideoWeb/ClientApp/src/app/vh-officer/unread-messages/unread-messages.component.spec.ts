@@ -8,7 +8,6 @@ import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { UnreadMessagesComponent } from './unread-messages.component';
 import { InstantMessage } from '../../services/models/instant-message';
-import { of } from 'rxjs';
 import { Hearing } from '../../shared/models/hearing';
 
 describe('UnreadMessagesComponent', () => {
@@ -94,18 +93,24 @@ describe('UnreadMessagesComponent', () => {
     it('should reset unread message counter when judge send a message', () => {
         component.unreadCount = unreadCountResponse.number_of_unread_messages;
         component.setupSubscribers();
-        mockEventService.messageSubject.next(new InstantMessage({
-            conferenceId: conference.id, from: 'judge.fudge@hearings.net'
-        }));
+        mockEventService.messageSubject.next(
+            new InstantMessage({
+                conferenceId: conference.id,
+                from: 'judge.fudge@hearings.net'
+            })
+        );
 
         expect(component.unreadCount).toBe(unreadCountResponse.number_of_unread_messages + 1);
     });
     it('should not increase unread message counter when admin send a message', () => {
         component.unreadCount = unreadCountResponse.number_of_unread_messages;
         component.setupSubscribers();
-        mockEventService.messageSubject.next(new InstantMessage({
-            conferenceId: conference.id, from: 'james.green123@hearings.net'
-        }));
+        mockEventService.messageSubject.next(
+            new InstantMessage({
+                conferenceId: conference.id,
+                from: 'james.green123@hearings.net'
+            })
+        );
 
         expect(component.unreadCount).toBe(unreadCountResponse.number_of_unread_messages);
     });
