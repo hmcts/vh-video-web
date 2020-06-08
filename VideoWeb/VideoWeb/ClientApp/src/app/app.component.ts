@@ -13,6 +13,8 @@ import { LocationService } from './services/location.service';
 import { PageTrackerService } from './services/page-tracker.service';
 import { pageUrls } from './shared/page-url.constants';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
+import { EventType } from 'src/app/services/clients/api-client';
+import { participantPages } from 'src/app/services/participant-status-update.service';
 
 @Component({
     selector: 'app-root',
@@ -31,7 +33,6 @@ export class AppComponent implements OnInit, OnDestroy {
     pageTitle = 'Video Hearings - ';
 
     subscriptions = new Subscription();
-
     constructor(
         private adalService: AdalService,
         private configService: ConfigService,
@@ -42,14 +43,16 @@ export class AppComponent implements OnInit, OnDestroy {
         private titleService: Title,
         private activatedRoute: ActivatedRoute,
         private locationService: LocationService,
-        pageTracker: PageTrackerService,
+        private pageTracker: PageTrackerService,
         private participantStatusUpdateService: ParticipantStatusUpdateService
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
         this.initAuthentication();
 
-        pageTracker.trackPreviousPage(router);
+        this.pageTracker.trackPreviousPage(router);
+        this.refreshPageParticipant();
+
     }
 
     private initAuthentication() {
@@ -151,7 +154,19 @@ export class AppComponent implements OnInit, OnDestroy {
     @HostListener('window:beforeunload', ['$event'])
     async beforeunloadHandler($event: any) {
         $event.preventDefault();
-        await this.participantStatusUpdateService.postParticipantStatus();
+        await this.participantStatusUpdateService.postParticipantStatus(EventType.ParticipantNotSignedIn);
         $event.returnValue = 'save';
+    }
+
+    refreshPageParticipant() {
+        this.subscriptions.add(this.router.events.subscribe(async (event) => {
+            if (event instanceof NavigationEnd) {
+                const params = event.url.split('/');
+                const isThePage = params.length > 2 && participantPages.findIndex(x => x === params[1]) > -1;
+                if (event.id === 1 && event.url === event.urlAfterRedirects && isThePage) {
+                    await this.participantStatusUpdateService.postParticipantStatus(EventType.ParticipantJoining);
+                }
+            }
+        }));
     }
 }

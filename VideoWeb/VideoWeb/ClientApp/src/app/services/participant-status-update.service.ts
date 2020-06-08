@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { EventType, UpdateParticipantStatusEventRequest } from 'src/app/services/clients/api-client';
+import { EventType, UpdateParticipantStatusEventRequest, ApiClient } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Router } from '@angular/router';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -22,25 +21,26 @@ export const participantPages: string[] = [
 })
 export class ParticipantStatusUpdateService {
 
-    constructor(private videoWebService: VideoWebService, private logger: Logger, private router: Router) {}
-    async postParticipantStatus() {
+    constructor(private apiClient: ApiClient, private logger: Logger, private router: Router) { }
+    async postParticipantStatus(eventType: EventType) {
         try {
-            const urlCurrent = await this.router.url;
-            const params = urlCurrent.split('/');
-            if (params.length > 2 && this.checkRouter(params[1])) {
-                await this.videoWebService.raiseParticipantEvent(
-                    params[2],
+            const conferenceId = this.checkRouter();
+            if (conferenceId) {
+                await this.apiClient.updateParticipantStatus(
+                    conferenceId,
                     new UpdateParticipantStatusEventRequest({
-                        event_type: EventType.ParticipantNotSignedIn
-                    })
-                );
+                        event_type: eventType
+                    })).toPromise();
             }
         } catch (error) {
             this.logger.error('Failed to raise "UpdateParticipantStatusEventRequest"', error);
         }
     }
 
-    private checkRouter(currentUrl: string): boolean {
-        return participantPages.findIndex(x => x === currentUrl) > -1;
+    checkRouter(): string {
+        const urlCurrent = this.router.url;
+        const params = urlCurrent.split('/');
+
+        return params.length > 2 && participantPages.findIndex(x => x === params[1]) > -1 ? params[2] : null;
     }
 }

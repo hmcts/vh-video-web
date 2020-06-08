@@ -1,35 +1,48 @@
 import { Router } from '@angular/router';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { TestBed, fakeAsync } from '@angular/core/testing';
-
-class MockRouter {
-    public url = '/check-equipment/1234-1234-1234';
-}
+import { ApiClient, EventType } from 'src/app/services/clients/api-client';
+import { of } from 'rxjs';
 
 describe('ParticipantStatusUpdateService', () => {
 
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['raiseParticipantEvent']);
-    videoWebServiceSpy.raiseParticipantEvent.and.returnValue(Promise.resolve());
-    beforeEach(() => {
-        TestBed.configureTestingModule({
-            providers: [
-                ParticipantStatusUpdateService,
-                { provide: Router, useValue: MockRouter },
-                { provide: VideoWebService, useValue: videoWebServiceSpy },
-                { provide: Logger, useClass: MockLogger }
-            ]
-        });
-    });
+    let apiClientSpy: jasmine.SpyObj<ApiClient>;
+    apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['updateParticipantStatus']);
+    apiClientSpy.updateParticipantStatus.and.returnValue(of());
+
+    let routerSpy: jasmine.SpyObj<Router>;
+    routerSpy = jasmine.createSpyObj<Router>('Router', [], { url: '/introduction/1234-1234-1234' });
+    const logger = new MockLogger();
+    const service = new ParticipantStatusUpdateService(apiClientSpy, logger, routerSpy);
 
     it('should raise participant event with event type not signed in', async () => {
-        const service = TestBed.get(ParticipantStatusUpdateService);
-        const router = TestBed.get(Router);
-        router.url = '/introduction/566788899';
-        await service.postParticipantStatus();
-        expect(videoWebServiceSpy.raiseParticipantEvent).toHaveBeenCalled();
+        spyOn(logger, 'error');
+
+        await service.postParticipantStatus(EventType.ParticipantNotSignedIn);
+        expect(apiClientSpy.updateParticipantStatus).toHaveBeenCalled();
+        expect(logger.error).toHaveBeenCalledTimes(0);
+
+    });
+});
+
+describe('ParticipantStatusUpdateService failure', () => {
+
+    let apiClientSpy: jasmine.SpyObj<ApiClient>;
+    apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['updateParticipantStatus']);
+    apiClientSpy.updateParticipantStatus.and.throwError('Error');
+
+    let routerSpy: jasmine.SpyObj<Router>;
+    routerSpy = jasmine.createSpyObj<Router>('Router', [], { url: '/introduction/1234-1234-1234' });
+
+    const logger = new MockLogger();
+    const service = new ParticipantStatusUpdateService(apiClientSpy, logger, routerSpy);
+
+    it('should not raise participant event with event type not signed in', async () => {
+        spyOn(logger, 'error');
+
+        await service.postParticipantStatus(EventType.ParticipantNotSignedIn);
+        expect(apiClientSpy.updateParticipantStatus).toHaveBeenCalled();
+        expect(logger.error).toHaveBeenCalled();
+
     });
 });
