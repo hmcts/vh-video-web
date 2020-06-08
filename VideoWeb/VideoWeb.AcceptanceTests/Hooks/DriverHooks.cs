@@ -65,7 +65,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 proxy.SslProxy = proxySetting;
             }
 
-            context.Driver = new DriverSetup(context.VideoWebConfig.SauceLabsConfiguration, driverOptions, sauceLabsOptions,proxy);
+            context.Driver = new DriverSetup(context.VideoWebConfig.SauceLabsConfiguration, driverOptions, sauceLabsOptions, proxy);
         }
 
         private static bool EnableLogging(ScenarioInfo scenario)
