@@ -25,7 +25,7 @@ export class ModalComponent implements OnInit, OnDestroy {
         // move element to bottom of page (just before </body>) so it can be displayed above everything else
         document.body.appendChild(this.element);
         // close modal on background click
-        this.element.addEventListener('click', function(e: any) {
+        this.element.addEventListener('click', function (e: any) {
             if (e.target.className === 'modal') {
                 modal.close();
             }

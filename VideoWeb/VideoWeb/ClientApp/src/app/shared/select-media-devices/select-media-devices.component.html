@@ -1,22 +1,17 @@
 <!-- The Modal -->
 <div id="select-device-modal" class="modal">
-
   <!-- Modal content -->
   <div class="modal-content">
     <div class="govuk-width-container">
       <h2 class="govuk-heading-l govuk-!-margin-top-6 govuk-!-margin-bottom-6">Choose your camera and microphone</h2>
 
       <div class="govuk-grid-row">
-
         <!-- Left hand side -->
         <div class="govuk-grid-column-one-half">
-
-          <form *ngIf="selectedMediaDevicesForm" [formGroup]="selectedMediaDevicesForm" class="govuk-form-group"
-            (ngSubmit)="onSubmit()">
-
+          <form *ngIf="selectedMediaDevicesForm" [formGroup]="selectedMediaDevicesForm" class="govuk-form-group" (ngSubmit)="onSubmit()">
             <div *ngIf="hasSingleCameraConncted">
               <p class="govuk-body">
-                {{singleCameraName}}
+                {{ singleCameraName }}
               </p>
             </div>
 
@@ -26,14 +21,14 @@
               </p>
               <select class="govuk-select govuk-!-width-one-half" id="available-cam-list" formControlName="camera">
                 <option *ngFor="let availableCam of availableCameraDevices" [ngValue]="availableCam">
-                  {{availableCam.label}}
+                  {{ availableCam.label }}
                 </option>
               </select>
             </div>
 
             <div *ngIf="hasSingleMicrophoneConncted">
               <p class="govuk-body">
-                {{singleMicrophoneName}}
+                {{ singleMicrophoneName }}
               </p>
             </div>
 
@@ -43,13 +38,11 @@
               </p>
               <select class="govuk-select govuk-!-width-one-half" id="available-mics-list" formControlName="microphone">
                 <option *ngFor="let availableMic of availableMicrophoneDevices" [ngValue]="availableMic">
-                  {{availableMic.label}}
+                  {{ availableMic.label }}
                 </option>
               </select>
             </div>
-
           </form>
-
         </div>
         <!-- Right hand side -->
         <div class="govuk-grid-column-one-half">
@@ -59,20 +52,29 @@
             </video>
           </div>
           <div class="govuk-grid-column-full">
-            <app-mic-visualiser *ngIf="preferredMicrophoneStream" [stream]="preferredMicrophoneStream">
-            </app-mic-visualiser>
+            <app-mic-visualiser *ngIf="preferredMicrophoneStream" [stream]="preferredMicrophoneStream"> </app-mic-visualiser>
           </div>
         </div>
 
         <div class="govuk-grid-column-full">
           <div ng class="govuk-!-margin-top-6">
-            <button id="change-device-btn" class="govuk-button govuk-!-margin-right-9" data-module="govuk-button"
-                    (click)="onSubmit()" alt="Continue">
+            <button
+              id="change-device-btn"
+              class="govuk-button govuk-!-margin-right-9"
+              data-module="govuk-button"
+              (click)="onSubmit()"
+              alt="Continue"
+            >
               Change
             </button>
 
-            <button id="cancel-btn" class="govuk-button govuk-button--secondary" data-module="govuk-button"
-                    (click)="onCancel()" alt="Cancel camera and microphone change">
+            <button
+              id="cancel-btn"
+              class="govuk-button govuk-button--secondary"
+              data-module="govuk-button"
+              (click)="onCancel()"
+              alt="Cancel camera and microphone change"
+            >
               Cancel
             </button>
           </div>
@@ -80,5 +82,4 @@
       </div>
     </div>
   </div>
-
 </div>

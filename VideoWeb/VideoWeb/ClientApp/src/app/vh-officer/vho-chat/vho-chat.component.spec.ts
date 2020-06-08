@@ -155,7 +155,6 @@ describe('VhoChatComponent', () => {
         const result = await component.verifySender(instantMessage);
         expect(result.from_display_name).toEqual(hearing.judge.displayName);
     });
-
     it('should clear subscription on destroy', async () => {
         const sub = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
         component.chatHubSubscription = sub;

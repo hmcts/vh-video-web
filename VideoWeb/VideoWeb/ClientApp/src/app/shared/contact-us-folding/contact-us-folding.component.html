@@ -1,24 +1,26 @@
 <div class="govuk-!-margin-top-7">
   <details class="govuk-details" data-module="govuk-details">
     <summary class="govuk-details__summary" (click)="toggle()" tabindex="0" role="button" [attr.aria-expanded]="expanded">
-        <span class="govuk-details__summary-text" id="citizen-contact-details" i18n="@@contactUs_p_1">
-          Contact us for help
-        </span>
+      <span class="govuk-details__summary-text" id="citizen-contact-details" i18n="@@contactUs_p_1">
+        Contact us for help
+      </span>
     </summary>
     <div class="govuk-details__text" *ngIf="expanded">
-      <p class="govuk-body govuk-!-margin-bottom-0" i18n="@@contactUs_p_2">Call the video hearings team on <strong>0300 303 0655</strong> and quote your case number</p>
+      <p class="govuk-body govuk-!-margin-bottom-0" i18n="@@contactUs_p_2">
+        Call the video hearings team on <strong>0300 303 0655</strong> and quote your case number
+      </p>
       <span id="contact-us-telephone-times-hint" class="govuk-hint" i18n="@@contactUs_p_3">
-            (available between 9am and 5pm, Monday to Friday)
-        </span>
+        (available between 9am and 5pm, Monday to Friday)
+      </span>
 
       <p class="govuk-body govuk-!-margin-bottom-0">
         <span i18n="@@contactUs_p_4">Email us at </span>
-        <a class="govuk-link" target="_blank" href="mailto:{{contact.email" data-hsupport="email">{{contact.email}}</a>
+        <a class="govuk-link" target="_blank" href="mailto:{{contact.email" data-hsupport="email">{{ contact.email }}</a>
         <span i18n="@@contactUs_p_5"> quoting your case number</span>
       </p>
       <span id="contact-us-email-times-hint" class="govuk-hint" i18n="@@contactUs_p_6">
-            (available between 9am and 5pm, Monday to Friday)
-        </span>
+        (available between 9am and 5pm, Monday to Friday)
+      </span>
     </div>
   </details>
 </div>

@@ -1,18 +1,18 @@
-.vh-sl{
+.vh-sl {
     margin-left: 25px;
     font-size: 22px !important;
 }
 
-.vh-sr{
+.vh-sr {
     margin-right: 25px;
     font-size: 22px !important;
 }
 
-.vh-r{
+.vh-r {
     float: right;
     margin-top: 5px;
 }
 
-.vh-link{
- text-decoration: none !important;
+.vh-link {
+    text-decoration: none !important;
 }

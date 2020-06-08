@@ -1,4 +1,4 @@
-@import "~govuk-frontend/govuk/all";
+@import '~govuk-frontend/govuk/all';
 
 .outer_face.ontime {
   position: relative;
@@ -8,9 +8,9 @@
   /* height of clock */
   border-radius: 200px;
   /* clock round corner radius */
-  background: govuk-colour("blue");
+  background: govuk-colour('blue');
   //box-shadow: inset 0 0 10px gray;
-  border: 0 solid govuk-colour("mid-grey");
+  border: 0 solid govuk-colour('mid-grey');
   /* thickness of outer border */
 }
 
@@ -22,9 +22,9 @@
   /* height of clock */
   border-radius: 200px;
   /* clock round corner radius */
-  background: govuk-colour("black");
+  background: govuk-colour('black');
   //box-shadow: inset 0 0 10px gray;
-  border: 0 solid govuk-colour("mid-grey");
+  border: 0 solid govuk-colour('mid-grey');
   /* thickness of outer border */
 }
 
@@ -36,9 +36,9 @@
   /* height of clock */
   border-radius: 200px;
   /* clock round corner radius */
-  background: govuk-colour("yellow");
+  background: govuk-colour('yellow');
   //box-shadow: inset 0 0 10px gray;
-  border: 0 solid govuk-colour("mid-grey");
+  border: 0 solid govuk-colour('mid-grey');
   /* thickness of outer border */
 }
 
@@ -49,86 +49,86 @@
 .outer_face.ontime::after,
 .outer_face.ontime .marker.white {
   /* time markers syle */
-  content: "";
+  content: '';
   position: absolute;
   width: 8px;
   /* width of 12-6 and 3-9 markers */
   height: 100%;
-  background: govuk-colour("white");
+  background: govuk-colour('white');
   z-index: 0;
   left: 50%;
   margin-left: -4px;
   /* set this value of 1/2 marker width */
-  top: 0
+  top: 0;
 }
 
 .outer_face.ontime .marker.white,
 .outer_face.isstarting .marker.white {
-  background: govuk-colour("white");
+  background: govuk-colour('white');
   width: 2px;
   /* width of all other markers */
-  margin-left: -1px
-    /* set this value of 1/2 marker width */
+  margin-left: -1px;
+  /* set this value of 1/2 marker width */
 }
 
 .outer_face.delayed::before,
 .outer_face.delayed::after,
 .outer_face.delayed .marker.black {
   /* time markers syle */
-  content: "";
+  content: '';
   position: absolute;
   width: 8px;
   /* width of 12-6 and 3-9 markers */
   height: 100%;
-  background: govuk-colour("black");
+  background: govuk-colour('black');
   z-index: 0;
   left: 50%;
   margin-left: -4px;
   /* set this value of 1/2 marker width */
-  top: 0
+  top: 0;
 }
 
 .outer_face.delayed .marker.black {
-  background: govuk-colour("black");
+  background: govuk-colour('black');
   width: 2px;
   /* width of all other markers */
-  margin-left: -1px
-    /* set this value of 1/2 marker width */
+  margin-left: -1px;
+  /* set this value of 1/2 marker width */
 }
 
 .outer_face::after {
   -moz-transform: rotate(90deg);
   -ms-transform: rotate(90deg);
   -webkit-transform: rotate(90deg);
-  transform: rotate(90deg)
+  transform: rotate(90deg);
 }
 
 .outer_face .marker.oneseven {
   -moz-transform: rotate(30deg);
   -ms-transform: rotate(30deg);
   -webkit-transform: rotate(30deg);
-  transform: rotate(30deg)
+  transform: rotate(30deg);
 }
 
 .outer_face .marker.twoeight {
   -moz-transform: rotate(60deg);
   -ms-transform: rotate(60deg);
   -webkit-transform: rotate(60deg);
-  transform: rotate(60deg)
+  transform: rotate(60deg);
 }
 
 .outer_face .marker.fourten {
   -moz-transform: rotate(120deg);
   -ms-transform: rotate(120deg);
   -webkit-transform: rotate(120deg);
-  transform: rotate(120deg)
+  transform: rotate(120deg);
 }
 
 .outer_face .marker.fiveeleven {
   -moz-transform: rotate(150deg);
   -ms-transform: rotate(150deg);
   -webkit-transform: rotate(150deg);
-  transform: rotate(150deg)
+  transform: rotate(150deg);
 }
 
 .inner_face {
@@ -142,58 +142,58 @@
   z-index: 10;
   left: 6%;
   /* set this value of 1/2 width value*/
-  top: 6%
-    /* set this value of 1/2 height value*/
+  top: 6%;
+  /* set this value of 1/2 height value*/
 }
 
 .inner_face.ontime {
   position: relative;
   width: 88%;
   height: 88%;
-  background: govuk-colour("blue");
+  background: govuk-colour('blue');
   -moz-border-radius: 1000px;
   -webkit-border-radius: 1000px;
   border-radius: 1000px;
   z-index: 10;
   left: 6%;
   /* set this value of 1/2 width value*/
-  top: 6%
-    /* set this value of 1/2 height value*/
+  top: 6%;
+  /* set this value of 1/2 height value*/
 }
 
 .inner_face.isstarting {
   position: relative;
   width: 88%;
   height: 88%;
-  background: govuk-colour("black");
+  background: govuk-colour('black');
   -moz-border-radius: 1000px;
   -webkit-border-radius: 1000px;
   border-radius: 1000px;
   z-index: 10;
   left: 6%;
   /* set this value of 1/2 width value*/
-  top: 6%
-    /* set this value of 1/2 height value*/
+  top: 6%;
+  /* set this value of 1/2 height value*/
 }
 
 .inner_face.delayed {
   position: relative;
   width: 88%;
   height: 88%;
-  background: govuk-colour("yellow");
+  background: govuk-colour('yellow');
   -moz-border-radius: 1000px;
   -webkit-border-radius: 1000px;
   border-radius: 1000px;
   z-index: 10;
   left: 6%;
   /* set this value of 1/2 width value*/
-  top: 6%
-    /* set this value of 1/2 height value*/
+  top: 6%;
+  /* set this value of 1/2 height value*/
 }
 
 .inner_face.black:before {
   /* clock center circle small */
-  content: "";
+  content: '';
   width: 18px;
   /* width of inner circle */
   height: 18px;
@@ -203,7 +203,7 @@
   /* set this value of 1/2 width value*/
   margin-top: -9px;
   /* set this value of 1/2 height value*/
-  background: govuk-colour("black");
+  background: govuk-colour('black');
   position: absolute;
   top: 50%;
   left: 50%;
@@ -211,7 +211,7 @@
 
 .inner_face.white:before {
   /* clock center circle small */
-  content: "";
+  content: '';
   width: 18px;
   /* width of inner circle */
   height: 18px;
@@ -221,7 +221,7 @@
   /* set this value of 1/2 width value*/
   margin-top: -9px;
   /* set this value of 1/2 height value*/
-  background: govuk-colour("white");
+  background: govuk-colour('white');
   position: absolute;
   top: 50%;
   left: 50%;
@@ -229,7 +229,7 @@
 
 .inner_face.isStartingWhite::before {
   /* clock center circle small */
-  content: "";
+  content: '';
   width: 18px;
   /* width of inner circle */
   height: 18px;
@@ -239,19 +239,19 @@
   /* set this value of 1/2 width value*/
   margin-top: -9px;
   /* set this value of 1/2 height value*/
-  background: govuk-colour("white");
+  background: govuk-colour('white');
   position: absolute;
   top: 50%;
   left: 50%;
 }
 
 .inner_face::after {
-  content: "";
+  content: '';
   position: absolute;
   width: 100%;
-  color: govuk-colour("white");
+  color: govuk-colour('white');
   text-align: center;
-  top: 85%
+  top: 85%;
 }
 
 .hand,
@@ -266,7 +266,7 @@
   left: 50%;
   margin-left: -2px;
   /* set this value to 1/2 width */
-  background: govuk-colour("white");
+  background: govuk-colour('white');
   -moz-transform: rotate(0deg);
   -ms-transform: rotate(0deg);
   -webkit-transform: rotate(0deg);
@@ -289,7 +289,7 @@
   left: 50%;
   margin-left: -2px;
   /* set this value to 1/2 width */
-  background: govuk-colour("black");
+  background: govuk-colour('black');
   -moz-transform: rotate(0deg);
   -ms-transform: rotate(0deg);
   -webkit-transform: rotate(0deg);
@@ -310,7 +310,7 @@
   /* width of min hand */
   margin-left: -2.5px;
   /* set this value to 1/2 width */
-  background: govuk-colour("black");
+  background: govuk-colour('black');
 }
 
 .hand.minute.white {
@@ -332,7 +332,7 @@
   margin-left: -1px;
   /* set this value to 1/2 width */
   top: 0;
-  background: govuk-colour("white");
+  background: govuk-colour('white');
 }
 
 .hand.second.black {
@@ -343,5 +343,5 @@
   margin-left: -1px;
   /* set this value to 1/2 width */
   top: 0;
-  background: govuk-colour("black");
+  background: govuk-colour('black');
 }

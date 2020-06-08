@@ -121,7 +121,7 @@ describe('UnreadMessagesComponent', () => {
         component.setupSubscribers();
         mockEventService.messageSubject.next(
             new InstantMessage({
-                conferenceId,
+                conferenceId: conferenceId,
                 from: participantUsername
             })
         );
@@ -157,7 +157,7 @@ describe('UnreadMessagesComponent', () => {
         component.setupSubscribers();
         mockEventService.messageSubject.next(
             new InstantMessage({
-                conferenceId,
+                conferenceId: conferenceId,
                 from: participantUsername
             })
         );
