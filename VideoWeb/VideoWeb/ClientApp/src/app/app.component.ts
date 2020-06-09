@@ -164,7 +164,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     private raiseNotSignedIn() {
         this.participantStatusUpdateService
-            .postParticipantStatus(EventType.ParticipantNotSignedIn)
+            .postParticipantStatus(EventType.ParticipantNotSignedIn, null)
             .then(() => {
                 this.logger.info('Participant status was updated to not signed in');
             })
