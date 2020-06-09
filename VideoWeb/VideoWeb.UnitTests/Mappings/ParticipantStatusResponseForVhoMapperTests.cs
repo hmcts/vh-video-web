@@ -78,9 +78,7 @@ namespace VideoWeb.UnitTests.Mappings
             var results = ParticipantStatusResponseForVhoMapper
                 .MapParticipantsTo(conference, bookingParticipants, judgesInHearings).ToList();
 
-            AssertResponseItemWithEmptyBookingParticipants(results.ElementAt(0), conference.Participants[0], conferenceId, bookingParticipants[0], false);
-            //AssertResponseItem(results.ElementAt(1), conference.Participants[1], conferenceId, bookingParticipants[1], false);
-            //AssertResponseItem(results.ElementAt(2), conference.Participants[2], conferenceId, bookingParticipants[2], true);
+            AssertResponseItemWithNoBookingParticipants(results.ElementAt(0), conference.Participants[0], conferenceId, bookingParticipants[0], false);
         }
 
         [Test]
@@ -137,7 +135,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.JudgeInAnotherHearing.Should().Be(isInAnotherHearing);
         }
 
-        private static void AssertResponseItemWithEmptyBookingParticipants(ParticipantContactDetailsResponseVho response, Participant participant,
+        private static void AssertResponseItemWithNoBookingParticipants(ParticipantContactDetailsResponseVho response, Participant participant,
             Guid conferenceId, ParticipantResponse bookingParticipant, bool isInAnotherHearing)
         {
             response.Id.Should().Be(participant.Id);

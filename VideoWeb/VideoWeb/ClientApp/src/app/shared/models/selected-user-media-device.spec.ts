@@ -13,7 +13,7 @@ describe('SelectedUserMediaDevice', () => {
     it('should throw error when microphone is not a valid device type', () => {
         const cam = testData.getSingleCamera()[0];
         const mic = testData.getSingleCamera()[0];
-        const action = function() {
+        const action = function () {
             return new SelectedUserMediaDevice(cam, mic);
         };
         expect(action).toThrowError(TypeError, /is not a microphone/);
@@ -23,7 +23,7 @@ describe('SelectedUserMediaDevice', () => {
         const cam = testData.getSingleMicrophone()[0];
         const mic = testData.getSingleMicrophone()[0];
 
-        const action = function() {
+        const action = function () {
             return new SelectedUserMediaDevice(cam, mic);
         };
         expect(action).toThrowError(TypeError, /is not a camera/);

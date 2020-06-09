@@ -22,6 +22,7 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
         private ProfilesController _controller;
         private Mock<IUserApiClient> _userApiClientMock;
         private Mock<ILogger<ProfilesController>> _mockLogger;
+        private ClaimsPrincipal _claimsPrincipal;
 
         private ClaimsPrincipal claimsPrincipal = new ClaimsPrincipalBuilder()
             .WithRole(Role.Judge)
@@ -34,7 +35,13 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
         {
             _userApiClientMock = new Mock<IUserApiClient>();
             _mockLogger = new Mock<ILogger<ProfilesController>>();
-            _controller = SetupControllerWithClaims(claimsPrincipal);
+            _claimsPrincipal = new ClaimsPrincipalBuilder()
+                .WithRole(Role.Judge)
+                .WithClaim(ClaimTypes.GivenName, "John")
+                .WithClaim(ClaimTypes.Surname, "Doe")
+                .WithClaim(ClaimTypes.Name, "John D")
+                .Build();
+            _controller = SetupControllerWithClaims(_claimsPrincipal);
         }
 
         [Test]
@@ -43,13 +50,14 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
             var result = _controller.GetUserProfile();
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
-            var response = (UserProfileResponse)typedResult.Value;
-            response.FirstName.Should()
-                .Be(claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value);
-            response.LastName.Should()
-                .Be(claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value);
-            response.DisplayName.Should()
-                .Be(claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value);
+
+            var userProfile = (UserProfileResponse) typedResult.Value;
+            userProfile.FirstName.Should()
+                .Be(_claimsPrincipal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value);
+            userProfile.LastName.Should()
+                .Be(_claimsPrincipal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Surname)?.Value);
+            userProfile.DisplayName.Should()
+                .Be(_claimsPrincipal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value);
         }
 
         [Test]

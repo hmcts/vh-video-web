@@ -10,7 +10,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 export class AdminHearingComponent implements OnInit {
     @Input() hearing: Hearing;
     adminIframeUrl: SafeResourceUrl;
-    constructor(public sanitizer: DomSanitizer) { }
+    constructor(public sanitizer: DomSanitizer) {}
 
     ngOnInit() {
         this.sanitiseAndLoadIframe();

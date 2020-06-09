@@ -17,7 +17,8 @@
 .conference-list {
   @include govuk-grid-column(one-third);
   overflow-y: auto;
-  height: 100vh;
+  height: 70vh;
+  max-height: 100vh;
   padding: 0px;
   border-right: 1px solid govuk-colour('light-grey');
 }
@@ -27,5 +28,5 @@
 }
 
 .title {
-    @extend %govuk-heading-m;
+  @extend %govuk-heading-m;
 }

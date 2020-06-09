@@ -9,29 +9,30 @@
   </div>
 </div>
 <form [formGroup]="declarationForm" class="govuk-form-group" (ngSubmit)="onSubmit()">
-  <div [ngClass]="
-      declarationForm.invalid && submitted
-        ? 'govuk-form-group--error'
-        : 'govuk-form-group'
-    ">
+  <div [ngClass]="declarationForm.invalid && submitted ? 'govuk-form-group--error' : 'govuk-form-group'">
     <div *ngIf="declarationForm.invalid && submitted" class="govuk-error-message">
-      <span class="govuk-visually-hidden">Error:</span> Please tick the box to
-      confirm that you will not record the hearing in any way
+      <span class="govuk-visually-hidden">Error:</span> Please tick the box to confirm that you will not record the hearing in any way
     </div>
     <div class="govuk-warning-text">
       <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
       <strong class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">Warning</span>
-        It is a criminal offence to record this hearing (by audio or video), to
-        publish any such recording, or to take any images (by photo or screen
-        shot)
+        It is a criminal offence to record this hearing (by audio or video), to publish any such recording, or to take any images (by photo
+        or screen shot)
       </strong>
     </div>
     <fieldset class="govuk-fieldset">
       <div class="govuk-checkboxes">
         <div class="govuk-checkboxes__item">
-          <input class="govuk-checkboxes__input" id="declare" name="declare" formControlName="declare" type="checkbox"
-            aria-required="true" required />
+          <input
+            class="govuk-checkboxes__input"
+            id="declare"
+            name="declare"
+            formControlName="declare"
+            type="checkbox"
+            aria-required="true"
+            required
+          />
           <label class="govuk-label govuk-checkboxes__label" for="declare">
             I confirm that I will not record or take any images of this hearing
           </label>
@@ -40,8 +41,16 @@
     </fieldset>
   </div>
   <div class="govuk-body govuk-!-margin-top-3">
-    <button id="nextButton" class="govuk-button" data-module="govuk-button" style="margin-right:25px;"
-      (click)="onSubmit()" type="button" alt="Declaration">Continue
+    <button
+      id="nextButton"
+      class="govuk-button"
+      data-module="govuk-button"
+      style="margin-right: 25px;"
+      (click)="onSubmit()"
+      type="button"
+      alt="Declaration"
+    >
+      Continue
     </button>
   </div>
   <app-contact-us-folding></app-contact-us-folding>

@@ -8,12 +8,7 @@
     <h1 class="govuk-heading-xl">Was your camera working?</h1>
 
     <form [formGroup]="form" class="govuk-form-group" (ngSubmit)="onSubmit()">
-
-      <div [ngClass]="showError()
-        ? 'govuk-form-group--error'
-        : 'govuk-form-group'
-        ">
-
+      <div [ngClass]="showError() ? 'govuk-form-group--error' : 'govuk-form-group'">
         <div *ngIf="showError()" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
           Select if you could see yourself in the camera window
@@ -27,15 +22,27 @@
           </legend>
           <div class="govuk-radios govuk-!-margin-top-5">
             <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="camera-yes" formControlName="equipmentCheck" name="equipmentCheck"
-                type="radio" value="Yes">
+              <input
+                class="govuk-radios__input"
+                id="camera-yes"
+                formControlName="equipmentCheck"
+                name="equipmentCheck"
+                type="radio"
+                value="Yes"
+              />
               <label class="govuk-label govuk-radios__label" for="camera-yes">
                 Yes
               </label>
             </div>
             <div class="govuk-radios__item">
-              <input class="govuk-radios__input" id="camera-no" formControlName="equipmentCheck" name="equipmentCheck"
-                type="radio" value="No">
+              <input
+                class="govuk-radios__input"
+                id="camera-no"
+                formControlName="equipmentCheck"
+                name="equipmentCheck"
+                type="radio"
+                value="No"
+              />
               <label class="govuk-label govuk-radios__label" for="camera-no">
                 No
               </label>
@@ -44,11 +51,25 @@
         </fieldset>
       </div>
       <div class="govuk-!-margin-top-6">
-        <button id="continue-btn" class="govuk-button govuk-!-margin-right-1" data-module="govuk-button" type="button"
-          (click)="onSubmit()" aria-label="Continue to the next page">Continue</button>
+        <button
+          id="continue-btn"
+          class="govuk-button govuk-!-margin-right-1"
+          data-module="govuk-button"
+          type="button"
+          (click)="onSubmit()"
+          aria-label="Continue to the next page"
+        >
+          Continue
+        </button>
 
-        <button id="check-equipment-btn" class="govuk-button govuk-button--secondary" data-module="govuk-button"
-          type="button" (click)="checkEquipmentAgain()" aria-label="Check my equipment again">
+        <button
+          id="check-equipment-btn"
+          class="govuk-button govuk-button--secondary"
+          data-module="govuk-button"
+          type="button"
+          (click)="checkEquipmentAgain()"
+          aria-label="Check my equipment again"
+        >
           Check my equipment again
         </button>
       </div>

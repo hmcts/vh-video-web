@@ -13,9 +13,9 @@ import { FooterStubComponent } from './stubs/footer-stub';
 import { HeaderStubComponent } from './stubs/header-stub';
 import { HearingListTableStubComponent } from './stubs/hearing-list-table-stub';
 import { IndividualConsultationControlsStubComponent } from './stubs/individual-consultation-controls-stub';
-import { JudgeChatStubComponent } from './stubs/judge-chat-stub.component';
 import { JudgeHearingTableStubComponent } from './stubs/judge-hearing-list-table-stub';
 import { MicVisualiserStubComponent } from './stubs/mic-visualiser-stub';
+import { ParticipantChatStubComponent } from './stubs/participant-chat-stub.component';
 import {
     IndividualParticipantStatusListStubComponent,
     JudgeParticipantStatusListStubComponent
@@ -47,7 +47,7 @@ import { UnsupportedBrowserStubComponent } from './stubs/unsupported-browser-stu
         BetaBannerStubComponent,
         BackNavigationStubComponent,
         UnsupportedBrowserStubComponent,
-        JudgeChatStubComponent,
+        ParticipantChatStubComponent,
         ChatInputBoxStubComponent
     ]
 })

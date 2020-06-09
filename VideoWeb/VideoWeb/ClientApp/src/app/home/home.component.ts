@@ -22,8 +22,8 @@ export class HomeComponent implements OnInit {
         if (this.deviceTypeService.isDesktop()) {
             this.profileService
                 .getUserProfile()
-                .then((profile) => this.navigateToHearingList(profile))
-                .catch((error) => this.errorService.handleApiError(error));
+                .then(profile => this.navigateToHearingList(profile))
+                .catch(error => this.errorService.handleApiError(error));
         } else {
             this.router.navigate([pageUrls.SignonAComputer]);
         }

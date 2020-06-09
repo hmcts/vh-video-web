@@ -1,4 +1,3 @@
-import { profile } from 'console';
 import { Guid } from 'guid-typescript';
 import { ConferenceResponse, Role, UserProfileResponse } from '../services/clients/api-client';
 import { InstantMessage } from '../services/models/instant-message';

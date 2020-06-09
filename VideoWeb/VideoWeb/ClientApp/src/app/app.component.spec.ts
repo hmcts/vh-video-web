@@ -1,6 +1,8 @@
+import { ElementRef } from '@angular/core';
+import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
-import { Router } from '@angular/router';
-import { of } from 'rxjs';
+import { ActivatedRoute, convertToParamMap, Event, NavigationEnd, Router } from '@angular/router';
+import { Subject, Subscription } from 'rxjs';
 import { AppComponent } from './app.component';
 import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
@@ -33,8 +35,15 @@ describe('AppComponent', () => {
     });
 
     let component: AppComponent;
+    let activatedRoute: ActivatedRoute;
+    const eventsSubjects = new Subject<Event>();
+
+    const dummyElement = document.createElement('div');
 
     beforeAll(() => {
+        activatedRoute = jasmine.createSpyObj<ActivatedRoute>('ActivatedRoute', [], {
+            firstChild: <any>{ snapshot: { data: convertToParamMap({ title: 'test-title' }) } }
+        });
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['clientSettings', 'getClientSettings', 'loadConfig']);
         configServiceSpy.getClientSettings.and.returnValue(clientSettings);
         adalService = mockAdalService;
@@ -47,7 +56,7 @@ describe('AppComponent', () => {
         locationServiceSpy = jasmine.createSpyObj<LocationService>('LocationService', ['getCurrentUrl', 'getCurrentPathName']);
 
         routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate', 'navigateByUrl'], {
-            events: of()
+            events: eventsSubjects.asObservable()
         });
         errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError', 'goToUnauthorised']);
         titleServiceSpy = jasmine.createSpyObj<Title>('Title', ['getTitle', 'setTitle']);
@@ -64,10 +73,14 @@ describe('AppComponent', () => {
             profileServiceSpy,
             errorServiceSpy,
             titleServiceSpy,
-            null,
+            activatedRoute,
             locationServiceSpy,
             pageTrackerServiceSpy
         );
+
+        document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(dummyElement);
+        component.main = new ElementRef(dummyElement);
+        component.skipLinkDiv = new ElementRef(dummyElement);
         deviceTypeServiceSpy.isSupportedBrowser.and.returnValue(true);
         routerSpy.navigate.and.returnValue(Promise.resolve(true));
         routerSpy.navigateByUrl.and.returnValue(Promise.resolve(true));
@@ -152,5 +165,27 @@ describe('AppComponent', () => {
         await component.checkAuth();
         expect(routerSpy.navigate).toHaveBeenCalledTimes(0);
         expect(profileServiceSpy.getUserProfile).toHaveBeenCalledTimes(0);
+    });
+
+    it('should update page title is naviation event raised', fakeAsync(() => {
+        const navEvent = new NavigationEnd(1, pageUrls.Login, pageUrls.AdminVenueList);
+        component.setPageTitle();
+        eventsSubjects.next(navEvent);
+        tick();
+        flushMicrotasks();
+        expect(titleServiceSpy.setTitle).toHaveBeenCalled();
+    }));
+
+    it('should clear subscriptions on destory', () => {
+        const sub = jasmine.createSpyObj<Subscription>('Subscription', ['add', 'unsubscribe']);
+        component.subscriptions = sub;
+        component.ngOnDestroy();
+        expect(component.subscriptions.unsubscribe).toHaveBeenCalled();
+    });
+
+    it('should skip to content', () => {
+        spyOn(dummyElement, 'focus');
+        component.skipToContent();
+        expect(dummyElement.focus).toHaveBeenCalled();
     });
 });
