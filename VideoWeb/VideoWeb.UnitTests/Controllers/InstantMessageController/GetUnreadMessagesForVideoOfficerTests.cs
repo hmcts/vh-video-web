@@ -68,6 +68,10 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             var responseModel = (UnreadInstantMessageConferenceCountResponse)typedResult.Value;
             responseModel.NumberOfUnreadMessagesConference.Should().NotBeNull();
             responseModel.NumberOfUnreadMessagesConference.Sum(m => m.NumberOfUnreadMessages).Should().Be(5);
+            responseModel.NumberOfUnreadMessagesConference[0].NumberOfUnreadMessages.Should().Be(2);
+            responseModel.NumberOfUnreadMessagesConference[1].NumberOfUnreadMessages.Should().Be(3);
+            responseModel.NumberOfUnreadMessagesConference[2].NumberOfUnreadMessages.Should().Be(0);
+            responseModel.NumberOfUnreadMessagesConference[3].NumberOfUnreadMessages.Should().Be(0);
         }
 
         private static Conference InitConference()

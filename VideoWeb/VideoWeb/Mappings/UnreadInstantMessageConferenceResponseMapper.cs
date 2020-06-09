@@ -22,7 +22,6 @@ namespace VideoWeb.Mappings
         private static List<UnreadAdminMessageResponse> MapMessages(Conference conference, IList<InstantMessageResponse> messageResponses)
         {
             var unreadMessagesPerParticipant = new List<UnreadAdminMessageResponse>();
-            messageResponses = messageResponses.OrderByDescending(x => x.Time_stamp).ToList();
             foreach (var participant in conference.Participants)
             {
                 var participantMessageResponses = messageResponses
