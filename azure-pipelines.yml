@@ -286,9 +286,9 @@ extends:
         - vh-video-api-$(environment)
       acceptanceTestSettings:
         - name: VhServices:VideoWebApiUrl
-          value: $(video_web_url_staging)
+          value: $(video_web_url)
         - name: VhServices:VideoWebUrl
-          value: $(video_web_url_staging)
+          value: $(video_web_url)
         - ${{ each setting in parameters.testSettings }}:
           - name: ${{ setting.name }}
             value: ${{ setting.value }}
