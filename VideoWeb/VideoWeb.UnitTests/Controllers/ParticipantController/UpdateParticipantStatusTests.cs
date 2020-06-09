@@ -1,26 +1,26 @@
-using System;
-using System.Net;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using System;
+using System.Net;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 using EventHubEventType = VideoWeb.EventHub.Enums.EventType;
+using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
+using UpdateParticipantRequest = VideoWeb.Services.Video.UpdateParticipantRequest;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {
-    public class UpdateParticipantStatusTests
+    public class UpdateJudgeDisplatNameTests
     {
         private ParticipantsController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
@@ -43,7 +43,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _bookingsApiClientMock = new Mock<IBookingsApiClient>();
 
             _eventHandlerFactoryMock.Setup(x => x.Get(It.IsAny<EventHubEventType>())).Returns(_eventHandlerMock.Object);
-            
+
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             _testConference = _eventComponentHelper.BuildConferenceForTest();
             _testConference.Participants[0].Username = ClaimsPrincipalBuilder.Username;
@@ -55,7 +55,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                     User = claimsPrincipal
                 }
             };
-            
+
             _controller = new ParticipantsController(_videoApiClientMock.Object, _eventHandlerFactoryMock.Object, 
                 _conferenceCacheMock.Object, _mockLogger.Object, _bookingsApiClientMock.Object)
             {
@@ -66,63 +66,42 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         [Test]
         public async Task Should_return_ok()
         {
-            _conferenceCacheMock.Setup(cache => cache.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(_testConference);
-            
             var conferenceId = _testConference.Id;
-            var request = new UpdateParticipantStatusEventRequest
+            var participantId = Guid.NewGuid();
+
+            var request = new UpdateParticipantRequest
             {
-                EventType = EventType.JudgeAvailable
+                Fullname = "Judge Stive Adams",
+                Display_name ="Sir Steve",
+                Representee=""
             };
             _videoApiClientMock
-                .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
+                .Setup(x => x.UpdateParticipantDetailsAsync(It.IsAny<Guid>(),It.IsAny<Guid>(), request ))
                 .Returns(Task.FromResult(default(object)));
-            
-            var result = await _controller.UpdateParticipantStatusAsync(conferenceId, request);
-            var typedResult = (NoContentResult) result;
+
+            var result = await _controller.UpdateParticipantDisplayNameAsync(conferenceId, participantId, request);
+            var typedResult = (NoContentResult)result;
             typedResult.Should().NotBeNull();
-        }
-        
-        [Test]
-        public async Task Should_call_api_when_cache_is_empty()
-        {
-            _conferenceCacheMock.Setup(cache => cache.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(_testConference);
-            
-            var conferenceId = _testConference.Id;
-            var request = new UpdateParticipantStatusEventRequest
-            {
-                EventType = EventType.JudgeAvailable
-            };
-            _videoApiClientMock
-                .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
-                .Returns(Task.FromResult(default(object)));
-            
-            await _controller.UpdateParticipantStatusAsync(conferenceId, request);
-            _videoApiClientMock.Verify(x => x.GetConferenceDetailsByIdAsync(_testConference.Id), Times.Once);
         }
 
         [Test]
         public async Task Should_throw_error_when_get_api_throws_error()
         {
-            _conferenceCacheMock.Setup(cache => cache.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(_testConference);
-            
+
             var conferenceId = _testConference.Id;
-            var request = new UpdateParticipantStatusEventRequest
+            var request = new UpdateParticipantRequest
             {
-                EventType = EventType.JudgeAvailable
+                Fullname = "Judge Stive Adams",
+                Display_name = "Sir Steve",
+                Representee = ""
             };
-            var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
-                "Please provide a valid conference Id", null, default, null);
+            var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
+                "Please provide a valid conference Id and participant Id", null, default, null);
             _videoApiClientMock
-                .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
+                .Setup(x => x.UpdateParticipantDetailsAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), request))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.UpdateParticipantStatusAsync(conferenceId, request);
+            var result = await _controller.UpdateParticipantDisplayNameAsync(conferenceId, Guid.NewGuid(), request);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }

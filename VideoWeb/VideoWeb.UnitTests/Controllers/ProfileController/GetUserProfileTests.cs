@@ -24,12 +24,6 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
         private Mock<ILogger<ProfilesController>> _mockLogger;
         private ClaimsPrincipal _claimsPrincipal;
 
-        private ClaimsPrincipal claimsPrincipal = new ClaimsPrincipalBuilder()
-            .WithRole(Role.Judge)
-            .WithClaim(ClaimTypes.GivenName, "John")
-            .WithClaim(ClaimTypes.Surname, "Doe")
-            .WithClaim(ClaimTypes.Name, "John D")
-            .Build();
         [SetUp]
         public void Setup()
         {
@@ -48,7 +42,7 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
         public void Should_return_ok_code_when_user_profile_found()
         {
             var result = _controller.GetUserProfile();
-            var typedResult = (OkObjectResult)result;
+            var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
 
             var userProfile = (UserProfileResponse) typedResult.Value;
@@ -70,15 +64,15 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
                 .Build();
             _controller = SetupControllerWithClaims(claimsPrincipal);
             var apiException = new UserApiException<ProblemDetails>("Internal Server Error",
-                (int)HttpStatusCode.InternalServerError,
+                (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
             _userApiClientMock
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
             var result = _controller.GetUserProfile();
-            var typedResult = (ObjectResult)result;
-            typedResult.StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
+            var typedResult = (ObjectResult) result;
+            typedResult.StatusCode.Should().Be((int) HttpStatusCode.Unauthorized);
 
         }
 
