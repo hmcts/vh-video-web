@@ -22,20 +22,20 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
         private ProfilesController _controller;
         private Mock<IUserApiClient> _userApiClientMock;
         private Mock<ILogger<ProfilesController>> _mockLogger;
-        private ClaimsPrincipal claimsPrincipal;
+        private ClaimsPrincipal _claimsPrincipal;
 
         [SetUp]
         public void Setup()
         {
             _userApiClientMock = new Mock<IUserApiClient>();
             _mockLogger = new Mock<ILogger<ProfilesController>>();
-            claimsPrincipal = new ClaimsPrincipalBuilder()
+            _claimsPrincipal = new ClaimsPrincipalBuilder()
                 .WithRole(Role.Judge)
                 .WithClaim(ClaimTypes.GivenName, "John")
                 .WithClaim(ClaimTypes.Surname, "Doe")
                 .WithClaim(ClaimTypes.Name, "John D")
                 .Build();
-            _controller = SetupControllerWithClaims(claimsPrincipal);
+            _controller = SetupControllerWithClaims(_claimsPrincipal);
         }
 
         [Test]
@@ -47,11 +47,11 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
 
             var userProfile = (UserProfileResponse) typedResult.Value;
             userProfile.FirstName.Should()
-                .Be(claimsPrincipal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value);
+                .Be(_claimsPrincipal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value);
             userProfile.LastName.Should()
-                .Be(claimsPrincipal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Surname)?.Value);
+                .Be(_claimsPrincipal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Surname)?.Value);
             userProfile.DisplayName.Should()
-                .Be(claimsPrincipal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value);
+                .Be(_claimsPrincipal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value);
         }
 
         [Test]
