@@ -1,7 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <ProjectGuid>371E895D-1CDC-4872-BCCC-7199DD3AA519</ProjectGuid>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-      <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />
-      <ProjectReference Include="..\VideoWeb.Services\VideoWeb.Services.csproj" />
+    <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />
+    <ProjectReference Include="..\VideoWeb.Services\VideoWeb.Services.csproj" />
   </ItemGroup>
 
 </Project>

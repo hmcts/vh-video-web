@@ -5,6 +5,12 @@
     <IsPackable>false</IsPackable>
     <LangVersion>8.0</LangVersion>
     <UserSecretsId>18c466fd-9265-425f-964e-5989181743a7</UserSecretsId>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <ProjectGuid>4146DC41-60D5-464F-B140-B627E99079A3</ProjectGuid>
   </PropertyGroup>
 
   <ItemGroup>
@@ -44,8 +50,8 @@
       <TargetPath>appsettings.test1.json</TargetPath>
     </ContentWithTargetPath>
     <ContentWithTargetPath Include="Configuration\Environments\saucelabs.json" Condition="Exists('Configuration\Environments\saucelabs.json')">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        <TargetPath>saucelabs.json</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>saucelabs.json</TargetPath>
     </ContentWithTargetPath>
     <None Update="Data\TestData\CommonData.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

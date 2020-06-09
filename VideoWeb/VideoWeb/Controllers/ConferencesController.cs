@@ -144,7 +144,7 @@ namespace VideoWeb.Controllers
             {
                 _logger.LogWarning("Unable to get conference when id is not provided");
                 ModelState.AddModelError(nameof(conferenceId), $"Please provide a valid {nameof(conferenceId)}");
-                
+
                 return BadRequest(ModelState);
             }
 
@@ -152,7 +152,7 @@ namespace VideoWeb.Controllers
             if (!User.IsInRole(Role.VideoHearingsOfficer.EnumDataMemberAttr()))
             {
                 _logger.LogWarning($"Failed to get conference: ${conferenceId}, {User.Identity.Name} is not a VH officer");
-                
+
                 return Unauthorized("User must be a VH Officer");
             }
 
@@ -165,7 +165,7 @@ namespace VideoWeb.Controllers
             catch (VideoApiException e)
             {
                 _logger.LogError(e, $"Unable to retrieve conference: ${conferenceId}");
-                
+
                 return StatusCode(e.StatusCode, e.Response);
             }
 
@@ -175,7 +175,7 @@ namespace VideoWeb.Controllers
                 _logger.LogInformation(
                     $"Unauthorised to view conference details {conferenceId} because user is not " +
                     "Officer nor a participant of the conference, or the conference has been closed for over 30 minutes");
-                
+
                 return Unauthorized();
             }
 
@@ -186,13 +186,13 @@ namespace VideoWeb.Controllers
                 Role.Individual,
                 Role.Representative
             };
-            
+
             conference.Participants = conference
                 .Participants
                 .Where(x => displayRoles.Contains((Role) x.User_role)).ToList();
 
             var response = ConferenceResponseVhoMapper.MapConferenceDetailsToResponseModel(conference);
-            
+
             await _conferenceCache.AddConferenceAsync(conference);
 
             return Ok(response);
