@@ -11,7 +11,7 @@ describe('ParticipantStatusGuard', () => {
     let guard: ParticipantStatusGuard;
     let router: jasmine.SpyObj<Router>;
     let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
-    let activateRoute: any = { paramMap: convertToParamMap({ conferenceId: 'cef3051f-6909-40b9-a846-100cf4040a9a' }) };
+    const activateRoute: any = { paramMap: convertToParamMap({ conferenceId: 'cef3051f-6909-40b9-a846-100cf4040a9a' }) };
 
     beforeAll(() => {
         router = jasmine.createSpyObj<Router>('Router', [], { navigated: false });
