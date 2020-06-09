@@ -1,9 +1,11 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild, HostListener } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
+import { EventType } from 'src/app/services/clients/api-client';
+import { participantPages, ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
 import { Role } from './services/clients/api-client';
@@ -12,9 +14,6 @@ import { ErrorService } from './services/error.service';
 import { LocationService } from './services/location.service';
 import { PageTrackerService } from './services/page-tracker.service';
 import { pageUrls } from './shared/page-url.constants';
-import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
-import { EventType } from 'src/app/services/clients/api-client';
-import { participantPages } from 'src/app/services/participant-status-update.service';
 
 @Component({
     selector: 'app-root',
@@ -51,7 +50,6 @@ export class AppComponent implements OnInit, OnDestroy {
         this.initAuthentication();
 
         this.pageTracker.trackPreviousPage(router);
-        this.refreshPageParticipant();
     }
 
     private initAuthentication() {
@@ -67,15 +65,29 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        this.setupSubscribers();
         this.checkAuth().then(() => {
             this.checkBrowser();
             this.setPageTitle();
-            this.scrollToTop();
         });
     }
 
+    private setupSubscribers() {
+        this.subscriptions.add(
+            this.router.events.subscribe((event: NavigationEnd) => {
+                console.warn(event);
+                if (event instanceof NavigationEnd) {
+                    this.scrollToTop();
+                    this.refreshPageParticipant(event);
+                }
+            })
+        );
+    }
+
+    @HostListener('window:beforeunload', ['$event'])
     ngOnDestroy(): void {
         this.subscriptions.unsubscribe();
+        this.beforeunloadHandler(null);
     }
 
     checkBrowser(): void {
@@ -142,32 +154,47 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     scrollToTop() {
-        this.subscriptions.add(
-            this.router.events.subscribe((event: NavigationEnd) => {
-                window.scroll(0, 0);
-                this.skipLinkDiv.nativeElement.focus();
-            })
-        );
+        window.scroll(0, 0);
+        this.skipLinkDiv.nativeElement.focus();
     }
 
-    @HostListener('window:beforeunload', ['$event'])
-    async beforeunloadHandler($event: any) {
-        $event.preventDefault();
-        await this.participantStatusUpdateService.postParticipantStatus(EventType.ParticipantNotSignedIn);
-        $event.returnValue = 'save';
+    beforeunloadHandler($event: any) {
+        console.warn('unload code running');
+        this.raiseNotSignedIn();
     }
 
-    refreshPageParticipant() {
-        this.subscriptions.add(
-            this.router.events.subscribe(async event => {
-                if (event instanceof NavigationEnd) {
-                    const params = event.url.split('/');
-                    const isThePage = params.length > 2 && participantPages.findIndex(x => x === params[1]) > -1;
-                    if (event.id === 1 && event.url === event.urlAfterRedirects && isThePage) {
-                        await this.participantStatusUpdateService.postParticipantStatus(EventType.ParticipantJoining);
-                    }
-                }
+    async refreshPageParticipant(event: NavigationEnd) {
+        console.warn('refresh code running');
+        const params = event.url.split('/');
+        const isThePage = params.length > 2 && participantPages.findIndex(x => x === params[1]) > -1;
+        if (event.id === 1 && event.url === event.urlAfterRedirects && !isThePage) {
+            this.raiseNotSignedIn();
+        } else {
+            this.raiseJoiningStatus();
+        }
+    }
+
+    private raiseNotSignedIn() {
+        this.participantStatusUpdateService
+            .postParticipantStatus(EventType.ParticipantNotSignedIn)
+            .then(() => {
+                console.warn('I have updated status to not signed in');
             })
-        );
+            .catch(err => {
+                console.error('Unable to update status to not signed in');
+                console.error(err);
+            });
+    }
+
+    private raiseJoiningStatus() {
+        this.participantStatusUpdateService
+            .postParticipantStatus(EventType.ParticipantJoining)
+            .then(() => {
+                console.warn('I have updated status to joining');
+            })
+            .catch(err => {
+                console.error('Unable to update status to joining');
+                console.error(err);
+            });
     }
 }

@@ -1,4 +1,4 @@
-import { OnInit, Component, Injectable } from '@angular/core';
+import { Component, Injectable, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { ProfileService } from 'src/app/services/api/profile.service';
 
@@ -13,11 +13,17 @@ export class LogoutComponent implements OnInit {
 
     ngOnInit() {
         if (this.adalSvc.userInfo.authenticated) {
+            this.raiseNotSignedIn();
             this.profileService.clearUserProfile();
             this.adalSvc.logOut();
         }
     }
+
     get loggedIn(): boolean {
         return this.adalSvc.userInfo.authenticated;
+    }
+
+    raiseNotSignedIn() {
+        throw new Error('not implemented exception');
     }
 }
