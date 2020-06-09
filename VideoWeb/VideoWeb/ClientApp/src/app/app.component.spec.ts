@@ -39,18 +39,17 @@ describe('AppComponent', () => {
     let component: AppComponent;
     let activatedRoute: ActivatedRoute;
     const eventsSubjects = new Subject<Event>();
-
     const dummyElement = document.createElement('div');
 
     beforeAll(() => {
         activatedRoute = jasmine.createSpyObj<ActivatedRoute>('ActivatedRoute', [], {
             firstChild: <any>{ snapshot: { data: convertToParamMap({ title: 'test-title' }) } }
         });
+
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['clientSettings', 'getClientSettings', 'loadConfig']);
         configServiceSpy.getClientSettings.and.returnValue(clientSettings);
         adalService = mockAdalService;
         deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isSupportedBrowser']);
-
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
         const profile = new UserProfileResponse({ role: Role.Representative });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
