@@ -140,7 +140,6 @@ namespace VideoWeb.Controllers
         public async Task<ActionResult<ConferenceResponseVho>> GetConferenceByIdVHOAsync(Guid conferenceId)
         {
             _logger.LogDebug("GetConferenceById");
-            const string exceptionMessage = "User must be a VH Officer";
             if (conferenceId == Guid.Empty)
             {
                 _logger.LogWarning("Unable to get conference when id is not provided");
