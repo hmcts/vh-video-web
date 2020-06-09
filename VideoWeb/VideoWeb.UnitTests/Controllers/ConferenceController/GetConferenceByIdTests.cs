@@ -53,13 +53,13 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         [Test]
         public async Task Should_return_ok_when_user_is_in_conference()
         {
-            var conference = CreateValidConferenceResponse(null);
+            var conference = CreateValidConferenceResponse();
             _videoApiClientMock
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
 
             var result = await _controller.GetConferenceByIdAsync(conference.Id);
-            var typedResult = (UnauthorizedResult)result.Result;
+            var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
             _mockConferenceCache.Verify(x => x.AddConferenceAsync(new ConferenceDetailsResponse()), Times.Never);
         }
@@ -74,6 +74,20 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             var result = await _controller.GetConferenceByIdAsync(conference.Id);
             var typedResult = (UnauthorizedResult) result.Result;
+            typedResult.Should().NotBeNull();
+        }
+
+        [Test]
+        public async Task Should_return_unauthorised_when_conference_exceededLimit()
+        {
+            var conference = CreateValidConferenceResponse(null);
+            conference.Current_status = ConferenceState.Closed;
+            _videoApiClientMock
+                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(conference);
+
+            var result = await _controller.GetConferenceByIdAsync(conference.Id);
+            var typedResult = (UnauthorizedResult)result.Result;
             typedResult.Should().NotBeNull();
         }
 
