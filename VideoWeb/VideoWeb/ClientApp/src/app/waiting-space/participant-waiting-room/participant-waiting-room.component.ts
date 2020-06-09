@@ -18,13 +18,15 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { UserMediaService } from 'src/app/services/user-media.service';
 import { pageUrls } from 'src/app/shared/page-url.constants';
+import { Url } from 'url';
 import { DeviceTypeService } from '../../services/device-type.service';
 import { HeartbeatModelMapper } from '../../shared/mappers/heartbeat-model-mapper';
 import { Hearing } from '../../shared/models/hearing';
+import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models/video-call-models';
+import { VideoCallService } from '../services/video-call.service';
 
-declare var PexRTC: any;
+// declare var PexRTC: any;
 declare var HeartbeatFactory: any;
 
 @Component({
@@ -40,10 +42,10 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     participant: ParticipantResponse;
     conference: ConferenceResponse;
     token: TokenResponse;
-    pexipAPI: any;
-    stream: MediaStream;
+
+    stream: MediaStream | Url;
     connected: boolean;
-    outgoingStream: MediaStream;
+    outgoingStream: MediaStream | Url;
 
     currentTime: Date;
     hearingStartingAnnounced: boolean;
@@ -58,7 +60,9 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     isAdminConsultation: boolean;
     audioMuted: boolean;
 
-    clockSubscription: Subscription;
+    clockSubscription$: Subscription;
+    eventHubSubscription$ = new Subscription();
+    videoCallSubscription$ = new Subscription();
     errorCount: number;
 
     CALL_TIMEOUT = 31000; // 31 seconds
@@ -72,12 +76,12 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         private adalService: AdalService,
         private errorService: ErrorService,
         private clockService: ClockService,
-        private userMediaService: UserMediaService,
         private logger: Logger,
         private consultationService: ConsultationService,
         private router: Router,
         private heartbeatMapper: HeartbeatModelMapper,
-        private deviceTypeService: DeviceTypeService
+        private deviceTypeService: DeviceTypeService,
+        private videoCallService: VideoCallService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -111,10 +115,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     disconnect() {
-        if (this.pexipAPI) {
-            this.logger.info('disconnecting from pexip node');
-            this.pexipAPI.disconnect();
-        }
+        this.videoCallService.disconnectFromCall();
         this.stream = null;
         this.outgoingStream = null;
         this.connected = false;
@@ -143,7 +144,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     subscribeToClock(): void {
-        this.clockSubscription = this.clockService.getClock().subscribe(time => {
+        this.clockSubscription$ = this.clockService.getClock().subscribe(time => {
             this.currentTime = time;
             this.checkIfHearingIsClosed();
             this.checkIfHearingIsStarting();
@@ -158,7 +159,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     checkIfHearingIsClosed(): void {
         if (this.hearing.isPastClosedTime()) {
-            this.clockSubscription.unsubscribe();
+            this.clockSubscription$.unsubscribe();
             this.router.navigate([pageUrls.ParticipantHearingList]);
         }
     }
@@ -189,9 +190,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             .catch(error => {
                 this.logger.error(`There was an error getting a conference ${conferenceId}`, error);
                 this.loadingData = false;
-                if (!this.errorService.returnHomeIfUnauthorised(error)) {
-                    this.errorService.handleApiError(error);
-                }
+                this.errorService.handleApiError(error);
             });
     }
 
@@ -200,7 +199,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             this.logger.debug('retrieving jwtoken');
             this.token = await this.videoWebService.getJwToken(this.participant.id);
             this.logger.debug('retrieved jwtoken for heartbeat');
-            await this.setupPexipClient();
+            await this.setupPexipEventSubscriptionAndClient();
             this.call();
         } catch (error) {
             this.logger.error(`There was an error getting a jwtoken for ${this.participant.id}`, error);
@@ -229,43 +228,58 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     startEventHubSubscribers() {
         this.logger.debug('Subscribing to conference status changes...');
-        this.eventService.getHearingStatusMessage().subscribe(message => {
-            this.handleConferenceStatusChange(message);
-            this.updateShowVideo();
-        });
+        this.eventHubSubscription$.add(
+            this.eventService.getHearingStatusMessage().subscribe(message => {
+                this.handleConferenceStatusChange(message);
+                this.updateShowVideo();
+            })
+        );
 
         this.logger.debug('Subscribing to participant status changes...');
-        this.eventService.getParticipantStatusMessage().subscribe(message => {
-            this.handleParticipantStatusChange(message);
-            this.updateShowVideo();
-        });
+        this.eventHubSubscription$.add(
+            this.eventService.getParticipantStatusMessage().subscribe(message => {
+                this.handleParticipantStatusChange(message);
+                this.updateShowVideo();
+            })
+        );
 
         this.logger.debug('Subscribing to admin consultation messages...');
-        this.eventService.getAdminConsultationMessage().subscribe(message => {
-            if (message.answer && message.answer === ConsultationAnswer.Accepted) {
-                this.isAdminConsultation = true;
-            }
-        });
+        this.eventHubSubscription$.add(
+            this.eventService.getAdminConsultationMessage().subscribe(message => {
+                if (message.answer && message.answer === ConsultationAnswer.Accepted) {
+                    this.isAdminConsultation = true;
+                }
+            })
+        );
 
         this.logger.debug('Subscribing to EventHub disconnects');
-        this.eventService.getServiceDisconnected().subscribe(attemptNumber => {
-            this.handleEventHubDisconnection(attemptNumber);
-        });
+        this.eventHubSubscription$.add(
+            this.eventService.getServiceDisconnected().subscribe(async attemptNumber => {
+                await this.handleEventHubDisconnection(attemptNumber);
+            })
+        );
 
         this.logger.debug('Subscribing to EventHub reconnects');
-        this.eventService.getServiceReconnected().subscribe(() => {
-            this.logger.info(`EventHub re-connected for ${this.participant.id} in conference ${this.hearing.id}`);
-            this.getConference().then(() => this.updateShowVideo());
-        });
+        this.eventHubSubscription$.add(
+            this.eventService.getServiceReconnected().subscribe(() => {
+                this.logger.info(`EventHub re-connected for ${this.participant.id} in conference ${this.hearing.id}`);
+                this.getConference().then(() => this.updateShowVideo());
+            })
+        );
 
         this.eventService.start();
     }
 
-    handleEventHubDisconnection(reconnectionAttempt: number) {
+    async handleEventHubDisconnection(reconnectionAttempt: number) {
         if (reconnectionAttempt < 7) {
             this.logger.info(`EventHub disconnection for ${this.participant.id} in conference ${this.hearing.id}`);
             this.logger.info(`EventHub disconnection #${reconnectionAttempt}`);
-            this.getConference().then(() => this.updateShowVideo());
+            try {
+                await this.getConference();
+                this.updateShowVideo();
+            } catch (error) {
+                this.errorService.handleApiError(error);
+            }
         } else {
             this.logger.info(`EventHub disconnection too many times (#${reconnectionAttempt}), going to service error`);
             this.errorService.goToServiceError('Your connection was lost');
@@ -275,6 +289,9 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     handleParticipantStatusChange(message: ParticipantStatusMessage): any {
         const participant = this.hearing.getConference().participants.find(p => p.id === message.participantId);
         const isMe = participant.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase();
+        if (isMe) {
+            this.participant.status = message.status;
+        }
         participant.status = message.status;
         this.logger.info(
             `Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}, Participant status : ${participant.status}`
@@ -286,6 +303,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
         this.hearing.getConference().status = message.status;
+        this.conference.status = message.status;
         this.logger.info(
             `Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}, Conference status : ${message.status}`
         );
@@ -294,95 +312,91 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         }
     }
 
-    async setupPexipClient() {
+    setupParticipantHeartbeat() {
+        const baseUrl = this.conference.pexip_node_uri.replace('sip.', '');
+        const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${this.conference.id}`;
+        this.logger.debug(`heartbeat uri: ${url}`);
+        const bearerToken = `Bearer ${this.token.token}`;
+        this.heartbeat = new HeartbeatFactory(
+            this.videoCallService.pexipAPI,
+            url,
+            this.conference.id,
+            this.participant.id,
+            bearerToken,
+            this.handleHeartbeat(this)
+        );
+    }
+
+    async setupPexipEventSubscriptionAndClient() {
         this.logger.debug('Setting up pexip client...');
-        const self = this;
-        this.pexipAPI = new PexRTC();
 
-        const preferredCam = await this.userMediaService.getPreferredCamera();
-        if (preferredCam) {
-            this.pexipAPI.video_source = preferredCam.deviceId;
-            self.logger.info(
-                `Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}, Using preferred camera: ${preferredCam.label}`
-            );
+        this.videoCallSubscription$.add(this.videoCallService.onCallSetup().subscribe(setup => this.handleCallSetup(setup)));
+        this.videoCallSubscription$.add(
+            this.videoCallService.onCallConnected().subscribe(callConnected => this.handleCallConnected(callConnected))
+        );
+        this.videoCallSubscription$.add(this.videoCallService.onError().subscribe(callError => this.handleCallError(callError)));
+        this.videoCallSubscription$.add(
+            this.videoCallService.onCallDisconnected().subscribe(disconnectedCall => this.handleCallDisconnect(disconnectedCall))
+        );
+
+        await this.videoCallService.setupClient();
+    }
+
+    handleCallSetup(callSetup: CallSetup) {
+        this.logger.info('running pexip setup');
+        this.videoCallService.connect('', null);
+        this.outgoingStream = callSetup.stream;
+        this.showSelfView = true;
+    }
+
+    handleCallConnected(callConnected: ConnectedCall) {
+        this.errorCount = 0;
+        this.connected = true;
+        this.logger.info('successfully connected to call');
+        this.stream = callConnected.stream;
+        const incomingFeedElement = document.getElementById('incomingFeed') as any;
+        if (this.stream) {
+            this.updateShowVideo();
+            if (incomingFeedElement) {
+                this.assignStream(incomingFeedElement, callConnected.stream);
+            }
         }
+        this.setupParticipantHeartbeat();
+    }
 
-        const preferredMic = await this.userMediaService.getPreferredMicrophone();
-        if (preferredMic) {
-            this.pexipAPI.audio_source = preferredMic.deviceId;
-            self.logger.info(
-                `Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}, Using preferred microphone: ${preferredMic.label}`
-            );
+    handleCallError(error: CallError) {
+        this.errorCount++;
+        this.connected = false;
+        this.heartbeat.kill();
+        this.updateShowVideo();
+        this.logger.error(`Error from pexip. Reason : ${error.reason}`, error.reason);
+        if (this.errorCount > 3) {
+            this.errorService.goToServiceError('Your connection was lost');
         }
+    }
 
-        this.pexipAPI.onSetup = function (stream, pinStatus, conferenceExtension) {
-            self.logger.info('running pexip setup');
-            this.connect('', null);
-            self.outgoingStream = stream;
-            this.showSelfView = true;
-        };
-
-        this.pexipAPI.onConnect = function (stream) {
-            self.errorCount = 0;
-            self.connected = true;
-            self.logger.info('successfully connected to call');
-            self.stream = stream;
-            const incomingFeedElement = document.getElementById('incomingFeed') as any;
-            if (stream) {
-                self.updateShowVideo();
-                if (incomingFeedElement) {
-                    self.assignStream(incomingFeedElement, stream);
-                }
-            }
-
-            const baseUrl = self.conference.pexip_node_uri.replace('sip.', '');
-            const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${self.conference.id}`;
-            self.logger.debug(`heartbeat uri: ${url}`);
-            const bearerToken = `Bearer ${self.token.token}`;
-            self.heartbeat = new HeartbeatFactory(
-                self.pexipAPI,
-                url,
-                self.conference.id,
-                self.participant.id,
-                bearerToken,
-                self.handleHeartbeat(self)
-            );
-        };
-
-        this.pexipAPI.onError = function (reason) {
-            self.errorCount++;
-            self.connected = false;
-            self.heartbeat.kill();
-            self.updateShowVideo();
-            self.logger.error(`Error from pexip. Reason : ${reason}`, reason);
-            if (self.errorCount > 3) {
-                self.errorService.goToServiceError('Your connection was lost');
-            }
-        };
-
-        this.pexipAPI.onDisconnect = function (reason) {
-            self.connected = false;
-            self.heartbeat.kill();
-            self.updateShowVideo();
-            self.logger.warn(`Disconnected from pexip. Reason : ${reason}`);
-            if (!self.hearing.isPastClosedTime()) {
-                self.callbackTimeout = setTimeout(() => {
-                    self.call();
-                }, self.CALL_TIMEOUT);
-            }
-        };
+    handleCallDisconnect(reason: DisconnectedCall) {
+        this.connected = false;
+        this.heartbeat.kill();
+        this.updateShowVideo();
+        this.logger.warn(`Disconnected from pexip. Reason : ${reason.reason}`);
+        if (!this.hearing.isPastClosedTime()) {
+            this.callbackTimeout = setTimeout(() => {
+                this.call();
+            }, this.CALL_TIMEOUT);
+        }
     }
 
     call() {
-        this.logger.warn('calling pexip');
+        this.logger.info('calling pexip');
         const pexipNode = this.hearing.getConference().pexip_node_uri;
         const conferenceAlias = this.hearing.getConference().participant_uri;
         const displayName = this.participant.tiled_display_name;
         this.logger.debug(`Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`);
         if (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1) {
-            this.pexipAPI.h264_enabled = false;
+            this.videoCallService.enableH264(false);
         }
-        this.pexipAPI.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth);
+        this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth);
     }
 
     updateShowVideo(): void {
@@ -483,10 +497,8 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     muteUnmuteCall() {
-        if (this.pexipAPI) {
-            const muteAudio: boolean = this.pexipAPI.muteAudio();
-            this.logger.info('Participant mute status :' + muteAudio);
-            this.audioMuted = muteAudio;
-        }
+        const muteAudio = this.videoCallService.toggleMute();
+        this.logger.info('Participant mute status :' + muteAudio);
+        this.audioMuted = muteAudio;
     }
 }
