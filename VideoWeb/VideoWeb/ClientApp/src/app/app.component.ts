@@ -5,7 +5,7 @@ import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { EventType } from 'src/app/services/clients/api-client';
-import { participantPages, ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
+import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
 import { Role } from './services/clients/api-client';
@@ -14,6 +14,7 @@ import { ErrorService } from './services/error.service';
 import { LocationService } from './services/location.service';
 import { PageTrackerService } from './services/page-tracker.service';
 import { pageUrls } from './shared/page-url.constants';
+import { Logger } from './services/logging/logger-base';
 
 @Component({
     selector: 'app-root',
@@ -43,7 +44,8 @@ export class AppComponent implements OnInit, OnDestroy {
         private activatedRoute: ActivatedRoute,
         private locationService: LocationService,
         private pageTracker: PageTrackerService,
-        private participantStatusUpdateService: ParticipantStatusUpdateService
+        private participantStatusUpdateService: ParticipantStatusUpdateService,
+        private logger: Logger
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
@@ -75,10 +77,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private setupSubscribers() {
         this.subscriptions.add(
             this.router.events.subscribe((event: NavigationEnd) => {
-                console.warn(event);
                 if (event instanceof NavigationEnd) {
                     this.scrollToTop();
-                    this.refreshPageParticipant(event);
                 }
             })
         );
@@ -159,42 +159,17 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     beforeunloadHandler($event: any) {
-        console.warn('unload code running');
         this.raiseNotSignedIn();
-    }
-
-    async refreshPageParticipant(event: NavigationEnd) {
-        console.warn('refresh code running');
-        const params = event.url.split('/');
-        const isThePage = params.length > 2 && participantPages.findIndex(x => x === params[1]) > -1;
-        if (event.id === 1 && event.url === event.urlAfterRedirects && !isThePage) {
-            this.raiseNotSignedIn();
-        } else {
-            this.raiseJoiningStatus();
-        }
     }
 
     private raiseNotSignedIn() {
         this.participantStatusUpdateService
             .postParticipantStatus(EventType.ParticipantNotSignedIn)
             .then(() => {
-                console.warn('I have updated status to not signed in');
+                this.logger.info('Participant status was updated to not signed in');
             })
             .catch(err => {
-                console.error('Unable to update status to not signed in');
-                console.error(err);
-            });
-    }
-
-    private raiseJoiningStatus() {
-        this.participantStatusUpdateService
-            .postParticipantStatus(EventType.ParticipantJoining)
-            .then(() => {
-                console.warn('I have updated status to joining');
-            })
-            .catch(err => {
-                console.error('Unable to update status to joining');
-                console.error(err);
+                this.logger.error('Unable to update status to not signed in', err);
             });
     }
 }

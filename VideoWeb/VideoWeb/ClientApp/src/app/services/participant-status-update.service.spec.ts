@@ -17,7 +17,7 @@ describe('ParticipantStatusUpdateService', () => {
     it('should raise participant event with event type not signed in', async () => {
         spyOn(logger, 'error');
 
-        await service.postParticipantStatus(EventType.ParticipantNotSignedIn);
+        await service.postParticipantStatus(EventType.ParticipantNotSignedIn, '62464424244');
         expect(apiClientSpy.updateParticipantStatus).toHaveBeenCalled();
         expect(logger.error).toHaveBeenCalledTimes(0);
     });
@@ -37,7 +37,7 @@ describe('ParticipantStatusUpdateService failure', () => {
     it('should not raise participant event with event type not signed in', async () => {
         spyOn(logger, 'error');
 
-        await service.postParticipantStatus(EventType.ParticipantNotSignedIn);
+        await service.postParticipantStatus(EventType.ParticipantNotSignedIn, '3512352531');
         expect(apiClientSpy.updateParticipantStatus).toHaveBeenCalled();
         expect(logger.error).toHaveBeenCalled();
     });

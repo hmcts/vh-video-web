@@ -13,7 +13,6 @@ export class LogoutComponent implements OnInit {
 
     ngOnInit() {
         if (this.adalSvc.userInfo.authenticated) {
-            this.raiseNotSignedIn();
             this.profileService.clearUserProfile();
             this.adalSvc.logOut();
         }
@@ -21,9 +20,5 @@ export class LogoutComponent implements OnInit {
 
     get loggedIn(): boolean {
         return this.adalSvc.userInfo.authenticated;
-    }
-
-    raiseNotSignedIn() {
-        throw new Error('not implemented exception');
     }
 }

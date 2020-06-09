@@ -14,6 +14,7 @@ import { PageTrackerService } from './services/page-tracker.service';
 import { pageUrls } from './shared/page-url.constants';
 import { MockAdalService } from './testing/mocks/MockAdalService';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
+import { MockLogger } from './testing/mocks/MockLogger';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -79,7 +80,8 @@ describe('AppComponent', () => {
             activatedRoute,
             locationServiceSpy,
             pageTrackerServiceSpy,
-            participantStatusUpdateService
+            participantStatusUpdateService,
+            new MockLogger()
         );
 
         document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(dummyElement);
@@ -171,18 +173,22 @@ describe('AppComponent', () => {
         expect(profileServiceSpy.getUserProfile).toHaveBeenCalledTimes(0);
     });
 
-    it('should update page title is naviation event raised', fakeAsync(() => {
-        const navEvent = new NavigationEnd(1, pageUrls.Login, pageUrls.AdminVenueList);
-        component.setPageTitle();
-        eventsSubjects.next(navEvent);
-        tick();
-        flushMicrotasks();
-        expect(titleServiceSpy.setTitle).toHaveBeenCalled();
-    }));
+    it(
+        'should update page title is naviation event raised',
+        fakeAsync(() => {
+            const navEvent = new NavigationEnd(1, pageUrls.Login, pageUrls.AdminVenueList);
+            component.setPageTitle();
+            eventsSubjects.next(navEvent);
+            tick();
+            flushMicrotasks();
+            expect(titleServiceSpy.setTitle).toHaveBeenCalled();
+        })
+    );
 
     it('should clear subscriptions on destory', () => {
         const sub = jasmine.createSpyObj<Subscription>('Subscription', ['add', 'unsubscribe']);
         component.subscriptions = sub;
+        participantStatusUpdateService.postParticipantStatus.and.returnValue(Promise.resolve());
         component.ngOnDestroy();
         expect(component.subscriptions.unsubscribe).toHaveBeenCalled();
     });
