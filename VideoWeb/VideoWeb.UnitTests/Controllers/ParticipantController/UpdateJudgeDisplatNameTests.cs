@@ -31,7 +31,6 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         private Mock<IConferenceCache> _conferenceCacheMock;
         private Mock<ILogger<ParticipantsController>> _mockLogger;
         private Mock<IBookingsApiClient> _bookingsApiClientMock;
-        const string ErrorMessage = "Please provide a valid conference Id and participant Id";
 
         [SetUp]
         public void Setup()
@@ -88,6 +87,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         [Test]
         public async Task Should_throw_error_when_get_api_throws_error()
         {
+
             var conferenceId = _testConference.Id;
             var request = new UpdateParticipantRequest
             {
@@ -96,7 +96,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 Representee = ""
             };
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
-                ErrorMessage, null, default, null);
+                "Please provide a valid conference Id and participant Id", null, default, null);
             _videoApiClientMock
                 .Setup(x => x.UpdateParticipantDetailsAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), request))
                 .ThrowsAsync(apiException);
@@ -104,50 +104,6 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var result = await _controller.UpdateParticipantDisplayNameAsync(conferenceId, Guid.NewGuid(), request);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            typedResult.Value.Should().Be(ErrorMessage);
-        }
-
-        [Test]
-        public async Task Should_throw_error_when_get_api_throws_error_with_null_participantId_conferenceId()
-        {
-            var request = new UpdateParticipantRequest
-            {
-                Fullname = "Judge Steve Adams",
-                Display_name = "Sir Steve",
-                Representee = ""
-            };
-            var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
-                ErrorMessage, null, default, null);
-            _videoApiClientMock
-                .Setup(x => x.UpdateParticipantDetailsAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), request))
-                .ThrowsAsync(apiException);
-
-            var result = await _controller.UpdateParticipantDisplayNameAsync(Guid.Empty, Guid.Empty, request);
-            var typedResult = (ObjectResult)result;
-            typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            typedResult.Value.Should().Be(ErrorMessage);
-        }
-
-        [Test]
-        public async Task Should_throw_error_when_get_api_throws_error_with_null_participantId()
-        {
-            var conferenceId = _testConference.Id;
-            var request = new UpdateParticipantRequest
-            {
-                Fullname = "Judge Steve Adams",
-                Display_name = "Sir Steve",
-                Representee = ""
-            };
-            var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
-                ErrorMessage, null, default, null);
-            _videoApiClientMock
-                .Setup(x => x.UpdateParticipantDetailsAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), request))
-                .ThrowsAsync(apiException);
-
-            var result = await _controller.UpdateParticipantDisplayNameAsync(conferenceId, Guid.Empty, request);
-            var typedResult = (ObjectResult)result;
-            typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-            typedResult.Value.Should().Be(ErrorMessage);
         }
     }
 }
