@@ -5,7 +5,6 @@ import { ApiClient, EventType } from 'src/app/services/clients/api-client';
 import { of } from 'rxjs';
 
 describe('ParticipantStatusUpdateService', () => {
-
     let apiClientSpy: jasmine.SpyObj<ApiClient>;
     apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['updateParticipantStatus']);
     apiClientSpy.updateParticipantStatus.and.returnValue(of());
@@ -21,12 +20,10 @@ describe('ParticipantStatusUpdateService', () => {
         await service.postParticipantStatus(EventType.ParticipantNotSignedIn);
         expect(apiClientSpy.updateParticipantStatus).toHaveBeenCalled();
         expect(logger.error).toHaveBeenCalledTimes(0);
-
     });
 });
 
 describe('ParticipantStatusUpdateService failure', () => {
-
     let apiClientSpy: jasmine.SpyObj<ApiClient>;
     apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['updateParticipantStatus']);
     apiClientSpy.updateParticipantStatus.and.throwError('Error');
@@ -43,6 +40,5 @@ describe('ParticipantStatusUpdateService failure', () => {
         await service.postParticipantStatus(EventType.ParticipantNotSignedIn);
         expect(apiClientSpy.updateParticipantStatus).toHaveBeenCalled();
         expect(logger.error).toHaveBeenCalled();
-
     });
 });
