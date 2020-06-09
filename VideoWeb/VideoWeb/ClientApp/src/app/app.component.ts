@@ -14,7 +14,6 @@ import { ErrorService } from './services/error.service';
 import { LocationService } from './services/location.service';
 import { PageTrackerService } from './services/page-tracker.service';
 import { pageUrls } from './shared/page-url.constants';
-import { Logger } from './services/logging/logger-base';
 
 @Component({
     selector: 'app-root',
@@ -44,8 +43,7 @@ export class AppComponent implements OnInit, OnDestroy {
         private activatedRoute: ActivatedRoute,
         private locationService: LocationService,
         private pageTracker: PageTrackerService,
-        private participantStatusUpdateService: ParticipantStatusUpdateService,
-        private logger: Logger
+        private participantStatusUpdateService: ParticipantStatusUpdateService
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
@@ -166,10 +164,10 @@ export class AppComponent implements OnInit, OnDestroy {
         this.participantStatusUpdateService
             .postParticipantStatus(EventType.ParticipantNotSignedIn, null)
             .then(() => {
-                this.logger.info('Participant status was updated to not signed in');
+                console.info('Participant status was updated to not signed in');
             })
             .catch(err => {
-                this.logger.error('Unable to update status to not signed in', err);
+                console.error('Unable to update status to not signed in', err);
             });
     }
 }

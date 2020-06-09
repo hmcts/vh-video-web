@@ -14,7 +14,6 @@ import { PageTrackerService } from './services/page-tracker.service';
 import { pageUrls } from './shared/page-url.constants';
 import { MockAdalService } from './testing/mocks/MockAdalService';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
-import { MockLogger } from './testing/mocks/MockLogger';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -79,8 +78,7 @@ describe('AppComponent', () => {
             activatedRoute,
             locationServiceSpy,
             pageTrackerServiceSpy,
-            participantStatusUpdateService,
-            new MockLogger()
+            participantStatusUpdateService
         );
 
         document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(dummyElement);
