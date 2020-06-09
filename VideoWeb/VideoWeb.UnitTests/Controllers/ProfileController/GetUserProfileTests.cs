@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using FluentAssertions;
@@ -8,6 +9,7 @@ using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Services.User;
 using VideoWeb.UnitTests.Builders;
@@ -20,13 +22,14 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
         private ProfilesController _controller;
         private Mock<IUserApiClient> _userApiClientMock;
         private Mock<ILogger<ProfilesController>> _mockLogger;
+        private ClaimsPrincipal claimsPrincipal;
 
         [SetUp]
         public void Setup()
         {
             _userApiClientMock = new Mock<IUserApiClient>();
             _mockLogger = new Mock<ILogger<ProfilesController>>();
-            var claimsPrincipal = new ClaimsPrincipalBuilder()
+            claimsPrincipal = new ClaimsPrincipalBuilder()
                 .WithRole(Role.Judge)
                 .WithClaim(ClaimTypes.GivenName, "John")
                 .WithClaim(ClaimTypes.Surname, "Doe")
@@ -41,6 +44,14 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
             var result = _controller.GetUserProfile();
             var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
+
+            var userProfile = (UserProfileResponse) typedResult.Value;
+            userProfile.FirstName.Should()
+                .Be(claimsPrincipal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value);
+            userProfile.LastName.Should()
+                .Be(claimsPrincipal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Surname)?.Value);
+            userProfile.DisplayName.Should()
+                .Be(claimsPrincipal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value);
         }
 
         [Test]

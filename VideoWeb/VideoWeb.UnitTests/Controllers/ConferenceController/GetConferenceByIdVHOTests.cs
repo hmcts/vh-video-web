@@ -57,6 +57,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         [Test]
         public async Task Should_return_unauthorized_when_user_is_not_admin()
         {
+            var errorMessage = "User must be a VH Officer";
             var conference = CreateValidConferenceResponse(null);
             _videoApiClientMock
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
@@ -67,6 +68,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var result = await _controller.GetConferenceByIdVHOAsync(conference.Id);
             var typedResult = (UnauthorizedObjectResult)result.Result;
             typedResult.Should().NotBeNull();
+            typedResult.Value.Should().Be(errorMessage);
         }
 
         [Test]
