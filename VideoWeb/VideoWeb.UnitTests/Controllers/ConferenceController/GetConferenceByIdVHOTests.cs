@@ -12,6 +12,7 @@ using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
@@ -44,6 +45,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public async Task Should_return_ok_when_user_is_an_admin()
         {
             var conference = CreateValidConferenceResponse(null);
+            conference.Participants[0].User_role = UserRole.Individual;
             _videoApiClientMock
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
@@ -52,11 +54,15 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
             _mockConferenceCache.Verify(x => x.AddConferenceAsync(new ConferenceDetailsResponse()), Times.Never);
+            var response = (ConferenceResponseVho)typedResult.Value;
+            response.CaseNumber.Should().Be(conference.Case_number);
+            response.Participants[0].Role.Should().Be(UserRole.Individual);
         }
 
         [Test]
         public async Task Should_return_unauthorized_when_user_is_not_admin()
         {
+            var errorMessage = "User must be a VH Officer";
             var conference = CreateValidConferenceResponse(null);
             _videoApiClientMock
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
@@ -67,6 +73,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var result = await _controller.GetConferenceByIdVHOAsync(conference.Id);
             var typedResult = (UnauthorizedObjectResult)result.Result;
             typedResult.Should().NotBeNull();
+            typedResult.Value.Should().Be(errorMessage);
         }
 
         [Test]

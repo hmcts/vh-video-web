@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FizzWare.NBuilder;
@@ -49,7 +49,38 @@ namespace VideoWeb.UnitTests.Mappings
             AssertResponseItem(results.ElementAt(1), conference.Participants[1], conferenceId, bookingParticipants[1], false);
             AssertResponseItem(results.ElementAt(2), conference.Participants[2], conferenceId, bookingParticipants[2], true);
         }
-        
+
+        [Test]
+        public void Should_map_all_properties_with_not_matching_booking_participants()
+        {
+            var conferenceId = Guid.NewGuid();
+            var conference = CreateValidConference(conferenceId);
+
+            var judge1 = CreateParticipant("judge1");
+            var judge2 = CreateParticipant("judge2");
+            var judge3 = CreateParticipant("judge3");
+            var judge3DifferentHearing = CreateParticipant("judge3");
+            conference.Participants = new List<Participant>
+            {
+                judge1, judge2, judge3
+            };
+
+            var bookingParticipants = new List<ParticipantResponse>
+            {
+                new ParticipantResponse{Id = Guid.NewGuid(), First_name = "judge1", Last_name = "judge1", Contact_email = "judge1", Telephone_number = "judge1"},
+            };
+
+            var judgesInHearings = new List<JudgeInHearingResponse>
+            {
+                new JudgeInHearingResponse{ Id = judge3DifferentHearing.Id, Username = judge3.Username, Status = ParticipantState.InHearing }
+            };
+
+            var results = ParticipantStatusResponseForVhoMapper
+                .MapParticipantsTo(conference, bookingParticipants, judgesInHearings).ToList();
+
+            AssertResponseItemWithNoBookingParticipants(results.ElementAt(0), conference.Participants[0], conferenceId, bookingParticipants[0], false);
+        }
+
         [Test]
         public void Should_throw_exception_if_have_two_participants_with_the_same_id()
         {
@@ -103,7 +134,27 @@ namespace VideoWeb.UnitTests.Mappings
             response.HearingVenueName.Should().Be("MyVenue");
             response.JudgeInAnotherHearing.Should().Be(isInAnotherHearing);
         }
-        
+
+        private static void AssertResponseItemWithNoBookingParticipants(ParticipantContactDetailsResponseVho response, Participant participant,
+            Guid conferenceId, ParticipantResponse bookingParticipant, bool isInAnotherHearing)
+        {
+            response.Id.Should().Be(participant.Id);
+            response.ConferenceId.Should().Be(conferenceId);
+            response.Name.Should().Be(participant.Name);
+            response.Role.Should().Be(participant.Role);
+            response.Username.Should().Be(participant.Username);
+            response.CaseTypeGroup.Should().Be(participant.CaseTypeGroup);
+            response.RefId.Should().Be(participant.RefId);
+            response.FirstName.Should().BeNullOrEmpty();
+            response.LastName.Should().BeNullOrEmpty();
+            response.DisplayName.Should().Be(participant.DisplayName);
+            response.Status.Should().Be(participant.ParticipantStatus);
+            response.ContactEmail.Should().BeNullOrEmpty();
+            response.ContactTelephone.Should().BeNullOrEmpty();
+            response.HearingVenueName.Should().Be("MyVenue");
+            response.JudgeInAnotherHearing.Should().Be(isInAnotherHearing);
+        }
+
         private static Participant CreateParticipant(string username)
         {
             return Builder<Participant>.CreateNew()
