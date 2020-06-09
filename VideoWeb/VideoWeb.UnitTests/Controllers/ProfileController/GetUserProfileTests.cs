@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using FluentAssertions;
@@ -8,6 +9,7 @@ using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Services.User;
 using VideoWeb.UnitTests.Builders;
@@ -21,17 +23,17 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
         private Mock<IUserApiClient> _userApiClientMock;
         private Mock<ILogger<ProfilesController>> _mockLogger;
 
+        private ClaimsPrincipal claimsPrincipal = new ClaimsPrincipalBuilder()
+            .WithRole(Role.Judge)
+            .WithClaim(ClaimTypes.GivenName, "John")
+            .WithClaim(ClaimTypes.Surname, "Doe")
+            .WithClaim(ClaimTypes.Name, "John D")
+            .Build();
         [SetUp]
         public void Setup()
         {
             _userApiClientMock = new Mock<IUserApiClient>();
             _mockLogger = new Mock<ILogger<ProfilesController>>();
-            var claimsPrincipal = new ClaimsPrincipalBuilder()
-                .WithRole(Role.Judge)
-                .WithClaim(ClaimTypes.GivenName, "John")
-                .WithClaim(ClaimTypes.Surname, "Doe")
-                .WithClaim(ClaimTypes.Name, "John D")
-                .Build();
             _controller = SetupControllerWithClaims(claimsPrincipal);
         }
 
@@ -39,8 +41,15 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
         public void Should_return_ok_code_when_user_profile_found()
         {
             var result = _controller.GetUserProfile();
-            var typedResult = (OkObjectResult) result;
+            var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
+            var response = (UserProfileResponse)typedResult.Value;
+            response.FirstName.Should()
+                .Be(claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value);
+            response.LastName.Should()
+                .Be(claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value);
+            response.DisplayName.Should()
+                .Be(claimsPrincipal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value);
         }
 
         [Test]
@@ -53,15 +62,15 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
                 .Build();
             _controller = SetupControllerWithClaims(claimsPrincipal);
             var apiException = new UserApiException<ProblemDetails>("Internal Server Error",
-                (int) HttpStatusCode.InternalServerError,
+                (int)HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
             _userApiClientMock
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
             var result = _controller.GetUserProfile();
-            var typedResult = (ObjectResult) result;
-            typedResult.StatusCode.Should().Be((int) HttpStatusCode.Unauthorized);
+            var typedResult = (ObjectResult)result;
+            typedResult.StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
 
         }
 

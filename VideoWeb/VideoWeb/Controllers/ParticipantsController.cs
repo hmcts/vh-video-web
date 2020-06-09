@@ -155,11 +155,6 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> UpdateParticipantDisplayNameAsync(Guid conferenceId, Guid participantId, [FromBody] UpdateParticipantRequest participantRequest)
         {
-            if (conferenceId == Guid.Empty || participantId == Guid.Empty)
-            {
-                return BadRequest("Please provide a valid conference Id and participant Id");
-            }
-
             try
             {
                await  _videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, participantRequest);
@@ -185,7 +180,7 @@ namespace VideoWeb.Controllers
         public async Task<IActionResult> GetParticipantsWithContactDetailsByConferenceIdAsync(Guid conferenceId)
         {
             _logger.LogDebug("GetParticipantsWithContactDetailsByConferenceId");
-            
+            const string  exceptionMessage = "User must be a VH Officer";
             if (conferenceId == Guid.Empty)
             {
                 _logger.LogWarning("Unable to get conference when id is not provided");
@@ -199,7 +194,7 @@ namespace VideoWeb.Controllers
             {
                 _logger.LogWarning($"Failed to get conference: ${conferenceId}, {User.Identity.Name} is not a VH officer");
                 
-                return Unauthorized("User must be a VH Officer");
+                return Unauthorized(exceptionMessage);
             }
 
             try
