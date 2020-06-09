@@ -55,6 +55,8 @@ describe('AppComponent', () => {
         pageTracker = jasmine.createSpyObj('PageTrackerService', ['trackNavigation', 'trackPreviousPage']);
 
         participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
+        participantStatusUpdateService.postParticipantStatus.and.returnValue(Promise.resolve());
+
         TestBed.configureTestingModule({
             imports: [HttpClientModule, RouterTestingModule],
             declarations: [AppComponent, HeaderStubComponent, FooterStubComponent, BetaBannerStubComponent],
