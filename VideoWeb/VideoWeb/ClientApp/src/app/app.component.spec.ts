@@ -65,7 +65,6 @@ describe('AppComponent', () => {
         pageTrackerServiceSpy = jasmine.createSpyObj('PageTrackerService', ['trackNavigation', 'trackPreviousPage']);
 
         participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
-
     });
 
     beforeEach(() => {
@@ -172,14 +171,17 @@ describe('AppComponent', () => {
         expect(profileServiceSpy.getUserProfile).toHaveBeenCalledTimes(0);
     });
 
-    it('should update page title is naviation event raised', fakeAsync(() => {
-        const navEvent = new NavigationEnd(1, pageUrls.Login, pageUrls.AdminVenueList);
-        component.setPageTitle();
-        eventsSubjects.next(navEvent);
-        tick();
-        flushMicrotasks();
-        expect(titleServiceSpy.setTitle).toHaveBeenCalled();
-    }));
+    it(
+        'should update page title is naviation event raised',
+        fakeAsync(() => {
+            const navEvent = new NavigationEnd(1, pageUrls.Login, pageUrls.AdminVenueList);
+            component.setPageTitle();
+            eventsSubjects.next(navEvent);
+            tick();
+            flushMicrotasks();
+            expect(titleServiceSpy.setTitle).toHaveBeenCalled();
+        })
+    );
 
     it('should clear subscriptions on destory', () => {
         const sub = jasmine.createSpyObj<Subscription>('Subscription', ['add', 'unsubscribe']);

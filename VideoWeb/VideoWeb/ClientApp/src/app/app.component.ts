@@ -52,7 +52,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
         this.pageTracker.trackPreviousPage(router);
         this.refreshPageParticipant();
-
     }
 
     private initAuthentication() {
@@ -159,14 +158,16 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     refreshPageParticipant() {
-        this.subscriptions.add(this.router.events.subscribe(async (event) => {
-            if (event instanceof NavigationEnd) {
-                const params = event.url.split('/');
-                const isThePage = params.length > 2 && participantPages.findIndex(x => x === params[1]) > -1;
-                if (event.id === 1 && event.url === event.urlAfterRedirects && isThePage) {
-                    await this.participantStatusUpdateService.postParticipantStatus(EventType.ParticipantJoining);
+        this.subscriptions.add(
+            this.router.events.subscribe(async event => {
+                if (event instanceof NavigationEnd) {
+                    const params = event.url.split('/');
+                    const isThePage = params.length > 2 && participantPages.findIndex(x => x === params[1]) > -1;
+                    if (event.id === 1 && event.url === event.urlAfterRedirects && isThePage) {
+                        await this.participantStatusUpdateService.postParticipantStatus(EventType.ParticipantJoining);
+                    }
                 }
-            }
-        }));
+            })
+        );
     }
 }
