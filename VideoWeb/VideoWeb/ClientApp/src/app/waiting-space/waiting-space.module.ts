@@ -8,7 +8,7 @@ import { JudgeParticipantStatusListComponent } from './judge-participant-status-
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room/participant-waiting-room.component';
 import { WaitingSpaceRoutingModule } from './waiting-space-routing.module';
 import { IndividualConsultationControlsComponent } from './individual-consultation-controls/individual-consultation-controls.component';
-import { JudgeChatComponent } from './judge-chat/judge-chat.component';
+import { ParticipantChatComponent } from './participant-chat/participant-chat.component';
 import { AudioAlertComponent } from './audio-alert/audio-alert.component';
 
 @NgModule({
@@ -21,7 +21,7 @@ import { AudioAlertComponent } from './audio-alert/audio-alert.component';
         JudgeHearingPageComponent,
         AnalogueClockComponent,
         IndividualConsultationControlsComponent,
-        JudgeChatComponent,
+        ParticipantChatComponent,
         AudioAlertComponent
     ]
 })
