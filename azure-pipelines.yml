@@ -131,13 +131,13 @@ parameters:
   - name: AzureAd:PostLogoutRedirectUri
     slot:
       deployment:
-        value: $(video_web_url_staging)logout
+        value: $(video_web_url)logout
       active:
         value: $(video_web_url)logout
   - name: AzureAd:RedirectUri
     slot:
       deployment:
-        value: $(video_web_url_staging)home
+        value: $(video_web_url)home
       active:
         value: $(video_web_url)home
   - name: AzureAd:TenantId
