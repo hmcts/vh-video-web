@@ -1,4 +1,15 @@
-import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+    AfterViewChecked,
+    Component,
+    ElementRef,
+    EventEmitter,
+    HostListener,
+    Input,
+    OnDestroy,
+    OnInit,
+    Output,
+    ViewChild
+} from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
@@ -17,12 +28,13 @@ import { ConferenceUnreadMessageCount } from './vho-conference-unread_message-co
     templateUrl: './vho-chat.component.html',
     styleUrls: ['./vho-chat.component.scss', '../vho-global-styles.scss']
 })
-export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDestroy {
+export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDestroy, AfterViewChecked {
     newMessageBody: FormControl;
     chatHubSubscription: Subscription;
     loading: boolean;
 
     private _participant: Participant;
+    @ViewChild('content', { static: false }) content: ElementRef;
 
     @Input() set participant(value: Participant) {
         if (!this._participant) {
@@ -49,6 +61,10 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         protected imHelper: ImHelper
     ) {
         super(videoWebService, profileService, eventService, logger, adalService, imHelper);
+    }
+
+    ngAfterViewChecked(): void {
+        this.scrollToBottom();
     }
 
     ngOnInit() {

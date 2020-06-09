@@ -22,6 +22,7 @@ import {
     JudgeParticipantStatusListStubComponent
 } from 'src/app/testing/stubs/participant-status-list-stub';
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room.component';
+import { ParticipantChatStubComponent } from 'src/app/testing/stubs/participant-chat-stub.component';
 
 describe('ParticipantWaitingRoomComponent when service returns an error', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -45,7 +46,8 @@ describe('ParticipantWaitingRoomComponent when service returns an error', () => 
                 IndividualParticipantStatusListStubComponent,
                 AnalogueClockStubComponent,
                 JudgeParticipantStatusListStubComponent,
-                IndividualConsultationControlsStubComponent
+                IndividualConsultationControlsStubComponent,
+                ParticipantChatStubComponent
             ],
             providers: [
                 {

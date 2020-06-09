@@ -1,8 +1,9 @@
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
+import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ImHelper } from 'src/app/shared/im-helper';
@@ -11,22 +12,35 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { MockProfileService } from 'src/app/testing/mocks/MockProfileService';
 import { VhoChatComponent } from './vho-chat.component';
-import { Subscription } from 'rxjs';
 
 describe('VhoChatComponent', () => {
     let component: VhoChatComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     let eventsServiceSpy: jasmine.SpyObj<EventsService>;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
-    const mockProfileService = new MockProfileService();
     const mockAdalService = new MockAdalService();
     const mockEventsService = new MockEventsService();
     let adalService;
     let conference: ConferenceResponse;
     let hearing: Hearing;
     const imHelper = new ImHelper();
+
+    const judgeProfile: UserProfileResponse = new UserProfileResponse({
+        display_name: 'Judge Fudge',
+        first_name: 'Judge',
+        last_name: 'Fudge',
+        role: Role.Judge,
+        username: 'judge.fudge@hearings.net'
+    });
+
+    const adminProfile: UserProfileResponse = new UserProfileResponse({
+        display_name: 'Test Admin',
+        first_name: 'Test',
+        last_name: 'Admin',
+        role: Role.VideoHearingsOfficer,
+        username: 'admin@test.com'
+    });
 
     beforeAll(() => {
         adalService = mockAdalService;
@@ -49,9 +63,9 @@ describe('VhoChatComponent', () => {
         const chatHistory = new ConferenceTestData().getChatHistory(mockAdalService.userInfo.userName, conference.id);
 
         profileServiceSpy.checkCacheForProfileByUsername.and.callFake(() => null);
-        profileServiceSpy.getProfileByUsername.and.returnValue(Promise.resolve(mockProfileService.mockProfile));
+        profileServiceSpy.getProfileByUsername.and.returnValue(Promise.resolve(judgeProfile));
         videoWebServiceSpy.getConferenceChatHistory.and.returnValue(Promise.resolve(chatHistory));
-        profileServiceSpy.getUserProfile.and.resolveTo(mockProfileService.mockProfile);
+        profileServiceSpy.getUserProfile.and.resolveTo(adminProfile);
 
         eventsServiceSpy.getChatMessage.and.returnValue(mockEventsService.messageSubject.asObservable());
 
@@ -59,7 +73,7 @@ describe('VhoChatComponent', () => {
 
         component.hearing = hearing;
         component.participant = hearing.judge;
-        component.loggedInUserProfile = mockProfileService.mockProfile;
+        component.loggedInUserProfile = adminProfile;
         component.messages = new ConferenceTestData().getChatHistory('vho.user@hearings.net', conference.id);
     });
 
@@ -93,7 +107,7 @@ describe('VhoChatComponent', () => {
         expect(component.handleIncomingMessage).toHaveBeenCalledWith(instantMessage);
     }));
 
-    it('should set from to "You" when message is from current user', async () => {
+    it('should set from to "You" when admin send a message to participant', async () => {
         const judgeUsername = hearing.judge.username;
         const adminUsername = 'admin@test.com';
         const instantMessage = new InstantMessage({
@@ -134,9 +148,9 @@ describe('VhoChatComponent', () => {
     });
 
     it('should use profile from cache', async () => {
-        profileServiceSpy.checkCacheForProfileByUsername.and.returnValue(mockProfileService.mockProfile);
-        const result = await component.getDisplayNameForSender('vho.user@hearings.net');
-        expect(result).toEqual(mockProfileService.mockProfile.first_name);
+        profileServiceSpy.checkCacheForProfileByUsername.and.returnValue(judgeProfile);
+        const result = await component.getDisplayNameForSender(judgeProfile.username);
+        expect(result).toEqual(judgeProfile.display_name);
     });
 
     it('should use participant name when message is not from admin', async () => {
@@ -151,13 +165,12 @@ describe('VhoChatComponent', () => {
             message: 'test message',
             timestamp: new Date()
         });
-        profileServiceSpy.checkCacheForProfileByUsername.and.returnValue(mockProfileService.mockProfile);
+        profileServiceSpy.checkCacheForProfileByUsername.and.returnValue(judgeProfile);
         const result = await component.verifySender(instantMessage);
         expect(result.from_display_name).toEqual(hearing.judge.displayName);
     });
     it('should clear subscription on destroy', async () => {
-        const sub = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
-        component.chatHubSubscription = sub;
+        component.chatHubSubscription = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
         component.ngOnDestroy();
         expect(component.chatHubSubscription.unsubscribe).toHaveBeenCalled();
     });
@@ -167,5 +180,11 @@ describe('VhoChatComponent', () => {
         component.participant = newParticipant;
 
         expect(videoWebServiceSpy.getConferenceChatHistory).toHaveBeenCalledWith(hearing.id, newParticipant.username);
+    });
+
+    it('should scroll to bottom of chat window after view has been checked', () => {
+        spyOn(component, 'scrollToBottom');
+        component.ngAfterViewChecked();
+        expect(component.scrollToBottom).toHaveBeenCalled();
     });
 });

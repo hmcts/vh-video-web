@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using AcceptanceTests.Common.Configuration;
 using AcceptanceTests.Common.Configuration.Users;
 using AcceptanceTests.Common.Data.Time;
-using AcceptanceTests.Common.Driver;
+using AcceptanceTests.Common.Driver.Drivers;
 using VideoWeb.AcceptanceTests.Configuration;
 using Test = VideoWeb.AcceptanceTests.Data.Test;
 
