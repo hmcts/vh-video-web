@@ -16,6 +16,7 @@ import { MockLogger } from './testing/mocks/MockLogger';
 import { BetaBannerStubComponent } from './testing/stubs/beta-banner-stub';
 import { FooterStubComponent } from './testing/stubs/footer-stub';
 import { HeaderStubComponent } from './testing/stubs/header-stub';
+import { ParticipantStatusUpdateService } from './services/participant-status-update.service';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -23,6 +24,7 @@ describe('AppComponent', () => {
     let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
     let locationServiceSpy: jasmine.SpyObj<LocationService>;
+    let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
 
     const clientSettings = new ClientSettingsResponse({
         tenant_id: 'tenantid',
@@ -52,6 +54,7 @@ describe('AppComponent', () => {
         locationServiceSpy = jasmine.createSpyObj<LocationService>('LocationService', ['getCurrentUrl', 'getCurrentPathName']);
         pageTracker = jasmine.createSpyObj('PageTrackerService', ['trackNavigation', 'trackPreviousPage']);
 
+        participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
         TestBed.configureTestingModule({
             imports: [HttpClientModule, RouterTestingModule],
             declarations: [AppComponent, HeaderStubComponent, FooterStubComponent, BetaBannerStubComponent],
@@ -63,7 +66,8 @@ describe('AppComponent', () => {
                 { provide: DeviceTypeService, useValue: deviceTypeServiceSpy },
                 { provide: ProfileService, useValue: profileServiceSpy },
                 { provide: LocationService, useValue: locationServiceSpy },
-                { provide: PageTrackerService, useValue: pageTracker }
+                { provide: PageTrackerService, useValue: pageTracker },
+                { provide: ParticipantStatusUpdateService, useValue: participantStatusUpdateService }
             ]
         });
     });
