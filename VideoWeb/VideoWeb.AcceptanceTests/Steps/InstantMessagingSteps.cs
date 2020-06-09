@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AcceptanceTests.Common.Driver.Browser;
+using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
 using TechTalk.SpecFlow;
@@ -42,44 +42,44 @@ namespace VideoWeb.AcceptanceTests.Steps
             SelectTheMessagesTab();
         }
 
-        [When(@"the Video Hearings Officer instant messages the Clerk")]
-        public void TheVhoInstantMessagesTheClerk()
+        [When(@"the Video Hearings Officer instant messages the (.*) user")]
+        public void TheVhoInstantMessagesTheUser(string user)
         {
             _browserSteps.GivenInTheUsersBrowser("Video Hearings Officer");
             SelectTheHearing();
             SelectTheMessagesTab();
-            SelectTheParticipant();
+            SelectTheUser(user);
             SendNewMessage();
         }
 
-        [When(@"the Clerk instant messages the Video Hearings Officer")]
-        public void TheClerkInstantMessagesTheVideoHearingsOfficer()
+        [When(@"the (.*) user instant messages the Video Hearings Officer")]
+        public void TheUserInstantMessagesTheVideoHearingsOfficer(string user)
         {
-            _browserSteps.GivenInTheUsersBrowser("Clerk");
+            _browserSteps.GivenInTheUsersBrowser(user);
             SendNewMessage();
         }
 
-        [When(@"the Clerk opens the chat window")]
-        public void OpenChatWindow()
+        [When(@"the (.*) user opens the chat window")]
+        public void OpenChatWindow(string user)
         {
-            _browserSteps.GivenInTheUsersBrowser("Clerk");
+            _browserSteps.GivenInTheUsersBrowser(user);
             _browsers[_c.CurrentUser.Key].Click(InstantMessagePage.OpenChat);
         }
 
-        [When(@"the Clerk closes the chat window")]
-        public void WhenTheClerkClosesTheChatWindow()
+        [When(@"the (.*) user closes the chat window")]
+        public void WhenTheUserClosesTheChatWindow(string user)
         {
-            _browserSteps.GivenInTheUsersBrowser("Clerk");
+            _browserSteps.GivenInTheUsersBrowser(user);
             _browsers[_c.CurrentUser.Key].Click(InstantMessagePage.CloseChat);
         }
 
-        [Then(@"the Clerk can no longer see the messages")]
-        public void ThenTheClerkCanNoLongerSeeTheMessages()
+        [Then(@"the (.*) user can no longer see the messages")]
+        public void ThenTheUserCanNoLongerSeeTheMessages(string user)
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(InstantMessagePage.SendNewMessageButton).Should().BeTrue();
         }
 
-        [Then(@"the (.*) can see the message")]
+        [Then(@"the (.*) user can see the message")]
         public void ThenTheUserCanSeeTheMessage(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
@@ -88,30 +88,30 @@ namespace VideoWeb.AcceptanceTests.Steps
             AssertChatMessage.Assert(_messages.Last(), chatMessages.Last(), _c.TimeZone);
         }
 
-        [Then(@"the Clerk can see the notification for the message")]
-        public void ThenTheClerkCanSeeTheNotificationForTheMessage()
+        [Then(@"the (.*) user can see the notification for the message")]
+        public void ThenTheUserCanSeeTheNotificationForTheMessage(string user)
         {
-            _browserSteps.GivenInTheUsersBrowser("Clerk");
+            _browserSteps.GivenInTheUsersBrowser(user);
             var newMessagesCount = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(InstantMessagePage.UnreadMessagesBadge).GetAttribute("data-badge");
             int.Parse(newMessagesCount).Should().BePositive();
         }
 
-        [When(@"the Video Hearings Officer navigates to the message")]
-        public void ThenTheVideoHearingsOfficerNavigatesToTheMessage()
+        [When(@"the Video Hearings Officer navigates to the message from the (.*) user")]
+        public void ThenTheVideoHearingsOfficerNavigatesToTheMessage(string user)
         {
             _browserSteps.GivenInTheUsersBrowser("Video Hearings Officer");
             SelectTheHearing();
             SelectTheMessagesTab();
-            SelectTheParticipant();
+            SelectTheUser(user);
         }
 
-        [When(@"the participants send (.*) messages to each other")]
-        public void WhenTheParticipantsSendMultipleMessagesToEachOther(int numberOfMessagesAndReplies)
+        [When(@"the VHO and (.*) send (.*) messages to each other")]
+        public void WhenTheParticipantsSendMultipleMessagesToEachOther(string user, int numberOfMessagesAndReplies)
         {
             for (var i = 0; i < numberOfMessagesAndReplies; i++)
             {
-                TheVhoInstantMessagesTheClerk();
-                TheClerkInstantMessagesTheVideoHearingsOfficer();
+                TheVhoInstantMessagesTheUser(user);
+                TheUserInstantMessagesTheVideoHearingsOfficer(user);
             }
         }
 
@@ -137,10 +137,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.MessagesTabButton);
         }
 
-        private void SelectTheParticipant()
+        private void SelectTheUser(string user)
         {
-            var judgeParticipantId = _c.Test.Conference.Participants.First(x => x.User_role == UserRole.Judge).Id;
-            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.SelectParticipantToMessage(judgeParticipantId));
+            var participantId = _c.Test.Conference.Participants.First(x => x.Last_name.ToLower().Contains(user)).Id;
+            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.SelectParticipantToMessage(participantId));
         }
 
         private void SendNewMessage()
