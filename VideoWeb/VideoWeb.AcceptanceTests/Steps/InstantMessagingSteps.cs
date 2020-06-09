@@ -8,7 +8,6 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Assertions;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.Services.Video;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -139,13 +138,13 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private void SelectTheUser(string user)
         {
-            var participantId = _c.Test.Conference.Participants.First(x => x.Last_name.ToLower().Contains(user)).Id;
+            var participantId = _c.Test.Conference.Participants.First(x => x.Display_name.ToLower().Contains(user.ToLower())).Id;
             _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.SelectParticipantToMessage(participantId));
         }
 
         private void SendNewMessage()
         {
-            var sender = _c.CurrentUser.Role.ToLower().Equals("clerk")? _c.CurrentUser.DisplayName : _c.CurrentUser.Firstname;
+            var sender = GetSenderNameFormat();
             _messages.Add(new ChatMessage()
             {
                 Message = Faker.Company.BS(),
@@ -155,6 +154,11 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Click(InstantMessagePage.SendNewMessageTextBox);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(InstantMessagePage.SendNewMessageTextBox).SendKeys(_messages.Last().Message);
             _browsers[_c.CurrentUser.Key].Click(InstantMessagePage.SendNewMessageButton);
+        }
+
+        private string GetSenderNameFormat()
+        {
+            return _c.CurrentUser.Role.ToLower().Equals("video hearings officer") ? _c.CurrentUser.Firstname : _c.CurrentUser.DisplayName;
         }
 
         private void CheckMessagesAreAllDisplayed(string user)
