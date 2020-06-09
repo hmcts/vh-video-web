@@ -31,6 +31,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             var responseModel = typedResult.Value as List<ChatResponse>;
             responseModel.Should().NotBeNullOrEmpty();
             responseModel?.Count.Should().Be(messages.Count);
+            responseModel?.Should().BeInAscendingOrder(r => r.Timestamp);
         }
 
         [Test]

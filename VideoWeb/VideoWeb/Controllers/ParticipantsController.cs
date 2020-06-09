@@ -155,11 +155,6 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> UpdateParticipantDisplayNameAsync(Guid conferenceId, Guid participantId, [FromBody] UpdateParticipantRequest participantRequest)
         {
-            if (conferenceId == Guid.Empty || participantId == Guid.Empty)
-            {
-                return BadRequest("Please provide a valid conference Id and participant Id");
-            }
-
             try
             {
                await  _videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, participantRequest);
