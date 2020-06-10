@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using AcceptanceTests.Common.Driver.Browser;
+using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.Test.Helpers;
 using FluentAssertions;

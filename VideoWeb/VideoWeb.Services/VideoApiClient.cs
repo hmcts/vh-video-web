@@ -4974,10 +4974,10 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.AllowNull)]
         public string Username { get; set; }
     
-        [Newtonsoft.Json.JsonProperty("first_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("first_name", Required = Newtonsoft.Json.Required.AllowNull)]
         public string First_name { get; set; }
     
-        [Newtonsoft.Json.JsonProperty("last_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("last_name", Required = Newtonsoft.Json.Required.AllowNull)]
         public string Last_name { get; set; }
     
         [Newtonsoft.Json.JsonProperty("user_role", Required = Newtonsoft.Json.Required.Always)]
@@ -5626,10 +5626,10 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonProperty("fullname", Required = Newtonsoft.Json.Required.AllowNull)]
         public string Fullname { get; set; }
     
-        [Newtonsoft.Json.JsonProperty("first_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("first_name", Required = Newtonsoft.Json.Required.AllowNull)]
         public string First_name { get; set; }
     
-        [Newtonsoft.Json.JsonProperty("last_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("last_name", Required = Newtonsoft.Json.Required.AllowNull)]
         public string Last_name { get; set; }
     
         [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.AllowNull)]

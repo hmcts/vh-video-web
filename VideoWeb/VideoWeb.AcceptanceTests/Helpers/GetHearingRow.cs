@@ -1,5 +1,5 @@
 using System;
-using AcceptanceTests.Common.Driver.Browser;
+using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
 using VideoWeb.AcceptanceTests.Pages;
