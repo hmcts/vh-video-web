@@ -159,4 +159,4 @@
 <app-individual-consultation-controls (cancelConsulation)="onConsultationCancelled()" *ngIf="showConsultationControls">
 </app-individual-consultation-controls>
 
-<app-participant-chat *ngIf="!loadingData && conference" [hearing]="hearing"></app-participant-chat>
+<app-participant-chat *ngIf="!showVideo" [hearing]="hearing"></app-participant-chat>
