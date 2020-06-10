@@ -44,7 +44,7 @@ export abstract class ChatBaseComponent {
     }
 
     async handleIncomingMessage(message: InstantMessage) {
-        if (!this.isMesageRecipientForUser(message)) {
+        if (!this.isMessageRecipientForUser(message)) {
             return;
         }
         const from = message.from.toUpperCase();
@@ -59,7 +59,7 @@ export abstract class ChatBaseComponent {
         this.messages.push(message);
     }
 
-    isMesageRecipientForUser(message: InstantMessage): boolean {
+    isMessageRecipientForUser(message: InstantMessage): boolean {
         // ignore if not for current conference or participant
         if (message.conferenceId !== this.hearing.id) {
             return false;
