@@ -12,7 +12,7 @@ export const pageUrls = {
     VideoWorking: 'see-and-hear-video',
     SwitchOnCameraMicrophone: 'switch-on-camera-microphone',
     ParticipantSelfTestVideo: 'practice-video-hearing',
-    SignonAComputer: 'signon-a-computer',
+    UnsupportedDevice: 'unsupported-device',
     Introduction: 'introduction',
     // judge
     JudgeHearingList: 'judge/hearing-list',
