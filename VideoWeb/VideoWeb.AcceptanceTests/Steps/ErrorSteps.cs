@@ -89,7 +89,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the user is on the Unsupported Device error page with text of how to rectify the problem")]
         public void ThenTheUserIsOnTheUnsupportedDeviceErrorPageWithTextOfHowToRectifyTheProblem()
         {
-            _browsers[_c.CurrentUser.Key].PageUrl(Page.UnsupportedBrowser.Url);
+            _browsers[_c.CurrentUser.Key].PageUrl(Page.UnsupportedDevice.Url);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ErrorPage.UnsupportedDeviceTitle).Displayed.Should().BeTrue();
         }
     }
