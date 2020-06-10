@@ -21,11 +21,17 @@ export class ParticipantStatusGuard implements CanActivate {
         try {
             const profile = await this.userProfileService.getUserProfile();
 
+            const startUrl = 'introduction';
+
             // On Refresh set status back from NotSignedIn to Joining.
 
             const conferenceId = next.paramMap.get('conferenceId');
-
-            if (conferenceId && !this.router.navigated && (profile.role === Role.Representative || profile.role === Role.Individual)) {
+            const urlActive = state.url.indexOf(startUrl) > -1;
+            if (
+                conferenceId &&
+                (!this.router.navigated || urlActive) &&
+                (profile.role === Role.Representative || profile.role === Role.Individual)
+            ) {
                 this.participantStatusUpdateService.postParticipantStatus(EventType.ParticipantJoining, conferenceId).then(() => {});
             }
         } catch (err) {

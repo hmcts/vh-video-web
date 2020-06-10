@@ -1,4 +1,3 @@
-import { async } from '@angular/core/testing';
 import { Router, convertToParamMap } from '@angular/router';
 import { ProfileService } from '../services/api/profile.service';
 import { Role, UserProfileResponse } from '../services/clients/api-client';
@@ -12,7 +11,6 @@ describe('ParticipantStatusGuard', () => {
     let router: jasmine.SpyObj<Router>;
     let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
     const activateRoute: any = { paramMap: convertToParamMap({ conferenceId: 'cef3051f-6909-40b9-a846-100cf4040a9a' }) };
-
     beforeAll(() => {
         router = jasmine.createSpyObj<Router>('Router', [], { navigated: false });
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
@@ -25,13 +23,27 @@ describe('ParticipantStatusGuard', () => {
         guard = new ParticipantStatusGuard(profileServiceSpy, router, new MockLogger(), participantStatusUpdateService);
     });
 
-    it('should on refresh update status to joining', async(async () => {
+    it('should on refresh update status to joining', async () => {
+        const startRoute: any = { url: '/camera-working/cef3051f-6909-40b9-a846-100cf4040a9a' };
+
         const profile = new UserProfileResponse({ role: Role.Individual });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         participantStatusUpdateService.postParticipantStatus.and.returnValue(Promise.resolve());
-        const result = await guard.canActivate(activateRoute, null);
+        const result = await guard.canActivate(activateRoute, startRoute);
 
         expect(result).toBeTruthy();
         expect(participantStatusUpdateService.postParticipantStatus).toHaveBeenCalled();
-    }));
+    });
+    it('should on introduction page update status to joining', async () => {
+        const startRoute: any = { url: '/introduction/cef3051f-6909-40b9-a846-100cf4040a9a' };
+
+        const profile = new UserProfileResponse({ role: Role.Individual });
+        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
+        participantStatusUpdateService.postParticipantStatus.and.returnValue(Promise.resolve());
+
+        const result = await guard.canActivate(activateRoute, startRoute);
+
+        expect(result).toBeTruthy();
+        expect(participantStatusUpdateService.postParticipantStatus).toHaveBeenCalled();
+    });
 });

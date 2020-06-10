@@ -95,7 +95,8 @@ export const routes: Routes = [
     {
         path: `${pageUrls.Introduction}/:conferenceId`,
         component: IntroductionComponent,
-        data: { title: 'Introduction' }
+        data: { title: 'Introduction' },
+        canActivate: [ParticipantStatusGuard]
     }
 ];
 
