@@ -98,3 +98,11 @@
 .microphoneIcon {
   height: 18px;
 }
+
+#muteButton .govuk-button:focus {
+    background-color: #00703c;
+}
+
+#unmuteButton .govuk-button--warning:focus {
+    background-color: #d4351c;
+}
