@@ -1,4 +1,4 @@
-﻿@VIH-4350
+@VIH-4350
 Feature: Error Pages
 	As a registered video hearings user
 	I would expect information error messages when things go wrong
@@ -25,3 +25,15 @@ Scenario: Unsupported browser error page
 	Given a new browser is open for a Participant
 	When the user attempts to access the page on their unsupported browser
 	Then the user is on the Unsupported Browser error page with text of how to rectify the problem
+
+@VIH-4617 @UnsupportedDevice @MobileOnly 
+Scenario: Unsupported device error page - Mobile
+	Given a new browser is open for a Participant
+	When the user attempts to access the page on their unsupported device
+  Then the user is on the Unsupported Device error page with text of how to rectify the problem
+
+@VIH-4617 @UnsupportedDevice @TabletOnly @NotIOS 
+Scenario: Unsupported device error page - Tablet
+	Given a new browser is open for a Participant
+	When the user attempts to access the page on their unsupported device
+  Then the user is on the Unsupported Device error page with text of how to rectify the problem
