@@ -231,6 +231,8 @@ extends:
     Test: ${{ or(parameters.RunUnitTests, parameters.RunIntegTests, parameters.RunMutationTests) }}
     testParameters:
       coreProjectPath: VideoWeb/VideoWeb
+      nodeProjectPath: VideoWeb/VideoWeb/ClientApp
+      RunNode: true
       unitTestProjectPath: VideoWeb/VideoWeb.UnitTests
       integTestProjectPath: VideoWeb/VideoWeb.IntegrationTests
       secrets_KeyVault: $(pr_Secret_KeyVault)
