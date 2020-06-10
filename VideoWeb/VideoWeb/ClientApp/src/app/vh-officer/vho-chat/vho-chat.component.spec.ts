@@ -3,7 +3,7 @@ import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, Role, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ImHelper } from 'src/app/shared/im-helper';
@@ -12,6 +12,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { adminTestProfile, judgeTestProfile } from '../../testing/data/test-profiles';
 import { VhoChatComponent } from './vho-chat.component';
 
 describe('VhoChatComponent', () => {
@@ -24,23 +25,8 @@ describe('VhoChatComponent', () => {
     let adalService;
     let conference: ConferenceResponse;
     let hearing: Hearing;
-    const imHelper = new ImHelper();
-
-    const judgeProfile: UserProfileResponse = new UserProfileResponse({
-        display_name: 'Judge Fudge',
-        first_name: 'Judge',
-        last_name: 'Fudge',
-        role: Role.Judge,
-        username: 'judge.fudge@hearings.net'
-    });
-
-    const adminProfile: UserProfileResponse = new UserProfileResponse({
-        display_name: 'Test Admin',
-        first_name: 'Test',
-        last_name: 'Admin',
-        role: Role.VideoHearingsOfficer,
-        username: 'admin@test.com'
-    });
+    const judgeProfile = judgeTestProfile;
+    const adminProfile = adminTestProfile;
 
     beforeAll(() => {
         adalService = mockAdalService;
@@ -69,7 +55,14 @@ describe('VhoChatComponent', () => {
 
         eventsServiceSpy.getChatMessage.and.returnValue(mockEventsService.messageSubject.asObservable());
 
-        component = new VhoChatComponent(videoWebServiceSpy, profileServiceSpy, eventsServiceSpy, new MockLogger(), adalService, imHelper);
+        component = new VhoChatComponent(
+            videoWebServiceSpy,
+            profileServiceSpy,
+            eventsServiceSpy,
+            new MockLogger(),
+            adalService,
+            new ImHelper()
+        );
 
         component.hearing = hearing;
         component.participant = hearing.judge;

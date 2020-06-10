@@ -13,6 +13,7 @@ import { ParticipantStatusMessage } from './models/participant-status-message';
 import { HeartbeatHealth, ParticipantHeartbeat } from './models/participant-heartbeat';
 import { Heartbeat } from '../shared/models/heartbeat';
 import { ConferenceMessageAnswered } from './models/conference-message-answered';
+import { Guid } from 'guid-typescript';
 
 @Injectable({
     providedIn: 'root'
@@ -209,7 +210,7 @@ export class EventsService {
     }
 
     async sendMessage(conferenceId: string, message: string, to: string) {
-        await this.connection.send('SendMessage', conferenceId, message, to);
+        await this.connection.send('SendMessage', conferenceId, message, to, Guid.create().toString());
     }
 
     async sendHeartbeat(conferenceId: string, participantId: string, heartbeat: Heartbeat) {

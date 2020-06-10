@@ -75,7 +75,7 @@ export class ParticipantChatComponent extends ChatBaseComponent implements OnIni
     }
 
     handleIncomingOtherMessage(message: InstantMessage) {
-        if (!this.showChat) {
+        if (!this.showChat && !message.is_user) {
             this.unreadMessageCount++;
         }
     }
