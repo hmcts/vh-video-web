@@ -14,7 +14,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         [BeforeTestRun]
         public static void ZapStart()
         {
-            Zap.Start();            
+            Zap.Start();
         }
 
         [AfterTestRun]
