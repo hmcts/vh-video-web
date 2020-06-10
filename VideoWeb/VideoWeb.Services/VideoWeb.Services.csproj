@@ -1,16 +1,17 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>netstandard2.1</TargetFramework>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <ProjectGuid>473B7E77-C3AC-4131-9026-A9EA6107C0B9</ProjectGuid>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.1" />
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\VideoWeb.Services.Generator\VideoWeb.Services.Generator.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VideoWeb.Services.Generator\VideoWeb.Services.Generator.csproj" />
+  </ItemGroup>
 
 </Project>
