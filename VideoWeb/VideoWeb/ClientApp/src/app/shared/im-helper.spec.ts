@@ -48,7 +48,21 @@ describe('ImHelper', () => {
         expect(imHelper.isImForUser(message, hearing, adminProfile)).toBeTruthy();
     });
 
-    it('should return true when user is in conference', () => {
+    it('should return true when message sent to user is in conference', () => {
+        expect(imHelper.isImForUser(message, hearing, judgeProfile)).toBeTruthy();
+    });
+
+    it('should return true when message sent from user is in conference', () => {
+        message = new InstantMessage({
+            conferenceId: conference.id,
+            from: judgeUsername,
+            from_display_name: judgeProfile.display_name,
+            to: adminUsername,
+            id: Guid.create().toString(),
+            is_user: false,
+            message: 'test auto',
+            timestamp: new Date()
+        });
         expect(imHelper.isImForUser(message, hearing, judgeProfile)).toBeTruthy();
     });
 });

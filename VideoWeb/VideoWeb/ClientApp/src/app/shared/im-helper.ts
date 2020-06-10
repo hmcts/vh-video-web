@@ -14,6 +14,6 @@ export class ImHelper {
         }
 
         const usersInHearing = hearing.participants.map(p => p.username.toLowerCase().trim());
-        return usersInHearing.includes(message.to.toLowerCase().trim());
+        return usersInHearing.includes(message.to.toLowerCase().trim()) || usersInHearing.includes(message.from.toLowerCase().trim());
     }
 }
