@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models/video-call-models';
-import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
+import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models/video-call-models';
 
 declare var PexRTC: any;
 
@@ -71,6 +71,8 @@ export class VideoCallService {
         if (this.pexipAPI) {
             this.logger.info('disconnecting from pexip node');
             this.pexipAPI.disconnect();
+        } else {
+            throw new Error('Pexip Client has not been initialised');
         }
     }
 
