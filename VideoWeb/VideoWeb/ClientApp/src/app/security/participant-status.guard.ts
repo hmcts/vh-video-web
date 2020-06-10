@@ -30,8 +30,8 @@ export class ParticipantStatusGuard implements CanActivate {
             }
         } catch (err) {
             this.logger.error(`Could not reset participant status to Joining.`, err);
-            return true;
         }
+
         return true;
     }
 }
