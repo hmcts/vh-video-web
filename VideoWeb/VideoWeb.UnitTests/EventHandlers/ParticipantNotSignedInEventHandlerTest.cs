@@ -35,6 +35,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             };
 
             await _eventHandler.HandleAsync(callbackEvent);
+            Assert.AreEqual(_eventHandler.EventType, EventType.ParticipantNotSignedIn);
 
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
