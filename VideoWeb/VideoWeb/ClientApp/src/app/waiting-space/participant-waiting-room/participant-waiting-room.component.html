@@ -69,7 +69,13 @@
       <h1 class="govuk-heading-xl govuk-!-padding-top-5">Your video hearing {{ getConferenceStatusText() }}</h1>
     </div>
 
-    <table class="govuk-table vh-fullwidth">
+    <table class="govuk-table vh-fullwidth" aria-describedby="Details of the hearing">
+      <thead class="govuk-table__head no-mass">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Hearing</th>
+          <th scope="col" class="govuk-table__header">Date</th>
+        </tr>
+      </thead>
       <tbody class="govuk-table__body">
         <tr class="govuk-table__row">
           <td class="govuk-table__cell hearing-details-col1-width">
@@ -159,4 +165,4 @@
 <app-individual-consultation-controls (cancelConsulation)="onConsultationCancelled()" *ngIf="showConsultationControls">
 </app-individual-consultation-controls>
 
-<app-participant-chat *ngIf="!loadingData && conference" [hearing]="hearing"></app-participant-chat>
+<app-participant-chat *ngIf="hearing && !showVideo" [hearing]="hearing"></app-participant-chat>
