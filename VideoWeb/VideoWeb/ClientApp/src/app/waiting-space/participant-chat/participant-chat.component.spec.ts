@@ -2,7 +2,7 @@ import { fakeAsync, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, Role, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
@@ -12,6 +12,7 @@ import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ParticipantChatComponent } from './participant-chat.component';
 import { InstantMessage } from 'src/app/services/models/instant-message';
+import { adminTestProfile, judgeTestProfile } from '../../testing/data/test-profiles';
 
 describe('JudgeChatComponent', () => {
     let component: ParticipantChatComponent;
@@ -19,29 +20,14 @@ describe('JudgeChatComponent', () => {
     let hearing: Hearing;
 
     let videoWebService: jasmine.SpyObj<VideoWebService>;
-    const judgeUsername = 'judge.fudge@hearings.net';
+    const judgeUsername = judgeTestProfile.username;
     let eventsService: jasmine.SpyObj<EventsService>;
     let profileService: jasmine.SpyObj<ProfileService>;
     const mockAdalService = new MockAdalService();
     const mockEventsService = new MockEventsService();
     let adalService;
-    const imHelper = new ImHelper();
-
-    const judgeProfile: UserProfileResponse = new UserProfileResponse({
-        display_name: 'Judge Fudge',
-        first_name: 'Judge',
-        last_name: 'Fudge',
-        role: Role.Judge,
-        username: 'judge.fudge@hearings.net'
-    });
-
-    const adminProfile: UserProfileResponse = new UserProfileResponse({
-        display_name: 'Test Admin',
-        first_name: 'Test',
-        last_name: 'Admin',
-        role: Role.VideoHearingsOfficer,
-        username: 'admin@test.com'
-    });
+    const judgeProfile = judgeTestProfile;
+    const adminProfile = adminTestProfile;
 
     beforeAll(() => {
         adalService = mockAdalService;
@@ -67,7 +53,14 @@ describe('JudgeChatComponent', () => {
 
         eventsService.getChatMessage.and.returnValue(mockEventsService.messageSubject.asObservable());
 
-        component = new ParticipantChatComponent(videoWebService, profileService, eventsService, new MockLogger(), adalService, imHelper);
+        component = new ParticipantChatComponent(
+            videoWebService,
+            profileService,
+            eventsService,
+            new MockLogger(),
+            adalService,
+            new ImHelper()
+        );
         component.loggedInUserProfile = judgeProfile;
         component.hearing = hearing;
         component.messages = new ConferenceTestData().getChatHistory('vho.user@hearings.net', conference.id);

@@ -99,9 +99,14 @@
   height: 18px;
 }
 
+.no-mass {
+  display: none;
+}
+
 #muteButton .govuk-button:focus {
     background-color: #00703c;
 }
+
 
 #unmuteButton .govuk-button--warning:focus {
     background-color: #d4351c;
