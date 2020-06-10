@@ -135,10 +135,11 @@ namespace VideoWeb
                 app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Video Web App API V1"); });
             }
 
+            IdentityModelEventSource.ShowPII = true;
+            
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                IdentityModelEventSource.ShowPII = true;
             }
             else
             {
