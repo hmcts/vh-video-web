@@ -5,7 +5,8 @@ export class MockProfileService {
         display_name: 'John Doe',
         first_name: 'John',
         last_name: 'Doe',
-        role: Role.Individual
+        role: Role.Individual,
+        username: 'john@doe.com'
     });
 
     profile: UserProfileResponse;

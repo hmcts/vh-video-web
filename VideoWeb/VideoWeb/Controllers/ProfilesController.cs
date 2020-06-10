@@ -48,6 +48,7 @@ namespace VideoWeb.Controllers
                     LastName = User.Claims.First(c => c.Type == ClaimTypes.Surname).Value,
                     DisplayName = User.Claims.First(c => c.Type == ClaimTypes.Name).Value,
                     Role = Enum.Parse<Role>(role),
+                    Username = User.Identity.Name.ToLower().Trim(),
                 };
                 return Ok(response);
             }

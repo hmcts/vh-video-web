@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
+using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
@@ -53,15 +54,19 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         [Test]
         public async Task Should_return_ok_when_user_is_in_conference()
         {
-            var conference = CreateValidConferenceResponse(null);
+            var conference = CreateValidConferenceResponse();
+            conference.Participants[0].User_role = UserRole.Individual;
             _videoApiClientMock
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
 
             var result = await _controller.GetConferenceByIdAsync(conference.Id);
-            var typedResult = (UnauthorizedResult)result.Result;
+            var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
             _mockConferenceCache.Verify(x => x.AddConferenceAsync(new ConferenceDetailsResponse()), Times.Never);
+            var response = (ConferenceResponse)typedResult.Value;
+            response.CaseNumber.Should().Be(conference.Case_number);
+            response.Participants[0].Role.Should().Be(UserRole.Individual);
         }
 
         [Test]
@@ -74,6 +79,20 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             var result = await _controller.GetConferenceByIdAsync(conference.Id);
             var typedResult = (UnauthorizedResult) result.Result;
+            typedResult.Should().NotBeNull();
+        }
+
+        [Test]
+        public async Task Should_return_unauthorised_when_conference_exceededLimit()
+        {
+            var conference = CreateValidConferenceResponse(null);
+            conference.Current_status = ConferenceState.Closed;
+            _videoApiClientMock
+                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(conference);
+
+            var result = await _controller.GetConferenceByIdAsync(conference.Id);
+            var typedResult = (UnauthorizedResult)result.Result;
             typedResult.Should().NotBeNull();
         }
 

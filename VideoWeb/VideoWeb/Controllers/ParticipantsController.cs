@@ -106,7 +106,7 @@ namespace VideoWeb.Controllers
         {
             var conference = await _conferenceCache.GetOrAddConferenceAsync
             (
-                conferenceId, 
+                conferenceId,
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
             );
 
@@ -155,11 +155,6 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> UpdateParticipantDisplayNameAsync(Guid conferenceId, Guid participantId, [FromBody] UpdateParticipantRequest participantRequest)
         {
-            if (conferenceId == Guid.Empty || participantId == Guid.Empty)
-            {
-                return BadRequest("Please provide a valid conference Id and participant Id");
-            }
-
             try
             {
                await  _videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, participantRequest);
@@ -185,12 +180,12 @@ namespace VideoWeb.Controllers
         public async Task<IActionResult> GetParticipantsWithContactDetailsByConferenceIdAsync(Guid conferenceId)
         {
             _logger.LogDebug("GetParticipantsWithContactDetailsByConferenceId");
-            
+
             if (conferenceId == Guid.Empty)
             {
                 _logger.LogWarning("Unable to get conference when id is not provided");
                 ModelState.AddModelError(nameof(conferenceId), $"Please provide a valid {nameof(conferenceId)}");
-                
+
                 return BadRequest(ModelState);
             }
 
@@ -198,7 +193,7 @@ namespace VideoWeb.Controllers
             if (!User.IsInRole(Role.VideoHearingsOfficer.EnumDataMemberAttr()))
             {
                 _logger.LogWarning($"Failed to get conference: ${conferenceId}, {User.Identity.Name} is not a VH officer");
-                
+
                 return Unauthorized("User must be a VH Officer");
             }
 
@@ -207,14 +202,14 @@ namespace VideoWeb.Controllers
                 var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
                 {
                     _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
-                    
+
                     return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
                 });
-                
+
                 _logger.LogTrace($"Retrieving booking participants for hearing ${conference.HearingId}");
                 var bookingParticipants = await _bookingsApiClient.GetAllParticipantsInHearingAsync(conference.HearingId);
                 var judgesInHearingsToday = await _videoApiClient.GetJudgesInHearingsTodayAsync();
-                
+
                 var response = ParticipantStatusResponseForVhoMapper.MapParticipantsTo(conference, bookingParticipants, judgesInHearingsToday);
 
                 return Ok(response);
@@ -223,13 +218,13 @@ namespace VideoWeb.Controllers
             catch (VideoApiException ex)
             {
                 _logger.LogError(ex, $"Unable to retrieve conference: ${conferenceId}");
-                    
+
                 return StatusCode(ex.StatusCode, ex.Response);
             }
             catch (BookingsApiException ex)
             {
                 _logger.LogError(ex, $"Unable to retrieve booking participants from hearing with conferenceId: ${conferenceId}");
-                
+
                 return StatusCode(ex.StatusCode, ex.Response);
             }
         }

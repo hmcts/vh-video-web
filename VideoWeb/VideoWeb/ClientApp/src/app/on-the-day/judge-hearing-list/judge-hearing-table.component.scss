@@ -1,19 +1,19 @@
-@import "~govuk-frontend/govuk/all";
+@import '~govuk-frontend/govuk/all';
 
 .conference-closed {
-  background-color: govuk-colour("black");
-  color: govuk-colour("white");
+  background-color: govuk-colour('black');
+  color: govuk-colour('white');
   font-weight: bold;
 }
 
 .conference-paused {
-  background-color: govuk-colour("blue");
-  color: govuk-colour("white");
+  background-color: govuk-colour('blue');
+  color: govuk-colour('white');
   font-weight: bold;
 }
 
 .conference-suspended {
-  background-color: govuk-colour("red");
-  color: govuk-colour("white");
+  background-color: govuk-colour('red');
+  color: govuk-colour('white');
   font-weight: bold;
 }

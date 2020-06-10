@@ -1,36 +1,36 @@
-@import "~govuk-frontend/govuk/all";
+@import '~govuk-frontend/govuk/all';
 
 $crest-image-width: 180px;
 $crest-column-padding: 15px;
 
 .vh-crest-column {
-    min-width:$crest-image-width + $crest-column-padding;
+  min-width: $crest-image-width + $crest-column-padding;
 }
 
 .vh-crest-column img {
-    width: $crest-image-width;
+  width: $crest-image-width;
 }
 
 .panel-blue {
-    background-color: govuk-colour("blue");
-    padding: 30px;
+  background-color: govuk-colour('blue');
+  padding: 30px;
 }
 
 .text-white {
-    color: govuk-colour("white");
+  color: govuk-colour('white');
 }
 
 .vh-button-white {
-    background-color: govuk-colour("white");
-    color: govuk-colour("black");
-    margin-top: 12px;
-    margin-bottom: 0px;
-    padding: 7px 17px 4px 17px;
-    font-size: 19px;
-    font-size: 1.1875rem;
+  background-color: govuk-colour('white');
+  color: govuk-colour('black');
+  margin-top: 12px;
+  margin-bottom: 0px;
+  padding: 7px 17px 4px 17px;
+  font-size: 19px;
+  font-size: 1.1875rem;
 }
 
 .vh-button-white:hover {
-    background-color: govuk-colour("white");
-    color: govuk-colour("black");
+  background-color: govuk-colour('white');
+  color: govuk-colour('black');
 }

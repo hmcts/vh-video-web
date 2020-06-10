@@ -42,9 +42,27 @@ module.exports = function (config) {
         logLevel: config.LOG_DEBUG,
         autoWatch: true,
         browsers: [
-            // 'Chrome',
-            'ChromeHeadless'
+            'ChromeNoPrompt'
+            // 'ChromeHeadlessNoPrompt'
         ],
+        customLaunchers: {
+            ChromeNoPrompt: {
+                base: 'Chrome',
+                flags: [
+                    '--remote-debugging-port=9222',
+                    '--use-fake-ui-for-media-stream',
+                    '--mute-audio'
+                ]
+            },
+            ChromeHeadlessNoPrompt: {
+                base: 'ChromeHeadless',
+                flags: [
+                    '--remote-debugging-port=9222',
+                    '--use-fake-ui-for-media-stream',
+                    '--mute-audio'
+                ]
+            }
+        },
         browserDisconnectTimeout: 10000,
         browserDisconnectTolerance: 3,
         browserNoActivityTimeout: 60000,

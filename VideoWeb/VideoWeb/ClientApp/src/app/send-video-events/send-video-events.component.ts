@@ -48,11 +48,11 @@ export class SendVideoEventsComponent implements OnInit {
         });
     }
 
-   suspendHearing() {
-    const request = this.buildBasicEventRequest();
-    request.event_type = EventType.Suspend;
-    this.sendEvent(request);
-  }
+    suspendHearing() {
+        const request = this.buildBasicEventRequest();
+        request.event_type = EventType.Suspend;
+        this.sendEvent(request);
+    }
 
     pauseHearing() {
         const request = this.buildBasicEventRequest();

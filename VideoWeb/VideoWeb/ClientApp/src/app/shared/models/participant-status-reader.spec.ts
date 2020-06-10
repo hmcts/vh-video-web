@@ -5,14 +5,14 @@ describe('ParticipantStatusReader', () => {
     const reader = new ParticipantStatusReader();
 
     const testCasesForGetStatusAsText = [
-        { status: ParticipantStatus.None, expected: 'Not Signed In' },
-        { status: ParticipantStatus.NotSignedIn, expected: 'Not Signed In' },
-        { status: ParticipantStatus.InConsultation, expected: 'In Consultation' },
-        { status: ParticipantStatus.InHearing, expected: 'In Hearing' },
-        { status: ParticipantStatus.UnableToJoin, expected: 'Unable to Join' }
+        { status: ParticipantStatus.None, expected: 'Not signed in' },
+        { status: ParticipantStatus.NotSignedIn, expected: 'Not signed in' },
+        { status: ParticipantStatus.InConsultation, expected: 'In consultation' },
+        { status: ParticipantStatus.InHearing, expected: 'In hearing' },
+        { status: ParticipantStatus.UnableToJoin, expected: 'Unable to join' }
     ];
 
-    testCasesForGetStatusAsText.forEach((testCase) => {
+    testCasesForGetStatusAsText.forEach(testCase => {
         it('should get status as text', () => {
             expect(reader.getStatusAsText(testCase.status)).toBe(testCase.expected);
         });
@@ -23,11 +23,11 @@ describe('ParticipantStatusReader', () => {
         { status: ParticipantStatus.NotSignedIn, expected: 'Unavailable' },
         { status: ParticipantStatus.InConsultation, expected: 'Unavailable' },
         { status: ParticipantStatus.UnableToJoin, expected: 'Unavailable' },
-        { status: ParticipantStatus.InHearing, expected: 'In Hearing' },
+        { status: ParticipantStatus.InHearing, expected: 'In hearing' },
         { status: ParticipantStatus.Available, expected: 'Available' }
     ];
 
-    testCasesForgetStatusAsTextForJudge.forEach((testCase) => {
+    testCasesForgetStatusAsTextForJudge.forEach(testCase => {
         it('should get status as text for judge', () => {
             expect(reader.getStatusAsTextForJudge(testCase.status)).toBe(testCase.expected);
         });

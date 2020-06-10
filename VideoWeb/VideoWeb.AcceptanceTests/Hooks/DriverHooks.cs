@@ -2,10 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using AcceptanceTests.Common.Api;
 using AcceptanceTests.Common.Configuration.Users;
-using AcceptanceTests.Common.Driver;
 using AcceptanceTests.Common.Driver.Browser;
+using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Helpers;
-using AcceptanceTests.Common.Driver.Support;
 using AcceptanceTests.Common.PageObject.Pages;
 using BoDi;
 using FluentAssertions;
@@ -37,9 +36,11 @@ namespace VideoWeb.AcceptanceTests.Hooks
         public void ConfigureDriver(TestContext context, ScenarioContext scenario)
         {
             DriverManager.KillAnyLocalDriverProcesses();
-            var browserAndVersion = GetBrowserAndVersion();
-            context.VideoWebConfig.TestConfig.TargetBrowser = GetTargetBrowser(browserAndVersion);
+            context.VideoWebConfig.TestConfig.TargetBrowser = DriverManager.GetTargetBrowser(NUnit.Framework.TestContext.Parameters["TargetBrowser"]);
+            context.VideoWebConfig.TestConfig.TargetBrowserVersion = NUnit.Framework.TestContext.Parameters["TargetBrowserVersion"];
             context.VideoWebConfig.TestConfig.TargetDevice = DriverManager.GetTargetDevice(NUnit.Framework.TestContext.Parameters["TargetDevice"]);
+            context.VideoWebConfig.TestConfig.TargetDeviceName = NUnit.Framework.TestContext.Parameters["TargetDeviceName"];
+            context.VideoWebConfig.TestConfig.TargetOS = DriverManager.GetTargetOS(NUnit.Framework.TestContext.Parameters["TargetOS"]);
 
             var driverOptions = new DriverOptions()
             {
@@ -50,9 +51,9 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
             var sauceLabsOptions = new SauceLabsOptions()
             {
-                BrowserVersion = GetBrowserVersion(browserAndVersion),
+                BrowserVersion = context.VideoWebConfig.TestConfig.TargetBrowserVersion,
                 EnableLogging = EnableLogging(scenario.ScenarioInfo),
-                Title = scenario.ScenarioInfo.Title
+                Name = scenario.ScenarioInfo.Title
             };
 
             OpenQA.Selenium.Proxy proxy = null;
@@ -64,22 +65,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 proxy.SslProxy = proxySetting;
             }
 
-            context.Driver = new DriverSetup(context.VideoWebConfig.SauceLabsConfiguration, driverOptions, sauceLabsOptions,proxy);
-        }
-
-        private static string GetBrowserAndVersion()
-        {
-            return NUnit.Framework.TestContext.Parameters["TargetBrowser"] ?? "";
-        }
-
-        private static TargetBrowser GetTargetBrowser(string browserAndVersion)
-        {
-            return DriverManager.GetTargetBrowser(browserAndVersion.Contains(":") ? browserAndVersion.Split(":")[0] : browserAndVersion);
-        }
-
-        private static string GetBrowserVersion(string browserAndVersion)
-        {
-            return browserAndVersion.Contains(":") ? browserAndVersion.Split(":")[1] : "latest";
+            context.Driver = new DriverSetup(context.VideoWebConfig.SauceLabsConfiguration, driverOptions, sauceLabsOptions, proxy);
         }
 
         private static bool EnableLogging(ScenarioInfo scenario)
@@ -90,7 +76,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         [BeforeScenario(Order = (int)HooksSequence.SetTimeZone)]
         public void SetTimeZone(TestContext context)
         {
-            context.TimeZone = new TimeZone(context.VideoWebConfig.SauceLabsConfiguration.RunningOnSauceLabs(), context.VideoWebConfig.TestConfig.TargetBrowser);
+            context.TimeZone = new TimeZone(context.VideoWebConfig.SauceLabsConfiguration.RunningOnSauceLabs(), context.VideoWebConfig.TestConfig.TargetOS);
         }
 
         [AfterScenario(Order = (int) HooksSequence.SignOutHooks)]
@@ -137,6 +123,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 context.CurrentUser = UserManager.GetDefaultParticipantUser(context.UserAccounts);
                 var browser = new UserBrowser()
                     .SetBaseUrl(context.VideoWebConfig.VhServices.VideoWebUrl)
+                    .SetTargetDevice(context.VideoWebConfig.TestConfig.TargetDevice)
                     .SetTargetBrowser(context.VideoWebConfig.TestConfig.TargetBrowser)
                     .SetDriver(context.Driver);
                 _browsers.Add(context.CurrentUser.Key, browser);
@@ -155,15 +142,6 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 DriverManager.TearDownBrowsers(_browsers);
 
             DriverManager.KillAnyLocalDriverProcesses();
-        }
-
-        [AfterScenario(Order = (int)HooksSequence.StopEdgeChromiumServer)]
-        public void StopEdgeChromiumServer(TestContext context)
-        {
-            var targetBrowser = GetBrowserAndVersion();
-            if (targetBrowser.ToLower().Contains(TargetBrowser.EdgeChromium.ToString().ToLower()) &&
-                !context.VideoWebConfig.SauceLabsConfiguration.RunningOnSauceLabs())
-                _browsers?[context.CurrentUser.Key].StopEdgeChromiumServer();
         }
     }
 }

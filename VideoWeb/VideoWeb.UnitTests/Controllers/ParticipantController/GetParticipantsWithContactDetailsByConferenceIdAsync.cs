@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -31,7 +31,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         private Mock<ILogger<ParticipantsController>> _mockLogger;
         private Mock<IConferenceCache> _mockConferenceCache;
         private Mock<IBookingsApiClient> _bookingsApiClientMock;
-        
+        private List<Participant> _participants;
         private ParticipantsController _controller;
 
         [SetUp]
@@ -42,7 +42,15 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _mockLogger = new Mock<ILogger<ParticipantsController>>(MockBehavior.Loose);
             _mockConferenceCache = new Mock<IConferenceCache>();
             _bookingsApiClientMock = new Mock<IBookingsApiClient>();
-            
+
+            var judge = CreateParticipant("Judge", "Judge");
+            var individual = CreateParticipant("Individual", "Claimant");
+            var representative = CreateParticipant("Representative", "Defendant");
+            _participants = new List<Participant>
+            {
+                judge, individual, representative
+            };
+
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(Role.VideoHearingsOfficer).Build();
             _controller = SetupControllerWithClaims(claimsPrincipal);
         }
@@ -53,25 +61,19 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var conferenceId = Guid.NewGuid();
             var conference = CreateValidConference(conferenceId);
 
-            var judge1 = CreateParticipant("judge1");
-            var judge2 = CreateParticipant("judge2");
-            var judge3 = CreateParticipant("judge3");
-            var judge3DifferentHearing = CreateParticipant("judge3");
-            conference.Participants = new List<Participant>
-            {
-                judge1, judge2, judge3
-            };
-            
+            var judge3DifferentHearing = CreateParticipant("judge3", "Judge");
+            conference.Participants = _participants;
+
             var bookingParticipants = new List<ParticipantResponse>
             {
-                new ParticipantResponse{Id = judge1.RefId, First_name = "judge1", Last_name = "judge1", Contact_email = "judge1", Telephone_number = "judge1"},
-                new ParticipantResponse{Id = judge2.RefId, First_name = "judge2", Last_name = "judge2", Contact_email = "judge2", Telephone_number = "judge2"},
-                new ParticipantResponse{Id = judge3.RefId, First_name = "judge3", Last_name = "judge3", Contact_email = "judge3", Telephone_number = "judge3"}
+                new ParticipantResponse{Id = _participants[0].RefId, First_name = "judge1", Last_name = "judge1", Contact_email = "judge1", Telephone_number = "judge1"},
+                new ParticipantResponse{Id = _participants[1].RefId, First_name = "judge2", Last_name = "judge2", Contact_email = "judge2", Telephone_number = "judge2"},
+                new ParticipantResponse{Id = _participants[2].RefId, First_name = "judge3", Last_name = "judge3", Contact_email = "judge3", Telephone_number = "judge3"}
             };
-            
+
             var judgesInHearings = new List<JudgeInHearingResponse>
             {
-                new JudgeInHearingResponse{ Id = judge3DifferentHearing.Id, Username = judge3.Username, Status = ParticipantState.InHearing }
+                new JudgeInHearingResponse{ Id = judge3DifferentHearing.Id, Username = _participants[2].Username, Status = ParticipantState.InHearing }
             };
 
             _mockConferenceCache.Setup(x => x.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
@@ -92,9 +94,9 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             results.Should().NotBeNullOrEmpty();
             results.Count.Should().Be(3);
 
-            AssertResponseItem(results.ElementAt(0), conference.Participants[0], conferenceId, bookingParticipants[0], false);
-            AssertResponseItem(results.ElementAt(1), conference.Participants[1], conferenceId, bookingParticipants[1], false);
-            AssertResponseItem(results.ElementAt(2), conference.Participants[2], conferenceId, bookingParticipants[2], true);
+            AssertResponseItem(results.ElementAt(0), conference.Participants[1], conferenceId, bookingParticipants[1], false);
+            AssertResponseItem(results.ElementAt(1), conference.Participants[2], conferenceId, bookingParticipants[2], true);
+            AssertResponseItem(results.ElementAt(2), conference.Participants[0], conferenceId, bookingParticipants[0], false);
         }
 
         [Test]
@@ -109,12 +111,14 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         [Test]
         public async Task Should_return_unauthorised_when_user_not_in_vho_role()
         {
+            var errorMessage = "User must be a VH Officer";
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(Role.Individual).Build();
             _controller = SetupControllerWithClaims(claimsPrincipal);
             var result = await _controller.GetParticipantsWithContactDetailsByConferenceIdAsync(Guid.NewGuid());
             
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
+            typedResult.Value.Should().Be(errorMessage);
         }
         
         [Test]
@@ -139,13 +143,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var conferenceId = Guid.NewGuid();
             var conference = CreateValidConference(conferenceId);
 
-            var judge1 = CreateParticipant("judge1");
-            var judge2 = CreateParticipant("judge2");
-            var judge3 = CreateParticipant("judge3");
-            conference.Participants = new List<Participant>
-            {
-                judge1, judge2, judge3
-            };
+            conference.Participants = _participants;
 
             _mockConferenceCache.Setup(x => x.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
@@ -184,14 +182,14 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             response.JudgeInAnotherHearing.Should().Be(isInAnotherHearing);
         }
         
-        private static Participant CreateParticipant(string username)
+        private static Participant CreateParticipant(string username, string caseTypeGroup)
         {
             return Builder<Participant>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
                 .With(x => x.Name = username)
                 .With(x => x.Role = Role.Judge)
                 .With(x => x.Username = username)
-                .With(x => x.CaseTypeGroup == ParticipantStatus.Available.ToString())
+                .With(x => x.CaseTypeGroup = caseTypeGroup)
                 .With(x => x.RefId = Guid.NewGuid())
                 .With(x => x.DisplayName = $"{username} {username}")
                 .Build();

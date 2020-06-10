@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ClipboardService } from 'ngx-clipboard';
 import { ConferenceResponseVho, ParticipantResponseVho } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
@@ -16,9 +15,9 @@ export class VhoHearingListComponent implements OnInit {
 
     currentConference: HearingSummary;
 
-    constructor(private clipboardService: ClipboardService) { }
+    constructor() {}
 
-    ngOnInit() { }
+    ngOnInit() {}
 
     isCurrentConference(conference: HearingSummary): boolean {
         return this.currentConference != null && this.currentConference.id === conference.id;
@@ -33,24 +32,23 @@ export class VhoHearingListComponent implements OnInit {
         this.selectedConference.emit(conference);
     }
 
-    copyToClipboard(conference: HearingSummary) {
-        this.clipboardService.copyFromContent(conference.id);
-    }
-
     getParticipantsForConference(conference: HearingSummary): ParticipantSummary[] {
         return conference.getParticipants();
     }
 
     mapToHearing(conference: HearingSummary, participants: ParticipantResponseVho[] = null): Hearing {
         const hearing = new ConferenceResponseVho({
-            id: conference.id, scheduled_date_time: conference.scheduledDateTime, status: conference.status,
+            id: conference.id,
+            scheduled_date_time: conference.scheduledDateTime,
+            status: conference.status,
             participants: participants
         });
         return new Hearing(hearing);
     }
 
     mapToHearingWithParticipants(conference: HearingSummary): Hearing {
-        const participants = conference.getParticipants()
+        const participants = conference
+            .getParticipants()
             .map(x => new ParticipantResponseVho({ id: x.id, name: x.displayName, username: x.username, role: x.role }));
         return this.mapToHearing(conference, participants);
     }

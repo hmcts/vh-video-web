@@ -1,19 +1,12 @@
-import { ClipboardService } from 'ngx-clipboard';
-import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { HearingSummary } from '../../shared/models/hearing-summary';
 import { VhoHearingListComponent } from './vho-hearing-list.component';
 
 describe('VhoHearingListComponent', () => {
     let component: VhoHearingListComponent;
-    let clipboardServiceSpy: jasmine.SpyObj<ClipboardService>;
-
-    beforeAll(() => {
-        clipboardServiceSpy = jasmine.createSpyObj<ClipboardService>('ClipboardService', ['copyFromContent']);
-    });
 
     beforeEach(() => {
-        component = new VhoHearingListComponent(clipboardServiceSpy);
+        component = new VhoHearingListComponent();
         component.conferences = new ConferenceTestData().getVhoTestData().map(c => new HearingSummary(c));
     });
 
@@ -53,13 +46,6 @@ describe('VhoHearingListComponent', () => {
         const participants = conference.participants;
         const hearing = new HearingSummary(conference);
         expect(component.getParticipantsForConference(hearing).length).toEqual(participants.length);
-    });
-
-    it('expect clipboard to copy conference id', () => {
-        const conference = new ConferenceTestData().getConferenceFuture();
-        const hearing = new HearingSummary(conference);
-        component.copyToClipboard(hearing);
-        expect(clipboardServiceSpy.copyFromContent).toHaveBeenCalledWith(conference.id);
     });
 
     it('should map summary to full dto', () => {

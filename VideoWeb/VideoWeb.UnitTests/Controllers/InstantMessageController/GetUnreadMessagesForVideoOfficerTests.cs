@@ -32,20 +32,20 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
         }
-        
+
         [Test]
         public async Task Should_return_okay_code_and_zero_unread_messages_when_there_is_no_im_history()
         {
             var conferenceId = Guid.NewGuid();
             VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceId))
                 .ReturnsAsync(new List<InstantMessageResponse>());
-            
+
             var result = await Controller.GetUnreadMessagesForVideoOfficerAsync(conferenceId);
-            
-            var typedResult = (OkObjectResult) result;
+
+            var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
-            var responseModel = (UnreadAdminMessageResponse) typedResult.Value;
-            responseModel.NumberOfUnreadMessages.Should().Be(0);
+            var responseModel = (UnreadInstantMessageConferenceCountResponse)typedResult.Value;
+            responseModel.NumberOfUnreadMessagesConference.Count.Should().Be(0);
         }
 
         [Test]
@@ -57,16 +57,21 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
                 .Setup(x => x.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
-            
+
             VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conference.Id))
                 .ReturnsAsync(messages);
-            
+
             var result = await Controller.GetUnreadMessagesForVideoOfficerAsync(conference.Id);
-            
-            var typedResult = (OkObjectResult) result;
+
+            var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
-            var responseModel = (UnreadAdminMessageResponse) typedResult.Value;
-            responseModel.NumberOfUnreadMessages.Should().BeGreaterThan(0);
+            var responseModel = (UnreadInstantMessageConferenceCountResponse)typedResult.Value;
+            responseModel.NumberOfUnreadMessagesConference.Should().NotBeNull();
+            responseModel.NumberOfUnreadMessagesConference.Sum(m => m.NumberOfUnreadMessages).Should().Be(5);
+            responseModel.NumberOfUnreadMessagesConference[0].NumberOfUnreadMessages.Should().Be(2);
+            responseModel.NumberOfUnreadMessagesConference[1].NumberOfUnreadMessages.Should().Be(3);
+            responseModel.NumberOfUnreadMessagesConference[2].NumberOfUnreadMessages.Should().Be(0);
+            responseModel.NumberOfUnreadMessagesConference[3].NumberOfUnreadMessages.Should().Be(0);
         }
 
         private static Conference InitConference()
@@ -85,25 +90,34 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
         private static List<InstantMessageResponse> InitMessages(Conference conference)
         {
             var judge = conference.Participants.Single(x => x.Role == Role.Judge);
+            var individual = conference.Participants.First(x => x.Role == Role.Individual);
             const string vho1Username = "vho1@hmcts.net";
             const string vho2Username = "vho2@hmcts.net";
 
             return new List<InstantMessageResponse>
             {
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 5", Time_stamp = DateTime.UtcNow.AddMinutes(-1)},
+                    {From = judge.Username, Message_text = "judge - 5", Time_stamp = DateTime.UtcNow.AddMinutes(-1), To = vho1Username},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 4", Time_stamp = DateTime.UtcNow.AddMinutes(-2)},
+                    {From = judge.Username, Message_text = "judge - 4", Time_stamp = DateTime.UtcNow.AddMinutes(-2), To = vho1Username},
                 new InstantMessageResponse
-                    {From = vho1Username, Message_text = "vho - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-3)},
+                    {From = vho1Username, Message_text = "vho - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-3), To = judge.Username},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 3", Time_stamp = DateTime.UtcNow.AddMinutes(-4)},
+                    {From = judge.Username, Message_text = "judge - 3", Time_stamp = DateTime.UtcNow.AddMinutes(-4), To = vho1Username},
                 new InstantMessageResponse
-                    {From = vho2Username, Message_text = "vho2 - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-5)},
+                    {From = vho2Username, Message_text = "vho2 - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-5), To = judge.Username},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 2", Time_stamp = DateTime.UtcNow.AddMinutes(-6)},
+                    {From = judge.Username, Message_text = "judge - 2", Time_stamp = DateTime.UtcNow.AddMinutes(-6), To = vho1Username},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-7)},
+                    {From = judge.Username, Message_text = "judge - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-7), To = vho1Username}, 
+                new InstantMessageResponse
+                    {From = individual.Username, Message_text = "individual - 3", Time_stamp = DateTime.UtcNow.AddMinutes(-8), To = vho1Username},
+                new InstantMessageResponse
+                    {From = individual.Username, Message_text = "individual - 2", Time_stamp = DateTime.UtcNow.AddMinutes(-9), To = vho1Username},
+                new InstantMessageResponse
+                    {From = individual.Username, Message_text = "individual - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-10), To = vho1Username},
+                new InstantMessageResponse
+                    {From = vho1Username, Message_text = "vho - ind - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-11), To = individual.Username},
             };
         }
     }

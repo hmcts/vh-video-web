@@ -37,7 +37,7 @@ namespace VideoWeb.UnitTests.Hub
         }
         
         [Test]
-        public async Task Should_subscribe_judge_to_conferences_they_are_assigned_to()
+        public async Task Should_not_subscriber_judge_to_conference_channels()
         {
             const int numOfConferences = 10;
             const int numOfConferencesWithUser = 2;
@@ -47,7 +47,7 @@ namespace VideoWeb.UnitTests.Hub
             
             GroupManagerMock.Verify(
                 x => x.AddToGroupAsync(HubCallerContextMock.Object.ConnectionId, It.IsIn(conferenceIds),
-                    CancellationToken.None), Times.Exactly(numOfConferencesWithUser));
+                    CancellationToken.None), Times.Never);
         }
 
         [Test]

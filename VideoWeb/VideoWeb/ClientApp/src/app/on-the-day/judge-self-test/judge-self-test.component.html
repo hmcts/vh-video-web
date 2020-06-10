@@ -1,26 +1,22 @@
 <div *ngIf="!conference && !participant" class="govuk-grid-column-full">
   <p class="govuk-body-l">Please wait to be connected...</p>
 </div>
-<app-self-test *ngIf="conference && participant && !hideSelfTest" [conference]="conference" [participant]="participant"
-  (testCompleted)="onSelfTestCompleted($event)" (testStarted)="onTestStarted()"></app-self-test>
+<app-self-test
+  *ngIf="conference && participant && !hideSelfTest"
+  [conference]="conference"
+  [participant]="participant"
+  (testCompleted)="onSelfTestCompleted($event)"
+  (testStarted)="onTestStarted()"
+></app-self-test>
 
 <div *ngIf="!showEquipmentFaultMessage" class="govuk-!-margin-top-6">
-    <button id="equipment-works-btn" class="govuk-button govuk-!-margin-right-4" data-module="govuk-button"
-        (click)="equipmentWorksHandler()" alt="Equipment is working and return to hearing list">
-        Equipment is working
-    </button>
-
-    <button id="equipment-faulty-btn" class="govuk-button govuk-button--warning" data-module="govuk-button"
-        (click)="equipmentFaultyHandler()" alt="Equipment is faulty and notify admin">
-        Equipment is faulty
-    </button>
+  <app-self-test-actions (equipmentWorked)="equipmentWorksHandler()" (equipmentBroken)="equipmentFaultyHandler()"></app-self-test-actions>
 </div>
 
 <div *ngIf="showEquipmentFaultMessage" class="govuk-!-margin-top-6">
   <h1 class="govuk-heading-xl">Problems with your equipment?</h1>
   <p class="govuk-body govuk-!-margin-top-7">
-    Please call the video hearings team on <span class="govuk-!-font-weight-bold">{{contact.phone}}</span> to let us
-    know.
+    Please call the video hearings team on <span class="govuk-!-font-weight-bold">{{ contact.phone }}</span> to let us know.
   </p>
 
   <p class="govuk-body">
@@ -29,12 +25,25 @@
 </div>
 
 <div>
-  <button *ngIf="showEquipmentFaultMessage" id="continue-btn" class="govuk-button govuk-!-margin-right-4"
-          data-module="govuk-button" (click)="equipmentWorksHandler()" alt="Continue">Continue</button>
+  <button
+    *ngIf="showEquipmentFaultMessage"
+    id="continue-btn"
+    class="govuk-button govuk-!-margin-right-4"
+    data-module="govuk-button"
+    (click)="equipmentWorksHandler()"
+    alt="Continue"
+  >
+    Continue
+  </button>
 
-  <button id="check-equipment-btn" class="govuk-button govuk-button--secondary" data-module="govuk-button"
-          (click)="restartTest()" alt="Re-play the video message">
-          Check equipment again
+  <button
+    id="check-equipment-btn"
+    class="govuk-button govuk-button--secondary"
+    data-module="govuk-button"
+    (click)="restartTest()"
+    alt="Re-play the video message"
+  >
+    Check equipment again
   </button>
 </div>
 
