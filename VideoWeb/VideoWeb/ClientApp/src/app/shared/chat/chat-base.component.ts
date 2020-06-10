@@ -44,7 +44,7 @@ export abstract class ChatBaseComponent {
     }
 
     async handleIncomingMessage(message: InstantMessage) {
-        if (!this.isMesageRecipientForUser(message)) {
+        if (!this.isMessageRecipientForUser(message)) {
             return;
         }
         const from = message.from.toUpperCase();
@@ -59,7 +59,7 @@ export abstract class ChatBaseComponent {
         this.messages.push(message);
     }
 
-    isMesageRecipientForUser(message: InstantMessage): boolean {
+    isMessageRecipientForUser(message: InstantMessage): boolean {
         // ignore if not for current conference or participant
         if (message.conferenceId !== this.hearing.id) {
             return false;
@@ -71,7 +71,8 @@ export abstract class ChatBaseComponent {
             this.logger.debug(`[ChatHub] message already been processed ${JSON.stringify(logInfo)}`);
             return false;
         }
-        return this.imHelper.isImForUser(message, this.hearing, this.loggedInUserProfile);
+        const isForUser = this.imHelper.isImForUser(message, this.hearing, this.loggedInUserProfile);
+        return isForUser;
     }
 
     async verifySender(message: InstantMessage): Promise<InstantMessage> {
