@@ -71,8 +71,7 @@ export abstract class ChatBaseComponent {
             this.logger.debug(`[ChatHub] message already been processed ${JSON.stringify(logInfo)}`);
             return false;
         }
-        const isForUser = this.imHelper.isImForUser(message, this.hearing, this.loggedInUserProfile);
-        return isForUser;
+        return this.imHelper.isImForUser(message, this.hearing, this.loggedInUserProfile);
     }
 
     async verifySender(message: InstantMessage): Promise<InstantMessage> {
