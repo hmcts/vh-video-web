@@ -67,10 +67,10 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.setupSubscribers();
         this.checkAuth().then(() => {
             this.checkBrowser();
             this.setPageTitle();
+            this.setupSubscribers();
         });
     }
 
@@ -87,7 +87,6 @@ export class AppComponent implements OnInit, OnDestroy {
     @HostListener('window:beforeunload', ['$event'])
     ngOnDestroy(): void {
         this.subscriptions.unsubscribe();
-        this.beforeunloadHandler(null);
     }
 
     checkBrowser(): void {
@@ -158,6 +157,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.skipLinkDiv.nativeElement.focus();
     }
 
+    @HostListener('window:beforeunload', ['$event'])
     beforeunloadHandler($event: any) {
         this.raiseNotSignedIn();
     }
