@@ -3,7 +3,6 @@ using System.Linq;
 using AcceptanceTests.Common.Api;
 using AcceptanceTests.Common.Configuration.Users;
 using AcceptanceTests.Common.Driver.Drivers;
-using AcceptanceTests.Common.Driver.Enums;
 using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.Driver.Settings;
 using AcceptanceTests.Common.PageObject.Pages;

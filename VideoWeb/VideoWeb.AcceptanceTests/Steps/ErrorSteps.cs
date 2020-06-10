@@ -56,6 +56,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [When(@"the user attempts to access the page on their unsupported browser")]
+        [When(@"the user attempts to access the page on their unsupported device")]
         public void WhenTheUserAttemptsToAccessThePageOnTheirUnsupportedBrowser()
         {
             _loginSteps.ProgressToNextPage();
@@ -83,6 +84,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser.Key].PageUrl(Page.UnsupportedBrowser.Url);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ErrorPage.UnsupportedBrowserTitle).Displayed.Should().BeTrue();
+        }
+
+        [Then(@"the user is on the Unsupported Device error page with text of how to rectify the problem")]
+        public void ThenTheUserIsOnTheUnsupportedDeviceErrorPageWithTextOfHowToRectifyTheProblem()
+        {
+            _browsers[_c.CurrentUser.Key].PageUrl(Page.UnsupportedBrowser.Url);
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ErrorPage.UnsupportedDeviceTitle).Displayed.Should().BeTrue();
         }
     }
 }
