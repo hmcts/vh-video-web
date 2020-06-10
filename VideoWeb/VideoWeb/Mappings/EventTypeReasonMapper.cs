@@ -12,7 +12,7 @@ namespace VideoWeb.Mappings
                 EventType.ParticipantJoining => "participant joining",
                 EventType.JudgeAvailable => "judge available",
                 EventType.JudgeUnavailable => "judge unavailable",
-                EventType.None => "participant not signed in",
+                EventType.ParticipantNotSignedIn => "participant not signed in",
                 _ => string.Empty
             };
 
