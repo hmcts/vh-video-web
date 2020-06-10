@@ -43,7 +43,7 @@ export class AppComponent implements OnInit, OnDestroy {
         private titleService: Title,
         private activatedRoute: ActivatedRoute,
         private locationService: LocationService,
-        private pageTracker: PageTrackerService,
+        pageTracker: PageTrackerService,
         private participantStatusUpdateService: ParticipantStatusUpdateService,
         private logger: Logger
     ) {
@@ -51,7 +51,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.isRepresentativeOrIndividual = false;
         this.initAuthentication();
 
-        this.pageTracker.trackPreviousPage(router);
+        pageTracker.trackPreviousPage(router);
     }
 
     private initAuthentication() {
@@ -84,7 +84,6 @@ export class AppComponent implements OnInit, OnDestroy {
         );
     }
 
-    @HostListener('window:beforeunload', ['$event'])
     ngOnDestroy(): void {
         this.subscriptions.unsubscribe();
     }
@@ -157,8 +156,8 @@ export class AppComponent implements OnInit, OnDestroy {
         this.skipLinkDiv.nativeElement.focus();
     }
 
-    @HostListener('window:beforeunload', ['$event'])
-    beforeunloadHandler($event: any) {
+    @HostListener('window:beforeunload')
+    beforeunloadHandler() {
         this.raiseNotSignedIn();
     }
 

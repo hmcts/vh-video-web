@@ -194,4 +194,8 @@ describe('AppComponent', () => {
         component.skipToContent();
         expect(dummyElement.focus).toHaveBeenCalled();
     });
+    it('should update participant status on log out', () => {
+        component.beforeunloadHandler();
+        expect(participantStatusUpdateService.postParticipantStatus).toHaveBeenCalled();
+    });
 });

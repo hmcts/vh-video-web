@@ -21,6 +21,32 @@ describe('ParticipantStatusUpdateService', () => {
         expect(apiClientSpy.updateParticipantStatus).toHaveBeenCalled();
         expect(logger.error).toHaveBeenCalledTimes(0);
     });
+    it('should update participant event by extract conference id from router url', async () => {
+        spyOn(logger, 'error');
+
+        await service.postParticipantStatus(EventType.ParticipantNotSignedIn);
+        expect(apiClientSpy.updateParticipantStatus).toHaveBeenCalled();
+        expect(logger.error).toHaveBeenCalledTimes(0);
+    });
+});
+
+describe('ParticipantStatusUpdateService for not participant page', () => {
+    let apiClientSpy: jasmine.SpyObj<ApiClient>;
+    apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['updateParticipantStatus']);
+    apiClientSpy.updateParticipantStatus.and.returnValue(of());
+
+    let routerSpy: jasmine.SpyObj<Router>;
+    routerSpy = jasmine.createSpyObj<Router>('Router', [], { url: '/notparticipantpage/1234-1234-1234' });
+    const logger = new MockLogger();
+    const service = new ParticipantStatusUpdateService(apiClientSpy, logger, routerSpy);
+
+    it('should not raise event for not participant page', async () => {
+        spyOn(logger, 'error');
+
+        await service.postParticipantStatus(EventType.ParticipantNotSignedIn);
+        expect(apiClientSpy.updateParticipantStatus).toHaveBeenCalledTimes(0);
+        expect(logger.error).toHaveBeenCalledTimes(0);
+    });
 });
 
 describe('ParticipantStatusUpdateService failure', () => {
