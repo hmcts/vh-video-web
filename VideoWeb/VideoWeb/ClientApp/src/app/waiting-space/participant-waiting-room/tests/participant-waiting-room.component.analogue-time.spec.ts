@@ -6,13 +6,13 @@ import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
-import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
+import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { Hearing } from '../../../shared/models/hearing';
-import { VideoCallService } from '../../services/video-call.service';
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
 
 describe('ParticipantWaitingRoomComponent message and clock', () => {
@@ -20,7 +20,7 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
     const gloalConference = new ConferenceTestData().getConferenceDetailPast();
     const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: gloalConference.id }) } };
     let videoWebService: jasmine.SpyObj<VideoWebService>;
-    let eventsService: jasmine.SpyObj<EventsService>;
+    const eventsService = eventsServiceSpy;
 
     let adalService: jasmine.SpyObj<AdalService>;
     let errorService: jasmine.SpyObj<ErrorService>;
@@ -29,7 +29,7 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
     let router: jasmine.SpyObj<Router>;
     let heartbeatModelMapper: HeartbeatModelMapper;
     let deviceTypeService: jasmine.SpyObj<DeviceTypeService>;
-    let videoCallService: jasmine.SpyObj<VideoCallService>;
+    const videoCallService = videoCallServiceSpy;
     let consultationService: jasmine.SpyObj<ConsultationService>;
     const logger: Logger = new MockLogger();
 
@@ -45,27 +45,7 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         heartbeatModelMapper = new HeartbeatModelMapper();
         deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['getBrowserName', 'getBrowserVersion']);
-        videoCallService = jasmine.createSpyObj<VideoCallService>('VideoCallService', [
-            'setupClient',
-            'makeCall',
-            'disconnectFromCall',
-            'connect',
-            'onCallSetup',
-            'onCallConnected',
-            'onCallDisconnected',
-            'onError',
-            'updateCameraForCall',
-            'updateMicrophoneForCall',
-            'toggleMute',
-            'enableH264'
-        ]);
         consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', ['leaveConsultation']);
-        eventsService = jasmine.createSpyObj<EventsService>('EventsService', [
-            'start',
-            'getHearingStatusMessage',
-            'getParticipantStatusMessage',
-            'sendHeartbeat'
-        ]);
     });
 
     beforeEach(() => {

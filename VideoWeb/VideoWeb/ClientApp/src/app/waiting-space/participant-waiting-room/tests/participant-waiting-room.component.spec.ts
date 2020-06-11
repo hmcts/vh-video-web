@@ -1,23 +1,20 @@
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
-import { of, Subject, Subscription } from 'rxjs';
+import { of, Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse, Role, TokenResponse } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
-import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
-import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { VideoCallService } from '../../services/video-call.service';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
+import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
@@ -25,15 +22,9 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     const gloalConference = new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse;
     const globalParticipant = gloalConference.participants.filter(x => x.role === Role.Individual)[0];
 
-    const participantStatusSubject = new Subject<ParticipantStatusMessage>();
-    const hearingStatusSubject = new Subject<ConferenceStatusMessage>();
-    const adminConsultationMessageSubject = new Subject<AdminConsultationMessage>();
-    const eventHubDisconnectSubject = new Subject<number>();
-    const eventHubReconnectSubject = new Subject();
-
     const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: gloalConference.id }) } };
     let videoWebService: jasmine.SpyObj<VideoWebService>;
-    let eventsService: jasmine.SpyObj<EventsService>;
+    const eventsService = eventsServiceSpy;
 
     let adalService: jasmine.SpyObj<AdalService>;
     let errorService: jasmine.SpyObj<ErrorService>;
@@ -42,7 +33,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let router: jasmine.SpyObj<Router>;
     let heartbeatModelMapper: HeartbeatModelMapper;
     let deviceTypeService: jasmine.SpyObj<DeviceTypeService>;
-    let videoCallService: jasmine.SpyObj<VideoCallService>;
+    const videoCallService = videoCallServiceSpy;
     let consultationService: jasmine.SpyObj<ConsultationService>;
     let logger: jasmine.SpyObj<Logger>;
 
@@ -72,36 +63,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         heartbeatModelMapper = new HeartbeatModelMapper();
         deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['getBrowserName', 'getBrowserVersion']);
-        videoCallService = jasmine.createSpyObj<VideoCallService>('VideoCallService', [
-            'setupClient',
-            'makeCall',
-            'disconnectFromCall',
-            'connect',
-            'onCallSetup',
-            'onCallConnected',
-            'onCallDisconnected',
-            'onError',
-            'updateCameraForCall',
-            'updateMicrophoneForCall',
-            'toggleMute',
-            'enableH264'
-        ]);
-        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', ['leaveConsultation']);
-        eventsService = jasmine.createSpyObj<EventsService>('EventsService', [
-            'start',
-            'getHearingStatusMessage',
-            'getParticipantStatusMessage',
-            'getAdminConsultationMessage',
-            'getServiceDisconnected',
-            'getServiceReconnected',
-            'sendHeartbeat'
-        ]);
 
-        eventsService.getHearingStatusMessage.and.returnValue(hearingStatusSubject.asObservable());
-        eventsService.getParticipantStatusMessage.and.returnValue(participantStatusSubject.asObservable());
-        eventsService.getAdminConsultationMessage.and.returnValue(adminConsultationMessageSubject.asObservable());
-        eventsService.getServiceDisconnected.and.returnValue(eventHubDisconnectSubject.asObservable());
-        eventsService.getServiceReconnected.and.returnValue(eventHubReconnectSubject.asObservable());
+        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', ['leaveConsultation']);
 
         logger = jasmine.createSpyObj<Logger>('Logger', ['debug', 'info', 'warn', 'event', 'error']);
     });

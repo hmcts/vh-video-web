@@ -1,11 +1,9 @@
-import { Url } from 'url';
-
 export class CallSetup {
-    constructor(public stream: MediaStream | Url) {}
+    constructor(public stream: MediaStream | URL) {}
 }
 
 export class ConnectedCall {
-    constructor(public stream: MediaStream | Url) {}
+    constructor(public stream: MediaStream | URL) {}
 }
 
 export class DisconnectedCall {

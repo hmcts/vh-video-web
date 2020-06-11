@@ -26,7 +26,6 @@ import { Hearing } from '../../shared/models/hearing';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 
-// declare var PexRTC: any;
 declare var HeartbeatFactory: any;
 
 @Component({
@@ -43,9 +42,9 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     conference: ConferenceResponse;
     token: TokenResponse;
 
-    stream: MediaStream | Url;
+    stream: MediaStream | URL;
     connected: boolean;
-    outgoingStream: MediaStream | Url;
+    outgoingStream: MediaStream | URL;
 
     currentTime: Date;
     hearingStartingAnnounced: boolean;
