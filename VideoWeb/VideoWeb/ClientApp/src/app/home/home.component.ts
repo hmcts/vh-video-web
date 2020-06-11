@@ -19,7 +19,7 @@ export class HomeComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        if (this.deviceTypeService.isDesktop() || (this.deviceTypeService.isTablet() && this.deviceTypeService.isIpad())) {
+        if (this.deviceTypeService.isDesktop() || this.deviceTypeService.isIpad()) {
             this.profileService
                 .getUserProfile()
                 .then(profile => this.navigateToHearingList(profile))
