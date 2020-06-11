@@ -195,7 +195,8 @@ describe('AppComponent', () => {
         expect(dummyElement.focus).toHaveBeenCalled();
     });
     it('should update participant status on log out', () => {
-        component.beforeunloadHandler();
+        const event: any = { returnValue: 'save' };
+        component.beforeunloadHandler(event);
         expect(participantStatusUpdateService.postParticipantStatus).toHaveBeenCalled();
     });
 });
