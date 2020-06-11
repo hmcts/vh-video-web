@@ -21,7 +21,7 @@ export class ParticipantStatusGuard implements CanActivate {
         try {
             const profile = await this.userProfileService.getUserProfile();
 
-            const startUrl = 'introduction';
+            const startUrl = 'hearing-list';
 
             // On Refresh set status back from NotSignedIn to Joining.
 
