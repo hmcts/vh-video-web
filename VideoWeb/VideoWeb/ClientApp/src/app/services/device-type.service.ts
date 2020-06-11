@@ -20,7 +20,7 @@ export class DeviceTypeService {
     }
 
     isIpad(): boolean {
-        return this.deviceDetectorService.device === 'iPad' && this.deviceDetectorService.browser === 'Safari';
+        return this.deviceDetectorService.isTablet() && this.deviceDetectorService.device === 'iPad';
     }
 
     isSupportedBrowser(): boolean {
