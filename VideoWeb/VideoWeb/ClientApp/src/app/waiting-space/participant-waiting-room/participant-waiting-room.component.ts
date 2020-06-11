@@ -19,7 +19,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { Url } from 'url';
 import { DeviceTypeService } from '../../services/device-type.service';
 import { HeartbeatModelMapper } from '../../shared/mappers/heartbeat-model-mapper';
 import { Hearing } from '../../shared/models/hearing';

@@ -1,3 +1,4 @@
+import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { BehaviorSubject } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -15,19 +16,17 @@ import { UserMediaStreamService } from 'src/app/services/user-media-stream.servi
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { SelfTestComponent } from './self-test.component';
-import { SelectedUserMediaDevice } from '../models/selected-user-media-device';
 import {
-    onSetupSubjectMock,
     onConnectedSubjectMock,
     onDisconnectedSubjectMock,
     onErrorSubjectMock,
+    onSetupSubjectMock,
     videoCallServiceSpy
 } from 'src/app/testing/mocks/mock-video-call-service';
-import { CallSetup, ConnectedCall, CallError, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
-import { flushMicrotasks, fakeAsync } from '@angular/core/testing';
-import { Url } from 'url';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
+import { SelectedUserMediaDevice } from '../models/selected-user-media-device';
+import { SelfTestComponent } from './self-test.component';
 
 describe('SelfTestComponent', () => {
     let component: SelfTestComponent;
