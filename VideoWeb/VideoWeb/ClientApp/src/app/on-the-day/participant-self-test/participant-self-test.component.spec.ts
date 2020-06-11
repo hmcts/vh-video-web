@@ -9,6 +9,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ParticipantSelfTestComponent } from './participant-self-test.component';
+import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 
 describe('ParticipantSelfTestComponent', () => {
     let component: ParticipantSelfTestComponent;
@@ -21,6 +22,7 @@ describe('ParticipantSelfTestComponent', () => {
     let adalService;
     let errorService: jasmine.SpyObj<ErrorService>;
     const logger: Logger = new MockLogger();
+    let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
 
     const pexipConfig = new SelfTestPexipResponse({
         pexip_self_test_node: 'selftest.automated.test'
@@ -34,6 +36,8 @@ describe('ParticipantSelfTestComponent', () => {
         videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
         videoWebService.getPexipConfig.and.returnValue(Promise.resolve(pexipConfig));
 
+        participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
+
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
 
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
@@ -44,7 +48,15 @@ describe('ParticipantSelfTestComponent', () => {
     });
 
     beforeEach(() => {
-        component = new ParticipantSelfTestComponent(router, activatedRoute, videoWebService, errorService, adalService, logger);
+        component = new ParticipantSelfTestComponent(
+            router,
+            activatedRoute,
+            videoWebService,
+            errorService,
+            adalService,
+            logger,
+            participantStatusUpdateService
+        );
         component.conference = conference;
         component.conferenceId = conference.id;
         router.navigate.calls.reset();
