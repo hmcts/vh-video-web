@@ -222,6 +222,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     });
 
     it('should make call to video conference', () => {
+        videoCallService.enableH264.calls.reset();
         spyOnProperty(window, 'navigator').and.returnValue({
             userAgent: 'Chrome'
         });
@@ -230,6 +231,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     });
 
     it('should make call to video conference and disable H264 on firefox ', () => {
+        videoCallService.enableH264.calls.reset();
         spyOnProperty(window, 'navigator').and.returnValue({
             userAgent: 'FireFox'
         });
