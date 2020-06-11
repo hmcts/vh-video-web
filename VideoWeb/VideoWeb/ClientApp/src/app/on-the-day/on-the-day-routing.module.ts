@@ -4,7 +4,6 @@ import { JudgeGuard } from '../security/judge.guard';
 import { ParticipantGuard } from '../security/participant.guard';
 import { EquipmentProblemComponent } from '../shared/equipment-problem/equipment-problem.component';
 import { pageUrls } from '../shared/page-url.constants';
-import { SignonAComputerComponent } from '../shared/signon-a-computer/signon-a-computer.component';
 import { CameraAndMicrophoneComponent } from './camera-and-microphone/camera-and-microphone.component';
 import { CameraCheckComponent } from './camera-check/camera-check.component';
 import { DeclarationComponent } from './declaration/declaration.component';
@@ -19,6 +18,7 @@ import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone
 import { VideoCheckComponent } from './video-check/video-check.component';
 import { JudgeSelfTestComponent } from './judge-self-test/judge-self-test.component';
 import { IndependentSelfTestComponent } from './independent-self-test/independent-self-test.component';
+import { UnsupportedDeviceComponent } from '../shared/unsupported-device/unsupported-device.component';
 import { ParticipantStatusGuard } from '../security/participant-status.guard';
 
 export const routes: Routes = [
@@ -91,7 +91,7 @@ export const routes: Routes = [
     { path: `${pageUrls.JudgeSelfTestVideo}/:conferenceId`, component: JudgeSelfTestComponent },
     { path: `${pageUrls.IndependentSelfTestVideo}`, component: IndependentSelfTestComponent },
     { path: `${pageUrls.GetHelp}`, component: EquipmentProblemComponent, data: { title: 'Get help' } },
-    { path: `${pageUrls.SignonAComputer}`, component: SignonAComputerComponent },
+    { path: `${pageUrls.UnsupportedDevice}`, component: UnsupportedDeviceComponent },
     {
         path: `${pageUrls.Introduction}/:conferenceId`,
         component: IntroductionComponent,
