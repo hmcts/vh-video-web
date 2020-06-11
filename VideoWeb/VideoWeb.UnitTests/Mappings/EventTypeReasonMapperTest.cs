@@ -31,5 +31,12 @@ namespace VideoWeb.UnitTests.Mappings
             var eventType = EventType.None;
             EventTypeReasonMapper.Map(eventType).Should().Be(string.Empty);
         }
+        [Test]
+        public void Should_set_reason_to_participant_not_signed_in()
+        {
+            var eventType = EventType.ParticipantNotSignedIn;
+            EventTypeReasonMapper.Map(eventType).Should().Be("participant not signed in");
+        }
+
     }
 }
