@@ -17,6 +17,7 @@ namespace VideoWeb.EventHub.Enums
         SelfTestFailed,
         Suspend,
         VhoCall,
-        JudgeUnavailable
+        JudgeUnavailable,
+        ParticipantNotSignedIn
     }
 }

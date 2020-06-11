@@ -1,9 +1,11 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
+import { EventType } from 'src/app/services/clients/api-client';
+import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
 import { Role } from './services/clients/api-client';
@@ -12,6 +14,7 @@ import { ErrorService } from './services/error.service';
 import { LocationService } from './services/location.service';
 import { PageTrackerService } from './services/page-tracker.service';
 import { pageUrls } from './shared/page-url.constants';
+import { Logger } from './services/logging/logger-base';
 
 @Component({
     selector: 'app-root',
@@ -30,7 +33,6 @@ export class AppComponent implements OnInit, OnDestroy {
     pageTitle = 'Video Hearings - ';
 
     subscriptions = new Subscription();
-
     constructor(
         private adalService: AdalService,
         private configService: ConfigService,
@@ -41,7 +43,9 @@ export class AppComponent implements OnInit, OnDestroy {
         private titleService: Title,
         private activatedRoute: ActivatedRoute,
         private locationService: LocationService,
-        pageTracker: PageTrackerService
+        pageTracker: PageTrackerService,
+        private participantStatusUpdateService: ParticipantStatusUpdateService,
+        private logger: Logger
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
@@ -66,8 +70,18 @@ export class AppComponent implements OnInit, OnDestroy {
         this.checkAuth().then(() => {
             this.checkBrowser();
             this.setPageTitle();
-            this.scrollToTop();
+            this.setupSubscribers();
         });
+    }
+
+    private setupSubscribers() {
+        this.subscriptions.add(
+            this.router.events.subscribe((event: NavigationEnd) => {
+                if (event instanceof NavigationEnd) {
+                    this.scrollToTop();
+                }
+            })
+        );
     }
 
     ngOnDestroy(): void {
@@ -138,11 +152,23 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     scrollToTop() {
-        this.subscriptions.add(
-            this.router.events.subscribe((event: NavigationEnd) => {
-                window.scroll(0, 0);
-                this.skipLinkDiv.nativeElement.focus();
+        window.scroll(0, 0);
+        this.skipLinkDiv.nativeElement.focus();
+    }
+
+    @HostListener('window:beforeunload')
+    beforeunloadHandler() {
+        this.raiseNotSignedIn();
+    }
+
+    private raiseNotSignedIn() {
+        this.participantStatusUpdateService
+            .postParticipantStatus(EventType.ParticipantNotSignedIn, null)
+            .then(() => {
+                this.logger.info('Participant status was updated to not signed in');
             })
-        );
+            .catch(err => {
+                this.logger.error('Unable to update status to not signed in', err);
+            });
     }
 }

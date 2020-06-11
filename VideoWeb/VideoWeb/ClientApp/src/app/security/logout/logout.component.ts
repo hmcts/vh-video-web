@@ -1,4 +1,4 @@
-import { OnInit, Component, Injectable } from '@angular/core';
+import { Component, Injectable, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { ProfileService } from 'src/app/services/api/profile.service';
 
@@ -17,6 +17,7 @@ export class LogoutComponent implements OnInit {
             this.adalSvc.logOut();
         }
     }
+
     get loggedIn(): boolean {
         return this.adalSvc.userInfo.authenticated;
     }
