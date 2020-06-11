@@ -1,23 +1,23 @@
 @import '~govuk-frontend/govuk/all';
 
 #incomingFeed {
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    min-width: 100%;
-    min-height: 100%;
-    max-width: 100%;
-    max-height: 100vh;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+  max-width: 100%;
+  max-height: 100vh;
 }
 
 #incomingFeedPrivate {
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    min-width: 100%;
-    min-height: 100%;
-    max-width: 100%;
-    max-height: 100vh;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+  max-width: 100%;
+  max-height: 100vh;
 }
 
 .video-background {
@@ -76,14 +76,14 @@
 }
 
 #outgoingFeedVideo {
-    left: 1%;
-    position: fixed;
-    bottom: 7.5%;
-    max-width: 13%;
-    min-width: 15%;
-    transform: rotateY(180deg);
-    -webkit-transform: rotateY(180deg); /* Safari and Chrome */
-    -moz-transform: rotateY(180deg); /* Firefox */
+  left: 1%;
+  position: fixed;
+  bottom: 7.5%;
+  max-width: 13%;
+  min-width: 15%;
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg); /* Safari and Chrome */
+  -moz-transform: rotateY(180deg); /* Firefox */
 }
 
 .reduce-margin {
