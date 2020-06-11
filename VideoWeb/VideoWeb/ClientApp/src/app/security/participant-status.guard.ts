@@ -21,12 +21,13 @@ export class ParticipantStatusGuard implements CanActivate {
         try {
             const profile = await this.userProfileService.getUserProfile();
 
-            const startUrl = 'introduction';
+            const startUrl = 'hearing-list';
 
             // On Refresh set status back from NotSignedIn to Joining.
 
             const conferenceId = next.paramMap.get('conferenceId');
-            const urlActive = state.url.indexOf(startUrl) > -1;
+            const urlActive = this.router.url.indexOf(startUrl) > -1;
+
             if (
                 conferenceId &&
                 (!this.router.navigated || urlActive) &&
