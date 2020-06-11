@@ -22,7 +22,7 @@
   <div [hidden]="!showChat">
     <div #content id="chat-list" class="govuk-!-padding-2 govuk-!-padding-left-4 chat-window">
       <div *ngIf="loading" class="govuk-body">Loading...</div>
-      <app-chat-body-window [messages]="messages"></app-chat-body-window>
+      <app-chat-body-window [messagesReceived]="messages" [pendingMessages]="pendingMessages"></app-chat-body-window>
     </div>
 
     <app-chat-input-box (submittedMessage)="sendMessage($event)"></app-chat-input-box>
