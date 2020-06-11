@@ -19,6 +19,10 @@ export class DeviceTypeService {
         return this.deviceDetectorService.isDesktop();
     }
 
+    isIpad(): boolean {
+        return this.deviceDetectorService.device === 'iPad' && this.deviceDetectorService.browser === 'Safari';
+    }
+
     isSupportedBrowser(): boolean {
         const supportedBrowsers = ['Firefox', 'Safari', 'Chrome', 'MS-Edge', 'MS-Edge-Chromium'];
         const browser = this.deviceDetectorService.browser;
