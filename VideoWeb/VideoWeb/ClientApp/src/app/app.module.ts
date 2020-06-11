@@ -19,6 +19,7 @@ import { ConsoleLogger } from './services/logging/loggers/console-logger';
 import { PageTrackerService } from './services/page-tracker.service';
 import { SharedModule } from './shared/shared.module';
 import { WaitingSpaceModule } from './waiting-space/waiting-space.module';
+import { ParticipantStatusUpdateService } from './services/participant-status-update.service';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -48,7 +49,8 @@ export function getSettings(configService: ConfigService) {
         ConfigService,
         AuthGuard,
         Title,
-        PageTrackerService
+        PageTrackerService,
+        ParticipantStatusUpdateService
     ],
     bootstrap: [AppComponent]
 })
