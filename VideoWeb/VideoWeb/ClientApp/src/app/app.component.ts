@@ -156,9 +156,11 @@ export class AppComponent implements OnInit, OnDestroy {
         this.skipLinkDiv.nativeElement.focus();
     }
 
-    @HostListener('window:beforeunload')
-    beforeunloadHandler() {
+    @HostListener('window:beforeunload', ['$event'])
+    beforeunloadHandler($event: any) {
+        $event.returnValue = 'save';
         this.raiseNotSignedIn();
+        return 'save';
     }
 
     private raiseNotSignedIn() {
