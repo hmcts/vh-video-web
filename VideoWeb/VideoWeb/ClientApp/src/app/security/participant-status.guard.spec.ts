@@ -12,7 +12,10 @@ describe('ParticipantStatusGuard', () => {
     let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
     const activateRoute: any = { paramMap: convertToParamMap({ conferenceId: 'cef3051f-6909-40b9-a846-100cf4040a9a' }) };
     beforeAll(() => {
-        router = jasmine.createSpyObj<Router>('Router', [], { navigated: false });
+        router = jasmine.createSpyObj<Router>('Router', [], {
+            navigated: false,
+            url: '/camera-working/cef3051f-6909-40b9-a846-100cf4040a9a'
+        });
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
         participantStatusUpdateService = jasmine.createSpyObj<ParticipantStatusUpdateService>('ParticipantStatusUpdateService', [
             'postParticipantStatus'
@@ -24,24 +27,43 @@ describe('ParticipantStatusGuard', () => {
     });
 
     it('should on refresh update status to joining', async () => {
-        const startRoute: any = { url: '/camera-working/cef3051f-6909-40b9-a846-100cf4040a9a' };
-
         const profile = new UserProfileResponse({ role: Role.Individual });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         participantStatusUpdateService.postParticipantStatus.and.returnValue(Promise.resolve());
-        const result = await guard.canActivate(activateRoute, startRoute);
+        const result = await guard.canActivate(activateRoute, null);
 
         expect(result).toBeTruthy();
         expect(participantStatusUpdateService.postParticipantStatus).toHaveBeenCalled();
     });
-    it('should on introduction page update status to joining', async () => {
-        const startRoute: any = { url: '/introduction/cef3051f-6909-40b9-a846-100cf4040a9a' };
+});
 
+describe('ParticipantStatusGuard', () => {
+    let profileServiceSpy: jasmine.SpyObj<ProfileService>;
+    let guard: ParticipantStatusGuard;
+    let router: jasmine.SpyObj<Router>;
+    let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
+    const activateRoute: any = { paramMap: convertToParamMap({ conferenceId: 'cef3051f-6909-40b9-a846-100cf4040a9a' }) };
+    beforeAll(() => {
+        router = jasmine.createSpyObj<Router>('Router', [], {
+            navigated: false,
+            url: '/hearing-list/cef3051f-6909-40b9-a846-100cf4040a9a'
+        });
+        profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
+        participantStatusUpdateService = jasmine.createSpyObj<ParticipantStatusUpdateService>('ParticipantStatusUpdateService', [
+            'postParticipantStatus'
+        ]);
+    });
+
+    beforeEach(() => {
+        guard = new ParticipantStatusGuard(profileServiceSpy, router, new MockLogger(), participantStatusUpdateService);
+    });
+
+    it('should on introduction page update status to joining', async () => {
         const profile = new UserProfileResponse({ role: Role.Individual });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         participantStatusUpdateService.postParticipantStatus.and.returnValue(Promise.resolve());
 
-        const result = await guard.canActivate(activateRoute, startRoute);
+        const result = await guard.canActivate(activateRoute, null);
 
         expect(result).toBeTruthy();
         expect(participantStatusUpdateService.postParticipantStatus).toHaveBeenCalled();
