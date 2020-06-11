@@ -59,7 +59,7 @@ describe('HomeComponent', () => {
     it('should redirect to signon-a-computer screen if on a mobile device', () => {
         deviceTypeServiceSpy.isDesktop.and.returnValue(false);
         component.ngOnInit();
-        expect(router.navigate).toHaveBeenCalledWith([pageUrls.SignonAComputer]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.UnsupportedDevice]);
     });
 
     it('should navigate to hearing list when device is a desktop', fakeAsync(() => {
