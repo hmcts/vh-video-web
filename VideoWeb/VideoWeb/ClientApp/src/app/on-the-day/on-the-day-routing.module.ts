@@ -19,6 +19,7 @@ import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone
 import { VideoCheckComponent } from './video-check/video-check.component';
 import { JudgeSelfTestComponent } from './judge-self-test/judge-self-test.component';
 import { IndependentSelfTestComponent } from './independent-self-test/independent-self-test.component';
+import { ParticipantStatusGuard } from '../security/participant-status.guard';
 
 export const routes: Routes = [
     {
@@ -33,30 +34,70 @@ export const routes: Routes = [
         canActivate: [ParticipantGuard],
         data: { title: 'Hearing list' }
     },
-    { path: `${pageUrls.Declaration}/:conferenceId`, component: DeclarationComponent, data: { title: 'Declaration' } },
-    { path: `${pageUrls.HearingRules}/:conferenceId`, component: HearingRulesComponent, data: { title: 'Hearing rules' } },
-    { path: `${pageUrls.EquipmentCheck}/:conferenceId`, component: EquipmentCheckComponent, data: { title: 'Equipment check' } },
+    {
+        path: `${pageUrls.Declaration}/:conferenceId`,
+        component: DeclarationComponent,
+        data: { title: 'Declaration' },
+        canActivate: [ParticipantStatusGuard]
+    },
+    {
+        path: `${pageUrls.HearingRules}/:conferenceId`,
+        component: HearingRulesComponent,
+        data: { title: 'Hearing rules' },
+        canActivate: [ParticipantStatusGuard]
+    },
+    {
+        path: `${pageUrls.EquipmentCheck}/:conferenceId`,
+        component: EquipmentCheckComponent,
+        data: { title: 'Equipment check' },
+        canActivate: [ParticipantStatusGuard]
+    },
     { path: `${pageUrls.EquipmentCheck}`, component: EquipmentCheckComponent },
-    { path: `${pageUrls.CameraWorking}/:conferenceId`, component: CameraCheckComponent, data: { title: 'Camera working' } },
-    { path: `${pageUrls.MicrophoneWorking}/:conferenceId`, component: MicrophoneCheckComponent, data: { title: 'Microphone working' } },
-    { path: `${pageUrls.VideoWorking}/:conferenceId`, component: VideoCheckComponent, data: { title: 'See and hear video' } },
+    {
+        path: `${pageUrls.CameraWorking}/:conferenceId`,
+        component: CameraCheckComponent,
+        data: { title: 'Camera working' },
+        canActivate: [ParticipantStatusGuard]
+    },
+    {
+        path: `${pageUrls.MicrophoneWorking}/:conferenceId`,
+        component: MicrophoneCheckComponent,
+        data: { title: 'Microphone working' },
+        canActivate: [ParticipantStatusGuard]
+    },
+    {
+        path: `${pageUrls.VideoWorking}/:conferenceId`,
+        component: VideoCheckComponent,
+        data: { title: 'See and hear video' },
+        canActivate: [ParticipantStatusGuard]
+    },
     { path: `${pageUrls.CameraAndMicrophone}/:conferenceId`, component: CameraAndMicrophoneComponent },
     {
         path: `${pageUrls.SwitchOnCameraMicrophone}/:conferenceId`,
         component: SwitchOnCameraMicrophoneComponent,
-        data: { title: 'Switch on camera and microphone' }
+        data: { title: 'Switch on camera and microphone' },
+        canActivate: [ParticipantStatusGuard]
     },
-    { path: `${pageUrls.SwitchOnCameraMicrophone}`, component: SwitchOnCameraMicrophoneComponent },
+    {
+        path: `${pageUrls.SwitchOnCameraMicrophone}`,
+        component: SwitchOnCameraMicrophoneComponent
+    },
     {
         path: `${pageUrls.ParticipantSelfTestVideo}/:conferenceId`,
         component: ParticipantSelfTestComponent,
-        data: { title: 'Practice video hearing' }
+        data: { title: 'Practice video hearing' },
+        canActivate: [ParticipantStatusGuard]
     },
     { path: `${pageUrls.JudgeSelfTestVideo}/:conferenceId`, component: JudgeSelfTestComponent },
     { path: `${pageUrls.IndependentSelfTestVideo}`, component: IndependentSelfTestComponent },
     { path: `${pageUrls.GetHelp}`, component: EquipmentProblemComponent, data: { title: 'Get help' } },
     { path: `${pageUrls.SignonAComputer}`, component: SignonAComputerComponent },
-    { path: `${pageUrls.Introduction}/:conferenceId`, component: IntroductionComponent, data: { title: 'Introduction' } }
+    {
+        path: `${pageUrls.Introduction}/:conferenceId`,
+        component: IntroductionComponent,
+        data: { title: 'Introduction' },
+        canActivate: [ParticipantStatusGuard]
+    }
 ];
 
 @NgModule({
