@@ -1,4 +1,4 @@
-<div *ngIf="loadingData">
+<div *ngIf="loadingData" class="govuk-!-padding-top-2">
   <p class="govuk-body">Loading please wait...</p>
 </div>
 
@@ -16,7 +16,7 @@
   <app-hearing-list-table [conferences]="conferences" (selectedConference)="onConferenceSelected($event)"> </app-hearing-list-table>
 </div>
 <div *ngIf="!loadingData && !hasHearings()">
-  <h1 class="govuk-heading-xl">You do not have a video hearing today</h1>
+  <h1 class="govuk-heading-xl govuk-!-padding-top-2">You do not have a video hearing today</h1>
   <div class="govuk-!-margin-top-1">
     <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button" (click)="goToEquipmentCheck()" alt="Check equipment">
       Check equipment
