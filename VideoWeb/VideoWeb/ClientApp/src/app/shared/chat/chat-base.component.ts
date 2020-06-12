@@ -12,7 +12,8 @@ import { ImHelper } from '../im-helper';
 
 export abstract class ChatBaseComponent {
     protected hearing: Hearing;
-    messages: InstantMessage[];
+    messages: InstantMessage[] = [];
+    pendingMessages: InstantMessage[] = [];
     loggedInUserProfile: UserProfileResponse;
 
     DEFAULT_ADMIN_USERNAME = 'Admin';
@@ -56,7 +57,12 @@ export abstract class ChatBaseComponent {
             message = await this.verifySender(message);
             this.handleIncomingOtherMessage(message);
         }
+        this.removeMessageFromPending(message);
         this.messages.push(message);
+    }
+
+    removeMessageFromPending(message: InstantMessage) {
+        this.pendingMessages = this.pendingMessages.filter(im => im.id !== message.id);
     }
 
     isMessageRecipientForUser(message: InstantMessage): boolean {
@@ -100,7 +106,7 @@ export abstract class ChatBaseComponent {
         return await this.profileService.getProfileByUsername(username);
     }
 
-    handleIncomingOtherMessage(messsage: InstantMessage) {}
+    abstract handleIncomingOtherMessage(messsage: InstantMessage);
 
     async retrieveChatForConference(participantUsername: string): Promise<InstantMessage[]> {
         this.messages = (await this.videoWebService.getConferenceChatHistory(this.hearing.id, participantUsername)).map(m => {
@@ -115,5 +121,21 @@ export abstract class ChatBaseComponent {
         try {
             this.content.nativeElement.scrollTop = this.content.nativeElement.scrollHeight;
         } catch (err) {}
+    }
+
+    async sendInstantMessage(instantMessage: InstantMessage) {
+        this.pendingMessages.push(instantMessage);
+        await this.eventService.sendMessage(instantMessage);
+        // 5 seconds is sufficient time to check if message has not returned
+        setTimeout(() => {
+            this.checkIfMessageFailed(instantMessage);
+        }, 3000);
+    }
+
+    checkIfMessageFailed(instantMessage: InstantMessage) {
+        if (this.messages.findIndex(x => x.id === instantMessage.id) < 0) {
+            const index = this.pendingMessages.findIndex(x => x.id === instantMessage.id);
+            this.pendingMessages[index].failedToSend = true;
+        }
     }
 }

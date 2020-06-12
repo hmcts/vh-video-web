@@ -10,7 +10,7 @@
 
 <div #content id="chat-list" class="govuk-grid-row chat-window">
   <div *ngIf="loading" class="govuk-body">Loading...</div>
-  <app-chat-body-window [messages]="messages"></app-chat-body-window>
+  <app-chat-body-window [messagesReceived]="messages" [pendingMessages]="pendingMessages"></app-chat-body-window>
 </div>
 
 <div id="im-send-message" class="govuk-grid-row">

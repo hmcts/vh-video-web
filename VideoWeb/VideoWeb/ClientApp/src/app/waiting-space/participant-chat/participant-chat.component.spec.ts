@@ -28,6 +28,7 @@ describe('JudgeChatComponent', () => {
     let adalService;
     const judgeProfile = judgeTestProfile;
     const adminProfile = adminTestProfile;
+    const timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
 
     beforeAll(() => {
         adalService = mockAdalService;
@@ -43,6 +44,7 @@ describe('JudgeChatComponent', () => {
     });
 
     beforeEach(() => {
+        spyOn(global, 'setTimeout').and.returnValue(timer);
         adalService.userInfo.userName = judgeUsername;
         const chatHistory = new ConferenceTestData().getChatHistory(mockAdalService.userInfo.userName, conference.id);
 
@@ -184,9 +186,13 @@ describe('JudgeChatComponent', () => {
         expect(messagesWithId.length).toBe(messages.length);
     });
 
-    it('should send message to hub', () => {
+    it('should send message to hub', async () => {
         const message = 'test';
-        component.sendMessage(message);
-        expect(eventsService.sendMessage).toHaveBeenCalledWith(conference.id, message, component.DEFAULT_ADMIN_USERNAME);
+        await component.sendMessage(message);
+        expect(eventsService.sendMessage.calls.mostRecent().args[0]).toBeInstanceOf(InstantMessage);
+        const lastArg = <InstantMessage>eventsService.sendMessage.calls.mostRecent().args[0];
+        expect(lastArg.conferenceId).toBe(conference.id);
+        expect(lastArg.message).toBe(message);
+        expect(lastArg.to).toBe(component.DEFAULT_ADMIN_USERNAME);
     });
 });
