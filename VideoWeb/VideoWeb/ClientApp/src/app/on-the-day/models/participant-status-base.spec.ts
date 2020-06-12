@@ -4,6 +4,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ActivatedRoute } from '@angular/router';
 import { convertToParamMap } from '@angular/router';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { fakeAsync, tick } from '@angular/core/testing';
 
 class ParticipantStatusBaseTest extends ParticipantStatusBase {
     constructor(
@@ -23,9 +24,23 @@ describe('ParticipantStatusBase', () => {
 
     const component = new ParticipantStatusBaseTest(participantStatusUpdateServiceSpy, loggerMock, activatedRoute);
 
-    it('should update participant status on log out', () => {
+    it('should update participant status on log out', fakeAsync(() => {
         const event: any = { returnValue: 'save' };
+        spyOn(loggerMock, 'info');
+        participantStatusUpdateServiceSpy.postParticipantStatus.and.returnValue(Promise.resolve());
+
         component.beforeunloadHandler(event);
+        tick();
         expect(participantStatusUpdateServiceSpy.postParticipantStatus).toHaveBeenCalled();
-    });
+        expect(loggerMock.info).toHaveBeenCalled();
+    }));
+    it('should throw error message when update participant status on log out', fakeAsync(() => {
+        const event: any = { returnValue: 'save' };
+        spyOn(loggerMock, 'error');
+        participantStatusUpdateServiceSpy.postParticipantStatus.and.returnValue(Promise.reject());
+        component.beforeunloadHandler(event);
+        tick();
+        expect(participantStatusUpdateServiceSpy.postParticipantStatus).toHaveBeenCalled();
+        expect(loggerMock.error).toHaveBeenCalled();
+    }));
 });

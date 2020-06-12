@@ -10,6 +10,7 @@ import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ParticipantSelfTestComponent } from './participant-self-test.component';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
+import { fakeAsync, tick } from '@angular/core/testing';
 
 describe('ParticipantSelfTestComponent', () => {
     let component: ParticipantSelfTestComponent;
@@ -90,4 +91,23 @@ describe('ParticipantSelfTestComponent', () => {
         expect(component.hideSelfTest).toBeFalsy();
         expect(selfTestSpy.replayVideo).toHaveBeenCalled();
     });
+    it('should update participant status on log out', fakeAsync(() => {
+        const event: any = { returnValue: 'save' };
+        spyOn(logger, 'info');
+        participantStatusUpdateService.postParticipantStatus.and.returnValue(Promise.resolve());
+
+        component.beforeunloadHandler(event);
+        tick();
+        expect(participantStatusUpdateService.postParticipantStatus).toHaveBeenCalled();
+        expect(logger.info).toHaveBeenCalled();
+    }));
+    it('should throw error message when update participant status on log out', fakeAsync(() => {
+        const event: any = { returnValue: 'save' };
+        spyOn(logger, 'error');
+        participantStatusUpdateService.postParticipantStatus.and.returnValue(Promise.reject());
+        component.beforeunloadHandler(event);
+        tick();
+        expect(participantStatusUpdateService.postParticipantStatus).toHaveBeenCalled();
+        expect(logger.error).toHaveBeenCalled();
+    }));
 });
