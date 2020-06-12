@@ -13,8 +13,6 @@ import { LocationService } from './services/location.service';
 import { PageTrackerService } from './services/page-tracker.service';
 import { pageUrls } from './shared/page-url.constants';
 import { MockAdalService } from './testing/mocks/MockAdalService';
-import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
-import { MockLogger } from './testing/mocks/MockLogger';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -27,7 +25,6 @@ describe('AppComponent', () => {
     let pageTrackerServiceSpy: jasmine.SpyObj<PageTrackerService>;
     const mockAdalService = new MockAdalService();
     let adalService;
-    let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
     const clientSettings = new ClientSettingsResponse({
         tenant_id: 'tenantid',
         client_id: 'clientid',
@@ -63,8 +60,6 @@ describe('AppComponent', () => {
         titleServiceSpy = jasmine.createSpyObj<Title>('Title', ['getTitle', 'setTitle']);
 
         pageTrackerServiceSpy = jasmine.createSpyObj('PageTrackerService', ['trackNavigation', 'trackPreviousPage']);
-
-        participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
     });
 
     beforeEach(() => {
@@ -78,9 +73,7 @@ describe('AppComponent', () => {
             titleServiceSpy,
             activatedRoute,
             locationServiceSpy,
-            pageTrackerServiceSpy,
-            participantStatusUpdateService,
-            new MockLogger()
+            pageTrackerServiceSpy
         );
 
         document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(dummyElement);
@@ -184,7 +177,6 @@ describe('AppComponent', () => {
     it('should clear subscriptions on destory', () => {
         const sub = jasmine.createSpyObj<Subscription>('Subscription', ['add', 'unsubscribe']);
         component.subscriptions = sub;
-        participantStatusUpdateService.postParticipantStatus.and.returnValue(Promise.resolve());
         component.ngOnDestroy();
         expect(component.subscriptions.unsubscribe).toHaveBeenCalled();
     });
@@ -193,10 +185,5 @@ describe('AppComponent', () => {
         spyOn(dummyElement, 'focus');
         component.skipToContent();
         expect(dummyElement.focus).toHaveBeenCalled();
-    });
-    it('should update participant status on log out', () => {
-        const event: any = { returnValue: 'save' };
-        component.beforeunloadHandler(event);
-        expect(participantStatusUpdateService.postParticipantStatus).toHaveBeenCalled();
     });
 });

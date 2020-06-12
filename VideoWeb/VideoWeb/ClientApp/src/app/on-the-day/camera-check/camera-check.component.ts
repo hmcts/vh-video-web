@@ -8,6 +8,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VideoWebService } from '../../services/api/video-web.service';
 import { EquipmentCheckBaseComponent } from '../abstract/equipment-check-base.component';
+import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 
 @Component({
     selector: 'app-camera-check',
@@ -21,9 +22,10 @@ export class CameraCheckComponent extends EquipmentCheckBaseComponent implements
         protected videoWebService: VideoWebService,
         protected adalService: AdalService,
         protected errorService: ErrorService,
-        protected logger: Logger
+        protected logger: Logger,
+        protected participantStatusUpdateService: ParticipantStatusUpdateService
     ) {
-        super(router, route, fb, videoWebService, adalService, errorService, logger);
+        super(router, route, fb, videoWebService, adalService, errorService, logger, participantStatusUpdateService);
     }
 
     ngOnInit() {
