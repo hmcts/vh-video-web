@@ -14,23 +14,29 @@ import { ModalService } from 'src/app/services/modal.service';
 import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
 import { Participant } from 'src/app/shared/models/participant';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
+import { eventsServiceSpy, consultationMessageSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { NotificationSoundsService } from '../services/notification-sounds.service';
-import { IndividualParticipantStatusListComponent } from './individual-participant-status-list.component';
+import { NotificationSoundsService } from '../../services/notification-sounds.service';
+import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
+import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 
-describe('IndividualParticipantStatusListComponent', () => {
+describe('IndividualParticipantStatusListComponent consultations', () => {
     let component: IndividualParticipantStatusListComponent;
+    let conference: ConferenceResponse;
+    let consultationRequester: Participant;
+    let consultationRequestee: Participant;
+
     const mockAdalService = new MockAdalService();
     let adalService;
     let consultationService: jasmine.SpyObj<ConsultationService>;
     const eventsService = eventsServiceSpy;
+    const consultationSubject = consultationMessageSubjectMock;
+
     const logger: Logger = new MockLogger();
     let videoWebService: jasmine.SpyObj<VideoWebService>;
     let modalService: jasmine.SpyObj<ModalService>;
     let notificationSoundsService: jasmine.SpyObj<NotificationSoundsService>;
-    let conference: ConferenceResponse;
 
     let timer: jasmine.SpyObj<NodeJS.Timer>;
 
@@ -61,8 +67,14 @@ describe('IndividualParticipantStatusListComponent', () => {
     });
 
     beforeEach(() => {
+        conference = new ConferenceTestData().getConferenceDetailFuture();
+        consultationRequester = new Participant(conference.participants[0]);
+        consultationRequestee = new Participant(conference.participants[1]);
+
         notificationSoundsService.initConsultationRequestRingtone.calls.reset();
         notificationSoundsService.stopConsultationRequestRingtone.calls.reset();
+        notificationSoundsService.playConsultationRequestRingtone.calls.reset();
+        modalService.open.calls.reset();
 
         timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
         component = new IndividualParticipantStatusListComponent(
@@ -74,9 +86,9 @@ describe('IndividualParticipantStatusListComponent', () => {
             videoWebService,
             notificationSoundsService
         );
-        conference = new ConferenceTestData().getConferenceDetailFuture();
-        component.consultationRequester = new Participant(conference.participants[0]);
-        component.consultationRequestee = new Participant(conference.participants[1]);
+
+        component.consultationRequester = consultationRequester;
+        component.consultationRequestee = consultationRequestee;
         component.conference = conference;
     });
 
@@ -114,33 +126,7 @@ describe('IndividualParticipantStatusListComponent', () => {
             ConsultationAnswer.Cancelled
         );
         expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalledTimes(1);
-        expect(modalService.open).toHaveBeenCalledWith(component.REJECTED_PC_MODAL)
-    });
-
-    it('should return true when participant is available', () => {
-        const availableParticipant = component.conference.participants.find(x => x.status === ParticipantStatus.Available);
-        expect(component.isParticipantAvailable(availableParticipant)).toBeTruthy();
-    });
-
-    it('should return false when participant is not available', () => {
-        const availableParticipant = component.conference.participants.find(x => x.status !== ParticipantStatus.Available);
-        expect(component.isParticipantAvailable(availableParticipant)).toBeFalsy();
-    });
-
-    it('should return unavailable text for all non-available statuses', () => {
-        expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.Disconnected }))).toBe('Unavailable');
-        expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.InConsultation }))).toBe(
-            'Unavailable'
-        );
-        expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.InHearing }))).toBe('Unavailable');
-        expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.Joining }))).toBe('Unavailable');
-        expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.NotSignedIn }))).toBe('Unavailable');
-        expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.UnableToJoin }))).toBe('Unavailable');
-        expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.None }))).toBe('Unavailable');
-    });
-
-    it('should return available text for when participant is available', () => {
-        expect(component.getParticipantStatusText(new ParticipantResponse({ status: ParticipantStatus.Available }))).toBe('Available');
+        expect(modalService.open).toHaveBeenCalledWith(component.REJECTED_PC_MODAL);
     });
 
     it('should not be able to call participant is user is judge', () => {
@@ -178,11 +164,6 @@ describe('IndividualParticipantStatusListComponent', () => {
         expect(component.canCallParticipant(participant)).toBeFalsy();
     });
 
-    it('should not be able to call when hearing is about to start', () => {
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: adalService.userInfo.userName });
-        expect(component.canCallParticipant(participant)).toBeFalsy();
-    });
-
     it('should be able to call an available participant', () => {
         const participant = new ParticipantResponse({ status: ParticipantStatus.Available, username: 'test@dot.com' });
         expect(component.canCallParticipant(participant)).toBeTruthy();
@@ -197,8 +178,6 @@ describe('IndividualParticipantStatusListComponent', () => {
     });
 
     it('should be able to begin call with another participant', () => {
-        spyOn(component, 'startCallRinging').and.callFake(() => Promise.resolve());
-
         const participant = conference.participants.find(x => x.username === 'james.green@hearings.net');
         participant.status = ParticipantStatus.Available;
         component.begingCallWith(participant);
@@ -207,8 +186,6 @@ describe('IndividualParticipantStatusListComponent', () => {
 
     it('should answer consultation request', async () => {
         component.waitingForConsultationResponse = true;
-
-        spyOn(component, 'stopCallRinging');
 
         await component.answerConsultationRequest('Accepted');
 
@@ -232,8 +209,6 @@ describe('IndividualParticipantStatusListComponent', () => {
         component.waitingForConsultationResponse = true;
         component.adminConsultationMessage = adminConsultationMessage;
 
-        spyOn(component, 'stopCallRinging');
-
         await component.acceptVhoConsultationRequest();
         expect(component.waitingForConsultationResponse).toBeFalsy();
         expect(consultationService.respondToAdminConsultationRequest).toHaveBeenCalledWith(
@@ -242,5 +217,71 @@ describe('IndividualParticipantStatusListComponent', () => {
             ConsultationAnswer.Accepted,
             adminConsultationMessage.roomType
         );
+    });
+
+    it('should display consultation request', () => {
+        component.consultationRequestee = undefined;
+        component.consultationRequester = undefined;
+
+        const payload = new ConsultationMessage(conference.id, consultationRequester.username, consultationRequestee.username, null);
+        consultationSubject.next(payload);
+
+        expect(component.consultationRequestee.id).toEqual(consultationRequestee.id);
+        expect(component.consultationRequester.id).toEqual(consultationRequester.id);
+        // this is an incoming consultation request
+        expect(component.waitingForConsultationResponse).toBeFalsy();
+        expect(component.outgoingCallTimeout).toBeUndefined();
+        expect(modalService.open).toHaveBeenCalledWith(component.REJECTED_PC_MODAL);
+        expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalledTimes(1);
+    });
+
+    it('should cancel consultation request', () => {
+        component.consultationRequestee = undefined;
+        component.consultationRequester = undefined;
+
+        const payload = new ConsultationMessage(
+            conference.id,
+            consultationRequester.username,
+            consultationRequestee.username,
+            ConsultationAnswer.Cancelled
+        );
+        consultationSubject.next(payload);
+
+        expect(component.consultationRequestee.id).toEqual(consultationRequestee.id);
+        expect(component.consultationRequester.id).toEqual(consultationRequester.id);
+        // this is an incoming consultation request
+        expect(component.waitingForConsultationResponse).toBeFalsy();
+        expect(component.outgoingCallTimeout).toBeUndefined();
+        expect(modalService.close).toHaveBeenCalled();
+        expect(modalService.open).toHaveBeenCalledTimes(0);
+        expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalledTimes(1);
+    });
+
+    const consultationMessageResponseTestCases = [
+        { consultationResult: ConsultationAnswer.Accepted, modalId: component.ACCEPTED_PC_MODAL },
+        { consultationResult: ConsultationAnswer.Rejected, modalId: component.REJECTED_PC_MODAL }
+    ];
+
+    consultationMessageResponseTestCases.forEach(testCase => {
+        it(`should handle ${testCase.consultationResult} messages`, () => {
+            component.consultationRequestee = undefined;
+            component.consultationRequester = undefined;
+
+            const payload = new ConsultationMessage(
+                conference.id,
+                consultationRequester.username,
+                consultationRequestee.username,
+                testCase.consultationResult
+            );
+            consultationSubject.next(payload);
+
+            expect(component.consultationRequestee.id).toEqual(consultationRequestee.id);
+            expect(component.consultationRequester.id).toEqual(consultationRequester.id);
+            // this is an incoming consultation request
+            expect(component.waitingForConsultationResponse).toBeFalsy();
+            expect(component.outgoingCallTimeout).toBeUndefined();
+            expect(modalService.open).toHaveBeenCalledWith(testCase.modalId);
+            expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalledTimes(1);
+        });
     });
 });

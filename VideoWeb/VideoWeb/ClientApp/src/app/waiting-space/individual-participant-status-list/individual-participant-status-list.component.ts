@@ -11,6 +11,7 @@ import { ConsultationMessage } from 'src/app/services/models/consultation-messag
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
+import { NotificationSoundsService } from '../services/notification-sounds.service';
 
 @Component({
     selector: 'app-individual-participant-status-list',
@@ -26,16 +27,15 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     consultationRequestee: Participant;
     consultationRequester: Participant;
 
-    callRingingSound: HTMLAudioElement;
     outgoingCallTimeout: NodeJS.Timer;
     waitingForConsultationResponse: boolean;
     private readonly CALL_TIMEOUT = 120000;
 
-    private readonly REQUEST_PC_MODAL = 'raise-pc-modal';
-    private readonly RECIEVE_PC_MODAL = 'receive-pc-modal';
-    private readonly ACCEPTED_PC_MODAL = 'accepted-pc-modal';
-    private readonly REJECTED_PC_MODAL = 'rejected-pc-modal';
-    private readonly VHO_REQUEST_PC_MODAL = 'vho-raise-pc-modal';
+    readonly REQUEST_PC_MODAL = 'raise-pc-modal';
+    readonly RECIEVE_PC_MODAL = 'receive-pc-modal';
+    readonly ACCEPTED_PC_MODAL = 'accepted-pc-modal';
+    readonly REJECTED_PC_MODAL = 'rejected-pc-modal';
+    readonly VHO_REQUEST_PC_MODAL = 'vho-raise-pc-modal';
     adminConsultationMessage: AdminConsultationMessage;
 
     constructor(
@@ -44,7 +44,8 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         private eventService: EventsService,
         private modalService: ModalService,
         private logger: Logger,
-        private videoWebService: VideoWebService
+        private videoWebService: VideoWebService,
+        private notificationSoundService: NotificationSoundsService
     ) {}
 
     ngOnInit() {
@@ -56,29 +57,18 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     }
 
     initCallRingingSound(): void {
-        this.callRingingSound = new Audio();
-        this.callRingingSound.src = '/assets/audio/consultation_request.mp3';
-        this.callRingingSound.load();
-        this.callRingingSound.addEventListener(
-            'ended',
-            function () {
-                this.play();
-            },
-            false
-        );
+        this.notificationSoundService.initConsultationRequestRingtone();
     }
 
     stopCallRinging() {
         clearTimeout(this.outgoingCallTimeout);
-        this.callRingingSound.pause();
-        this.callRingingSound.currentTime = 0;
+        this.notificationSoundService.stopConsultationRequestRingtone();
     }
 
     async cancelOutgoingCall() {
         if (!this.waitingForConsultationResponse) {
             return;
         }
-        this.stopCallRinging();
         this.waitingForConsultationResponse = false;
         this.logger.info('Consultation request timed-out. Cancelling call');
         await this.answerConsultationRequest(ConsultationAnswer.Cancelled);
@@ -125,7 +115,6 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
-        // const isCurrentUser = this.adalService.userInfo.userName.toLocaleLowerCase() === message.email.toLowerCase();
         const isCurrentUser = this.conference.participants.find(p => p.id === message.participantId);
         if (isCurrentUser && message.status === ParticipantStatus.InConsultation) {
             this.closeAllPCModals();
@@ -193,7 +182,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
                 this.closeAllPCModals();
             }, this.CALL_TIMEOUT);
         }
-        await this.callRingingSound.play();
+        await this.notificationSoundService.playConsultationRequestRingtone();
     }
 
     async cancelConsultationRequest() {
