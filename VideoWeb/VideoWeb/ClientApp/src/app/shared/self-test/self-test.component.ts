@@ -1,24 +1,25 @@
-import { Component, EventEmitter, Input, OnInit, Output, OnDestroy, HostListener } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Guid } from 'guid-typescript';
+import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
+    AddSelfTestFailureEventRequest,
     ConferenceResponse,
     ParticipantResponse,
-    TokenResponse,
-    TestCallScoreResponse,
-    TestScore,
-    AddSelfTestFailureEventRequest,
+    Role,
     SelfTestFailureReason,
     SelfTestPexipResponse,
-    Role
+    TestCallScoreResponse,
+    TestScore,
+    TokenResponse
 } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
+import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { SelectedUserMediaDevice } from '../models/selected-user-media-device';
-import { Subscription } from 'rxjs';
-import { Guid } from 'guid-typescript';
-declare var PexRTC: any;
 
 @Component({
     selector: 'app-self-test',
@@ -34,9 +35,8 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     @Output() testCompleted = new EventEmitter<TestCallScoreResponse>();
 
     token: TokenResponse;
-    pexipAPI: any;
-    incomingStream: MediaStream;
-    outgoingStream: MediaStream;
+    incomingStream: MediaStream | URL;
+    outgoingStream: MediaStream | URL;
 
     preferredMicrophoneStream: MediaStream;
 
@@ -54,13 +54,15 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
     private maxBandwidth = 768;
     subscription: Subscription = new Subscription();
+    videoCallSubscription$ = new Subscription();
 
     constructor(
         private logger: Logger,
         private videoWebService: VideoWebService,
         private errorService: ErrorService,
         private userMediaService: UserMediaService,
-        private userMediaStreamService: UserMediaStreamService
+        private userMediaStreamService: UserMediaStreamService,
+        private videoCallService: VideoCallService
     ) {
         this.didTestComplete = false;
     }
@@ -93,12 +95,20 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     }
 
     get streamsActive() {
-        return this.outgoingStream && this.outgoingStream.active && this.incomingStream && this.incomingStream.active;
+        let outgoingActive = true;
+        if (this.outgoingStream instanceof MediaStream) {
+            outgoingActive = this.outgoingStream.active;
+        }
+        let incomingActive = true;
+        if (this.incomingStream instanceof MediaStream) {
+            incomingActive = this.incomingStream.active;
+        }
+        return this.outgoingStream && outgoingActive && this.incomingStream && incomingActive;
     }
 
     async setupTestAndCall(): Promise<void> {
         this.logger.debug('setting up pexip client and call');
-        this.setupPexipClient();
+        await this.setupPexipClient();
         try {
             this.token = await this.videoWebService.getSelfTestToken(this.selfTestParticipantId);
             this.logger.debug('retrieved token for self test');
@@ -135,51 +145,63 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         );
     }
 
+    async setupPexipClient() {
+        this.logger.debug('Setting up pexip client...');
+
+        this.videoCallSubscription$.add(this.videoCallService.onCallSetup().subscribe(setup => this.handleCallSetup(setup)));
+        this.videoCallSubscription$.add(
+            this.videoCallService.onCallConnected().subscribe(callConnected => this.handleCallConnected(callConnected))
+        );
+        this.videoCallSubscription$.add(this.videoCallService.onError().subscribe(callError => this.handleCallError(callError)));
+        this.videoCallSubscription$.add(
+            this.videoCallService
+                .onCallDisconnected()
+                .subscribe(async disconnectedCall => await this.handleCallDisconnect(disconnectedCall))
+        );
+
+        await this.videoCallService.setupClient();
+    }
+
+    handleCallSetup(callSetup: CallSetup) {
+        this.logger.info('running pexip test call setup');
+        this.outgoingStream = callSetup.stream;
+        this.videoCallService.connect('0000', null);
+    }
+
+    handleCallConnected(callConnected: ConnectedCall) {
+        this.logger.info('successfully connected');
+        this.incomingStream = callConnected.stream;
+        this.displayFeed = true;
+        this.testStarted.emit();
+    }
+
+    handleCallError(error: CallError) {
+        this.displayFeed = false;
+        this.logger.error('Error from pexip. Reason : ' + error.reason, error.reason);
+        this.errorService.goToServiceError('Your connection was lost');
+    }
+
+    async handleCallDisconnect(reason: DisconnectedCall) {
+        this.displayFeed = false;
+        this.logger.info('Disconnected from pexip. Reason : ' + reason);
+        if (reason.reason === 'Conference terminated by another participant') {
+            await this.retrieveSelfTestScore();
+        }
+    }
+
     async updatePexipAudioVideoSource() {
         this.hasMultipleDevices = await this.userMediaService.hasMultipleDevices();
 
         const cam = await this.userMediaService.getPreferredCamera();
         if (cam) {
-            this.pexipAPI.video_source = cam.deviceId;
+            this.videoCallService.updateCameraForCall(cam);
         }
 
         const mic = await this.userMediaService.getPreferredMicrophone();
         if (mic) {
-            this.pexipAPI.audio_source = mic.deviceId;
+            this.videoCallService.updateCameraForCall(mic);
         }
         this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(mic);
-    }
-
-    setupPexipClient() {
-        const self = this;
-        this.pexipAPI = new PexRTC();
-        this.updatePexipAudioVideoSource();
-        this.pexipAPI.onSetup = function (stream, pinStatus, conferenceExtension) {
-            self.logger.info('running pexip test call setup');
-            self.outgoingStream = stream;
-            this.connect('0000', null);
-        };
-
-        this.pexipAPI.onConnect = function (stream) {
-            self.logger.info('successfully connected');
-            self.incomingStream = stream;
-            self.displayFeed = true;
-            self.testStarted.emit();
-        };
-
-        this.pexipAPI.onError = function (reason) {
-            self.displayFeed = false;
-            self.logger.error('Error from pexip. Reason : ' + reason, reason);
-            self.errorService.goToServiceError('Your connection was lost');
-        };
-
-        this.pexipAPI.onDisconnect = function (reason) {
-            self.displayFeed = false;
-            self.logger.info('Disconnected from pexip. Reason : ' + reason);
-            if (reason === 'Conference terminated by another participant') {
-                self.retrieveSelfTestScore();
-            }
-        };
     }
 
     async call() {
@@ -187,9 +209,14 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         const conferenceAlias = 'testcall2';
         const tokenOptions = btoa(`${this.token.expires_on};${this.selfTestParticipantId};${this.token.token}`);
         if (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1) {
-            this.pexipAPI.h264_enabled = false;
+            this.videoCallService.enableH264(false);
         }
-        this.pexipAPI.makeCall(this.selfTestPexipNode, `${conferenceAlias};${tokenOptions}`, this.selfTestParticipantId, this.maxBandwidth);
+        this.videoCallService.makeCall(
+            this.selfTestPexipNode,
+            `${conferenceAlias};${tokenOptions}`,
+            this.selfTestParticipantId,
+            this.maxBandwidth
+        );
     }
 
     replayVideo() {
@@ -200,10 +227,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     }
 
     disconnect() {
-        if (this.pexipAPI) {
-            this.logger.info('disconnecting from pexip node');
-            this.pexipAPI.disconnect();
-        }
+        this.videoCallService.disconnectFromCall();
         this.closeStreams();
         this.incomingStream = null;
         this.outgoingStream = null;
@@ -252,6 +276,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     @HostListener('window:beforeunload')
     async ngOnDestroy() {
         this.subscription.unsubscribe();
+        this.videoCallSubscription$.unsubscribe();
         this.disconnect();
 
         if (this.conference) {
