@@ -398,7 +398,7 @@ export class ConferenceTestData {
     getChatHistory(loggedInUser: string, conferenceId: string): InstantMessage[] {
         const adminUsername = 'vho.user@hearings.net';
         const adminDisplayName = 'VHO user';
-        const judgeUsername ='judge.fudge@hearings.net'
+        const judgeUsername = 'judge.fudge@hearings.net';
         const judgeDisplayName = 'Judge Fudge';
 
         const now = new Date();
@@ -408,7 +408,7 @@ export class ConferenceTestData {
             id: Guid.create().toString(),
             from: adminUsername,
             to: judgeUsername,
-            from_display_name: adminUsername,
+            from_display_name: adminDisplayName,
             message: 'test message from vho',
             timestamp: moment(now).subtract(3, 'minutes').toDate()
         });
