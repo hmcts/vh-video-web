@@ -1,28 +1,22 @@
 import { ParticipantStatusBase } from 'src/app/on-the-day/models/participant-status-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ActivatedRoute } from '@angular/router';
-import { convertToParamMap } from '@angular/router';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { fakeAsync, tick } from '@angular/core/testing';
 
 class ParticipantStatusBaseTest extends ParticipantStatusBase {
-    constructor(
-        protected participantStatusUpdateService: ParticipantStatusUpdateService,
-        protected logger: Logger,
-        protected route: ActivatedRoute
-    ) {
-        super(participantStatusUpdateService, logger, route);
+    conferenceId = '123456789';
+    constructor(protected participantStatusUpdateService: ParticipantStatusUpdateService, protected logger: Logger) {
+        super(participantStatusUpdateService, logger);
     }
 }
 
 describe('ParticipantStatusBase', () => {
-    const activatedRoute: any = { snapshot: { paramMap: convertToParamMap({ conferenceId: '1234567' }) } };
     const loggerMock: Logger = new MockLogger();
     let participantStatusUpdateServiceSpy: jasmine.SpyObj<ParticipantStatusUpdateService>;
     participantStatusUpdateServiceSpy = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
 
-    const component = new ParticipantStatusBaseTest(participantStatusUpdateServiceSpy, loggerMock, activatedRoute);
+    const component = new ParticipantStatusBaseTest(participantStatusUpdateServiceSpy, loggerMock);
 
     it('should update participant status on log out', fakeAsync(() => {
         const event: any = { returnValue: 'save' };

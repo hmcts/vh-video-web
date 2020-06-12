@@ -18,7 +18,7 @@ export class EquipmentCheckComponent extends ParticipantStatusBase implements On
         protected participantStatusUpdateService: ParticipantStatusUpdateService,
         protected logger: Logger
     ) {
-        super(participantStatusUpdateService, logger, route);
+        super(participantStatusUpdateService, logger);
     }
 
     ngOnInit() {

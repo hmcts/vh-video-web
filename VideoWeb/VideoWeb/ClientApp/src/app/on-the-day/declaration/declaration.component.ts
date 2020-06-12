@@ -22,7 +22,7 @@ export class DeclarationComponent extends ParticipantStatusBase implements OnIni
         protected participantStatusUpdateService: ParticipantStatusUpdateService,
         protected logger: Logger
     ) {
-        super(participantStatusUpdateService, logger, route);
+        super(participantStatusUpdateService, logger);
         this.declarationForm = this.fb.group({
             declare: [false, [Validators.required, Validators.requiredTrue]]
         });

@@ -19,7 +19,7 @@ export class HearingRulesComponent extends ParticipantStatusBase implements OnIn
         protected participantStatusUpdateService: ParticipantStatusUpdateService,
         protected logger: Logger
     ) {
-        super(participantStatusUpdateService, logger, route);
+        super(participantStatusUpdateService, logger);
     }
 
     ngOnInit() {

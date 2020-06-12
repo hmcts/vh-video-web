@@ -29,7 +29,7 @@ export abstract class EquipmentCheckBaseComponent extends ParticipantStatusBase 
         protected logger: Logger,
         protected participantStatusUpdateService: ParticipantStatusUpdateService
     ) {
-        super(participantStatusUpdateService, logger, route);
+        super(participantStatusUpdateService, logger);
     }
 
     abstract getEquipmentCheck(): string;

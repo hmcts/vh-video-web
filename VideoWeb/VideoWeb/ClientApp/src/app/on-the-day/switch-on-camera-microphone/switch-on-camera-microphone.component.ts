@@ -38,7 +38,7 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBase imp
         protected logger: Logger,
         protected participantStatusUpdateService: ParticipantStatusUpdateService
     ) {
-        super(participantStatusUpdateService, logger, route);
+        super(participantStatusUpdateService, logger);
         this.userPrompted = false;
         this.mediaAccepted = false;
         this.isJudge = false;

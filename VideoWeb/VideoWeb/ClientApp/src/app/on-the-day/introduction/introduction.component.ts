@@ -23,7 +23,7 @@ export class IntroductionComponent extends ParticipantStatusBase implements OnIn
         protected participantStatusUpdateService: ParticipantStatusUpdateService,
         protected logger: Logger
     ) {
-        super(participantStatusUpdateService, logger, route);
+        super(participantStatusUpdateService, logger);
     }
 
     async ngOnInit() {
