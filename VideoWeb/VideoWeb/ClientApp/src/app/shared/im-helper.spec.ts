@@ -44,15 +44,7 @@ describe('ImHelper', () => {
         });
     });
 
-    it('should return true when user is admin', () => {
-        expect(imHelper.isImForUser(message, hearing, adminProfile)).toBeTruthy();
-    });
-
-    it('should return true when message sent to user is in conference', () => {
-        expect(imHelper.isImForUser(message, hearing, judgeProfile)).toBeTruthy();
-    });
-
-    it('should return true when message sent from user is in conference', () => {
+    it('should return true when message is sent from participant A to admin and admin has participant A chat open', () => {
         message = new InstantMessage({
             conferenceId: conference.id,
             from: judgeUsername,
@@ -63,6 +55,59 @@ describe('ImHelper', () => {
             message: 'test auto',
             timestamp: new Date()
         });
-        expect(imHelper.isImForUser(message, hearing, judgeProfile)).toBeTruthy();
+
+        expect(imHelper.isImForUser(message, judgeUsername, adminProfile)).toBeTruthy();
+    });
+
+    it('should return false when message is sent from participant A to admin and admin has participant B chat open', () => {
+        message = new InstantMessage({
+            conferenceId: conference.id,
+            from: judgeUsername,
+            from_display_name: judgeProfile.display_name,
+            to: adminUsername,
+            id: Guid.create().toString(),
+            is_user: false,
+            message: 'test auto',
+            timestamp: new Date()
+        });
+
+        expect(imHelper.isImForUser(message, 'notjudge@test.com', adminProfile)).toBeTruthy();
+    });
+
+    it('should return true when message is sent from admin to participant A logged in as participant A', () => {
+        message = new InstantMessage({
+            conferenceId: conference.id,
+            from: adminUsername,
+            from_display_name: adminProfile.display_name,
+            to: judgeUsername,
+            id: Guid.create().toString(),
+            is_user: false,
+            message: 'test auto',
+            timestamp: new Date()
+        });
+
+        expect(imHelper.isImForUser(message, null, judgeProfile)).toBeTruthy();
+    });
+
+    it('should return false when message is sent from admin to participant B but logged in as Participant A', () => {
+        const nonChatUser = new UserProfileResponse({
+            display_name: 'Test Rep',
+            first_name: 'Test',
+            last_name: 'Rep',
+            role: Role.Representative,
+            username: 'rep@test.com'
+        });
+        message = new InstantMessage({
+            conferenceId: conference.id,
+            from: adminUsername,
+            from_display_name: adminProfile.display_name,
+            to: judgeUsername,
+            id: Guid.create().toString(),
+            is_user: false,
+            message: 'test auto',
+            timestamp: new Date()
+        });
+
+        expect(imHelper.isImForUser(message, null, nonChatUser)).toBeFalsy();
     });
 });
