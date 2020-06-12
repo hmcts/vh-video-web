@@ -10,6 +10,7 @@ import { WaitingSpaceRoutingModule } from './waiting-space-routing.module';
 import { IndividualConsultationControlsComponent } from './individual-consultation-controls/individual-consultation-controls.component';
 import { ParticipantChatComponent } from './participant-chat/participant-chat.component';
 import { AudioAlertComponent } from './audio-alert/audio-alert.component';
+import { VideoCallService } from './services/video-call.service';
 
 @NgModule({
     imports: [SharedModule, WaitingSpaceRoutingModule],
@@ -23,6 +24,7 @@ import { AudioAlertComponent } from './audio-alert/audio-alert.component';
         IndividualConsultationControlsComponent,
         ParticipantChatComponent,
         AudioAlertComponent
-    ]
+    ],
+    providers: [VideoCallService]
 })
 export class WaitingSpaceModule {}

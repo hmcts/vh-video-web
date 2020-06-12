@@ -1,3 +1,4 @@
+import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { BehaviorSubject } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -15,17 +16,31 @@ import { UserMediaStreamService } from 'src/app/services/user-media-stream.servi
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
+import {
+    onConnectedSubjectMock,
+    onDisconnectedSubjectMock,
+    onErrorSubjectMock,
+    onSetupSubjectMock,
+    videoCallServiceSpy
+} from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { SelfTestComponent } from './self-test.component';
+import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 import { SelectedUserMediaDevice } from '../models/selected-user-media-device';
+import { SelfTestComponent } from './self-test.component';
 
 describe('SelfTestComponent', () => {
     let component: SelfTestComponent;
+
+    const onSetupSubject = onSetupSubjectMock;
+    const onConnectedSubject = onConnectedSubjectMock;
+    const onDisconnectedSubject = onDisconnectedSubjectMock;
+    const onErrorSubject = onErrorSubjectMock;
+    const videoCallService = videoCallServiceSpy;
+
     const logger: Logger = new MockLogger();
     let videoWebService: jasmine.SpyObj<VideoWebService>;
     let errorService: jasmine.SpyObj<ErrorService>;
     let userMediaService: jasmine.SpyObj<UserMediaService>;
-    let pexipSpy: any;
     let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
     const pexipConfig = new SelfTestPexipResponse({
         pexip_self_test_node: 'selftest.automated.test'
@@ -71,31 +86,31 @@ describe('SelfTestComponent', () => {
         ]);
         userMediaStreamService.requestAccess.and.returnValue(Promise.resolve(true));
         userMediaStreamService.stopStream.and.callFake(() => {});
-        pexipSpy = jasmine.createSpyObj('pexipAPI', [
-            'onSetup',
-            'connect',
-            'disconnect',
-            'onConnect',
-            'onError',
-            'onDisconnect',
-            'makeCall'
-        ]);
     });
 
     beforeEach(() => {
         conference = testData.getConferenceDetailFuture();
-        component = new SelfTestComponent(logger, videoWebService, errorService, userMediaService, userMediaStreamService);
-        component.pexipAPI = pexipSpy;
+        component = new SelfTestComponent(
+            logger,
+            videoWebService,
+            errorService,
+            userMediaService,
+            userMediaStreamService,
+            videoCallService
+        );
         component.conference = conference;
         component.participant = component.conference.participants[0];
         component.selfTestPexipConfig = pexipConfig;
         component.token = token;
 
-        spyOn(component, 'setupPexipClient').and.callFake(() => (component.pexipAPI = pexipSpy));
         videoWebService.raiseSelfTestFailureEvent.calls.reset();
         videoWebService.getTestCallScore.calls.reset();
         videoWebService.getIndependentTestCallScore.calls.reset();
         videoWebService.getSelfTestToken.and.resolveTo(token);
+    });
+
+    afterEach(() => {
+        component.ngOnDestroy();
     });
 
     it('should use participant id if provided', () => {
@@ -165,13 +180,12 @@ describe('SelfTestComponent', () => {
 
     it('should disconnect from pexip when publishing prematurely', () => {
         spyOn(component.testCompleted, 'emit');
-        spyOn(component, 'disconnect');
         const testCallScoreResponse = null;
         component.didTestComplete = false;
         component.testCallResult = testCallScoreResponse;
 
         component.publishTestResult();
-        expect(component.disconnect).toHaveBeenCalled();
+        expect(videoCallService.disconnectFromCall).toHaveBeenCalled();
     });
 
     it('should raise failed self test event when test score is bad', async () => {
@@ -217,7 +231,7 @@ describe('SelfTestComponent', () => {
 
         component.disconnect();
 
-        expect(pexipSpy.disconnect).toHaveBeenCalled();
+        expect(videoCallService.disconnectFromCall).toHaveBeenCalled();
         expect(component.incomingStream).toBeNull();
         expect(component.outgoingStream).toBeNull();
         expect(component.didTestComplete).toBeTruthy();
@@ -227,7 +241,127 @@ describe('SelfTestComponent', () => {
     it('should call node on replay', () => {
         component.replayVideo();
 
-        expect(pexipSpy.disconnect).toHaveBeenCalled();
-        expect(pexipSpy.makeCall).toHaveBeenCalled();
+        expect(videoCallService.disconnectFromCall).toHaveBeenCalled();
+        expect(videoCallService.makeCall).toHaveBeenCalled();
+    });
+
+    it('should init pexip setup to be called on start', () => {
+        component.setupPexipClient();
+        expect(videoCallService.setupClient).toHaveBeenCalled();
+    });
+
+    it('should define outgoing stream when video call has been setup', () => {
+        const outgoingStream = <any>{};
+        const payload = new CallSetup(outgoingStream);
+
+        component.setupPexipClient();
+        onSetupSubject.next(payload);
+
+        expect(videoCallService.connect).toHaveBeenCalled();
+        expect(component.outgoingStream).toBeDefined();
+    });
+
+    it('should define incoming stream when video call has connected', () => {
+        const mockedDocElement = document.createElement('div');
+        document.getElementById = jasmine.createSpy('incomingFeed').and.returnValue(mockedDocElement);
+        spyOn(component.testStarted, 'emit');
+        spyOnProperty(window, 'navigator').and.returnValue({
+            userAgent: 'Chrome'
+        });
+        const incomingStream = <any>{};
+
+        component.setupPexipClient();
+        const payload = new ConnectedCall(incomingStream);
+
+        onConnectedSubject.next(payload);
+
+        expect(component.incomingStream).toBeDefined();
+        expect(component.displayFeed).toBeTruthy();
+        expect(component.testStarted.emit).toHaveBeenCalled();
+    });
+
+    it('should hide video when video call failed', () => {
+        const payload = new CallError('test failure intentional');
+
+        component.setupPexipClient();
+        onErrorSubject.next(payload);
+
+        expect(component.displayFeed).toBeFalsy();
+        expect(errorService.goToServiceError).toHaveBeenCalledWith('Your connection was lost');
+    });
+
+    it('should hide video when video call has disconnected', () => {
+        const payload = new DisconnectedCall('test failure intentional');
+
+        component.setupPexipClient();
+        onDisconnectedSubject.next(payload);
+
+        expect(component.displayFeed).toBeFalsy();
+    });
+
+    it('should hide video and get self test score when test has ended as expected', () => {
+        const payload = new DisconnectedCall('Conference terminated by another participant');
+
+        component.setupPexipClient();
+        onDisconnectedSubject.next(payload);
+
+        expect(component.displayFeed).toBeFalsy();
+        expect(videoWebService.getTestCallScore).toHaveBeenCalled();
+    });
+
+    it('should raise failed self-test event when score is bad', fakeAsync(() => {
+        videoWebService.getTestCallScore.and.resolveTo(
+            new TestCallScoreResponse({
+                passed: false,
+                score: TestScore.Bad
+            })
+        );
+        component.scoreSent = false;
+        const payload = new DisconnectedCall('Conference terminated by another participant');
+
+        component.setupPexipClient();
+        onDisconnectedSubject.next(payload);
+        flushMicrotasks();
+
+        expect(component.displayFeed).toBeFalsy();
+        expect(videoWebService.raiseSelfTestFailureEvent).toHaveBeenCalled();
+    }));
+
+    it('should make call to video conference and disable H264 on firefox ', async () => {
+        spyOnProperty(window, 'navigator').and.returnValue({
+            userAgent: 'FireFox'
+        });
+        await component.call();
+        expect(videoCallService.enableH264).toHaveBeenCalledWith(false);
+    });
+
+    it('should return false when no streams are active', () => {
+        component.outgoingStream = undefined;
+        component.incomingStream = undefined;
+        expect(component.streamsActive).toBeFalsy();
+    });
+
+    it('should return true when streams are active', () => {
+        component.outgoingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
+        component.incomingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
+        expect(component.streamsActive).toBeTruthy();
+    });
+
+    it('should return true when streams are active urls', () => {
+        component.outgoingStream = new URL('http://www.test.com');
+        component.incomingStream = new URL('http://www.test.com');
+        expect(component.streamsActive).toBeTruthy();
+    });
+
+    it('should return false when outgoing stream is inactive', () => {
+        component.outgoingStream = undefined;
+        component.incomingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
+        expect(component.streamsActive).toBeFalsy();
+    });
+
+    it('should return false when incoming stream is inactive', () => {
+        component.outgoingStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
+        component.incomingStream = undefined;
+        expect(component.streamsActive).toBeFalsy();
     });
 });
