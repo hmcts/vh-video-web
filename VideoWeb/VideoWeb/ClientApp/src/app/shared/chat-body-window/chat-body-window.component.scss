@@ -25,3 +25,20 @@
 .chat-message {
   white-space: pre-wrap;
 }
+
+.chat-message.failed {
+  margin-bottom: 0 !important;
+}
+
+.failed-message {
+  @include govuk-font($size: 16, $weight: 'bold');
+  display: block;
+  margin-bottom: govuk-spacing(0);
+  clear: both;
+  color: $govuk-error-colour;
+}
+
+.alert-image {
+  width: 14px;
+  height: 14px;
+}

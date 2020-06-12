@@ -2,18 +2,17 @@ import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { AdalService } from 'adal-angular4';
 import { Observable, Subject } from 'rxjs';
+import { Heartbeat } from '../shared/models/heartbeat';
 import { ConferenceStatus, ConsultationAnswer, ParticipantStatus, RoomType } from './clients/api-client';
 import { Logger } from './logging/logger-base';
 import { AdminConsultationMessage } from './models/admin-consultation-message';
+import { ConferenceMessageAnswered } from './models/conference-message-answered';
 import { ConferenceStatusMessage } from './models/conference-status-message';
 import { ConsultationMessage } from './models/consultation-message';
 import { HelpMessage } from './models/help-message';
 import { InstantMessage } from './models/instant-message';
-import { ParticipantStatusMessage } from './models/participant-status-message';
 import { HeartbeatHealth, ParticipantHeartbeat } from './models/participant-heartbeat';
-import { Heartbeat } from '../shared/models/heartbeat';
-import { ConferenceMessageAnswered } from './models/conference-message-answered';
-import { Guid } from 'guid-typescript';
+import { ParticipantStatusMessage } from './models/participant-status-message';
 
 @Injectable({
     providedIn: 'root'
@@ -209,8 +208,14 @@ export class EventsService {
         return this.participantHeartbeat.asObservable();
     }
 
-    async sendMessage(conferenceId: string, message: string, to: string) {
-        await this.connection.send('SendMessage', conferenceId, message, to, Guid.create().toString());
+    async sendMessage(instantMessage: InstantMessage) {
+        await this.connection.send(
+            'SendMessage',
+            instantMessage.conferenceId,
+            instantMessage.message,
+            instantMessage.to,
+            instantMessage.id
+        );
     }
 
     async sendHeartbeat(conferenceId: string, participantId: string, heartbeat: Heartbeat) {
