@@ -60,10 +60,10 @@ describe('ImHelper', () => {
     });
 
     it('should return false when message is sent from participant A to admin and admin has participant B chat open', () => {
-        message = new InstantMessage({
+        const imOther = new InstantMessage({
             conferenceId: conference.id,
-            from: judgeUsername,
-            from_display_name: judgeProfile.display_name,
+            from: 'notjudge@test.com',
+            from_display_name: 'Test Other',
             to: adminUsername,
             id: Guid.create().toString(),
             is_user: false,
@@ -71,7 +71,7 @@ describe('ImHelper', () => {
             timestamp: new Date()
         });
 
-        expect(imHelper.isImForUser(message, 'notjudge@test.com', adminProfile)).toBeTruthy();
+        expect(imHelper.isImForUser(imOther, judgeProfile.username, adminProfile)).toBeFalsy();
     });
 
     it('should return true when message is sent from admin to participant A logged in as participant A', () => {
