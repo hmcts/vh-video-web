@@ -65,6 +65,10 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         super(videoWebService, profileService, eventService, logger, adalService, imHelper);
     }
 
+    get participantUsername() {
+        return this._participant.username.toLowerCase();
+    }
+
     ngAfterViewChecked(): void {
         this.scrollToBottom();
     }

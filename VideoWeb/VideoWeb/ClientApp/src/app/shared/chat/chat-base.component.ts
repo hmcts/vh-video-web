@@ -28,6 +28,7 @@ export abstract class ChatBaseComponent {
 
     abstract content: ElementRef;
     abstract sendMessage(messageBody: string): void;
+    abstract get participantUsername(): string;
 
     async setupChatSubscription(): Promise<Subscription> {
         if (!this.loggedInUserProfile) {
@@ -77,7 +78,8 @@ export abstract class ChatBaseComponent {
             this.logger.debug(`[ChatHub] message already been processed ${JSON.stringify(logInfo)}`);
             return false;
         }
-        return this.imHelper.isImForUser(message, this.hearing, this.loggedInUserProfile);
+
+        return this.imHelper.isImForUser(message, this.participantUsername, this.loggedInUserProfile);
     }
 
     async verifySender(message: InstantMessage): Promise<InstantMessage> {

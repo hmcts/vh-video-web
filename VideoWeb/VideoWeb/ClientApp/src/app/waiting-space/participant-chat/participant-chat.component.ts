@@ -39,6 +39,10 @@ export class ParticipantChatComponent extends ChatBaseComponent implements OnIni
         super(videoWebService, profileService, eventService, logger, adalService, imHelper);
     }
 
+    get participantUsername() {
+        return this.adalService.userInfo.userName.toLowerCase();
+    }
+
     ngOnInit() {
         this.logger.debug(`[ChatHub Judge] starting chat for ${this.hearing.id}`);
         this.showChat = false;
