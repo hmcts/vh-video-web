@@ -7,8 +7,10 @@ import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceLite } from 'src/app/services/models/conference-lite';
 import { pageUrls } from 'src/app/shared/page-url.constants';
+import { ParticipantStatusBase } from 'src/app/on-the-day/models/participant-status-base';
+import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 
-export abstract class EquipmentCheckBaseComponent {
+export abstract class EquipmentCheckBaseComponent extends ParticipantStatusBase {
     form: FormGroup;
     submitted = false;
 
@@ -24,8 +26,11 @@ export abstract class EquipmentCheckBaseComponent {
         protected videoWebService: VideoWebService,
         protected adalService: AdalService,
         protected errorService: ErrorService,
-        protected logger: Logger
-    ) {}
+        protected logger: Logger,
+        protected participantStatusUpdateService: ParticipantStatusUpdateService
+    ) {
+        super(participantStatusUpdateService, logger);
+    }
 
     abstract getEquipmentCheck(): string;
     abstract getFailureReason(): SelfTestFailureReason;

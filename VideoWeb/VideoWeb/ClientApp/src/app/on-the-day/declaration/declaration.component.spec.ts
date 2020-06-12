@@ -3,6 +3,8 @@ import { convertToParamMap, Router } from '@angular/router';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { DeclarationComponent } from './declaration.component';
+import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 
 describe('DeclarationComponent Tests', () => {
     let component: DeclarationComponent;
@@ -11,16 +13,18 @@ describe('DeclarationComponent Tests', () => {
     let router: jasmine.SpyObj<Router>;
     const activatedRoute: any = { snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
     const formBuilder = new FormBuilder();
+    let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
 
     let checkboxControl: AbstractControl;
 
     beforeAll(() => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+        participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
     });
 
     beforeEach(() => {
         router.navigate.calls.reset();
-        component = new DeclarationComponent(router, activatedRoute, formBuilder);
+        component = new DeclarationComponent(router, activatedRoute, formBuilder, participantStatusUpdateService, new MockLogger());
         checkboxControl = component.declarationForm.controls['declare'];
         component.ngOnInit();
     });
