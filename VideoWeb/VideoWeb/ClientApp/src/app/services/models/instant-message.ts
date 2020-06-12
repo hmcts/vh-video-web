@@ -6,6 +6,7 @@ export interface IInstantMessage extends IChatResponse {
 
 export class InstantMessage extends ChatResponse {
     conferenceId: string;
+    failedToSend: boolean;
 
     constructor(data?: IInstantMessage) {
         super(data);
@@ -16,5 +17,6 @@ export class InstantMessage extends ChatResponse {
                 }
             }
         }
+        this.failedToSend = false;
     }
 }
