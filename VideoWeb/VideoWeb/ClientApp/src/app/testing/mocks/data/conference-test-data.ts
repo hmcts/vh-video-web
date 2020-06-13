@@ -396,13 +396,19 @@ export class ConferenceTestData {
     }
 
     getChatHistory(loggedInUser: string, conferenceId: string): InstantMessage[] {
+        const adminUsername = 'vho.user@hearings.net';
+        const adminDisplayName = 'VHO user';
+        const judgeUsername = 'judge.fudge@hearings.net';
+        const judgeDisplayName = 'Judge Fudge';
+
         const now = new Date();
         const messages: InstantMessage[] = [];
         const message1 = new InstantMessage({
             conferenceId,
             id: Guid.create().toString(),
-            from: 'vho.user@hearings.net',
-            from_display_name: 'VHO user',
+            from: adminUsername,
+            to: judgeUsername,
+            from_display_name: adminDisplayName,
             message: 'test message from vho',
             timestamp: moment(now).subtract(3, 'minutes').toDate()
         });
@@ -410,8 +416,9 @@ export class ConferenceTestData {
         const message2 = new InstantMessage({
             conferenceId,
             id: Guid.create().toString(),
-            from: 'judge.fudge@hearings.net',
-            from_display_name: 'Judge Fudge',
+            from: judgeUsername,
+            to: adminUsername,
+            from_display_name: judgeDisplayName,
             message: 'test message from judge',
             timestamp: moment(now).subtract(5, 'minutes').toDate()
         });
@@ -419,8 +426,9 @@ export class ConferenceTestData {
         const message3 = new InstantMessage({
             conferenceId,
             id: Guid.create().toString(),
-            from: 'vho.user@hearings.net',
-            from_display_name: 'VHO user',
+            from: adminUsername,
+            to: judgeUsername,
+            from_display_name: adminUsername,
             message: 'test message from vho 2',
             timestamp: moment(now).subtract(8, 'minutes').toDate()
         });
@@ -428,8 +436,9 @@ export class ConferenceTestData {
         const message4 = new InstantMessage({
             conferenceId,
             id: Guid.create().toString(),
-            from: 'vho.user@hearings.net',
-            from_display_name: 'VHO user',
+            from: adminUsername,
+            to: judgeUsername,
+            from_display_name: adminUsername,
             message: 'test message from vho 3',
             timestamp: moment(now).subtract(10, 'minutes').toDate()
         });

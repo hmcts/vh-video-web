@@ -10,6 +10,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone.component';
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 
 describe('SwitchOnCameraMicrophoneComponent', () => {
     let component: SwitchOnCameraMicrophoneComponent;
@@ -24,6 +25,7 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
     let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
     let errorService: jasmine.SpyObj<ErrorService>;
     const logger: Logger = new MockLogger();
+    let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
 
     beforeAll(() => {
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
@@ -46,6 +48,8 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
         profileService.getUserProfile.and.returnValue(Promise.resolve(profile));
 
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+
+        participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
     });
 
     beforeEach(async () => {
@@ -56,7 +60,8 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
             userMediaStreamService,
             profileService,
             errorService,
-            logger
+            logger,
+            participantStatusUpdateService
         );
         component.conference = conference;
         component.conferenceId = conference.id;
@@ -81,7 +86,8 @@ describe('SwitchOnCameraMicrophoneComponent', () => {
             userMediaStreamService,
             profileService,
             errorService,
-            logger
+            logger,
+            participantStatusUpdateService
         );
 
         component.ngOnInit();

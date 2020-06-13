@@ -1,59 +1,57 @@
 import { fakeAsync, tick } from '@angular/core/testing';
+import { AdalService } from 'adal-angular4';
 import { Guid } from 'guid-typescript';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse } from 'src/app/services/clients/api-client';
-import { EventsService } from 'src/app/services/events.service';
+import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
-import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { ParticipantChatComponent } from './participant-chat.component';
-import { InstantMessage } from 'src/app/services/models/instant-message';
 import { adminTestProfile, judgeTestProfile } from '../../testing/data/test-profiles';
+import { ParticipantChatComponent } from './participant-chat.component';
 
-describe('JudgeChatComponent', () => {
+describe('ParticipantChatComponent', () => {
     let component: ParticipantChatComponent;
     let conference: ConferenceResponse;
     let hearing: Hearing;
 
     let videoWebService: jasmine.SpyObj<VideoWebService>;
     const judgeUsername = judgeTestProfile.username;
-    let eventsService: jasmine.SpyObj<EventsService>;
+    const eventsService = eventsServiceSpy;
     let profileService: jasmine.SpyObj<ProfileService>;
-    const mockAdalService = new MockAdalService();
-    const mockEventsService = new MockEventsService();
-    let adalService;
+    let adalService: jasmine.SpyObj<AdalService>;
+
     const judgeProfile = judgeTestProfile;
     const adminProfile = adminTestProfile;
     const timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
 
     beforeAll(() => {
-        adalService = mockAdalService;
         conference = new ConferenceTestData().getConferenceDetailFuture();
         hearing = new Hearing(conference);
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceChatHistory']);
-        eventsService = jasmine.createSpyObj<EventsService>('EventsService', ['start', 'getChatMessage', 'sendMessage']);
         profileService = jasmine.createSpyObj<ProfileService>('ProfileService', [
             'checkCacheForProfileByUsername',
             'getProfileByUsername',
             'getUserProfile'
         ]);
+
+        adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
+            userInfo: <adal.User>{ userName: judgeUsername, authenticated: true }
+        });
     });
 
     beforeEach(() => {
         spyOn(global, 'setTimeout').and.returnValue(timer);
         adalService.userInfo.userName = judgeUsername;
-        const chatHistory = new ConferenceTestData().getChatHistory(mockAdalService.userInfo.userName, conference.id);
+        const chatHistory = new ConferenceTestData().getChatHistory(judgeUsername, conference.id);
 
         profileService.checkCacheForProfileByUsername.and.returnValue(null);
         profileService.getProfileByUsername.and.resolveTo(adminProfile);
         profileService.getUserProfile.and.resolveTo(judgeProfile);
         videoWebService.getConferenceChatHistory.and.resolveTo(chatHistory);
-
-        eventsService.getChatMessage.and.returnValue(mockEventsService.messageSubject.asObservable());
 
         component = new ParticipantChatComponent(
             videoWebService,
@@ -79,6 +77,10 @@ describe('JudgeChatComponent', () => {
         expect(component.loading).toBeFalsy();
         expect(component.messages.length).toBeGreaterThan(0);
     }));
+
+    it('should return adal username as participant username', () => {
+        expect(component.participantUsername).toEqual(judgeUsername.toLowerCase());
+    });
 
     it('should toggle show chat state', () => {
         component.showChat = false;
