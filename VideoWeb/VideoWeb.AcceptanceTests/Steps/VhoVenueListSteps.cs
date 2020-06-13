@@ -39,7 +39,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 _browsers[_c.CurrentUser.Key].Driver.FindElement(VhoVenueAllocationPage.VenuesTextBox).SendKeys(venue);
                 _browsers[_c.CurrentUser.Key].ClickCheckbox(VhoVenueAllocationPage.VenueCheckbox(venue));
-                DeleteText(venue);
             }
         }
         
@@ -55,14 +54,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             const string venues = "Birmingham,Manchester,Taylor House";
             SelectVenues(venues);
             ConfirmVenue();
-        }
-
-        private void DeleteText(string text)
-        {
-            for (var i = 0; i < text.Length; i++)
-            {
-                _browsers[_c.CurrentUser.Key].Driver.FindElement(VhoVenueAllocationPage.VenuesTextBox).SendKeys(Keys.Backspace);
-            }
         }
     }
 }
