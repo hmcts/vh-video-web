@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -12,13 +12,20 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-individual-participant-status-list',
     templateUrl: './individual-participant-status-list.component.html',
     styleUrls: ['./individual-participant-status-list.component.scss']
 })
-export class IndividualParticipantStatusListComponent implements OnInit {
+export class IndividualParticipantStatusListComponent implements OnInit, OnDestroy {
+    static REQUEST_PC_MODAL = 'raise-pc-modal';
+    static RECIEVE_PC_MODAL = 'receive-pc-modal';
+    static ACCEPTED_PC_MODAL = 'accepted-pc-modal';
+    static REJECTED_PC_MODAL = 'rejected-pc-modal';
+    static VHO_REQUEST_PC_MODAL = 'vho-raise-pc-modal';
+
     @Input() conference: ConferenceResponse;
 
     nonJugdeParticipants: ParticipantResponse[];
@@ -31,12 +38,8 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     waitingForConsultationResponse: boolean;
     private readonly CALL_TIMEOUT = 120000;
 
-    readonly REQUEST_PC_MODAL = 'raise-pc-modal';
-    readonly RECIEVE_PC_MODAL = 'receive-pc-modal';
-    readonly ACCEPTED_PC_MODAL = 'accepted-pc-modal';
-    readonly REJECTED_PC_MODAL = 'rejected-pc-modal';
-    readonly VHO_REQUEST_PC_MODAL = 'vho-raise-pc-modal';
     adminConsultationMessage: AdminConsultationMessage;
+    eventHubSubscriptions$ = new Subscription();
 
     constructor(
         private adalService: AdalService,
@@ -56,12 +59,20 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         this.setupSubscribers();
     }
 
+    ngOnDestroy(): void {
+        if (this.outgoingCallTimeout) {
+            clearTimeout(this.outgoingCallTimeout);
+        }
+        this.eventHubSubscriptions$.unsubscribe();
+    }
+
     initCallRingingSound(): void {
         this.notificationSoundService.initConsultationRequestRingtone();
     }
 
     stopCallRinging() {
         clearTimeout(this.outgoingCallTimeout);
+        this.outgoingCallTimeout = null;
         this.notificationSoundService.stopConsultationRequestRingtone();
     }
 
@@ -72,50 +83,60 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         this.waitingForConsultationResponse = false;
         this.logger.info('Consultation request timed-out. Cancelling call');
         await this.answerConsultationRequest(ConsultationAnswer.Cancelled);
-        this.displayModal(this.REJECTED_PC_MODAL);
+        this.displayModal(IndividualParticipantStatusListComponent.REJECTED_PC_MODAL);
     }
 
     setupSubscribers() {
-        this.eventService.getConsultationMessage().subscribe(message => {
-            if (message.result === ConsultationAnswer.Accepted) {
-                this.handleAcceptedConsultationRequest(message);
-            } else if (message.result === ConsultationAnswer.Rejected) {
-                this.handleRejectedConsultationRequest(message);
-            } else if (message.result === ConsultationAnswer.Cancelled) {
-                this.handleCancelledConsultationRequest(message);
-            } else {
-                this.displayConsultationRequestPopup(message);
-            }
-        });
+        this.eventHubSubscriptions$.add(
+            this.eventService.getConsultationMessage().subscribe(message => {
+                if (message.result === ConsultationAnswer.Accepted) {
+                    this.handleAcceptedConsultationRequest(message);
+                } else if (message.result === ConsultationAnswer.Rejected) {
+                    this.handleRejectedConsultationRequest(message);
+                } else if (message.result === ConsultationAnswer.Cancelled) {
+                    this.handleCancelledConsultationRequest(message);
+                } else {
+                    this.displayConsultationRequestPopup(message);
+                }
+            })
+        );
 
-        this.eventService.getParticipantStatusMessage().subscribe(message => {
-            this.handleParticipantStatusChange(message);
-        });
+        this.eventHubSubscriptions$.add(
+            this.eventService.getParticipantStatusMessage().subscribe(message => {
+                this.handleParticipantStatusChange(message);
+            })
+        );
 
-        this.eventService.getAdminConsultationMessage().subscribe(message => {
-            if (!message.answer) {
-                this.adminConsultationMessage = message;
-                this.handleAdminConsultationMessage(message);
-            }
-        });
+        this.eventHubSubscriptions$.add(
+            this.eventService.getAdminConsultationMessage().subscribe(async message => {
+                if (!message.answer) {
+                    this.adminConsultationMessage = message;
+                    await this.handleAdminConsultationMessage(message);
+                }
+            })
+        );
 
         this.eventService.start();
     }
 
-    handleAdminConsultationMessage(message: AdminConsultationMessage) {
+    async handleAdminConsultationMessage(message: AdminConsultationMessage) {
         const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
         if (!this.isParticipantAvailable(requestee)) {
             this.logger.info(`Ignoring request for private consultation from Video Hearings Team since participant is not available`);
             return;
         }
+        console.log('available');
         this.logger.info(`Incoming request for private consultation from Video Hearings Team`);
         this.consultationRequestee = new Participant(requestee);
-        this.displayModal(this.VHO_REQUEST_PC_MODAL);
-        this.startCallRinging(false);
+        this.displayModal(IndividualParticipantStatusListComponent.VHO_REQUEST_PC_MODAL);
+        console.log('displayed modal');
+        await this.startCallRinging(false);
+        console.log('started ringin');
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
-        const isCurrentUser = this.conference.participants.find(p => p.id === message.participantId);
+        const isCurrentUser = this.adalService.userInfo.userName.toLocaleLowerCase() === message.username.toLowerCase();
+        this.conference.participants.find(p => p.id === message.participantId);
         if (isCurrentUser && message.status === ParticipantStatus.InConsultation) {
             this.closeAllPCModals();
         }
@@ -146,7 +167,7 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         if (!this.canCallParticipant(participant)) {
             return;
         }
-        this.displayModal(this.REQUEST_PC_MODAL);
+        this.displayModal(IndividualParticipantStatusListComponent.REQUEST_PC_MODAL);
         const requestee = this.conference.participants.find(x => x.id === participant.id);
         const requester = this.conference.participants.find(
             x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase()
@@ -169,6 +190,13 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         }
     }
 
+    /**
+     * Start playing the call ringing sound with a timeout.
+     * The ringing and will stop on no answer.
+     * Requester will see a rejected call modal.
+     * If an admin call is ignored, no message is displayed.
+     * @param outgoingCall is logged in user requesting the call
+     */
     async startCallRinging(outgoingCall: boolean) {
         if (outgoingCall) {
             this.waitingForConsultationResponse = true;
@@ -191,14 +219,14 @@ export class IndividualParticipantStatusListComponent implements OnInit {
         this.answerConsultationRequest(ConsultationAnswer.Cancelled);
     }
 
-    private displayConsultationRequestPopup(message: ConsultationMessage) {
+    private async displayConsultationRequestPopup(message: ConsultationMessage) {
         const requester = this.conference.participants.find(x => x.username === message.requestedBy);
         const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
         this.logger.info(`Incoming request for private consultation from ${requester.display_name}`);
         this.consultationRequester = new Participant(requester);
         this.consultationRequestee = new Participant(requestee);
-        this.displayModal(this.RECIEVE_PC_MODAL);
-        this.startCallRinging(false);
+        this.displayModal(IndividualParticipantStatusListComponent.RECIEVE_PC_MODAL);
+        await this.startCallRinging(false);
     }
 
     async answerConsultationRequest(answer: string) {
@@ -240,13 +268,13 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     private handleAcceptedConsultationRequest(message: ConsultationMessage) {
         this.stopCallRinging();
         this.initConsultationParticipants(message);
-        this.displayModal(this.ACCEPTED_PC_MODAL);
+        this.displayModal(IndividualParticipantStatusListComponent.ACCEPTED_PC_MODAL);
     }
 
     private handleRejectedConsultationRequest(message: ConsultationMessage) {
         this.stopCallRinging();
         this.initConsultationParticipants(message);
-        this.displayModal(this.REJECTED_PC_MODAL);
+        this.displayModal(IndividualParticipantStatusListComponent.REJECTED_PC_MODAL);
     }
 
     private handleCancelledConsultationRequest(message: ConsultationMessage) {
@@ -261,11 +289,11 @@ export class IndividualParticipantStatusListComponent implements OnInit {
     }
 
     private closeAllPCModals(): void {
-        this.modalService.close(this.REQUEST_PC_MODAL);
-        this.modalService.close(this.RECIEVE_PC_MODAL);
-        this.modalService.close(this.ACCEPTED_PC_MODAL);
-        this.modalService.close(this.REJECTED_PC_MODAL);
-        this.modalService.close(this.VHO_REQUEST_PC_MODAL);
+        this.modalService.close(IndividualParticipantStatusListComponent.REQUEST_PC_MODAL);
+        this.modalService.close(IndividualParticipantStatusListComponent.RECIEVE_PC_MODAL);
+        this.modalService.close(IndividualParticipantStatusListComponent.ACCEPTED_PC_MODAL);
+        this.modalService.close(IndividualParticipantStatusListComponent.REJECTED_PC_MODAL);
+        this.modalService.close(IndividualParticipantStatusListComponent.VHO_REQUEST_PC_MODAL);
     }
 
     closeConsultationRejection() {
