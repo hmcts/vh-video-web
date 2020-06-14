@@ -110,7 +110,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                var conferences = await _videoApiClient.GetConferencesTodayForAdminAsync(query.VenueNames);
+                var conferences = await _videoApiClient.GetConferencesTodayForAdminAsync(query.UserNames);
                 conferences = conferences.Where(c => ConferenceHelper.HasNotPassed(c.Status, c.Closed_date_time))
                     .ToList();
                 conferences = conferences.OrderBy(x => x.Closed_date_time).ToList();

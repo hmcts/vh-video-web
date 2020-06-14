@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { ConferenceForVhOfficerResponse, HearingVenueResponse } from 'src/app/services/clients/api-client';
+import { ConferenceForVhOfficerResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -27,7 +27,7 @@ import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-
 export class CommandCentreComponent implements OnInit, OnDestroy {
     public menuOption = MenuOption;
 
-    private readonly venueAllocationStorage: SessionStorage<HearingVenueResponse[]>;
+    private readonly judgeAllocationStorage: SessionStorage<string[]>;
 
     venueAllocations: string[] = [];
 
@@ -54,7 +54,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         private eventbus: EventBusService
     ) {
         this.loadingData = false;
-        this.venueAllocationStorage = new SessionStorage<HearingVenueResponse[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
+        this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
     }
 
     ngOnInit(): void {
@@ -184,8 +184,8 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     loadVenueSelection(): void {
-        const venues = this.venueAllocationStorage.get();
-        this.venueAllocations = venues.map(v => v.name);
+        const venues = this.judgeAllocationStorage.get();
+        this.venueAllocations = venues; // .map(v => v.name);
     }
 
     retrieveHearingsForVhOfficer(reload: boolean) {

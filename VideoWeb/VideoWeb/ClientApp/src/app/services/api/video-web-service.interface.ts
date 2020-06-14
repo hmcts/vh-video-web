@@ -7,12 +7,12 @@ import {
     ConferenceForIndividualResponse,
     ConferenceForJudgeResponse,
     ConferenceResponse,
-    HearingVenueResponse,
     SelfTestPexipResponse,
     TestCallScoreResponse,
     TokenResponse,
     UpdateParticipantRequest,
-    UpdateParticipantStatusEventRequest
+    UpdateParticipantStatusEventRequest,
+    JudgeNameListResponse
 } from '../clients/api-client';
 export interface IVideoWebApiService {
     getConferencesForJudge(): Observable<ConferenceForJudgeResponse[]>;
@@ -28,7 +28,7 @@ export interface IVideoWebApiService {
     raiseSelfTestFailureEvent(conferenceId: string, addSelfTestFailureEventRequest: AddSelfTestFailureEventRequest): Promise<void>;
     getPexipConfig(): Promise<SelfTestPexipResponse>;
     getObfuscatedName(displayName: string): string;
-    getHearingVenues(): Promise<HearingVenueResponse[]>;
     getConferenceChatHistory(conferenceId: string, participantUsername: string): Promise<ChatResponse[]>;
     updateParticipantDetails(conferenceId: string, participantId: string, updateParticipantRequest: UpdateParticipantRequest);
+    getDistinctJudgeNames(): Promise<JudgeNameListResponse>;
 }

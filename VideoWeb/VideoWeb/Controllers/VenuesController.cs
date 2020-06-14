@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
-using VideoWeb.Services.Bookings;
+using VideoWeb.Services.Video;
 
 namespace VideoWeb.Controllers
 {
@@ -13,37 +12,36 @@ namespace VideoWeb.Controllers
     [Route("hearing-venues")]
     public class VenuesController : Controller
     {
-        private readonly IBookingsApiClient _bookingsApiClient;
+        private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<VenuesController> _logger;
 
-        public VenuesController(IBookingsApiClient bookingsApiClient, ILogger<VenuesController> logger)
+        public VenuesController(IVideoApiClient videoApiClient, ILogger<VenuesController> logger)
         {
-            _bookingsApiClient = bookingsApiClient;
+            _videoApiClient = videoApiClient;
             _logger = logger;
         }
 
         /// <summary>
-        /// Get hearings venues
+        /// Get Judge names
         /// </summary>
-        /// <returns>List of hearings venue, if any</returns>
+        /// <returns>List of judges with hearing scheduled, if any</returns>
         [HttpGet]
-        [ProducesResponseType(typeof(List<HearingVenueResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(JudgeNameListResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [SwaggerOperation(OperationId = "GetHearingVenues")]
-        public async Task<ActionResult<List<HearingVenueResponse>>> GetHearingVenuesAsync()
+        [SwaggerOperation(OperationId = "GetDistinctJudgeNames")]
+        public async Task<ActionResult<JudgeNameListResponse>> GetDistinctJudgeNamesAsync()
         {
-            _logger.LogDebug("GetHearingVenues");
+            _logger.LogDebug("GetDistinctJudgeNames");
             try
             {
-                var venues = await _bookingsApiClient.GetHearingVenuesAsync();
-                return Ok(venues);
+                var judges = await _videoApiClient.GetDistinctJudgeNamesAsync();
+                return Ok(judges);
             }
-            catch (BookingsApiException e)
+            catch (VideoApiException e)
             {
-                _logger.LogError(e, "Unable to retrieve hearings venues");
+                _logger.LogError(e, "Unable to retrieve judge names");
                 return NotFound();
             }
         }
-
     }
 }
