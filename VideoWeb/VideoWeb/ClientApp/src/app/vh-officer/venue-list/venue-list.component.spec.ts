@@ -14,9 +14,11 @@ describe('VenueListComponent', () => {
     const venueSessionStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
 
     const venues = new JudgeNameListResponse();
-    venues.first_names.push('Birmingham');
-    venues.first_names.push('Manchester');
-    venues.first_names.push('Taylor House');
+    const judgeNames: string[] = [];
+    judgeNames.push('Birmingham');
+    judgeNames.push('Manchester');
+    judgeNames.push('Taylor House');
+    venues.first_names = judgeNames;
 
     beforeAll(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getDistinctJudgeNames']);
