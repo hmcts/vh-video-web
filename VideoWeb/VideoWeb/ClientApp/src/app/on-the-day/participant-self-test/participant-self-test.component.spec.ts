@@ -32,10 +32,11 @@ describe('ParticipantSelfTestComponent', () => {
     beforeAll(() => {
         adalService = mockAdalService;
         adalService = mockAdalService;
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'getPexipConfig']);
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'getPexipConfig', 'raiseSelfTestFailureEvent']);
 
         videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
         videoWebService.getPexipConfig.and.returnValue(Promise.resolve(pexipConfig));
+        videoWebService.raiseSelfTestFailureEvent.and.returnValue(Promise.resolve());
 
         participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
 
@@ -64,11 +65,32 @@ describe('ParticipantSelfTestComponent', () => {
     });
 
     it('should navigate to camera working screen', () => {
+        component.selfTestCompleted = true;
         component.continueParticipantJourney();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.CameraWorking, conference.id]);
     });
+    it('should navigate to camera working screen if self-test is incompleted', fakeAsync(() => {
+        spyOn(logger, 'info');
+        component.selfTestCompleted = false;
+        component.continueParticipantJourney();
+        tick();
+        expect(videoWebService.raiseSelfTestFailureEvent).toHaveBeenCalled();
+        expect(logger.info).toHaveBeenCalled();
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.CameraWorking, conference.id]);
+    }));
+    it('should log error if self-test is incompleted and raised event is failed', fakeAsync(() => {
+        spyOn(logger, 'error');
+        component.selfTestCompleted = false;
+        videoWebService.raiseSelfTestFailureEvent.and.returnValue(Promise.reject());
+        component.continueParticipantJourney();
+        tick();
+        expect(logger.error).toHaveBeenCalled();
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.CameraWorking, conference.id]);
+    }));
 
-    it('should set test in progress to false when test completes and continue', () => {
+
+
+    it('should set test in progress to false and test completed to true when test completes', () => {
         spyOn(component, 'continueParticipantJourney');
         const score = new TestCallScoreResponse({
             passed: true,
@@ -76,7 +98,7 @@ describe('ParticipantSelfTestComponent', () => {
         });
         component.onSelfTestCompleted(score);
         expect(component.testInProgress).toBeFalsy();
-        expect(component.continueParticipantJourney).toHaveBeenCalled();
+        expect(component.selfTestCompleted).toBeTruthy();
     });
 
     it('should show self test restarting video', () => {
