@@ -25,7 +25,6 @@ export class VenueListComponent implements OnInit {
         this.venueListLoading = false;
         this.videoWebService.getDistinctJudgeNames().then(response => {
             this.judges = response.first_names;
-            console.log(response);
             this.selectedJudges = this.judgeAllocationStorage.get();
             this.venueListLoading = false;
         });

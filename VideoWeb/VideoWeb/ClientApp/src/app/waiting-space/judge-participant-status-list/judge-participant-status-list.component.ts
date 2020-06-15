@@ -26,7 +26,7 @@ export class JudgeParticipantStatusListComponent implements OnInit {
     showChangeJudgeDisplayName = false;
     newJudgeDisplayName: string;
 
-    constructor(private adalService: AdalService, private videoWebService: VideoWebService, private logger: Logger) {}
+    constructor(private adalService: AdalService, private videoWebService: VideoWebService, private logger: Logger) { }
 
     ngOnInit() {
         this.filterNonJudgeParticipants();
@@ -110,9 +110,7 @@ export class JudgeParticipantStatusListComponent implements OnInit {
         const updateParticipantRequest = new UpdateParticipantRequest({
             fullname: this.judge.name,
             display_name: this.judge.display_name,
-            representee: this.judge.representee,
-            first_name: '',
-            last_name: ''
+            representee: this.judge.representee
         });
 
         this.videoWebService.updateParticipantDetails(this.conference.id, this.judge.id, updateParticipantRequest).catch(error => {

@@ -1,6 +1,5 @@
 import { Router } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-// import { HearingVenueResponse } from 'src/app/services/clients/api-client';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VhoStorageKeys } from '../services/models/session-keys';
@@ -13,12 +12,12 @@ describe('VenueListComponent', () => {
     let router: jasmine.SpyObj<Router>;
     const venueSessionStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
 
-    const venues = new JudgeNameListResponse();
+    const judges = new JudgeNameListResponse();
     const judgeNames: string[] = [];
     judgeNames.push('Birmingham');
     judgeNames.push('Manchester');
     judgeNames.push('Taylor House');
-    venues.first_names = judgeNames;
+    judges.first_names = judgeNames;
 
     beforeAll(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getDistinctJudgeNames']);
@@ -27,7 +26,7 @@ describe('VenueListComponent', () => {
 
     beforeEach(() => {
         component = new VenueListComponent(videoWebServiceSpy, router);
-        videoWebServiceSpy.getDistinctJudgeNames.and.returnValue(Promise.resolve(venues));
+        videoWebServiceSpy.getDistinctJudgeNames.and.returnValue(Promise.resolve(judges));
         venueSessionStorage.clear();
     });
 
@@ -38,11 +37,12 @@ describe('VenueListComponent', () => {
     });
 
     it('should update storage with selection', () => {
-        const selection = [venues[0]];
+        const selection = [judges.first_names[0]];
         component.selectedJudges = selection;
         component.updateSelection();
         const result = venueSessionStorage.get();
         expect(result.length).toBe(selection.length);
+        expect(result[0]).toBe(judges.first_names[0]);
     });
 
     it('should navigate to admin hearing list', () => {
@@ -56,7 +56,7 @@ describe('VenueListComponent', () => {
     });
 
     it('should return true when allocations are selected', () => {
-        component.selectedJudges = [venues[0]];
+        component.selectedJudges = [judges[0]];
         expect(component.venuesSelected).toBeTruthy();
     });
 });
