@@ -13,7 +13,7 @@ import { ImHelper } from '../im-helper';
 export abstract class ChatBaseComponent {
     protected hearing: Hearing;
     messages: InstantMessage[] = [];
-    pendingMessages: InstantMessage[] = [];
+    pendingMessages: Map<string, InstantMessage[]> = new Map<string, InstantMessage[]>();
     loggedInUserProfile: UserProfileResponse;
 
     DEFAULT_ADMIN_USERNAME = 'Admin';
@@ -29,6 +29,14 @@ export abstract class ChatBaseComponent {
     abstract content: ElementRef;
     abstract sendMessage(messageBody: string): void;
     abstract get participantUsername(): string;
+
+    get pendingMessagesForConversation(): InstantMessage[] {
+        if (this.pendingMessages.has(this.participantUsername)) {
+            return this.pendingMessages.get(this.participantUsername);
+        } else {
+            return [];
+        }
+    }
 
     async setupChatSubscription(): Promise<Subscription> {
         if (!this.loggedInUserProfile) {
@@ -62,8 +70,20 @@ export abstract class ChatBaseComponent {
         this.messages.push(message);
     }
 
+    addMessageToPending(message: InstantMessage) {
+        if (!this.pendingMessages.has(message.to)) {
+            this.pendingMessages.set(message.to, []);
+        }
+        this.pendingMessages.get(message.to).push(message);
+    }
+
     removeMessageFromPending(message: InstantMessage) {
-        this.pendingMessages = this.pendingMessages.filter(im => im.id !== message.id);
+        if (this.pendingMessages.has(message.to)) {
+            this.pendingMessages.set(
+                message.to,
+                this.pendingMessages.get(message.to).filter(im => im.id !== message.id)
+            );
+        }
     }
 
     isMessageRecipientForUser(message: InstantMessage): boolean {
@@ -126,18 +146,19 @@ export abstract class ChatBaseComponent {
     }
 
     async sendInstantMessage(instantMessage: InstantMessage) {
-        this.pendingMessages.push(instantMessage);
+        this.addMessageToPending(instantMessage);
         await this.eventService.sendMessage(instantMessage);
         // 5 seconds is sufficient time to check if message has not returned
         setTimeout(() => {
             this.checkIfMessageFailed(instantMessage);
-        }, 3000);
+        }, 5000);
     }
 
     checkIfMessageFailed(instantMessage: InstantMessage) {
-        if (this.messages.findIndex(x => x.id === instantMessage.id) < 0) {
-            const index = this.pendingMessages.findIndex(x => x.id === instantMessage.id);
-            this.pendingMessages[index].failedToSend = true;
+        if (this.messages.findIndex(x => x.id === instantMessage.id) < 0 && this.pendingMessages.has(instantMessage.to)) {
+            const entry = this.pendingMessages.get(instantMessage.to);
+            const index = entry.findIndex(x => x.id === instantMessage.id);
+            entry[index].failedToSend = true;
         }
     }
 }
