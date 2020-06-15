@@ -32,7 +32,11 @@ describe('ParticipantSelfTestComponent', () => {
     beforeAll(() => {
         adalService = mockAdalService;
         adalService = mockAdalService;
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'getPexipConfig', 'raiseSelfTestFailureEvent']);
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
+            'getConferenceById',
+            'getPexipConfig',
+            'raiseSelfTestFailureEvent'
+        ]);
 
         videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
         videoWebService.getPexipConfig.and.returnValue(Promise.resolve(pexipConfig));
@@ -87,8 +91,6 @@ describe('ParticipantSelfTestComponent', () => {
         expect(logger.error).toHaveBeenCalled();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.CameraWorking, conference.id]);
     }));
-
-
 
     it('should set test in progress to false and test completed to true when test completes', () => {
         spyOn(component, 'continueParticipantJourney');
