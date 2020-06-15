@@ -125,18 +125,14 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
             this.logger.info(`Ignoring request for private consultation from Video Hearings Team since participant is not available`);
             return;
         }
-        console.log('available');
         this.logger.info(`Incoming request for private consultation from Video Hearings Team`);
         this.consultationRequestee = new Participant(requestee);
         this.displayModal(IndividualParticipantStatusListComponent.VHO_REQUEST_PC_MODAL);
-        console.log('displayed modal');
         await this.startCallRinging(false);
-        console.log('started ringin');
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
         const isCurrentUser = this.adalService.userInfo.userName.toLocaleLowerCase() === message.username.toLowerCase();
-        this.conference.participants.find(p => p.id === message.participantId);
         if (isCurrentUser && message.status === ParticipantStatus.InConsultation) {
             this.closeAllPCModals();
         }
