@@ -105,6 +105,7 @@ describe('VhoChatComponent', () => {
             message: 'test message',
             timestamp: new Date()
         });
+        component.pendingMessages.set(instantMessageTest.to, []);
         component.addMessageToPending(instantMessageTest);
         messageSubjectMock.next(instantMessageTest);
         expect(component.handleIncomingMessage).toHaveBeenCalledWith(instantMessageTest);

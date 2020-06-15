@@ -18,6 +18,7 @@ import { ParticipantStatusMessage } from './models/participant-status-message';
     providedIn: 'root'
 })
 export class EventsService {
+    retryDelayTime = 5000;
     connection: signalR.HubConnection;
 
     private participantStatusSubject = new Subject<ParticipantStatusMessage>();
@@ -60,7 +61,7 @@ export class EventsService {
                 .catch(async err => {
                     this.logger.warn(`Failed to connect to EventHub ${err}`);
                     this.onEventHubErrorOrClose(err);
-                    await this.delay(5000);
+                    await this.delay(this.retryDelayTime);
                     this.start();
                 });
         }
@@ -74,7 +75,7 @@ export class EventsService {
         );
     }
 
-    private registerHandlers(): void {
+    registerHandlers(): void {
         this.connection.on(
             'ParticipantStatusMessage',
             (participantId: string, username: string, conferenceId: string, status: ParticipantStatus) => {
