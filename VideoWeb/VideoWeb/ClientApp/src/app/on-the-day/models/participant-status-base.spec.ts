@@ -1,8 +1,8 @@
-import { ParticipantStatusBase } from 'src/app/on-the-day/models/participant-status-base';
-import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { fakeAsync, tick } from '@angular/core/testing';
+import { ParticipantStatusBase } from 'src/app/on-the-day/models/participant-status-base';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 
 class ParticipantStatusBaseTest extends ParticipantStatusBase {
     conferenceId = '123456789';

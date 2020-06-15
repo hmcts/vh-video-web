@@ -1,19 +1,19 @@
-import { ChatBaseComponent } from './chat-base.component';
 import { ElementRef } from '@angular/core';
-import { InstantMessage } from 'src/app/services/models/instant-message';
-import { Guid } from 'guid-typescript';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
-import { ProfileService } from 'src/app/services/api/profile.service';
 import { AdalService } from 'adal-angular4';
+import { Guid } from 'guid-typescript';
+import { ProfileService } from 'src/app/services/api/profile.service';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse } from 'src/app/services/clients/api-client';
-import { Hearing } from '../models/hearing';
-import { judgeTestProfile, adminTestProfile } from 'src/app/testing/data/test-profiles';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ImHelper } from '../im-helper';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { InstantMessage } from 'src/app/services/models/instant-message';
+import { adminTestProfile } from 'src/app/testing/data/test-profiles';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { ImHelper } from '../im-helper';
+import { Hearing } from '../models/hearing';
+import { ChatBaseComponent } from './chat-base.component';
 
 class ChatBaseTest extends ChatBaseComponent {
     content: ElementRef<any>;
@@ -50,7 +50,6 @@ describe('ChatBaseComponent', () => {
     let adalService: jasmine.SpyObj<AdalService>;
     let conference: ConferenceResponse;
     let hearing: Hearing;
-    const judgeProfile = judgeTestProfile;
     const adminProfile = adminTestProfile;
 
     beforeAll(() => {
