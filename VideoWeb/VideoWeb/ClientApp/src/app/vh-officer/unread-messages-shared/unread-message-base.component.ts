@@ -22,14 +22,14 @@ export abstract class UnreadMessagesComponentBase {
     setupSubscribers() {
         this.messagesSubscription$.add(
             this.eventsService.getAdminAnsweredChat().subscribe(message => {
-                this.logger.debug(`an admin has answered`);
+                this.logger.debug(`an admin has answered ${message.conferenceId}`);
                 this.handleAdminAnsweredChat(message);
             })
         );
 
         this.messagesSubscription$.add(
             this.eventsService.getChatMessage().subscribe(message => {
-                this.logger.debug(`an admin has recceived a message`);
+                this.logger.debug(`an admin has received a message ${message.conferenceId}`);
                 this.handleImReceived(message);
             })
         );
