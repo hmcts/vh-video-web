@@ -41,7 +41,20 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _browsers[_c.CurrentUser.Key].ClickCheckbox(VhoVenueAllocationPage.VenueCheckbox(venue));
             }
         }
-        
+
+        [When(@"the VHO selects the hearings for Judge named (.*)")]
+        public void WhenTheVHOSelectsTheHearingsForJudgeNamedAutomationCourtroom(string judgeNames)
+        {
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesDropdown).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Click(VhoVenueAllocationPage.VenuesTextBox);
+
+            foreach (var venue in ConverterHelpers.ConvertStringIntoArray(judgeNames))
+            {
+                _browsers[_c.CurrentUser.Key].Driver.FindElement(VhoVenueAllocationPage.VenuesTextBox).SendKeys(venue);
+                _browsers[_c.CurrentUser.Key].ClickCheckbox(VhoVenueAllocationPage.VenueCheckbox(venue));
+            }
+        }
+
         [When(@"the VHO confirms their allocation selection")]
         public void ConfirmVenue()
         {

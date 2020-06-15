@@ -72,5 +72,18 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(hearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(VhoHearingListPage.CaseName(hearingThatShouldNotBeVisible.Id)).Should().BeTrue();
         }
+        
+        [Then(@"the hearings are filtered by the judge named (.*)")]
+        public void ThenTheHearingsAreFilteredByTheJudgeNames(string judgeName)
+        {
+            var hearingThatShouldNotBeVisible =
+                _c.Test.Conferences.FirstOrDefault(p =>
+                    p.Participants.Any(m => m.User_role == UserRole.Judge && m.First_name != judgeName));
+            var hearingThatShouldBeVisible = _c.Test.Conferences.FirstOrDefault(p =>
+                p.Participants.Any(m => m.User_role == UserRole.Judge && m.First_name == judgeName));
+
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(hearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(VhoHearingListPage.CaseName(hearingThatShouldNotBeVisible.Id)).Should().BeTrue();
+        }
     }
 }

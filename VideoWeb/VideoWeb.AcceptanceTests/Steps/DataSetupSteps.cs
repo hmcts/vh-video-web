@@ -66,6 +66,20 @@ namespace VideoWeb.AcceptanceTests.Steps
             GetTheNewConferenceDetails();
         }
 
+        [Given(@"I have a hearing with a Judge named (.*)")]
+        public void GivenIHaveAHearingWithAJudgeNamed(string judgeName)
+        {
+            GivenIHaveAHearingWithJudgeNamed(judgeName);
+            GetTheNewConferenceDetails();
+        }
+
+        [Given(@"I have another hearing with a Judge named (.*)")]
+        public void GivenIHaveAnotherHearingWithAJudgeNamed(string judgeName)
+        {
+            GivenIHaveAHearingWithJudgeClerkNamed(judgeName);
+            GetTheNewConferenceDetails();
+        }
+
         [Given(@"I have a hearing with audio recording enabled")]
         public void GivenIHaveAHearingWihAudioRecording()
         {
@@ -88,6 +102,27 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithScheduledDuration(HearingDuration)
                 .WithLocation(location)
                 .Build();
+
+            SendTheHearingRequest(request);
+        }
+        
+        public void GivenIHaveAHearingWithJudgeNamed(string judgeName = "Automation Courtroom 01")
+        {
+            var request = new HearingRequestBuilder()
+                .WithUserAccounts(_c.UserAccounts)
+                .WithScheduledTime(_c.TimeZone.AdjustForVideoWeb(DateTime.Now.ToUniversalTime()))
+                .WithScheduledDuration(HearingDuration)
+                .Build();
+
+            SendTheHearingRequest(request);
+        }
+        public void GivenIHaveAHearingWithJudgeClerkNamed(string judgeName = "Automation Courtroom 02")
+        {
+            var request = new HearingRequestBuilder()
+                .WithUserAccounts(_c.UserAccounts)
+                .WithScheduledTime(_c.TimeZone.AdjustForVideoWeb(DateTime.Now.ToUniversalTime()))
+                .WithScheduledDuration(HearingDuration)
+                .BuildWithJudgeClerk();
 
             SendTheHearingRequest(request);
         }
