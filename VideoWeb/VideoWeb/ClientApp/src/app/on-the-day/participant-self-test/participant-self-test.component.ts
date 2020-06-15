@@ -2,7 +2,7 @@ import { Component, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { TestCallScoreResponse } from 'src/app/services/clients/api-client';
+import { TestCallScoreResponse, AddSelfTestFailureEventRequest, SelfTestFailureReason } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -15,6 +15,7 @@ import { EventType } from 'src/app/services/clients/api-client';
     templateUrl: './participant-self-test.component.html'
 })
 export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
+    selfTestCompleted = false;
     constructor(
         private router: Router,
         protected route: ActivatedRoute,
@@ -29,10 +30,13 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
 
     onSelfTestCompleted(testcallScore: TestCallScoreResponse): void {
         super.onSelfTestCompleted(testcallScore);
-        this.continueParticipantJourney();
+        this.selfTestCompleted = true;
     }
 
-    continueParticipantJourney() {
+    async continueParticipantJourney() {
+        if (!this.selfTestCompleted) {
+            await this.raisedSelfTestIncompleted();
+        }
         const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         this.router.navigate([pageUrls.CameraWorking, conferenceId]);
     }
@@ -58,5 +62,19 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
             .catch(err => {
                 this.logger.error('Unable to update status to not signed in', err);
             });
+    }
+
+    async raisedSelfTestIncompleted() {
+        try {
+            await this.videoWebService.raiseSelfTestFailureEvent(
+                this.conferenceId,
+                new AddSelfTestFailureEventRequest({
+                    self_test_failure_reason: SelfTestFailureReason.IncompleteTest
+                })
+            );
+            this.logger.info('Self-test is incompleted.');
+        } catch (error) {
+            this.logger.error('Failed to raise "SelfTestFailureEvent"', error);
+        }
     }
 }

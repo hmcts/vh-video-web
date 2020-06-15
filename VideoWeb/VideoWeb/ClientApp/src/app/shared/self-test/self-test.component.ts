@@ -160,6 +160,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         );
 
         await this.videoCallService.setupClient();
+        this.updatePexipAudioVideoSource();
     }
 
     handleCallSetup(callSetup: CallSetup) {
@@ -263,13 +264,11 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             this.logger.error('there was a problem retrieving the self test score', err);
         }
         this.didTestComplete = true;
+        this.publishTestResult();
     }
 
     publishTestResult(): void {
         this.logger.info('test call completed');
-        if (!this.didTestComplete) {
-            this.disconnect();
-        }
         this.testCompleted.emit(this.testCallResult);
     }
 
