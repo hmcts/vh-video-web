@@ -17,7 +17,7 @@ describe('HomeComponent', () => {
     beforeAll(() => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-        deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isMobile', 'isTablet', 'isDesktop']);
+        deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isMobile', 'isTablet', 'isDesktop', 'isIpad']);
         errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError']);
     });
 
@@ -59,7 +59,7 @@ describe('HomeComponent', () => {
     it('should redirect to signon-a-computer screen if on a mobile device', () => {
         deviceTypeServiceSpy.isDesktop.and.returnValue(false);
         component.ngOnInit();
-        expect(router.navigate).toHaveBeenCalledWith([pageUrls.SignonAComputer]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.UnsupportedDevice]);
     });
 
     it('should navigate to hearing list when device is a desktop', fakeAsync(() => {
@@ -81,4 +81,10 @@ describe('HomeComponent', () => {
         flushMicrotasks();
         expect(errorServiceSpy.handleApiError).toHaveBeenCalledWith(error);
     }));
+
+    it('should redirect to signon-a-computer screen if on tablet and not an iPad', () => {
+        deviceTypeServiceSpy.isIpad.and.returnValue(false);
+        component.ngOnInit();
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.UnsupportedDevice]);
+    });
 });

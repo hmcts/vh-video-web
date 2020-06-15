@@ -1,53 +1,38 @@
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { AdalService } from 'adal-angular4';
 import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, Role, UserProfileResponse } from 'src/app/services/clients/api-client';
-import { EventsService } from 'src/app/services/events.service';
+import { ConferenceResponse } from 'src/app/services/clients/api-client';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
-import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
+import { eventsServiceSpy, messageSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { adminTestProfile, judgeTestProfile } from '../../testing/data/test-profiles';
 import { VhoChatComponent } from './vho-chat.component';
 
 describe('VhoChatComponent', () => {
     let component: VhoChatComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    let eventsServiceSpy: jasmine.SpyObj<EventsService>;
+    const eventsService = eventsServiceSpy;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
-    const mockAdalService = new MockAdalService();
-    const mockEventsService = new MockEventsService();
-    let adalService;
+    let adalService: jasmine.SpyObj<AdalService>;
     let conference: ConferenceResponse;
     let hearing: Hearing;
-    const imHelper = new ImHelper();
-
-    const judgeProfile: UserProfileResponse = new UserProfileResponse({
-        display_name: 'Judge Fudge',
-        first_name: 'Judge',
-        last_name: 'Fudge',
-        role: Role.Judge,
-        username: 'judge.fudge@hearings.net'
-    });
-
-    const adminProfile: UserProfileResponse = new UserProfileResponse({
-        display_name: 'Test Admin',
-        first_name: 'Test',
-        last_name: 'Admin',
-        role: Role.VideoHearingsOfficer,
-        username: 'admin@test.com'
-    });
-
+    const judgeProfile = judgeTestProfile;
+    const adminProfile = adminTestProfile;
+    const timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
+    let chatSub$: Subscription;
     beforeAll(() => {
-        adalService = mockAdalService;
+        adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
+            userInfo: <adal.User>{ userName: adminProfile.username, authenticated: true }
+        });
         conference = new ConferenceTestData().getConferenceDetailFuture();
         hearing = new Hearing(conference);
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceChatHistory']);
-        eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', ['start', 'getChatMessage', 'sendMessage']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', [
             'checkCacheForProfileByUsername',
             'getProfileByUsername',
@@ -60,21 +45,39 @@ describe('VhoChatComponent', () => {
     });
 
     beforeEach(() => {
-        const chatHistory = new ConferenceTestData().getChatHistory(mockAdalService.userInfo.userName, conference.id);
+        spyOn(global, 'setTimeout').and.returnValue(timer);
+        const chatHistory = new ConferenceTestData().getChatHistory(adminProfile.username, conference.id);
+
+        adalService.userInfo.userName = adminProfile.username;
 
         profileServiceSpy.checkCacheForProfileByUsername.and.callFake(() => null);
         profileServiceSpy.getProfileByUsername.and.returnValue(Promise.resolve(judgeProfile));
         videoWebServiceSpy.getConferenceChatHistory.and.returnValue(Promise.resolve(chatHistory));
         profileServiceSpy.getUserProfile.and.resolveTo(adminProfile);
 
-        eventsServiceSpy.getChatMessage.and.returnValue(mockEventsService.messageSubject.asObservable());
-
-        component = new VhoChatComponent(videoWebServiceSpy, profileServiceSpy, eventsServiceSpy, new MockLogger(), adalService, imHelper);
+        component = new VhoChatComponent(
+            videoWebServiceSpy,
+            profileServiceSpy,
+            eventsService,
+            new MockLogger(),
+            adalService,
+            new ImHelper()
+        );
 
         component.hearing = hearing;
         component.participant = hearing.judge;
         component.loggedInUserProfile = adminProfile;
-        component.messages = new ConferenceTestData().getChatHistory('vho.user@hearings.net', conference.id);
+        component.messages = new ConferenceTestData().getChatHistory(adminTestProfile.username, conference.id);
+    });
+
+    afterEach(() => {
+        if (chatSub$) {
+            chatSub$.unsubscribe();
+        }
+    });
+
+    it('should return input participant username as participant username', () => {
+        expect(component.participantUsername).toEqual(hearing.judge.username.toLowerCase());
     });
 
     it('should get chat history and subscribe', fakeAsync(() => {
@@ -88,12 +91,29 @@ describe('VhoChatComponent', () => {
         expect(component.messages.length).toBeGreaterThan(0);
     }));
 
-    it('should handle message when received from admin', fakeAsync(() => {
-        component.setupChatSubscription();
+    it('should handle message when received from admin', fakeAsync(async () => {
+        chatSub$ = await component.setupChatSubscription();
         spyOn(component, 'handleIncomingMessage');
         const judgeUsername = hearing.judge.username;
         const adminUsername = 'admin@test.com';
         adalService.userInfo.userName = judgeUsername;
+        const instantMessageTest = new InstantMessage({
+            conferenceId: conference.id,
+            id: Guid.create().toString(),
+            from: adminUsername,
+            to: judgeUsername,
+            message: 'test message',
+            timestamp: new Date()
+        });
+        component.pendingMessages.push(instantMessageTest);
+        messageSubjectMock.next(instantMessageTest);
+        expect(component.handleIncomingMessage).toHaveBeenCalledWith(instantMessageTest);
+    }));
+
+    it('should set from to "You" when admin send a message to participant', fakeAsync(async () => {
+        chatSub$ = await component.setupChatSubscription();
+        const judgeUsername = hearing.judge.username;
+        const adminUsername = 'admin@test.com';
         const instantMessage = new InstantMessage({
             conferenceId: conference.id,
             id: Guid.create().toString(),
@@ -102,49 +122,42 @@ describe('VhoChatComponent', () => {
             message: 'test message',
             timestamp: new Date()
         });
-        mockEventsService.messageSubject.next(instantMessage);
+        const messageCount = component.messages.length;
+        messageSubjectMock.next(instantMessage);
         flushMicrotasks();
-        expect(component.handleIncomingMessage).toHaveBeenCalledWith(instantMessage);
+
+        const afterCount = component.messages.length;
+        expect(component.messages.pop().is_user).toBeTruthy();
+        expect(afterCount).toBeGreaterThan(messageCount);
     }));
 
-    it('should set from to "You" when admin send a message to participant', async () => {
-        const judgeUsername = hearing.judge.username;
+    it('should not add message participant B send message to admin when chat for participant A is open', fakeAsync(async () => {
+        chatSub$ = await component.setupChatSubscription();
+        const otherUsername = 'not@chatwindow.com';
         const adminUsername = 'admin@test.com';
-        const instantMessage = new InstantMessage({
+        const im = new InstantMessage({
             conferenceId: conference.id,
             id: Guid.create().toString(),
-            from: judgeUsername,
+            from: otherUsername,
             to: adminUsername,
             message: 'test message',
             timestamp: new Date()
         });
         const messageCount = component.messages.length;
-        await component.handleIncomingMessage(instantMessage);
-        expect(instantMessage.is_user).toBeTruthy();
-        expect(component.messages.length).toBeGreaterThan(messageCount);
-    });
 
-    it('should set from to display name whem message is from other user', async () => {
-        const username = conference.participants[0].username;
-        const otherUsername = component.DEFAULT_ADMIN_USERNAME;
-        adalService.userInfo.userName = username;
-        const chatResponse = new InstantMessage({
-            conferenceId: conference.id,
-            id: Guid.create().toString(),
-            from: otherUsername,
-            message: 'test message',
-            timestamp: new Date()
-        });
-        const messageCount = component.messages.length;
-        await component.handleIncomingMessage(chatResponse);
-        expect(chatResponse.is_user).toBeFalsy();
-        expect(component.messages.length).toBeGreaterThan(messageCount);
-    });
+        messageSubjectMock.next(im);
+        flushMicrotasks();
+        expect(component.messages.length).toBe(messageCount);
+    }));
 
-    it('should send message to hub', () => {
+    it('should send message to hub', async () => {
         const message = 'test';
-        component.sendMessage(message);
-        expect(eventsServiceSpy.sendMessage).toHaveBeenCalledWith(conference.id, message, component.participant.username);
+        await component.sendMessage(message);
+        expect(eventsService.sendMessage.calls.mostRecent().args[0]).toBeInstanceOf(InstantMessage);
+        const lastArg = <InstantMessage>eventsService.sendMessage.calls.mostRecent().args[0];
+        expect(lastArg.conferenceId).toBe(conference.id);
+        expect(lastArg.message).toBe(message);
+        expect(lastArg.to).toBe(component.participant.username);
     });
 
     it('should use profile from cache', async () => {
@@ -169,6 +182,7 @@ describe('VhoChatComponent', () => {
         const result = await component.verifySender(instantMessage);
         expect(result.from_display_name).toEqual(hearing.judge.displayName);
     });
+
     it('should clear subscription on destroy', async () => {
         component.chatHubSubscription = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
         component.ngOnDestroy();
@@ -186,5 +200,41 @@ describe('VhoChatComponent', () => {
         spyOn(component, 'scrollToBottom');
         component.ngAfterViewChecked();
         expect(component.scrollToBottom).toHaveBeenCalled();
+    });
+
+    it('should update failed property if im has not sent after 3 seconds', () => {
+        const judgeUsername = hearing.judge.username;
+        const adminUsername = 'admin@test.com';
+        adalService.userInfo.userName = adminUsername;
+        const instantMessage = new InstantMessage({
+            conferenceId: conference.id,
+            id: Guid.create().toString(),
+            from: judgeUsername,
+            to: adminUsername,
+            message: 'test message',
+            timestamp: new Date()
+        });
+
+        component.pendingMessages.push(instantMessage);
+        component.checkIfMessageFailed(instantMessage);
+        const result = component.pendingMessages.pop();
+        expect(result.failedToSend).toBeTruthy();
+    });
+
+    it('should handle pending IMs already processed', () => {
+        const judgeUsername = hearing.judge.username;
+        const adminUsername = 'admin@test.com';
+        adalService.userInfo.userName = adminUsername;
+        const im = new InstantMessage({
+            conferenceId: conference.id,
+            id: Guid.create().toString(),
+            from: judgeUsername,
+            to: adminUsername,
+            message: 'test message',
+            timestamp: new Date()
+        });
+        component.messages.push(im);
+        component.checkIfMessageFailed(im);
+        expect(component.pendingMessages.length).toBe(0);
     });
 });

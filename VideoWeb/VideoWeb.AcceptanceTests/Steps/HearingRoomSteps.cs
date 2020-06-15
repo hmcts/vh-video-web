@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using AcceptanceTests.Common.Api.Helpers;
-using AcceptanceTests.Common.Driver.Browser;
+using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Enums;
 using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.Test.Helpers;

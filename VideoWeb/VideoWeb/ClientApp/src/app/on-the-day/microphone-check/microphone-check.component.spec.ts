@@ -9,6 +9,7 @@ import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MicrophoneCheckComponent } from './microphone-check.component';
 import { SelfTestFailureReason, AddSelfTestFailureEventRequest } from 'src/app/services/clients/api-client';
+import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 
 describe('MicrophoneCheckComponent', () => {
     let component: MicrophoneCheckComponent;
@@ -22,6 +23,7 @@ describe('MicrophoneCheckComponent', () => {
     let adalService;
     let errorService: jasmine.SpyObj<ErrorService>;
     const logger: Logger = new MockLogger();
+    let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
 
     beforeAll(() => {
         adalService = mockAdalService;
@@ -37,6 +39,8 @@ describe('MicrophoneCheckComponent', () => {
             'handleApiError',
             'returnHomeIfUnauthorised'
         ]);
+
+        participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
     });
 
     beforeEach(() => {
@@ -47,7 +51,8 @@ describe('MicrophoneCheckComponent', () => {
             videoWebServiceSpy,
             adalService,
             errorService,
-            logger
+            logger,
+            participantStatusUpdateService
         );
         router.navigate.calls.reset();
         component.ngOnInit();

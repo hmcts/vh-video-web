@@ -13,7 +13,7 @@ describe('ParticipantStatusReader', () => {
     ];
 
     testCasesForGetStatusAsText.forEach(testCase => {
-        it('should get status as text', () => {
+        it(`should get status ${testCase.status} as text`, () => {
             expect(reader.getStatusAsText(testCase.status)).toBe(testCase.expected);
         });
     });
@@ -28,7 +28,7 @@ describe('ParticipantStatusReader', () => {
     ];
 
     testCasesForgetStatusAsTextForJudge.forEach(testCase => {
-        it('should get status as text for judge', () => {
+        it(`should get status ${testCase.status} as text for judge`, () => {
             expect(reader.getStatusAsTextForJudge(testCase.status)).toBe(testCase.expected);
         });
     });

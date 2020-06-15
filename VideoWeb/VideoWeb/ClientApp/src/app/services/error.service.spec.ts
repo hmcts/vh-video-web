@@ -57,13 +57,6 @@ describe('ErrorService', () => {
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.ServiceError]);
     }));
 
-    it('should navigate to service error', inject([ErrorService], (service: ErrorService) => {
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-        const error = { status: 500, isApiException: true };
-        service.handleApiError(error);
-        expect(router.navigate).toHaveBeenCalledWith([pageUrls.ServiceError]);
-    }));
-
     it('should return false when error not an ApiException during unauthorised check', inject([ErrorService], (service: ErrorService) => {
         const error = { message: 'this is a standard error' };
         expect(service.returnHomeIfUnauthorised(error)).toBeFalsy();

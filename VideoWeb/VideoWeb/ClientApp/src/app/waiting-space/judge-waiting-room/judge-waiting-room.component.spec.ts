@@ -209,11 +209,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(videoWebService.getConferenceById).toHaveBeenCalled();
     });
 
-    it('should get latest conference on eventhub disconnect', () => {
-        mockEventService.eventHubReconnectSubject.next();
-        expect(videoWebService.getConferenceById).toHaveBeenCalled();
-    });
-
     it('should update hearing status when message received', () => {
         component.conference.status = ConferenceStatus.InSession;
         const message = new ConferenceStatusMessage(conference.id, ConferenceStatus.Paused);

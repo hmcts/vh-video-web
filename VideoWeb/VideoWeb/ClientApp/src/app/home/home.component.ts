@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProfileService } from '../services/api/profile.service';
-import { UserProfileResponse, Role } from '../services/clients/api-client';
 import { DeviceTypeService } from '../services/device-type.service';
 import { ErrorService } from '../services/error.service';
 import { pageUrls } from '../shared/page-url.constants';
+import { UserProfileResponse, Role } from '../services/clients/api-client';
 
 @Component({
     selector: 'app-home',
@@ -19,13 +19,13 @@ export class HomeComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        if (this.deviceTypeService.isDesktop()) {
+        if (this.deviceTypeService.isDesktop() || this.deviceTypeService.isIpad()) {
             this.profileService
                 .getUserProfile()
                 .then(profile => this.navigateToHearingList(profile))
                 .catch(error => this.errorService.handleApiError(error));
         } else {
-            this.router.navigate([pageUrls.SignonAComputer]);
+            this.router.navigate([pageUrls.UnsupportedDevice]);
         }
     }
 

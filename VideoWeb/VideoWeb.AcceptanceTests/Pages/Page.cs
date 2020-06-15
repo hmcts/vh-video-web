@@ -38,6 +38,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly Page Accessibility = new Page("Accessibility", "accessibility");
         public static readonly Page OpenGovernmentLicence = new Page("Open Government Licence", "open-government-licence");
         public static readonly Page UnsupportedBrowser = new Page("Unsupported Browser", "unsupported-browser");
+        public static readonly Page UnsupportedDevice = new Page("Unsupported Device", "unsupported-device");
 
         public string ToString(Page page)
         {
@@ -84,6 +85,7 @@ namespace VideoWeb.AcceptanceTests.Pages
                 yield return Accessibility;
                 yield return OpenGovernmentLicence;
                 yield return UnsupportedBrowser;
+                yield return UnsupportedDevice;
             }
         }
     }

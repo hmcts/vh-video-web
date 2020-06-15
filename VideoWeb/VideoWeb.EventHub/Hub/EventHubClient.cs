@@ -128,7 +128,7 @@ namespace VideoWeb.EventHub.Hub
             return await _userProfileService.GetObfuscatedUsernameAsync(username);
         }
 
-        public async Task SendMessage(Guid conferenceId, string message, string to)
+        public async Task SendMessage(Guid conferenceId, string message, string to, Guid messageUuid)
         {
             // this determines if the message is from admin
             var isSenderAdmin = IsSenderAdmin();
@@ -136,20 +136,28 @@ namespace VideoWeb.EventHub.Hub
             // only admins and participants in the conference can send or receive a message within a conference channel
             var from = Context.User.Identity.Name.ToLowerInvariant();
             var participantUsername = isSenderAdmin ? to : from;
-            var isAllowed = await IsAllowedToSendMessageAsync(conferenceId, isSenderAdmin, isRecipientAdmin, participantUsername);
+            var isAllowed =
+                await IsAllowedToSendMessageAsync(conferenceId, isSenderAdmin, isRecipientAdmin, participantUsername);
             if (!isAllowed) return;
 
-            
-            var timestamp = DateTime.UtcNow;
+            var dto = new SendMessageDto
+            {
+                Conference = new Conference {Id = conferenceId},
+                From = from,
+                To = to,
+                Message = message,
+                ParticipantUsername = participantUsername,
+                Timestamp = DateTime.UtcNow,
+                MessageUuid = messageUuid
+            };
 
             // send to admin channel
 
-            await SendToAdmin(conferenceId, message, to, @from, timestamp);
+            await SendToAdmin(dto);
 
             // determine participant username
-            var conference = await GetConference(conferenceId);
-
-            await SendToParticipant(conferenceId, message, to, conference, participantUsername, @from, timestamp);
+            dto.Conference = await GetConference(conferenceId);
+            await SendToParticipant(dto);
             await _videoApiClient.AddInstantMessageToConferenceAsync(conferenceId, new AddInstantMessageRequest
             {
                 From = from,
@@ -173,20 +181,19 @@ namespace VideoWeb.EventHub.Hub
             return user!=null &&  user.User_role.Equals("VHOfficer", StringComparison.InvariantCultureIgnoreCase);
         }
 
-        private async Task SendToParticipant(Guid conferenceId, string message, string to, Conference conference,
-            string participantUsername, string @from, DateTime timestamp)
+        private async Task SendToParticipant(SendMessageDto dto)
         {
-            var participant = conference.Participants.Single(x =>
-                x.Username.Equals(participantUsername, StringComparison.InvariantCultureIgnoreCase));
+            var participant = dto.Conference.Participants.Single(x =>
+                x.Username.Equals(dto.ParticipantUsername, StringComparison.InvariantCultureIgnoreCase));
 
             await Clients.Group(participant.Username.ToLowerInvariant())
-                .ReceiveMessage(conferenceId, @from, to, message, timestamp, Guid.NewGuid());
+                .ReceiveMessage(dto.Conference.Id, dto.From, dto.To, dto.Message, dto.Timestamp, dto.MessageUuid);
         }
 
-        private async Task SendToAdmin(Guid conferenceId, string message, string to, string @from, DateTime timestamp)
+        private async Task SendToAdmin(SendMessageDto dto)
         {
-            await Clients.Group(conferenceId.ToString())
-                .ReceiveMessage(conferenceId, @from, to, message, timestamp, Guid.NewGuid());
+            await Clients.Group(dto.Conference.Id.ToString())
+                .ReceiveMessage(dto.Conference.Id, dto.From, dto.To, dto.Message, dto.Timestamp, dto.MessageUuid);
         }
 
         private bool IsConversationBetweenAdminAndParticipant(bool isSenderAdmin, bool isRecipientAdmin)

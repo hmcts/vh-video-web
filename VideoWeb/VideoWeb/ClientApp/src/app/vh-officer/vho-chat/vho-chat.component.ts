@@ -12,11 +12,13 @@ import {
 } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { AdalService } from 'adal-angular4';
+import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
 import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
@@ -63,6 +65,10 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         super(videoWebService, profileService, eventService, logger, adalService, imHelper);
     }
 
+    get participantUsername() {
+        return this._participant.username.toLowerCase();
+    }
+
     ngAfterViewChecked(): void {
         this.scrollToBottom();
     }
@@ -86,8 +92,22 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         this.newMessageBody = new FormControl(null, [Validators.required, Validators.minLength(1), Validators.maxLength(256)]);
     }
 
-    sendMessage(messageBody: string) {
-        this.eventService.sendMessage(this.hearing.id, messageBody, this.participant.username);
+    async sendMessage(messageBody: string) {
+        const im = new InstantMessage({
+            conferenceId: this.hearing.id,
+            id: Guid.create().toString(),
+            to: this.participant.username,
+            from: this.adalService.userInfo.userName,
+            from_display_name: 'You',
+            message: messageBody,
+            is_user: true,
+            timestamp: new Date(new Date().toUTCString())
+        });
+        await this.sendInstantMessage(im);
+    }
+
+    handleIncomingOtherMessage(messsage: InstantMessage) {
+        // no special changes here
     }
 
     @HostListener('window:beforeunload')

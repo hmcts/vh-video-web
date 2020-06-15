@@ -1,19 +1,22 @@
-import { Hearing } from './models/hearing';
-import { UserProfileResponse, Role } from '../services/clients/api-client';
-import { SharedModule } from './shared.module';
 import { Injectable } from '@angular/core';
+import { Role, UserProfileResponse } from '../services/clients/api-client';
 import { InstantMessage } from '../services/models/instant-message';
+import { SharedModule } from './shared.module';
 
 @Injectable({
     providedIn: SharedModule
 })
 export class ImHelper {
-    isImForUser(message: InstantMessage, hearing: Hearing, profile: UserProfileResponse) {
-        if (profile.role === Role.VideoHearingsOfficer) {
-            return true;
+    isImForUser(message: InstantMessage, participantUsername: string, loggedInProfile: UserProfileResponse) {
+        if (loggedInProfile.role === Role.VideoHearingsOfficer) {
+            return this.isParticipantSenderOrRecepient(message, participantUsername);
+        } else {
+            return this.isParticipantSenderOrRecepient(message, loggedInProfile.username);
         }
+    }
 
-        const usersInHearing = hearing.participants.map(p => p.username.toLowerCase().trim());
-        return usersInHearing.includes(message.to.toLowerCase().trim());
+    private isParticipantSenderOrRecepient(message: InstantMessage, username: string) {
+        const user = username.toLowerCase();
+        return user === message.from.toLowerCase() || user === message.to.toLowerCase();
     }
 }

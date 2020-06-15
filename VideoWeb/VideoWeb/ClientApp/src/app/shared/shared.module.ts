@@ -6,6 +6,7 @@ import { DeviceDetectorModule } from 'ngx-device-detector';
 import { AccessibilityComponent } from './accessibility/accessibility.component';
 import { BackNavigationComponent } from './back-navigation/back-navigation.component';
 import { BetaBannerComponent } from './beta-banner/beta-banner.component';
+import { ChatBodyWindowComponent } from './chat-body-window/chat-body-window.component';
 import { ChatInputBoxComponent } from './chat-input-box/chat-input-box.component';
 import { ContactUsFoldingComponent } from './contact-us-folding/contact-us-folding.component';
 import { ContactUsComponent } from './contact-us/contact-us.component';
@@ -20,12 +21,11 @@ import { ModalComponent } from './modal/modal.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
+import { ScreenHelper } from './screen-helper';
 import { SelectMediaDevicesComponent } from './select-media-devices/select-media-devices.component';
 import { SelfTestComponent } from './self-test/self-test.component';
 import { SharedRoutingModule } from './shared-routing.module';
 import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-browser.component';
-import { ScreenHelper } from './screen-helper';
-import { ChatBodyWindowComponent } from './chat-body-window/chat-body-window.component';
 
 @NgModule({
     imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, SharedRoutingModule, DeviceDetectorModule.forRoot()],

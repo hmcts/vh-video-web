@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -7,6 +7,8 @@ import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { BaseSelfTestComponent } from '../models/base-self-test.component';
+import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
+import { EventType } from 'src/app/services/clients/api-client';
 
 @Component({
     selector: 'app-participant-self-test',
@@ -19,7 +21,8 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
         protected videoWebService: VideoWebService,
         protected errorService: ErrorService,
         protected adalService: AdalService,
-        protected logger: Logger
+        protected logger: Logger,
+        private participantStatusUpdateService: ParticipantStatusUpdateService
     ) {
         super(route, videoWebService, errorService, adalService, logger);
     }
@@ -37,5 +40,23 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
     restartTest() {
         this.logger.debug('restarting participant self-test');
         this.selfTestComponent.replayVideo();
+    }
+
+    @HostListener('window:beforeunload', ['$event'])
+    beforeunloadHandler($event: any) {
+        $event.returnValue = 'save';
+        this.raiseNotSignedIn();
+        return 'save';
+    }
+
+    private raiseNotSignedIn() {
+        this.participantStatusUpdateService
+            .postParticipantStatus(EventType.ParticipantNotSignedIn, null)
+            .then(() => {
+                this.logger.info('Participant status was updated to not signed in');
+            })
+            .catch(err => {
+                this.logger.error('Unable to update status to not signed in', err);
+            });
     }
 }

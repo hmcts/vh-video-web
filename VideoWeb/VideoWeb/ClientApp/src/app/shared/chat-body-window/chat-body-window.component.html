@@ -1,9 +1,26 @@
-<div *ngFor="let message of messages" class="govuk-grid-row message-container">
-  <div class="govuk-grid-column-full" [ngClass]="message.is_user ? 'own-message' : 'other-message'">
-    <p class="govuk-body govuk-!-margin-bottom-2">
+<div *ngFor="let message of allMessages" class="govuk-grid-row message-container">
+  <div
+    class="govuk-grid-column-full"
+    [ngClass]="message.is_user ? 'own-message' : 'other-message'"
+    [class.govuk-form-group--error]="hasMessageFailed(message)"
+  >
+    <p class="govuk-body-s govuk-!-margin-bottom-1">
       <span class="govuk-!-font-weight-bold govuk-!-margin-right-2">{{ message.from_display_name }}</span
       >({{ message.timestamp | date: 'shortTime' }})
     </p>
-    <p class="govuk-body chat-message" [ngClass]="message.is_user ? '' : 'other-message-body'">{{ message.message }}</p>
+    <p
+      class="govuk-body-s chat-message"
+      [ngClass]="message.is_user ? '' : 'other-message-body'"
+      [class.govuk-!-margin-bottom-0]="hasMessageFailed(message)"
+    >
+      {{ message.message }}
+    </p>
+    <ng-container *ngIf="hasMessageFailed(message)">
+      <span id="message-send-error govuk-!-margin-bottom-1" class="failed-message">
+        <img class="alert-image" id="failed-message-icon" src="/assets/images/alert-full.png" alt="alerts-icon" />
+        <span class="govuk-visually-hidden">Error:</span> message failed to send
+        <a href="javascript:void(0)" class="govuk-link" (click)="retry(message)">try again</a>
+      </span>
+    </ng-container>
   </div>
 </div>

@@ -12,7 +12,8 @@ import { ImHelper } from '../im-helper';
 
 export abstract class ChatBaseComponent {
     protected hearing: Hearing;
-    messages: InstantMessage[];
+    messages: InstantMessage[] = [];
+    pendingMessages: InstantMessage[] = [];
     loggedInUserProfile: UserProfileResponse;
 
     DEFAULT_ADMIN_USERNAME = 'Admin';
@@ -27,6 +28,7 @@ export abstract class ChatBaseComponent {
 
     abstract content: ElementRef;
     abstract sendMessage(messageBody: string): void;
+    abstract get participantUsername(): string;
 
     async setupChatSubscription(): Promise<Subscription> {
         if (!this.loggedInUserProfile) {
@@ -44,7 +46,7 @@ export abstract class ChatBaseComponent {
     }
 
     async handleIncomingMessage(message: InstantMessage) {
-        if (!this.isMesageRecipientForUser(message)) {
+        if (!this.isMessageRecipientForUser(message)) {
             return;
         }
         const from = message.from.toUpperCase();
@@ -56,10 +58,15 @@ export abstract class ChatBaseComponent {
             message = await this.verifySender(message);
             this.handleIncomingOtherMessage(message);
         }
+        this.removeMessageFromPending(message);
         this.messages.push(message);
     }
 
-    isMesageRecipientForUser(message: InstantMessage): boolean {
+    removeMessageFromPending(message: InstantMessage) {
+        this.pendingMessages = this.pendingMessages.filter(im => im.id !== message.id);
+    }
+
+    isMessageRecipientForUser(message: InstantMessage): boolean {
         // ignore if not for current conference or participant
         if (message.conferenceId !== this.hearing.id) {
             return false;
@@ -71,7 +78,8 @@ export abstract class ChatBaseComponent {
             this.logger.debug(`[ChatHub] message already been processed ${JSON.stringify(logInfo)}`);
             return false;
         }
-        return this.imHelper.isImForUser(message, this.hearing, this.loggedInUserProfile);
+
+        return this.imHelper.isImForUser(message, this.participantUsername, this.loggedInUserProfile);
     }
 
     async verifySender(message: InstantMessage): Promise<InstantMessage> {
@@ -100,7 +108,7 @@ export abstract class ChatBaseComponent {
         return await this.profileService.getProfileByUsername(username);
     }
 
-    handleIncomingOtherMessage(messsage: InstantMessage) {}
+    abstract handleIncomingOtherMessage(messsage: InstantMessage);
 
     async retrieveChatForConference(participantUsername: string): Promise<InstantMessage[]> {
         this.messages = (await this.videoWebService.getConferenceChatHistory(this.hearing.id, participantUsername)).map(m => {
@@ -115,5 +123,21 @@ export abstract class ChatBaseComponent {
         try {
             this.content.nativeElement.scrollTop = this.content.nativeElement.scrollHeight;
         } catch (err) {}
+    }
+
+    async sendInstantMessage(instantMessage: InstantMessage) {
+        this.pendingMessages.push(instantMessage);
+        await this.eventService.sendMessage(instantMessage);
+        // 5 seconds is sufficient time to check if message has not returned
+        setTimeout(() => {
+            this.checkIfMessageFailed(instantMessage);
+        }, 3000);
+    }
+
+    checkIfMessageFailed(instantMessage: InstantMessage) {
+        if (this.messages.findIndex(x => x.id === instantMessage.id) < 0) {
+            const index = this.pendingMessages.findIndex(x => x.id === instantMessage.id);
+            this.pendingMessages[index].failedToSend = true;
+        }
     }
 }

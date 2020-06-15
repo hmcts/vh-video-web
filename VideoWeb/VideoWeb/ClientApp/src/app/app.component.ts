@@ -30,7 +30,6 @@ export class AppComponent implements OnInit, OnDestroy {
     pageTitle = 'Video Hearings - ';
 
     subscriptions = new Subscription();
-
     constructor(
         private adalService: AdalService,
         private configService: ConfigService,
@@ -66,8 +65,18 @@ export class AppComponent implements OnInit, OnDestroy {
         this.checkAuth().then(() => {
             this.checkBrowser();
             this.setPageTitle();
-            this.scrollToTop();
+            this.setupSubscribers();
         });
+    }
+
+    private setupSubscribers() {
+        this.subscriptions.add(
+            this.router.events.subscribe((event: NavigationEnd) => {
+                if (event instanceof NavigationEnd) {
+                    this.scrollToTop();
+                }
+            })
+        );
     }
 
     ngOnDestroy(): void {
@@ -138,11 +147,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     scrollToTop() {
-        this.subscriptions.add(
-            this.router.events.subscribe((event: NavigationEnd) => {
-                window.scroll(0, 0);
-                this.skipLinkDiv.nativeElement.focus();
-            })
-        );
+        window.scroll(0, 0);
+        this.skipLinkDiv.nativeElement.focus();
     }
 }

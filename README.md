@@ -115,3 +115,31 @@ Update following configuration under VideoWeb/VideoWeb.AcceptanceTests/appsettin
 - "AzureAd:RedirectUri": "https://videoweb_ac/home"
 - "AzureAd:PostLogoutRedirectUri": "https://videoweb_ac/logout"
 - "ZapConfiguration:ZapScan": true
+
+## Run Stryker
+
+To run stryker mutation test, go to UnitTest folder under command prompt and run the following command
+
+```bash
+dotnet stryker
+```
+
+From the results look for line(s) of code highlighted with Survived\No Coverage and fix them.
+
+
+If in case you have not installed stryker previously, please use one of the following commands
+
+### Global
+```bash
+dotnet tool install -g dotnet-stryker
+```
+### Local
+```bash
+dotnet tool install dotnet-stryker
+```
+
+To update latest version of stryker please use the following command
+
+```bash
+dotnet tool update --global dotnet-stryker
+```

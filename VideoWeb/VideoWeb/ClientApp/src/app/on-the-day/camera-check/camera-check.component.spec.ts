@@ -8,6 +8,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { CameraCheckComponent } from './camera-check.component';
+import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 
 describe('CameraCheckComponent', () => {
     let component: CameraCheckComponent;
@@ -22,6 +23,7 @@ describe('CameraCheckComponent', () => {
     let adalService;
     let errorService: jasmine.SpyObj<ErrorService>;
     const logger: Logger = new MockLogger();
+    let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
 
     beforeAll(() => {
         adalService = mockAdalService;
@@ -37,10 +39,21 @@ describe('CameraCheckComponent', () => {
             'handleApiError',
             'returnHomeIfUnauthorised'
         ]);
+
+        participantStatusUpdateService = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
     });
 
     beforeEach(() => {
-        component = new CameraCheckComponent(router, activatedRoute, formBuilder, videoWebServiceSpy, adalService, errorService, logger);
+        component = new CameraCheckComponent(
+            router,
+            activatedRoute,
+            formBuilder,
+            videoWebServiceSpy,
+            adalService,
+            errorService,
+            logger,
+            participantStatusUpdateService
+        );
         router.navigate.calls.reset();
         component.ngOnInit();
     });

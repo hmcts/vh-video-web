@@ -1,5 +1,6 @@
 import { AfterViewChecked, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AdalService } from 'adal-angular4';
+import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -38,6 +39,10 @@ export class ParticipantChatComponent extends ChatBaseComponent implements OnIni
         super(videoWebService, profileService, eventService, logger, adalService, imHelper);
     }
 
+    get participantUsername() {
+        return this.adalService.userInfo.userName.toLowerCase();
+    }
+
     ngOnInit() {
         this.logger.debug(`[ChatHub Judge] starting chat for ${this.hearing.id}`);
         this.showChat = false;
@@ -59,7 +64,18 @@ export class ParticipantChatComponent extends ChatBaseComponent implements OnIni
     }
 
     async sendMessage(messageBody: string) {
-        await this.eventService.sendMessage(this.hearing.id, messageBody, this.DEFAULT_ADMIN_USERNAME);
+        const im = new InstantMessage({
+            conferenceId: this.hearing.id,
+            id: Guid.create().toString(),
+            to: this.DEFAULT_ADMIN_USERNAME,
+            from: this.adalService.userInfo.userName.toLowerCase(),
+            from_display_name: 'You',
+            is_user: true,
+            message: messageBody,
+            timestamp: new Date(new Date().toUTCString())
+        });
+        im.failedToSend = false;
+        await this.sendInstantMessage(im);
     }
 
     @HostListener('window:beforeunload')
@@ -75,7 +91,7 @@ export class ParticipantChatComponent extends ChatBaseComponent implements OnIni
     }
 
     handleIncomingOtherMessage(message: InstantMessage) {
-        if (!this.showChat) {
+        if (!this.showChat && !message.is_user) {
             this.unreadMessageCount++;
         }
     }

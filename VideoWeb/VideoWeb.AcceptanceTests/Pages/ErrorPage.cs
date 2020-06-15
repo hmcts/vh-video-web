@@ -1,4 +1,4 @@
-﻿using AcceptanceTests.Common.PageObject.Helpers;
+using AcceptanceTests.Common.PageObject.Helpers;
 using OpenQA.Selenium;
 
 namespace VideoWeb.AcceptanceTests.Pages
@@ -18,5 +18,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By NotRegisteredErrorMessage = CommonLocators.ElementContainingText(NotRegisteredError);
         public static By IsThisAMistakeErrorMessage = CommonLocators.ElementContainingText(IsThisAMistakeError);
         public static By UnsupportedBrowserTitle = By.Id("unsupported");
+        public static By UnsupportedDeviceTitle = By.Id("unsupportedDevice");
     }
 }
