@@ -1,15 +1,11 @@
-import { inject, TestBed } from '@angular/core/testing';
 import * as signalR from '@microsoft/signalr';
-import { AdalService } from 'adal-angular4';
+import { Guid } from 'guid-typescript';
+import { Subscription } from 'rxjs';
 import { MockAdalService } from '../testing/mocks/MockAdalService';
-import { MockConfigService } from '../testing/mocks/MockConfigService';
 import { MockLogger } from '../testing/mocks/MockLogger';
-import { ConfigService } from './api/config.service';
 import { EventsService } from './events.service';
 import { Logger } from './logging/logger-base';
-import { Subject, Subscription } from 'rxjs';
 import { InstantMessage } from './models/instant-message';
-import { Guid } from 'guid-typescript';
 
 describe('EventsService', () => {
     let service: EventsService;
@@ -56,7 +52,7 @@ describe('EventsService', () => {
         service.reconnectionAttempt = 0;
         service.retryDelayTime = 1;
         spyOn(service.connection, 'start').and.returnValues(Promise.reject('Unable to connect auto test'), Promise.resolve());
-        const sub$ = service.getServiceDisconnected();
+        subscription$.add(service.getServiceDisconnected().subscribe());
         await service.start();
         expect(service.reconnectionAttempt).toBe(0);
         expect(service.connection.start).toHaveBeenCalledTimes(2);

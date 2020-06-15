@@ -1,17 +1,16 @@
+import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ModalService } from 'src/app/services/modal.service';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Participant } from 'src/app/shared/models/participant';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy, participantStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { NotificationSoundsService } from '../../services/notification-sounds.service';
 import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { AdalService } from 'adal-angular4';
 
 describe('IndividualParticipantStatusListComponent Participant Status and Availability', () => {
     let component: IndividualParticipantStatusListComponent;
