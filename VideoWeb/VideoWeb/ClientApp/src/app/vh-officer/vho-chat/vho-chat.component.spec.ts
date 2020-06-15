@@ -105,7 +105,7 @@ describe('VhoChatComponent', () => {
             message: 'test message',
             timestamp: new Date()
         });
-        component.pendingMessages.push(instantMessageTest);
+        component.addMessageToPending(instantMessageTest);
         messageSubjectMock.next(instantMessageTest);
         expect(component.handleIncomingMessage).toHaveBeenCalledWith(instantMessageTest);
     }));
@@ -209,15 +209,15 @@ describe('VhoChatComponent', () => {
         const instantMessage = new InstantMessage({
             conferenceId: conference.id,
             id: Guid.create().toString(),
-            from: judgeUsername,
-            to: adminUsername,
+            from: adminUsername,
+            to: judgeUsername,
             message: 'test message',
             timestamp: new Date()
         });
 
-        component.pendingMessages.push(instantMessage);
+        component.addMessageToPending(instantMessage);
         component.checkIfMessageFailed(instantMessage);
-        const result = component.pendingMessages.pop();
+        const result = component.pendingMessagesForConversation.pop();
         expect(result.failedToSend).toBeTruthy();
     });
 
@@ -235,6 +235,6 @@ describe('VhoChatComponent', () => {
         });
         component.messages.push(im);
         component.checkIfMessageFailed(im);
-        expect(component.pendingMessages.length).toBe(0);
+        expect(component.pendingMessagesForConversation.length).toBe(0);
     });
 });
