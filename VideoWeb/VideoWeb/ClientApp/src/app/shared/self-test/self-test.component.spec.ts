@@ -178,16 +178,6 @@ describe('SelfTestComponent', () => {
         expect(component.testCompleted.emit).toHaveBeenCalledWith(testCallScoreResponse);
     });
 
-    it('should disconnect from pexip when publishing prematurely', () => {
-        spyOn(component.testCompleted, 'emit');
-        const testCallScoreResponse = null;
-        component.didTestComplete = false;
-        component.testCallResult = testCallScoreResponse;
-
-        component.publishTestResult();
-        expect(videoCallService.disconnectFromCall).toHaveBeenCalled();
-    });
-
     it('should raise failed self test event when test score is bad', async () => {
         component.testCallResult = new TestCallScoreResponse({ passed: false, score: TestScore.Bad });
         await component.ngOnDestroy();
@@ -210,10 +200,13 @@ describe('SelfTestComponent', () => {
     });
 
     it('should retrive self test score for conference and participant', async () => {
+        spyOn(component.testCompleted, 'emit');
+
         component.conference = new ConferenceTestData().getConferenceNow();
         component.participant = component.conference.participants[0];
         await component.retrieveSelfTestScore();
         expect(videoWebService.getTestCallScore).toHaveBeenCalledTimes(1);
+        expect(component.testCompleted.emit).toHaveBeenCalled();
     });
 
     it('should retrive independent self test score as a conference and participant are null', async () => {
