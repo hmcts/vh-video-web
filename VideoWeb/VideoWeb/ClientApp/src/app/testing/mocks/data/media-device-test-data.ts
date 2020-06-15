@@ -14,9 +14,9 @@ export class MediaDeviceTestData {
     }
 
     getListOfSingleCameraAndMicDevices(): UserMediaDevice[] {
-        const testData: Array<UserMediaDevice> = [];
-        testData.concat(this.getSingleCamera());
-        testData.concat(this.getSingleMicrophone());
+        let testData: Array<UserMediaDevice> = [];
+        testData = testData.concat(this.getSingleCamera());
+        testData = testData.concat(this.getSingleMicrophone());
         return testData;
     }
 
