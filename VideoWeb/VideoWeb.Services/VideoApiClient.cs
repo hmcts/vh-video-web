@@ -267,18 +267,18 @@ namespace VideoWeb.Services.Video
         /// <summary>Get todays conferences</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForAdminResponse>> GetConferencesTodayForAdminAsync(System.Collections.Generic.IEnumerable<string> userNames);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForAdminResponse>> GetConferencesTodayForAdminAsync(System.Collections.Generic.IEnumerable<string> venueNames);
     
         /// <summary>Get todays conferences</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Collections.Generic.List<ConferenceForAdminResponse> GetConferencesTodayForAdmin(System.Collections.Generic.IEnumerable<string> userNames);
+        System.Collections.Generic.List<ConferenceForAdminResponse> GetConferencesTodayForAdmin(System.Collections.Generic.IEnumerable<string> venueNames);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get todays conferences</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForAdminResponse>> GetConferencesTodayForAdminAsync(System.Collections.Generic.IEnumerable<string> userNames, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForAdminResponse>> GetConferencesTodayForAdminAsync(System.Collections.Generic.IEnumerable<string> venueNames, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get all conferences for a judge</summary>
         /// <param name="username">judge username</param>
@@ -2119,30 +2119,30 @@ namespace VideoWeb.Services.Video
         /// <summary>Get todays conferences</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForAdminResponse>> GetConferencesTodayForAdminAsync(System.Collections.Generic.IEnumerable<string> userNames)
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForAdminResponse>> GetConferencesTodayForAdminAsync(System.Collections.Generic.IEnumerable<string> venueNames)
         {
-            return GetConferencesTodayForAdminAsync(userNames, System.Threading.CancellationToken.None);
+            return GetConferencesTodayForAdminAsync(venueNames, System.Threading.CancellationToken.None);
         }
     
         /// <summary>Get todays conferences</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public System.Collections.Generic.List<ConferenceForAdminResponse> GetConferencesTodayForAdmin(System.Collections.Generic.IEnumerable<string> userNames)
+        public System.Collections.Generic.List<ConferenceForAdminResponse> GetConferencesTodayForAdmin(System.Collections.Generic.IEnumerable<string> venueNames)
         {
-            return System.Threading.Tasks.Task.Run(async () => await GetConferencesTodayForAdminAsync(userNames, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+            return System.Threading.Tasks.Task.Run(async () => await GetConferencesTodayForAdminAsync(venueNames, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get todays conferences</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForAdminResponse>> GetConferencesTodayForAdminAsync(System.Collections.Generic.IEnumerable<string> userNames, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForAdminResponse>> GetConferencesTodayForAdminAsync(System.Collections.Generic.IEnumerable<string> venueNames, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/today/vho?");
-            if (userNames != null) 
+            if (venueNames != null) 
             {
-                foreach (var item_ in userNames) { urlBuilder_.Append(System.Uri.EscapeDataString("UserNames") + "=").Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append("&"); }
+                foreach (var item_ in venueNames) { urlBuilder_.Append(System.Uri.EscapeDataString("VenueNames") + "=").Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append("&"); }
             }
             urlBuilder_.Length--;
     

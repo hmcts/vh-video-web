@@ -26,7 +26,7 @@ export class JudgeParticipantStatusListComponent implements OnInit {
     showChangeJudgeDisplayName = false;
     newJudgeDisplayName: string;
 
-    constructor(private adalService: AdalService, private videoWebService: VideoWebService, private logger: Logger) { }
+    constructor(private adalService: AdalService, private videoWebService: VideoWebService, private logger: Logger) {}
 
     ngOnInit() {
         this.filterNonJudgeParticipants();
