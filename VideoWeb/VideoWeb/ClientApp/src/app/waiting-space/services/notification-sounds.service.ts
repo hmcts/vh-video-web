@@ -11,6 +11,7 @@ export class NotificationSoundsService {
         this.consultationRequestSound.addEventListener(
             'ended',
             function () {
+                console.log('ended sound');
                 this.play();
             },
             false
