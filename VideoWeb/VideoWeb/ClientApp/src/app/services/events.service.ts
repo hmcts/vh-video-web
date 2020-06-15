@@ -210,13 +210,18 @@ export class EventsService {
     }
 
     async sendMessage(instantMessage: InstantMessage) {
-        await this.connection.send(
-            'SendMessage',
-            instantMessage.conferenceId,
-            instantMessage.message,
-            instantMessage.to,
-            instantMessage.id
-        );
+        try {
+            await this.connection.send(
+                'SendMessage',
+                instantMessage.conferenceId,
+                instantMessage.message,
+                instantMessage.to,
+                instantMessage.id
+            );
+        } catch (err) {
+            this.logger.error(`Unable to send im from ${instantMessage.from}`, err);
+            throw err;
+        }
     }
 
     async sendHeartbeat(conferenceId: string, participantId: string, heartbeat: Heartbeat) {
