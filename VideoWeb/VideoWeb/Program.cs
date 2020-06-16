@@ -25,7 +25,7 @@ namespace VideoWeb
                         logging
                             .AddFilter<Microsoft.Extensions.Logging.ApplicationInsights.
                                     ApplicationInsightsLoggerProvider>
-                                ("", LogLevel.Trace);
+                                ("", LogLevel.Debug);
                     });
                 });
         }

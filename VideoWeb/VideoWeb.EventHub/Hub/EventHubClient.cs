@@ -131,7 +131,7 @@ namespace VideoWeb.EventHub.Hub
         public async Task SendMessage(Guid conferenceId, string message, string to, Guid messageUuid)
         {
             var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name);
-            _logger.LogTrace($"{userName} is attempting to SendMessageds");
+            _logger.LogTrace($"{userName} is attempting to SendMessages");
             // this determines if the message is from admin
             var isSenderAdmin = IsSenderAdmin();
             _logger.LogDebug($"{userName} is sender admin: {isSenderAdmin}");
