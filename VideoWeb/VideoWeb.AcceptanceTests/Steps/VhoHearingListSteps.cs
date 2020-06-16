@@ -41,13 +41,17 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheVhoCanSeeAListOfHearingsIncludingTheNewHearing()
         {
             Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser.Key], _c.Test.Conference.Id);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(_c.Test.Conference.Id)).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.CaseNumber(_c.Test.Conference.Id)).Displayed.Should().BeTrue();
-            var timespan = TimeSpan.FromMinutes(_c.Test.Hearing.Scheduled_duration);
+
+            var hearingThatShouldBeVisible = _c.Test.Conferences.FirstOrDefault(p =>
+                p.Participants.Any(m => m.User_role == UserRole.Judge && m.First_name == "Automation Courtroom 01"));
+
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(hearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.CaseNumber(hearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
+            var timespan = TimeSpan.FromMinutes(hearingThatShouldBeVisible.Scheduled_duration);
             var listedFor = DateTimeToString.GetListedForTimeAsString(timespan);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.HearingTime(_c.Test.Conference.Id)).Text.Trim()
-                .Should().Be($"{_c.TimeZone.Adjust(_c.Test.Hearing.Scheduled_date_time):HH:mm}");
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.ListedFor(_c.Test.Conference.Id)).Text.Trim()
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.HearingTime(hearingThatShouldBeVisible.Id)).Text.Trim()
+                .Should().Be($"{_c.TimeZone.Adjust(hearingThatShouldBeVisible.Scheduled_date_time):HH:mm}");
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.ListedFor(hearingThatShouldBeVisible.Id)).Text.Trim()
                 .Should().Be($"{listedFor}");
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser.Key]);
         }

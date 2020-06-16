@@ -110,7 +110,9 @@ export class JudgeParticipantStatusListComponent implements OnInit {
         const updateParticipantRequest = new UpdateParticipantRequest({
             fullname: this.judge.name,
             display_name: this.judge.display_name,
-            representee: this.judge.representee
+            representee: this.judge.representee,
+            first_name: this.judge.first_name,
+            last_name: this.judge.last_name
         });
 
         this.videoWebService.updateParticipantDetails(this.conference.id, this.judge.id, updateParticipantRequest).catch(error => {

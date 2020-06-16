@@ -52,6 +52,15 @@ namespace VideoWeb.Contract.Responses
         /// The representee the participant is acting on behalf
         /// </summary>
         public string Representee { get; set; }
-        
+
+        /// <summary>
+        /// The first name of the participant
+        /// </summary>
+        public string FirstName { get; set; }
+
+        /// <summary>
+        /// The last name of the participant
+        /// </summary>
+        public string LastName { get; set; }
     }
 }

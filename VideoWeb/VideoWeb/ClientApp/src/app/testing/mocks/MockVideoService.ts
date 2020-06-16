@@ -12,11 +12,11 @@ import {
     ConferenceEventRequest,
     ConferenceForVhOfficerResponse,
     SelfTestPexipResponse,
-    HearingVenueResponse,
     ParticipantHeartbeatResponse,
     ConferenceForJudgeResponse,
     UpdateParticipantRequest,
-    ConferenceResponseVho
+    ConferenceResponseVho,
+    JudgeNameListResponse
 } from 'src/app/services/clients/api-client';
 import { Observable, of } from 'rxjs';
 import { ConferenceTestData } from './data/conference-test-data';
@@ -52,7 +52,7 @@ export class MockVideoWebService implements IVideoWebApiService {
     getObfuscatedName(displayName: string): string {
         return displayName.replace(/(?!\b)\w/g, '*');
     }
-    getHearingVenues(): Promise<HearingVenueResponse[]> {
+    getDistinctJudgeNames(): Promise<JudgeNameListResponse> {
         throw new Error('Method not implemented.');
     }
     getConferencesForJudge(): Observable<ConferenceForJudgeResponse[]> {

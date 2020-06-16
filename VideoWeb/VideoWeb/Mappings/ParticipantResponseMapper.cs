@@ -23,6 +23,8 @@ namespace VideoWeb.Mappings
                 DisplayName = participant.Display_name,
                 CaseTypeGroup = participant.Case_type_group,
                 Representee = participant.Representee,
+                FirstName = participant.First_name,
+                LastName = participant.Last_name
             };
 
             if (role == Role.Judge)

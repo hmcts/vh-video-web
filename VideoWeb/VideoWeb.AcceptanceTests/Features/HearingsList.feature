@@ -58,7 +58,7 @@ Scenario: Video Hearings Officer has 1 or more hearings
 	And a new browser is open for a Video Hearings Officer
 	When the user attempts to login with valid credentials
 	Then the user is on the VHO Venue List page
-  When the VHO selects the venue Birmingham Civil and Family Justice Centre
+  When the VHO selects the courtroom Automation Courtroom 01
   And the VHO confirms their allocation selection
 	Then the VHO can see a list of hearings including the new hearing
 	When the VHO selects the hearing
