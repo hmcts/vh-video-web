@@ -60,7 +60,7 @@ namespace VideoWeb.AcceptanceTests.Builders
             return this;
         }
 
-        public BookNewHearingRequest Build()
+        public BookNewHearingRequest Build(string courtroom = "clerk")
         {
             _individuals.AddRange(UserManager.GetIndividualUsers(_userAccounts));
             _representatives.AddRange(UserManager.GetRepresentativeUsers(_userAccounts));
@@ -81,10 +81,19 @@ namespace VideoWeb.AcceptanceTests.Builders
                 .AddRepresentative().WithUser(_representatives[1])
                 .Build());
 
-            _participants.Add(new ParticipantsRequestBuilder()
-                .AddClerkOrJudge().WithUser(UserManager.GetClerkUser(_userAccounts))
-                .Build());           
-
+            if (courtroom == "clerk")
+            {
+                _participants.Add(new ParticipantsRequestBuilder()
+                    .AddClerkOrJudge().WithUser(UserManager.GetClerkUser(_userAccounts))
+                    .Build());
+            }
+            else
+            {
+                _participants.Add(new ParticipantsRequestBuilder()
+                    .AddClerkOrJudge().WithUser(UserManager.GetJudgeUser(_userAccounts))
+                    .Build());
+            }
+            
             var cases = Builder<CaseRequest>.CreateListOfSize(1).Build().ToList();
             cases[0].Is_lead_case = false;
             cases[0].Name = $"Video Web Automated Test {GenerateRandom.Letters(_fromRandomNumber)}";

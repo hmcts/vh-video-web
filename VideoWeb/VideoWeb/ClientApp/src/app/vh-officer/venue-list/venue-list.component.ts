@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { HearingVenueResponse } from 'src/app/services/clients/api-client';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from '../services/models/session-keys';
@@ -12,31 +11,31 @@ import { VhoStorageKeys } from '../services/models/session-keys';
     styleUrls: ['./venue-list.component.scss']
 })
 export class VenueListComponent implements OnInit {
-    private readonly venueAllocationStorage: SessionStorage<HearingVenueResponse[]>;
-    venues: HearingVenueResponse[];
-    selectedVenues: HearingVenueResponse[];
+    private readonly judgeAllocationStorage: SessionStorage<string[]>;
+    judges: string[];
+    selectedJudges: string[];
     venueListLoading: boolean;
 
     constructor(private videoWebService: VideoWebService, private router: Router) {
-        this.selectedVenues = [];
-        this.venueAllocationStorage = new SessionStorage<HearingVenueResponse[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
+        this.selectedJudges = [];
+        this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
     }
 
     async ngOnInit() {
         this.venueListLoading = false;
-        this.videoWebService.getHearingVenues().then(response => {
-            this.venues = response;
-            this.selectedVenues = this.venueAllocationStorage.get();
+        this.videoWebService.getDistinctJudgeNames().then(response => {
+            this.judges = response.first_names;
+            this.selectedJudges = this.judgeAllocationStorage.get();
             this.venueListLoading = false;
         });
     }
 
     get venuesSelected(): boolean {
-        return this.selectedVenues && this.selectedVenues.length > 0;
+        return this.selectedJudges && this.selectedJudges.length > 0;
     }
 
     updateSelection() {
-        this.venueAllocationStorage.set(this.selectedVenues);
+        this.judgeAllocationStorage.set(this.selectedJudges);
     }
 
     goToHearingList() {

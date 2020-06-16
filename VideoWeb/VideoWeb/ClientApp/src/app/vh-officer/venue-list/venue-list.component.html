@@ -8,17 +8,19 @@
       id="venue-allocation-list"
       class="custom"
       aria-label="Venue allocation list"
-      [items]="venues"
+      [items]="judges"
       [multiple]="true"
       bindLabel="name"
       placeholder="Choose lists"
-      [(ngModel)]="selectedVenues"
+      [(ngModel)]="selectedJudges"
       [closeOnSelect]="false"
       (change)="updateSelection()"
+      [clearSearchOnAdd]="true"
+      [selectOnTab]="true"
     >
       <ng-template ng-option-tmp let-item="item" let-item$="item$" let-index="index">
-        <input id="venue-{{ index }}" type="checkbox" [ngModel]="item$.selected" attr.aria-label="Venue name {{ item.name }}" />
-        {{ item.name }}
+        <input id="venue-{{ index }}" type="checkbox" [ngModel]="item$.selected" attr.aria-label="Venue name {{ item }}" />
+        {{ item }}
       </ng-template>
     </ng-select>
   </div>

@@ -9,7 +9,6 @@ import {
     ConferenceForIndividualResponse,
     ConferenceForJudgeResponse,
     ConferenceResponse,
-    HearingVenueResponse,
     ParticipantContactDetailsResponseVho,
     SelfTestPexipResponse,
     TestCallScoreResponse,
@@ -17,7 +16,8 @@ import {
     UnreadAdminMessageResponse,
     UpdateParticipantRequest,
     UpdateParticipantStatusEventRequest,
-    UnreadInstantMessageConferenceCountResponse
+    UnreadInstantMessageConferenceCountResponse,
+    JudgeNameListResponse
 } from '../clients/api-client';
 import { ConferenceLite } from '../models/conference-lite';
 import { SessionStorage } from '../session-storage';
@@ -86,8 +86,8 @@ export class VideoWebService implements IVideoWebApiService {
         return displayName.replace(/(?!\b)\w/g, '*');
     }
 
-    getHearingVenues(): Promise<HearingVenueResponse[]> {
-        return this.apiClient.getHearingVenues().toPromise();
+    getDistinctJudgeNames(): Promise<JudgeNameListResponse> {
+        return this.apiClient.getDistinctJudgeNames().toPromise();
     }
 
     /**

@@ -28,8 +28,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             ConfirmVenue();
         }
         
-        [When(@"the VHO selects the venue (.*)")]
-        [When(@"the VHO selects the venues (.*)")]
+        [When(@"the VHO selects the courtroom (.*)")]
+        [When(@"the VHO selects the courtrooms (.*)")]
         public void SelectVenues(string venues)
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesDropdown).Displayed.Should().BeTrue();
@@ -37,12 +37,24 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             foreach (var venue in ConverterHelpers.ConvertStringIntoArray(venues))
             {
-                _browsers[_c.CurrentUser.Key].Driver.FindElement(VhoVenueAllocationPage.VenuesTextBox).SendKeys(venue);
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesTextBox).SendKeys(venue);
                 _browsers[_c.CurrentUser.Key].ClickCheckbox(VhoVenueAllocationPage.VenueCheckbox(venue));
-                DeleteText(venue);
             }
         }
-        
+
+        [When(@"the VHO selects the hearings for Judge named (.*)")]
+        public void WhenTheVHOSelectsTheHearingsForJudgeNamedAutomationCourtroom(string judgeNames)
+        {
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesDropdown).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Click(VhoVenueAllocationPage.VenuesTextBox);
+
+            foreach (var venue in ConverterHelpers.ConvertStringIntoArray(judgeNames))
+            {
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesTextBox).SendKeys(venue);
+                _browsers[_c.CurrentUser.Key].ClickCheckbox(VhoVenueAllocationPage.VenueCheckbox(venue));
+            }
+        }
+
         [When(@"the VHO confirms their allocation selection")]
         public void ConfirmVenue()
         {
@@ -55,14 +67,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             const string venues = "Birmingham,Manchester,Taylor House";
             SelectVenues(venues);
             ConfirmVenue();
-        }
-
-        private void DeleteText(string text)
-        {
-            for (var i = 0; i < text.Length; i++)
-            {
-                _browsers[_c.CurrentUser.Key].Driver.FindElement(VhoVenueAllocationPage.VenuesTextBox).SendKeys(Keys.Backspace);
-            }
         }
     }
 }
