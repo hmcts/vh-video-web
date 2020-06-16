@@ -37,7 +37,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             foreach (var venue in ConverterHelpers.ConvertStringIntoArray(venues))
             {
-                _browsers[_c.CurrentUser.Key].Driver.FindElement(VhoVenueAllocationPage.VenuesTextBox).SendKeys(venue);
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesTextBox).SendKeys(venue);
                 _browsers[_c.CurrentUser.Key].ClickCheckbox(VhoVenueAllocationPage.VenueCheckbox(venue));
             }
         }
@@ -50,7 +50,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             foreach (var venue in ConverterHelpers.ConvertStringIntoArray(judgeNames))
             {
-                _browsers[_c.CurrentUser.Key].Driver.FindElement(VhoVenueAllocationPage.VenuesTextBox).SendKeys(venue);
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesTextBox).SendKeys(venue);
                 _browsers[_c.CurrentUser.Key].ClickCheckbox(VhoVenueAllocationPage.VenueCheckbox(venue));
             }
         }
