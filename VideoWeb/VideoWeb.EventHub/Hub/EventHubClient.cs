@@ -104,7 +104,7 @@ namespace VideoWeb.EventHub.Hub
         }
 
         private async Task RemoveUserFromConferenceGroups(bool isAdmin)
-        { 
+        {
             if (!isAdmin) return;
             var conferences = await GetConferencesForAdmin();
             var tasks = conferences.Select(c => Groups.RemoveFromGroupAsync(Context.ConnectionId, c.Id.ToString())).ToArray();
@@ -130,19 +130,23 @@ namespace VideoWeb.EventHub.Hub
 
         public async Task SendMessage(Guid conferenceId, string message, string to, Guid messageUuid)
         {
+            var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name);
+            _logger.LogTrace($"{userName} is attempting to SendMessaged");
             // this determines if the message is from admin
             var isSenderAdmin = IsSenderAdmin();
+            _logger.LogDebug($"{userName} is sender admin: {isSenderAdmin}");
             var isRecipientAdmin = await IsRecipientAdmin(to);
+            _logger.LogDebug($"{userName} is recipient admin: {isSenderAdmin}");
             // only admins and participants in the conference can send or receive a message within a conference channel
             var from = Context.User.Identity.Name.ToLowerInvariant();
             var participantUsername = isSenderAdmin ? to : from;
             var isAllowed =
                 await IsAllowedToSendMessageAsync(conferenceId, isSenderAdmin, isRecipientAdmin, participantUsername);
-            if (!isAllowed) return;
-
+            if (!isAllowed) {return;}
+            
             var dto = new SendMessageDto
             {
-                Conference = new Conference {Id = conferenceId},
+                Conference = new Conference { Id = conferenceId },
                 From = from,
                 To = to,
                 Message = message,
@@ -150,14 +154,14 @@ namespace VideoWeb.EventHub.Hub
                 Timestamp = DateTime.UtcNow,
                 MessageUuid = messageUuid
             };
-
+            _logger.LogDebug($"Message validation passed for message {dto.MessageUuid}");
             // send to admin channel
-
             await SendToAdmin(dto);
 
             // determine participant username
             dto.Conference = await GetConference(conferenceId);
             await SendToParticipant(dto);
+            _logger.LogDebug($"Pushing message to Video API history {dto.MessageUuid}");
             await _videoApiClient.AddInstantMessageToConferenceAsync(conferenceId, new AddInstantMessageRequest
             {
                 From = from,
@@ -167,6 +171,7 @@ namespace VideoWeb.EventHub.Hub
 
             if (isSenderAdmin)
             {
+                _logger.LogDebug($"Admin has responded, notifying admin channel");
                 await Clients.Group(VhOfficersGroupName).AdminAnsweredChat(conferenceId, to.ToLower());
             }
         }
@@ -177,22 +182,26 @@ namespace VideoWeb.EventHub.Hub
             {
                 return true;
             }
-            var user =  await _userProfileService.GetUserAsync(recipientUsername);
-            return user!=null &&  user.User_role.Equals("VHOfficer", StringComparison.InvariantCultureIgnoreCase);
+            var user = await _userProfileService.GetUserAsync(recipientUsername);
+            return user != null && user.User_role.Equals("VHOfficer", StringComparison.InvariantCultureIgnoreCase);
         }
 
         private async Task SendToParticipant(SendMessageDto dto)
         {
             var participant = dto.Conference.Participants.Single(x =>
                 x.Username.Equals(dto.ParticipantUsername, StringComparison.InvariantCultureIgnoreCase));
-
+            
+            var username = await _userProfileService.GetObfuscatedUsernameAsync(participant.Username);
+            _logger.LogDebug($"Sending message {dto.MessageUuid} to group {username}");
             await Clients.Group(participant.Username.ToLowerInvariant())
                 .ReceiveMessage(dto.Conference.Id, dto.From, dto.To, dto.Message, dto.Timestamp, dto.MessageUuid);
         }
 
         private async Task SendToAdmin(SendMessageDto dto)
         {
-            await Clients.Group(dto.Conference.Id.ToString())
+            var groupName = dto.Conference.Id.ToString();
+            _logger.LogDebug($"Sending message {dto.MessageUuid} to group {groupName}");
+            await Clients.Group(groupName)
                 .ReceiveMessage(dto.Conference.Id, dto.From, dto.To, dto.Message, dto.Timestamp, dto.MessageUuid);
         }
 
@@ -202,11 +211,14 @@ namespace VideoWeb.EventHub.Hub
             {
                 if (isSenderAdmin && isRecipientAdmin)
                 {
+                    
+                    _logger.LogDebug($"Sender and recipient are admins");
                     throw new InvalidInstantMessageException("Admins are not allowed to IM each other");
                 }
 
                 if (!isSenderAdmin && !isRecipientAdmin)
                 {
+                    _logger.LogDebug($"Sender and recipient are participants");
                     throw new InvalidInstantMessageException("Participants are not allowed to IM each other");
                 }
             }
@@ -216,12 +228,14 @@ namespace VideoWeb.EventHub.Hub
                 return false;
             }
 
+            _logger.LogDebug($"Sender and recipient are allowed to converse");
             return true;
         }
 
         private async Task<bool> IsAllowedToSendMessageAsync(Guid conferenceId, bool isSenderAdmin,
             bool isRecipientAdmin, string participantUsername)
         {
+            var username = await _userProfileService.GetObfuscatedUsernameAsync(participantUsername);
             if (!IsConversationBetweenAdminAndParticipant(isSenderAdmin, isRecipientAdmin))
             {
                 return false;
@@ -235,6 +249,8 @@ namespace VideoWeb.EventHub.Hub
 
                 if (participant == null)
                 {
+                    
+                    _logger.LogDebug($"Participant {username} does not exist in conversation");
                     throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
                 }
             }
@@ -243,6 +259,7 @@ namespace VideoWeb.EventHub.Hub
                 _logger.LogError(ex, "Error occured when validating send message");
                 return false;
             }
+            _logger.LogDebug($"Participant {username} exists in conversation");
             return true;
         }
 
