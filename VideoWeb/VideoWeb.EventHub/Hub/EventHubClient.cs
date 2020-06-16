@@ -131,7 +131,7 @@ namespace VideoWeb.EventHub.Hub
         public async Task SendMessage(Guid conferenceId, string message, string to, Guid messageUuid)
         {
             var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name);
-            _logger.LogTrace($"{userName} is attempting to SendMessaged");
+            _logger.LogTrace($"{userName} is attempting to SendMessageds");
             // this determines if the message is from admin
             var isSenderAdmin = IsSenderAdmin();
             _logger.LogDebug($"{userName} is sender admin: {isSenderAdmin}");
@@ -142,8 +142,8 @@ namespace VideoWeb.EventHub.Hub
             var participantUsername = isSenderAdmin ? to : from;
             var isAllowed =
                 await IsAllowedToSendMessageAsync(conferenceId, isSenderAdmin, isRecipientAdmin, participantUsername);
-            if (!isAllowed) {return;}
-            
+            if (!isAllowed) { return; }
+
             var dto = new SendMessageDto
             {
                 Conference = new Conference { Id = conferenceId },
@@ -190,7 +190,7 @@ namespace VideoWeb.EventHub.Hub
         {
             var participant = dto.Conference.Participants.Single(x =>
                 x.Username.Equals(dto.ParticipantUsername, StringComparison.InvariantCultureIgnoreCase));
-            
+
             var username = await _userProfileService.GetObfuscatedUsernameAsync(participant.Username);
             _logger.LogDebug($"Sending message {dto.MessageUuid} to group {username}");
             await Clients.Group(participant.Username.ToLowerInvariant())
@@ -211,7 +211,7 @@ namespace VideoWeb.EventHub.Hub
             {
                 if (isSenderAdmin && isRecipientAdmin)
                 {
-                    
+
                     _logger.LogDebug($"Sender and recipient are admins");
                     throw new InvalidInstantMessageException("Admins are not allowed to IM each other");
                 }
@@ -249,7 +249,7 @@ namespace VideoWeb.EventHub.Hub
 
                 if (participant == null)
                 {
-                    
+
                     _logger.LogDebug($"Participant {username} does not exist in conversation");
                     throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
                 }
