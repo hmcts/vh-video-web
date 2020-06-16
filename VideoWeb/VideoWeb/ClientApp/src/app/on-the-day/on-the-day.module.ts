@@ -47,4 +47,4 @@ import { SignonAComputerComponent } from '../shared/signon-a-computer/signon-a-c
     ],
     exports: [DeclarationComponent]
 })
-export class OnTheDayModule { }
+export class OnTheDayModule {}
