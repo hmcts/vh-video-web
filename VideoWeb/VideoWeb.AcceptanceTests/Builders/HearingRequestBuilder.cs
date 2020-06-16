@@ -60,7 +60,7 @@ namespace VideoWeb.AcceptanceTests.Builders
             return this;
         }
 
-        public BookNewHearingRequest Build()
+        public BookNewHearingRequest Build(string courtroom = "clerk")
         {
             _individuals.AddRange(UserManager.GetIndividualUsers(_userAccounts));
             _representatives.AddRange(UserManager.GetRepresentativeUsers(_userAccounts));
@@ -81,48 +81,19 @@ namespace VideoWeb.AcceptanceTests.Builders
                 .AddRepresentative().WithUser(_representatives[1])
                 .Build());
 
-            _participants.Add(new ParticipantsRequestBuilder()
-                .AddClerkOrJudge().WithUser(UserManager.GetClerkUser(_userAccounts))
-                .Build());           
-
-            var cases = Builder<CaseRequest>.CreateListOfSize(1).Build().ToList();
-            cases[0].Is_lead_case = false;
-            cases[0].Name = $"Video Web Automated Test {GenerateRandom.Letters(_fromRandomNumber)}";
-            cases[0].Number = $"{GenerateRandom.CaseNumber(_fromRandomNumber)}";
-
-            _request = Builder<BookNewHearingRequest>.CreateNew()
-                .With(x => x.Case_type_name = "Civil Money Claims")
-                .With(x => x.Hearing_type_name = "Application to Set Judgment Aside")
-                .With(x => x.Hearing_venue_name = _venueName)
-                .With(x => x.Hearing_room_name = "Room 1")
-                .With(x => x.Other_information = "Other information")
-                .With(x => x.Scheduled_date_time = _scheduledTime)
-                .With(x => x.Scheduled_duration = _scheduledDuration)
-                .With(x => x.Participants = _participants)
-                .With(x => x.Cases = cases)
-                .With(x => x.Created_by = UserManager.GetCaseAdminUser(_userAccounts).Username)
-                .With(x => x.Questionnaire_not_required = true)
-                .With(x => x.Audio_recording_required = _audioRecordingRequired)
-                .Build();
-
-            return _request;
-        }
-
-        public BookNewHearingRequest BuildWithJudgeClerk()
-        {
-            _individuals.AddRange(UserManager.GetIndividualUsers(_userAccounts));
-            _representatives.AddRange(UserManager.GetRepresentativeUsers(_userAccounts));
-
-            _participants.Add(new ParticipantsRequestBuilder()
-                .AddIndividual().WithUser(_individuals[0])
-                .Build());
-            _participants.Add(new ParticipantsRequestBuilder()
-                .AddRepresentative().WithUser(_representatives[0])
-                .Build());
-            _participants.Add(new ParticipantsRequestBuilder()
-                .AddClerkOrJudge().WithUser(UserManager.GetJudgeUser(_userAccounts))
-                .Build());
-
+            if (courtroom == "clerk")
+            {
+                _participants.Add(new ParticipantsRequestBuilder()
+                    .AddClerkOrJudge().WithUser(UserManager.GetClerkUser(_userAccounts))
+                    .Build());
+            }
+            else
+            {
+                _participants.Add(new ParticipantsRequestBuilder()
+                    .AddClerkOrJudge().WithUser(UserManager.GetJudgeUser(_userAccounts))
+                    .Build());
+            }
+            
             var cases = Builder<CaseRequest>.CreateListOfSize(1).Build().ToList();
             cases[0].Is_lead_case = false;
             cases[0].Name = $"Video Web Automated Test {GenerateRandom.Letters(_fromRandomNumber)}";

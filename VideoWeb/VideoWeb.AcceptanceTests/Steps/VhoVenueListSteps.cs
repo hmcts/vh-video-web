@@ -28,8 +28,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             ConfirmVenue();
         }
         
-        [When(@"the VHO selects the venue (.*)")]
-        [When(@"the VHO selects the venues (.*)")]
+        [When(@"the VHO selects the courtroom (.*)")]
+        [When(@"the VHO selects the courtrooms (.*)")]
         public void SelectVenues(string venues)
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesDropdown).Displayed.Should().BeTrue();

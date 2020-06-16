@@ -17,7 +17,7 @@ Scenario: VHO filters hearings by location
   Given I have a hearing located in Birmingham Civil and Family Justice Centre
   And I have another hearing located in Manchester Civil and Family Justice Centre
   And the Video Hearings Officer user has progressed to the VHO Venue List page for the existing hearing
-  When the VHO selects the venue Manchester Civil and Family Justice Centre
+  When the VHO selects the courtroom Manchester Civil and Family Justice Centre
   And the VHO confirms their allocation selection
   Then the hearings are filtered
 
@@ -31,8 +31,8 @@ Scenario: VHO filters hearings by status
   Then the hearings are filtered
 
 Scenario: VHO filters hearings by Judge name
-  Given I have a hearing with a Judge named Automation Courtroom 01
-  And I have another hearing with a Judge named Automation01
+  Given I have a hearing with a Judge
+  And I have another hearing with another Judge
   And the Video Hearings Officer user has progressed to the VHO Venue List page for the existing hearing
   When the VHO selects the hearings for Judge named Automation Courtroom 01
   And the VHO confirms their allocation selection

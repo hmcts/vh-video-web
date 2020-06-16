@@ -66,17 +66,17 @@ namespace VideoWeb.AcceptanceTests.Steps
             GetTheNewConferenceDetails();
         }
 
-        [Given(@"I have a hearing with a Judge named (.*)")]
-        public void GivenIHaveAHearingWithAJudgeNamed(string judgeName)
+        [Given(@"I have a hearing with a Judge")]
+        public void GivenIHaveAHearingWithAJudge()
         {
-            GivenIHaveAHearingWithJudgeNamed(judgeName);
+            GivenIHaveAHearingWithJudge();
             GetTheNewConferenceDetails();
         }
 
-        [Given(@"I have another hearing with a Judge named (.*)")]
-        public void GivenIHaveAnotherHearingWithAJudgeNamed(string judgeName)
+        [Given(@"I have another hearing with another Judge")]
+        public void GivenIHaveAnotherHearingWithAnotherJudge()
         {
-            GivenIHaveAHearingWithJudgeClerkNamed(judgeName);
+            GivenIHaveAHearingWithAnotherJudge();
             GetTheNewConferenceDetails();
         }
 
@@ -106,7 +106,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             SendTheHearingRequest(request);
         }
         
-        public void GivenIHaveAHearingWithJudgeNamed(string judgeName = "Automation Courtroom 01")
+        public void GivenIHaveAHearingWithJudge()
         {
             var request = new HearingRequestBuilder()
                 .WithUserAccounts(_c.UserAccounts)
@@ -116,13 +116,13 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             SendTheHearingRequest(request);
         }
-        public void GivenIHaveAHearingWithJudgeClerkNamed(string judgeName = "Automation Courtroom 02")
+        public void GivenIHaveAHearingWithAnotherJudge()
         {
             var request = new HearingRequestBuilder()
                 .WithUserAccounts(_c.UserAccounts)
                 .WithScheduledTime(_c.TimeZone.AdjustForVideoWeb(DateTime.Now.ToUniversalTime()))
                 .WithScheduledDuration(HearingDuration)
-                .BuildWithJudgeClerk();
+                .Build("judge");
 
             SendTheHearingRequest(request);
         }
