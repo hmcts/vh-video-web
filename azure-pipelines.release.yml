@@ -29,7 +29,7 @@ parameters:
   type: object
   default:
     - Prod
-    - Prepod
+    - Preprod
 
 # Set variables once
 variables:
