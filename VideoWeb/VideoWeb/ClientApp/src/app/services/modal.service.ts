@@ -31,4 +31,8 @@ export class ModalService {
             modal.close();
         }
     }
+
+    getModals(): any[] {
+        return this.modals;
+    }
 }
