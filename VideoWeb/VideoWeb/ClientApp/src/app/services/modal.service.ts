@@ -19,12 +19,16 @@ export class ModalService {
     open(id: string) {
         // open modal specified by id
         const modal: any = this.modals.filter(x => x.id === id)[0];
-        modal.open();
+        if (modal) {
+            modal.open();
+        }
     }
 
     close(id: string) {
         // close modal specified by id
         const modal: any = this.modals.filter(x => x.id === id)[0];
-        modal.close();
+        if (modal) {
+            modal.close();
+        }
     }
 }
