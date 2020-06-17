@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using FizzWare.NBuilder;
 using VideoWeb.Common.Models;
-using VideoWeb.Services.Video;
+using VideoWeb.Contract.Request;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
 {
@@ -31,29 +31,29 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             };
         }
 
-        public static LeaveConsultationRequest GetLeaveConsultationRequest(Conference conference)
+        public static LeavePrivateConsultationRequest GetLeaveConsultationRequest(Conference conference)
         {
-            return Builder<LeaveConsultationRequest>.CreateNew()
-                .With(x => x.Conference_id = conference.Id)
-                .With(x => x.Participant_id = conference.Participants[0].Id)
+            return Builder<LeavePrivateConsultationRequest>.CreateNew()
+                .With(x => x.ConferenceId = conference.Id)
+                .With(x => x.ParticipantId = conference.Participants[0].Id)
                 .Build();
         }
 
-        public static ConsultationRequest GetConsultationRequest(Conference conference)
+        public static PrivateConsultationRequest GetConsultationRequest(Conference conference)
         {
-            return Builder<ConsultationRequest>.CreateNew()
-                .With(x => x.Conference_id = conference.Id)
-                .With(x => x.Requested_by = conference.Participants[1].Id)
-                .With(x => x.Requested_for = conference.Participants[2].Id)
+            return Builder<PrivateConsultationRequest>.CreateNew()
+                .With(x => x.ConferenceId = conference.Id)
+                .With(x => x.RequestedById = conference.Participants[1].Id)
+                .With(x => x.RequestedForId = conference.Participants[2].Id)
                 .With(x => x.Answer = null)
                 .Build();
         }
-        public static AdminConsultationRequest GetAdminConsultationRequest(Conference conference, ConsultationAnswer answer)
+        public static PrivateAdminConsultationRequest GetAdminConsultationRequest(Conference conference, ConsultationAnswer answer)
         {
-            return Builder<AdminConsultationRequest>.CreateNew()
-                .With(x => x.Conference_id = conference.Id)
-                .With(x => x.Participant_id = conference.Participants[1].Id)
-                .With(x => x.Consultation_room = RoomType.ConsultationRoom1)
+            return Builder<PrivateAdminConsultationRequest>.CreateNew()
+                .With(x => x.ConferenceId = conference.Id)
+                .With(x => x.ParticipantId = conference.Participants[1].Id)
+                .With(x => x.ConsultationRoom = RoomType.ConsultationRoom1)
                 .With(x => x.Answer = answer)
                 .Build();
         }

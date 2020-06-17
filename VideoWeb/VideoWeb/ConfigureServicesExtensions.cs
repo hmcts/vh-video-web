@@ -50,6 +50,7 @@ namespace VideoWeb
                 c.IncludeXmlComments(xmlPath);
                 c.IncludeXmlComments(contractsXmlPath);
                 c.EnableAnnotations();
+                c.CustomSchemaIds(x => x.FullName);
 
                 c.AddSecurityDefinition("Bearer", //Name the security scheme
                     new OpenApiSecurityScheme

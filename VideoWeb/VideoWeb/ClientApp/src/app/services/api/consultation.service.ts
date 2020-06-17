@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import {
-    AdminConsultationRequest,
     ApiClient,
     BadRequestModelResponse,
     ConferenceResponse,
     ConsultationAnswer,
-    ConsultationRequest,
-    LeaveConsultationRequest,
+    LeavePrivateConsultationRequest,
     ParticipantResponse,
+    PrivateAdminConsultationRequest,
+    PrivateConsultationRequest,
     RoomType
 } from '../clients/api-client';
 import { ModalService } from '../modal.service';
@@ -25,15 +25,13 @@ export class ConsultationService {
         requester: ParticipantResponse,
         requestee: ParticipantResponse
     ): Promise<void> {
-        await this.apiClient
-            .handleConsultationRequest(
-                new ConsultationRequest({
-                    conference_id: conference.id,
-                    requested_by: requester.id,
-                    requested_for: requestee.id
-                })
-            )
-            .toPromise();
+        await this.handleConsultationRequest(
+            new PrivateConsultationRequest({
+                conference_id: conference.id,
+                requested_by_id: requester.id,
+                requested_for_id: requestee.id
+            })
+        );
     }
 
     async respondToConsultationRequest(
@@ -42,17 +40,19 @@ export class ConsultationService {
         requestee: ParticipantResponse,
         answer: ConsultationAnswer
     ): Promise<void> {
+        await this.handleConsultationRequest(
+            new PrivateConsultationRequest({
+                conference_id: conference.id,
+                requested_by_id: requester.id,
+                requested_for_id: requestee.id,
+                answer: answer
+            })
+        );
+    }
+
+    private async handleConsultationRequest(request: PrivateConsultationRequest): Promise<void> {
         try {
-            await this.apiClient
-                .handleConsultationRequest(
-                    new ConsultationRequest({
-                        conference_id: conference.id,
-                        requested_by: requester.id,
-                        requested_for: requestee.id,
-                        answer: answer
-                    })
-                )
-                .toPromise();
+            await this.apiClient.handleConsultationRequest(request).toPromise();
         } catch (error) {
             if (this.checkNoRoomsLeftError(error)) {
                 this.displayNoConsultationRoomAvailableModal();
@@ -66,13 +66,13 @@ export class ConsultationService {
         if (!(error instanceof BadRequestModelResponse)) {
             return false;
         }
-        return error.errors.findIndex(x => x.errors.includes('No consultation room available')) >= 0;
+        return error.errors && error.errors.findIndex(x => x.errors.includes('No consultation room available')) >= 0;
     }
 
     async leaveConsultation(conference: ConferenceResponse, participant: ParticipantResponse): Promise<void> {
         await this.apiClient
             .leavePrivateConsultation(
-                new LeaveConsultationRequest({
+                new LeavePrivateConsultationRequest({
                     conference_id: conference.id,
                     participant_id: participant.id
                 })
@@ -88,7 +88,7 @@ export class ConsultationService {
     ): Promise<void> {
         await this.apiClient
             .respondToAdminConsultationRequest(
-                new AdminConsultationRequest({
+                new PrivateAdminConsultationRequest({
                     conference_id: conference.id,
                     participant_id: participant.id,
                     answer: answer,

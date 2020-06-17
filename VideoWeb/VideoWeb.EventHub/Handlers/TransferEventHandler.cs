@@ -9,7 +9,7 @@ using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
-using RoomType = VideoWeb.EventHub.Enums.RoomType;
+using RoomType = VideoWeb.Common.Models.RoomType;
 
 namespace VideoWeb.EventHub.Handlers
 {

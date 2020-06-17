@@ -1,14 +1,14 @@
 import { of, throwError } from 'rxjs';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import {
-    AdminConsultationRequest,
     ApiClient,
-    ConsultationAnswer,
-    ConsultationRequest,
-    LeaveConsultationRequest,
-    RoomType,
+    BadModel,
     BadRequestModelResponse,
-    BadModel
+    ConsultationAnswer,
+    LeavePrivateConsultationRequest,
+    PrivateAdminConsultationRequest,
+    PrivateConsultationRequest,
+    RoomType
 } from '../clients/api-client';
 import { ModalService } from '../modal.service';
 import { ConsultationService } from './consultation.service';
@@ -42,10 +42,10 @@ describe('ConsultationService', () => {
         const requester = conference.participants[0];
         const requestee = conference.participants[1];
 
-        const request = new ConsultationRequest({
+        const request = new PrivateConsultationRequest({
             conference_id: conference.id,
-            requested_by: requester.id,
-            requested_for: requestee.id
+            requested_by_id: requester.id,
+            requested_for_id: requestee.id
         });
         service.raiseConsultationRequest(conference, requester, requestee);
 
@@ -57,10 +57,10 @@ describe('ConsultationService', () => {
         const requester = conference.participants[0];
         const requestee = conference.participants[1];
 
-        const request = new ConsultationRequest({
+        const request = new PrivateConsultationRequest({
             conference_id: conference.id,
-            requested_by: requester.id,
-            requested_for: requestee.id,
+            requested_by_id: requester.id,
+            requested_for_id: requestee.id,
             answer: ConsultationAnswer.Accepted
         });
         await service.respondToConsultationRequest(conference, requester, requestee, ConsultationAnswer.Accepted);
@@ -72,7 +72,7 @@ describe('ConsultationService', () => {
         const conference = new ConferenceTestData().getConferenceDetailFuture();
         const participant = conference.participants[0];
 
-        const request = new LeaveConsultationRequest({
+        const request = new LeavePrivateConsultationRequest({
             conference_id: conference.id,
             participant_id: participant.id
         });
@@ -87,7 +87,7 @@ describe('ConsultationService', () => {
         const participant = conference.participants[0];
         const answer = ConsultationAnswer.Accepted;
         const room = RoomType.WaitingRoom;
-        const request = new AdminConsultationRequest({
+        const request = new PrivateAdminConsultationRequest({
             conference_id: conference.id,
             participant_id: participant.id,
             answer,
