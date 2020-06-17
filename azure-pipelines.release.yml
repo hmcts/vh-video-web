@@ -31,7 +31,10 @@ variables:
   - group: vh-video-web
   - group: vh test users
   - group: Saucelabs
-  - group: vh-preview
+  - ${{ if containsValue(['Preprod','Prod'], parameters.environment) }}:
+    - group: vh-prod
+  - ${{ if not(containsValue(['Preprod','Prod'], parameters.environment)) }}:
+    - group: vh-preview
 
 trigger: none
 pr: none
