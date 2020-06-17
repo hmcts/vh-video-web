@@ -238,7 +238,7 @@ namespace VideoWeb
         private static IVideoApiClient BuildVideoApiClient(HttpClient httpClient,
             HearingServicesConfiguration serviceSettings)
         {
-            return new VideoApiClient(httpClient) { BaseUrl = serviceSettings.VideoApiUrl };
+            return new VideoApiClient(httpClient) { BaseUrl = serviceSettings.VideoApiUrl, ReadResponseAsString = true};
         }
 
         private static IUserApiClient BuildUserApiClient(HttpClient httpClient,
