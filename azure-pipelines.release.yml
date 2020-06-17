@@ -24,6 +24,13 @@ parameters:
   type: boolean
   default: false
 
+- name: prodEnvs
+  displayName: Environments Using Prod Subscription
+  type: object
+  default:
+    - Prod
+    - Prepod
+
 # Set variables once
 variables:
   - group: vh-domains-and-urls
@@ -31,9 +38,9 @@ variables:
   - group: vh-video-web
   - group: vh test users
   - group: Saucelabs
-  - ${{ if containsValue(['Preprod','Prod'], parameters.environment) }}:
+  - ${{ if containsValue(parameters.prodEnvs, parameters.environment) }}:
     - group: vh-prod
-  - ${{ if not(containsValue(['Preprod','Prod'], parameters.environment)) }}:
+  - ${{ if not(containsValue(parameters.prodEnvs, parameters.environment)) }}:
     - group: vh-preview
 
 trigger: none
