@@ -1,0 +1,242 @@
+parameters:
+- name: deploymentBranch
+  displayName: Branch to Deploy
+  type: string
+  default: refs/heads/master
+
+- name: environment
+  displayName: Environment
+  type: string
+  default: Sandbox
+  values:
+  - Preview
+  - Dev
+  - AAT
+  - Sandbox
+  - Test1
+  - Test2
+  - Demo
+  - Preprod
+  - Prod
+
+- name: RunZap
+  displayName: Execute ZAP Tests
+  type: boolean
+  default: false
+
+# Set variables once
+variables:
+  - group: vh-domains-and-urls
+  - group: vh-apps-settings-generic
+  - group: vh-video-web
+  - group: vh test users
+  - group: Saucelabs
+
+
+trigger: none
+pr: none
+
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: hmcts/azure-devops-templates
+      ref: refs/heads/dynamicvariables
+      endpoint: hmcts (1)
+  pipelines:
+  - pipeline: CI
+    source: hmcts.vh-video-web
+    trigger:
+      branches:
+        include:
+          - master
+          - hotfix/*
+          - release/*
+
+stages:
+  - template: templates/vh-release.yml@templates
+    parameters:
+      ${{ if ne(variables['Build.Reason'], 'ResourceTrigger') }}:
+        environments:
+          - ${{ parameters.environment }}
+        deploymentBranch: ${{ parameters.deploymentBranch }}
+      ${{ if eq(variables['Build.Reason'], 'ResourceTrigger') }}:
+        deploymentBranch: $(resources.pipeline.CI.sourceBranch)
+      releaseParameters:
+        runZapTests: ${{ parameters.RunZap }}
+        subscription: $(env_Subscription)
+        secrets_KeyVault: $(env_Secret_KeyVault)
+        secrets_Subscription: $(env_Secret_Subscription)
+        devOpsResource: vh_video_web
+        appName: vh-video-web-$(environment)
+        resourceGroup: vh-video-web-$(environment)
+        variables:
+          - group: vh-wowza-dev
+            env:
+             - Preview
+             - Dev
+             - AAT
+             - Sandbox
+             - Test1
+             - Test2
+          - group: vh-wowza-demo
+            env:
+             - Demo
+          - group: vh-wowza-preprod
+            env:
+             - Preprod
+          - group: vh-wowza-prod
+            env:
+             - Prod
+          - group: KinlyConfiguration_Test
+            env:
+             - Preview
+             - Dev
+             - AAT
+             - Sandbox
+             - Test1
+             - Test2
+          - group: KinlyConfiguration_Test
+            env:
+             - Preview
+             - Dev
+             - AAT
+             - Sandbox
+             - Test1
+             - Test2
+          - group: KinlyConfiguration_Test2
+            env:
+             - Demo
+          - group: KinlyConfiguration_Preprod
+            env:
+             - Preprod
+          - group: KinlyConfiguration_Prod
+            env:
+             - Prod
+        appSettings:
+          - name: ApplicationInsights:InstrumentationKey
+            value: vh-core-infra-AppInsightsKey
+            secret: true
+          - name: ConnectionStrings:SignalR
+            value: signalr-connection-str
+            secret: true
+
+          # AzureAd
+          - name: AzureAd:ClientId
+            value: vh-video-web-appid
+            secret: true
+          - name: AzureAd:ClientSecret
+            value: vh-video-web-key
+            secret: true
+          - name: AzureAd:PostLogoutRedirectUri
+            slot:
+              deployment:
+                value: $(video_web_url)logout
+              active:
+                value: $(video_web_url)logout
+          - name: AzureAd:RedirectUri
+            slot:
+              deployment:
+                value: $(video_web_url)home
+              active:
+                value: $(video_web_url)home
+          - name: AzureAd:TenantId
+            value: tenantid
+            secret: true
+          - name: AzureAd:VhVideoWebResourceId
+            value: vh-video-web-identifieruris
+            secret: true
+
+          # Kinly
+          - name: KinlyConfiguration:CallbackSecret
+            value: $(CallbackKey)
+          - name: KinlyConfiguration:ApiSecret
+            value: $(KinlyApiKey)
+          - name: KinlyConfiguration:SelfTestApiSecret
+            value: $(SelfTestApiKey)
+
+          # VhServices
+          - name: VhServices:BookingsApiResourceId
+            value: vh-bookings-api-identifieruris
+            secret: true
+          - name: VhServices:BookingsApiUrl
+            value: $(bookings_api_url)
+          - name: VhServices:UserApiResourceId
+            value: vh-user-api-identifieruris
+            secret: true
+          - name: VhServices:UserApiUrl
+            value: $(user_api_url)
+          - name: VhServices:VideoApiResourceId
+            value: vh-video-api-identifieruris
+            secret: true
+          - name: VhServices:VideoApiUrl
+            value: $(video_api_url)
+        acceptanceTestSettings:
+          - name: ConnectionStrings:SignalR
+            value: signalr-connection-str
+            secret: true
+
+          # VhServices
+          - name: VhServices:VideoApiUrl
+            value: $(video_api_url)
+          - name: VhServices:VideoApiResourceId
+            value: vh-video-api-identifieruris
+            secret: true
+          - name: VhServices:UserApiUrl
+            value: $(user_api_url)
+          - name: VhServices:UserApiResourceId
+            value: vh-user-api-identifieruris
+            secret: true
+          - name: VhServices:BookingsApiUrl
+            value: $(bookings_api_url)
+          - name: VhServices:BookingsApiResourceId
+            value: vh-bookings-api-identifieruris
+            secret: true
+
+          # AzureAd
+          - name: AzureAd:TenantId
+            value: tenantid
+            secret: true
+          - name: AzureAd:ClientId
+            value: vh-video-web-appid
+            secret: true
+          - name: AzureAd:ClientSecret
+            value: vh-video-web-key
+            secret: true
+          - name: AzureAd:VhVideoApiResourceId
+            value: vh-video-web-identifieruris
+            secret: true
+
+          # Testing
+          - name: Testing:TestClientId
+            value: vh-admin-web-appid
+            secret: true
+          - name: Testing:TestClientSecret
+            value: vh-admin-web-key
+            secret: true
+          - name: Testing:TestUsernameStem
+            value: $(TestUserSecrets:TestUsernameStem)
+          - name: Testing:TestUserPassword
+            value: $(TestUserSecrets:TestUserPassword)
+
+          # Kinly
+          - name: KinlyConfiguration:CallbackSecret
+            value: $(CallbackKey)
+          - name: KinlyConfiguration:ApiSecret
+            value: $(KinlyApiKey)
+          - name: KinlyConfiguration:SelfTestApiSecret
+            value: $(SelfTestApiKey)
+
+          # SauceLabs
+          - name: Saucelabs:Username
+            value: $(Saucelabs:Username)
+          - name: Saucelabs:AccessKey
+            value: $(Saucelabs:AccessKey)
+
+          # WowzaConfiguration
+          - name: WowzaConfiguration:StorageAccountName
+            value: $(wowza_storageAccountName)
+          - name: WowzaConfiguration:StorageAccountKey
+            value: $(wowza_storageAccountKey)
+          - name: WowzaConfiguration:StorageContainerName
+            value: $(wowza_storageContainerName)
