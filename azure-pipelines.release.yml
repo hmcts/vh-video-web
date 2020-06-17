@@ -33,7 +33,6 @@ variables:
   - group: Saucelabs
   - group: vh-preview
 
-
 trigger: none
 pr: none
 
@@ -65,9 +64,9 @@ stages:
         deploymentBranch: $(resources.pipeline.CI.sourceBranch)
       releaseParameters:
         runZapTests: ${{ parameters.RunZap }}
-        subscription: ${{ variables.env_Subscription }}
+        subscription: $(env_Subscription)
         secrets_KeyVault: $(env_Secret_KeyVault)
-        secrets_Subscription: ${{ variables.env_Secret_Subscription }}
+        secrets_Subscription: $(env_Secret_Subscription}
         devOpsResource: vh_video_web
         appName: vh-video-web-$(environment)
         resourceGroup: vh-video-web-$(environment)
