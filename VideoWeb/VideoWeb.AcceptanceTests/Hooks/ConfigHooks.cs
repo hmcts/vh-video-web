@@ -78,6 +78,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         private void RegisterTestUserSecrets(TestContext context)
         {
             context.VideoWebConfig.TestConfig = Options.Create(_configRoot.GetSection("Testing").Get<VideoWebTestConfig>()).Value;
+            context.VideoWebConfig.TestConfig.RealDeviceApiKey.Should().NotBeNull();
             context.VideoWebConfig.TestConfig.TargetBrowser.Should().NotBeNull();
             context.VideoWebConfig.TestConfig.TargetDevice.Should().NotBeNull();
             context.VideoWebConfig.TestConfig.TargetOS.Should().NotBeNull();
