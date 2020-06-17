@@ -1,5 +1,6 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
+import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, ConsultationAnswer, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
@@ -12,7 +13,6 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
-import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-individual-participant-status-list',
@@ -284,12 +284,8 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
         this.modalService.open(modalId);
     }
 
-    private closeAllPCModals(): void {
-        this.modalService.close(IndividualParticipantStatusListComponent.REQUEST_PC_MODAL);
-        this.modalService.close(IndividualParticipantStatusListComponent.RECIEVE_PC_MODAL);
-        this.modalService.close(IndividualParticipantStatusListComponent.ACCEPTED_PC_MODAL);
-        this.modalService.close(IndividualParticipantStatusListComponent.REJECTED_PC_MODAL);
-        this.modalService.close(IndividualParticipantStatusListComponent.VHO_REQUEST_PC_MODAL);
+    closeAllPCModals(): void {
+        this.modalService.closeAll();
     }
 
     closeConsultationRejection() {

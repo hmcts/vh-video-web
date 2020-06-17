@@ -62,7 +62,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
 
-        modalService = jasmine.createSpyObj<ModalService>('ModalService', ['open', 'close']);
+        modalService = jasmine.createSpyObj<ModalService>('ModalService', ['open', 'closeAll']);
 
         notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', [
             'initConsultationRequestRingtone',
@@ -293,7 +293,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         // this is an incoming consultation request
         expect(component.waitingForConsultationResponse).toBeFalsy();
         expect(component.outgoingCallTimeout).toBeNull();
-        expect(modalService.close).toHaveBeenCalled();
+        expect(modalService.closeAll).toHaveBeenCalled();
         expect(modalService.open).toHaveBeenCalledTimes(0);
         expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalledTimes(1);
     });
@@ -333,7 +333,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
         await component.cancelConsultationRequest();
 
-        expect(modalService.close).toHaveBeenCalled();
+        expect(modalService.closeAll).toHaveBeenCalled();
         expect(consultationService.respondToConsultationRequest).toHaveBeenCalledWith(
             component.conference,
             component.consultationRequester.base,
@@ -398,7 +398,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
         component.closeConsultationRejection();
 
-        expect(modalService.close).toHaveBeenCalled();
+        expect(modalService.closeAll).toHaveBeenCalled();
         expect(global.clearTimeout).toHaveBeenCalledWith(timer);
         expect(component.outgoingCallTimeout).toBeNull();
         expect(component.waitingForConsultationResponse).toBeFalsy();

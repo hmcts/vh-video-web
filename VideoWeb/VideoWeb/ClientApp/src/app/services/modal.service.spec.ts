@@ -1,21 +1,22 @@
 import { ModalService } from './modal.service';
+import { ModalComponent } from '../shared/modal/modal.component';
+import { ElementRef } from '@angular/core';
 
 describe('ModalService', () => {
     let service: ModalService;
-    let testModal: any;
+    let testModal: ModalComponent;
     beforeEach(() => {
         service = new ModalService();
-        testModal = {
-            id: '1234',
-            open: jasmine.createSpy('open'),
-            close: jasmine.createSpy('close')
-        };
+        const elem = document.createElement('div');
+        const elemRef = new ElementRef(elem);
+        testModal = new ModalComponent(service, elemRef);
+        testModal.open = jasmine.createSpy('open');
+        testModal.close = jasmine.createSpy('close');
     });
 
     it('should add modal to list', () => {
-        const modal = { id: 'test123' };
-        service.add(modal);
-        expect(service.getModals()).toContain(modal);
+        service.add(testModal);
+        expect(service.getModals()).toContain(testModal);
     });
 
     it('should open modal if in list', () => {

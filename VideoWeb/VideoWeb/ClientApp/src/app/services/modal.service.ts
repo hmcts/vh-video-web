@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
+import { ModalComponent } from '../shared/modal/modal.component';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ModalService {
-    private modals: any[] = [];
+    private modals: ModalComponent[] = [];
 
-    add(modal: any) {
+    add(modal: ModalComponent) {
         // add modal to array of active modals
         this.modals.push(modal);
     }
@@ -32,7 +33,13 @@ export class ModalService {
         }
     }
 
-    getModals(): any[] {
+    closeAll() {
+        this.modals.forEach(modal => {
+            this.close(modal.id);
+        });
+    }
+
+    getModals(): readonly ModalComponent[] {
         return this.modals;
     }
 }

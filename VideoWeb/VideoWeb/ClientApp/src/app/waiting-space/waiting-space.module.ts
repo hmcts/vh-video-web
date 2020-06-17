@@ -12,6 +12,7 @@ import { ParticipantWaitingRoomComponent } from './participant-waiting-room/part
 import { NotificationSoundsService } from './services/notification-sounds.service';
 import { VideoCallService } from './services/video-call.service';
 import { WaitingSpaceRoutingModule } from './waiting-space-routing.module';
+import { NoConsultationRoomComponent } from './consultation-modals/no-consultation-room/no-consultation-room.component';
 
 @NgModule({
     imports: [SharedModule, WaitingSpaceRoutingModule],
@@ -24,7 +25,8 @@ import { WaitingSpaceRoutingModule } from './waiting-space-routing.module';
         AnalogueClockComponent,
         IndividualConsultationControlsComponent,
         ParticipantChatComponent,
-        AudioAlertComponent
+        AudioAlertComponent,
+        NoConsultationRoomComponent
     ],
     providers: [VideoCallService, NotificationSoundsService]
 })
