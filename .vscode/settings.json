@@ -1,4 +1,7 @@
 {
   "editor.formatOnSave": true,
-  "editor.rulers": [120, 140]
+  "editor.rulers": [120, 140],
+  "dotnet-test-explorer.testProjectPath": "**/*[Tt]ests/*.csproj",
+  "markiscodecoverage.searchCriteria": "**/lcov*.info",
+  "prettier.configPath": "VideoWeb/VideoWeb/ClientApp/.prettierrc"
 }
