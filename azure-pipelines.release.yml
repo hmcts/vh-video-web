@@ -64,9 +64,9 @@ stages:
         deploymentBranch: $(resources.pipeline.CI.sourceBranch)
       releaseParameters:
         runZapTests: ${{ parameters.RunZap }}
-        subscription: $(env_Subscription)
+        subscription: ${{ varables.env_Subscription }}
         secrets_KeyVault: $(env_Secret_KeyVault)
-        secrets_Subscription: $(env_Secret_Subscription)
+        secrets_Subscription: ${{ varables.env_Secret_Subscription }}
         devOpsResource: vh_video_web
         appName: vh-video-web-$(environment)
         resourceGroup: vh-video-web-$(environment)
