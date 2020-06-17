@@ -73,6 +73,11 @@ stages:
         devOpsResource: vh_video_web
         appName: vh-video-web-$(environment)
         resourceGroup: vh-video-web-$(environment)
+        testCaseFilter: TestCategory=smoketest
+        dependentApps:
+        - vh-user-api-$(environment)
+        - vh-bookings-api-$(environment)
+        - vh-video-api-$(environment)
         variables:
           - group: vh-wowza-dev
             env:
@@ -187,6 +192,10 @@ stages:
           - name: VhServices:BookingsApiResourceId
             value: vh-bookings-api-identifieruris
             secret: true
+          - name: VhServices:VideoWebApiUrl
+            value: $(video_web_url)
+          - name: VhServices:VideoWebUrl
+            value: $(video_web_url)
 
           # AzureAd
           - name: AzureAd:TenantId
