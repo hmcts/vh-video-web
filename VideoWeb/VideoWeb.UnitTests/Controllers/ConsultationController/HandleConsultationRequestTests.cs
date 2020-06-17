@@ -105,7 +105,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         public async Task Should_return_bad_request()
         {
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
-                "Please provide a valid conference Id", null, default, null);
+                "{\"ConsultationRoom\":[\"No consultation room available\"]}", null, default, null);
             _videoApiClientMock
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .ThrowsAsync(apiException);
@@ -118,9 +118,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [Test]
         public async Task Should_return_exception()
         {
-            var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
-                (int) HttpStatusCode.InternalServerError,
-                "Stacktrace goes here", null, default, null);
+            var apiException = new VideoApiException("Internal Server Error",
+                (int) HttpStatusCode.InternalServerError, "The server collapse due to unhandled error", default, null);
             _videoApiClientMock
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .ThrowsAsync(apiException);

@@ -759,7 +759,7 @@ export class ApiClient {
                 _observableMergeMap(_responseText => {
                     let result400: any = null;
                     let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
+                    result400 = BadRequestModelResponse.fromJS(resultData400);
                     return throwException('Bad Request', status, _responseText, _headers, result400);
                 })
             );
@@ -3660,6 +3660,92 @@ export interface IConsultationRequest {
     requested_by: string;
     requested_for: string;
     answer?: ConsultationAnswer | undefined;
+}
+
+export class BadModel implements IBadModel {
+    title?: string | undefined;
+    errors?: string[] | undefined;
+
+    constructor(data?: IBadModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.title = _data['title'];
+            if (Array.isArray(_data['errors'])) {
+                this.errors = [] as any;
+                for (let item of _data['errors']) this.errors!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): BadModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new BadModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['title'] = this.title;
+        if (Array.isArray(this.errors)) {
+            data['errors'] = [];
+            for (let item of this.errors) data['errors'].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IBadModel {
+    title?: string | undefined;
+    errors?: string[] | undefined;
+}
+
+export class BadRequestModelResponse implements IBadRequestModelResponse {
+    readonly errors?: BadModel[] | undefined;
+
+    constructor(data?: IBadRequestModelResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data['errors'])) {
+                (<any>this).errors = [] as any;
+                for (let item of _data['errors']) (<any>this).errors!.push(BadModel.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): BadRequestModelResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new BadRequestModelResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.errors)) {
+            data['errors'] = [];
+            for (let item of this.errors) data['errors'].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IBadRequestModelResponse {
+    errors?: BadModel[] | undefined;
 }
 
 export class LeaveConsultationRequest implements ILeaveConsultationRequest {
