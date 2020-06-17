@@ -116,39 +116,39 @@
       class="govuk-panel"
       [ngClass]="getCurrentTimeClass()"
     >
-        <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="getCurrentTimeClass()">
-            <div *ngIf="hearing.isOnTime()">
-                <h2 class="govuk-heading-m white">Please wait</h2>
-                <p class="white">Your video hearing is scheduled to begin at {{ hearing.scheduledStartTime | date: 'HH:mm' }}</p>
-            </div>
-
-            <div *ngIf="hearing.isStarting()">
-                <h2 class="govuk-heading-m white">Please stay near your screen</h2>
-                <p class="white">Make sure you're ready when the judge starts the hearing.</p>
-            </div>
-
-            <div *ngIf="hearing.isDelayed()">
-                <h2 class="govuk-heading-m">Your hearing is delayed</h2>
-                <p>
-                    We're sorry for the delay. Stay near your screen for further updates.
-                </p>
-            </div>
-
-            <div *ngIf="hearing.isClosed()">
-                <h2 class="govuk-heading-m white">This hearing has finished. You may now sign out.</h2>
-            </div>
-
-            <div *ngIf="hearing.isPaused()" class="hearing-title-mt--20">
-                <p class="white">The judge will restart the hearing when they are ready. Please stay near your screen.</p>
-            </div>
-
-            <div *ngIf="hearing.isSuspended()">
-                <h2 class="govuk-heading-m">We're having technical issues</h2>
-                <p>
-                    All participants are affected. Stay near your screen for further updates. There's no need to call us.
-                </p>
-            </div>
+      <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="getCurrentTimeClass()">
+        <div *ngIf="hearing.isOnTime()">
+          <h2 class="govuk-heading-m white">Please wait</h2>
+          <p class="white">Your video hearing is scheduled to begin at {{ hearing.scheduledStartTime | date: 'HH:mm' }}</p>
         </div>
+
+        <div *ngIf="hearing.isStarting()">
+          <h2 class="govuk-heading-m white">Please stay near your screen</h2>
+          <p class="white">Make sure you're ready when the judge starts the hearing.</p>
+        </div>
+
+        <div *ngIf="hearing.isDelayed()">
+          <h2 class="govuk-heading-m">Your hearing is delayed</h2>
+          <p>
+            We're sorry for the delay. Stay near your screen for further updates.
+          </p>
+        </div>
+
+        <div *ngIf="hearing.isClosed()">
+          <h2 class="govuk-heading-m white">This hearing has finished. You may now sign out.</h2>
+        </div>
+
+        <div *ngIf="hearing.isPaused()" class="hearing-title-mt--20">
+          <p class="white">The judge will restart the hearing when they are ready. Please stay near your screen.</p>
+        </div>
+
+        <div *ngIf="hearing.isSuspended()">
+          <h2 class="govuk-heading-m">We're having technical issues</h2>
+          <p>
+            All participants are affected. Stay near your screen for further updates. There's no need to call us.
+          </p>
+        </div>
+      </div>
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
           <div class="govuk-panel__body govuk-!-margin-top-4">
