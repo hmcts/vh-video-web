@@ -96,14 +96,6 @@ stages:
              - Sandbox
              - Test1
              - Test2
-          - group: KinlyConfiguration_Test
-            env:
-             - Preview
-             - Dev
-             - AAT
-             - Sandbox
-             - Test1
-             - Test2
           - group: KinlyConfiguration_Test2
             env:
              - Demo
