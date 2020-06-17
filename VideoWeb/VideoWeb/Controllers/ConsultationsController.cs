@@ -4,13 +4,17 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Hub;
+using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
+using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.Controllers
 {
@@ -42,7 +46,7 @@ namespace VideoWeb.Controllers
         [HttpPost]
         [SwaggerOperation(OperationId = "HandleConsultationRequest")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
-        [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(BadRequestModelResponse), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> HandleConsultationRequestAsync(ConsultationRequest request)
         {
             try
@@ -55,13 +59,13 @@ namespace VideoWeb.Controllers
                 });
                 
                 conference.Participants ??= new List<Participant>();
-
+                
                 var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.Requested_by);
                 if (requestedBy == null)
                 {
                     return NotFound();
                 }
-
+                
                 var requestedFor = conference.Participants?.SingleOrDefault(x => x.Id == request.Requested_for);
                 if (requestedFor == null)
                 {
@@ -81,15 +85,25 @@ namespace VideoWeb.Controllers
                 {
                     await NotifyConsultationResponseAsync(conference, requestedBy, requestedFor, request.Answer.Value);
                 }
-            
+                
                 await _videoApiClient.HandleConsultationRequestAsync(request);
                 return NoContent();
             }
             catch (VideoApiException e)
             {
+                object value;
+                if (e is VideoApiException<ProblemDetails>)
+                {
+                    var errors = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string[]>>(e.Response);
+                    value = BadRequestResponseMapper.MapToResponse(errors);
+                }
+                else
+                {
+                    value = e.Response;
+                }
+
                 _logger.LogError(e, $"ConferenceId: {request.Conference_id}, ErrorCode: {e.StatusCode}");
-                    
-                return StatusCode(e.StatusCode, e.Response);
+                return StatusCode(400, value);
             }
         }
         
