@@ -52,12 +52,14 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
             'raiseConsultationRequest',
             'respondToConsultationRequest',
             'leaveConsultation',
-            'respondToAdminConsultationRequest'
+            'respondToAdminConsultationRequest',
+            'displayNoConsultationRoomAvailableModal'
         ]);
-        consultationService.raiseConsultationRequest.and.callFake(() => Promise.resolve());
-        consultationService.respondToConsultationRequest.and.callFake(() => Promise.resolve());
-        consultationService.leaveConsultation.and.callFake(() => Promise.resolve());
-        consultationService.respondToAdminConsultationRequest.and.callFake(() => Promise.resolve());
+        consultationService.raiseConsultationRequest.and.resolveTo();
+        consultationService.respondToConsultationRequest.and.resolveTo();
+        consultationService.leaveConsultation.and.resolveTo();
+        consultationService.respondToAdminConsultationRequest.and.resolveTo();
+        consultationService.respondToAdminConsultationRequest.and.resolveTo();
 
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
@@ -402,5 +404,18 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         expect(global.clearTimeout).toHaveBeenCalledWith(timer);
         expect(component.outgoingCallTimeout).toBeNull();
         expect(component.waitingForConsultationResponse).toBeFalsy();
+    });
+
+    it('should display no consultation room available modal when no room message is received', () => {
+        const payload = new ConsultationMessage(
+            conference.id,
+            consultationRequester.username,
+            consultationRequestee.username,
+            ConsultationAnswer.NoRoomsAvailable
+        );
+        consultationService.respondToAdminConsultationRequest.calls.reset();
+        consultationSubject.next(payload);
+
+        expect(consultationService.displayNoConsultationRoomAvailableModal).toHaveBeenCalledTimes(1);
     });
 });

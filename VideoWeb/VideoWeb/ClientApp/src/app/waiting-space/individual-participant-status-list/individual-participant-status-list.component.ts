@@ -95,6 +95,8 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
                     this.handleRejectedConsultationRequest(message);
                 } else if (message.result === ConsultationAnswer.Cancelled) {
                     this.handleCancelledConsultationRequest(message);
+                } else if (message.result === ConsultationAnswer.NoRoomsAvailable) {
+                    this.handleNoConsulationRoom();
                 } else {
                     this.displayConsultationRequestPopup(message);
                 }
@@ -137,6 +139,10 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
             this.closeAllPCModals();
         }
         this.filterNonJudgeParticipants();
+    }
+
+    handleNoConsulationRoom() {
+        this.consultationService.displayNoConsultationRoomAvailableModal();
     }
 
     isParticipantAvailable(participant: ParticipantResponse): boolean {
