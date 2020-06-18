@@ -1,4 +1,4 @@
-import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
@@ -74,6 +74,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             judgeEventService
         );
         component.ngOnInit();
+        tick(500);
         flushMicrotasks();
     }));
 
