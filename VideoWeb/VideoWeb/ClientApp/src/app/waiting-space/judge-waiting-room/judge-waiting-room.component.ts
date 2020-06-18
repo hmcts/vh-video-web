@@ -38,7 +38,9 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.getConference().then(() => {
             this.setupEventHubSubscribers();
-            this.postEventJudgeAvailableStatus();
+            setTimeout(() => {
+                this.postEventJudgeAvailableStatus();
+            }, 500);
         });
     }
 

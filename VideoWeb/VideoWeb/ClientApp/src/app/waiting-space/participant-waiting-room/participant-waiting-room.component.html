@@ -128,9 +128,9 @@
         </div>
 
         <div *ngIf="hearing.isDelayed()">
-          <h2 class="govuk-heading-m">We're really sorry your hearing is delayed</h2>
+          <h2 class="govuk-heading-m">Your hearing is delayed</h2>
           <p>
-            Please stand by and one of the video hearing team will call you in the next 5 minutes on the number you have given us.
+            We're sorry for the delay. Stay near your screen for further updates.
           </p>
         </div>
 
@@ -145,8 +145,7 @@
         <div *ngIf="hearing.isSuspended()">
           <h2 class="govuk-heading-m">We're having technical issues</h2>
           <p>
-            Please wait while we try to restart the hearing. All participants are affected. We'll call to update you - there's no need to
-            call us.
+            All participants are affected. Stay near your screen for further updates. There's no need to call us.
           </p>
         </div>
       </div>
