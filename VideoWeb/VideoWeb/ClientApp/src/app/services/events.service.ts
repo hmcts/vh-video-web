@@ -97,11 +97,14 @@ export class EventsService {
             this.helpMessageSubject.next(message);
         });
 
-        this.connection.on('ConsultationMessage', (conferenceId: string, requestedBy: string, requestedFor: string, result: string) => {
-            const message = new ConsultationMessage(conferenceId, requestedBy, requestedFor, result);
-            this.logger.event('ConsultationMessage received', message);
-            this.consultationMessageSubject.next(message);
-        });
+        this.connection.on(
+            'ConsultationMessage',
+            (conferenceId: string, requestedBy: string, requestedFor: string, result?: ConsultationAnswer) => {
+                const message = new ConsultationMessage(conferenceId, requestedBy, requestedFor, result);
+                this.logger.event('ConsultationMessage received', message);
+                this.consultationMessageSubject.next(message);
+            }
+        );
 
         this.connection.on(
             'AdminConsultationMessage',

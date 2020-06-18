@@ -1,6 +1,10 @@
 import { Component, OnInit, Input, ElementRef, OnDestroy, HostListener } from '@angular/core';
 import { ModalService } from 'src/app/services/modal.service';
 
+/**
+ * https://stackoverflow.com/a/53065618
+ * modal setup based on answer
+ */
 @Component({
     selector: 'app-modal',
     template: '<ng-content></ng-content>'

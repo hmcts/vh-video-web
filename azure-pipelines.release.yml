@@ -56,12 +56,11 @@ resources:
   pipelines:
   - pipeline: CI
     source: hmcts.vh-video-web
-    trigger:
+    trigger: 
       branches:
-        include:
-          - master
-          - hotfix/*
-          - release/*
+      - master
+      - hotfix/*
+      - release/*
 
 stages:
   - template: templates/vh-release.yml@templates

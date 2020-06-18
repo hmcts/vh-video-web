@@ -61,8 +61,8 @@ $govuk-global-styles: true;
   position: fixed;
   left: 50%;
   top: 70%;
-  width: auto;
-  white-space: nowrap;
+  width: 35vw;
+  white-space: pre-wrap;
   transform: translate(-50%, -50%);
   text-align: center;
 }

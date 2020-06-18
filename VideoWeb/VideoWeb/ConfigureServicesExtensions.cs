@@ -50,6 +50,7 @@ namespace VideoWeb
                 c.IncludeXmlComments(xmlPath);
                 c.IncludeXmlComments(contractsXmlPath);
                 c.EnableAnnotations();
+                c.CustomSchemaIds(x => x.FullName);
 
                 c.AddSecurityDefinition("Bearer", //Name the security scheme
                     new OpenApiSecurityScheme
@@ -238,7 +239,7 @@ namespace VideoWeb
         private static IVideoApiClient BuildVideoApiClient(HttpClient httpClient,
             HearingServicesConfiguration serviceSettings)
         {
-            return new VideoApiClient(httpClient) { BaseUrl = serviceSettings.VideoApiUrl };
+            return new VideoApiClient(httpClient) { BaseUrl = serviceSettings.VideoApiUrl, ReadResponseAsString = true};
         }
 
         private static IUserApiClient BuildUserApiClient(HttpClient httpClient,
