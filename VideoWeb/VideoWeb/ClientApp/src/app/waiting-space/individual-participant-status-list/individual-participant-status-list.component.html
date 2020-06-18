@@ -165,3 +165,11 @@
     </div>
   </div>
 </app-modal>
+
+<app-modal id="no-room-pc-modal" class="modal clear consultation">
+  <app-no-consultation-room (closedModal)="closeAllPCModals()"></app-no-consultation-room>
+</app-modal>
+
+<app-modal id="pc-error-modal" class="modal clear consultation">
+  <app-consultation-error (closedModal)="closeAllPCModals()"></app-consultation-error>
+</app-modal>

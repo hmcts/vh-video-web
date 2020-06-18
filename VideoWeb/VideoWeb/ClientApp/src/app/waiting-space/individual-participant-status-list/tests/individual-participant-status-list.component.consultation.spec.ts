@@ -52,17 +52,19 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
             'raiseConsultationRequest',
             'respondToConsultationRequest',
             'leaveConsultation',
-            'respondToAdminConsultationRequest'
+            'respondToAdminConsultationRequest',
+            'displayNoConsultationRoomAvailableModal'
         ]);
-        consultationService.raiseConsultationRequest.and.callFake(() => Promise.resolve());
-        consultationService.respondToConsultationRequest.and.callFake(() => Promise.resolve());
-        consultationService.leaveConsultation.and.callFake(() => Promise.resolve());
-        consultationService.respondToAdminConsultationRequest.and.callFake(() => Promise.resolve());
+        consultationService.raiseConsultationRequest.and.resolveTo();
+        consultationService.respondToConsultationRequest.and.resolveTo();
+        consultationService.leaveConsultation.and.resolveTo();
+        consultationService.respondToAdminConsultationRequest.and.resolveTo();
+        consultationService.respondToAdminConsultationRequest.and.resolveTo();
 
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
 
-        modalService = jasmine.createSpyObj<ModalService>('ModalService', ['open', 'close']);
+        modalService = jasmine.createSpyObj<ModalService>('ModalService', ['open', 'closeAll']);
 
         notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', [
             'initConsultationRequestRingtone',
@@ -293,7 +295,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         // this is an incoming consultation request
         expect(component.waitingForConsultationResponse).toBeFalsy();
         expect(component.outgoingCallTimeout).toBeNull();
-        expect(modalService.close).toHaveBeenCalled();
+        expect(modalService.closeAll).toHaveBeenCalled();
         expect(modalService.open).toHaveBeenCalledTimes(0);
         expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalledTimes(1);
     });
@@ -333,7 +335,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
         await component.cancelConsultationRequest();
 
-        expect(modalService.close).toHaveBeenCalled();
+        expect(modalService.closeAll).toHaveBeenCalled();
         expect(consultationService.respondToConsultationRequest).toHaveBeenCalledWith(
             component.conference,
             component.consultationRequester.base,
@@ -398,9 +400,22 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
         component.closeConsultationRejection();
 
-        expect(modalService.close).toHaveBeenCalled();
+        expect(modalService.closeAll).toHaveBeenCalled();
         expect(global.clearTimeout).toHaveBeenCalledWith(timer);
         expect(component.outgoingCallTimeout).toBeNull();
         expect(component.waitingForConsultationResponse).toBeFalsy();
+    });
+
+    it('should display no consultation room available modal when no room message is received', () => {
+        const payload = new ConsultationMessage(
+            conference.id,
+            consultationRequester.username,
+            consultationRequestee.username,
+            ConsultationAnswer.NoRoomsAvailable
+        );
+        consultationService.respondToAdminConsultationRequest.calls.reset();
+        consultationSubject.next(payload);
+
+        expect(consultationService.displayNoConsultationRoomAvailableModal).toHaveBeenCalledTimes(1);
     });
 });
