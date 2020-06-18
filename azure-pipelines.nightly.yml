@@ -250,17 +250,17 @@ stages:
             value: $(wowza_storageAccountKey)
           - name: WowzaConfiguration:StorageContainerName
             value: $(wowza_storageContainerName)
-      runMultiDeviceTests: true
-      deviceConfiguration:
-        - OS: Windows
-          Browser: Chrome
-          BrowserVersion: Latest
-          DeviceType: Desktop
-          DeviceName:
-          TestCaseFilter: TestCategory!=UnsupportedBrowser
-        - OS: Windows
-          Browser: Chrome
-          BrowserVersion: Beta
-          DeviceType: Desktop
-          DeviceName:
-          TestCaseFilter: TestCategory!=UnsupportedBrowser
+        runMultiDeviceTests: true
+        deviceConfiguration:
+          - OS: Windows
+            Browser: Chrome
+            BrowserVersion: Latest
+            DeviceType: Desktop
+            DeviceName:
+            TestCaseFilter: TestCategory!=UnsupportedBrowser
+          - OS: Windows
+            Browser: Chrome
+            BrowserVersion: Beta
+            DeviceType: Desktop
+            DeviceName:
+            TestCaseFilter: TestCategory!=UnsupportedBrowser
