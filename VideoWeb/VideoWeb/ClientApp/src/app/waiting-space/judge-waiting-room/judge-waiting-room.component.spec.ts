@@ -74,7 +74,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             judgeEventService
         );
         component.ngOnInit();
-        tick(500);
+        tick(1000);
         flushMicrotasks();
     }));
 

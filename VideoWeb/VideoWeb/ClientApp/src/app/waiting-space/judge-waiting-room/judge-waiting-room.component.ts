@@ -40,7 +40,7 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
             this.setupEventHubSubscribers();
             setTimeout(() => {
                 this.postEventJudgeAvailableStatus();
-            }, 500);
+            }, 1000);
         });
     }
 
