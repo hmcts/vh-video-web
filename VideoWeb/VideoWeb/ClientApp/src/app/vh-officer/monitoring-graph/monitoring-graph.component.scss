@@ -131,3 +131,8 @@
   background: #ffdd00;
   color: #0b0c0d;
 }
+.shadow {
+  -webkit-box-shadow: 3px 3px 5px 6px #ccc;
+  -moz-box-shadow: 3px 3px 5px 6px #ccc;
+  box-shadow: 3px 3px 5px 6px #ccc;
+}
