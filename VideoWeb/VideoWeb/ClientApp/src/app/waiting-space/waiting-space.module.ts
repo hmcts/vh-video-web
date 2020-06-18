@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
 import { AnalogueClockComponent } from './analogue-clock/analogue-clock.component';
 import { AudioAlertComponent } from './audio-alert/audio-alert.component';
+import { ConsultationErrorComponent } from './consultation-modals/consultation-error/consultation-error.component';
+import { NoConsultationRoomComponent } from './consultation-modals/no-consultation-room/no-consultation-room.component';
 import { IndividualConsultationControlsComponent } from './individual-consultation-controls/individual-consultation-controls.component';
 import { IndividualParticipantStatusListComponent } from './individual-participant-status-list/individual-participant-status-list.component';
 import { JudgeHearingPageComponent } from './judge-hearing-page/judge-hearing-page.component';
@@ -12,7 +14,6 @@ import { ParticipantWaitingRoomComponent } from './participant-waiting-room/part
 import { NotificationSoundsService } from './services/notification-sounds.service';
 import { VideoCallService } from './services/video-call.service';
 import { WaitingSpaceRoutingModule } from './waiting-space-routing.module';
-import { NoConsultationRoomComponent } from './consultation-modals/no-consultation-room/no-consultation-room.component';
 
 @NgModule({
     imports: [SharedModule, WaitingSpaceRoutingModule],
@@ -26,7 +27,8 @@ import { NoConsultationRoomComponent } from './consultation-modals/no-consultati
         IndividualConsultationControlsComponent,
         ParticipantChatComponent,
         AudioAlertComponent,
-        NoConsultationRoomComponent
+        NoConsultationRoomComponent,
+        ConsultationErrorComponent
     ],
     providers: [VideoCallService, NotificationSoundsService]
 })

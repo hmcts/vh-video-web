@@ -17,6 +17,7 @@ import { ModalService } from '../modal.service';
 })
 export class ConsultationService {
     static NO_ROOM_PC_MODAL = 'no-room-pc-modal';
+    static ERROR_PC_MODAL = 'pc-error-modal';
 
     constructor(private apiClient: ApiClient, private modalService: ModalService) {}
 
@@ -57,6 +58,7 @@ export class ConsultationService {
             if (this.checkNoRoomsLeftError(error)) {
                 this.displayNoConsultationRoomAvailableModal();
             } else {
+                this.displayConsultationErrorModal();
                 throw error;
             }
         }
@@ -101,6 +103,11 @@ export class ConsultationService {
     displayNoConsultationRoomAvailableModal() {
         this.clearModals();
         this.modalService.open(ConsultationService.NO_ROOM_PC_MODAL);
+    }
+
+    displayConsultationErrorModal() {
+        this.clearModals();
+        this.modalService.open(ConsultationService.ERROR_PC_MODAL);
     }
 
     clearModals() {

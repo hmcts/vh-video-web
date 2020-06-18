@@ -188,6 +188,7 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
             this.logger.info('Raised consultation request event');
             await this.startCallRinging(true);
         } catch (error) {
+            await this.stopCallRinging();
             this.logger.error('Failed to raise consultation request', error);
         }
     }

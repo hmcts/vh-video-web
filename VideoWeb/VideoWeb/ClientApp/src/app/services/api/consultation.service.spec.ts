@@ -119,7 +119,7 @@ describe('ConsultationService', () => {
         expect(modalService.open).toHaveBeenCalledWith(ConsultationService.NO_ROOM_PC_MODAL);
     });
 
-    it('should throw unknown error', async () => {
+    it('should display error modal when unexpected consultation error occurs', async () => {
         const error = { error: 'test bad thing' };
         const conference = new ConferenceTestData().getConferenceDetailFuture();
         const requester = conference.participants[0];
@@ -127,11 +127,11 @@ describe('ConsultationService', () => {
 
         apiClient.handleConsultationRequest.and.callFake(() => throwError(error));
 
-        expectAsync(service.respondToConsultationRequest(conference, requester, requestee, ConsultationAnswer.Accepted)).toBeRejectedWith(
-            error
-        );
+        await expectAsync(
+            service.respondToConsultationRequest(conference, requester, requestee, ConsultationAnswer.Accepted)
+        ).toBeRejectedWith(error);
 
-        expect(modalService.closeAll).toHaveBeenCalledTimes(0);
-        expect(modalService.open).toHaveBeenCalledTimes(0);
+        expect(modalService.closeAll).toHaveBeenCalledTimes(1);
+        expect(modalService.open).toHaveBeenCalledWith(ConsultationService.ERROR_PC_MODAL);
     });
 });
