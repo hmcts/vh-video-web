@@ -19,11 +19,6 @@ parameters:
   - Preprod
   - Prod
 
-- name: RunZap
-  displayName: Execute ZAP Tests
-  type: boolean
-  default: false
-
 - name: prodEnvs
   displayName: Environments Using Prod Subscription
   type: object
@@ -71,7 +66,6 @@ stages:
         - ${{ parameters.environment }}
       deploymentBranch: ${{ parameters.deploymentBranch }}
       releaseParameters:
-        runZapTests: ${{ parameters.RunZap }}
         subscription: $(env_Subscription)
         secrets_KeyVault: $(env_Secret_KeyVault)
         secrets_Subscription: $(env_Secret_Subscription)
