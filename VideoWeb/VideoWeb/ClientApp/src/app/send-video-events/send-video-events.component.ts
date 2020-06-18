@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Guid } from 'guid-typescript';
-import { ConferenceEventRequest, ConferenceResponse, EventType, ParticipantResponse, RoomType } from '../services/clients/api-client';
 import { VideoWebService } from '../services/api/video-web.service';
+import { ConferenceEventRequest, ConferenceResponse, EventType, ParticipantResponse, RoomType2 } from '../services/clients/api-client';
 import { ErrorService } from '../services/error.service';
 import { Logger } from '../services/logging/logger-base';
 
@@ -98,8 +98,8 @@ export class SendVideoEventsComponent implements OnInit {
         const request = this.buildBasicEventRequest();
         request.participant_id = participant.id;
         request.event_type = EventType.Transfer;
-        request.transfer_from = RoomType.HearingRoom;
-        request.transfer_to = RoomType.WaitingRoom;
+        request.transfer_from = RoomType2.HearingRoom;
+        request.transfer_to = RoomType2.WaitingRoom;
         this.sendEvent(request);
     }
 
@@ -107,8 +107,8 @@ export class SendVideoEventsComponent implements OnInit {
         const request = this.buildBasicEventRequest();
         request.participant_id = participant.id;
         request.event_type = EventType.Transfer;
-        request.transfer_from = RoomType.ConsultationRoom1;
-        request.transfer_to = RoomType.WaitingRoom;
+        request.transfer_from = RoomType2.ConsultationRoom1;
+        request.transfer_to = RoomType2.WaitingRoom;
         this.sendEvent(request);
     }
 
@@ -116,8 +116,8 @@ export class SendVideoEventsComponent implements OnInit {
         const request = this.buildBasicEventRequest();
         request.participant_id = participant.id;
         request.event_type = EventType.Transfer;
-        request.transfer_from = RoomType.WaitingRoom;
-        request.transfer_to = RoomType.HearingRoom;
+        request.transfer_from = RoomType2.WaitingRoom;
+        request.transfer_to = RoomType2.HearingRoom;
         this.sendEvent(request);
     }
 
@@ -125,8 +125,8 @@ export class SendVideoEventsComponent implements OnInit {
         const request = this.buildBasicEventRequest();
         request.participant_id = participant.id;
         request.event_type = EventType.Transfer;
-        request.transfer_from = RoomType.WaitingRoom;
-        request.transfer_to = RoomType.ConsultationRoom1;
+        request.transfer_from = RoomType2.WaitingRoom;
+        request.transfer_to = RoomType2.ConsultationRoom1;
         this.sendEvent(request);
     }
 
@@ -134,8 +134,8 @@ export class SendVideoEventsComponent implements OnInit {
         const request = this.buildBasicEventRequest();
         request.participant_id = participant.id;
         request.event_type = EventType.Transfer;
-        request.transfer_from = RoomType.WaitingRoom;
-        request.transfer_to = RoomType.ConsultationRoom2;
+        request.transfer_from = RoomType2.WaitingRoom;
+        request.transfer_to = RoomType2.ConsultationRoom2;
         this.sendEvent(request);
     }
 
@@ -143,7 +143,7 @@ export class SendVideoEventsComponent implements OnInit {
         const request = this.buildBasicEventRequest();
         request.participant_id = participant.id;
         request.event_type = EventType.VhoCall;
-        request.transfer_to = RoomType.ConsultationRoom2;
+        request.transfer_to = RoomType2.ConsultationRoom2;
         this.sendEvent(request);
     }
 
