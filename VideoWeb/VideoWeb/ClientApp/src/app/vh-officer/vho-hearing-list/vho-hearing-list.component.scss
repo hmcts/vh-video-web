@@ -258,7 +258,7 @@
 }
 .line {
   grid-column: 1/7;
-  grid-row: 6/6;
+  grid-row: 7/7;
 }
 .status {
   grid-column: 4 / span 2;
@@ -266,29 +266,16 @@
   justify-self: start;
   align-self: center;
 }
-
-.pIcon1 {
-  grid-column: 6/6;
-  grid-row: 1/1;
-  justify-self: end;
+.pIcons {
+  grid-column: 1/6;
+  grid-row: 6/6;
+  justify-self: start;
+  align-self: center;
 }
-.pIcon2 {
-  grid-column: 6/6;
-  grid-row: 2/2;
-  justify-self: end;
+.vh-top-padding {
+  padding-top: 8px;
 }
-.pIcon3 {
-  grid-column: 6/6;
-  grid-row: 3/3;
-  justify-self: end;
-}
-.pIcon4 {
-  grid-column: 6/6;
-  grid-row: 4/4;
-  justify-self: end;
-}
-.pIcon5 {
-  grid-column: 6/6;
-  grid-row: 5/5;
-  justify-self: end;
+.vh-pIcons {
+  float: left;
+  padding-right: 4px;
 }

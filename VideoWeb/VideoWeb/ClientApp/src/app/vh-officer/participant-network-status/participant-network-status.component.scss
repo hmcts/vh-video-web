@@ -21,8 +21,8 @@
 }
 
 .network-status-icon {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   cursor: pointer;
 }
 
@@ -32,8 +32,8 @@
   height: 20px;
   background: govuk-colour('dark-grey');
   position: absolute;
-  top: -10px;
-  left: 50%;
+  top: -5px;
+  left: 1%;
   transform: translateX(-50%) rotate(45deg);
 }
 
@@ -44,35 +44,4 @@
   background: govuk-colour('white');
   width: auto;
   height: auto;
-}
-
-.pIcon1 {
-  grid-column: 6/6;
-  grid-row: 1/1;
-  justify-self: end;
-}
-.pIcon2 {
-  grid-column: 6/6;
-  grid-row: 2/2;
-  justify-self: end;
-}
-.pIcon3 {
-  grid-column: 6/6;
-  grid-row: 3/3;
-  justify-self: end;
-}
-.pIcon4 {
-  grid-column: 6/6;
-  grid-row: 4/4;
-  justify-self: end;
-}
-.pIcon5 {
-  grid-column: 6/6;
-  grid-row: 5/5;
-  justify-self: end;
-}
-.pIcon6 {
-  grid-column: 6/6;
-  grid-row: 6/6;
-  justify-self: end;
 }
