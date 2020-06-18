@@ -9,17 +9,25 @@ export class ModalService {
 
     add(modal: ModalComponent) {
         // add modal to array of active modals
-        this.modals.push(modal);
+        if (!this.checkModalExists(modal.id)) {
+            this.modals.push(modal);
+        }
     }
 
     remove(id: string) {
         // remove modal from array of active modals
-        this.modals = this.modals.filter(x => x.id !== id);
+        if (this.checkModalExists(id)) {
+            this.modals = this.modals.filter(x => x.id !== id);
+        }
+    }
+
+    private checkModalExists(id: string): ModalComponent {
+        return this.modals.find(x => x.id === id);
     }
 
     open(id: string) {
         // open modal specified by id
-        const modal: any = this.modals.filter(x => x.id === id)[0];
+        const modal = this.checkModalExists(id);
         if (modal) {
             modal.open();
         }
@@ -27,7 +35,7 @@ export class ModalService {
 
     close(id: string) {
         // close modal specified by id
-        const modal: any = this.modals.filter(x => x.id === id)[0];
+        const modal = this.checkModalExists(id);
         if (modal) {
             modal.close();
         }
@@ -35,7 +43,7 @@ export class ModalService {
 
     closeAll() {
         this.modals.forEach(modal => {
-            this.close(modal.id);
+            modal.close();
         });
     }
 
