@@ -53,7 +53,7 @@ resources:
     - repository: templates
       type: github
       name: hmcts/azure-devops-templates
-      ref: refs/heads/feature/multidevice
+      ref: refs/heads/master
       endpoint: hmcts (1)
   pipelines:
   - pipeline: CI
