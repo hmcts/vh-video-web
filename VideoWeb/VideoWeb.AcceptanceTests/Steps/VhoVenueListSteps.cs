@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.Test.Helpers;
@@ -7,6 +8,7 @@ using OpenQA.Selenium;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.Services.Video;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -24,7 +26,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         
         public void ProgressToNextPage()
         {
-            SelectVenues(_c.Test.Conference.Hearing_venue_name);
+            SelectVenues(_c.Test.Conference.Participants.First(x => x.User_role == UserRole.Judge).First_name);
             ConfirmVenue();
         }
         

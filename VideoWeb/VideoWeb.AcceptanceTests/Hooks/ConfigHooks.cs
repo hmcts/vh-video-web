@@ -128,8 +128,11 @@ namespace VideoWeb.AcceptanceTests.Hooks
         private void RegisterSauceLabsSettings(TestContext context)
         {
             context.VideoWebConfig.SauceLabsConfiguration = Options.Create(_configRoot.GetSection("Saucelabs").Get<SauceLabsSettingsConfig>()).Value;
-            if (context.VideoWebConfig.SauceLabsConfiguration.RunningOnSauceLabs())
-                context.VideoWebConfig.SauceLabsConfiguration.SetRemoteServerUrlForDesktop(context.Test.CommonData.CommonConfig.SauceLabsServerUrl);
+            if (!context.VideoWebConfig.SauceLabsConfiguration.RunningOnSauceLabs()) return;
+            context.VideoWebConfig.SauceLabsConfiguration.SetRemoteServerUrlForDesktop(context.Test.CommonData.CommonConfig.SauceLabsServerUrl);
+            context.VideoWebConfig.SauceLabsConfiguration.AccessKey.Should().NotBeNullOrWhiteSpace();
+            context.VideoWebConfig.SauceLabsConfiguration.Username.Should().NotBeNullOrWhiteSpace();
+            context.VideoWebConfig.SauceLabsConfiguration.RealDeviceApiKey.Should().NotBeNullOrWhiteSpace();
         }
 
         private static void RunningAppsLocally(TestContext context)
