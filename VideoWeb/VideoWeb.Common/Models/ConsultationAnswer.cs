@@ -1,4 +1,4 @@
-namespace VideoWeb.EventHub.Enums
+namespace VideoWeb.Common.Models
 {
     public enum ConsultationAnswer
     {
@@ -17,6 +17,14 @@ namespace VideoWeb.EventHub.Enums
         /// <summary>
         /// Cancel a consultation request
         /// </summary>
-        Cancelled
+        Cancelled,
+        /// <summary>
+        /// Consultation request failed
+        /// </summary>
+        Failed,
+        /// <summary>
+        /// No consultation rooms available
+        /// </summary>
+        NoRoomsAvailable
     }
 }

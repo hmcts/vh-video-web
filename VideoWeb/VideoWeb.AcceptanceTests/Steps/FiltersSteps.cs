@@ -9,7 +9,7 @@ using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.Common.Models;
 using VideoWeb.Services.Video;
-using RoomType = VideoWeb.EventHub.Enums.RoomType;
+using RoomType = VideoWeb.Common.Models.RoomType;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {

@@ -1,59 +1,80 @@
 import { Injectable } from '@angular/core';
 import {
-    AdminConsultationRequest,
     ApiClient,
+    BadRequestModelResponse,
     ConferenceResponse,
     ConsultationAnswer,
-    ConsultationRequest,
-    LeaveConsultationRequest,
+    LeavePrivateConsultationRequest,
     ParticipantResponse,
+    PrivateAdminConsultationRequest,
+    PrivateConsultationRequest,
     RoomType
 } from '../clients/api-client';
+import { ModalService } from '../modal.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ConsultationService {
-    constructor(private apiClient: ApiClient) {}
+    static NO_ROOM_PC_MODAL = 'no-room-pc-modal';
+    static ERROR_PC_MODAL = 'pc-error-modal';
 
-    raiseConsultationRequest(
+    constructor(private apiClient: ApiClient, private modalService: ModalService) {}
+
+    async raiseConsultationRequest(
         conference: ConferenceResponse,
         requester: ParticipantResponse,
         requestee: ParticipantResponse
     ): Promise<void> {
-        return this.apiClient
-            .handleConsultationRequest(
-                new ConsultationRequest({
-                    conference_id: conference.id,
-                    requested_by: requester.id,
-                    requested_for: requestee.id
-                })
-            )
-            .toPromise();
+        await this.handleConsultationRequest(
+            new PrivateConsultationRequest({
+                conference_id: conference.id,
+                requested_by_id: requester.id,
+                requested_for_id: requestee.id
+            })
+        );
     }
 
-    respondToConsultationRequest(
+    async respondToConsultationRequest(
         conference: ConferenceResponse,
         requester: ParticipantResponse,
         requestee: ParticipantResponse,
         answer: ConsultationAnswer
     ): Promise<void> {
-        return this.apiClient
-            .handleConsultationRequest(
-                new ConsultationRequest({
-                    conference_id: conference.id,
-                    requested_by: requester.id,
-                    requested_for: requestee.id,
-                    answer: answer
-                })
-            )
-            .toPromise();
+        await this.handleConsultationRequest(
+            new PrivateConsultationRequest({
+                conference_id: conference.id,
+                requested_by_id: requester.id,
+                requested_for_id: requestee.id,
+                answer: answer
+            })
+        );
     }
 
-    leaveConsultation(conference: ConferenceResponse, participant: ParticipantResponse): Promise<void> {
-        return this.apiClient
+    private async handleConsultationRequest(request: PrivateConsultationRequest): Promise<void> {
+        try {
+            await this.apiClient.handleConsultationRequest(request).toPromise();
+        } catch (error) {
+            if (this.checkNoRoomsLeftError(error)) {
+                this.displayNoConsultationRoomAvailableModal();
+            } else {
+                this.displayConsultationErrorModal();
+                throw error;
+            }
+        }
+    }
+
+    private checkNoRoomsLeftError(error: any): boolean {
+        if (!(error instanceof BadRequestModelResponse)) {
+            return false;
+        }
+        return error.errors && error.errors.findIndex(x => x.errors.includes('No consultation room available')) >= 0;
+    }
+
+    async leaveConsultation(conference: ConferenceResponse, participant: ParticipantResponse): Promise<void> {
+        await this.apiClient
             .leavePrivateConsultation(
-                new LeaveConsultationRequest({
+                new LeavePrivateConsultationRequest({
                     conference_id: conference.id,
                     participant_id: participant.id
                 })
@@ -61,15 +82,15 @@ export class ConsultationService {
             .toPromise();
     }
 
-    respondToAdminConsultationRequest(
+    async respondToAdminConsultationRequest(
         conference: ConferenceResponse,
         participant: ParticipantResponse,
         answer: ConsultationAnswer,
         room: RoomType
     ): Promise<void> {
-        return this.apiClient
+        await this.apiClient
             .respondToAdminConsultationRequest(
-                new AdminConsultationRequest({
+                new PrivateAdminConsultationRequest({
                     conference_id: conference.id,
                     participant_id: participant.id,
                     answer: answer,
@@ -77,5 +98,19 @@ export class ConsultationService {
                 })
             )
             .toPromise();
+    }
+
+    displayNoConsultationRoomAvailableModal() {
+        this.clearModals();
+        this.modalService.open(ConsultationService.NO_ROOM_PC_MODAL);
+    }
+
+    displayConsultationErrorModal() {
+        this.clearModals();
+        this.modalService.open(ConsultationService.ERROR_PC_MODAL);
+    }
+
+    clearModals() {
+        this.modalService.closeAll();
     }
 }
