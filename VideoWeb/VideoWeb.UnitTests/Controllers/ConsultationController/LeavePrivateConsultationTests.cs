@@ -11,6 +11,7 @@ using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.Services.Video;
@@ -46,10 +47,12 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 }
             };
 
-            _conferenceCacheMock.Setup(cache => cache.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+            _conferenceCacheMock.Setup(cache =>
+                    cache.GetOrAddConferenceAsync(_testConference.Id,
+                        It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(_testConference);
-            _controller = new ConsultationsController(_videoApiClientMock.Object, _eventHubContextMock.Object, 
+            _controller = new ConsultationsController(_videoApiClientMock.Object, _eventHubContextMock.Object,
                 _conferenceCacheMock.Object, _loggerMock.Object)
             {
                 ControllerContext = context
@@ -63,12 +66,14 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Setup(x => x.LeavePrivateConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
                 .Returns(Task.FromResult(default(object)));
             var conference = new Conference {Id = Guid.NewGuid()};
-            
-            _conferenceCacheMock.Setup(cache => cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+
+            _conferenceCacheMock.Setup(cache =>
+                    cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
 
-            var leaveConsultationRequest = Builder<LeaveConsultationRequest>.CreateNew().With(x => x.Conference_id = conference.Id).Build();
+            var leaveConsultationRequest = Builder<LeavePrivateConsultationRequest>.CreateNew()
+                .With(x => x.ConferenceId = conference.Id).Build();
             var result = await _controller.LeavePrivateConsultationAsync(leaveConsultationRequest);
 
             var typedResult = (NotFoundResult) result;
@@ -98,7 +103,9 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Setup(x => x.LeavePrivateConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.LeavePrivateConsultationAsync(ConsultationHelper.GetLeaveConsultationRequest(_testConference));
+            var result =
+                await _controller.LeavePrivateConsultationAsync(
+                    ConsultationHelper.GetLeaveConsultationRequest(_testConference));
             var typedResult = (ObjectResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
         }
@@ -113,7 +120,9 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Setup(x => x.LeavePrivateConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.LeavePrivateConsultationAsync(ConsultationHelper.GetLeaveConsultationRequest(_testConference));
+            var result =
+                await _controller.LeavePrivateConsultationAsync(
+                    ConsultationHelper.GetLeaveConsultationRequest(_testConference));
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
         }
@@ -126,14 +135,15 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Returns(Task.FromResult(default(object)));
             var conference = _testConference;
 
-            var leaveConsultationRequest = Builder<LeaveConsultationRequest>.CreateNew().With(x => x.Conference_id = conference.Id).Build();
-            var findId = leaveConsultationRequest.Participant_id;
+            var leaveConsultationRequest = Builder<LeavePrivateConsultationRequest>.CreateNew()
+                .With(x => x.ConferenceId = conference.Id).Build();
+            var findId = leaveConsultationRequest.ParticipantId;
             conference.Participants[0].Id = findId;
             conference.Participants[1].Id = findId;
 
-            Assert.ThrowsAsync<InvalidOperationException>(() => _controller.LeavePrivateConsultationAsync(leaveConsultationRequest));
+            Assert.ThrowsAsync<InvalidOperationException>(() =>
+                _controller.LeavePrivateConsultationAsync(leaveConsultationRequest));
 
         }
-
     }
 }

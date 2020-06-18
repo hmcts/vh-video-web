@@ -47,7 +47,7 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
 
-        modalService = jasmine.createSpyObj<ModalService>('ModalService', ['open', 'close']);
+        modalService = jasmine.createSpyObj<ModalService>('ModalService', ['open', 'closeAll']);
 
         notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', [
             'initConsultationRequestRingtone',
@@ -156,7 +156,7 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
             const payload = new ParticipantStatusMessage(participant.id, participant.username, conference.id, test.status);
 
             participantStatusSubject.next(payload);
-            expect(modalService.close).toHaveBeenCalledTimes(0);
+            expect(modalService.closeAll).toHaveBeenCalledTimes(0);
         });
     });
 
@@ -166,6 +166,6 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
         const payload = new ParticipantStatusMessage(participant.id, participant.username, conference.id, ParticipantStatus.InConsultation);
 
         participantStatusSubject.next(payload);
-        expect(modalService.close).toHaveBeenCalled();
+        expect(modalService.closeAll).toHaveBeenCalled();
     });
 });

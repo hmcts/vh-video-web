@@ -8,7 +8,7 @@ using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
 using EventType = VideoWeb.EventHub.Enums.EventType;
-using RoomType = VideoWeb.EventHub.Enums.RoomType;
+using RoomType = VideoWeb.Common.Models.RoomType;
 
 namespace VideoWeb.EventHub.Handlers
 {

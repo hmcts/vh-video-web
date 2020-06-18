@@ -1,4 +1,4 @@
-namespace VideoWeb.EventHub.Enums
+namespace VideoWeb.Common.Models
 {
     public enum RoomType
     {

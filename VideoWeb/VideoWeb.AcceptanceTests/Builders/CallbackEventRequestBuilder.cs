@@ -1,5 +1,6 @@
 using System;
 using FizzWare.NBuilder;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Models;
 

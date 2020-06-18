@@ -1,5 +1,5 @@
 using System;
-using VideoWeb.EventHub.Enums;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.EventHub.Exceptions
 {

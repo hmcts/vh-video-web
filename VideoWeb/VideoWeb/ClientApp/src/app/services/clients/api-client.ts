@@ -702,7 +702,7 @@ export class ApiClient {
      * @param body (optional) Private consultation request with or without an answer
      * @return Success
      */
-    handleConsultationRequest(body: ConsultationRequest | undefined): Observable<void> {
+    handleConsultationRequest(body: PrivateConsultationRequest | undefined): Observable<void> {
         let url_ = this.baseUrl + '/consultations';
         url_ = url_.replace(/[?&]$/, '');
 
@@ -759,7 +759,7 @@ export class ApiClient {
                 _observableMergeMap(_responseText => {
                     let result400: any = null;
                     let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
+                    result400 = BadRequestModelResponse.fromJS(resultData400);
                     return throwException('Bad Request', status, _responseText, _headers, result400);
                 })
             );
@@ -783,7 +783,7 @@ export class ApiClient {
      * @param body (optional)
      * @return Success
      */
-    leavePrivateConsultation(body: LeaveConsultationRequest | undefined): Observable<void> {
+    leavePrivateConsultation(body: LeavePrivateConsultationRequest | undefined): Observable<void> {
         let url_ = this.baseUrl + '/consultations/leave';
         url_ = url_.replace(/[?&]$/, '');
 
@@ -873,7 +873,7 @@ export class ApiClient {
      * @param body (optional)
      * @return Success
      */
-    respondToAdminConsultationRequest(body: AdminConsultationRequest | undefined): Observable<void> {
+    respondToAdminConsultationRequest(body: PrivateAdminConsultationRequest | undefined): Observable<void> {
         let url_ = this.baseUrl + '/consultations/vhofficer/respond';
         url_ = url_.replace(/[?&]$/, '');
 
@@ -3612,16 +3612,20 @@ export enum ConsultationAnswer {
     None = 'None',
     Accepted = 'Accepted',
     Rejected = 'Rejected',
-    Cancelled = 'Cancelled'
+    Cancelled = 'Cancelled',
+    Failed = 'Failed',
+    NoRoomsAvailable = 'NoRoomsAvailable'
 }
 
-export class ConsultationRequest implements IConsultationRequest {
-    conference_id!: string;
-    requested_by!: string;
-    requested_for!: string;
+/** Raise or respond to a private consultation request */
+export class PrivateConsultationRequest implements IPrivateConsultationRequest {
+    conference_id?: string;
+    requested_by_id?: string;
+    requested_for_id?: string;
+    /** Consultation Answer (absent value is treated as raising a consultation request) */
     answer?: ConsultationAnswer | undefined;
 
-    constructor(data?: IConsultationRequest) {
+    constructor(data?: IPrivateConsultationRequest) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
@@ -3632,15 +3636,15 @@ export class ConsultationRequest implements IConsultationRequest {
     init(_data?: any) {
         if (_data) {
             this.conference_id = _data['conference_id'];
-            this.requested_by = _data['requested_by'];
-            this.requested_for = _data['requested_for'];
+            this.requested_by_id = _data['requested_by_id'];
+            this.requested_for_id = _data['requested_for_id'];
             this.answer = _data['answer'];
         }
     }
 
-    static fromJS(data: any): ConsultationRequest {
+    static fromJS(data: any): PrivateConsultationRequest {
         data = typeof data === 'object' ? data : {};
-        let result = new ConsultationRequest();
+        let result = new PrivateConsultationRequest();
         result.init(data);
         return result;
     }
@@ -3648,25 +3652,114 @@ export class ConsultationRequest implements IConsultationRequest {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data['conference_id'] = this.conference_id;
-        data['requested_by'] = this.requested_by;
-        data['requested_for'] = this.requested_for;
+        data['requested_by_id'] = this.requested_by_id;
+        data['requested_for_id'] = this.requested_for_id;
         data['answer'] = this.answer;
         return data;
     }
 }
 
-export interface IConsultationRequest {
-    conference_id: string;
-    requested_by: string;
-    requested_for: string;
+/** Raise or respond to a private consultation request */
+export interface IPrivateConsultationRequest {
+    conference_id?: string;
+    requested_by_id?: string;
+    requested_for_id?: string;
+    /** Consultation Answer (absent value is treated as raising a consultation request) */
     answer?: ConsultationAnswer | undefined;
 }
 
-export class LeaveConsultationRequest implements ILeaveConsultationRequest {
-    conference_id!: string;
-    participant_id!: string;
+export class BadModel implements IBadModel {
+    title?: string | undefined;
+    errors?: string[] | undefined;
 
-    constructor(data?: ILeaveConsultationRequest) {
+    constructor(data?: IBadModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.title = _data['title'];
+            if (Array.isArray(_data['errors'])) {
+                this.errors = [] as any;
+                for (let item of _data['errors']) this.errors!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): BadModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new BadModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['title'] = this.title;
+        if (Array.isArray(this.errors)) {
+            data['errors'] = [];
+            for (let item of this.errors) data['errors'].push(item);
+        }
+        return data;
+    }
+}
+
+export interface IBadModel {
+    title?: string | undefined;
+    errors?: string[] | undefined;
+}
+
+export class BadRequestModelResponse implements IBadRequestModelResponse {
+    readonly errors?: BadModel[] | undefined;
+
+    constructor(data?: IBadRequestModelResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data['errors'])) {
+                (<any>this).errors = [] as any;
+                for (let item of _data['errors']) (<any>this).errors!.push(BadModel.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): BadRequestModelResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new BadRequestModelResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.errors)) {
+            data['errors'] = [];
+            for (let item of this.errors) data['errors'].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface IBadRequestModelResponse {
+    errors?: BadModel[] | undefined;
+}
+
+/** Leave a private consultation */
+export class LeavePrivateConsultationRequest implements ILeavePrivateConsultationRequest {
+    conference_id?: string;
+    participant_id?: string;
+
+    constructor(data?: ILeavePrivateConsultationRequest) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
@@ -3681,9 +3774,9 @@ export class LeaveConsultationRequest implements ILeaveConsultationRequest {
         }
     }
 
-    static fromJS(data: any): LeaveConsultationRequest {
+    static fromJS(data: any): LeavePrivateConsultationRequest {
         data = typeof data === 'object' ? data : {};
-        let result = new LeaveConsultationRequest();
+        let result = new LeavePrivateConsultationRequest();
         result.init(data);
         return result;
     }
@@ -3696,9 +3789,10 @@ export class LeaveConsultationRequest implements ILeaveConsultationRequest {
     }
 }
 
-export interface ILeaveConsultationRequest {
-    conference_id: string;
-    participant_id: string;
+/** Leave a private consultation */
+export interface ILeavePrivateConsultationRequest {
+    conference_id?: string;
+    participant_id?: string;
 }
 
 export enum RoomType {
@@ -3709,13 +3803,15 @@ export enum RoomType {
     AdminRoom = 'AdminRoom'
 }
 
-export class AdminConsultationRequest implements IAdminConsultationRequest {
-    conference_id!: string;
-    participant_id!: string;
+/** Request a private consultation with another participant */
+export class PrivateAdminConsultationRequest implements IPrivateAdminConsultationRequest {
+    conference_id?: string;
+    participant_id?: string;
+    /** Response to a consultation request (i.e. 'Accepted or Rejected') */
+    answer?: ConsultationAnswer;
     consultation_room?: RoomType;
-    answer?: ConsultationAnswer | undefined;
 
-    constructor(data?: IAdminConsultationRequest) {
+    constructor(data?: IPrivateAdminConsultationRequest) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
@@ -3727,14 +3823,14 @@ export class AdminConsultationRequest implements IAdminConsultationRequest {
         if (_data) {
             this.conference_id = _data['conference_id'];
             this.participant_id = _data['participant_id'];
-            this.consultation_room = _data['consultation_room'];
             this.answer = _data['answer'];
+            this.consultation_room = _data['consultation_room'];
         }
     }
 
-    static fromJS(data: any): AdminConsultationRequest {
+    static fromJS(data: any): PrivateAdminConsultationRequest {
         data = typeof data === 'object' ? data : {};
-        let result = new AdminConsultationRequest();
+        let result = new PrivateAdminConsultationRequest();
         result.init(data);
         return result;
     }
@@ -3743,17 +3839,19 @@ export class AdminConsultationRequest implements IAdminConsultationRequest {
         data = typeof data === 'object' ? data : {};
         data['conference_id'] = this.conference_id;
         data['participant_id'] = this.participant_id;
-        data['consultation_room'] = this.consultation_room;
         data['answer'] = this.answer;
+        data['consultation_room'] = this.consultation_room;
         return data;
     }
 }
 
-export interface IAdminConsultationRequest {
-    conference_id: string;
-    participant_id: string;
+/** Request a private consultation with another participant */
+export interface IPrivateAdminConsultationRequest {
+    conference_id?: string;
+    participant_id?: string;
+    /** Response to a consultation request (i.e. 'Accepted or Rejected') */
+    answer?: ConsultationAnswer;
     consultation_room?: RoomType;
-    answer?: ConsultationAnswer | undefined;
 }
 
 export class HealthCheck implements IHealthCheck {
@@ -4623,14 +4721,22 @@ export interface IJudgeNameListResponse {
     first_names?: string[] | undefined;
 }
 
+export enum RoomType2 {
+    WaitingRoom = 'WaitingRoom',
+    HearingRoom = 'HearingRoom',
+    ConsultationRoom1 = 'ConsultationRoom1',
+    ConsultationRoom2 = 'ConsultationRoom2',
+    AdminRoom = 'AdminRoom'
+}
+
 export class ConferenceEventRequest implements IConferenceEventRequest {
     event_id!: string | undefined;
     event_type?: EventType;
     time_stamp_utc?: Date;
     conference_id!: string | undefined;
     participant_id?: string | undefined;
-    transfer_from?: RoomType | undefined;
-    transfer_to?: RoomType | undefined;
+    transfer_from?: RoomType2 | undefined;
+    transfer_to?: RoomType2 | undefined;
     reason?: string | undefined;
 
     constructor(data?: IConferenceEventRequest) {
@@ -4681,8 +4787,8 @@ export interface IConferenceEventRequest {
     time_stamp_utc?: Date;
     conference_id: string | undefined;
     participant_id?: string | undefined;
-    transfer_from?: RoomType | undefined;
-    transfer_to?: RoomType | undefined;
+    transfer_from?: RoomType2 | undefined;
+    transfer_to?: RoomType2 | undefined;
     reason?: string | undefined;
 }
 

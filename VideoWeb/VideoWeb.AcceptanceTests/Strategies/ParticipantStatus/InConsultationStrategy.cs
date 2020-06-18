@@ -3,6 +3,7 @@ using System.Net;
 using FluentAssertions;
 using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Helpers;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 
 namespace VideoWeb.AcceptanceTests.Strategies.ParticipantStatus
