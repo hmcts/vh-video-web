@@ -78,6 +78,7 @@ stages:
         secrets_KeyVault: $(env_Secret_KeyVault)
         secrets_Subscription: $(env_Secret_Subscription)
         devOpsResource: vh_video_web
+        deploymentSlot: production
         appName: vh-video-web-$(environment)
         resourceGroup: vh-video-web-$(environment)
         testCaseFilter: TestCategory=smoketest
