@@ -63,7 +63,7 @@
 }
 
 .box {
-  background: #fff;
+  background: govuk-colour('white');
   width: auto;
   height: auto;
   border-radius: 3px;
@@ -73,14 +73,11 @@
 }
 
 .boxHead {
-  font-family: 'GDS Transport', Arial, sans-serif;
+  @include govuk-font($size: 16, $weight: 'bold');
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 1.14286;
-  background: #626a6e;
-  color: #fff;
+  background: govuk-colour('dark-grey');
+  color: govuk-colour('white');
   padding: 12px 16px 8px 16px;
   border-radius: 3px 3px 0px 0px;
 }
@@ -111,8 +108,8 @@
   font-weight: 400;
   font-size: 16px;
   line-height: 1.14286;
-  background: #626a6e;
-  color: #fff;
+  background: govuk-colour('dark-grey');
+  color: govuk-colour('white');
   padding: 12px 16px 8px 16px;
   margin-top: 0px;
   margin-bottom: 0px;
@@ -125,31 +122,30 @@
   font-weight: 700;
   font-size: 16px;
   line-height: 1.14286;
-  // background: #00703c;
-  color: #fff;
+  color: govuk-colour('white');
   padding: 0px 15px;
   border-radius: 0px 0px 3px 3px;
 }
 
 .boxFoot--Dead {
   background: #0b0c0d;
-  color: #fff;
+  color: govuk-colour('white');
 }
 
 .boxFoot--Poor {
-  background: #ffdd00;
-  color: #0b0c0d;
+  background: govuk-colour('yellow');
+  color: govuk-colour('black');
 }
 
 .shadow {
-  -webkit-box-shadow: 3px 3px 5px 6px #ccc;
-  -moz-box-shadow: 3px 3px 5px 6px #ccc;
-  box-shadow: 3px 3px 5px 6px #ccc;
+  -webkit-box-shadow: 3px 3px 5px 6px govuk-colour('light-grey');
+  -moz-box-shadow: 3px 3px 5px 6px govuk-colour('light-grey');
+  box-shadow: 3px 3px 5px 6px govuk-colour('light-grey');
 }
 
 .graph-display {
   display: block;
   margin: 10px;
-  background-color: white;
+  background-color: govuk-colour('white');
   border-radius: 3px;
 }
