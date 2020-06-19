@@ -42,7 +42,7 @@ trigger: none
 pr: none
 schedules:
 - cron: "0 0 * * *"
-  displayName: Daily midnight build
+  displayName: Weekly Beta build
   always: true
   branches:
     include:
@@ -250,67 +250,31 @@ stages:
         deviceConfiguration:
           - OS: Windows
             Browser: Chrome
-            BrowserVersion: Latest
+            BrowserVersion: Beta
             DeviceType: Desktop
             DeviceName:
-            TestCaseFilter: TestCategory!=UnsupportedBrowser
+            TestCaseFilter: TestCategory=SmoketestExtended
           - OS: Windows
             Browser: Firefox
-            BrowserVersion: Latest
+            BrowserVersion: Beta
             DeviceType: Desktop
             DeviceName:
             TestCaseFilter: TestCategory=SmoketestExtended
           - OS: Windows
             Browser: EdgeChromium
-            BrowserVersion: Latest
-            DeviceType: Desktop
-            DeviceName:
-            TestCaseFilter: TestCategory=SmoketestExtended
-          - OS: MacOS
-            Browser: Safari
-            BrowserVersion: Latest
+            BrowserVersion: Beta
             DeviceType: Desktop
             DeviceName:
             TestCaseFilter: TestCategory=SmoketestExtended
           - OS: MacOS
             Browser: Chrome
-            BrowserVersion: Latest
+            BrowserVersion: Beta
             DeviceType: Desktop
             DeviceName:
             TestCaseFilter: TestCategory=SmoketestExtended
           - OS: MacOS
             Browser: Firefox
-            BrowserVersion: Latest
+            BrowserVersion: Beta
             DeviceType: Desktop
             DeviceName:
             TestCaseFilter: TestCategory=SmoketestExtended
-          - OS: Windows
-            Browser: Edge
-            BrowserVersion: Latest
-            DeviceType: Desktop
-            DeviceName:
-            TestCaseFilter: TestCategory=UnsupportedBrowser
-          - OS: Windows
-            Browser: Ie11
-            BrowserVersion: Latest
-            DeviceType: Desktop
-            DeviceName:
-            TestCaseFilter: TestCategory=UnsupportedBrowser
-          - OS: Android
-            Browser: Chrome
-            BrowserVersion:
-            DeviceType: Tablet
-            DeviceName:
-            TestCaseFilter: TestCategory=UnsupportedDevice
-          - OS: iOS
-            Browser: Safari
-            BrowserVersion:
-            DeviceType: Mobile
-            DeviceName:
-            TestCaseFilter: TestCategory=UnsupportedDevice
-          - OS: Android
-            Browser: Chrome
-            BrowserVersion:
-            DeviceType: Mobile
-            DeviceName:
-            TestCaseFilter: TestCategory=UnsupportedDevice
