@@ -3021,6 +3021,8 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     /** The participant username */
     username?: string | undefined;
     display_name?: string | undefined;
+    first_name?: string | undefined;
+    last_name?: string | undefined;
     /** The participant role in conference */
     role?: Role;
     /** The current status of a participant */
@@ -3042,6 +3044,8 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
             this.id = _data['id'];
             this.username = _data['username'];
             this.display_name = _data['display_name'];
+            this.first_name = _data['first_name'];
+            this.last_name = _data['last_name'];
             this.role = _data['role'];
             this.status = _data['status'];
             this.representee = _data['representee'];
@@ -3061,6 +3065,8 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
         data['id'] = this.id;
         data['username'] = this.username;
         data['display_name'] = this.display_name;
+        data['first_name'] = this.first_name;
+        data['last_name'] = this.last_name;
         data['role'] = this.role;
         data['status'] = this.status;
         data['representee'] = this.representee;
@@ -3075,6 +3081,8 @@ export interface IParticipantForUserResponse {
     /** The participant username */
     username?: string | undefined;
     display_name?: string | undefined;
+    first_name?: string | undefined;
+    last_name?: string | undefined;
     /** The participant role in conference */
     role?: Role;
     /** The current status of a participant */

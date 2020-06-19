@@ -1,0 +1,29 @@
+<div id="filterPopup" class="vh-popup-overlay">
+    <span class="helper"></span>
+    <div>
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-row">
+                <span style="float:left; padding-left:0;" class="govuk-heading-m">Filters</span>
+                <span style="float:right">
+                    <input type="button"
+                            value="Cancel"
+                            (click)="cancelFilters()"
+                            id="btn-cancel-filters"
+                            class="govuk-button govuk-button--secondary" style="margin-right:5px;"
+                            alt="Apply selected filters"/>
+                    <input type="button"
+                            value="Apply filters"
+                            (click)="applyFilters()"
+                            id="applyFilter"
+                            class="govuk-button"
+                            [disabled]="disableFilterApply"
+                            alt="Apply selected filters"/>
+
+                </span>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
+

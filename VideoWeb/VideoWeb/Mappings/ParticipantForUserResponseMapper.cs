@@ -19,7 +19,9 @@ namespace VideoWeb.Mappings
                     Status = Enum.Parse<ParticipantStatus>(participant.Status.ToString()),
                     Role = Enum.Parse<Role>(participant.User_role.ToString()),
                     Representee = string.IsNullOrWhiteSpace(participant.Representee) ? null : participant.Representee,
-                    CaseTypeGroup = participant.Case_group
+                    CaseTypeGroup = participant.Case_group,
+                    FirstName = participant.First_name,
+                    LastName = participant.Last_name
                 })
                 .ToList();
         }

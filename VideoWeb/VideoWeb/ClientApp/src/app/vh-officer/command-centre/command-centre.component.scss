@@ -1,32 +1,59 @@
 @import '~govuk-frontend/govuk/all';
 
 .menu {
-  @include govuk-responsive-padding(2, 'top');
-  @include govuk-responsive-padding(2, 'left', $important: true);
-  @include govuk-responsive-padding(2, 'right', $important: true);
+    @include govuk-responsive-padding(2, 'top');
+    @include govuk-responsive-padding(2, 'left', $important: true);
+    @include govuk-responsive-padding(2, 'right', $important: true);
 }
 
 .half-left {
-  @include govuk-grid-column(one-half);
+    @include govuk-grid-column(one-half);
 }
 
 .half-right {
-  @include govuk-grid-column(one-half, $float: right);
+    @include govuk-grid-column(one-half, $float: right);
 }
 
 .conference-list {
-  @include govuk-grid-column(one-third);
-  overflow-y: auto;
-  height: 70vh;
-  max-height: 100vh;
-  padding: 0px;
-  border-right: 1px solid govuk-colour('light-grey');
+    @include govuk-grid-column(one-third);
+    overflow-y: auto;
+    height: 70vh;
+    max-height: 100vh;
+    padding: 0px;
+    border-right: 1px solid govuk-colour('light-grey');
 }
 
 .selected-menu-content {
-  @include govuk-grid-column(two-thirds);
+    @include govuk-grid-column(two-thirds);
 }
 
 .title {
-  @extend %govuk-heading-m;
+    @extend %govuk-heading-m;
+}
+
+.ml5 {
+    margin-left: 5px;
+}
+
+.connected {
+    position: element(#filters-court-rooms);
+    transform: translateY(-100%);
+    margin-top: 5px;
+}
+
+.vh-top {
+    position: relative;
+    z-index: 9999 !important;
+}
+
+    .vh-left {
+        position: relative;
+        margin-left: -31%;
+    }
+
+@media screen and (max-width: 400px) {
+    .vh-left {
+        position: relative;
+        margin-left: 5px;
+    }
 }

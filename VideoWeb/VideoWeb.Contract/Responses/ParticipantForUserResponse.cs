@@ -19,6 +19,16 @@ namespace VideoWeb.Contract.Responses
         /// The participant display name during a conference
         /// </summary>
         public string DisplayName { get; set; }
+
+        /// <summary>
+        /// The participant first name
+        /// </summary>
+        public string FirstName { get; set; }
+
+        /// <summary>
+        /// The participant last name
+        /// </summary>
+        public string LastName { get; set; }
         
         /// <summary>
         /// The participant role in conference
