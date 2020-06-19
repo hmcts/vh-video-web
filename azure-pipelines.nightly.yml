@@ -7,7 +7,7 @@ parameters:
 - name: environment
   displayName: Environment
   type: string
-  default: Sandbox
+  default: AAT
   values:
   - Preview
   - Dev
@@ -19,10 +19,76 @@ parameters:
   - Preprod
   - Prod
 
-- name: RunZap
-  displayName: Execute ZAP Tests
-  type: boolean
-  default: false
+- name: deviceConfiguration
+  displayName: Device Configurations
+  type: object
+  default:
+    - OS: Windows
+      Browser: Chrome
+      BrowserVersion: Latest
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory!=UnsupportedBrowser
+    - OS: Windows
+      Browser: Firefox
+      BrowserVersion: Latest
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=SmoketestExtended
+    - OS: Windows
+      Browser: EdgeChromium
+      BrowserVersion: Latest
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=SmoketestExtended
+    - OS: MacOS
+      Browser: Safari
+      BrowserVersion: Latest
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=SmoketestExtended
+    - OS: MacOS
+      Browser: Chrome
+      BrowserVersion: Latest
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=SmoketestExtended
+    - OS: MacOS
+      Browser: Firefox
+      BrowserVersion: Latest
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=SmoketestExtended
+    - OS: Windows
+      Browser: Edge
+      BrowserVersion: Latest
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=UnsupportedBrowser
+    - OS: Windows
+      Browser: Ie11
+      BrowserVersion: Latest
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=UnsupportedBrowser
+    - OS: Android
+      Browser: Chrome
+      BrowserVersion:
+      DeviceType: Tablet
+      DeviceName:
+      TestCaseFilter: TestCategory=UnsupportedDevice
+    - OS: iOS
+      Browser: Safari
+      BrowserVersion:
+      DeviceType: Mobile
+      DeviceName:
+      TestCaseFilter: TestCategory=UnsupportedDevice
+    - OS: Android
+      Browser: Chrome
+      BrowserVersion:
+      DeviceType: Mobile
+      DeviceName:
+      TestCaseFilter: TestCategory=UnsupportedDevice
 
 - name: prodEnvs
   displayName: Environments Using Prod Subscription
@@ -45,6 +111,13 @@ variables:
 
 trigger: none
 pr: none
+schedules:
+- cron: "0 0 * * *"
+  displayName: Daily midnight build
+  always: true
+  branches:
+    include:
+    - master
 
 resources:
   repositories:
@@ -56,23 +129,14 @@ resources:
   pipelines:
   - pipeline: CI
     source: hmcts.vh-video-web
-    trigger: 
-      branches:
-      - master
-      - hotfix/*
-      - release/*
 
 stages:
   - template: templates/vh-release.yml@templates
     parameters:
-      ${{ if ne(variables['Build.Reason'], 'ResourceTrigger') }}:
-        environments:
-          - ${{ parameters.environment }}
-        deploymentBranch: ${{ parameters.deploymentBranch }}
-      ${{ if eq(variables['Build.Reason'], 'ResourceTrigger') }}:
-        deploymentBranch: $(resources.pipeline.CI.sourceBranch)
+      environments:
+        - ${{ parameters.environment }}
+      deploymentBranch: ${{ parameters.deploymentBranch }}
       releaseParameters:
-        runZapTests: ${{ parameters.RunZap }}
         subscription: $(env_Subscription)
         secrets_KeyVault: $(env_Secret_KeyVault)
         secrets_Subscription: $(env_Secret_Subscription)
@@ -253,3 +317,5 @@ stages:
             value: $(wowza_storageAccountKey)
           - name: WowzaConfiguration:StorageContainerName
             value: $(wowza_storageContainerName)
+        runMultiDeviceTests: true
+        deviceConfiguration: ${{ parameters.deviceConfiguration }}
