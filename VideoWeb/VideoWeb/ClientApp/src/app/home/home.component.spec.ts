@@ -56,10 +56,10 @@ describe('HomeComponent', () => {
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.Unauthorised]);
     });
 
-    it('should redirect to signon-a-computer screen if on a mobile device', () => {
+    it('should redirect to unsupported device screen if on a mobile device', () => {
         deviceTypeServiceSpy.isDesktop.and.returnValue(false);
         component.ngOnInit();
-        expect(router.navigate).toHaveBeenCalledWith([pageUrls.SignonAComputer]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.UnsupportedDevice]);
     });
 
     it('should navigate to hearing list when device is a desktop', fakeAsync(() => {
@@ -82,9 +82,9 @@ describe('HomeComponent', () => {
         expect(errorServiceSpy.handleApiError).toHaveBeenCalledWith(error);
     }));
 
-    it('should redirect to signon-a-computer screen if on tablet and not an iPad', () => {
+    it('should redirect to unsupported device screen if on tablet and not an iPad', () => {
         deviceTypeServiceSpy.isIpad.and.returnValue(false);
         component.ngOnInit();
-        expect(router.navigate).toHaveBeenCalledWith([pageUrls.SignonAComputer]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.UnsupportedDevice]);
     });
 });
