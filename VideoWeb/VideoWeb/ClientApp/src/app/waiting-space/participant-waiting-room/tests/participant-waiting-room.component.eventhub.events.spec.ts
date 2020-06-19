@@ -237,15 +237,30 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         expect(component.isAdminConsultation).toBeTruthy();
     });
 
-    it('should get conference when disconnected from eventhub less than 7 times', async () => {
+    it('should get conference when disconnected from eventhub less than 7 times', fakeAsync(() => {
+        component.participant.status = ParticipantStatus.InHearing;
+        component.conference.status = ConferenceStatus.InSession;
+
+        const newParticipantStatus = ParticipantStatus.InConsultation;
+        const newConferenceStatus = ConferenceStatus.Paused;
+        const newConference = new ConferenceResponse(Object.assign({}, gloalConference));
+        newConference.status = newConferenceStatus;
+        newConference.participants.find(x => x.id === globalParticipant.id).status = newParticipantStatus;
+
+        videoWebService.getConferenceById.and.resolveTo(newConference);
         eventHubDisconnectSubject.next(1);
         eventHubDisconnectSubject.next(2);
         eventHubDisconnectSubject.next(3);
         eventHubDisconnectSubject.next(4);
         eventHubDisconnectSubject.next(5);
         eventHubDisconnectSubject.next(6);
+
+        flushMicrotasks();
         expect(videoWebService.getConferenceById).toHaveBeenCalledTimes(6);
-    });
+        expect(component.participant.status).toBe(newParticipantStatus);
+        expect(component.conference.status).toBe(newConferenceStatus);
+        expect(component.conference).toEqual(newConference);
+    }));
 
     it('should go to service error when disconnected from eventhub more than 7 times', () => {
         eventHubDisconnectSubject.next(8);

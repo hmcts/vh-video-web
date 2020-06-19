@@ -7,7 +7,7 @@ parameters:
 - name: environment
   displayName: Environment
   type: string
-  default: Sandbox
+  default: AAT
   values:
   - Preview
   - Dev
@@ -19,10 +19,40 @@ parameters:
   - Preprod
   - Prod
 
-- name: RunZap
-  displayName: Execute ZAP Tests
-  type: boolean
-  default: false
+- name: deviceConfiguration
+  displayName: Device Configurations
+  type: object
+  default:
+    - OS: Windows
+      Browser: Chrome
+      BrowserVersion: Beta
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=SmoketestExtended
+    - OS: Windows
+      Browser: Firefox
+      BrowserVersion: Beta
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=SmoketestExtended
+    - OS: Windows
+      Browser: EdgeChromium
+      BrowserVersion: Beta
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=SmoketestExtended
+    - OS: MacOS
+      Browser: Chrome
+      BrowserVersion: Beta
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=SmoketestExtended
+    - OS: MacOS
+      Browser: Firefox
+      BrowserVersion: Beta
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=SmoketestExtended
 
 - name: prodEnvs
   displayName: Environments Using Prod Subscription
@@ -45,6 +75,13 @@ variables:
 
 trigger: none
 pr: none
+schedules:
+- cron: "0 19 7 * 0"
+  displayName: Weekly Beta build
+  always: true
+  branches:
+    include:
+    - master
 
 resources:
   repositories:
@@ -56,23 +93,14 @@ resources:
   pipelines:
   - pipeline: CI
     source: hmcts.vh-video-web
-    trigger: 
-      branches:
-      - master
-      - hotfix/*
-      - release/*
 
 stages:
   - template: templates/vh-release.yml@templates
     parameters:
-      ${{ if ne(variables['Build.Reason'], 'ResourceTrigger') }}:
-        environments:
-          - ${{ parameters.environment }}
-        deploymentBranch: ${{ parameters.deploymentBranch }}
-      ${{ if eq(variables['Build.Reason'], 'ResourceTrigger') }}:
-        deploymentBranch: $(resources.pipeline.CI.sourceBranch)
+      environments:
+        - ${{ parameters.environment }}
+      deploymentBranch: ${{ parameters.deploymentBranch }}
       releaseParameters:
-        runZapTests: ${{ parameters.RunZap }}
         subscription: $(env_Subscription)
         secrets_KeyVault: $(env_Secret_KeyVault)
         secrets_Subscription: $(env_Secret_Subscription)
@@ -253,3 +281,5 @@ stages:
             value: $(wowza_storageAccountKey)
           - name: WowzaConfiguration:StorageContainerName
             value: $(wowza_storageContainerName)
+        runMultiDeviceTests: true
+        deviceConfiguration: ${{ parameters.deviceConfiguration }}
