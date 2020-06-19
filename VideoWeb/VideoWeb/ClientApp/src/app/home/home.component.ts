@@ -19,13 +19,13 @@ export class HomeComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        if (this.deviceTypeService.isDesktop()) {
+        if (this.deviceTypeService.isDesktop() || this.deviceTypeService.isIpad()) {
             this.profileService
                 .getUserProfile()
                 .then(profile => this.navigateToHearingList(profile))
                 .catch(error => this.errorService.handleApiError(error));
         } else {
-            this.router.navigate([pageUrls.SignonAComputer]);
+            this.router.navigate([pageUrls.UnsupportedDevice]);
         }
     }
 
