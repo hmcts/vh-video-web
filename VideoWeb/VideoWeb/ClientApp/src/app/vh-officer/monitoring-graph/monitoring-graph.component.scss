@@ -74,8 +74,6 @@
 
 .boxHead {
   @include govuk-font($size: 16, $weight: 'bold');
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   background: govuk-colour('dark-grey');
   color: govuk-colour('white');
   padding: 12px 16px 8px 16px;
@@ -102,12 +100,7 @@
 }
 
 .boxBody {
-  font-family: 'GDS Transport', Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 1.14286;
+  @include govuk-font($size: 16, $weight: 'regular');
   background: govuk-colour('dark-grey');
   color: govuk-colour('white');
   padding: 12px 16px 8px 16px;
@@ -116,12 +109,7 @@
 }
 
 .boxFoot {
-  font-family: 'GDS Transport', Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-weight: 700;
-  font-size: 16px;
-  line-height: 1.14286;
+  @include govuk-font($size: 16, $weight: 'bold');
   color: govuk-colour('white');
   padding: 0px 15px;
   border-radius: 0px 0px 3px 3px;
