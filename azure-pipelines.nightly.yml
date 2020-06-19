@@ -19,6 +19,77 @@ parameters:
   - Preprod
   - Prod
 
+- name: deviceConfiguration
+  displayName: Device Configurations
+  type: object
+  default:
+    - OS: Windows
+      Browser: Chrome
+      BrowserVersion: Latest
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory!=UnsupportedBrowser
+    - OS: Windows
+      Browser: Firefox
+      BrowserVersion: Latest
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=SmoketestExtended
+    - OS: Windows
+      Browser: EdgeChromium
+      BrowserVersion: Latest
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=SmoketestExtended
+    - OS: MacOS
+      Browser: Safari
+      BrowserVersion: Latest
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=SmoketestExtended
+    - OS: MacOS
+      Browser: Chrome
+      BrowserVersion: Latest
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=SmoketestExtended
+    - OS: MacOS
+      Browser: Firefox
+      BrowserVersion: Latest
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=SmoketestExtended
+    - OS: Windows
+      Browser: Edge
+      BrowserVersion: Latest
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=UnsupportedBrowser
+    - OS: Windows
+      Browser: Ie11
+      BrowserVersion: Latest
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=UnsupportedBrowser
+    - OS: Android
+      Browser: Chrome
+      BrowserVersion:
+      DeviceType: Tablet
+      DeviceName:
+      TestCaseFilter: TestCategory=UnsupportedDevice
+    - OS: iOS
+      Browser: Safari
+      BrowserVersion:
+      DeviceType: Mobile
+      DeviceName:
+      TestCaseFilter: TestCategory=UnsupportedDevice
+    - OS: Android
+      Browser: Chrome
+      BrowserVersion:
+      DeviceType: Mobile
+      DeviceName:
+      TestCaseFilter: TestCategory=UnsupportedDevice
+
 - name: prodEnvs
   displayName: Environments Using Prod Subscription
   type: object
@@ -247,70 +318,4 @@ stages:
           - name: WowzaConfiguration:StorageContainerName
             value: $(wowza_storageContainerName)
         runMultiDeviceTests: true
-        deviceConfiguration:
-          - OS: Windows
-            Browser: Chrome
-            BrowserVersion: Latest
-            DeviceType: Desktop
-            DeviceName:
-            TestCaseFilter: TestCategory!=UnsupportedBrowser
-          - OS: Windows
-            Browser: Firefox
-            BrowserVersion: Latest
-            DeviceType: Desktop
-            DeviceName:
-            TestCaseFilter: TestCategory=SmoketestExtended
-          - OS: Windows
-            Browser: EdgeChromium
-            BrowserVersion: Latest
-            DeviceType: Desktop
-            DeviceName:
-            TestCaseFilter: TestCategory=SmoketestExtended
-          - OS: MacOS
-            Browser: Safari
-            BrowserVersion: Latest
-            DeviceType: Desktop
-            DeviceName:
-            TestCaseFilter: TestCategory=SmoketestExtended
-          - OS: MacOS
-            Browser: Chrome
-            BrowserVersion: Latest
-            DeviceType: Desktop
-            DeviceName:
-            TestCaseFilter: TestCategory=SmoketestExtended
-          - OS: MacOS
-            Browser: Firefox
-            BrowserVersion: Latest
-            DeviceType: Desktop
-            DeviceName:
-            TestCaseFilter: TestCategory=SmoketestExtended
-          - OS: Windows
-            Browser: Edge
-            BrowserVersion: Latest
-            DeviceType: Desktop
-            DeviceName:
-            TestCaseFilter: TestCategory=UnsupportedBrowser
-          - OS: Windows
-            Browser: Ie11
-            BrowserVersion: Latest
-            DeviceType: Desktop
-            DeviceName:
-            TestCaseFilter: TestCategory=UnsupportedBrowser
-          - OS: Android
-            Browser: Chrome
-            BrowserVersion:
-            DeviceType: Tablet
-            DeviceName:
-            TestCaseFilter: TestCategory=UnsupportedDevice
-          - OS: iOS
-            Browser: Safari
-            BrowserVersion:
-            DeviceType: Mobile
-            DeviceName:
-            TestCaseFilter: TestCategory=UnsupportedDevice
-          - OS: Android
-            Browser: Chrome
-            BrowserVersion:
-            DeviceType: Mobile
-            DeviceName:
-            TestCaseFilter: TestCategory=UnsupportedDevice
+        deviceConfiguration: ${{ parameters.deviceConfiguration }}

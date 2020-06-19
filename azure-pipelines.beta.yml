@@ -19,6 +19,41 @@ parameters:
   - Preprod
   - Prod
 
+- name: deviceConfiguration
+  displayName: Device Configurations
+  type: object
+  default:
+    - OS: Windows
+      Browser: Chrome
+      BrowserVersion: Beta
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=SmoketestExtended
+    - OS: Windows
+      Browser: Firefox
+      BrowserVersion: Beta
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=SmoketestExtended
+    - OS: Windows
+      Browser: EdgeChromium
+      BrowserVersion: Beta
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=SmoketestExtended
+    - OS: MacOS
+      Browser: Chrome
+      BrowserVersion: Beta
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=SmoketestExtended
+    - OS: MacOS
+      Browser: Firefox
+      BrowserVersion: Beta
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=SmoketestExtended
+
 - name: prodEnvs
   displayName: Environments Using Prod Subscription
   type: object
@@ -247,34 +282,4 @@ stages:
           - name: WowzaConfiguration:StorageContainerName
             value: $(wowza_storageContainerName)
         runMultiDeviceTests: true
-        deviceConfiguration:
-          - OS: Windows
-            Browser: Chrome
-            BrowserVersion: Beta
-            DeviceType: Desktop
-            DeviceName:
-            TestCaseFilter: TestCategory=SmoketestExtended
-          - OS: Windows
-            Browser: Firefox
-            BrowserVersion: Beta
-            DeviceType: Desktop
-            DeviceName:
-            TestCaseFilter: TestCategory=SmoketestExtended
-          - OS: Windows
-            Browser: EdgeChromium
-            BrowserVersion: Beta
-            DeviceType: Desktop
-            DeviceName:
-            TestCaseFilter: TestCategory=SmoketestExtended
-          - OS: MacOS
-            Browser: Chrome
-            BrowserVersion: Beta
-            DeviceType: Desktop
-            DeviceName:
-            TestCaseFilter: TestCategory=SmoketestExtended
-          - OS: MacOS
-            Browser: Firefox
-            BrowserVersion: Beta
-            DeviceType: Desktop
-            DeviceName:
-            TestCaseFilter: TestCategory=SmoketestExtended
+        deviceConfiguration: ${{ parameters.deviceConfiguration }}
