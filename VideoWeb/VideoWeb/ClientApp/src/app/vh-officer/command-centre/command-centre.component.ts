@@ -18,6 +18,7 @@ import { ScreenHelper } from 'src/app/shared/screen-helper';
 import { MenuOption } from '../models/menus-options';
 import { VhoStorageKeys } from '../services/models/session-keys';
 import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-bus.service';
+import { CourtRoomsAccounts } from '../services/models/court-rooms-accounts';
 
 @Component({
     selector: 'app-command-centre',
@@ -28,13 +29,16 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     public menuOption = MenuOption;
 
     private readonly judgeAllocationStorage: SessionStorage<string[]>;
+    private readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
 
     venueAllocations: string[] = [];
+    courtRoomsAccountsFilters: CourtRoomsAccounts[] = [];
 
     selectedMenu: MenuOption;
 
     conferencesSubscription: Subscription;
     eventHubSubscriptions: Subscription = new Subscription();
+    filterSubcription: Subscription;
 
     hearings: HearingSummary[];
     selectedHearing: Hearing;
@@ -43,6 +47,8 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     participantsHeartBeat: Map<string, ParticipantHeartbeat> = new Map<string, ParticipantHeartbeat>();
 
     loadingData: boolean;
+
+    displayFilters = false;
 
     constructor(
         private queryService: VhoQueryService,
@@ -55,6 +61,8 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     ) {
         this.loadingData = false;
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
+        this.courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
+
     }
 
     ngOnInit(): void {
@@ -69,6 +77,9 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.screenHelper.enableFullScreen(false);
         if (this.conferencesSubscription) {
             this.conferencesSubscription.unsubscribe();
+        }
+        if (this.filterSubcription) {
+            this.filterSubcription.unsubscribe();
         }
         this.eventHubSubscriptions.unsubscribe();
         // this.eventService.stop();
@@ -179,6 +190,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     getConferenceForSelectedAllocations() {
         this.loadVenueSelection();
+        this.loadCourtRoomsAccountFilters();
         this.queryService.startQuery(this.venueAllocations);
         this.retrieveHearingsForVhOfficer(true);
     }
@@ -186,6 +198,10 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     loadVenueSelection(): void {
         const venues = this.judgeAllocationStorage.get();
         this.venueAllocations = venues; // .map(v => v.name);
+    }
+
+    loadCourtRoomsAccountFilters(): void {
+        this.courtRoomsAccountsFilters = this.courtAccountsAllocationStorage.get();
     }
 
     retrieveHearingsForVhOfficer(reload: boolean) {
@@ -237,4 +253,15 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     goBackToVenueSelection() {
         this.router.navigateByUrl(pageUrls.AdminVenueList);
     }
+
+    showFilters() {
+        this.displayFilters = !this.displayFilters;
+    }
+
+    setupSubscribers() {
+        this.filterSubcription = this.eventbus.on<CourtRoomsAccounts[]>(VHEventType.ApplyCourtAccountFilter, applyFilter => {
+            console.log('Appling filter' + applyFilter[0].venue);
+        });
+    }
+
 }

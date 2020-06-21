@@ -38,6 +38,7 @@
 .connected {
     position: element(#filters-court-rooms);
     transform: translateY(-100%);
+    transform: translateX(-33%);
     margin-top: 5px;
 }
 
@@ -46,14 +47,6 @@
     z-index: 9999 !important;
 }
 
-    .vh-left {
-        position: relative;
-        margin-left: -31%;
-    }
-
-@media screen and (max-width: 400px) {
-    .vh-left {
-        position: relative;
-        margin-left: 5px;
-    }
+.vh-left {
+    position: relative;
 }

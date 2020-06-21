@@ -1,29 +1,64 @@
 <div id="filterPopup" class="vh-popup-overlay">
     <span class="helper"></span>
     <div>
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-row">
-                <span style="float:left; padding-left:0;" class="govuk-heading-m">Filters</span>
-                <span style="float:right">
+        <div class="govuk-grid-row" >
+            <div class="govuk-grid-column-full">
+                <span style="float:left; padding-left:10px;" class="govuk-heading-m">Filters</span>
+                <span style="float:right; padding-right:10px;">
                     <input type="button"
-                            value="Cancel"
-                            (click)="cancelFilters()"
-                            id="btn-cancel-filters"
-                            class="govuk-button govuk-button--secondary" style="margin-right:5px;"
-                            alt="Apply selected filters"/>
+                           value="Cancel"
+                           (click)="cancelFilters()"
+                           id="btn-cancel-filters"
+                           class="govuk-button govuk-button--secondary" style="margin-right:5px;"
+                           alt="Apply selected filters" />
                     <input type="button"
-                            value="Apply filters"
-                            (click)="applyFilters()"
-                            id="applyFilter"
-                            class="govuk-button"
-                            [disabled]="disableFilterApply"
-                            alt="Apply selected filters"/>
+                           value="Apply filters"
+                           (click)="applyFilters()"
+                           id="applyFilter"
+                           class="govuk-button"
+                           [disabled]="disableFilterApply"
+                           alt="Apply selected filters" />
 
                 </span>
             </div>
 
         </div>
-    </div>
-    </div>
 
+        <div class="vh-content">
+            <div *ngFor="let court of courtRoomsAccountsFilters; let i = index">
+                <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-one-half">
+                        <p class="govuk-body-m vh-bold">{{court.venue}}</p>
+                    </div>
+                    <div class="govuk-grid-column-one-half">
+
+                        <div class="govuk-checkboxes__item vh-5">
+                            <input class="govuk-checkboxes__input"
+                                   type="checkbox"
+                                   [checked]="court.selected"
+                                   id="{{ 'allRooms' + i }}"
+                                   name="{{ 'allRooms' + i }}"
+                                   (click)="allRoomOptionSelected(i)" />
+                            <label class="govuk-label govuk-checkboxes__label vh-bold" for="{{ 'allRooms' + i }}">Select all</label>
+                        </div>
+
+
+                        <div *ngFor="let room of court.courtsRooms; let j = index">
+                            <div class="govuk-checkboxes__item vh-5">
+                                <input class="govuk-checkboxes__input"
+                                       type="checkbox"
+                                       [checked]="room.selected"
+                                       id="{{ 'room' + i + j }}"
+                                       name="{{ 'room' + i + j }}"
+                                       (click)="roomOptionSelected(i,j)" />
+                                <label class="govuk-label govuk-checkboxes__label vh-word" for="{{ 'room' + i + j }}">{{ room.courtRoom }}</label>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 

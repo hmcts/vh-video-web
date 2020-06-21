@@ -1,18 +1,5 @@
 @import '~govuk-frontend/govuk/all';
-.vh-popup-overlay {
-    cursor: pointer;
-    height: 100%;
-    position: fixed;
-    text-align: center;
-    top: 0px;
-    width: 100%;
-    z-index: 10000;
-    float: left;
-    padding:0px;
-    margin-left: -250px;
-}
 
-@media only screen and (max-width: 480px) {
     .vh-popup-overlay {
         cursor: pointer;
         height: 100%;
@@ -23,11 +10,8 @@
         z-index: 10000;
         float: left;
         padding: 0px;
-        margin-left: 5px;
+        margin-left: 0px;
     }
-}
-
-
 
 .vh-popup-overlay .helper {
     display: inline-block;
@@ -39,12 +23,35 @@
     box-shadow: 5px 10px 30px #555;
     display: inline-block;
     height: auto;
-    max-width: 551px;
+    max-width: 650px;
     min-height: 100px;
     vertical-align: top;
-    width: 60%;
+    width: 100%;
     position: relative;
     border-radius: 8px;
-    padding: 15px 5%;
+    padding: 10px 0px 10px 10px;
 }
 
+.vh-5 {
+    margin-bottom: 5px !important;
+    margin-left: 0;
+    float: left;
+}
+
+.vh-word {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-all;
+    word-break: break-word;
+    hyphens: auto;
+}
+
+.vh-bold {
+    font-weight: bold;
+}
+
+.vh-content{
+    max-height:700px;
+    overflow-x:hidden;
+    overflow-y:auto;
+}
