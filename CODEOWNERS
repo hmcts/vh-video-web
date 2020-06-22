@@ -1,2 +1,5 @@
 * @RuwanikaWeerakkody @npoxon @valentinabennett @jdssunil @Rochel @rehmanab @shaed-parkar @muralikaturi @shravankris
 azure-pipelines.yml @rdbartram
+azure-pipelines.release.yml @rdbartram
+azure-pipelines.nightly.yml @rdbartram @npoxon
+azure-pipelines.beta.yml @rdbartram @npoxon
