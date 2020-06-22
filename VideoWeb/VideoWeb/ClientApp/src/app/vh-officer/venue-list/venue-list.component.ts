@@ -4,7 +4,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from '../services/models/session-keys';
-import { CourtRoomsAccounts } from 'src/app/vh-officer/services/models/court-rooms-accounts';
+import { CourtRoomsAccounts, CourtRoomFilter } from 'src/app/vh-officer/services/models/court-rooms-accounts';
 
 @Component({
     selector: 'app-venue-list',
@@ -45,10 +45,23 @@ export class VenueListComponent implements OnInit {
 
     getFiltersCourtRoomsAccounts() {
         this.videoWebService.getCourtRoomsAccounts(this.selectedJudges).then(response => {
-            this.filterCourtRoomsAccounts = response.map(x => new CourtRoomsAccounts(x.venue, x.court_rooms, false));
+            this.filterCourtRoomsAccounts = response.map(x => new CourtRoomsAccounts(x.venue, x.court_rooms, true));
+            const previousFilter = this.courtAccountsAllocationStorage.get();
+            if (previousFilter) {
+                previousFilter.forEach(x => this.updateFilterSelection(x))
+            }
             this.courtAccountsAllocationStorage.set(this.filterCourtRoomsAccounts);
         });
     }
+
+    updateFilterSelection(filterVenue: CourtRoomsAccounts) {
+        const courtroomAccount = this.filterCourtRoomsAccounts.find(x => x.venue === filterVenue.venue);
+        if (courtroomAccount) {
+            courtroomAccount.selected = filterVenue.selected;
+            courtroomAccount.updateRoomSelection(filterVenue.courtsRooms);
+        }
+    }
+
 
     goToHearingList() {
         this.updateSelection();

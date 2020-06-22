@@ -42,6 +42,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     hearings: HearingSummary[];
     selectedHearing: Hearing;
+    cloneHearings: HearingSummary[];
 
     // this tracks heartbeats and pushes them back into a hearing summary object on each subscribe
     participantsHeartBeat: Map<string, ParticipantHeartbeat> = new Map<string, ParticipantHeartbeat>();
@@ -69,6 +70,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.selectedMenu = this.menuOption.Hearing;
         this.screenHelper.enableFullScreen(true);
         this.setupEventHubSubscribers();
+        this.setupFilterSubscribers();
         this.getConferenceForSelectedAllocations();
     }
 
@@ -215,9 +217,14 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
                     });
                     return h;
                 });
+
+                Object.assign(this.cloneHearings, this.hearings);
+                this.applyFilter();
+
                 if (this.selectedHearing) {
                     this.eventbus.emit(new EmitEvent(VHEventType.PageRefreshed, null));
                 }
+
                 this.loadingData = false;
             },
             error => {
@@ -258,10 +265,16 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.displayFilters = !this.displayFilters;
     }
 
-    setupSubscribers() {
+    setupFilterSubscribers() {
         this.filterSubcription = this.eventbus.on<CourtRoomsAccounts[]>(VHEventType.ApplyCourtAccountFilter, applyFilter => {
-            console.log('Appling filter' + applyFilter[0].venue);
+
+            this.courtAccountsAllocationStorage.set(applyFilter);
+            this.displayFilters = false;
         });
+    }
+
+    applyFilter() {
+
     }
 
 }

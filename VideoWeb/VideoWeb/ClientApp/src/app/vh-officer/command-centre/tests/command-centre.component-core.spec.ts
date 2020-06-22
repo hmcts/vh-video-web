@@ -16,7 +16,8 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MenuOption } from '../../models/menus-options';
 import { VhoQueryService } from '../../services/vho-query-service.service';
 import { CommandCentreComponent } from '../command-centre.component';
-import { EventBusService } from 'src/app/services/event-bus.service';
+import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-bus.service';
+import { CourtRoomsAccounts } from '../../services/models/court-rooms-accounts';
 
 describe('CommandCentreComponent - Core', () => {
     let component: CommandCentreComponent;
@@ -124,6 +125,12 @@ describe('CommandCentreComponent - Core', () => {
         expect(component.venueAllocations).toBeDefined();
     });
 
+    it('should load filter for venue selection', () => {
+        component.loadCourtRoomsAccountFilters();
+        expect(component.courtRoomsAccountsFilters).toBeDefined();
+    });
+
+
     it('should return true when current conference is selected', () => {
         const currentConference = conferences[0];
         component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
@@ -194,4 +201,12 @@ describe('CommandCentreComponent - Core', () => {
 
         expect(component.selectedMenu).toBe(menu);
     });
+
+    it('should emit event to apply court room accounts filter', () => {
+        const eventbus = new EventBusService();
+        component.setupFilterSubscribers();
+        eventbus.emit(new EmitEvent<CourtRoomsAccounts[]>(VHEventType.ApplyCourtAccountFilter, null));
+        expect(component.displayFilters).toBeFalse();
+    });
+
 });

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CourtRoomsAccounts } from '../services/models/court-rooms-accounts';
+import { CourtRoomsAccounts, CourtRoomFilter } from '../services/models/court-rooms-accounts';
 import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
 
 @Component({
@@ -28,11 +28,16 @@ export class CourtRoomsFiltersComponent implements OnInit {
     }
 
     applyFilters() {
-
         this.eventBusService.emit(new EmitEvent(VHEventType.ApplyCourtAccountFilter, this.courtRoomsAccountsFilters));
     }
 
     cancelFilters() {
+        this.courtRoomsAccountsFilters.forEach(x => this.resetCourtRoomSelectOption(x));
+        this.applyFilters();
+    }
 
+    resetCourtRoomSelectOption(courtRoomsAccounts: CourtRoomsAccounts) {
+        courtRoomsAccounts.selected = true;
+        courtRoomsAccounts.courtsRooms.forEach(x => x.selected = true);
     }
 }
