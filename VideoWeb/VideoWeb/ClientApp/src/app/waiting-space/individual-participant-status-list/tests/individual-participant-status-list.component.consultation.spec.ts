@@ -11,7 +11,6 @@ import {
     RoomType
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ModalService } from 'src/app/services/modal.service';
 import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { Participant } from 'src/app/shared/models/participant';
@@ -22,7 +21,6 @@ import {
     eventsServiceSpy
 } from 'src/app/testing/mocks/mock-events-service';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
-import { NotificationSoundsService } from '../../services/notification-sounds.service';
 import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
 
 describe('IndividualParticipantStatusListComponent consultations', () => {
@@ -40,8 +38,6 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
     let logger: jasmine.SpyObj<Logger>;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
-    let modalService: jasmine.SpyObj<ModalService>;
-    let notificationSoundsService: jasmine.SpyObj<NotificationSoundsService>;
 
     let timer: jasmine.SpyObj<NodeJS.Timer>;
 
@@ -49,11 +45,17 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         adalService = mockAdalService;
 
         consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', [
+            'resetWaitingForResponse',
+            'clearOutoingCallTimeout',
+            'displayAdminConsultationRequest',
+            'displayNoConsultationRoomAvailableModal',
+            'displayIncomingPrivateConsultation',
             'raiseConsultationRequest',
+            'handleConsultationResponse',
             'respondToConsultationRequest',
             'leaveConsultation',
             'respondToAdminConsultationRequest',
-            'displayNoConsultationRoomAvailableModal'
+            'clearModals'
         ]);
         consultationService.raiseConsultationRequest.and.resolveTo();
         consultationService.respondToConsultationRequest.and.resolveTo();
@@ -64,13 +66,6 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
 
-        modalService = jasmine.createSpyObj<ModalService>('ModalService', ['open', 'closeAll']);
-
-        notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', [
-            'initConsultationRequestRingtone',
-            'playConsultationRequestRingtone',
-            'stopConsultationRequestRingtone'
-        ]);
         logger = jasmine.createSpyObj<Logger>('Logger', ['debug', 'info', 'warn', 'event', 'error']);
     });
 
@@ -82,21 +77,8 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         consultationRequester = new Participant(conference.participants[0]);
         consultationRequestee = new Participant(conference.participants[1]);
 
-        notificationSoundsService.initConsultationRequestRingtone.calls.reset();
-        notificationSoundsService.stopConsultationRequestRingtone.calls.reset();
-        notificationSoundsService.playConsultationRequestRingtone.calls.reset();
-        modalService.open.calls.reset();
-
         timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
-        component = new IndividualParticipantStatusListComponent(
-            adalService,
-            consultationService,
-            eventsService,
-            modalService,
-            logger,
-            videoWebService,
-            notificationSoundsService
-        );
+        component = new IndividualParticipantStatusListComponent(adalService, consultationService, eventsService, logger, videoWebService);
 
         component.consultationRequester = consultationRequester;
         component.consultationRequestee = consultationRequestee;
@@ -113,36 +95,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         expect(component).toBeTruthy();
         expect(component.judge).toBeDefined();
         expect(component.nonJugdeParticipants).toBeDefined();
-        expect(notificationSoundsService.initConsultationRequestRingtone).toHaveBeenCalled();
-    });
-
-    it('should clear timeout when ringing stops', () => {
-        spyOn(global, 'clearTimeout').and.callThrough();
-        component.outgoingCallTimeout = timer;
-        component.stopCallRinging();
-        expect(global.clearTimeout).toHaveBeenCalledWith(timer);
-        expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalled();
-    });
-
-    it('should not cancel outgoing call is user is not waiting for a response', async () => {
-        component.waitingForConsultationResponse = false;
-        await component.cancelOutgoingCall();
-        expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalledTimes(0);
-    });
-
-    it('should hide request modal and stop ringing when outgoing private consulation has been cancelled', async () => {
-        component.waitingForConsultationResponse = true;
-        await component.cancelOutgoingCall();
-
-        expect(component.waitingForConsultationResponse).toBeFalsy();
-        expect(consultationService.respondToConsultationRequest).toHaveBeenCalledWith(
-            conference,
-            component.consultationRequester.base,
-            component.consultationRequestee.base,
-            ConsultationAnswer.Cancelled
-        );
-        expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalledTimes(1);
-        expect(modalService.open).toHaveBeenCalledWith(IndividualParticipantStatusListComponent.REJECTED_PC_MODAL);
+        expect(consultationService.resetWaitingForResponse).toHaveBeenCalled();
     });
 
     it('should not be able to call participant is user is judge', () => {
@@ -185,7 +138,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         expect(component.canCallParticipant(participant)).toBeTruthy();
     });
 
-    it('should not be able to begin call self', async () => {
+    it('should not be able to begin call with self', async () => {
         consultationService.raiseConsultationRequest.and.callFake(() => Promise.resolve());
         adalService.userInfo.userName = 'chris.green@hearings.net';
         const participant = conference.participants.find(x => x.username === adalService.userInfo.userName);
@@ -197,26 +150,65 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         const participant = conference.participants.find(x => x.username === 'james.green@hearings.net');
         participant.status = ParticipantStatus.Available;
         await component.begingCallWith(participant);
-        expect(component.waitingForConsultationResponse).toBeTruthy();
         expect(consultationService.raiseConsultationRequest).toHaveBeenCalled();
     });
 
-    it('should not play ringing is raising consultation request to API fails', async () => {
+    it('should log error when raising consultation request to API fails', async () => {
         const error = { error: 'failed to raise test PC' };
         consultationService.raiseConsultationRequest.and.rejectWith(error);
         const participant = conference.participants.find(x => x.username === 'james.green@hearings.net');
         participant.status = ParticipantStatus.Available;
         await component.begingCallWith(participant);
-        expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalledTimes(0);
         expect(logger.error.calls.mostRecent().args[0]).toEqual('Failed to raise consultation request');
     });
 
+    const getConsultationMessageTestCases = [
+        { consulatationAnswer: ConsultationAnswer.Accepted },
+        { consulatationAnswer: ConsultationAnswer.Rejected },
+        { consulatationAnswer: ConsultationAnswer.Cancelled }
+    ];
+
+    getConsultationMessageTestCases.forEach(test => {
+        it(`should call consultation service when consultation has been "${test.consulatationAnswer}"`, () => {
+            const payload = new ConsultationMessage(
+                conference.id,
+                component.consultationRequester.username,
+                component.consultationRequestee.username,
+                test.consulatationAnswer
+            );
+            consultationMessageSubjectMock.next(payload);
+            expect(consultationService.handleConsultationResponse).toHaveBeenCalledWith(payload.result);
+        });
+    });
+
+    it('should display no consultation room available modal when no room message is received', () => {
+        const payload = new ConsultationMessage(
+            conference.id,
+            consultationRequester.username,
+            consultationRequestee.username,
+            ConsultationAnswer.NoRoomsAvailable
+        );
+        consultationSubject.next(payload);
+
+        expect(consultationService.displayNoConsultationRoomAvailableModal).toHaveBeenCalledTimes(1);
+    });
+
+    it('should display consultation request', () => {
+        component.consultationRequestee = undefined;
+        component.consultationRequester = undefined;
+
+        // this is an incoming consultation request
+        const payload = new ConsultationMessage(conference.id, consultationRequester.username, consultationRequestee.username, null);
+        consultationSubject.next(payload);
+
+        expect(component.consultationRequestee.id).toEqual(consultationRequestee.id);
+        expect(component.consultationRequester.id).toEqual(consultationRequester.id);
+        expect(consultationService.displayIncomingPrivateConsultation).toHaveBeenCalledTimes(1);
+    });
+
     it('should answer consultation request', async () => {
-        component.waitingForConsultationResponse = true;
+        await component.answerConsultationRequest(ConsultationAnswer.Accepted);
 
-        await component.answerConsultationRequest('Accepted');
-
-        expect(component.waitingForConsultationResponse).toBeFalsy();
         expect(consultationService.respondToConsultationRequest).toHaveBeenCalledWith(
             conference,
             component.consultationRequester.base,
@@ -233,11 +225,9 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
             component.consultationRequestee.username,
             null
         );
-        component.waitingForConsultationResponse = true;
         component.adminConsultationMessage = adminConsultationMessage;
 
         await component.acceptVhoConsultationRequest();
-        expect(component.waitingForConsultationResponse).toBeFalsy();
         expect(consultationService.respondToAdminConsultationRequest).toHaveBeenCalledWith(
             conference,
             component.consultationRequestee.base,
@@ -246,15 +236,26 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         );
     });
 
-    it('should do something when answering consultation request fails', async () => {
+    it('should cancel consultation when requester cancels call', async () => {
+        await component.cancelConsultationRequest();
+
+        expect(consultationService.respondToConsultationRequest).toHaveBeenCalledWith(
+            component.conference,
+            component.consultationRequester.base,
+            component.consultationRequestee.base,
+            ConsultationAnswer.Cancelled
+        );
+    });
+
+    it('should log error when answering consultation request fails', async () => {
         logger.error.calls.reset();
         const error = { error: 'test error' };
         consultationService.respondToConsultationRequest.and.rejectWith(error);
-        await component.answerConsultationRequest(ConsultationAnswer.Accepted.toString());
+        await component.answerConsultationRequest(ConsultationAnswer.Accepted);
         expect(logger.error).toHaveBeenCalled();
     });
 
-    it('should do something when accepting VHO consultation fails', async () => {
+    it('should log error when accepting VHO consultation fails', async () => {
         logger.error.calls.reset();
         const error = { error: 'test error' };
         consultationService.respondToAdminConsultationRequest.and.rejectWith(error);
@@ -262,92 +263,8 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         expect(logger.error).toHaveBeenCalled();
     });
 
-    it('should display consultation request', () => {
-        component.consultationRequestee = undefined;
-        component.consultationRequester = undefined;
-
-        const payload = new ConsultationMessage(conference.id, consultationRequester.username, consultationRequestee.username, null);
-        consultationSubject.next(payload);
-
-        expect(component.consultationRequestee.id).toEqual(consultationRequestee.id);
-        expect(component.consultationRequester.id).toEqual(consultationRequester.id);
-        // this is an incoming consultation request
-        expect(component.waitingForConsultationResponse).toBeFalsy();
-        expect(component.outgoingCallTimeout).toBeUndefined();
-        expect(modalService.open).toHaveBeenCalledWith(IndividualParticipantStatusListComponent.RECIEVE_PC_MODAL);
-        expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalledTimes(1);
-    });
-
-    it('should cancel consultation request', () => {
-        component.consultationRequestee = undefined;
-        component.consultationRequester = undefined;
-
-        const payload = new ConsultationMessage(
-            conference.id,
-            consultationRequester.username,
-            consultationRequestee.username,
-            ConsultationAnswer.Cancelled
-        );
-        consultationSubject.next(payload);
-
-        expect(component.consultationRequestee.id).toEqual(consultationRequestee.id);
-        expect(component.consultationRequester.id).toEqual(consultationRequester.id);
-        // this is an incoming consultation request
-        expect(component.waitingForConsultationResponse).toBeFalsy();
-        expect(component.outgoingCallTimeout).toBeNull();
-        expect(modalService.closeAll).toHaveBeenCalled();
-        expect(modalService.open).toHaveBeenCalledTimes(0);
-        expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalledTimes(1);
-    });
-
-    const consultationMessageResponseTestCases = [
-        { consultationResult: ConsultationAnswer.Accepted, modalId: IndividualParticipantStatusListComponent.ACCEPTED_PC_MODAL },
-        { consultationResult: ConsultationAnswer.Rejected, modalId: IndividualParticipantStatusListComponent.REJECTED_PC_MODAL }
-    ];
-
-    consultationMessageResponseTestCases.forEach(testCase => {
-        it(`should handle ${testCase.consultationResult} messages`, () => {
-            component.outgoingCallTimeout = timer;
-            component.consultationRequestee = undefined;
-            component.consultationRequester = undefined;
-
-            const payload = new ConsultationMessage(
-                conference.id,
-                consultationRequester.username,
-                consultationRequestee.username,
-                testCase.consultationResult
-            );
-            consultationSubject.next(payload);
-
-            expect(component.consultationRequestee.id).toEqual(consultationRequestee.id);
-            expect(component.consultationRequester.id).toEqual(consultationRequester.id);
-            // this is an incoming consultation request
-            expect(component.waitingForConsultationResponse).toBeFalsy();
-            expect(component.outgoingCallTimeout).toBeNull();
-            expect(modalService.open).toHaveBeenCalledWith(testCase.modalId);
-            expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalledTimes(1);
-        });
-    });
-
-    it('should close modals and clear outgoing time when requester cancels call', async () => {
-        spyOn(global, 'clearTimeout');
-        component.outgoingCallTimeout = timer;
-
-        await component.cancelConsultationRequest();
-
-        expect(modalService.closeAll).toHaveBeenCalled();
-        expect(consultationService.respondToConsultationRequest).toHaveBeenCalledWith(
-            component.conference,
-            component.consultationRequester.base,
-            component.consultationRequestee.base,
-            ConsultationAnswer.Cancelled
-        );
-        expect(global.clearTimeout).toHaveBeenCalledWith(timer);
-        expect(component.outgoingCallTimeout).toBeNull();
-        expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalled();
-    });
-
     it('should display VHO consultation request modal when VHO request message is received and participant is available', fakeAsync(() => {
+        consultationService.displayAdminConsultationRequest.calls.reset();
         spyOn(global, 'setTimeout').and.returnValue(timer);
         component.consultationRequestee = undefined;
         component.consultationRequester = undefined;
@@ -357,11 +274,11 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         tick();
 
         expect(component.consultationRequestee.id).toEqual(consultationRequestee.id);
-        expect(modalService.open).toHaveBeenCalledWith(IndividualParticipantStatusListComponent.VHO_REQUEST_PC_MODAL);
-        expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalledTimes(1);
+        expect(consultationService.displayAdminConsultationRequest).toHaveBeenCalledTimes(1);
     }));
 
     it('should not VHO consultation request modal when VHO request message is received and participant is not available', fakeAsync(() => {
+        consultationService.displayAdminConsultationRequest.calls.reset();
         spyOn(global, 'setTimeout').and.returnValue(timer);
         component.consultationRequestee = undefined;
         component.consultationRequester = undefined;
@@ -372,14 +289,14 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         tick();
 
         expect(component.consultationRequestee).toBeUndefined();
-        expect(modalService.open).toHaveBeenCalledTimes(0);
-        expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalledTimes(0);
+        expect(consultationService.displayAdminConsultationRequest).toHaveBeenCalledTimes(0);
     }));
 
     it('should not take action when VHO consultation response message is received', fakeAsync(() => {
+        consultationService.displayAdminConsultationRequest.calls.reset();
         component.consultationRequestee = undefined;
         component.consultationRequester = undefined;
-
+        spyOn(component, 'handleAdminConsultationMessage');
         const payload = new AdminConsultationMessage(
             conference.id,
             RoomType.AdminRoom,
@@ -387,35 +304,12 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
             ConsultationAnswer.Accepted
         );
         adminConsultationSubject.next(payload);
-        tick();
 
-        expect(modalService.open).toHaveBeenCalledTimes(0);
-        expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalledTimes(0);
-        expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalledTimes(0);
+        expect(component.handleAdminConsultationMessage).toHaveBeenCalledTimes(0);
     }));
 
-    it('should clear requesters modal and stop call ringing when consultation has been rejected', () => {
-        spyOn(global, 'clearTimeout');
-        component.outgoingCallTimeout = timer;
-
-        component.closeConsultationRejection();
-
-        expect(modalService.closeAll).toHaveBeenCalled();
-        expect(global.clearTimeout).toHaveBeenCalledWith(timer);
-        expect(component.outgoingCallTimeout).toBeNull();
-        expect(component.waitingForConsultationResponse).toBeFalsy();
-    });
-
-    it('should display no consultation room available modal when no room message is received', () => {
-        const payload = new ConsultationMessage(
-            conference.id,
-            consultationRequester.username,
-            consultationRequestee.username,
-            ConsultationAnswer.NoRoomsAvailable
-        );
-        consultationService.respondToAdminConsultationRequest.calls.reset();
-        consultationSubject.next(payload);
-
-        expect(consultationService.displayNoConsultationRoomAvailableModal).toHaveBeenCalledTimes(1);
+    it('should close all modals when user clicks close on modal', () => {
+        component.closeAllPCModals();
+        expect(consultationService.clearModals).toHaveBeenCalledTimes(1);
     });
 });

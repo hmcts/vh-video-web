@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Output } from '@angular/core';
+
 @Component({
-    selector: 'app-consultation-error',
-    templateUrl: './consultation-error.component.html'
+    selector: 'app-rejected-consultation',
+    templateUrl: './rejected-consultation.component.html'
 })
-export class ConsultationErrorComponent {
+export class RejectedConsultationComponent {
     @Output() closedModal = new EventEmitter();
     constructor() {}
 
