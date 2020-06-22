@@ -45,6 +45,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             var driverOptions = new DriverOptions()
             {
                 TargetBrowser = context.VideoWebConfig.TestConfig.TargetBrowser,
+                TargetBrowserVersion = context.VideoWebConfig.TestConfig.TargetBrowserVersion,
                 TargetDevice = context.VideoWebConfig.TestConfig.TargetDevice,
                 TargetOS = context.VideoWebConfig.TestConfig.TargetOS,
                 HeadlessMode = context.ZapConfiguration.HeadlessMode
@@ -52,7 +53,6 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
             var sauceLabsOptions = new SauceLabsOptions()
             {
-                BrowserVersion = context.VideoWebConfig.TestConfig.TargetBrowserVersion,
                 EnableLogging = EnableLogging(scenario.ScenarioInfo),
                 Name = scenario.ScenarioInfo.Title
             };
