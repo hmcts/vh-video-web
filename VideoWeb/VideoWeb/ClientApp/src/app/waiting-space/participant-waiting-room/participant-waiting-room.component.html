@@ -42,7 +42,7 @@
       Your browser does not support Video
     </video>
 
-    <ng-container *ngIf="connected">
+    <ng-container *ngIf="connected && showVideo">
       <span *ngIf="!audioMuted; else unmuteButton">
         <button
           id="muteButton"
