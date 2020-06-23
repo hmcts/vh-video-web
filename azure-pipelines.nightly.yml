@@ -34,31 +34,31 @@ parameters:
       BrowserVersion: Latest
       DeviceType: Desktop
       DeviceName:
-      TestCaseFilter: TestCategory=SmoketestExtended
+      TestCaseFilter: TestCategory=Smoketest-Extended
     - OS: Windows
       Browser: EdgeChromium
       BrowserVersion: Latest
       DeviceType: Desktop
       DeviceName:
-      TestCaseFilter: TestCategory=SmoketestExtended
+      TestCaseFilter: TestCategory=Smoketest-Extended
     - OS: MacOS
       Browser: Safari
       BrowserVersion: Latest
       DeviceType: Desktop
       DeviceName:
-      TestCaseFilter: TestCategory=SmoketestExtended
+      TestCaseFilter: TestCategory=Smoketest-Extended
     - OS: MacOS
       Browser: Chrome
       BrowserVersion: Latest
       DeviceType: Desktop
       DeviceName:
-      TestCaseFilter: TestCategory=SmoketestExtended
+      TestCaseFilter: TestCategory=Smoketest-Extended
     - OS: MacOS
       Browser: Firefox
       BrowserVersion: Latest
       DeviceType: Desktop
       DeviceName:
-      TestCaseFilter: TestCategory=SmoketestExtended
+      TestCaseFilter: TestCategory=Smoketest-Extended
     - OS: Windows
       Browser: Edge
       BrowserVersion: Latest
