@@ -1,14 +1,12 @@
-import { TestBed, inject } from '@angular/core/testing';
 import { HeartbeatModelMapper } from './heartbeat-model-mapper';
 
 describe('HeartbeatModelMapper', () => {
+    let mapper: HeartbeatModelMapper;
     beforeEach(() => {
-        TestBed.configureTestingModule({
-            providers: [HeartbeatModelMapper]
-        });
+        mapper = new HeartbeatModelMapper();
     });
 
-    it('should map', inject([HeartbeatModelMapper], async (mapper: HeartbeatModelMapper) => {
+    it('should map', () => {
         const heartbeat: any = {
             media_statistics: {
                 outgoing: {
@@ -47,8 +45,9 @@ describe('HeartbeatModelMapper', () => {
         expect(result.incomingVideoPercentageLostRecent).toBe('8');
         expect(result.browserName).toBe(browserName);
         expect(result.browserVersion).toBe(browserVersion);
-    }));
-    it('should map with no package loss values', inject([HeartbeatModelMapper], async (mapper: HeartbeatModelMapper) => {
+    });
+
+    it('should map with no package loss values', () => {
         const heartbeat: any = {
             media_statistics: {
                 outgoing: {
@@ -86,5 +85,5 @@ describe('HeartbeatModelMapper', () => {
         expect(result.incomingVideoPercentageLostRecent).toBe('0');
         expect(result.browserName).toBe(browserName);
         expect(result.browserVersion).toBe(browserVersion);
-    }));
+    });
 });
