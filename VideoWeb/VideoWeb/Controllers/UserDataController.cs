@@ -35,6 +35,7 @@ namespace VideoWeb.Controllers
             try
             {
                 var response = await _userApiClient.GetJudgesAsync();
+
                 var accountList = response.Where(x => query.UserNames.Any(s => x.First_name == s))
                     .Select(s => new { first_name = s.First_name, last_name = s.Last_name })
                     .GroupBy(x => x.first_name)

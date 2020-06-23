@@ -50,8 +50,22 @@
     font-weight: bold;
 }
 
-.vh-content{
-    max-height:700px;
-    overflow-x:hidden;
-    overflow-y:auto;
+.vh-content {
+    max-height: 700px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+hr{
+    clear:both;
+}
+
+.vh-left{
+    float:left !important;
+    padding-left:10px;
+}
+
+.vh-right{
+    float:right !important;
+    padding-right:10px;
 }

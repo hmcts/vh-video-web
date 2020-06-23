@@ -12,7 +12,7 @@ export class CourtRoomsAccounts {
     constructor(venue: string, courtRooms: string[], selected: boolean) {
         this.venue = venue;
         this.selected = selected;
-        
+
         this.courtsRooms = courtRooms ? courtRooms.map(x => new CourtRoomFilter(x, true)) : [];
     }
 

@@ -34,7 +34,6 @@ describe('VenueListComponent', () => {
     venueAccounts.push(venueAccounts1);
     venueAccounts.push(venueAccounts2);
 
-
     beforeAll(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getDistinctJudgeNames', 'getCourtRoomsAccounts']);
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
@@ -93,7 +92,6 @@ describe('VenueListComponent', () => {
         expect(result[1].courtsRooms[0].courtRoom).toBe('Room 01');
         expect(result[1].courtsRooms[0].selected).toBeTrue();
         expect(result[1].courtsRooms[1].selected).toBeTrue();
-
     }));
     it('should update filter records with select options from filter in storage', fakeAsync(() => {
         venueAccounts[0].courtsRooms[0].selected = false;
@@ -115,7 +113,5 @@ describe('VenueListComponent', () => {
         expect(result[1].courtsRooms[0].courtRoom).toBe('Room 01');
         expect(result[1].courtsRooms[0].selected).toBeFalse();
         expect(result[1].courtsRooms[1].selected).toBeTrue();
-
     }));
-
 });

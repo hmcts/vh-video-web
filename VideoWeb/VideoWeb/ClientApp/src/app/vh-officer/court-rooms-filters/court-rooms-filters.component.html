@@ -3,8 +3,8 @@
     <div>
         <div class="govuk-grid-row" >
             <div class="govuk-grid-column-full">
-                <span style="float:left; padding-left:10px;" class="govuk-heading-m">Filters</span>
-                <span style="float:right; padding-right:10px;">
+                <span class="govuk-heading-m vh-left">Filters</span>
+                <span class="vh-right">
                     <input type="button"
                            value="Cancel"
                            (click)="cancelFilters()"
@@ -20,15 +20,16 @@
                            alt="Apply selected filters" />
 
                 </span>
-            </div>
+                <hr />
 
+            </div>
         </div>
 
         <div class="vh-content">
             <div *ngFor="let court of courtRoomsAccountsFilters; let i = index">
                 <div class="govuk-grid-row">
                     <div class="govuk-grid-column-one-half">
-                        <p class="govuk-body-m vh-bold">{{court.venue}}</p>
+                        <p class="govuk-body-m vh-bold vh-5">{{court.venue}}</p>
                     </div>
                     <div class="govuk-grid-column-one-half">
 
@@ -55,7 +56,7 @@
                             </div>
                         </div>
                     </div>
-                    <hr>
+                    <hr />
                 </div>
             </div>
         </div>

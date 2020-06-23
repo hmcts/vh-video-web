@@ -211,7 +211,9 @@ export class ConferenceTestData {
             display_name: 'Judge Fudge',
             username: 'judge.fudge@hearings.net',
             role: Role.Judge,
-            case_type_group: 'judge'
+            case_type_group: 'judge',
+            first_name: 'judge',
+            last_name: 'fudge'
         });
 
         const participant4 = new ParticipantForUserResponse({

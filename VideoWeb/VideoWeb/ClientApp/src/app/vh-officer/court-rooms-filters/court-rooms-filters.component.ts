@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { CourtRoomsAccounts, CourtRoomFilter } from '../services/models/court-rooms-accounts';
+import { Component, Input } from '@angular/core';
+import { CourtRoomsAccounts } from '../services/models/court-rooms-accounts';
 import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
 
 @Component({
@@ -7,12 +7,10 @@ import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-
     templateUrl: './court-rooms-filters.component.html',
     styleUrls: ['./court-rooms-filters.component.scss']
 })
-export class CourtRoomsFiltersComponent implements OnInit {
+export class CourtRoomsFiltersComponent {
     @Input() courtRoomsAccountsFilters: CourtRoomsAccounts[];
 
-    constructor(private eventBusService: EventBusService) { }
-
-    ngOnInit() {}
+    constructor(private eventBusService: EventBusService) {}
 
     allRoomOptionSelected(venueIndex: number) {
         const venue = this.courtRoomsAccountsFilters[venueIndex];
@@ -36,8 +34,8 @@ export class CourtRoomsFiltersComponent implements OnInit {
         this.applyFilters();
     }
 
-    resetCourtRoomSelectOption(courtRoomsAccounts: CourtRoomsAccounts) {
+    private resetCourtRoomSelectOption(courtRoomsAccounts: CourtRoomsAccounts) {
         courtRoomsAccounts.selected = true;
-        courtRoomsAccounts.courtsRooms.forEach(x => x.selected = true);
+        courtRoomsAccounts.courtsRooms.forEach(x => (x.selected = true));
     }
 }
