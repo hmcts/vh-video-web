@@ -290,7 +290,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     isSelectedHearing(participant: ParticipantSummary, filter: CourtRoomsAccounts[]): boolean {
         const venue = filter.find(s => s.venue === participant.firstName);
         if (venue) {
-            return venue && venue.courtsRooms.some(room => room.selected && participant.lastName === room.courtRoom);
+            return venue.courtsRooms.some(room => room.selected && participant.lastName === room.courtRoom);
         } else {
             // if the venue could not be found (the venue name is not match the judge first name) will not hide the hearing
             this.logger.warn(`Venue for judge first name: ${participant.firstName} could not be found in court rooms accounts`);
