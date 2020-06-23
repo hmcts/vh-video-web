@@ -34,16 +34,19 @@ describe('CourtRoomsFiltersComponent', () => {
         expect(component.courtRoomsAccountsFilters[1].selected).toBeTrue();
         expect(component.courtRoomsAccountsFilters[1].courtsRooms[0].selected).toBeTrue();
         expect(component.courtRoomsAccountsFilters[1].courtsRooms[1].selected).toBeTrue();
+        expect(component.disableFilterApply).toBeFalse();
     });
     it('should unselected the court room', () => {
         component.roomOptionSelected(0, 1);
         expect(component.courtRoomsAccountsFilters[0].selected).toBeFalsy();
         expect(component.courtRoomsAccountsFilters[0].courtsRooms[1].selected).toBeFalse();
         expect(component.courtRoomsAccountsFilters[0].courtsRooms[0].selected).toBeTrue();
+        expect(component.disableFilterApply).toBeFalse();
     });
     it('should apply filter emit filter event', () => {
         component.applyFilters();
         expect(eventBusServiceSpy.emit).toHaveBeenCalled();
+        expect(component.disableFilterApply).toBeTrue();
     });
     it('should on cancel reset filter with all options selected', () => {
         component.allRoomOptionSelected(1);
@@ -57,5 +60,6 @@ describe('CourtRoomsFiltersComponent', () => {
         expect(component.courtRoomsAccountsFilters[1].courtsRooms[0].selected).toBeTrue();
 
         expect(eventBusServiceSpy.emit).toHaveBeenCalled();
+        expect(component.disableFilterApply).toBeTrue();
     });
 });

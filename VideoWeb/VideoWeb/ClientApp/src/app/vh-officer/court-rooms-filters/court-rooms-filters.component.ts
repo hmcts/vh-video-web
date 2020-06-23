@@ -9,6 +9,7 @@ import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-
 })
 export class CourtRoomsFiltersComponent {
     @Input() courtRoomsAccountsFilters: CourtRoomsAccounts[];
+    disableFilterApply = true;
 
     constructor(private eventBusService: EventBusService) {}
 
@@ -16,6 +17,7 @@ export class CourtRoomsFiltersComponent {
         const venue = this.courtRoomsAccountsFilters[venueIndex];
         venue.selected = !venue.selected;
         venue.courtsRooms.forEach(x => (x.selected = venue.selected));
+        this.disableFilterApply = false;
     }
 
     roomOptionSelected(venueIndex: number, roomIndex: number) {
@@ -23,13 +25,17 @@ export class CourtRoomsFiltersComponent {
         const room = venue.courtsRooms[roomIndex];
         room.selected = !room.selected;
         venue.selected = venue.courtsRooms.every(x => x.selected);
+        this.disableFilterApply = false;
+
     }
 
     applyFilters() {
+        this.disableFilterApply = true;
         this.eventBusService.emit(new EmitEvent(VHEventType.ApplyCourtAccountFilter, this.courtRoomsAccountsFilters));
     }
 
     cancelFilters() {
+        this.disableFilterApply = true;
         this.courtRoomsAccountsFilters.forEach(x => this.resetCourtRoomSelectOption(x));
         this.applyFilters();
     }
