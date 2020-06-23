@@ -7,11 +7,14 @@ import { VenueListComponent } from './venue-list.component';
 import { JudgeNameListResponse, CourtRoomsAccountResponse } from 'src/app/services/clients/api-client';
 import { CourtRoomsAccounts } from '../services/models/court-rooms-accounts';
 import { fakeAsync, tick } from '@angular/core/testing';
+import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 
 describe('VenueListComponent', () => {
     let component: VenueListComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     let router: jasmine.SpyObj<Router>;
+    let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
+
     const venueSessionStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
     const roomSessionStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
 
@@ -35,14 +38,15 @@ describe('VenueListComponent', () => {
     venueAccounts.push(venueAccounts2);
 
     beforeAll(() => {
-        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getDistinctJudgeNames', 'getCourtRoomsAccounts']);
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getDistinctJudgeNames']);
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
+        vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getCourtRoomsAccounts']);
     });
 
     beforeEach(() => {
-        component = new VenueListComponent(videoWebServiceSpy, router);
+        component = new VenueListComponent(videoWebServiceSpy, router, vhoQueryService);
         videoWebServiceSpy.getDistinctJudgeNames.and.returnValue(Promise.resolve(judges));
-        videoWebServiceSpy.getCourtRoomsAccounts.and.returnValue(Promise.resolve(courtAccounts));
+        vhoQueryService.getCourtRoomsAccounts.and.returnValue(Promise.resolve(courtAccounts));
         venueSessionStorage.clear();
     });
 

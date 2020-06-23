@@ -17,8 +17,7 @@ import {
     UpdateParticipantRequest,
     UpdateParticipantStatusEventRequest,
     UnreadInstantMessageConferenceCountResponse,
-    JudgeNameListResponse,
-    CourtRoomsAccountResponse
+    JudgeNameListResponse
 } from '../clients/api-client';
 import { ConferenceLite } from '../models/conference-lite';
 import { SessionStorage } from '../session-storage';
@@ -137,9 +136,5 @@ export class VideoWebService implements IVideoWebApiService {
         updateParticipantRequest: UpdateParticipantRequest
     ): Promise<void> {
         return this.apiClient.updateParticipantDisplayName(conferenceId, participantId, updateParticipantRequest).toPromise();
-    }
-
-    getCourtRoomsAccounts(venueAllocation: string[]): Promise<CourtRoomsAccountResponse[]> {
-        return this.apiClient.getCourtRoomAccounts(venueAllocation).toPromise();
     }
 }

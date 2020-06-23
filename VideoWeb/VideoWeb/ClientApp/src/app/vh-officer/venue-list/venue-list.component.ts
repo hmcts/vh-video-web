@@ -5,6 +5,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from '../services/models/session-keys';
 import { CourtRoomsAccounts } from 'src/app/vh-officer/services/models/court-rooms-accounts';
+import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 
 @Component({
     selector: 'app-venue-list',
@@ -19,7 +20,7 @@ export class VenueListComponent implements OnInit {
     venueListLoading: boolean;
     filterCourtRoomsAccounts: CourtRoomsAccounts[];
 
-    constructor(private videoWebService: VideoWebService, private router: Router) {
+    constructor(private videoWebService: VideoWebService, private router: Router, private vhoQueryService: VhoQueryService) {
         this.selectedJudges = [];
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
         this.courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
@@ -44,7 +45,7 @@ export class VenueListComponent implements OnInit {
     }
 
     getFiltersCourtRoomsAccounts() {
-        this.videoWebService.getCourtRoomsAccounts(this.selectedJudges).then(response => {
+        this.vhoQueryService.getCourtRoomsAccounts(this.selectedJudges).then(response => {
             this.filterCourtRoomsAccounts = response.map(x => new CourtRoomsAccounts(x.venue, x.court_rooms, true));
             const previousFilter = this.courtAccountsAllocationStorage.get();
             if (previousFilter) {
