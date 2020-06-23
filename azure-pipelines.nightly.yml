@@ -60,12 +60,6 @@ parameters:
       DeviceName:
       TestCaseFilter: TestCategory=Smoketest-Extended
     - OS: Windows
-      Browser: Edge
-      BrowserVersion: Latest
-      DeviceType: Desktop
-      DeviceName:
-      TestCaseFilter: TestCategory=UnsupportedBrowser
-    - OS: Windows
       Browser: Ie11
       BrowserVersion: Latest
       DeviceType: Desktop
