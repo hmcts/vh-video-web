@@ -1,5 +1,5 @@
 import { CourtRoomsFiltersComponent } from './court-rooms-filters.component';
-import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
+import { EventBusService } from 'src/app/services/event-bus.service';
 import { CourtRoomsAccounts } from '../services/models/court-rooms-accounts';
 
 describe('CourtRoomsFiltersComponent', () => {

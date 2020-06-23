@@ -45,6 +45,15 @@ namespace VideoWeb.UnitTests.Controllers
             judgeList[0].CourtRooms.Count.Should().Be(3);
             judgeList[1].CourtRooms.Count.Should().Be(1);
 
+            judgeList[0].Venue.Should().Be("Manual01");
+            judgeList[1].Venue.Should().Be("Manual03");
+
+            judgeList[0].CourtRooms[0].Should().Be("Court room 01");
+            judgeList[0].CourtRooms[1].Should().Be("Court room 02");
+            judgeList[0].CourtRooms[2].Should().Be("Court room 03");
+
+            judgeList[1].CourtRooms[0].Should().Be("Court room 01");
+
         }
 
         [Test]
