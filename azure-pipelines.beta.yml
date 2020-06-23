@@ -28,31 +28,31 @@ parameters:
       BrowserVersion: Beta
       DeviceType: Desktop
       DeviceName:
-      TestCaseFilter: TestCategory=SmoketestExtended
+      TestCaseFilter: TestCategory=Smoketest-Extended
     - OS: Windows
       Browser: Firefox
       BrowserVersion: Beta
       DeviceType: Desktop
       DeviceName:
-      TestCaseFilter: TestCategory=SmoketestExtended
+      TestCaseFilter: TestCategory=Smoketest-Extended
     - OS: Windows
       Browser: EdgeChromium
       BrowserVersion: Beta
       DeviceType: Desktop
       DeviceName:
-      TestCaseFilter: TestCategory=SmoketestExtended
+      TestCaseFilter: TestCategory=Smoketest-Extended
     - OS: MacOS
       Browser: Chrome
       BrowserVersion: Beta
       DeviceType: Desktop
       DeviceName:
-      TestCaseFilter: TestCategory=SmoketestExtended
+      TestCaseFilter: TestCategory=Smoketest-Extended
     - OS: MacOS
       Browser: Firefox
       BrowserVersion: Beta
       DeviceType: Desktop
       DeviceName:
-      TestCaseFilter: TestCategory=SmoketestExtended
+      TestCaseFilter: TestCategory=Smoketest-Extended
 
 - name: prodEnvs
   displayName: Environments Using Prod Subscription
