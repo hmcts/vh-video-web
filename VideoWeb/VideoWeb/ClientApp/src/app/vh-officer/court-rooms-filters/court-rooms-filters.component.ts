@@ -26,7 +26,6 @@ export class CourtRoomsFiltersComponent {
         room.selected = !room.selected;
         venue.selected = venue.courtsRooms.every(x => x.selected);
         this.disableFilterApply = false;
-
     }
 
     applyFilters() {
