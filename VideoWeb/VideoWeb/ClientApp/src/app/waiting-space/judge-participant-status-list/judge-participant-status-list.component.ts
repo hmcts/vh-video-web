@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
     ParticipantResponse,
@@ -7,7 +8,6 @@ import {
     Role,
     UpdateParticipantRequest
 } from 'src/app/services/clients/api-client';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 
 @Component({
@@ -31,7 +31,6 @@ export class JudgeParticipantStatusListComponent implements OnInit {
     ngOnInit() {
         this.filterNonJudgeParticipants();
         this.filterJudge();
-
         this.filterRepresentatives();
     }
 
@@ -96,17 +95,17 @@ export class JudgeParticipantStatusListComponent implements OnInit {
         this.newJudgeDisplayName = value;
     }
 
-    saveJudgeDisplayName() {
+    async saveJudgeDisplayName() {
         this.judge.display_name = this.newJudgeDisplayName;
         this.showChangeJudgeDisplayName = false;
-        this.updateParticipant();
+        await this.updateParticipant();
     }
 
     cancelJudgeDisplayName() {
         this.showChangeJudgeDisplayName = false;
     }
 
-    private updateParticipant() {
+    private async updateParticipant() {
         const updateParticipantRequest = new UpdateParticipantRequest({
             fullname: this.judge.name,
             display_name: this.judge.display_name,
@@ -115,9 +114,11 @@ export class JudgeParticipantStatusListComponent implements OnInit {
             last_name: this.judge.last_name
         });
 
-        this.videoWebService.updateParticipantDetails(this.conference.id, this.judge.id, updateParticipantRequest).catch(error => {
+        try {
+            await this.videoWebService.updateParticipantDetails(this.conference.id, this.judge.id, updateParticipantRequest);
+        } catch (error) {
             this.logger.error(`There was an error update judge display name ${this.judge.id}`, error);
-        });
+        }
     }
 
     getParticipantsCount(): number {

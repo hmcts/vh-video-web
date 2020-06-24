@@ -3,7 +3,7 @@ Feature: Participant Status
 	As a Video Hearings Officer
 	I want to be able to view the status of each participant
 
-@VIH-4500 @Smoketest-Extended
+@VIH-4500
 Scenario Outline: Participants status updates
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	Then the VHO can see the participants statuses are Not signed in
@@ -17,7 +17,7 @@ Scenario Outline: Participants status updates
 	| Available       |
 	| Disconnected    |
 
-@VIH-5431 @Smoketest-Extended
+@VIH-5431
 Scenario Outline: Clerk status updates
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	Then the VHO can see the clerk status is Unavailable
