@@ -43,9 +43,7 @@
             <!-- Participant count -->
             <span *ngIf="getParticipantsCount(hearing)">
               <p class="govuk-!-margin-0 govuk-!-padding-0">
-                <span id="applicant-rep-display-name-{{ hearing.id }}" class="govuk-!-font-weight-bold">{{
-                  getParticipantsCount(hearing)
-                }}</span>
+                <span id="participant-count-{{ hearing.id }}" class="govuk-!-font-weight-bold">{{ getParticipantsCount(hearing) }}</span>
               </p>
             </span>
           </td>

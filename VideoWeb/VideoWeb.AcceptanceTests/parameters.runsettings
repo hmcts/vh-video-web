@@ -6,7 +6,7 @@
     <Parameter name="TargetBrowserVersion" value="" />
     <Parameter name="TargetDevice" value="Desktop" />
     <Parameter name="TargetDeviceName" value="" />
-    <Parameter name="TargetEnvironment" value="" />
+    <Parameter name="TargetEnvironment" value="local" />
     <Parameter name="TargetOS" value="" />
   </TestRunParameters>
 </RunSettings>
