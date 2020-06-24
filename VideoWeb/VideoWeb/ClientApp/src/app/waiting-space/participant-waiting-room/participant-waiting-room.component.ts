@@ -131,7 +131,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         const self = this;
         this.hearingAlertSound.addEventListener(
             'ended',
-            function () {
+            function() {
                 self.currentPlayCount++;
                 if (self.currentPlayCount <= 3) {
                     this.play();
@@ -164,7 +164,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     announceHearingIsAboutToStart(): void {
         const self = this;
-        this.hearingAlertSound.play().catch(function (reason) {
+        this.hearingAlertSound.play().catch(function(reason) {
             self.logger.error('Failed to announce hearing starting', reason);
         });
         this.hearingStartingAnnounced = true;
@@ -359,6 +359,9 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
                 this.assignStream(incomingFeedElement, callConnected.stream);
             }
         }
+        if (this.audioMuted) {
+            this.muteUnmuteCall();
+        }
         this.setupParticipantHeartbeat();
     }
 
@@ -471,7 +474,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     handleHeartbeat(self: this) {
-        return async function (heartbeat) {
+        return async function(heartbeat) {
             const heartbeatModel = self.heartbeatMapper.map(
                 JSON.parse(heartbeat),
                 self.deviceTypeService.getBrowserName(),

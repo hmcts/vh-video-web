@@ -229,4 +229,28 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
         expect(component.showVideo).toBeFalsy();
         expect(component.callbackTimeout).toBeUndefined();
     });
+
+    it('should unmute already muted participant everytime video call has connected', () => {
+        const mockedDocElement = document.createElement('div');
+        document.getElementById = jasmine.createSpy('incomingFeed').and.returnValue(mockedDocElement);
+
+        spyOn(component, 'setupParticipantHeartbeat').and.callFake(() => (component.heartbeat = mockHeartbeat));
+        spyOn(component, 'assignStream');
+        spyOnProperty(window, 'navigator').and.returnValue({
+            userAgent: 'Chrome'
+        });
+        const incomingStream = <any>{};
+        const payload = new ConnectedCall(incomingStream);
+
+        onConnectedSubject.next(payload);
+        component.audioMuted = true;
+        expect(component.stream).toBeDefined();
+        expect(component.errorCount).toBe(0);
+        expect(component.connected).toBeTruthy();
+        expect(component.setupParticipantHeartbeat).toHaveBeenCalled();
+        expect(component.assignStream).toHaveBeenCalled();
+        expect(component.heartbeat).toBeTruthy();
+        expect(component.muteUnmuteCall).toHaveBeenCalled();
+        expect(component.audioMuted).toBeFalsy();
+    });
 });
