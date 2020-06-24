@@ -29,7 +29,7 @@ export class ConsultationService {
 
     callRingingTimeout: NodeJS.Timer;
     waitingForConsultationResponse: boolean;
-    private readonly CALL_TIMEOUT = 120000;
+    readonly CALL_TIMEOUT = 120000;
 
     consultationRequestee: Participant;
     consultationRequester: Participant;
