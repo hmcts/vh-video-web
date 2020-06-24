@@ -52,7 +52,7 @@ Scenario: Clerk has 1 or more hearings
 	When the user clicks on the Start Hearing button
 	Then the user is on the Waiting Room page
 
-@VIH-4156 @VIH-4507 @Smoketest @Smoketest-Extended
+@VIH-4156 @VIH-4507 @Smoketest
 Scenario: Video Hearings Officer has 1 or more hearings
 	Given I have a hearing
 	And a new browser is open for a Video Hearings Officer
