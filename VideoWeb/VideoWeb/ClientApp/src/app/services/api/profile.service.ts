@@ -19,9 +19,7 @@ export class ProfileService {
 
     async getProfileByUsername(username: string): Promise<UserProfileResponse> {
         const profile = await this.apiClient.getProfileByUsername(username).toPromise();
-        if (!this.profiles[username]) {
-            this.profiles[username] = profile;
-        }
+        this.profiles[username] = profile;
         return profile;
     }
 
