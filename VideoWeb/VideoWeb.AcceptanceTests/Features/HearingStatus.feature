@@ -3,7 +3,7 @@ Feature: Hearing Status
 	As a Video Hearings Officer
 	I want to be able to see an overview of the status of all hearings
 
-@VIH-4195 @Smoketest-Extended
+@VIH-4195
 Scenario Outline: VHO views hearing status
 	Given I have a hearing in 2 minutes time
 	And I have another hearing
@@ -15,11 +15,11 @@ Scenario Outline: VHO views hearing status
 	And the hearings should be in chronological order
 	And the Video Hearings Officer user should see a <Status> notification
 	Examples: 
-	| Status	  | 
+	| Status	    | 
 	| Not Started | 
 	| Delayed     | 
 	| In Session  | 
-	| Paused	  | 
+	| Paused	    | 
 	| Suspended   | 
 
 @VIH-4195

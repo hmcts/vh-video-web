@@ -16,7 +16,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By AboutToBeginText = CommonLocators.ElementContainingText("Please stay near your screen");
         public static string AboutToBeginBgColour = "#0b0c0c";
         public static By DelayedHeader = CommonLocators.ElementContainingText("Your video hearing is delayed");
-        public static By DelayedText = CommonLocators.ElementContainingText("We're really sorry your hearing is delayed");
+        public static By DelayedText = CommonLocators.ElementContainingText("We're sorry for the delay");
         public static string DelayedBgColour = "#ffdd00";
         public static By ScheduledHeader = CommonLocators.ElementContainingText("Your video hearing");
         public static By ScheduledText = CommonLocators.ElementContainingText("Please wait"); 

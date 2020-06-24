@@ -75,7 +75,7 @@ Scenario: Four participants join hearing
 	When in Individual01's browser
 	Then the participants waiting room displays the closed status
 
-  @HearingTest @Smoketest-Extended @DisableLogging @AudioRecording
+  @HearingTest @Smoketest-Extended @Smoketest-Prod @DisableLogging @AudioRecording
 Scenario: Audio Recording
   Given I have a hearing with audio recording enabled
   And the Individual01 user has progressed to the Waiting Room page for the existing hearing
