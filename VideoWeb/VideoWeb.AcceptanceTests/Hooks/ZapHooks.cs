@@ -9,7 +9,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
     [Binding]
     public static class ZapHooks
     {
-        private static VideoWebVhServicesConfig VhServices => ConfigurationManager.BuildConfig("CA353381-2F0D-47D7-A97B-79A30AFF8B86").GetSection("VhServices").Get<VideoWebVhServicesConfig>();
+        private static VideoWebVhServicesConfig VhServices => ConfigurationManager.BuildConfig("CA353381-2F0D-47D7-A97B-79A30AFF8B86", NUnit.Framework.TestContext.Parameters["TargetEnvironment"] ?? "").GetSection("VhServices").Get<VideoWebVhServicesConfig>();
 
         [BeforeTestRun]
         public static void ZapStart()
@@ -20,7 +20,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         [AfterTestRun]
         public static void ZapReport()
         {
-            if (VhServices.VideoWebApiUrl != null)
+            if (VhServices?.VideoWebApiUrl != null)
             {
                 Zap.ReportAndShutDown("VideoWeb-Acceptance", VhServices.VideoWebApiUrl);
             }

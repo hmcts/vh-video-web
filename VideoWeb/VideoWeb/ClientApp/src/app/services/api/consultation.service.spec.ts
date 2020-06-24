@@ -59,6 +59,10 @@ describe('ConsultationService', () => {
         notificationSoundsService.playConsultationRequestRingtone.calls.reset();
     });
 
+    it('should expect timeout to be 2 minutes', () => {
+        expect(service.CALL_TIMEOUT).toBe(120000);
+    });
+
     it('should display request modal and start ringing when raising a request for consulation', async () => {
         const conference = new ConferenceTestData().getConferenceDetailFuture();
         const requester = conference.participants[0];
@@ -286,7 +290,7 @@ describe('ConsultationService', () => {
         service.displayIncomingPrivateConsultation();
 
         expect(service.waitingForConsultationResponse).toBeFalsy();
-        expect(modalService.open).toHaveBeenCalledWith(ConsultationService.RECIEVE_PC_MODAL);
+        expect(modalService.open).toHaveBeenCalledWith(ConsultationService.RECEIVE_PC_MODAL);
         expect(service.callRingingTimeout).toBe(timer);
         expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalled();
     });
