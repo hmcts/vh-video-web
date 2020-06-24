@@ -119,4 +119,8 @@ export class JudgeParticipantStatusListComponent implements OnInit {
             this.logger.error(`There was an error update judge display name ${this.judge.id}`, error);
         });
     }
+
+    getParticipantsCount(): number {
+        return this.nonJudgeParticipants.length;
+    }
 }

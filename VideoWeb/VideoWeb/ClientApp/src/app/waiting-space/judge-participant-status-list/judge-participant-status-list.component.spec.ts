@@ -75,6 +75,10 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(component.judge.display_name).toBe(newName);
         expect(component.showChangeJudgeDisplayName).toBe(false);
     });
+    it('should get the participant count excluding judge', () => {
+        const participantCount = component.getParticipantsCount();
+        expect(participantCount).toBe(component.nonJudgeParticipants.length);
+    });
 
     const participantStatusTestCases = [
         { status: ParticipantStatus.Available, expected: 'Connected' },

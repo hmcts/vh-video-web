@@ -54,7 +54,9 @@
   <hr />
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-m">Participants</h2>
+      <h2 class="govuk-heading-m">
+        Participants <span id="participantCount" *ngIf="getParticipantsCount()">({{ getParticipantsCount() }})</span>
+      </h2>
     </div>
   </div>
 
