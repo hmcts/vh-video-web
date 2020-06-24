@@ -232,9 +232,9 @@
       },
       "SpecFlow": {
         "type": "Direct",
-        "requested": "[3.1.97, )",
-        "resolved": "3.1.97",
-        "contentHash": "8nRsXBSjvtbSmZHw5tqnJcfwgNaygsRKFhbP+ipZXu+5suzUibTI16sG3wNLgGza6LKpZlxPef8fRxqtmZZJaA==",
+        "requested": "[3.3.30, )",
+        "resolved": "3.3.30",
+        "contentHash": "JparyL5p4UKHBIFVxhuLG2pBBShGBILoYWREUXp+dOeChCbYWArHIB+NWEbeu3xdp6r6IJ65ps4CW/X7LgHm0Q==",
         "dependencies": {
           "BoDi": "1.4.1",
           "Cucumber.Messages": "[6.0.1, 7.0.0)",
@@ -247,21 +247,21 @@
       },
       "SpecFlow.NUnit": {
         "type": "Direct",
-        "requested": "[3.1.97, )",
-        "resolved": "3.1.97",
-        "contentHash": "BzY9W55Hi4PbD0XOfML7mZh601ITWOwOg0ydo/ZR5CSh668xXezTcrl7/I8SCLjdaMPqZGXN08qdKTnLcv1aAA==",
+        "requested": "[3.3.30, )",
+        "resolved": "3.3.30",
+        "contentHash": "X2VwUV0SQciXHZPVpy9C6e8Aev0PaXyursVX3UXH8SloBq735Qd0GyJwq6jHXKrD3DK6/fipdlL8uvW90UgQCw==",
         "dependencies": {
           "NUnit": "3.11.0",
-          "SpecFlow": "[3.1.97]"
+          "SpecFlow": "[3.3.30]"
         }
       },
       "SpecFlow.Tools.MsBuild.Generation": {
         "type": "Direct",
-        "requested": "[3.1.97, )",
-        "resolved": "3.1.97",
-        "contentHash": "oKy/9sMidEBzqC/P1ORDNQbMKoLIqJb1pnVBIHPpjdbCXGRNuf07V7dXrny9OFno22BuNnwN2ETk2c3+FLMb/A==",
+        "requested": "[3.3.30, )",
+        "resolved": "3.3.30",
+        "contentHash": "goNseYYHcaa28FBZRmBl9BkzPIqyL379vsuxCzp85WT6XS44L858h+oRicmAnGXBJ2SdZaqjXxATzorwFKmNlQ==",
         "dependencies": {
-          "SpecFlow": "[3.1.97]"
+          "SpecFlow": "[3.3.30]"
         }
       },
       "System.Drawing.Common": {
@@ -276,9 +276,9 @@
       },
       "VH.AcceptanceTests.Common": {
         "type": "Direct",
-        "requested": "[1.0.222, )",
-        "resolved": "1.0.222",
-        "contentHash": "LodMyTPuo7Xy/buJaoXGgaYa4688SR9U3hgX2dX5EnYvoC7aVQsmbthtEVawD6iWoll71bBwjxpf9TIiZzNveg==",
+        "requested": "[1.0.223, )",
+        "resolved": "1.0.223",
+        "contentHash": "9wM4rAyaE2lW6sNhyCOJDo2YOIt151HvK3YDNaheFKWVIk4/I4/Zpv/9v+mQcKhPekUonUF9R/owBBEbxZGYXw==",
         "dependencies": {
           "Appium.WebDriver": "4.1.1",
           "Azure.Storage.Blobs": "12.4.4",

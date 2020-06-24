@@ -20,7 +20,7 @@ import { ModalService } from '../modal.service';
 })
 export class ConsultationService {
     static REQUEST_PC_MODAL = 'raise-pc-modal';
-    static RECIEVE_PC_MODAL = 'receive-pc-modal';
+    static RECEIVE_PC_MODAL = 'receive-pc-modal';
     static ACCEPTED_PC_MODAL = 'accepted-pc-modal';
     static REJECTED_PC_MODAL = 'rejected-pc-modal';
     static VHO_REQUEST_PC_MODAL = 'vho-raise-pc-modal';
@@ -29,8 +29,7 @@ export class ConsultationService {
 
     callRingingTimeout: NodeJS.Timer;
     waitingForConsultationResponse: boolean;
-    // private readonly CALL_TIMEOUT = 120000;
-    private readonly CALL_TIMEOUT = 5000;
+    private readonly CALL_TIMEOUT = 120000;
 
     consultationRequestee: Participant;
     consultationRequester: Participant;
@@ -190,7 +189,7 @@ export class ConsultationService {
     }
 
     displayIncomingPrivateConsultation() {
-        this.displayModal(ConsultationService.RECIEVE_PC_MODAL);
+        this.displayModal(ConsultationService.RECEIVE_PC_MODAL);
         this.startIncomingCallRingingTimeout();
     }
 

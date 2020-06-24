@@ -14,6 +14,7 @@ import {
 } from '../clients/api-client';
 import { ModalService } from '../modal.service';
 import { ConsultationService } from './consultation.service';
+import RECEIVE_PC_MODAL = ConsultationService.RECEIVE_PC_MODAL;
 
 describe('ConsultationService', () => {
     let apiClient: jasmine.SpyObj<ApiClient>;
@@ -286,7 +287,7 @@ describe('ConsultationService', () => {
         service.displayIncomingPrivateConsultation();
 
         expect(service.waitingForConsultationResponse).toBeFalsy();
-        expect(modalService.open).toHaveBeenCalledWith(ConsultationService.RECIEVE_PC_MODAL);
+        expect(modalService.open).toHaveBeenCalledWith(RECEIVE_PC_MODAL);
         expect(service.callRingingTimeout).toBe(timer);
         expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalled();
     });

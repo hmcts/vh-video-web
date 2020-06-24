@@ -66,7 +66,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the VHO selects all the venues")]
         public void SelectAllVenuesAndProceed()
         {
-            const string venues = "Birmingham,Manchester,Taylor House";
+            const string venues = "Automation Courtroom 01,Automation01";
             SelectVenues(venues);
             ConfirmVenue();
         }
