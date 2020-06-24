@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Mappings;
 using VideoWeb.Services.User;
 
 namespace VideoWeb.Controllers
@@ -36,12 +37,7 @@ namespace VideoWeb.Controllers
             {
                 var response = await _userApiClient.GetJudgesAsync();
 
-                var accountList = response.Where(x => query.UserNames.Any(s => x.First_name == s))
-                    .Select(s => new { first_name = s.First_name, last_name = s.Last_name })
-                    .GroupBy(x => x.first_name)
-                    .Select(s => new CourtRoomsAccountResponse(s.Key, s.Select(g => g.last_name).OrderBy(o => o).ToList()))
-                    .OrderBy(s => s.Venue)
-                    .ToList();
+                var accountList = CourtRoomsAccountResponseMapper.MapUserToCourtRoomsAccount(response, query.UserNames);
 
                 return Ok(accountList);
             }

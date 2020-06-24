@@ -219,8 +219,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
                 });
 
                 if (this.hearings) {
-                    Object.assign(this.cloneHearings, this.hearings);
-                    this.applyFilter();
+                    this.applyFilterInit();
                 }
 
                 if (this.selectedHearing) {
@@ -235,6 +234,14 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
                 this.errorService.handleApiError(error);
             }
         );
+    }
+
+    applyFilterInit() {
+        Object.assign(this.cloneHearings, this.hearings);
+        const filter = this.courtAccountsAllocationStorage.get();
+        if (filter) {
+            this.applyFilter(filter);
+        }
     }
 
     isCurrentConference(conferenceId: string): boolean {
@@ -271,19 +278,16 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.filterSubcription = this.eventbus.on<CourtRoomsAccounts[]>(VHEventType.ApplyCourtAccountFilter, applyFilter => {
             this.courtAccountsAllocationStorage.set(applyFilter);
             this.displayFilters = false;
-            this.applyFilter();
+            this.applyFilter(applyFilter);
         });
     }
 
-    applyFilter() {
-        const filter = this.courtAccountsAllocationStorage.get();
-        if (filter) {
-            const isOriginal = filter.every(x => x.selected);
-            Object.assign(this.hearings, this.cloneHearings);
+    applyFilter(filter: CourtRoomsAccounts[]) {
+        const isOriginal = filter.every(x => x.selected);
+        Object.assign(this.hearings, this.cloneHearings);
 
-            if (!isOriginal) {
-                this.hearings = this.hearings.filter(x => x.getParticipants().some(j => j.isJudge && this.isSelectedHearing(j, filter)));
-            }
+        if (!isOriginal) {
+            this.hearings = this.hearings.filter(x => x.getParticipants().some(j => j.isJudge && this.isSelectedHearing(j, filter)));
         }
     }
 

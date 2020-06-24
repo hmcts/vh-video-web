@@ -10,6 +10,7 @@ using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Services.User;
+using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Controllers
 {
@@ -30,7 +31,7 @@ namespace VideoWeb.UnitTests.Controllers
         [Test]
         public async Task Should_return_list_of_court_rooms_accounts_with_status_ok()
         {
-            var accounts = BuildData();
+            var accounts = UserResponseBuilder.BuildData();
             var usernames = new VhoConferenceFilterQuery { UserNames = new List<string> { "Manual01", "Manual03" } };
 
             _userApiClientMock.Setup(x => x.GetJudgesAsync()).ReturnsAsync(accounts);
@@ -71,19 +72,6 @@ namespace VideoWeb.UnitTests.Controllers
             var typedResult = (ObjectResult)result.Result;
             typedResult.Should().NotBeNull();
             typedResult.StatusCode.Should().Be(apiException.StatusCode);
-        }
-
-
-        private List<UserResponse> BuildData()
-        {
-            return new List<UserResponse> {
-                new UserResponse{First_name="Manual03", Last_name="Court room 01"},
-                new UserResponse{First_name="Manual01", Last_name="Court room 03"},
-                new UserResponse{First_name="Manual01", Last_name="Court room 02"},
-                new UserResponse{First_name="Manual02", Last_name="Court room 01"},
-                new UserResponse{First_name="Manual02", Last_name="Court room 02"},
-                new UserResponse{First_name="Manual01", Last_name="Court room 01"}
-            };
         }
     }
 }

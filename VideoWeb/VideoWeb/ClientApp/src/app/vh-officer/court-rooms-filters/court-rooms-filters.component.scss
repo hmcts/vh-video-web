@@ -19,10 +19,10 @@
 }
 
 .vh-popup-overlay > div {
-  background-color: #fff;
-  -moz-box-shadow: 7px 11px 30px #dcdcdc;
-  -webkit-box-shadow: 7px 11px 30px #dcdcdc;
-  box-shadow: 11px 5px 30px #dcdcdc;
+  background-color: govuk-colour('white');
+  -moz-box-shadow: 7px 11px 30px govuk-colour('light-grey');
+  -webkit-box-shadow: 7px 11px 30px govuk-colour('light-grey');
+  box-shadow: 11px 5px 30px govuk-colour('light-grey');
   display: inline-block;
   height: auto;
   max-width: 40%;
