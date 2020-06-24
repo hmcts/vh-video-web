@@ -18,9 +18,9 @@
 
   <div class="vho-line-border"></div>
 
-  <div class="connected vh-top vh-left" *ngIf="displayFilters">
+  <div *ngIf="displayFilters">
     <div class="govuk-grid-row">
-      <div class="govuk-grid-column-one-third">
+      <div class="govuk-grid-column-full connected">
         <app-court-rooms-filters [courtRoomsAccountsFilters]="courtRoomsAccountsFilters"></app-court-rooms-filters>
       </div>
     </div>

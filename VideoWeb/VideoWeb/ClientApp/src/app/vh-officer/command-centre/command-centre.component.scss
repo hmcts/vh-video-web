@@ -37,16 +37,9 @@
 
 .connected {
   transform: translateY(-100%);
-  transform: translateX(-33%);
+  transform: translateX(-32%);
   margin-top: 5px;
   margin-left: 5px;
-}
-
-.vh-top {
   position: relative;
   z-index: 9999 !important;
-}
-
-.vh-left {
-  position: relative;
 }
