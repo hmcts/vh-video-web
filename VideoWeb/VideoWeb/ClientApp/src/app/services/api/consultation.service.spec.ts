@@ -14,7 +14,6 @@ import {
 } from '../clients/api-client';
 import { ModalService } from '../modal.service';
 import { ConsultationService } from './consultation.service';
-import RECEIVE_PC_MODAL = ConsultationService.RECEIVE_PC_MODAL;
 
 describe('ConsultationService', () => {
     let apiClient: jasmine.SpyObj<ApiClient>;
@@ -58,6 +57,10 @@ describe('ConsultationService', () => {
         notificationSoundsService.initConsultationRequestRingtone.calls.reset();
         notificationSoundsService.stopConsultationRequestRingtone.calls.reset();
         notificationSoundsService.playConsultationRequestRingtone.calls.reset();
+    });
+
+    it('should expect timeout to be 2 minutes', () => {
+        expect(service.CALL_TIMEOUT).toBe(120000);
     });
 
     it('should display request modal and start ringing when raising a request for consulation', async () => {
@@ -287,7 +290,7 @@ describe('ConsultationService', () => {
         service.displayIncomingPrivateConsultation();
 
         expect(service.waitingForConsultationResponse).toBeFalsy();
-        expect(modalService.open).toHaveBeenCalledWith(RECEIVE_PC_MODAL);
+        expect(modalService.open).toHaveBeenCalledWith(ConsultationService.RECEIVE_PC_MODAL);
         expect(service.callRingingTimeout).toBe(timer);
         expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalled();
     });
