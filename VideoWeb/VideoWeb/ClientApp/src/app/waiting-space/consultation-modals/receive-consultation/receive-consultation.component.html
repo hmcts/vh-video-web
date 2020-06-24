@@ -1,0 +1,31 @@
+<div class="modal-content negative">
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-full">
+      <p id="caller" class="govuk-!-font-size-27 govuk-!-font-weight-bold govuk-body--white govuk-!-margin-bottom-1">
+        Incoming call from {{ requesterName }}
+      </p>
+    </div>
+    <div class="govuk-grid-column-one-half">
+      <button
+        id="accept-pc-request-btn"
+        class="govuk-button govuk-!-margin-top-9"
+        data-module="govuk-button"
+        (click)="acceptConsultationRequest()"
+        alt="Accept call"
+      >
+        Accept call
+      </button>
+    </div>
+    <div class="govuk-grid-column-one-half">
+      <button
+        id="reject-pc-request-btn"
+        class="govuk-button govuk-button--warning govuk-!-margin-top-9"
+        data-module="govuk-button"
+        (click)="rejectConsultationRequest()"
+        alt="Reject call"
+      >
+        Reject call
+      </button>
+    </div>
+  </div>
+</div>

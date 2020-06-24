@@ -3,13 +3,11 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ModalService } from 'src/app/services/modal.service';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Participant } from 'src/app/shared/models/participant';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy, participantStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { NotificationSoundsService } from '../../services/notification-sounds.service';
 import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
 
 describe('IndividualParticipantStatusListComponent Participant Status and Availability', () => {
@@ -20,11 +18,8 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
     const participantStatusSubject = participantStatusSubjectMock;
     const logger: Logger = new MockLogger();
     let videoWebService: jasmine.SpyObj<VideoWebService>;
-    let modalService: jasmine.SpyObj<ModalService>;
-    let notificationSoundsService: jasmine.SpyObj<NotificationSoundsService>;
-    let conference: ConferenceResponse;
 
-    let timer: jasmine.SpyObj<NodeJS.Timer>;
+    let conference: ConferenceResponse;
 
     beforeAll(() => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
@@ -33,43 +28,15 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
             userInfo: <adal.User>{ userName: testParticipant.username, authenticated: true }
         });
 
-        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', [
-            'raiseConsultationRequest',
-            'respondToConsultationRequest',
-            'leaveConsultation',
-            'respondToAdminConsultationRequest'
-        ]);
-        consultationService.raiseConsultationRequest.and.callFake(() => Promise.resolve());
-        consultationService.respondToConsultationRequest.and.callFake(() => Promise.resolve());
-        consultationService.leaveConsultation.and.callFake(() => Promise.resolve());
-        consultationService.respondToAdminConsultationRequest.and.callFake(() => Promise.resolve());
+        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', ['clearOutoingCallTimeout', 'clearModals']);
 
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
-
-        modalService = jasmine.createSpyObj<ModalService>('ModalService', ['open', 'closeAll']);
-
-        notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', [
-            'initConsultationRequestRingtone',
-            'playConsultationRequestRingtone',
-            'stopConsultationRequestRingtone'
-        ]);
     });
 
     beforeEach(() => {
-        notificationSoundsService.initConsultationRequestRingtone.calls.reset();
-        notificationSoundsService.stopConsultationRequestRingtone.calls.reset();
-
-        timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
-        component = new IndividualParticipantStatusListComponent(
-            adalService,
-            consultationService,
-            eventsService,
-            modalService,
-            logger,
-            videoWebService,
-            notificationSoundsService
-        );
+        consultationService.clearModals.calls.reset();
+        component = new IndividualParticipantStatusListComponent(adalService, consultationService, eventsService, logger, videoWebService);
         conference = new ConferenceTestData().getConferenceDetailFuture();
         component.consultationRequester = new Participant(conference.participants[0]);
         component.consultationRequestee = new Participant(conference.participants[1]);
@@ -156,7 +123,7 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
             const payload = new ParticipantStatusMessage(participant.id, participant.username, conference.id, test.status);
 
             participantStatusSubject.next(payload);
-            expect(modalService.closeAll).toHaveBeenCalledTimes(0);
+            expect(consultationService.clearModals).toHaveBeenCalledTimes(0);
         });
     });
 
@@ -166,6 +133,6 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
         const payload = new ParticipantStatusMessage(participant.id, participant.username, conference.id, ParticipantStatus.InConsultation);
 
         participantStatusSubject.next(payload);
-        expect(modalService.closeAll).toHaveBeenCalled();
+        expect(consultationService.clearModals).toHaveBeenCalledTimes(1);
     });
 });
