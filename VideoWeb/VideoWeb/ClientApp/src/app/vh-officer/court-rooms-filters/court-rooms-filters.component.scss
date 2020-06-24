@@ -2,7 +2,7 @@
 
 .vh-popup-overlay {
   cursor: pointer;
-  height: 100%;
+  max-height: 60vh;
   position: fixed;
   text-align: center;
   top: 0px;
@@ -20,16 +20,18 @@
 
 .vh-popup-overlay > div {
   background-color: #fff;
-  box-shadow: 5px 10px 30px #555;
+  -moz-box-shadow: 7px 11px 30px #dcdcdc;
+  -webkit-box-shadow: 7px 11px 30px #dcdcdc;
+  box-shadow: 11px 5px 30px #dcdcdc;
   display: inline-block;
   height: auto;
-  max-width: 36%;
+  max-width: 40%;
   min-height: 100px;
   vertical-align: top;
   width: 100%;
   position: relative;
   border-radius: 8px;
-  padding: 10px 0px 10px 10px;
+  padding: 10px 0px 10px 20px;
 }
 
 .vh-5 {
@@ -48,10 +50,11 @@
 
 .vh-bold {
   font-weight: bold;
+  margin-left: 5px;
 }
 
 .vh-content {
-  max-height: 700px;
+  max-height: 60vh;
   overflow-x: hidden;
   overflow-y: auto;
 }
