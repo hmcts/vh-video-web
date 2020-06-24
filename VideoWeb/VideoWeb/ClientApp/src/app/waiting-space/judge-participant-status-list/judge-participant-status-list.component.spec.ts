@@ -1,51 +1,33 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AdalService } from 'adal-angular4';
-import { configureTestSuite } from 'ng-bullet';
-import { ConfigService } from 'src/app/services/api/config.service';
-import { ParticipantStatus } from 'src/app/services/clients/api-client';
-import { EventsService } from 'src/app/services/events.service';
-import { SharedModule } from 'src/app/shared/shared.module';
+import { ConferenceResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { individualTestProfile, judgeTestProfile } from 'src/app/testing/data/test-profiles';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
-import { MockConfigService } from 'src/app/testing/mocks/MockConfigService';
-import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { MockVideoWebService } from 'src/app/testing/mocks/MockVideoService';
 import { VideoWebService } from '../../services/api/video-web.service';
 import { Logger } from '../../services/logging/logger-base';
 import { JudgeParticipantStatusListComponent } from './judge-participant-status-list.component';
 
 describe('JudgeParticipantStatusListComponent', () => {
     let component: JudgeParticipantStatusListComponent;
-    let fixture: ComponentFixture<JudgeParticipantStatusListComponent>;
-    let adalService: MockAdalService;
-    let eventService: MockEventsService;
-    let videoWebService: MockVideoWebService;
-    let logger: MockLogger;
+    let videoWebService: jasmine.SpyObj<VideoWebService>;
+    let adalService: jasmine.SpyObj<AdalService>;
+    const judgeProfile = judgeTestProfile;
+    const individualProfile = individualTestProfile;
+    const logger: Logger = new MockLogger();
+    let conference: ConferenceResponse;
 
-    configureTestSuite(() => {
-        TestBed.configureTestingModule({
-            imports: [SharedModule],
-            declarations: [JudgeParticipantStatusListComponent],
-            providers: [
-                { provide: AdalService, useClass: MockAdalService },
-                { provide: ConfigService, useClass: MockConfigService },
-                { provide: EventsService, useClass: MockEventsService },
-                { provide: VideoWebService, useClass: MockVideoWebService },
-                { provide: Logger, useClass: MockLogger }
-            ]
+    beforeAll(() => {
+        adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
+            userInfo: <adal.User>{ userName: judgeProfile.username, authenticated: true }
         });
-        adalService = TestBed.get(AdalService);
-        eventService = TestBed.get(EventsService);
-        videoWebService = TestBed.get(VideoWebService);
-        logger = TestBed.get(Logger);
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails']);
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(JudgeParticipantStatusListComponent);
-        component = fixture.componentInstance;
-        component.conference = new ConferenceTestData().getConferenceDetailFuture();
-        fixture.detectChanges();
+        conference = new ConferenceTestData().getConferenceDetailNow();
+        component = new JudgeParticipantStatusListComponent(adalService, videoWebService, logger);
+        component.conference = conference;
+        component.ngOnInit();
     });
 
     it('should create', () => {
@@ -59,21 +41,37 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(component.showChangeJudgeDisplayName).toBe(true);
         expect(component.newJudgeDisplayName).toBe(component.judge.display_name);
     });
+
     it('should hide input template for change judge display name', () => {
         component.cancelJudgeDisplayName();
         expect(component.showChangeJudgeDisplayName).toBe(false);
     });
+
     it('should update new judge display name with user input', () => {
         const newName = 'new name';
         component.onEnterJudgeDisplayName(newName);
         expect(component.newJudgeDisplayName).toBe(newName);
     });
-    it('should save new judge display name in database', () => {
+
+    it('should save new judge display name in database', async () => {
         const newName = 'new name';
         component.onEnterJudgeDisplayName(newName);
-        component.saveJudgeDisplayName();
+        await component.saveJudgeDisplayName();
         expect(component.judge.display_name).toBe(newName);
         expect(component.showChangeJudgeDisplayName).toBe(false);
+        expect(videoWebService.updateParticipantDetails).toHaveBeenCalledTimes(1);
+    });
+
+    it('should log error when unable to save new judge name', async () => {
+        const error = { error: 'test failure' };
+        const newName = 'new name';
+        component.onEnterJudgeDisplayName(newName);
+        videoWebService.updateParticipantDetails.and.rejectWith(error);
+        spyOn(logger, 'error');
+
+        await component.saveJudgeDisplayName();
+
+        expect(logger.error).toHaveBeenCalled();
     });
 
     const participantStatusTestCases = [
@@ -112,5 +110,21 @@ describe('JudgeParticipantStatusListComponent', () => {
             pat.status = test.status;
             expect(component.getParticipantStatusCss(pat)).toBe(test.expected);
         });
+    });
+
+    it('should return true when user is judge', () => {
+        adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
+            userInfo: <adal.User>{ userName: judgeProfile.username, authenticated: true }
+        });
+        expect(component.isUserJudge()).toBeTruthy();
+    });
+
+    it('should return false when user is not judge', () => {
+        adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
+            userInfo: <adal.User>{ userName: individualProfile.username, authenticated: true }
+        });
+        component = new JudgeParticipantStatusListComponent(adalService, videoWebService, logger);
+        component.conference = conference;
+        expect(component.isUserJudge()).toBeFalsy();
     });
 });

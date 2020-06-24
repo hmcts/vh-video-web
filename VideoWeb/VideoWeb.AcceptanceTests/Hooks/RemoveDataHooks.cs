@@ -15,20 +15,24 @@ namespace VideoWeb.AcceptanceTests.Hooks
     [Binding]
     public sealed class RemoveDataHooks
     {
-        private string _clerkUsername;
+        private string _username;
 
         [BeforeScenario(Order = (int)HooksSequence.RemoveDataHooks)]
         [AfterScenario]
         public void RemovePreviousHearings(TestContext context)
         {
-            _clerkUsername = UserManager.GetClerkUser(context.UserAccounts).Username;
-            ClearHearingsForClerk(context.Apis.BookingsApi);
-            ClearClosedConferencesForClerk(context.Apis.BookingsApi, context.Apis.VideoApi);
+            _username = UserManager.GetClerkUser(context.UserAccounts).Username;
+            ClearHearingsForUser(context.Apis.BookingsApi);
+            ClearClosedConferencesForUser(context.Apis.BookingsApi, context.Apis.VideoApi);
+
+            _username = UserManager.GetJudgeUser(context.UserAccounts).Username;
+            ClearHearingsForUser(context.Apis.BookingsApi);
+            ClearClosedConferencesForUser(context.Apis.BookingsApi, context.Apis.VideoApi);
         }
 
-        private void ClearHearingsForClerk(BookingsApiManager bookingsApi)
+        private void ClearHearingsForUser(BookingsApiManager bookingsApi)
         {
-            var response = bookingsApi.GetHearingsForUsername(_clerkUsername);
+            var response = bookingsApi.GetHearingsForUsername(_username);
             var hearings = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingDetailsResponse>>(response.Content);
             if (hearings == null) return;
             foreach (var hearing in hearings)
@@ -42,9 +46,9 @@ namespace VideoWeb.AcceptanceTests.Hooks
             response.IsSuccessful.Should().BeTrue($"HearingDetails {hearingId} has been deleted. Status {response.StatusCode}. {response.Content}");
         }
 
-        private void ClearClosedConferencesForClerk(BookingsApiManager bookingsApi, VideoApiManager videoApi)
+        private void ClearClosedConferencesForUser(BookingsApiManager bookingsApi, VideoApiManager videoApi)
         {
-            var response = videoApi.GetConferencesForTodayJudge(_clerkUsername);
+            var response = videoApi.GetConferencesForTodayJudge(_username);
             var todaysConferences = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ConferenceForAdminResponse>>(response.Content);
             if (todaysConferences == null) return;
 

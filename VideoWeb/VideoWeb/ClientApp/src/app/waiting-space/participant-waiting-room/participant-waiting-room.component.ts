@@ -344,7 +344,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.logger.info('running pexip setup');
         this.videoCallService.connect('', null);
         this.outgoingStream = callSetup.stream;
-        this.showSelfView = true;
     }
 
     handleCallConnected(callConnected: ConnectedCall) {

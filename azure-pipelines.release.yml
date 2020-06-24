@@ -56,12 +56,11 @@ resources:
   pipelines:
   - pipeline: CI
     source: hmcts.vh-video-web
-    trigger:
+    trigger: 
       branches:
-        include:
-          - master
-          - hotfix/*
-          - release/*
+      - master
+      - hotfix/*
+      - release/*
 
 stages:
   - template: templates/vh-release.yml@templates
@@ -78,6 +77,7 @@ stages:
         secrets_KeyVault: $(env_Secret_KeyVault)
         secrets_Subscription: $(env_Secret_Subscription)
         devOpsResource: vh_video_web
+        deploymentSlot: production
         appName: vh-video-web-$(environment)
         resourceGroup: vh-video-web-$(environment)
         testCaseFilter: TestCategory=smoketest
@@ -243,6 +243,8 @@ stages:
             value: $(Saucelabs:Username)
           - name: Saucelabs:AccessKey
             value: $(Saucelabs:AccessKey)
+          - name: Saucelabs:RealDeviceApiKey
+            value: $(RealDeviceApiKey)
 
           # WowzaConfiguration
           - name: WowzaConfiguration:StorageAccountName

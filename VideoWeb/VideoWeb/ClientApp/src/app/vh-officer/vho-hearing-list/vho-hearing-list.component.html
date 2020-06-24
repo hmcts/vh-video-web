@@ -27,11 +27,11 @@
     <div id="{{ conference.id }}-hearing-status" class="status">
       <app-hearing-status [hearing]="mapToHearing(conference)"></app-hearing-status>
     </div>
-
-    <div *ngFor="let participant of getParticipantsForConference(conference); index as i" class="pIcon{{ i + 1 }}">
-      <app-participant-network-status [participant]="participant" [conferenceId]="conference.id"> </app-participant-network-status>
+    <div class="pIcons vh-top-padding">
+      <div *ngFor="let participant of getParticipantsForConference(conference)" class="vh-pIcons">
+        <app-participant-network-status [participant]="participant" [conferenceId]="conference.id"> </app-participant-network-status>
+      </div>
     </div>
-
     <div class="line"><hr /></div>
   </div>
 </div>

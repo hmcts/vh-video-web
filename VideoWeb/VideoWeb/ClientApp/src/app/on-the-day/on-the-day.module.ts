@@ -20,7 +20,7 @@ import { JudgeSelfTestComponent } from './judge-self-test/judge-self-test.compon
 import { IndependentSelfTestComponent } from './independent-self-test/independent-self-test.component';
 import { PluraliseTextPipe } from '../shared/pipes/pluraliseText.pipe';
 import { SelfTestActionsComponent } from './self-test-actions/self-test-actions.component';
-import { SignonAComputerComponent } from '../shared/signon-a-computer/signon-a-computer.component';
+import { UnsupportedDeviceComponent } from '../shared/unsupported-device/unsupported-device.component';
 
 @NgModule({
     imports: [CommonModule, SharedModule, OnTheDayRoutingModule],
@@ -37,7 +37,7 @@ import { SignonAComputerComponent } from '../shared/signon-a-computer/signon-a-c
         MicrophoneCheckComponent,
         VideoCheckComponent,
         SwitchOnCameraMicrophoneComponent,
-        SignonAComputerComponent,
+        UnsupportedDeviceComponent,
         IntroductionComponent,
         ParticipantSelfTestComponent,
         JudgeSelfTestComponent,

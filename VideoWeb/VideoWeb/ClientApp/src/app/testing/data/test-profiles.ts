@@ -15,3 +15,11 @@ export const adminTestProfile: UserProfileResponse = new UserProfileResponse({
     role: Role.VideoHearingsOfficer,
     username: 'admin@test.com'
 });
+
+export const individualTestProfile: UserProfileResponse = new UserProfileResponse({
+    display_name: 'J Green',
+    first_name: 'James',
+    last_name: 'Green',
+    role: Role.Individual,
+    username: 'james.green@hearings.net'
+});

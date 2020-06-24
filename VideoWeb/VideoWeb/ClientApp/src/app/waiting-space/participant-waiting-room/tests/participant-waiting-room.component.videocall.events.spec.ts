@@ -118,13 +118,14 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
     });
 
     it('should define outgoing stream when video call has been setup', () => {
+        const currentShowSelfVideo = component.showSelfView;
         const outgoingStream = <any>{};
         const payload = new CallSetup(outgoingStream);
         onSetupSubject.next(payload);
 
         expect(videoCallService.connect).toHaveBeenCalledWith('', null);
         expect(component.outgoingStream).toBeDefined();
-        expect(component.showSelfView).toBeTruthy();
+        expect(component.showSelfView).toBe(currentShowSelfVideo);
     });
 
     it('should define incoming stream when video call has connected', () => {

@@ -11,5 +11,5 @@ export class ConsultationMessage {
     conferenceId: string;
     requestedBy: string;
     requestedFor: string;
-    result: string;
+    result: ConsultationAnswer;
 }
