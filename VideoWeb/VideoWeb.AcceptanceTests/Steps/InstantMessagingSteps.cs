@@ -72,8 +72,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Click(InstantMessagePage.CloseChat);
         }
 
-        [Then(@"the (.*) user can no longer see the messages")]
-        public void ThenTheUserCanNoLongerSeeTheMessages(string user)
+        [Then(@"the user can no longer see the messages")]
+        public void ThenTheUserCanNoLongerSeeTheMessages()
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(InstantMessagePage.SendNewMessageButton).Should().BeTrue();
         }
