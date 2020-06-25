@@ -15,5 +15,13 @@ export class CallError {
 }
 
 export class ParticipantUpdated {
-    constructor(public uuid: string, displayName: string, isMuted: boolean, uri: string) {}
+    public isMuted: boolean;
+
+    constructor(isMuted: string) {
+        this.isMuted = isMuted === 'YES';
+    }
+}
+
+export class ConferenceUpdated {
+    constructor(public guestedMuted: boolean) {}
 }
