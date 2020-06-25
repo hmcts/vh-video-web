@@ -73,6 +73,10 @@ describe('JudgeParticipantStatusListComponent', () => {
 
         expect(logger.error).toHaveBeenCalled();
     });
+    it('should get the participant count excluding judge', () => {
+        const participantCount = component.getParticipantsCount();
+        expect(participantCount).toBe(component.nonJudgeParticipants.length);
+    });
 
     const participantStatusTestCases = [
         { status: ParticipantStatus.Available, expected: 'Connected' },
