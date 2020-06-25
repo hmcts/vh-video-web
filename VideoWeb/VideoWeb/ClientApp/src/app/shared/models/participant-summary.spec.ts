@@ -23,6 +23,8 @@ describe('ParticipantSummary', () => {
         expect(participant.displayName).toBe(p.display_name);
         expect(participant.representee).toBe(p.representee);
         expect(participant.caseGroup).toBe(p.case_type_group);
+        expect(participant.firstName).toBe(p.first_name);
+        expect(participant.lastName).toBe(p.last_name);
     });
 
     it('should return true if a judge', () => {

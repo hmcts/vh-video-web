@@ -28,6 +28,7 @@ import { VhOfficerRoutingModule } from './vh-officer-routing.module';
 import { VhoChatComponent } from './vho-chat/vho-chat.component';
 import { VhoHearingListComponent } from './vho-hearing-list/vho-hearing-list.component';
 import { VhoHearingsFilterComponent } from './vho-hearings-filter/vho-hearings-filter.component';
+import { CourtRoomsFiltersComponent } from './court-rooms-filters/court-rooms-filters.component';
 
 @NgModule({
     declarations: [
@@ -50,7 +51,8 @@ import { VhoHearingsFilterComponent } from './vho-hearings-filter/vho-hearings-f
         HearingHeaderComponent,
         HearingStatusComponent,
         CopyIdComponent,
-        UnreadMessagesParticipantComponent
+        UnreadMessagesParticipantComponent,
+        CourtRoomsFiltersComponent
     ],
     imports: [CommonModule, SharedModule, ChartsModule, ClipboardModule, VhOfficerRoutingModule, NgSelectModule],
     providers: [HearingsFilterOptionsService, ParticipantStatusReader, VhoQueryService],
