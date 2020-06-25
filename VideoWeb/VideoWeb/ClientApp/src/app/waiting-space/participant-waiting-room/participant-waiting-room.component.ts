@@ -358,9 +358,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
                 this.assignStream(incomingFeedElement, callConnected.stream);
             }
         }
-        if (this.audioMuted) {
-            this.muteUnmuteCall();
-        }
         this.setupParticipantHeartbeat();
     }
 
@@ -413,6 +410,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             this.logger.debug('Showing video because hearing is in session');
             this.showSelfView = true;
             this.showVideo = true;
+            this.resetMute();
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;
             return;
@@ -422,6 +420,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             this.logger.debug('Showing video because hearing is in session');
             this.showSelfView = true;
             this.showVideo = true;
+            this.resetMute();
             this.isPrivateConsultation = true;
             this.showConsultationControls = !this.isAdminConsultation;
             return;
@@ -496,6 +495,14 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         }
     }
 
+    /**
+     *Unmutes participants
+     **/
+    resetMute() {
+        if (this.audioMuted) {
+            this.muteUnmuteCall();
+        }
+    }
     muteUnmuteCall() {
         const muteAudio = this.videoCallService.toggleMute();
         this.logger.info('Participant mute status :' + muteAudio);

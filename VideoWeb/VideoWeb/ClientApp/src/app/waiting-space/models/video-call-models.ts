@@ -13,3 +13,7 @@ export class DisconnectedCall {
 export class CallError {
     constructor(public reason) {}
 }
+
+export class ParticipantUpdated {
+    constructor(public uuid: string, displayName: string, isMuted: boolean, uri: string) {}
+}

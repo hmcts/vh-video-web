@@ -3,7 +3,7 @@ import { Observable, Subject } from 'rxjs';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
-import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models/video-call-models';
+import { CallError, CallSetup, ConnectedCall, DisconnectedCall, ParticipantUpdated } from '../models/video-call-models';
 
 declare var PexRTC: any;
 
@@ -13,6 +13,7 @@ export class VideoCallService {
     private onConnectedSubject = new Subject<ConnectedCall>();
     private onDisconnected = new Subject<DisconnectedCall>();
     private onErrorSubject = new Subject<CallError>();
+    private onParticipantSubject = new Subject<ParticipantUpdated>();
 
     pexipAPI: any;
 
@@ -41,6 +42,11 @@ export class VideoCallService {
 
         this.pexipAPI.onDisconnect = function (reason) {
             self.onDisconnected.next(new DisconnectedCall(reason));
+        };
+
+        this.pexipAPI.onParticipantUpdate = function (participantUpdate) {
+            console.log(participantUpdate);
+            //self.onParticipantSubject.next(new ParticipantUpdated(onParticipantSubject.));
         };
     }
 
