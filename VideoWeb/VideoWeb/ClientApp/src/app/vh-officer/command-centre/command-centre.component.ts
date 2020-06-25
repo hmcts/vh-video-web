@@ -43,7 +43,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     hearings: HearingSummary[];
     selectedHearing: Hearing;
-    cloneHearings: HearingSummary[] = [];
+    originalHearings: HearingSummary[] = [];
 
     // this tracks heartbeats and pushes them back into a hearing summary object on each subscribe
     participantsHeartBeat: Map<string, ParticipantHeartbeat> = new Map<string, ParticipantHeartbeat>();
@@ -237,7 +237,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     applyFilterInit() {
-        Object.assign(this.cloneHearings, this.hearings);
+        Object.assign(this.originalHearings, this.hearings);
         const filter = this.courtAccountsAllocationStorage.get();
         if (filter) {
             this.applyFilter(filter);
@@ -284,7 +284,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     applyFilter(filter: CourtRoomsAccounts[]) {
         const isOriginal = filter.every(x => x.selected);
-        Object.assign(this.hearings, this.cloneHearings);
+        Object.assign(this.hearings, this.originalHearings);
 
         if (!isOriginal) {
             this.hearings = this.hearings.filter(x => x.getParticipants().some(j => j.isJudge && this.isSelectedHearing(j, filter)));
