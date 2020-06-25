@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Threading;
 using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
@@ -78,7 +80,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         [Then(@"the VHO can see the (.*) status has updated to (.*)")]
         [Then(@"the VHO can see the (.*) statuses have updated to (.*)")]
-        public void ThenTheParticipantsStatusesShouldUpdateTo(string userType, string participantStatus)
+        public void ThenTheParticipantsStatusesShouldUpdateTo(string userType, string expectedStatus)
         {
             _browsers[_c.CurrentUser.Key].Refresh();
             Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser.Key], _c.Test.Conference.Id);
@@ -86,15 +88,29 @@ namespace VideoWeb.AcceptanceTests.Steps
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser.Key]);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
             var participants = ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, userType);
-            CheckParticipantStatus(participantStatus, participants);
+            CheckParticipantStatus(expectedStatus, participants);
         }
 
-        private void CheckParticipantStatus(string participantStatus, IEnumerable<ParticipantDetailsResponse> participants)
+        private void CheckParticipantStatus(string expectedStatus, IEnumerable<ParticipantDetailsResponse> participants)
         {
             foreach (var participant in participants)
             {
-                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatus(participant.Id)).Text.Trim().Should().Be(participantStatus);
+                PollForStatusUpdate(participant, expectedStatus).Should().Be(expectedStatus);
             }
+        }
+
+        private string PollForStatusUpdate(ParticipantDetailsResponse participant, string expectedStatus)
+        {
+            for (var i = 0; i < MaxRetries; i++)
+            {
+                var status = _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatus(participant.Id)).Text.Trim();
+                if (status.Equals(expectedStatus))
+                {
+                    return status;
+                }
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+            }
+            throw new TimeoutException($"Expected participant status to be updated to {expectedStatus}");
         }
     }
 }

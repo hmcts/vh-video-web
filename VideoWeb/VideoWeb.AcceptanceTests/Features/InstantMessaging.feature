@@ -15,7 +15,7 @@ Scenario: Clerk Instant Messaging
   When the Video Hearings Officer navigates to the message from the Clerk user
   Then the Video Hearings Officer user can see the message 
   When the Clerk user closes the chat window
-  Then the Clerk user can no longer see the messages
+  Then the user can no longer see the messages
 
 @VIH-5862 @Smoketest-Extended
 Scenario: Participant Instant Messaging
@@ -29,7 +29,7 @@ Scenario: Participant Instant Messaging
   When the Video Hearings Officer navigates to the message from the Individual01 user
   Then the Video Hearings Officer user can see the message 
   When the Individual01 user closes the chat window
-  Then the Individual01 user can no longer see the messages
+  Then the user can no longer see the messages
 
 @VIH-5517
 Scenario: Instant Messaging Video Hearings Officer logged in first
