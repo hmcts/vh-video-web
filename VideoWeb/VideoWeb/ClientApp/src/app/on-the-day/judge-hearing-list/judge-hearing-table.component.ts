@@ -35,6 +35,10 @@ export class JudgeHearingTableComponent implements OnInit {
         return participants.find(x => !x.representee || x.representee.trim() === '');
     }
 
+    getParticipantsCount(hearing: JudgeHearingSummary): number {
+        return hearing.applicants.length + hearing.respondents.length;
+    }
+
     signIntoConference(hearing: JudgeHearingSummary) {
         this.logger.info(`selected conference to sign into: ${hearing.id}`);
         const conference = this.conferenceForJudgeResponse.find(x => x.id === hearing.id);

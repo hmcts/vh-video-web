@@ -115,14 +115,18 @@ namespace VideoWeb.AcceptanceTests.Helpers
             _hearingRow.RespondentRepresentee = _browser.Driver.WaitUntilVisible(ClerkHearingListPage.RespondentRepresenteeName(_hearingId)).Text;
         }
 
+        private void GetParticipantCount()
+        {
+            _hearingRow.ParticipantCount = Int32.Parse( _browser.Driver.WaitUntilVisible(ClerkHearingListPage.ParticipantCount(_hearingId)).Text);
+        }
+
         public HearingRow Fetch()
         {
             CheckRowIsVisible();
             GetTime();
             GetJudge();
             GetCaseDetails();
-            GetApplicantParticipants();
-            GetRespondantParticipants();
+            GetParticipantCount();
             return _hearingRow;
         }
     }
