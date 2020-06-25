@@ -196,18 +196,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var applicantRep = participantResponses.First(x => x.Case_role_name.Equals("Claimant") && x.Hearing_role_name.Equals("Representative"));
             var respondentRep = participantResponses.First(x => x.Case_role_name.Equals("Defendant") && x.Hearing_role_name.Equals("Representative"));
-            rowData.ApplicantRep.Trim().Should().Be(applicantRep.Display_name);
-            rowData.ApplicantRepresentee.Trim().Should().Be(applicantRep.Representee);
-            rowData.RespondentRep.Trim().Should().Be(respondentRep.Display_name);
-            rowData.RespondentRepresentee.Trim().Should().Be(respondentRep.Representee);
+            rowData.ParticipantCount.Should().Be(participantResponses.Count(x => x.Hearing_role_name != "Judge"));
         }
 
         private static void AssertHearingWithIndividualsOnly(IReadOnlyCollection<ParticipantResponse> participantResponses, HearingRow rowData)
         {
             var applicantIndividual = participantResponses.First(x => x.Case_role_name.Equals("Claimant"));
             var respondentIndividual = participantResponses.First(x => x.Case_role_name.Equals("Defendant"));
-            rowData.ApplicantIndividual.Trim().Should().Be(applicantIndividual.Display_name);
-            rowData.RespondentIndividual.Trim().Should().Be(respondentIndividual.Display_name);
+            rowData.ParticipantCount.Should().Be(participantResponses.Count(x => x.Hearing_role_name != "Judge"));
         }
     }
 }
