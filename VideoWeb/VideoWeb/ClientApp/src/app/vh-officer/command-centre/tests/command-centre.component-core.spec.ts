@@ -16,7 +16,10 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MenuOption } from '../../models/menus-options';
 import { VhoQueryService } from '../../services/vho-query-service.service';
 import { CommandCentreComponent } from '../command-centre.component';
-import { EventBusService } from 'src/app/services/event-bus.service';
+import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-bus.service';
+import { CourtRoomsAccounts } from '../../services/models/court-rooms-accounts';
+import { SessionStorage } from '../../../services/session-storage';
+import { VhoStorageKeys } from '../../services/models/session-keys';
 
 describe('CommandCentreComponent - Core', () => {
     let component: CommandCentreComponent;
@@ -124,6 +127,11 @@ describe('CommandCentreComponent - Core', () => {
         expect(component.venueAllocations).toBeDefined();
     });
 
+    it('should load filter for venue selection', () => {
+        component.loadCourtRoomsAccountFilters();
+        expect(component.courtRoomsAccountsFilters).toBeDefined();
+    });
+
     it('should return true when current conference is selected', () => {
         const currentConference = conferences[0];
         component.selectedHearing = new Hearing(new ConferenceResponse({ id: currentConference.id }));
@@ -193,5 +201,59 @@ describe('CommandCentreComponent - Core', () => {
         component.onMenuSelected(menu);
 
         expect(component.selectedMenu).toBe(menu);
+    });
+
+    it('should emit event to apply court room accounts filter', () => {
+        const eventbus = new EventBusService();
+        component.setupFilterSubscribers();
+        eventbus.emit(new EmitEvent<CourtRoomsAccounts[]>(VHEventType.ApplyCourtAccountFilter, null));
+        expect(component.displayFilters).toBeFalse();
+    });
+    it('should filter hearings by selected court rooms, all venues and rooms are selected', () => {
+        const filter = [new CourtRoomsAccounts('judge', ['fudge'], true), new CourtRoomsAccounts('manual', ['manual1', 'manual2'], true)];
+        const courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
+        courtAccountsAllocationStorage.set(filter);
+        const numberHearing = component.hearings.length;
+        component.applyFilter(filter);
+        expect(component.hearings.length).toBe(numberHearing);
+    });
+
+    it('should filter hearings by selected court rooms', () => {
+        const filter = [new CourtRoomsAccounts('manual', ['manual1', 'manual2'], false), new CourtRoomsAccounts('judge', ['fudge'], false)];
+        filter[0].courtsRooms[0].selected = true;
+        filter[1].courtsRooms[0].selected = false;
+
+        const courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
+        courtAccountsAllocationStorage.set(filter);
+
+        const conferencesFilter = new ConferenceTestData().getConferenceNow();
+        const judge = conferencesFilter.participants.filter(p => p.role === 'Judge');
+        judge[0].first_name = 'manual';
+        judge[0].last_name = 'manual1';
+
+        component.hearings.push(new HearingSummary(conferencesFilter));
+        component.applyFilter(filter);
+        expect(component.hearings.length).toBe(1);
+        expect(component.hearings[0].getParticipants().filter(p => p.isJudge)[0].firstName).toBe('manual');
+    });
+    it('should not hide the hearing if venue is not match judge first name in court room account', () => {
+        const filter = [new CourtRoomsAccounts('manual', ['manual1', 'manual2'], false), new CourtRoomsAccounts('judge', ['fudge'], false)];
+        filter[0].courtsRooms[0].selected = false;
+        filter[0].courtsRooms[1].selected = false;
+        filter[1].courtsRooms[0].selected = false;
+
+        const courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
+
+        courtAccountsAllocationStorage.set(filter);
+
+        const conferencesFilter = new ConferenceTestData().getConferenceNow();
+        const judge = conferencesFilter.participants.filter(p => p.role === 'Judge');
+        judge[0].first_name = 'manual3';
+        judge[0].last_name = 'manual1';
+
+        component.hearings.push(new HearingSummary(conferencesFilter));
+        component.applyFilter(filter);
+        expect(component.hearings.length).toBe(1);
+        expect(component.hearings[0].getParticipants().filter(p => p.isJudge)[0].firstName).toBe('manual3');
     });
 });

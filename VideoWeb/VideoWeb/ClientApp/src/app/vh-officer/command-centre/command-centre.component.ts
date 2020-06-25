@@ -18,6 +18,8 @@ import { ScreenHelper } from 'src/app/shared/screen-helper';
 import { MenuOption } from '../models/menus-options';
 import { VhoStorageKeys } from '../services/models/session-keys';
 import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-bus.service';
+import { CourtRoomsAccounts } from '../services/models/court-rooms-accounts';
+import { ParticipantSummary } from '../../shared/models/participant-summary';
 
 @Component({
     selector: 'app-command-centre',
@@ -28,21 +30,27 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     public menuOption = MenuOption;
 
     private readonly judgeAllocationStorage: SessionStorage<string[]>;
+    private readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
 
     venueAllocations: string[] = [];
+    courtRoomsAccountsFilters: CourtRoomsAccounts[] = [];
 
     selectedMenu: MenuOption;
 
     conferencesSubscription: Subscription;
     eventHubSubscriptions: Subscription = new Subscription();
+    filterSubcription: Subscription;
 
     hearings: HearingSummary[];
     selectedHearing: Hearing;
+    originalHearings: HearingSummary[] = [];
 
     // this tracks heartbeats and pushes them back into a hearing summary object on each subscribe
     participantsHeartBeat: Map<string, ParticipantHeartbeat> = new Map<string, ParticipantHeartbeat>();
 
     loadingData: boolean;
+
+    displayFilters = false;
 
     constructor(
         private queryService: VhoQueryService,
@@ -55,12 +63,14 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     ) {
         this.loadingData = false;
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
+        this.courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
     }
 
     ngOnInit(): void {
         this.selectedMenu = this.menuOption.Hearing;
         this.screenHelper.enableFullScreen(true);
         this.setupEventHubSubscribers();
+        this.setupFilterSubscribers();
         this.getConferenceForSelectedAllocations();
     }
 
@@ -69,6 +79,9 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.screenHelper.enableFullScreen(false);
         if (this.conferencesSubscription) {
             this.conferencesSubscription.unsubscribe();
+        }
+        if (this.filterSubcription) {
+            this.filterSubcription.unsubscribe();
         }
         this.eventHubSubscriptions.unsubscribe();
         // this.eventService.stop();
@@ -179,6 +192,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     getConferenceForSelectedAllocations() {
         this.loadVenueSelection();
+        this.loadCourtRoomsAccountFilters();
         this.queryService.startQuery(this.venueAllocations);
         this.retrieveHearingsForVhOfficer(true);
     }
@@ -186,6 +200,10 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     loadVenueSelection(): void {
         const venues = this.judgeAllocationStorage.get();
         this.venueAllocations = venues; // .map(v => v.name);
+    }
+
+    loadCourtRoomsAccountFilters(): void {
+        this.courtRoomsAccountsFilters = this.courtAccountsAllocationStorage.get();
     }
 
     retrieveHearingsForVhOfficer(reload: boolean) {
@@ -199,9 +217,15 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
                     });
                     return h;
                 });
+
+                if (this.hearings) {
+                    this.applyFilterInit();
+                }
+
                 if (this.selectedHearing) {
                     this.eventbus.emit(new EmitEvent(VHEventType.PageRefreshed, null));
                 }
+
                 this.loadingData = false;
             },
             error => {
@@ -210,6 +234,14 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
                 this.errorService.handleApiError(error);
             }
         );
+    }
+
+    applyFilterInit() {
+        Object.assign(this.originalHearings, this.hearings);
+        const filter = this.courtAccountsAllocationStorage.get();
+        if (filter) {
+            this.applyFilter(filter);
+        }
     }
 
     isCurrentConference(conferenceId: string): boolean {
@@ -236,5 +268,37 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     goBackToVenueSelection() {
         this.router.navigateByUrl(pageUrls.AdminVenueList);
+    }
+
+    showFilters() {
+        this.displayFilters = !this.displayFilters;
+    }
+
+    setupFilterSubscribers() {
+        this.filterSubcription = this.eventbus.on<CourtRoomsAccounts[]>(VHEventType.ApplyCourtAccountFilter, applyFilter => {
+            this.courtAccountsAllocationStorage.set(applyFilter);
+            this.displayFilters = false;
+            this.applyFilter(applyFilter);
+        });
+    }
+
+    applyFilter(filter: CourtRoomsAccounts[]) {
+        const isOriginal = filter.every(x => x.selected);
+        Object.assign(this.hearings, this.originalHearings);
+
+        if (!isOriginal) {
+            this.hearings = this.hearings.filter(x => x.getParticipants().some(j => j.isJudge && this.isSelectedHearing(j, filter)));
+        }
+    }
+
+    isSelectedHearing(participant: ParticipantSummary, filter: CourtRoomsAccounts[]): boolean {
+        const venue = filter.find(s => s.venue === participant.firstName);
+        if (venue) {
+            return venue.courtsRooms.some(room => room.selected && participant.lastName === room.courtRoom);
+        } else {
+            // if the venue could not be found (the venue name is not match the judge first name) will not hide the hearing
+            this.logger.warn(`Venue for judge first name: ${participant.firstName} could not be found in court rooms accounts`);
+            return true;
+        }
     }
 }
