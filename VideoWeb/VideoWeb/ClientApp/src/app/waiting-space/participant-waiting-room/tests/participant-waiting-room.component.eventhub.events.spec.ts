@@ -126,6 +126,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         hearingStatusSubject.next(message);
         flushMicrotasks();
 
+        expect(component.resetMute).toHaveBeenCalled();
         expect(component.hearing.status).toBe(status);
         expect(component.conference.status).toBe(status);
         expect(component.showVideo).toBeTruthy();
@@ -149,6 +150,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         expect(component.showVideo).toBeFalsy();
         expect(videoWebService.getConferenceById).toHaveBeenCalledWith(gloalConference.id);
         expect(component.getConferenceStatusText()).toBe('is closed');
+        expect(component.resetMute).toHaveBeenCalledTimes(0);
     }));
 
     it('should return correct conference status text when suspended', fakeAsync(() => {
@@ -162,6 +164,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         expect(component.conference.status).toBe(status);
         expect(component.showVideo).toBeFalsy();
         expect(component.getConferenceStatusText()).toBe('is suspended');
+        expect(component.resetMute).toHaveBeenCalledTimes(0);
     }));
 
     it('should return correct conference status text when paused', fakeAsync(() => {
@@ -175,6 +178,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         expect(component.conference.status).toBe(status);
         expect(component.showVideo).toBeFalsy();
         expect(component.getConferenceStatusText()).toBe('is paused');
+        expect(component.resetMute).toHaveBeenCalledTimes(0);
     }));
 
     it('should update participant status to available', () => {
@@ -187,6 +191,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         expect(participant.status).toBe(message.status);
         expect(component.isAdminConsultation).toBeFalsy();
         expect(component.showVideo).toBeFalsy();
+        expect(component.resetMute).toHaveBeenCalledTimes(0);
     });
 
     it('should update logged in participant status to in consultation', () => {
@@ -197,6 +202,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
 
         participantStatusSubject.next(message);
 
+        expect(component.resetMute).toHaveBeenCalled();
         expect(component.participant.status).toBe(message.status);
         expect(component.showVideo).toBeTruthy();
         expect(component.isAdminConsultation).toBeFalsy();
