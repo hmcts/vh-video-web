@@ -95,8 +95,8 @@ describe('ParticipantNetworkStatusComponent', () => {
         component.graphContainer = new ElementRef(mockGraphContainer);
         component.updateGraphPosition(mouseEvent);
 
-        const expectedTop = mouseEvent.clientY + 30 + 'px';
-        const expectedLeft = mouseEvent.clientX - 350 + 'px';
+        const expectedTop = mouseEvent.clientY + 10 + 'px';
+        const expectedLeft = mouseEvent.clientX - 5 + 'px';
         expect(mockGraphContainer.style.top).toBe(expectedTop);
         expect(mockGraphContainer.style.left).toBe(expectedLeft);
     });
