@@ -82,7 +82,7 @@
     "node-sass": "^4.13.1",
     "nswag": "^13.6.0",
     "prettier": "^2.0.5",
-    "puppeteer": "^3.0.4",
+    "puppeteer": "^3.3.0",
     "typescript": "~3.5.3"
   },
   "optionalDependencies": {
