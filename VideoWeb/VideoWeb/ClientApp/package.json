@@ -47,7 +47,7 @@
     "guid-typescript": "^1.0.9",
     "moment": "^2.24.0",
     "ng-bullet": "^1.0.3",
-    "ng2-charts": "^2.3.0",
+    "ng2-charts": "^2.3.2",
     "ngx-clipboard": "^12.3.1",
     "ngx-device-detector": "^1.4.4",
     "ngx-moment": "^3.5.0",
