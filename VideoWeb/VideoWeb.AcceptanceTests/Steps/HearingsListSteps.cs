@@ -182,27 +182,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         private static void ParticipantsDisplayed(IEnumerable<ParticipantResponse> participants, HearingRow rowData)
         {
             var participantResponses = participants.ToList();
-            if (participantResponses.Any(x => x.Hearing_role_name.Equals("Representative")))
-            {
-                AssertHearingWithRepresentatives(participantResponses, rowData);
-            }
-            else
-            {
-                AssertHearingWithIndividualsOnly(participantResponses, rowData);
-            }
+            AssertParticipantsCount(participantResponses, rowData);
         }
 
-        private static void AssertHearingWithRepresentatives(IReadOnlyCollection<ParticipantResponse> participantResponses, HearingRow rowData)
-        {
-            var applicantRep = participantResponses.First(x => x.Case_role_name.Equals("Claimant") && x.Hearing_role_name.Equals("Representative"));
-            var respondentRep = participantResponses.First(x => x.Case_role_name.Equals("Defendant") && x.Hearing_role_name.Equals("Representative"));
-            rowData.ParticipantCount.Should().Be(participantResponses.Count(x => x.Hearing_role_name != "Judge"));
-        }
-
-        private static void AssertHearingWithIndividualsOnly(IReadOnlyCollection<ParticipantResponse> participantResponses, HearingRow rowData)
-        {
-            var applicantIndividual = participantResponses.First(x => x.Case_role_name.Equals("Claimant"));
-            var respondentIndividual = participantResponses.First(x => x.Case_role_name.Equals("Defendant"));
+        private static void AssertParticipantsCount(IEnumerable<ParticipantResponse> participantResponses, HearingRow rowData)
+        { 
             rowData.ParticipantCount.Should().Be(participantResponses.Count(x => x.Hearing_role_name != "Judge"));
         }
     }
