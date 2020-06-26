@@ -1,4 +1,11 @@
 <div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h2 class="govuk-heading-m">
+        Participants <span id="participantCount" *ngIf="getParticipantsCount()">({{ getParticipantsCount() }})</span>
+      </h2>
+    </div>
+  </div>
   <div id="p-row-{{ judge.id }}" class="govuk-grid-row govuk-!-margin-bottom-1">
     <div class="govuk-!-margin-top-4">
       <div class="govuk-grid-column-one-third">
@@ -52,14 +59,6 @@
   </div>
 
   <hr />
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-m">
-        Participants <span id="participantCount" *ngIf="getParticipantsCount()">({{ getParticipantsCount() }})</span>
-      </h2>
-    </div>
-  </div>
-
   <div *ngIf="litigantInPerson">
     <div *ngFor="let participant of individualParticipants" class="govuk-grid-row govuk-!-margin-bottom-1">
       <div id="p-row-{{ participant.id }}" class="govuk-grid-column-full govuk-!-margin-top-2">
