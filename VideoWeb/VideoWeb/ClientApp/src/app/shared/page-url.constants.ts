@@ -17,6 +17,7 @@ export const pageUrls = {
     // judge
     JudgeHearingList: 'judge/hearing-list',
     JudgeHearingRoom: 'judge/hearing-room',
+    JudgeHearingRoomError: 'judge/hearing-room-error',
     JudgeWaitingRoom: 'judge/waiting-room',
     JudgeSelfTestVideo: 'judge/practice-video-hearing',
     // participant

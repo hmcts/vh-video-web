@@ -14,6 +14,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { JudgeWaitingRoomComponent } from './judge-waiting-room.component';
+import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
@@ -28,6 +29,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     let errorService: jasmine.SpyObj<ErrorService>;
     const logger: Logger = new MockLogger();
     let judgeEventService: jasmine.SpyObj<JudgeEventService>;
+
+    const videoCallService = videoCallServiceSpy;
 
     beforeAll(() => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
@@ -71,7 +74,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             eventsService,
             errorService,
             logger,
-            judgeEventService
+            judgeEventService,
+            videoCallService
         );
         component.ngOnInit();
         tick(1000);
@@ -251,5 +255,18 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         const result = await component.postEventJudgeUnvailableStatus();
 
         expect(result).toBeFalsy();
+    });
+
+    it('should redirect to error page if judge cannot connect to controls', async () => {
+        videoCallService.canConnectToJudgeControl.and.resolveTo(false);
+        await component.verifyJudgeControlConnectivity();
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeHearingRoomError]);
+    });
+
+    it('should not redirect to error page if judge can connect to controls', async () => {
+        router.navigate.calls.reset();
+        videoCallService.canConnectToJudgeControl.and.resolveTo(true);
+        await component.verifyJudgeControlConnectivity();
+        expect(router.navigate).toHaveBeenCalledTimes(0);
     });
 });

@@ -4,11 +4,14 @@ import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { VideoCallService } from './video-call.service';
+import { HttpClient } from '@angular/common/http';
+import { of, throwError } from 'rxjs';
 
 describe('VideoCallService', () => {
     let service: VideoCallService;
     const logger: Logger = new MockLogger();
     let userMediaService: jasmine.SpyObj<UserMediaService>;
+    let httpClient: jasmine.SpyObj<HttpClient>;
     const testData = new MediaDeviceTestData();
     let preferredCamera: UserMediaDevice;
     let preferredMicrophone: UserMediaDevice;
@@ -29,11 +32,13 @@ describe('VideoCallService', () => {
         userMediaService.getListOfMicrophoneDevices.and.resolveTo(testData.getListOfMicrophones());
         userMediaService.getPreferredCamera.and.resolveTo(preferredCamera);
         userMediaService.getPreferredMicrophone.and.resolveTo(preferredMicrophone);
+
+        httpClient = jasmine.createSpyObj<HttpClient>('HttpClient', ['options']);
     });
 
     beforeEach(() => {
         pexipSpy = jasmine.createSpyObj('pexipAPI', ['connect', 'makeCall', 'muteAudio', 'disconnect']);
-        service = new VideoCallService(logger, userMediaService);
+        service = new VideoCallService(logger, userMediaService, httpClient);
     });
 
     it('should init pexip and set pexip client', async () => {
@@ -105,5 +110,29 @@ describe('VideoCallService', () => {
 
         service.makeCall(node, conferenceAlias, participantDisplayName, maxBandwidth);
         expect(pexipSpy.makeCall).toHaveBeenCalledWith(node, conferenceAlias, participantDisplayName, maxBandwidth);
+    });
+
+    it('should return true if user can connect to judge control response is OK', async () => {
+        const uri = 'https://test.url.com';
+        const response = { ok: true };
+        httpClient.options.and.returnValue(of(response));
+
+        await expectAsync(service.canConnectToJudgeControl(uri)).toBeResolvedTo(true);
+    });
+
+    it('should return false if user can connect to judge control response is NOT OK', async () => {
+        const uri = 'https://test.url.com';
+        const response = { ok: false };
+        httpClient.options.and.returnValue(of(response));
+
+        await expectAsync(service.canConnectToJudgeControl(uri)).toBeResolvedTo(false);
+    });
+
+    it('should return false if user can connect to judge control response is NOT OK', async () => {
+        const uri = 'https://test.url.com';
+        const error = { status: 401, isApiException: true };
+        httpClient.options.and.callFake(() => throwError(error));
+
+        await expectAsync(service.canConnectToJudgeControl(uri)).toBeResolvedTo(false);
     });
 });

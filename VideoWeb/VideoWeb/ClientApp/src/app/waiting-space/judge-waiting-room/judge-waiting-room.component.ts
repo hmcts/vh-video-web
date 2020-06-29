@@ -10,6 +10,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
+import { VideoCallService } from '../services/video-call.service';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -30,18 +31,26 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
         private eventService: EventsService,
         private errorService: ErrorService,
         private logger: Logger,
-        private judgeEventService: JudgeEventService
+        private judgeEventService: JudgeEventService,
+        private videoCallService: VideoCallService
     ) {
         this.loadingData = true;
     }
 
     ngOnInit() {
         this.getConference().then(() => {
+            this.verifyJudgeControlConnectivity();
             this.setupEventHubSubscribers();
             setTimeout(() => {
                 this.postEventJudgeAvailableStatus();
             }, 1000);
         });
+    }
+    async verifyJudgeControlConnectivity() {
+        const canConnect = await this.videoCallService.canConnectToJudgeControl(this.conference.judge_i_frame_uri);
+        if (!canConnect) {
+            this.router.navigate([pageUrls.JudgeHearingRoomError]);
+        }
     }
 
     @HostListener('window:beforeunload')

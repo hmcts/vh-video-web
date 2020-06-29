@@ -19,6 +19,7 @@ import { ReceiveConsultationComponent } from './consultation-modals/receive-cons
 import { AcceptedConsultationComponent } from './consultation-modals/accepted-consultation/accepted-consultation.component';
 import { RejectedConsultationComponent } from './consultation-modals/rejected-consultation/rejected-consultation.component';
 import { VhoRaiseConsultationComponent } from './consultation-modals/vho-raise-consultation/vho-raise-consultation.component';
+import { JudgeHearingPageErrorComponent } from './judge-hearing-page-error/judge-hearing-page-error.component';
 
 @NgModule({
     imports: [SharedModule, WaitingSpaceRoutingModule],
@@ -38,7 +39,8 @@ import { VhoRaiseConsultationComponent } from './consultation-modals/vho-raise-c
         ReceiveConsultationComponent,
         AcceptedConsultationComponent,
         RejectedConsultationComponent,
-        VhoRaiseConsultationComponent
+        VhoRaiseConsultationComponent,
+        JudgeHearingPageErrorComponent
     ],
     providers: [VideoCallService, NotificationSoundsService]
 })

@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -16,7 +17,7 @@ export class VideoCallService {
 
     pexipAPI: any;
 
-    constructor(private logger: Logger, private userMediaService: UserMediaService) {}
+    constructor(private logger: Logger, private userMediaService: UserMediaService, private httpClient: HttpClient) {}
 
     /**
      * This will initialise the pexip client and initalise the call with
@@ -112,5 +113,15 @@ export class VideoCallService {
 
     enableH264(enable: boolean) {
         this.pexipAPI.h264_enabled = enable;
+    }
+
+    async canConnectToJudgeControl(uri: string): Promise<boolean> {
+        try {
+            const response = await this.httpClient.options(uri, { observe: 'response' }).toPromise();
+            return response.ok;
+        } catch (error) {
+            this.logger.error(`Unable to connect to judge control ${uri}`, error);
+            return false;
+        }
     }
 }

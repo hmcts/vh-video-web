@@ -6,6 +6,7 @@ import { JudgeHearingPageComponent } from './judge-hearing-page/judge-hearing-pa
 import { JudgeWaitingRoomComponent } from './judge-waiting-room/judge-waiting-room.component';
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room/participant-waiting-room.component';
 import { ParticipantWaitingRoomGuard } from '../security/participant-waiting-room.guard';
+import { JudgeHearingPageErrorComponent } from './judge-hearing-page-error/judge-hearing-page-error.component';
 
 const routes: Routes = [
     {
@@ -20,6 +21,11 @@ const routes: Routes = [
         component: JudgeHearingPageComponent,
         canActivate: [ConferenceGuard],
         data: { title: 'Hearing room' }
+    },
+    {
+        path: `${pageUrls.JudgeHearingRoomError}`,
+        component: JudgeHearingPageErrorComponent,
+        data: { title: 'Error' }
     }
 ];
 
