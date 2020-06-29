@@ -298,7 +298,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         } else {
             // if the venue could not be found (the venue name is not match the judge first name) will not hide the hearing
             this.logger.warn(`Venue for judge first name: ${participant.firstName} could not be found in court rooms accounts`);
-            return true;
+            return false;
         }
     }
 }
