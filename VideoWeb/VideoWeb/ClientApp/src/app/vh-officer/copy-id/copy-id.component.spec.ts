@@ -42,7 +42,7 @@ describe('CopyIdComponent', () => {
         expect(copyID.style.left).toBe(expectedLeft);
 
         expect(component.displayTooltip).toBe(false);
-        expect(component.tooltip).toBe('Copy hearing ID to clipboard');
+        expect(component.tooltip).toBe('Copy conference ID to clipboard');
     });
 
     it('should not show tooltip if element if not ready', () => {
@@ -59,6 +59,6 @@ describe('CopyIdComponent', () => {
         component.copyToClipboard(hearing);
         expect(clipboardServiceSpy.copyFromContent).toHaveBeenCalledWith(hearing.id);
         expect(component.displayTooltip).toBe(false);
-        expect(component.tooltip).toBe('Hearing ID copied to clipboard');
+        expect(component.tooltip).toBe('Conference ID copied to clipboard');
     });
 });
