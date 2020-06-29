@@ -30,27 +30,33 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
-function StringBuffer() {
+function StringBuffer()
+{
     this.buffer = [];
 }
 
-StringBuffer.prototype.append = function append(string) {
+StringBuffer.prototype.append = function append(string)
+{
     this.buffer.push(string);
     return this;
 };
 
-StringBuffer.prototype.toString = function toString() {
-    return this.buffer.join('');
+StringBuffer.prototype.toString = function toString()
+{
+    return this.buffer.join("");
 };
 
-var Base64 = {
-    codex: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
+var Base64 =
+{
+    codex : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
 
-    encode: function (input) {
+    encode : function (input)
+    {
         var output = new StringBuffer();
 
         var enumerator = new Utf8EncodeEnumerator(input);
-        while (enumerator.moveNext()) {
+        while (enumerator.moveNext())
+        {
             var chr1 = enumerator.current;
 
             enumerator.moveNext();
@@ -64,9 +70,12 @@ var Base64 = {
             var enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
             var enc4 = chr3 & 63;
 
-            if (isNaN(chr2)) {
+            if (isNaN(chr2))
+            {
                 enc3 = enc4 = 64;
-            } else if (isNaN(chr3)) {
+            }
+            else if (isNaN(chr3))
+            {
                 enc4 = 64;
             }
 
@@ -76,20 +85,26 @@ var Base64 = {
         return output.toString();
     },
 
-    decode: function (input) {
+    decode : function (input)
+    {
         var output = new StringBuffer();
 
         var enumerator = new Base64DecodeEnumerator(input);
-        while (enumerator.moveNext()) {
+        while (enumerator.moveNext())
+        {
             var charCode = enumerator.current;
 
-            if (charCode < 128) output.append(String.fromCharCode(charCode));
-            else if (charCode > 191 && charCode < 224) {
+            if (charCode < 128)
+                output.append(String.fromCharCode(charCode));
+            else if ((charCode > 191) && (charCode < 224))
+            {
                 enumerator.moveNext();
                 var charCode2 = enumerator.current;
 
                 output.append(String.fromCharCode(((charCode & 31) << 6) | (charCode2 & 63)));
-            } else {
+            }
+            else
+            {
                 enumerator.moveNext();
                 var charCode2 = enumerator.current;
 
@@ -104,38 +119,53 @@ var Base64 = {
     }
 };
 
-function Utf8EncodeEnumerator(input) {
+
+function Utf8EncodeEnumerator(input)
+{
     this._input = input;
     this._index = -1;
     this._buffer = [];
 }
 
-Utf8EncodeEnumerator.prototype = {
+Utf8EncodeEnumerator.prototype =
+{
     current: Number.NaN,
 
-    moveNext: function () {
-        if (this._buffer.length > 0) {
+    moveNext: function()
+    {
+        if (this._buffer.length > 0)
+        {
             this.current = this._buffer.shift();
             return true;
-        } else if (this._index >= this._input.length - 1) {
+        }
+        else if (this._index >= (this._input.length - 1))
+        {
             this.current = Number.NaN;
             return false;
-        } else {
+        }
+        else
+        {
             var charCode = this._input.charCodeAt(++this._index);
 
             // "\r\n" -> "\n"
             //
-            if (charCode == 13 && this._input.charCodeAt(this._index + 1) == 10) {
+            if ((charCode == 13) && (this._input.charCodeAt(this._index + 1) == 10))
+            {
                 charCode = 10;
                 this._index += 2;
             }
 
-            if (charCode < 128) {
+            if (charCode < 128)
+            {
                 this.current = charCode;
-            } else if (charCode > 127 && charCode < 2048) {
+            }
+            else if ((charCode > 127) && (charCode < 2048))
+            {
                 this.current = (charCode >> 6) | 192;
                 this._buffer.push((charCode & 63) | 128);
-            } else {
+            }
+            else
+            {
                 this.current = (charCode >> 12) | 224;
                 this._buffer.push(((charCode >> 6) & 63) | 128);
                 this._buffer.push((charCode & 63) | 128);
@@ -146,23 +176,31 @@ Utf8EncodeEnumerator.prototype = {
     }
 };
 
-function Base64DecodeEnumerator(input) {
+function Base64DecodeEnumerator(input)
+{
     this._input = input;
     this._index = -1;
     this._buffer = [];
 }
 
-Base64DecodeEnumerator.prototype = {
+Base64DecodeEnumerator.prototype =
+{
     current: 64,
 
-    moveNext: function () {
-        if (this._buffer.length > 0) {
+    moveNext: function()
+    {
+        if (this._buffer.length > 0)
+        {
             this.current = this._buffer.shift();
             return true;
-        } else if (this._index >= this._input.length - 1) {
+        }
+        else if (this._index >= (this._input.length - 1))
+        {
             this.current = 64;
             return false;
-        } else {
+        }
+        else
+        {
             var enc1 = Base64.codex.indexOf(this._input.charAt(++this._index));
             var enc2 = Base64.codex.indexOf(this._input.charAt(++this._index));
             var enc3 = Base64.codex.indexOf(this._input.charAt(++this._index));
@@ -174,9 +212,11 @@ Base64DecodeEnumerator.prototype = {
 
             this.current = chr1;
 
-            if (enc3 != 64) this._buffer.push(chr2);
+            if (enc3 != 64)
+                this._buffer.push(chr2);
 
-            if (enc4 != 64) this._buffer.push(chr3);
+            if (enc4 != 64)
+                this._buffer.push(chr3);
 
             return true;
         }
@@ -185,14 +225,14 @@ Base64DecodeEnumerator.prototype = {
 /* End of base64 code */
 
 function t2b(text) {
-    return text == 'YES' || text == 'ALLOW' ? true : false;
+    return text == "YES" || text == "ALLOW" ? true : false;
 }
 
 function b2t(val) {
-    return val ? 'YES' : 'NO';
+    return val ? "YES" : "NO";
 }
 function b2p(val) {
-    return val ? 'ALLOW' : 'DENY';
+    return val ? "ALLOW" : "DENY";
 }
 
 function PexRTCCall() {
@@ -244,14 +284,15 @@ function PexRTCCall() {
     self.onScreenshareMissing = null;
 }
 
-PexRTCCall.prototype.sdpAddCandidates = function (sdplines) {
+
+PexRTCCall.prototype.sdpAddCandidates = function(sdplines) {
     var self = this;
     var newlines = [];
 
     for (var i = 0; i < sdplines.length; i++) {
         if (self.edge_ver < 14393 && (sdplines[i].lastIndexOf('m=', 0) === 0 || sdplines[i] === '')) {
             for (var j = 0; j < self.ice_candidates.length; j++) {
-                if (self.ice_candidates[j].indexOf('endOfCandidates') === -1) {
+                if (self.ice_candidates[j].indexOf("endOfCandidates") === -1) {
                     newlines.push('a=' + self.ice_candidates[j]);
                 }
             }
@@ -259,15 +300,15 @@ PexRTCCall.prototype.sdpAddCandidates = function (sdplines) {
         newlines.push(sdplines[i]);
 
         if (sdplines[i].indexOf('a=ssrc:') === 0 && sdplines[i].indexOf('cname:') > 0) {
-            var ssrc = sdplines[i].substr(7, sdplines[i].indexOf(' ') - 7);
-            newlines.push('a=x-ssrc-range:' + ssrc + '-' + (parseInt(ssrc) + 99));
+            var ssrc = sdplines[i].substr(7, sdplines[i].indexOf(" ")-7);
+            newlines.push('a=x-ssrc-range:' + ssrc + '-' + (parseInt(ssrc)+99));
         }
     }
 
     return newlines;
 };
 
-PexRTCCall.prototype.getHostCandidate = function (sdplines, start, port) {
+PexRTCCall.prototype.getHostCandidate = function(sdplines, start, port) {
     var self = this;
 
     var candidates = [];
@@ -300,7 +341,7 @@ PexRTCCall.prototype.getHostCandidate = function (sdplines, start, port) {
     }
 };
 
-PexRTCCall.prototype.cleanupLocalCandidates = function (sdplines) {
+PexRTCCall.prototype.cleanupLocalCandidates = function(sdplines) {
     var self = this;
 
     var newlines = [];
@@ -339,7 +380,7 @@ PexRTCCall.prototype.cleanupLocalCandidates = function (sdplines) {
                     }
                     newlines.push(sdplines[i]);
 
-                    if (sdplines[i + 1] === undefined || sdplines[i + 1].lastIndexOf('m=', 0) === 0) {
+                    if (sdplines[i+1] === undefined || sdplines[i+1].lastIndexOf('m=', 0) === 0) {
                         break;
                     }
                 }
@@ -350,7 +391,7 @@ PexRTCCall.prototype.cleanupLocalCandidates = function (sdplines) {
     return newlines;
 };
 
-PexRTCCall.prototype.sdpAddPLI = function (origlines) {
+PexRTCCall.prototype.sdpAddPLI = function(origlines) {
     var self = this;
     var state = 'notinvideo';
     var newlines = [];
@@ -360,13 +401,7 @@ PexRTCCall.prototype.sdpAddPLI = function (origlines) {
     for (var i = 0; i < sdplines.length; i++) {
         var sdpline = sdplines[i];
 
-        if (
-            sdplines[i].lastIndexOf('c=', 0) === 0 &&
-            (sdplines[i].substr(-7) == '0.0.0.0' ||
-                sdplines[i].length < 16 ||
-                sdplines[i].lastIndexOf('.local') > -1 ||
-                self.firefox_ver > 0)
-        ) {
+        if (sdplines[i].lastIndexOf('c=', 0) === 0 && (sdplines[i].substr(-7) == '0.0.0.0' || sdplines[i].length < 16 || sdplines[i].lastIndexOf('.local') > -1 || self.firefox_ver > 0)) {
             var host = self.getHostCandidate(sdplines, i);
             if (host) {
                 if (host[0].indexOf(':') > -1) {
@@ -407,27 +442,19 @@ PexRTCCall.prototype.sdpAddPLI = function (origlines) {
                 }
             }
 
-            if (
-                (!self.h264_enabled || self.is_screenshare) &&
-                sdplines[i].lastIndexOf('a=rtpmap:', 0) === 0 &&
-                sdplines[i].lastIndexOf('H264') > 0
-            ) {
+            if ((!self.h264_enabled || self.is_screenshare) && sdplines[i].lastIndexOf('a=rtpmap:', 0) === 0 && sdplines[i].lastIndexOf('H264') > 0) {
                 var fields = sdplines[i].split(' ');
-                var pt = fields[0].substr(fields[0].indexOf(':') + 1);
-                while (sdplines[i + 1].lastIndexOf('a=fmtp:' + pt, 0) === 0 || sdplines[i + 1].lastIndexOf('a=rtcp-fb:' + pt, 0) === 0) {
+                var pt = fields[0].substr(fields[0].indexOf(':')+1);
+                while (sdplines[i+1].lastIndexOf('a=fmtp:' + pt, 0) === 0 || sdplines[i+1].lastIndexOf('a=rtcp-fb:' + pt, 0) === 0) {
                     i++;
                 }
                 continue;
             }
 
-            if (
-                (!self.vp9_enabled || self.is_screenshare) &&
-                sdplines[i].lastIndexOf('a=rtpmap:', 0) === 0 &&
-                sdplines[i].lastIndexOf('VP9') > 0
-            ) {
+            if ((!self.vp9_enabled || self.is_screenshare) && sdplines[i].lastIndexOf('a=rtpmap:', 0) === 0 && sdplines[i].lastIndexOf('VP9') > 0) {
                 var fields = sdplines[i].split(' ');
-                var pt = fields[0].substr(fields[0].indexOf(':') + 1);
-                while (sdplines[i + 1].lastIndexOf('a=fmtp:' + pt, 0) === 0 || sdplines[i + 1].lastIndexOf('a=rtcp-fb:' + pt, 0) === 0) {
+                var pt = fields[0].substr(fields[0].indexOf(':')+1);
+                while (sdplines[i+1].lastIndexOf('a=fmtp:' + pt, 0) === 0 || sdplines[i+1].lastIndexOf('a=rtcp-fb:' + pt, 0) === 0) {
                     i++;
                 }
                 continue;
@@ -435,33 +462,24 @@ PexRTCCall.prototype.sdpAddPLI = function (origlines) {
 
             newlines.push(sdpline);
 
-            if (
-                self.chrome_ver > 0 &&
-                (self.allow_1080p || self.call_type == 'presentation') &&
-                sdplines[i].lastIndexOf('a=rtpmap:', 0) === 0
-            ) {
+            if (self.chrome_ver > 0 && (self.allow_1080p || self.call_type == 'presentation') && sdplines[i].lastIndexOf('a=rtpmap:', 0) === 0) {
                 var fields = sdplines[i].split(' ');
-                var pt = fields[0].substr(fields[0].indexOf(':') + 1);
+                var pt = fields[0].substr(fields[0].indexOf(':')+1);
                 if (sdplines[i].lastIndexOf('VP8') > 0 || sdplines[i].lastIndexOf('VP9') > 0) {
                     newlines.push('a=fmtp:' + pt + ' max-fs=8160;max-fr=30');
                 } else if (sdplines[i].lastIndexOf('H264') > 0) {
-                    while (sdplines[i + 1].lastIndexOf('a=rtcp-fb:' + pt, 0) === 0) {
+                    while (sdplines[i+1].lastIndexOf('a=rtcp-fb:' + pt, 0) === 0) {
                         newlines.push(sdplines[++i]);
                     }
-                    if (sdplines[i + 1].lastIndexOf('a=fmtp:' + pt, 0) === 0 && sdplines[i + 1].lastIndexOf('max-fs') === -1) {
+                    if (sdplines[i+1].lastIndexOf('a=fmtp:' + pt, 0) === 0 && sdplines[i+1].lastIndexOf('max-fs') === -1) {
                         newlines.push(sdplines[++i] + ';max-br=3732;max-mbps=245760;max-fs=8192;max-smbps=245760;max-fps=3000;max-fr=30');
                     }
                 }
             }
 
-            if (
-                self.firefox_ver > 65 &&
-                (self.allow_1080p || self.call_type == 'presentation') &&
-                sdplines[i].lastIndexOf('a=rtpmap:', 0) === 0 &&
-                sdplines[i].lastIndexOf('H264') > 0
-            ) {
+            if (self.firefox_ver > 65 && (self.allow_1080p || self.call_type == 'presentation') && sdplines[i].lastIndexOf('a=rtpmap:', 0) === 0 && sdplines[i].lastIndexOf('H264') > 0) {
                 var fields = sdplines[i].split(' ');
-                var pt = fields[0].substr(fields[0].indexOf(':') + 1);
+                var pt = fields[0].substr(fields[0].indexOf(':')+1);
                 for (var j = 0; j < newlines.length; j++) {
                     if (newlines[j].lastIndexOf('a=fmtp:' + pt, 0) === 0 && newlines[j].lastIndexOf('max-fs') === -1) {
                         newlines[j] += ';max-br=3732;max-mbps=245760;max-fs=8192;max-smbps=245760;max-fps=3000;max-fr=30';
@@ -478,7 +496,7 @@ PexRTCCall.prototype.sdpAddPLI = function (origlines) {
     return newlines;
 };
 
-PexRTCCall.prototype.sdpChangeBW = function (sdplines) {
+PexRTCCall.prototype.sdpChangeBW = function(sdplines) {
     var self = this;
     var state = 'notinvideo';
     var newlines = [];
@@ -489,32 +507,34 @@ PexRTCCall.prototype.sdpChangeBW = function (sdplines) {
             state = 'invideo';
         } else if (state === 'invideo') {
             if (sdplines[i].lastIndexOf('c=', 0) === 0) {
-                if (sdplines[i + 1].lastIndexOf('b=AS:', 0) === 0) {
-                    var oldbw = sdplines[i + 1];
-                    oldbw = oldbw.substr(oldbw.indexOf(':') + 1);
+                if (sdplines[i+1].lastIndexOf('b=AS:', 0) === 0) {
+                    var oldbw = sdplines[i+1];
+                    oldbw = oldbw.substr(oldbw.indexOf(":")+1);
                     if (parseInt(oldbw) < self.bandwidth_out) {
                         self.bandwidth_out = oldbw;
                     }
                     i++;
                 }
-                if (sdplines[i + 1].lastIndexOf('b=TIAS:', 0) === 0) {
+                if (sdplines[i+1].lastIndexOf('b=TIAS:', 0) === 0) {
                     i++;
                 }
                 newlines.push('b=AS:' + self.bandwidth_out);
-                newlines.push('b=TIAS:' + self.bandwidth_out * 1000);
+                newlines.push('b=TIAS:' + (self.bandwidth_out * 1000));
             } else if (sdplines[i].lastIndexOf('m=', 0) === 0 || sdplines[i] === '') {
                 if (sdplines[i].lastIndexOf('m=video', 0) !== 0) {
                     state = 'notinvideo';
                 }
             }
+
         }
-        if (navigator.userAgent.indexOf('Chrome') != -1 && sdplines[i].lastIndexOf('a=sendonly', 0) === 0) {
+        if (navigator.userAgent.indexOf("Chrome") != -1 && sdplines[i].lastIndexOf('a=sendonly', 0) === 0) {
             newlines.push('a=sendrecv');
         }
     }
 
     return newlines;
 };
+
 
 PexRTCCall.prototype.makeCall = function (parent, call_type) {
     var self = this;
@@ -526,10 +546,10 @@ PexRTCCall.prototype.makeCall = function (parent, call_type) {
     self.bandwidth_in = self.parent.bandwidth_in;
     self.bandwidth_out = self.parent.bandwidth_out;
     if (self.parent.set_bandwidth_in < self.bandwidth_in) {
-        self.bandwidth_in = self.parent.set_bandwidth_in;
+         self.bandwidth_in = self.parent.set_bandwidth_in;
     }
     if (self.parent.set_bandwidth_out < self.bandwidth_out) {
-        self.bandwidth_out = self.parent.set_bandwidth_out;
+         self.bandwidth_out = self.parent.set_bandwidth_out;
     }
     self.presentation_in_main = self.parent.presentation_in_main;
     self.legacy_screenshare = self.parent.screenshare_api === null;
@@ -542,7 +562,7 @@ PexRTCCall.prototype.makeCall = function (parent, call_type) {
     self.vp9_enabled = self.parent.vp9_enabled;
     self.allow_1080p = self.parent.allow_1080p;
     self.force_hd = self.parent.force_hd;
-    self.is_electron = self.parent.is_electron;
+    self.is_electron = self.parent.is_electron
 
     if (call_type == 'presentation') {
         self.call_type = call_type;
@@ -577,13 +597,8 @@ PexRTCCall.prototype.makeCall = function (parent, call_type) {
         self.recv_video = self.parent.recv_video;
     }
 
-    if (
-        self.is_screenshare &&
-        ((self.chrome_ver >= 34 && self.chrome_ver < 72) || self.is_electron) &&
-        !self.legacy_screenshare &&
-        !self.parent.user_presentation_stream
-    ) {
-        var pending = window.setTimeout(function () {
+    if (self.is_screenshare && ((self.chrome_ver >= 34 && self.chrome_ver < 72) || self.is_electron) && !self.legacy_screenshare && !self.parent.user_presentation_stream) {
+        var pending = window.setTimeout(function() {
             /* var err = new Error('NavigatorUserMediaError');
             err.name = 'EXTENSION_UNAVAILABLE';
             self.gumError(err); */
@@ -601,73 +616,59 @@ PexRTCCall.prototype.makeCall = function (parent, call_type) {
             }
         };
         window.addEventListener('message', self.event_listener);
-        window.postMessage({ type: self.parent.screenshare_api, id: +pending }, '*');
+        window.postMessage({ type: self.parent.screenshare_api, id: +pending}, '*');
     } else {
         self.getMedia();
     }
 };
 
-PexRTCCall.prototype.sendRequest = function (request, params, cb, retries, timeout) {
+PexRTCCall.prototype.sendRequest = function(request, params, cb, retries, timeout) {
     var self = this;
 
     // Only do sync if explicitly asked
     var async = cb === false ? false : true;
     var xhr_timeout = timeout || self.parent.xhr_timeout;
     var xhr = new XMLHttpRequest();
-    var xhrUrl =
-        'https://' +
-        self.parent.node +
-        '/api/client/v2/conferences/' +
-        self.parent.conference_uri +
-        '/participants/' +
-        self.parent.uuid +
-        '/' +
-        request;
-    self.parent.onLog('PexRTCCall.sendRequest', request, params, xhrUrl);
+    var xhrUrl = "https://" + self.parent.node + "/api/client/v2/conferences/" + self.parent.conference_uri + "/participants/" + self.parent.uuid + "/" + request;
+    self.parent.onLog("PexRTCCall.sendRequest", request, params, xhrUrl);
     if (request in self.outstanding_requests) {
         clearTimeout(self.outstanding_requests[request]);
         delete self.outstanding_requests[request];
     }
-    xhr.open('POST', xhrUrl, async);
+    xhr.open("POST", xhrUrl, async);
     if (retries === undefined) {
         retries = 0;
     }
     if (cb) {
-        xhr.onload = function (e) {
+        xhr.onload = function(e) {
             if (e.target.status == 502 || e.target.status == 504) {
                 if (++retries > 10) {
-                    self.parent.error = e.target.status + ' ' + e.target.statusText + ' sending request: ' + request;
+                    self.parent.error = e.target.status + " " + e.target.statusText + " sending request: " + request;
                     self.onError(self.parent.trans.ERROR_CONNECTING);
                 } else {
-                    self.outstanding_requests[request] = setTimeout(function () {
-                        self.sendRequest(request, params, cb, retries, xhr_timeout);
-                    }, retries * 500);
+                    self.outstanding_requests[request] = setTimeout(function() { self.sendRequest(request, params, cb, retries, xhr_timeout); }, retries * 500);
                 }
             } else {
                 cb(e);
             }
         };
     }
-    xhr.onerror = function () {
+    xhr.onerror = function() {
         if (++retries > 10 || cb === false) {
-            self.parent.error = 'Error sending request: ' + request;
+            self.parent.error = "Error sending request: " + request;
             self.onError(self.parent.trans.ERROR_CONNECTING);
         } else {
-            self.outstanding_requests[request] = setTimeout(function () {
-                self.sendRequest(request, params, cb, retries, xhr_timeout);
-            }, retries * 500);
+            self.outstanding_requests[request] = setTimeout(function() { self.sendRequest(request, params, cb, retries, xhr_timeout); }, retries * 500);
         }
     };
     if (async) {
         xhr.timeout = xhr_timeout;
-        xhr.ontimeout = function () {
+        xhr.ontimeout = function() {
             if (++retries > 10 || cb === false) {
-                self.parent.error = 'Timeout sending request: ' + request;
+                self.parent.error = "Timeout sending request: " + request;
                 self.onError(self.parent.trans.ERROR_CONNECTING);
             } else {
-                self.outstanding_requests[request] = setTimeout(function () {
-                    self.sendRequest(request, params, cb, retries, xhr_timeout);
-                }, retries * 500);
+                self.outstanding_requests[request] = setTimeout(function() { self.sendRequest(request, params, cb, retries, xhr_timeout); }, retries * 500);
             }
         };
     }
@@ -690,12 +691,12 @@ PexRTCCall.prototype.sendRequest = function (request, params, cb, retries, timeo
         }
     }
     if (cb === false) {
-        self.parent.onLog('PexRTCCall.sendRequest response', xhr.responseText);
+        self.parent.onLog("PexRTCCall.sendRequest response", xhr.responseText);
         var msg = {};
         try {
             msg = JSON.parse(xhr.responseText);
         } catch (error) {
-            msg.reason = xhr.status + ' ' + xhr.statusText;
+            msg.reason = xhr.status + " " + xhr.statusText;
         }
         msg.http_status = xhr.status;
         return msg;
@@ -721,15 +722,10 @@ PexRTCCall.prototype.handleError = function (err) {
     }
 };
 
-PexRTCCall.prototype.getMedia = function (sourceId) {
+PexRTCCall.prototype.getMedia = function(sourceId) {
     var self = this;
 
-    if (
-        self.is_screenshare &&
-        ((self.chrome_ver >= 34 && self.chrome_ver < 72) || self.is_electron) &&
-        !self.legacy_screenshare &&
-        !self.parent.user_presentation_stream
-    ) {
+    if (self.is_screenshare && ((self.chrome_ver >= 34 && self.chrome_ver < 72) || self.is_electron) && !self.legacy_screenshare && !self.parent.user_presentation_stream) {
         if (sourceId) {
             self.video_source = sourceId;
         } else {
@@ -773,22 +769,22 @@ PexRTCCall.prototype.getMedia = function (sourceId) {
                 videoConstraints.maxHeight = self.parent.screenshare_height;
                 videoConstraints.maxFrameRate = self.parent.screenshare_fps.toString();
             } else {
-                videoConstraints.width = { max: self.parent.screenshare_width };
-                videoConstraints.height = { max: self.parent.screenshare_height };
-                videoConstraints.frameRate = { ideal: self.parent.screenshare_fps, max: self.parent.screenshare_fps };
+                videoConstraints.width = {'max': self.parent.screenshare_width};
+                videoConstraints.height = {'max': self.parent.screenshare_height};
+                videoConstraints.frameRate = {'ideal': self.parent.screenshare_fps, 'max': self.parent.screenshare_fps};
             }
         } else if (self.firefox_ver > 43 || self.edge_ver > 10527) {
-            videoConstraints.frameRate = { ideal: 30, max: 30 };
+            videoConstraints.frameRate = {'ideal': 30, 'max': 30};
             if (self.force_hd > 0 && navigator.userAgent.indexOf('OS X') != -1) {
-                videoConstraints.width = { min: 1280 };
-                videoConstraints.height = { min: 720 };
+                videoConstraints.width = {'min': 1280};
+                videoConstraints.height = {'min': 720};
                 if (self.force_hd == 1080) {
                     videoConstraints.width.ideal = 1920;
                     videoConstraints.height.ideal = 1080;
                 }
             } else {
-                videoConstraints.width = { ideal: 1280 };
-                videoConstraints.height = { ideal: 720 };
+                videoConstraints.width = {'ideal': 1280};
+                videoConstraints.height = {'ideal': 720};
                 if (self.force_hd == 1080) {
                     videoConstraints.width.max = 1920;
                     videoConstraints.height.max = 1080;
@@ -796,16 +792,16 @@ PexRTCCall.prototype.getMedia = function (sourceId) {
             }
         } else if (self.chrome_ver > 56 && !self.is_android) {
             if (self.force_hd == 1080) {
-                videoConstraints.width = { min: 1920 };
-                videoConstraints.height = { min: 1080 };
-                videoConstraints.frameRate = { ideal: 30, max: 30 };
+                videoConstraints.width = {'min': 1920};
+                videoConstraints.height = {'min': 1080};
+                videoConstraints.frameRate = {'ideal': 30, 'max': 30};
             } else if (self.force_hd == 720) {
-                videoConstraints.width = { min: 1280 };
-                videoConstraints.height = { min: 720 };
-                videoConstraints.frameRate = { ideal: 30, max: 30 };
+                videoConstraints.width = {'min': 1280};
+                videoConstraints.height = {'min': 720};
+                videoConstraints.frameRate = {'ideal': 30, 'max': 30};
             } else if (self.force_hd !== false) {
-                videoConstraints.width = { ideal: 1280 };
-                videoConstraints.height = { ideal: 720 };
+                videoConstraints.width = {'ideal': 1280};
+                videoConstraints.height = {'ideal': 720};
             }
         } else if (self.safari_ver >= 11) {
             if (self.force_hd == 1080) {
@@ -816,11 +812,11 @@ PexRTCCall.prototype.getMedia = function (sourceId) {
                 videoConstraints.height = 720;
             }
         } else if (self.force_hd == 1080 && self.chrome_ver >= 34) {
-            videoConstraints.minWidth = '1920';
-            videoConstraints.minHeight = '1080';
+            videoConstraints.minWidth = "1920";
+            videoConstraints.minHeight = "1080";
         } else if (self.force_hd == 720) {
-            videoConstraints.minWidth = '1280';
-            videoConstraints.minHeight = '720';
+            videoConstraints.minWidth = "1280";
+            videoConstraints.minHeight = "720";
         }
 
         if (self.chrome_ver >= 38 && self.chrome_ver < 49 && self.bandwidth_out > 384) {
@@ -832,32 +828,32 @@ PexRTCCall.prototype.getMedia = function (sourceId) {
 
         if (self.audio_source && audioConstraints) {
             if ((self.chrome_ver > 56 && self.chrome_ver < 66 && !self.is_android) || self.firefox_ver > 43 || self.edge_ver > 10527) {
-                audioConstraints = { deviceId: self.audio_source };
+                audioConstraints = {'deviceId': self.audio_source};
             } else if (self.safari_ver >= 11 || self.chrome_ver > 65) {
-                audioConstraints = { deviceId: { exact: self.audio_source } };
+                audioConstraints = {'deviceId': {'exact': self.audio_source}};
             } else if (self.chrome_ver > 49) {
-                audioConstraints = { mandatory: { sourceId: self.audio_source }, optional: [] };
+                audioConstraints = {'mandatory': {'sourceId': self.audio_source}, 'optional': []};
             } else {
-                audioConstraints = { optional: [{ sourceId: self.audio_source }] };
+                audioConstraints = {'optional': [{'sourceId': self.audio_source}]};
             }
         }
 
         if (self.chrome_ver >= 38 && self.chrome_ver < 57) {
             if (audioConstraints && !audioConstraints.optional) {
-                audioConstraints = { optional: [] };
+                audioConstraints = {'optional': []};
             }
             if (audioConstraints) {
-                audioConstraints.optional.push({ googEchoCancellation: true });
-                audioConstraints.optional.push({ googEchoCancellation2: true });
-                audioConstraints.optional.push({ googAutoGainControl: true });
-                audioConstraints.optional.push({ googAutoGainControl2: true });
-                audioConstraints.optional.push({ googNoiseSuppression: true });
-                audioConstraints.optional.push({ googNoiseSuppression2: true });
-                audioConstraints.optional.push({ googHighpassFilter: true });
+                audioConstraints.optional.push({'googEchoCancellation': true});
+                audioConstraints.optional.push({'googEchoCancellation2': true});
+                audioConstraints.optional.push({'googAutoGainControl': true});
+                audioConstraints.optional.push({'googAutoGainControl2': true});
+                audioConstraints.optional.push({'googNoiseSuppression': true});
+                audioConstraints.optional.push({'googNoiseSuppression2': true});
+                audioConstraints.optional.push({'googHighpassFilter': true});
             }
         } else if (self.chrome_ver >= 57 && self.chrome_ver < 63) {
             if (audioConstraints === true) {
-                audioConstraints = { deviceId: 'default' };
+                audioConstraints = {'deviceId': 'default'};
             }
             if (audioConstraints) {
                 audioConstraints['googEchoCancellation'] = true;
@@ -871,78 +867,54 @@ PexRTCCall.prototype.getMedia = function (sourceId) {
             }
         }
 
-        var constraints = { audio: audioConstraints };
+        var constraints = { 'audio' : audioConstraints };
 
-        if (
-            (self.chrome_ver > 56 && !(self.is_screenshare && (self.chrome_ver < 72 || self.is_electron)) && !self.is_android) ||
-            self.firefox_ver > 32 ||
-            self.edge_ver > 10527 ||
-            self.safari_ver >= 11
-        ) {
+        if ((self.chrome_ver > 56 && !(self.is_screenshare && (self.chrome_ver < 72 || self.is_electron)) && !self.is_android) || self.firefox_ver > 32 || self.edge_ver > 10527 || self.safari_ver >= 11) {
             constraints.video = videoConstraints;
         } else {
-            constraints.video = { mandatory: videoConstraints, optional: [] };
+            constraints.video = { 'mandatory' : videoConstraints, 'optional' : [] };
         }
 
         if (self.video_source && !self.is_screenshare) {
             if ((self.chrome_ver > 56 && self.chrome_ver < 66 && !self.is_android) || self.firefox_ver > 43 || self.edge_ver > 10527) {
                 constraints.video.deviceId = self.video_source;
             } else if (self.safari_ver >= 11 || (self.chrome_ver > 65 && !self.is_android)) {
-                constraints.video.deviceId = { exact: self.video_source };
+                constraints.video.deviceId = {'exact': self.video_source};
             } else if (self.chrome_ver > 49) {
                 constraints.video.mandatory.sourceId = self.video_source;
             } else {
-                constraints.video.optional = [{ sourceId: self.video_source }];
+                constraints.video.optional = [{'sourceId': self.video_source}];
             }
         }
 
         if (self.chrome_ver > 49 && self.chrome_ver < 57 && !self.call_type && self.parent.powerLineFrequency > 0) {
-            constraints.video.optional.push({ googPowerLineFrequency: self.parent.powerLineFrequency });
+            constraints.video.optional.push({'googPowerLineFrequency': self.parent.powerLineFrequency});
         }
 
         if (self.video_source === false) {
             constraints.video = false;
         }
 
-        self.parent.onLog('constraints', constraints);
+        self.parent.onLog("constraints", constraints);
 
-        navigator.getMedia =
-            navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+        navigator.getMedia = ( navigator.getUserMedia ||
+                               navigator.webkitGetUserMedia ||
+                               navigator.mozGetUserMedia ||
+                               navigator.msGetUserMedia);
 
         try {
-            if (
-                self.call_type == 'screen' &&
-                navigator.mediaDevices &&
-                navigator.mediaDevices.getDisplayMedia &&
-                !self.parent.is_electron
-            ) {
-                navigator.mediaDevices
-                    .getDisplayMedia(constraints)
-                    .then(function (stream) {
-                        self.gumSuccess(stream);
-                    })
-                    .catch(function (err) {
-                        self.gumError(err);
-                    });
+            if (self.call_type == 'screen' && navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia && !self.parent.is_electron) {
+                navigator.mediaDevices.getDisplayMedia(constraints)
+                                                    .then(function(stream) { self.gumSuccess(stream); })
+                                                    .catch(function(err) { self.gumError(err); });
             } else if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                navigator.mediaDevices
-                    .getUserMedia(constraints)
-                    .then(function (stream) {
-                        self.gumSuccess(stream);
-                    })
-                    .catch(function (err) {
-                        self.gumError(err);
-                    });
+                navigator.mediaDevices.getUserMedia(constraints)
+                                                    .then(function(stream) { self.gumSuccess(stream); })
+                                                    .catch(function(err) { self.gumError(err); });
             } else if (navigator.getMedia) {
-                navigator.getMedia(
-                    constraints,
-                    function (stream) {
-                        self.gumSuccess(stream);
-                    },
-                    function (err) {
-                        self.gumError(err);
-                    }
-                );
+                navigator.getMedia(constraints,
+                                   function(stream) { self.gumSuccess(stream); },
+                                   function(err) { self.gumError(err); });
             } else {
                 return self.handleError(self.parent.trans.ERROR_WEBRTC_SUPPORT);
             }
@@ -972,10 +944,10 @@ PexRTCCall.prototype.gumSuccess = function (stream) {
     // }
 };
 
-PexRTCCall.prototype.createAudioContext = function (stream) {
+PexRTCCall.prototype.createAudioContext = function(stream) {
     var self = this;
 
-    var audioCtx = window.AudioContext || window.webkitAudioContext || undefined;
+    var audioCtx = (window.AudioContext || window.webkitAudioContext || undefined);
     if (self.audio_source !== false && audioCtx !== undefined && audioCtx.prototype.createMediaStreamSource) {
         if (!self.audioContext) {
             self.audioContext = new audioCtx();
@@ -993,8 +965,8 @@ PexRTCCall.prototype.createAudioContext = function (stream) {
         self.analyser.fftSize = 512;
         self.microphone.connect(self.analyser);
 
-        var audioProcess = function () {
-            var array = new Uint8Array(self.analyser.frequencyBinCount);
+        var audioProcess = function() {
+            var array =  new Uint8Array(self.analyser.frequencyBinCount);
             self.analyser.getByteFrequencyData(array);
             var values = 0;
 
@@ -1014,10 +986,10 @@ PexRTCCall.prototype.createAudioContext = function (stream) {
     }
 };
 
-PexRTCCall.prototype.gumError = function (err) {
+PexRTCCall.prototype.gumError = function(err) {
     var self = this;
 
-    self.parent.onLog('getUserMedia error', err);
+    self.parent.onLog("getUserMedia error", err);
 
     if (self.is_screenshare) {
         self.cleanup();
@@ -1047,7 +1019,7 @@ PexRTCCall.prototype.gumError = function (err) {
     }
 };
 
-PexRTCCall.prototype.connect = function () {
+PexRTCCall.prototype.connect = function() {
     var self = this;
 
     if (self.state != 'UPDATING') {
@@ -1058,27 +1030,19 @@ PexRTCCall.prototype.connect = function () {
         }
     }
 
-    self.pc.onicecandidate = function (evt) {
-        self.pcIceCandidate(evt);
-    };
-    self.pc.oniceconnectionstatechange = function (evt) {
-        self.pcIceConnectionStateChanged(evt);
-    };
+    self.pc.onicecandidate = function(evt) { self.pcIceCandidate(evt); };
+    self.pc.oniceconnectionstatechange = function(evt) { self.pcIceConnectionStateChanged(evt); };
     //pc.onnegotiationneeded = this.pcNegotiationNeeded;
     if (self.firefox_ver > 52 || self.safari_ver >= 11) {
-        self.pc.ontrack = function (evt) {
-            self.pcAddStream(evt.streams);
-        };
+        self.pc.ontrack = function(evt) { self.pcAddStream(evt.streams); }
     } else {
-        self.pc.onaddstream = function (evt) {
-            self.pcAddStream([evt.stream]);
-        };
+        self.pc.onaddstream = function(evt) { self.pcAddStream([evt.stream]); };
     }
     //pc.onremovestream = this.pcRemoveStream;
     //pc.onsignalingstatechange = this.pcSignalingStateChange;
 
     if (self.is_screenshare) {
-        var screenshareEnded = function () {
+        var screenshareEnded = function() {
             if (self.state != 'DISCONNECTING') {
                 self.disconnect();
                 self.onDisconnect(self.parent.trans.ERROR_PRESENTATION_ENDED);
@@ -1095,22 +1059,22 @@ PexRTCCall.prototype.connect = function () {
         if (self.state == 'UPDATING' && (self.firefox_ver > 58 || self.chrome_ver > 71 || self.safari_ver >= 12.1)) {
             if (self.mutedAudio) {
                 var tracks = self.localStream.getAudioTracks();
-                for (var i = 0; i < tracks.length; i++) {
+                for (var i=0; i<tracks.length; i++) {
                     tracks[i].enabled = false;
                 }
             }
             if (self.mutedVideo) {
                 var tracks = self.localStream.getVideoTracks();
-                for (var i = 0; i < tracks.length; i++) {
+                for (var i=0; i<tracks.length; i++) {
                     tracks[i].enabled = false;
                 }
             }
             var senders = self.pc.getSenders();
             if (self.safari_ver >= 12.1) {
-                for (var i = 0; i < senders.length; i++) {
-                    if (senders[i].track && senders[i].track.kind == 'audio') {
+                for (var i=0; i<senders.length; i++) {
+                    if (senders[i].track && senders[i].track.kind == "audio") {
                         senders[i].replaceTrack(self.localStream.getAudioTracks()[0]);
-                    } else if (senders[i].track && senders[i].track.kind == 'video') {
+                    } else if (senders[i].track && senders[i].track.kind == "video") {
                         senders[i].replaceTrack(self.localStream.getVideoTracks()[0]);
                     }
                 }
@@ -1125,7 +1089,7 @@ PexRTCCall.prototype.connect = function () {
             self.pc.addStream(self.localStream);
         } else if (self.pc.addTrack) {
             var tracks = self.localStream.getTracks();
-            for (var i = 0; i < tracks.length; i++) {
+            for (var i=0;i<tracks.length;i++) {
                 self.pc.addTrack(tracks[i], self.localStream);
             }
         }
@@ -1141,41 +1105,39 @@ PexRTCCall.prototype.connect = function () {
     }
 
     if (self.parent.event_newPC) {
-        self.parent.event_newPC(self.pc, self.parent.uuid, self.parent.conference, self.call_type, function () {
-            self.pcCreateOffer();
-        });
+        self.parent.event_newPC(self.pc, self.parent.uuid, self.parent.conference, self.call_type, function() { self.pcCreateOffer(); });
     }
     self.pcCreateOffer();
 };
 
-PexRTCCall.prototype.pcCreateOffer = function () {
+PexRTCCall.prototype.pcCreateOffer = function() {
     var self = this;
 
     var constraints = {};
     if (self.safari_ver >= 11) {
         if (self.recv_audio && self.audio_source === false) {
-            self.pc.addTransceiver('audio', { direction: 'recvonly' });
+            self.pc.addTransceiver('audio', {'direction': 'recvonly'});
         } else {
             constraints['offerToReceiveAudio'] = self.recv_audio;
         }
         if (self.recv_video && self.video_source === false) {
-            self.pc.addTransceiver('video', { direction: 'recvonly' });
+            self.pc.addTransceiver('video', {'direction': 'recvonly'});
         } else {
             constraints['offerToReceiveVideo'] = self.recv_video;
         }
     } else if (self.chrome_ver > 49 || self.firefox_ver > 42 || self.edge_ver > 10527) {
-        constraints = { offerToReceiveAudio: self.recv_audio, offerToReceiveVideo: self.recv_video };
+        constraints =  { 'offerToReceiveAudio': self.recv_audio, 'offerToReceiveVideo': self.recv_video };
     } else {
-        constraints = { mandatory: { OfferToReceiveAudio: self.recv_audio, OfferToReceiveVideo: self.recv_video } };
+        constraints =  { 'mandatory': { 'OfferToReceiveAudio': self.recv_audio, 'OfferToReceiveVideo': self.recv_video } };
     }
 
-    setTimeout(function () {
+    setTimeout(function() {
         if (self.state == 'ACTIVE') {
             self.state = 'CONNECTING';
-            self.parent.onLog('Timed out gathering candidates', self.pc.localDescription.sdp);
+            self.parent.onLog("Timed out gathering candidates", self.pc.localDescription.sdp);
             if (self.ice_candidates.length == 0) {
-                self.parent.onLog('No ICE candidates were gathered.');
-                self.parent.error = 'Timed out gathering candidates';
+                self.parent.onLog("No ICE candidates were gathered.");
+                self.parent.error = "Timed out gathering candidates";
                 self.handleError(self.parent.trans.ERROR_ICE_CANDIDATES);
             } else {
                 self.sendOffer(self.pc.localDescription);
@@ -1188,38 +1150,34 @@ PexRTCCall.prototype.pcCreateOffer = function () {
     }
 
     if (self.safari_ver >= 12 || self.firefox_ver > 65) {
-        self.pc
-            .createOffer(constraints)
-            .then(function (sdp) {
-                if (self.parent.use_trickle_ice) {
-                    self.sendOffer(sdp);
-                } else {
-                    self.pcOfferCreated(sdp);
-                }
-            })
-            .catch(function (err) {
-                if (self.parent.event_error) {
-                    self.parent.event_error(self.pc, self.parent.conference, 'createOffer', err, self.pc.localDescription);
-                }
-                self.handleError(err);
-            });
+        self.pc.createOffer(constraints)
+                            .then(function(sdp) { 
+                                if (self.parent.use_trickle_ice) {
+                                    self.sendOffer(sdp);
+                                } else {
+                                    self.pcOfferCreated(sdp);
+                                }
+                            }).catch(function(err) {
+                                if (self.parent.event_error) {
+                                    self.parent.event_error(self.pc, self.parent.conference, 'createOffer', err, self.pc.localDescription);
+                                }
+                                self.handleError(err);
+                            });
     } else {
-        self.pc.createOffer(
-            function (sdp) {
-                if (self.parent.use_trickle_ice) {
-                    self.sendOffer(sdp);
-                } else {
-                    self.pcOfferCreated(sdp);
-                }
-            },
-            function (err) {
-                if (self.parent.event_error) {
-                    self.parent.event_error(self.pc, self.parent.conference, 'createOffer', err, self.pc.localDescription);
-                }
-                self.handleError(err);
-            },
-            constraints
-        );
+        self.pc.createOffer(function(sdp) { 
+                                if (self.parent.use_trickle_ice) {
+                                    self.sendOffer(sdp);
+                                } else {
+                                    self.pcOfferCreated(sdp);
+                                }
+                            },
+                            function(err) {
+                                if (self.parent.event_error) {
+                                    self.parent.event_error(self.pc, self.parent.conference, 'createOffer', err, self.pc.localDescription);
+                                }
+                                self.handleError(err);
+                            },
+                            constraints);
     }
 };
 
@@ -1231,27 +1189,24 @@ PexRTCCall.prototype.pcIceCandidate = function (evt) {
         return;
     }
 
-    self.parent.onLog('Ice Gathering State', self.pc.iceGatheringState);
+    self.parent.onLog("Ice Gathering State", self.pc.iceGatheringState);
     if (evt.candidate) {
-        self.parent.onLog('Gathered ICE candidate', evt.candidate.candidate);
-        if (self.parent.use_trickle_ice) {
-            self.sendRequest('calls/' + self.call_uuid + '/new_candidate', {
-                candidate: evt.candidate.candidate,
-                mid: evt.candidate.sdpMid
-            });
+        self.parent.onLog("Gathered ICE candidate", evt.candidate.candidate);
+        if (self.parent.use_trickle_ice){
+            self.sendRequest('calls/' + self.call_uuid + '/new_candidate', { 'candidate': evt.candidate.candidate, 'mid': evt.candidate.sdpMid });
         } else {
             self.ice_candidates.push(evt.candidate.candidate);
         }
-    } else if (self.pc.iceGatheringState == 'complete') {
+    } else if (self.pc.iceGatheringState == "complete") {
         if (self.state == 'ACTIVE') {
             self.state = 'CONNECTING';
-            self.parent.onLog('Finished gathering candidates', self.pc.localDescription.sdp);
+            self.parent.onLog("Finished gathering candidates", self.pc.localDescription.sdp);
             if (self.ice_candidates.length == 0) {
-                self.parent.onLog('No ICE candidates were gathered.');
-                self.parent.error = 'No ICE candidates were gathered.';
+                self.parent.onLog("No ICE candidates were gathered.");
+                self.parent.error = "No ICE candidates were gathered.";
                 self.handleError(self.parent.trans.ERROR_ICE_CANDIDATES);
             } else {
-                setTimeout(function () {
+                setTimeout(function() {
                     self.sendOffer(self.pc.localDescription);
                 }, 200);
             }
@@ -1262,12 +1217,12 @@ PexRTCCall.prototype.pcIceCandidate = function (evt) {
 PexRTCCall.prototype.pcIceConnectionStateChanged = function (evt) {
     var self = this;
 
-    self.parent.onLog('Ice Connection State', self.pc.iceConnectionState);
+    self.parent.onLog("Ice Connection State", self.pc.iceConnectionState);
     if (self.pc.iceConnectionState == 'failed' && self.state == 'CONNECTED') {
         if (self.previousIceConnectionState == 'checking') {
-            self.parent.onLog('ICE Failed at start of call.');
+            self.parent.onLog("ICE Failed at start of call.");
         } else if (self.chrome_ver > 0) {
-            self.parent.onLog('ICE Failed mid-call.');
+            self.parent.onLog("ICE Failed mid-call.");
         }
         if (self.parent.onIceFailure) {
             self.parent.onIceFailure();
@@ -1276,7 +1231,7 @@ PexRTCCall.prototype.pcIceConnectionStateChanged = function (evt) {
     self.previousIceConnectionState = self.pc.iceConnectionState;
 };
 
-PexRTCCall.prototype.mutateOffer = function (description) {
+PexRTCCall.prototype.mutateOffer = function(description) {
     var self = this;
     var lines = description.sdp.split('\r\n');
     if (self.edge_ver > 10527) {
@@ -1285,16 +1240,17 @@ PexRTCCall.prototype.mutateOffer = function (description) {
     lines = self.sdpAddPLI(lines);
 
     var sdp = lines.join('\r\n');
-    self.parent.onLog('Mutated offer', sdp);
+    self.parent.onLog("Mutated offer", sdp);
 
-    return new SessionDescription({ type: 'offer', sdp: sdp });
+    return new SessionDescription({ 'type' : 'offer', 'sdp' : sdp });
 };
 
-PexRTCCall.prototype.pcAddStream = function (streams) {
+
+PexRTCCall.prototype.pcAddStream = function(streams) {
     var self = this;
 
     for (var i = 0; i < streams.length; i++) {
-        self.parent.onLog('Stream added', streams[i].id);
+        self.parent.onLog("Stream added", streams[i].id);
         if (self.recv_audio === false && self.recv_video === false && self.localStream) {
             self.stream = self.localStream;
         } else {
@@ -1312,46 +1268,40 @@ PexRTCCall.prototype.pcAddStream = function (streams) {
     }
 };
 
-PexRTCCall.prototype.pcOfferCreated = function (sdp) {
+PexRTCCall.prototype.pcOfferCreated = function(sdp) {
     var self = this;
 
-    self.parent.onLog('Setting local description', sdp.sdp);
+    self.parent.onLog("Setting local description", sdp.sdp);
     if (self.safari_ver >= 12 || self.firefox_ver > 65) {
-        self.pc
-            .setLocalDescription(sdp)
-            .then(function () {
-                self.parent.onLog('Local description active');
-            })
-            .catch(function (err) {
-                if (self.parent.event_error) {
-                    self.parent.event_error(self.pc, self.parent.conference, 'setLocalDescription', err, sdp);
-                }
-                self.parent.onLog('Local description failed', err);
-            });
+        self.pc.setLocalDescription(sdp)
+                        .then(function () { self.parent.onLog("Local description active"); })
+                        .catch(function (err) {
+                            if (self.parent.event_error) {
+                                self.parent.event_error(self.pc, self.parent.conference, 'setLocalDescription', err, sdp);
+                            }
+                            self.parent.onLog("Local description failed", err);
+                        });
     } else {
-        self.pc.setLocalDescription(
-            sdp,
-            function () {
-                self.parent.onLog('Local description active');
-            },
-            function (err) {
-                if (self.parent.event_error) {
-                    self.parent.event_error(self.pc, self.parent.conference, 'setLocalDescription', err, sdp);
-                }
-                self.parent.onLog('Local description failed', err);
-            }
-        );
+        self.pc.setLocalDescription(sdp,
+                        function () { self.parent.onLog("Local description active"); },
+                        function (err) {
+                            if (self.parent.event_error) {
+                                self.parent.event_error(self.pc, self.parent.conference, 'setLocalDescription', err, sdp);
+                            }
+                            self.parent.onLog("Local description failed", err);
+                        }
+                    );
     }
 };
 
-PexRTCCall.prototype.sendOffer = function (sdp) {
+PexRTCCall.prototype.sendOffer = function(sdp) {
     var self = this;
 
     if (self.chrome_ver > 0 && self.chrome_ver < 72 && !self.parent.use_trickle_ice) {
         self.pcOfferCreated(sdp);
     }
 
-    var mutatedOffer = { call_type: 'WEBRTC', sdp: self.mutateOffer(sdp).sdp };
+    var mutatedOffer = {'call_type' : 'WEBRTC', 'sdp' : self.mutateOffer(sdp).sdp};
     if (self.is_screenshare) {
         mutatedOffer.present = 'send';
     } else if (self.call_type == 'presentation') {
@@ -1361,33 +1311,25 @@ PexRTCCall.prototype.sendOffer = function (sdp) {
     }
 
     var request = self.state == 'UPDATING' ? 'calls/' + self.call_uuid + '/update' : 'calls';
-    self.sendRequest(
-        request,
-        mutatedOffer,
-        function (e) {
-            if (self.parent.use_trickle_ice) {
-                self.pcOfferCreated(sdp);
-            }
-            self.processAnswer(e);
-        },
-        0,
-        60000
-    );
+    self.sendRequest(request, mutatedOffer, function(e) {
+        if (self.parent.use_trickle_ice) {
+            self.pcOfferCreated(sdp);
+        }
+        self.processAnswer(e);
+    }, 0, 60000);
 };
 
-PexRTCCall.prototype.remoteDescriptionActive = function () {
+PexRTCCall.prototype.remoteDescriptionActive = function() {
     var self = this;
 
-    self.parent.onLog('Remote description active');
+    self.parent.onLog("Remote description active");
     if (self.recv_audio === false && self.recv_video === false && self.chrome_ver > 47 && self.localStream) {
         self.pcAddStream([self.localStream]);
     }
-    self.sendRequest('calls/' + self.call_uuid + '/ack', null, function () {
-        self.ackReceived();
-    });
+    self.sendRequest('calls/' + self.call_uuid + '/ack', null, function() { self.ackReceived(); });
 };
 
-PexRTCCall.prototype.ackReceived = function () {
+PexRTCCall.prototype.ackReceived = function() {
     var self = this;
 
     if (self.firefox_ver > 43 && self.is_screenshare && !self.stream) {
@@ -1409,20 +1351,20 @@ PexRTCCall.prototype.ackReceived = function () {
     self.state = 'CONNECTED';
 };
 
-PexRTCCall.prototype.processAnswer = function (e) {
+PexRTCCall.prototype.processAnswer = function(e) {
     var self = this;
 
     var msg;
     try {
         msg = JSON.parse(e.target.responseText);
     } catch (SyntaxError) {
-        return self.handleError('Unexpected Response: ' + e.target.status + ' ' + e.target.statusText);
+        return self.handleError("Unexpected Response: " + e.target.status + " " + e.target.statusText);
     }
     if (e.target.status != 200) {
         return self.handleError(msg.result || msg.reason);
     }
 
-    self.parent.onLog('Received answer', msg.result);
+    self.parent.onLog("Received answer", msg.result);
     if (msg.result.call_uuid) {
         self.call_uuid = msg.result.call_uuid;
     }
@@ -1437,54 +1379,49 @@ PexRTCCall.prototype.processAnswer = function (e) {
         lines = self.sdpChangeBW(lines);
 
         var sdp = lines.join('\r\n');
-        self.parent.onLog('Mutated answer', sdp);
+        self.parent.onLog("Mutated answer", sdp);
 
         if (self.safari_ver >= 12 || self.firefox_ver > 65) {
-            self.pc
-                .setRemoteDescription(new SessionDescription({ type: 'answer', sdp: sdp }))
-                .then(function () {
-                    self.remoteDescriptionActive();
-                })
-                .catch(function (err) {
-                    if (self.parent.event_error) {
-                        self.parent.event_error(self.pc, self.parent.conference, 'setRemoteDescription', err, sdp);
-                    }
-                    self.parent.onLog('Remote description failed', err);
-                    self.handleError(err.message);
-                });
+            self.pc.setRemoteDescription(new SessionDescription({ 'type' : 'answer', 'sdp' : sdp }))
+                            .then(function () { self.remoteDescriptionActive(); })
+                            .catch(function (err) {
+                                if (self.parent.event_error) {
+                                    self.parent.event_error(self.pc, self.parent.conference, 'setRemoteDescription', err, sdp);
+                                }
+                                self.parent.onLog("Remote description failed", err);
+                                self.handleError(err.message);
+                            });
         } else {
-            self.pc.setRemoteDescription(
-                new SessionDescription({ type: 'answer', sdp: sdp }),
-                function () {
-                    if (self.edge_ver > 10527 && self.edge_ver <= 14393) {
-                        self.sdpIceCandidates(lines);
-                    }
-                    self.remoteDescriptionActive();
-                },
-                function (err) {
-                    if (self.parent.event_error) {
-                        self.parent.event_error(self.pc, self.parent.conference, 'setRemoteDescription', err, sdp);
-                    }
-                    self.parent.onLog('Remote description failed', err);
-                    self.handleError(err.message);
-                }
-            );
+            self.pc.setRemoteDescription(new SessionDescription({ 'type' : 'answer', 'sdp' : sdp }),
+                            function () {
+                                          if (self.edge_ver > 10527 && self.edge_ver <= 14393) {
+                                              self.sdpIceCandidates(lines);
+                                          }
+                                          self.remoteDescriptionActive();
+                                        },
+                            function (err) {
+                                if (self.parent.event_error) {
+                                    self.parent.event_error(self.pc, self.parent.conference, 'setRemoteDescription', err, sdp);
+                                }
+                                self.parent.onLog("Remote description failed", err);
+                                self.handleError(err.message);
+                            });
         }
     }
 };
 
-PexRTCCall.prototype.sdpIceCandidates = function (sdplines) {
+PexRTCCall.prototype.sdpIceCandidates = function(sdplines) {
     var self = this;
     var mLine = -1;
     var candidate;
 
     for (var i = 0; i < sdplines.length; i++) {
         if (sdplines[i].lastIndexOf('a=candidate', 0) === 0) {
-            candidate = { sdpMLineIndex: mLine, candidate: sdplines[i].substr(2) };
+            candidate = {'sdpMLineIndex' : mLine, 'candidate' : sdplines[i].substr(2)};
             self.pc.addIceCandidate(candidate);
         } else if (sdplines[i].lastIndexOf('m=', 0) === 0 || sdplines[i] === '') {
             if (mLine > -1) {
-                candidate = { sdpMLineIndex: mLine, candidate: 'candidate:1 1 udp 1 0.0.0.0 9 typ endOfCandidates' };
+                candidate = {'sdpMLineIndex' : mLine, 'candidate' : 'candidate:1 1 udp 1 0.0.0.0 9 typ endOfCandidates'};
                 self.pc.addIceCandidate(candidate);
             }
             mLine++;
@@ -1492,7 +1429,7 @@ PexRTCCall.prototype.sdpIceCandidates = function (sdplines) {
     }
 };
 
-PexRTCCall.prototype.remoteDisconnect = function (msg) {
+PexRTCCall.prototype.remoteDisconnect = function(msg) {
     var self = this;
 
     if (self.state != 'DISCONNECTING') {
@@ -1503,12 +1440,12 @@ PexRTCCall.prototype.remoteDisconnect = function (msg) {
         if (self.call_type == 'presentation') {
             reason = self.parent.trans.ERROR_DISCONNECTED_PRESENTATION;
             if ('reason' in msg) {
-                reason += ': ' + msg.reason;
+                reason += ": " + msg.reason;
             }
         } else if (self.is_screenshare) {
             reason = self.parent.trans.ERROR_DISCONNECTED_SCREENSHARE;
             if ('reason' in msg) {
-                reason += ': ' + msg.reason;
+                reason += ": " + msg.reason;
             }
         } else if ('reason' in msg) {
             reason = msg.reason;
@@ -1520,7 +1457,7 @@ PexRTCCall.prototype.remoteDisconnect = function (msg) {
     }
 };
 
-PexRTCCall.prototype.muteAudio = function (setting) {
+PexRTCCall.prototype.muteAudio = function(setting) {
     //mutedAudio is a toggle, opposite to enabled value, so toggle at end
     var self = this;
 
@@ -1531,22 +1468,21 @@ PexRTCCall.prototype.muteAudio = function (setting) {
     if (self.pc && self.safari_ver >= 13) {
         if (!self.audioSender) {
             var senders = self.pc.getSenders();
-            for (var i = 0; i < senders.length; i++) {
+            for (var i=0; i<senders.length; i++) {
                 if (senders[i].track && senders[i].track.kind == 'audio') {
                     self.audioSender = senders[i];
                 }
             }
         }
 
-        if (self.mutedAudio) {
-            // Old setting = actually enable
+        if (self.mutedAudio) { // Old setting = actually enable
             self.audioSender.replaceTrack(self.localStream.getAudioTracks()[0]);
         } else {
             self.audioSender.replaceTrack(null);
         }
     } else if (self.pc && (self.firefox_ver > 47 || (self.safari_ver >= 12 && !self.pc.getLocalStreams) || self.chrome_ver > 71)) {
         var senders = self.pc.getSenders();
-        for (var i = 0; i < senders.length; i++) {
+        for (var i=0; i<senders.length; i++) {
             if (senders[i].track && senders[i].track.kind == 'audio') {
                 senders[i].track.enabled = self.mutedAudio;
             }
@@ -1559,9 +1495,9 @@ PexRTCCall.prototype.muteAudio = function (setting) {
             streams = [self.localStream];
         }
 
-        for (var i = 0; i < streams.length; i++) {
+        for (var i=0; i<streams.length; i++) {
             var tracks = streams[i].getAudioTracks();
-            for (var j = 0; j < tracks.length; j++) {
+            for (var j=0; j<tracks.length; j++) {
                 tracks[j].enabled = self.mutedAudio;
             }
         }
@@ -1575,7 +1511,7 @@ PexRTCCall.prototype.muteAudio = function (setting) {
     return self.mutedAudio;
 };
 
-PexRTCCall.prototype.update = function (call_type) {
+PexRTCCall.prototype.update = function(call_type) {
     var self = this;
 
     if (self.state == 'CONNECTED') {
@@ -1583,7 +1519,7 @@ PexRTCCall.prototype.update = function (call_type) {
         self.cleanupAudioContext();
         if (self.safari_ver >= 11 && self.safari_ver < 12.1 && self.stream) {
             var tracks = self.stream.getTracks();
-            for (var i = 0; i < tracks.length; i++) {
+            for (var i=0; i<tracks.length; i++) {
                 tracks[i].stop();
                 self.stream.removeTrack(tracks[i]);
             }
@@ -1591,19 +1527,19 @@ PexRTCCall.prototype.update = function (call_type) {
 
         if (self.localStream) {
             var tracks = self.localStream.getTracks();
-            for (var i = 0; i < tracks.length; i++) {
+            for (var i=0;i<tracks.length;i++) {
                 tracks[i].stop();
                 self.localStream.removeTrack(tracks[i]);
             }
             self.localStream = undefined;
             if (self.firefox_ver > 47 || (self.safari_ver >= 11 && self.safari_ver < 12.1) || self.chrome_ver > 71) {
                 var senders = self.pc.getSenders();
-                for (var i = 0; i < senders.length; i++) {
+                for (var i=0; i<senders.length; i++) {
                     self.pc.removeTrack(senders[i]);
                 }
             } else if (self.safari_ver == 0) {
                 var streams = self.pc.getLocalStreams();
-                for (var i = 0; i < streams.length; i++) {
+                for (var i=0; i<streams.length; i++) {
                     self.pc.removeStream(streams[i]);
                 }
             }
@@ -1613,7 +1549,7 @@ PexRTCCall.prototype.update = function (call_type) {
     }
 };
 
-PexRTCCall.prototype.muteVideo = function (setting) {
+PexRTCCall.prototype.muteVideo = function(setting) {
     var self = this;
 
     if (setting === self.mutedVideo) {
@@ -1622,7 +1558,7 @@ PexRTCCall.prototype.muteVideo = function (setting) {
 
     if (self.pc && (self.firefox_ver > 47 || (self.safari_ver >= 12 && !self.pc.getLocalStreams) || self.chrome_ver > 71)) {
         var senders = self.pc.getSenders();
-        for (var i = 0; i < senders.length; i++) {
+        for (var i=0; i<senders.length; i++) {
             if (senders[i].track && senders[i].track.kind == 'video') {
                 senders[i].track.enabled = self.mutedVideo;
             }
@@ -1635,9 +1571,9 @@ PexRTCCall.prototype.muteVideo = function (setting) {
             streams = [self.localStream];
         }
 
-        for (var i = 0; i < streams.length; i++) {
+        for (var i=0; i<streams.length; i++) {
             var tracks = streams[i].getVideoTracks();
-            for (var j = 0; j < tracks.length; j++) {
+            for (var j=0; j<tracks.length; j++) {
                 tracks[j].enabled = self.mutedVideo;
             }
         }
@@ -1651,15 +1587,15 @@ PexRTCCall.prototype.muteVideo = function (setting) {
     return self.mutedVideo;
 };
 
-PexRTCCall.prototype.holdresume = function (setting) {
+PexRTCCall.prototype.holdresume = function(setting) {
     var self = this;
 
     self.onHold = setting;
     setting = !setting;
     var streams = self.pc.getLocalStreams().concat(self.pc.getRemoteStreams());
-    for (var i = 0; i < streams.length; i++) {
+    for (var i=0; i<streams.length; i++) {
         var tracks = streams[i].getAudioTracks().concat(streams[i].getVideoTracks());
-        for (var j = 0; j < tracks.length; j++) {
+        for (var j=0; j<tracks.length; j++) {
             tracks[j].enabled = setting;
         }
     }
@@ -1678,7 +1614,7 @@ PexRTCCall.prototype.holdresume = function (setting) {
     }
 };
 
-PexRTCCall.prototype.disconnect = function (cb, save_call) {
+PexRTCCall.prototype.disconnect = function(cb, save_call) {
     var self = this;
 
     if (!save_call) {
@@ -1696,7 +1632,7 @@ PexRTCCall.prototype.disconnect = function (cb, save_call) {
     }
 };
 
-PexRTCCall.prototype.cleanupAudioContext = function () {
+PexRTCCall.prototype.cleanupAudioContext = function() {
     var self = this;
 
     if (self.audioContext && self.microphone && self.analyser) {
@@ -1707,7 +1643,7 @@ PexRTCCall.prototype.cleanupAudioContext = function () {
                 self.audioRTCInterval = null;
             }
         } catch (e) {
-            console.error('Unable to disconnect audio context', e);
+            console.error("Unable to disconnect audio context", e);
         }
     }
 
@@ -1722,7 +1658,7 @@ PexRTCCall.prototype.cleanupAudioContext = function () {
     }
 };
 
-PexRTCCall.prototype.cleanup = function () {
+PexRTCCall.prototype.cleanup = function() {
     var self = this;
 
     self.cleanupAudioContext();
@@ -1733,13 +1669,10 @@ PexRTCCall.prototype.cleanup = function () {
     }
 
     if (self.localStream) {
-        self.parent.onLog('Releasing user media');
-        if (
-            (self.is_screenshare && self.parent && !self.parent.user_presentation_stream) ||
-            (self.parent && !self.parent.user_media_stream)
-        ) {
+        self.parent.onLog("Releasing user media");
+        if ((self.is_screenshare && (self.parent && !self.parent.user_presentation_stream)) || (self.parent && !self.parent.user_media_stream)) {
             var tracks = self.localStream.getTracks();
-            for (var i = 0; i < tracks.length; i++) {
+            for (var i=0;i<tracks.length;i++) {
                 tracks[i].stop();
             }
         }
@@ -1778,26 +1711,20 @@ PexJPEGPresentation.prototype.connect = function () {
     var self = this;
 
     self.state = 'CONNECTING';
-    var callRequest = { call_type: 'presentation' };
-    self.sendRequest(
-        'participants/' + self.parent.uuid + '/calls',
-        callRequest,
-        function (e) {
-            self.processAnswer(e);
-        },
-        0,
-        60000
-    );
+    var callRequest = {'call_type' : 'presentation'};
+    self.sendRequest('participants/' + self.parent.uuid + '/calls', callRequest, function(e) {
+        self.processAnswer(e);
+    }, 0, 60000);
 };
 
-PexJPEGPresentation.prototype.processAnswer = function (e) {
+PexJPEGPresentation.prototype.processAnswer = function(e) {
     var self = this;
 
     var msg;
     try {
         msg = JSON.parse(e.target.responseText);
     } catch (SyntaxError) {
-        return self.handleError('Unexpected Response: ' + e.target.status + ' ' + e.target.statusText);
+        return self.handleError("Unexpected Response: " + e.target.status + " " + e.target.statusText);
     }
     if (e.target.status != 200) {
         return self.handleError(msg.result || msg.reason);
@@ -1809,29 +1736,27 @@ PexJPEGPresentation.prototype.processAnswer = function (e) {
     self.call_uuid = msg.result.call_uuid;
 };
 
-PexJPEGPresentation.prototype.sendRequest = function (request, params, cb, files, retries) {
+PexJPEGPresentation.prototype.sendRequest = function(request, params, cb, files, retries) {
     var self = this;
 
     // Only do sync if explicitly asked
     var async = cb === false ? false : true;
     var xhr = new XMLHttpRequest();
-    var xhrUrl = 'https://' + self.parent.node + '/api/client/v2/conferences/' + self.parent.conference_uri + '/' + request;
-    self.parent.onLog('PexJPEGPresentation.sendRequest', request, params, files, xhrUrl);
+    var xhrUrl = "https://" + self.parent.node + "/api/client/v2/conferences/" + self.parent.conference_uri + "/" + request;
+    self.parent.onLog("PexJPEGPresentation.sendRequest", request, params, files, xhrUrl);
     if (request in self.outstanding_requests) {
         clearTimeout(self.outstanding_requests[request]);
         delete self.outstanding_requests[request];
     }
-    xhr.open('POST', xhrUrl, async);
+    xhr.open("POST", xhrUrl, async);
     if (cb) {
-        xhr.onload = function (e) {
+        xhr.onload = function(e) {
             if (e.target.status == 502 || e.target.status == 504) {
                 if (++retries > 10) {
-                    self.parent.error = e.target.status + ' ' + e.target.statusText + ' sending request: ' + request;
+                    self.parent.error = e.target.status + " " + e.target.statusText + " sending request: " + request;
                     self.onError(self.parent.trans.ERROR_CONNECTING);
                 } else {
-                    self.outstanding_requests[request] = setTimeout(function () {
-                        self.sendRequest(request, params, cb, retries);
-                    }, retries * 500);
+                    self.outstanding_requests[request] = setTimeout(function() { self.sendRequest(request, params, cb, retries); }, retries * 500);
                 }
             } else {
                 cb(e);
@@ -1841,26 +1766,22 @@ PexJPEGPresentation.prototype.sendRequest = function (request, params, cb, files
     if (retries === undefined) {
         retries = 0;
     }
-    xhr.onerror = function () {
+    xhr.onerror = function() {
         if (++retries > 10 || cb === false) {
-            self.parent.error = 'Error sending request: ' + request;
+            self.parent.error = "Error sending request: " + request;
             self.onError(self.parent.trans.ERROR_CONNECTING);
         } else {
-            self.outstanding_requests[request] = setTimeout(function () {
-                self.sendRequest(request, params, cb, files, retries);
-            }, retries * 500);
+            self.outstanding_requests[request] = setTimeout(function() { self.sendRequest(request, params, cb, files, retries); }, retries * 500);
         }
     };
     if (async) {
         xhr.timeout = self.parent.xhr_timeout;
-        xhr.ontimeout = function () {
+        xhr.ontimeout = function() {
             if (++retries > 10 || cb === false) {
-                self.parent.error = 'Timeout sending request: ' + request;
+                self.parent.error = "Timeout sending request: " + request;
                 self.onError(self.parent.trans.ERROR_CONNECTING);
             } else {
-                self.outstanding_requests[request] = setTimeout(function () {
-                    self.sendRequest(request, params, cb, files, retries);
-                }, retries * 500);
+                self.outstanding_requests[request] = setTimeout(function() { self.sendRequest(request, params, cb, files, retries); }, retries * 500);
             }
         };
     }
@@ -1879,12 +1800,12 @@ PexJPEGPresentation.prototype.sendRequest = function (request, params, cb, files
         xhr.send();
     }
     if (cb === false) {
-        self.parent.onLog('PexJPEGPresentation.sendRequest response', xhr.responseText);
+        self.parent.onLog("PexJPEGPresentation.sendRequest response", xhr.responseText);
         var msg = {};
         try {
             msg = JSON.parse(xhr.responseText);
         } catch (error) {
-            msg.reason = xhr.status + ' ' + xhr.statusText;
+            msg.reason = xhr.status + " " + xhr.statusText;
         }
         msg.http_status = xhr.status;
         return msg;
@@ -1893,24 +1814,24 @@ PexJPEGPresentation.prototype.sendRequest = function (request, params, cb, files
     }
 };
 
-PexJPEGPresentation.prototype.sendPresentationImageFile = function (file_element, cb) {
+PexJPEGPresentation.prototype.sendPresentationImageFile = function(file_element, cb) {
     var self = this;
     if (!file_element || !file_element.files.length) {
-        self.parent.onLog('PexJPEGPresentation.sendPresentationImageFile error:', 'Element not given');
+        self.parent.onLog("PexJPEGPresentation.sendPresentationImageFile error:", "Element not given");
     }
     return self.sendPresentationImage(file_element.files[0], cb);
 };
 
-PexJPEGPresentation.prototype.sendPresentationImage = function (image, cb) {
+PexJPEGPresentation.prototype.sendPresentationImage = function(image, cb) {
     var self = this;
-    var blob = new Blob([image], { type: 'image/jpeg' });
+    var blob = new Blob([image], {"type": "image/jpeg"});
     var formdata = new FormData();
-    formdata.append('frame', blob);
-    self.parent.onLog('PexJPEGPresentation.sendPresentationImage', formdata);
-    return self.sendRequest('presentation', null, cb ? cb : function () {}, formdata);
+    formdata.append("frame", blob);
+    self.parent.onLog("PexJPEGPresentation.sendPresentationImage", formdata);
+    return self.sendRequest('presentation', null, cb ? cb : function() {}, formdata);
 };
 
-PexJPEGPresentation.prototype.remoteDisconnect = function (msg) {
+PexJPEGPresentation.prototype.remoteDisconnect = function(msg) {
     var self = this;
 
     var reason = self.parent.trans.ERROR_DISCONNECTED_SCREENSHARE;
@@ -1920,7 +1841,7 @@ PexJPEGPresentation.prototype.remoteDisconnect = function (msg) {
     self.onDisconnect(reason);
 };
 
-PexJPEGPresentation.prototype.disconnect = function () {
+PexJPEGPresentation.prototype.disconnect = function() {
     var self = this;
 
     if (self.state != 'DISCONNECTING') {
@@ -1970,7 +1891,7 @@ function PexRTMP(flash) {
     self.onConnect = null;
 }
 
-PexRTMP.prototype.toggleSelfview = function () {
+PexRTMP.prototype.toggleSelfview = function() {
     var self = this;
     self.parent.onLog('PexRTMP.toggleSelfview', self.flash);
     self.flash.toggleSelfview();
@@ -2005,7 +1926,7 @@ PexRTMP.prototype.makeCall = function (parent, call_type) {
             self.recv_audio = false;
         }
     } else if (call_type == 'screen') {
-        self.handleError('Screensharing not supported');
+        self.handleError("Screensharing not supported");
     } else {
         self.audio_source = self.parent.audio_source;
         self.video_source = self.parent.video_source;
@@ -2027,7 +1948,7 @@ PexRTMP.prototype.connect = function () {
     var self = this;
 
     self.state = 'CONNECTING';
-    var callRequest = { call_type: 'RTMP', bandwidth: self.bandwidth_in };
+    var callRequest = {'call_type' : 'RTMP', 'bandwidth' : self.bandwidth_in };
     if (self.call_type == 'stream') {
         callRequest.streaming = 'true';
     }
@@ -2039,25 +1960,19 @@ PexRTMP.prototype.connect = function () {
     if (self.call_type == 'audioonly') {
         callRequest.audioonly = 'true';
     }
-    self.sendRequest(
-        'calls',
-        callRequest,
-        function (e) {
-            self.processAnswer(e);
-        },
-        0,
-        60000
-    );
+    self.sendRequest('calls', callRequest, function(e) {
+        self.processAnswer(e);
+    }, 0, 60000);
 };
 
-PexRTMP.prototype.processAnswer = function (e) {
+PexRTMP.prototype.processAnswer = function(e) {
     var self = this;
 
     var msg;
     try {
         msg = JSON.parse(e.target.responseText);
     } catch (SyntaxError) {
-        return self.handleError('Unexpected Response: ' + e.target.status + ' ' + e.target.statusText);
+        return self.handleError("Unexpected Response: " + e.target.status + " " + e.target.statusText);
     }
     if (e.target.status != 200) {
         return self.handleError(msg.result || msg.reason);
@@ -2081,16 +1996,8 @@ PexRTMP.prototype.processAnswer = function (e) {
     self.call_uuid = msg.result.call_uuid;
 
     if (self.flash) {
-        self.flash.startCall(
-            rtmps_url,
-            rtmp_url,
-            uuid,
-            self.parent.display_name,
-            self.bandwidth_out,
-            self.audio_source,
-            self.video_source,
-            self.call_type == 'audioonly'
-        );
+        self.flash.startCall(rtmps_url, rtmp_url, uuid, self.parent.display_name, self.bandwidth_out,
+                             self.audio_source, self.video_source, self.call_type == 'audioonly');
     }
 
     if (self.call_type == 'stream') {
@@ -2100,67 +2007,53 @@ PexRTMP.prototype.processAnswer = function (e) {
     //self.onConnect(remoteServiceUri);
 };
 
-PexRTMP.prototype.sendRequest = function (request, params, cb, retries, timeout) {
+PexRTMP.prototype.sendRequest = function(request, params, cb, retries, timeout) {
     var self = this;
 
     // Only do sync if explicitly asked
     var async = cb === false ? false : true;
     var xhr_timeout = timeout || self.parent.xhr_timeout;
     var xhr = new XMLHttpRequest();
-    var xhrUrl =
-        'https://' +
-        self.parent.node +
-        '/api/client/v2/conferences/' +
-        self.parent.conference_uri +
-        '/participants/' +
-        self.parent.uuid +
-        '/' +
-        request;
-    self.parent.onLog('PexRTMP.sendRequest', request, params, xhrUrl);
+    var xhrUrl = "https://" + self.parent.node + "/api/client/v2/conferences/" + self.parent.conference_uri + "/participants/" + self.parent.uuid + "/" + request;
+    self.parent.onLog("PexRTMP.sendRequest", request, params, xhrUrl);
     if (request in self.outstanding_requests) {
         clearTimeout(self.outstanding_requests[request]);
         delete self.outstanding_requests[request];
     }
-    xhr.open('POST', xhrUrl, async);
+    xhr.open("POST", xhrUrl, async);
     if (retries === undefined) {
         retries = 0;
     }
     if (cb) {
-        xhr.onload = function (e) {
+        xhr.onload = function(e) {
             if (e.target.status == 502 || e.target.status == 504) {
                 if (++retries > 10) {
-                    self.parent.error = e.target.status + ' ' + e.target.statusText + ' sending request: ' + request;
+                    self.parent.error = e.target.status + " " + e.target.statusText + " sending request: " + request;
                     self.onError(self.parent.trans.ERROR_CONNECTING);
                 } else {
-                    self.outstanding_requests[request] = setTimeout(function () {
-                        self.sendRequest(request, params, cb, retries, xhr_timeout);
-                    }, retries * 500);
+                    self.outstanding_requests[request] = setTimeout(function() { self.sendRequest(request, params, cb, retries, xhr_timeout); }, retries * 500);
                 }
             } else {
                 cb(e);
             }
         };
     }
-    xhr.onerror = function () {
+    xhr.onerror = function() {
         if (++retries > 10 || cb === false) {
-            self.parent.error = 'Error sending request: ' + request;
+            self.parent.error = "Error sending request: " + request;
             self.onError(self.parent.trans.ERROR_CONNECTING);
         } else {
-            self.outstanding_requests[request] = setTimeout(function () {
-                self.sendRequest(request, params, cb, retries, xhr_timeout);
-            }, retries * 500);
+            self.outstanding_requests[request] = setTimeout(function() { self.sendRequest(request, params, cb, retries, xhr_timeout); }, retries * 500);
         }
     };
     if (async) {
         xhr.timeout = xhr_timeout;
-        xhr.ontimeout = function () {
+        xhr.ontimeout = function() {
             if (++retries > 10 || cb === false) {
-                self.parent.error = 'Timeout sending request: ' + request;
+                self.parent.error = "Timeout sending request: " + request;
                 self.onError(self.parent.trans.ERROR_CONNECTING);
             } else {
-                self.outstanding_requests[request] = setTimeout(function () {
-                    self.sendRequest(request, params, cb, retries, xhr_timeout);
-                }, retries * 500);
+                self.outstanding_requests[request] = setTimeout(function() { self.sendRequest(request, params, cb, retries, xhr_timeout); }, retries * 500);
             }
         };
     }
@@ -2177,19 +2070,19 @@ PexRTMP.prototype.sendRequest = function (request, params, cb, retries, timeout)
         xhr.send();
     }
     if (cb === false) {
-        self.parent.onLog('PexRTMP.sendRequest response', xhr.responseText);
+        self.parent.onLog("PexRTMP.sendRequest response", xhr.responseText);
         var msg = {};
         try {
             msg = JSON.parse(xhr.responseText);
         } catch (error) {
-            msg.reason = xhr.status + ' ' + xhr.statusText;
+            msg.reason = xhr.status + " " + xhr.statusText;
         }
         msg.http_status = xhr.status;
         return msg;
     }
 };
 
-PexRTMP.prototype.disconnect = function (cb) {
+PexRTMP.prototype.disconnect = function(cb) {
     var self = this;
 
     if (self.state != 'DISCONNECTING') {
@@ -2222,7 +2115,7 @@ PexRTMP.prototype.handleError = function (err) {
     }
 };
 
-PexRTMP.prototype.remoteDisconnect = function (msg) {
+PexRTMP.prototype.remoteDisconnect = function(msg) {
     var self = this;
 
     if (self.state != 'DISCONNECTING') {
@@ -2244,7 +2137,7 @@ PexRTMP.prototype.remoteDisconnect = function (msg) {
     }
 };
 
-PexRTMP.prototype.muteAudio = function (setting) {
+PexRTMP.prototype.muteAudio = function(setting) {
     var self = this;
 
     if (setting === undefined) {
@@ -2256,7 +2149,7 @@ PexRTMP.prototype.muteAudio = function (setting) {
     }
 };
 
-PexRTMP.prototype.muteVideo = function (setting) {
+PexRTMP.prototype.muteVideo = function(setting) {
     var self = this;
 
     if (setting === undefined) {
@@ -2268,7 +2161,7 @@ PexRTMP.prototype.muteVideo = function (setting) {
     }
 };
 
-PexRTMP.prototype.getMediaStatistics = function () {
+PexRTMP.prototype.getMediaStatistics = function() {
     var self = this;
 
     return self.flash.getMediaStatistics();
@@ -2318,7 +2211,7 @@ function PexRTC() {
     self.event_source_timeout = 0;
     self.xhr_timeout = 10000;
     self.rosterList = {};
-    self.presentation_msg = { status: '' };
+    self.presentation_msg = {'status': ''};
     self.presentation_event_id = null;
     self.chat_enabled = false;
     self.fecc_enabled = false;
@@ -2376,24 +2269,22 @@ function PexRTC() {
     self.onChatMessage = null;
     self.onStageUpdate = null;
     self.onMicActivity = null;
-    self.onLog = function () {
-        console.log.apply(console, arguments);
-    };
+    self.onLog = function() { console.log.apply(console, arguments); };
     self.stats = new PexRTCStatistics();
     self.stats.parent = self;
     self.stats_interval = null;
     self.outstanding_requests = {};
 
     self.is_android = navigator.userAgent.indexOf('Android') != -1;
-    self.is_electron = navigator.userAgent.indexOf('Electron') != -1;
+    self.is_electron = navigator.userAgent.indexOf("Electron") != -1;
 
-    if (navigator.userAgent.indexOf('Chrome') != -1) {
+    if (navigator.userAgent.indexOf("Chrome") != -1) {
         self.chrome_ver = parseInt(window.navigator.appVersion.match(/Chrome\/(\d+)\./)[1], 10);
     } else {
         self.chrome_ver = 0;
     }
 
-    if (navigator.userAgent.indexOf('Firefox') != -1) {
+    if (navigator.userAgent.indexOf("Firefox") != -1) {
         self.firefox_ver = parseInt(window.navigator.userAgent.match(/Firefox\/(\d+)\./)[1], 10);
         if (self.firefox_ver < 38) {
             self.h264_enabled = false;
@@ -2402,14 +2293,14 @@ function PexRTC() {
         self.firefox_ver = 0;
     }
 
-    if (navigator.userAgent.indexOf('Edge') != -1) {
+    if (navigator.userAgent.indexOf("Edge") != -1) {
         self.edge_ver = parseInt(window.navigator.userAgent.match(/Edge\/\d+\.(\d+)/)[1], 10);
         self.chrome_ver = 0;
     } else {
         self.edge_ver = 0;
     }
 
-    if (self.chrome_ver == 0 && self.edge_ver == 0 && navigator.userAgent.indexOf('Safari') != -1) {
+    if (self.chrome_ver == 0 && self.edge_ver == 0 && navigator.userAgent.indexOf("Safari") != -1) {
         var ver_fields = window.navigator.appVersion.match(/Version\/(\d+\.\d+)(\.(\d+))?/);
         if (ver_fields) {
             self.safari_ver = parseFloat(ver_fields[1]);
@@ -2439,25 +2330,24 @@ function PexRTC() {
     }
 
     self.trans = {
-        ERROR_SCREENSHARE_CANCELLED: 'Screenshare cancelled',
-        ERROR_CALL_FAILED: 'Call Failed: ',
-        ERROR_WEBRTC_SUPPORT: 'Error: WebRTC not supported by this browser',
-        ERROR_SCREENSHARE_EXTENSION:
-            'Error: Screenshare extension not found.\n\nHave you installed it from http://www.pexip.com/extension/?',
-        ERROR_USER_MEDIA:
-            'Error: Could not get access to camera/microphone.\n\nHave you allowed access? Has any other application locked the camera?',
-        ERROR_ICE_CANDIDATES: 'Failed to gather IP addresses',
-        ERROR_ICE_FAILED: 'Failed to establish media to server.\n\nEnsure required firewall ports are permitted.',
-        ERROR_PRESENTATION_ENDED: 'Presentation ended',
-        ERROR_DISCONNECTED_PRESENTATION: 'Presentation stream remotely disconnected',
-        ERROR_DISCONNECTED_SCREENSHARE: 'Screenshare remotely disconnected',
-        ERROR_DISCONNECTED: 'You have been remotely disconnected from this conference',
-        ERROR_CONNECTING_PRESENTATION: 'Presentation stream unavailable',
-        ERROR_CONNECTING_SCREENSHARE: 'Screenshare error',
-        ERROR_CONNECTING_EXTENSION: 'Conference extension not found',
-        ERROR_CONNECTING: 'Error connecting to conference'
+        ERROR_SCREENSHARE_CANCELLED: "Screenshare cancelled",
+        ERROR_CALL_FAILED: "Call Failed: ",
+        ERROR_WEBRTC_SUPPORT: "Error: WebRTC not supported by this browser",
+        ERROR_SCREENSHARE_EXTENSION: "Error: Screenshare extension not found.\n\nHave you installed it from http://www.pexip.com/extension/?",
+        ERROR_USER_MEDIA: "Error: Could not get access to camera/microphone.\n\nHave you allowed access? Has any other application locked the camera?",
+        ERROR_ICE_CANDIDATES: "Failed to gather IP addresses",
+        ERROR_ICE_FAILED: "Failed to establish media to server.\n\nEnsure required firewall ports are permitted.",
+        ERROR_PRESENTATION_ENDED: "Presentation ended",
+        ERROR_DISCONNECTED_PRESENTATION: "Presentation stream remotely disconnected",
+        ERROR_DISCONNECTED_SCREENSHARE: "Screenshare remotely disconnected",
+        ERROR_DISCONNECTED: "You have been remotely disconnected from this conference",
+        ERROR_CONNECTING_PRESENTATION: "Presentation stream unavailable",
+        ERROR_CONNECTING_SCREENSHARE: "Screenshare error",
+        ERROR_CONNECTING_EXTENSION: "Conference extension not found",
+        ERROR_CONNECTING: "Error connecting to conference"
     };
 }
+
 
 PexRTC.prototype.makeCall = function (node, conf, name, bw, call_type, flash) {
     var self = this;
@@ -2474,7 +2364,7 @@ PexRTC.prototype.makeCall = function (node, conf, name, bw, call_type, flash) {
         self.bandwidth_out = self.bandwidth_in;
     }
 
-    self.requestToken(function () {
+    self.requestToken(function() {
         self.createEventSource();
         if (self.state != 'DISCONNECTING') {
             if (self.call_type != 'none') {
@@ -2487,16 +2377,16 @@ PexRTC.prototype.makeCall = function (node, conf, name, bw, call_type, flash) {
     });
 };
 
-PexRTC.prototype.sendRequest = function (request, params, cb, req_method, retries, timeout) {
+PexRTC.prototype.sendRequest = function(request, params, cb, req_method, retries, timeout) {
     var self = this;
 
     // Only do sync if explicitly asked
     var async = cb === false ? false : true;
-    var method = req_method || 'POST';
+    var method = req_method || "POST";
     var xhr_timeout = timeout || self.xhr_timeout;
     var xhr = new XMLHttpRequest();
-    var xhrUrl = 'https://' + self.node + '/api/client/v2/conferences/' + self.conference_uri + '/' + request;
-    self.onLog('PexRTC.sendRequest', request, params, method, xhrUrl);
+    var xhrUrl = "https://" + self.node + "/api/client/v2/conferences/" + self.conference_uri + "/" + request;
+    self.onLog("PexRTC.sendRequest", request, params, method, xhrUrl);
     if (request in self.outstanding_requests) {
         clearTimeout(self.outstanding_requests[request]);
         delete self.outstanding_requests[request];
@@ -2506,41 +2396,35 @@ PexRTC.prototype.sendRequest = function (request, params, cb, req_method, retrie
         retries = 0;
     }
     if (cb) {
-        xhr.onload = function (e) {
+        xhr.onload = function(e) {
             if (e.target.status == 502 || e.target.status == 504) {
                 if (++retries > 10) {
-                    self.error = e.target.status + ' ' + e.target.statusText + ' sending request: ' + request;
+                    self.error = e.target.status + " " + e.target.statusText + " sending request: " + request;
                     self.onError(self.trans.ERROR_CONNECTING);
                 } else {
-                    self.outstanding_requests[request] = setTimeout(function () {
-                        self.sendRequest(request, params, cb, method, retries, xhr_timeout);
-                    }, retries * 500);
+                    self.outstanding_requests[request] = setTimeout(function() { self.sendRequest(request, params, cb, method, retries, xhr_timeout); }, retries * 500);
                 }
             } else {
                 cb(e);
             }
         };
     }
-    xhr.onerror = function () {
+    xhr.onerror = function() {
         if (++retries > 10 || cb === false) {
-            self.error = 'Error sending request: ' + request;
+            self.error = "Error sending request: " + request;
             self.onError(self.trans.ERROR_CONNECTING);
         } else {
-            self.outstanding_requests[request] = setTimeout(function () {
-                self.sendRequest(request, params, cb, method, retries, xhr_timeout);
-            }, retries * 500);
+            self.outstanding_requests[request] = setTimeout(function() { self.sendRequest(request, params, cb, method, retries, xhr_timeout); }, retries * 500);
         }
     };
     if (async) {
         xhr.timeout = xhr_timeout;
-        xhr.ontimeout = function () {
+        xhr.ontimeout = function() {
             if (++retries > 10 || cb === false) {
-                self.error = 'Timeout sending request: ' + request;
+                self.error = "Timeout sending request: " + request;
                 self.onError(self.trans.ERROR_CONNECTING);
             } else {
-                self.outstanding_requests[request] = setTimeout(function () {
-                    self.sendRequest(request, params, cb, method, retries, xhr_timeout);
-                }, retries * 500);
+                self.outstanding_requests[request] = setTimeout(function() { self.sendRequest(request, params, cb, method, retries, xhr_timeout); }, retries * 500);
             }
         };
     }
@@ -2559,23 +2443,23 @@ PexRTC.prototype.sendRequest = function (request, params, cb, req_method, retrie
         xhr.send();
     }
     if (cb === false) {
-        self.onLog('PexRTC.sendRequest response', xhr.responseText);
+        self.onLog("PexRTC.sendRequest response", xhr.responseText);
         var msg = {};
         try {
             msg = JSON.parse(xhr.responseText);
         } catch (error) {
-            msg.reason = xhr.status + ' ' + xhr.statusText;
+            msg.reason = xhr.status + " " + xhr.statusText;
         }
         msg.http_status = xhr.status;
         return msg;
     }
 };
 
-PexRTC.prototype.requestToken = function (cb) {
+PexRTC.prototype.requestToken = function(cb) {
     var self = this;
 
     if (!self.token) {
-        var params = { display_name: self.display_name };
+        var params = {'display_name': self.display_name};
         if (self.registration_token) {
             params.registration_token = self.registration_token;
         }
@@ -2587,22 +2471,13 @@ PexRTC.prototype.requestToken = function (cb) {
             params.conference_extension = self.conference_extension;
         }
 
-        self.sendRequest(
-            'request_token',
-            params,
-            function (evt) {
-                self.tokenRequested(evt, cb);
-            },
-            'POST',
-            10,
-            60000
-        );
+        self.sendRequest("request_token", params, function(evt) { self.tokenRequested(evt, cb); }, "POST", 10, 60000);
     } else if (cb) {
         cb();
     }
 };
 
-PexRTC.prototype.tokenRequested = function (e, cb) {
+PexRTC.prototype.tokenRequested = function(e, cb) {
     var self = this;
 
     var msg = {};
@@ -2610,10 +2485,10 @@ PexRTC.prototype.tokenRequested = function (e, cb) {
         msg = JSON.parse(e.target.responseText);
         msg.http_status = e.target.status;
     } catch (error) {
-        msg.reason = e.target.status + ' ' + e.target.statusText;
+        msg.reason = e.target.status + " " + e.target.statusText;
     }
 
-    self.onLog('PexRTC.tokenRequested response', e.target.responseText);
+    self.onLog("PexRTC.tokenRequested response", e.target.responseText);
 
     if (msg.http_status == 200) {
         self.vp9_enabled = self.vp9_enabled && msg.result.vp9_enabled && (self.chrome_ver > 29 || self.firefox_ver > 28);
@@ -2647,28 +2522,28 @@ PexRTC.prototype.tokenRequested = function (e, cb) {
         self.pcConfig.iceServers = [];
         if (self.default_stun) {
             if (self.firefox_ver > 43 || self.edge_ver > 10527 || self.safari_ver >= 11) {
-                self.pcConfig.iceServers.push({ urls: [self.default_stun] });
+                self.pcConfig.iceServers.push({ 'urls' : [self.default_stun] });
             } else {
-                self.pcConfig.iceServers.push({ url: self.default_stun });
+                self.pcConfig.iceServers.push({ 'url' : self.default_stun });
             }
         }
         if (self.turn_server && self.edge_ver == 0) {
-            var turn_servers = [];
+            var turn_servers = []
             if (self.turn_server instanceof Array) {
                 turn_servers = self.turn_server;
             } else {
                 turn_servers.push(self.turn_server);
             }
 
-            for (var i = 0; i < turn_servers.length; i++) {
+            for (var i=0; i<turn_servers.length; i++) {
                 if (self.safari_ver >= 11) {
                     var is_tcp = false;
                     if (turn_servers[i].hasOwnProperty('url') && turn_servers[i].url.indexOf('transport=tcp') != -1) {
-                        is_tcp = true;
+                        is_tcp = true;;
                     } else if (turn_servers[i].hasOwnProperty('urls')) {
-                        for (var j = 0; j < turn_servers[i].urls.length; j++) {
+                        for (var j=0; j<turn_servers[i].urls.length; j++) {
                             if (turn_servers[i].urls[j].indexOf('transport=tcp') != -1) {
-                                is_tcp = true;
+                                is_tcp = true;;
                             }
                         }
                     }
@@ -2683,7 +2558,7 @@ PexRTC.prototype.tokenRequested = function (e, cb) {
         if ('stun' in msg.result && self.edge_ver == 0) {
             for (var i = 0; i < msg.result.stun.length; i++) {
                 if (self.firefox_ver > 43 || self.safari_ver >= 11) {
-                    self.pcConfig.iceServers.push({ urls: [msg.result.stun[i].url] });
+                    self.pcConfig.iceServers.push({ 'urls' : [msg.result.stun[i].url] });
                 } else {
                     self.pcConfig.iceServers.push(msg.result.stun[i]);
                 }
@@ -2694,7 +2569,7 @@ PexRTC.prototype.tokenRequested = function (e, cb) {
                 self.pcConfig.iceServers.push(msg.result.turn[i]);
             }
         }
-        self.onLog('ICE Servers:', self.pcConfig);
+        self.onLog("ICE Servers:", self.pcConfig);
 
         self.orig_bandwidth_in = self.bandwidth_in;
         self.orig_bandwidth_out = self.bandwidth_out;
@@ -2744,36 +2619,32 @@ PexRTC.prototype.tokenRequested = function (e, cb) {
         var expires = msg.result.expires || 120;
         self.token_refresh = setInterval(self.refreshToken.bind(this), (expires * 1000) / 3);
 
-        self.sendRequest(
-            'conference_status',
-            null,
-            function (e) {
-                self.onLog('conference_status');
-                if (e.target.status == 200 && self.onConferenceUpdate) {
-                    var msg = JSON.parse(e.target.responseText);
-                    self.onLog(msg);
-                    self.onConferenceUpdate(msg.result);
-                }
-            },
-            'GET'
-        );
+        self.sendRequest("conference_status", null, function(e) {
+            self.onLog("conference_status");
+            if (e.target.status == 200 && self.onConferenceUpdate) {
+                var msg = JSON.parse(e.target.responseText);
+                self.onLog(msg);
+                self.onConferenceUpdate(msg.result);
+            }
+        }, "GET");
     }
+
 
     if (cb) {
         cb();
     }
 };
 
-PexRTC.prototype.refreshToken = function () {
+PexRTC.prototype.refreshToken = function() {
     var self = this;
 
-    self.sendRequest('refresh_token', null, function (e) {
-        self.onLog('PexRTC.refreshToken response', e.target.responseText);
+    self.sendRequest("refresh_token", null,  function(e) {
+        self.onLog("PexRTC.refreshToken response", e.target.responseText);
         var msg = {};
         try {
             msg = JSON.parse(e.target.responseText);
         } catch (error) {
-            msg.reason = e.target.status + ' ' + e.target.statusText;
+            msg.reason = e.target.status + " " + e.target.statusText;
         }
         if (e.target.status == 200) {
             self.token = msg.result.token;
@@ -2789,267 +2660,199 @@ PexRTC.prototype.refreshToken = function () {
     });
 };
 
-PexRTC.prototype.createEventSource = function () {
+PexRTC.prototype.createEventSource = function() {
     var self = this;
 
     if (!self.event_source && self.token) {
-        self.event_source = new EventSource(
-            'https://' + self.node + '/api/client/v2/conferences/' + self.conference_uri + '/events?token=' + self.token
-        );
-        self.event_source.addEventListener(
-            'presentation_start',
-            function (e) {
-                var msg = JSON.parse(e.data);
-                self.onLog('presentation_start', msg);
-                msg.status = 'start';
-                if (self.presentation_msg.status != 'start' || self.presentation_msg.presenter_uuid != msg.presenter_uuid) {
-                    self.processPresentation(msg);
+        self.event_source = new EventSource("https://" + self.node + "/api/client/v2/conferences/" + self.conference_uri + "/events?token=" + self.token);
+        self.event_source.addEventListener("presentation_start", function(e) {
+            var msg = JSON.parse(e.data);
+            self.onLog("presentation_start", msg);
+            msg.status = "start";
+            if (self.presentation_msg.status != 'start' ||
+                self.presentation_msg.presenter_uuid != msg.presenter_uuid) {
+                self.processPresentation(msg);
+            }
+            self.presentation_msg = msg;
+        }, false);
+        self.event_source.addEventListener("presentation_stop", function(e) {
+            var msg = {'status': "stop"};
+            self.onLog("presentation_stop", msg);
+            if (self.presentation_msg.status != 'stop') {
+                self.processPresentation(msg);
+            }
+            self.presentation_msg = msg;
+        }, false);
+        self.event_source.addEventListener("presentation_frame", function(e) {
+            self.presentation_event_id = e.lastEventId;
+            if (self.onPresentationReload && !self.onHold) {
+                self.onPresentationReload(self.getPresentationURL());
+            }
+        }, false);
+        self.event_source.addEventListener("participant_create", function(e) {
+            var msg = JSON.parse(e.data);
+            self.onLog("participant_create", msg);
+            self.rosterList[msg.uuid] = msg;
+            if (msg.uuid == self.uuid && self.current_service_type && msg.service_type) {
+                self.current_service_type = msg.service_type;
+            }
+            if (!self.oldRosterList) {
+                if (self.onParticipantCreate) {
+                    self.onParticipantCreate(msg);
                 }
-                self.presentation_msg = msg;
-            },
-            false
-        );
-        self.event_source.addEventListener(
-            'presentation_stop',
-            function (e) {
-                var msg = { status: 'stop' };
-                self.onLog('presentation_stop', msg);
-                if (self.presentation_msg.status != 'stop') {
-                    self.processPresentation(msg);
-                }
-                self.presentation_msg = msg;
-            },
-            false
-        );
-        self.event_source.addEventListener(
-            'presentation_frame',
-            function (e) {
-                self.presentation_event_id = e.lastEventId;
-                if (self.onPresentationReload && !self.onHold) {
-                    self.onPresentationReload(self.getPresentationURL());
-                }
-            },
-            false
-        );
-        self.event_source.addEventListener(
-            'participant_create',
-            function (e) {
-                var msg = JSON.parse(e.data);
-                self.onLog('participant_create', msg);
-                self.rosterList[msg.uuid] = msg;
-                if (msg.uuid == self.uuid && self.current_service_type && msg.service_type) {
-                    self.current_service_type = msg.service_type;
-                }
-                if (!self.oldRosterList) {
-                    if (self.onParticipantCreate) {
-                        self.onParticipantCreate(msg);
-                    }
-                    if (self.onRosterList) {
-                        self.onRosterList(self.getRosterList());
-                    }
-                }
-            },
-            false
-        );
-        self.event_source.addEventListener(
-            'participant_update',
-            function (e) {
-                var msg = JSON.parse(e.data);
-                self.onLog('participant_update', msg);
-                self.rosterList[msg.uuid] = msg;
-                if (msg.uuid == self.uuid && self.current_service_type && msg.service_type) {
-                    self.current_service_type = msg.service_type;
-                }
-                if (!self.oldRosterList) {
-                    if (self.onParticipantUpdate) {
-                        self.onParticipantUpdate(msg);
-                    }
-                    if (self.onRosterList) {
-                        self.onRosterList(self.getRosterList());
-                    }
-                }
-            },
-            false
-        );
-        self.event_source.addEventListener(
-            'participant_delete',
-            function (e) {
-                var msg = JSON.parse(e.data);
-                self.onLog('participant_delete', msg);
-                delete self.rosterList[msg.uuid];
-                if (!self.oldRosterList) {
-                    if (self.onParticipantDelete) {
-                        self.onParticipantDelete(msg);
-                    }
-                    if (self.onRosterList) {
-                        self.onRosterList(self.getRosterList());
-                    }
-                }
-            },
-            false
-        );
-        self.event_source.addEventListener(
-            'message_received',
-            function (e) {
-                var msg = JSON.parse(e.data);
-                self.onLog('message_received', msg);
-                if (self.onChatMessage) {
-                    self.onChatMessage(msg);
-                }
-            },
-            false
-        );
-        self.event_source.addEventListener(
-            'participant_sync_begin',
-            function (e) {
-                self.onLog('participant_sync_begin');
-                if (!self.oldRosterList) {
-                    self.oldRosterList = self.rosterList;
-                }
-                self.rosterList = {};
-                if (self.onSyncBegin) {
-                    self.onSyncBegin();
-                }
-            },
-            false
-        );
-        self.event_source.addEventListener(
-            'participant_sync_end',
-            function (e) {
-                self.onLog('participant_sync_end', self.rosterList);
-                for (var uuid in self.rosterList) {
-                    if (!(uuid in self.oldRosterList) && self.onParticipantCreate) {
-                        self.onParticipantCreate(self.rosterList[uuid]);
-                    } else {
-                        if (self.onParticipantUpdate) {
-                            self.onParticipantUpdate(self.rosterList[uuid]);
-                        }
-                        delete self.oldRosterList[uuid];
-                    }
-                }
-                if (self.onParticipantDelete) {
-                    for (uuid in self.oldRosterList) {
-                        var msg = { uuid: uuid };
-                        self.onParticipantDelete(msg);
-                    }
-                }
-                delete self.oldRosterList;
                 if (self.onRosterList) {
                     self.onRosterList(self.getRosterList());
                 }
-                if (self.onSyncEnd) {
-                    self.onSyncEnd();
+            }
+        }, false);
+        self.event_source.addEventListener("participant_update", function(e) {
+            var msg = JSON.parse(e.data);
+            self.onLog("participant_update", msg);
+            self.rosterList[msg.uuid] = msg;
+            if (msg.uuid == self.uuid && self.current_service_type && msg.service_type) {
+                self.current_service_type = msg.service_type;
+            }
+            if (!self.oldRosterList) {
+                if (self.onParticipantUpdate) {
+                    self.onParticipantUpdate(msg);
                 }
-            },
-            false
-        );
-        self.event_source.addEventListener(
-            'call_disconnected',
-            function (e) {
-                var msg = JSON.parse(e.data);
-                self.onLog('call_disconnected', msg);
-                if (self.call && self.call.call_uuid == msg.call_uuid) {
-                    self.call.remoteDisconnect(msg);
-                } else if (self.presentation && self.presentation.call_uuid == msg.call_uuid) {
-                    self.presentation.remoteDisconnect(msg);
-                } else if (self.screenshare && self.screenshare.call_uuid == msg.call_uuid) {
-                    self.screenshare.remoteDisconnect(msg);
+                if (self.onRosterList) {
+                    self.onRosterList(self.getRosterList());
                 }
-            },
-            false
-        );
-        self.event_source.addEventListener(
-            'disconnect',
-            function (e) {
-                var msg = JSON.parse(e.data);
-                self.onLog('disconnect', msg);
-                var reason = self.trans.ERROR_DISCONNECTED;
-                if ('reason' in msg) {
-                    reason = msg.reason;
+            }
+        }, false);
+        self.event_source.addEventListener("participant_delete", function(e) {
+            var msg = JSON.parse(e.data);
+            self.onLog("participant_delete", msg);
+            delete self.rosterList[msg.uuid];
+            if (!self.oldRosterList) {
+                if (self.onParticipantDelete) {
+                    self.onParticipantDelete(msg);
                 }
-                if (self.state != 'DISCONNECTING') {
-                    self.disconnect();
-                    if (self.onDisconnect) {
-                        self.onDisconnect(reason);
+                if (self.onRosterList) {
+                    self.onRosterList(self.getRosterList());
+                }
+            }
+        }, false);
+        self.event_source.addEventListener("message_received", function(e) {
+            var msg = JSON.parse(e.data);
+            self.onLog("message_received", msg);
+            if (self.onChatMessage) {
+                self.onChatMessage(msg);
+            }
+        }, false);
+        self.event_source.addEventListener("participant_sync_begin", function(e) {
+            self.onLog("participant_sync_begin");
+            if (!self.oldRosterList) {
+                self.oldRosterList = self.rosterList;
+            }
+            self.rosterList = {};
+            if (self.onSyncBegin) {
+                self.onSyncBegin();
+            }
+        }, false);
+        self.event_source.addEventListener("participant_sync_end", function(e) {
+            self.onLog("participant_sync_end", self.rosterList);
+            for (var uuid in self.rosterList) {
+                if (!(uuid in self.oldRosterList) && self.onParticipantCreate) {
+                    self.onParticipantCreate(self.rosterList[uuid]);
+                } else {
+                    if (self.onParticipantUpdate) {
+                        self.onParticipantUpdate(self.rosterList[uuid]);
                     }
+                    delete self.oldRosterList[uuid];
                 }
-            },
-            false
-        );
-        self.event_source.addEventListener(
-            'conference_update',
-            function (e) {
-                var msg = JSON.parse(e.data);
-                self.onLog('conference_update', msg);
-                if (self.onConferenceUpdate) {
-                    self.onConferenceUpdate(msg);
+            }
+            if (self.onParticipantDelete) {
+                for (uuid in self.oldRosterList) {
+                    var msg = {'uuid': uuid};
+                    self.onParticipantDelete(msg);
                 }
-            },
-            false
-        );
-        self.event_source.addEventListener(
-            'refer',
-            function (e) {
-                var msg = JSON.parse(e.data);
-                self.onLog('refer', msg);
-                self.processRefer(msg);
-            },
-            false
-        );
-        self.event_source.addEventListener(
-            'on_hold',
-            function (e) {
-                var msg = JSON.parse(e.data);
-                self.onLog('call_hold', msg);
-                self.holdresume(msg.setting);
-            },
-            false
-        );
-        self.event_source.addEventListener(
-            'stage',
-            function (e) {
-                var msg = JSON.parse(e.data);
-                self.onLog('stage', msg);
-                if (self.onStageUpdate) {
-                    self.onStageUpdate(msg);
+            }
+            delete self.oldRosterList;
+            if (self.onRosterList) {
+                self.onRosterList(self.getRosterList());
+            }
+            if (self.onSyncEnd) {
+                self.onSyncEnd();
+            }
+
+        }, false);
+        self.event_source.addEventListener("call_disconnected", function(e) {
+            var msg = JSON.parse(e.data);
+            self.onLog("call_disconnected", msg);
+            if (self.call && self.call.call_uuid == msg.call_uuid) {
+                self.call.remoteDisconnect(msg);
+            } else if (self.presentation && self.presentation.call_uuid == msg.call_uuid) {
+                self.presentation.remoteDisconnect(msg);
+            } else if (self.screenshare && self.screenshare.call_uuid == msg.call_uuid) {
+                self.screenshare.remoteDisconnect(msg);
+            }
+        }, false);
+        self.event_source.addEventListener("disconnect", function(e) {
+            var msg = JSON.parse(e.data);
+            self.onLog("disconnect", msg);
+            var reason = self.trans.ERROR_DISCONNECTED;
+            if ('reason' in msg) {
+                reason = msg.reason;
+            }
+            if (self.state != 'DISCONNECTING') {
+                self.disconnect();
+                if (self.onDisconnect) {
+                    self.onDisconnect(reason);
                 }
-            },
-            false
-        );
-        self.event_source.addEventListener(
-            'layout',
-            function (e) {
-                var msg = JSON.parse(e.data);
-                self.onLog('layout', msg);
-                if (self.onLayoutUpdate) {
-                    self.onLayoutUpdate(msg);
-                }
-            },
-            false
-        );
-        self.event_source.addEventListener(
-            'refresh_token',
-            function (e) {
-                self.onLog('refresh_token');
-                self.refreshToken();
-            },
-            false
-        );
-        self.event_source.onopen = function (e) {
-            self.onLog('event source open');
+            }
+        }, false);
+        self.event_source.addEventListener("conference_update", function(e) {
+            var msg = JSON.parse(e.data);
+            self.onLog("conference_update", msg);
+            if (self.onConferenceUpdate) {
+                self.onConferenceUpdate(msg);
+            }
+        }, false);
+        self.event_source.addEventListener("refer", function(e) {
+            var msg = JSON.parse(e.data);
+            self.onLog("refer", msg);
+            self.processRefer(msg);
+        }, false);
+        self.event_source.addEventListener("on_hold", function(e) {
+            var msg = JSON.parse(e.data);
+            self.onLog("call_hold", msg);
+            self.holdresume(msg.setting);
+        }, false);
+        self.event_source.addEventListener("stage", function(e) {
+            var msg = JSON.parse(e.data);
+            self.onLog("stage", msg);
+            if (self.onStageUpdate) {
+                self.onStageUpdate(msg);
+            }
+        }, false);
+        self.event_source.addEventListener("layout", function(e) {
+            var msg = JSON.parse(e.data);
+            self.onLog("layout", msg);
+            if (self.onLayoutUpdate) {
+                self.onLayoutUpdate(msg);
+            }
+        }, false);
+        self.event_source.addEventListener("refresh_token", function(e) {
+            self.onLog("refresh_token");
+            self.refreshToken();
+        }, false);
+        self.event_source.onopen = function(e) {
+            self.onLog("event source open");
             self.event_source_timeout = 10;
         };
-        self.event_source.onerror = function (e) {
-            self.onLog('event source error', e);
+        self.event_source.onerror = function(e) {
+            self.onLog("event source error", e);
             if (self.state != 'DISCONNECTING') {
-                self.onLog('reconnecting...');
+                self.onLog("reconnecting...");
                 self.event_source.close();
                 self.event_source = null;
                 if (self.event_source_timeout > 15000) {
-                    self.error = 'Error connecting to EventSource';
+                    self.error = "Error connecting to EventSource";
                     return self.onError(self.trans.ERROR_CONNECTING);
                 }
-                setTimeout(function () {
+                setTimeout(function() {
                     self.createEventSource();
                 }, self.event_source_timeout);
                 self.event_source_timeout += 1000;
@@ -3058,80 +2861,81 @@ PexRTC.prototype.createEventSource = function () {
     }
 };
 
-PexRTC.prototype.setConferenceLock = function (setting) {
+PexRTC.prototype.setConferenceLock = function(setting) {
     var self = this;
 
-    var command = setting ? 'lock' : 'unlock';
+    var command = setting ? "lock" : "unlock";
     self.sendRequest(command);
 };
 
-PexRTC.prototype.sendChatMessage = function (message) {
+PexRTC.prototype.sendChatMessage = function(message) {
     var self = this;
 
-    var command = 'message';
-    var params = { type: 'text/plain', payload: message };
+    var command = "message";
+    var params = {'type': 'text/plain', 'payload': message};
 
     self.sendRequest(command, params);
 };
 
-PexRTC.prototype.setMuteAllGuests = function (setting) {
+PexRTC.prototype.setMuteAllGuests = function(setting) {
     var self = this;
 
-    var command = setting ? 'muteguests' : 'unmuteguests';
+    var command = setting ? "muteguests" : "unmuteguests";
     self.sendRequest(command);
 };
 
-PexRTC.prototype.startConference = function () {
+PexRTC.prototype.startConference = function() {
     var self = this;
 
-    var command = 'start_conference';
+    var command = "start_conference";
     self.sendRequest(command);
 };
 
-PexRTC.prototype.dialOut = function (destination, protocol, role, cb, user_params) {
+PexRTC.prototype.dialOut = function(destination, protocol, role, cb, user_params) {
     var self = this;
 
     if (!destination) {
         return;
     }
 
-    var command = 'dial';
-    var params = { destination: destination, protocol: protocol ? protocol : 'sip' };
+    var command = "dial";
+    var params = {'destination': destination,
+                  'protocol': (protocol ? protocol : "sip")};
     var streaming = false;
 
-    if (typeof user_params == 'string') {
+    if (typeof user_params == "string") {
         // Legacy: is in fact the presentationUri
         params.presentation_uri = user_params;
-    } else if (user_params !== null && typeof user_params == 'object') {
-        if ('call_type' in user_params) {
+    } else if (user_params !== null && typeof user_params == "object") {
+        if ("call_type" in user_params) {
             params.call_type = user_params.call_type;
         }
 
-        if ('dtmf_sequence' in user_params) {
+        if ("dtmf_sequence" in user_params) {
             params.dtmf_sequence = user_params.dtmf_sequence;
         }
 
-        if ('presentation_uri' in user_params) {
+        if ("presentation_uri" in user_params) {
             params.presentation_url = user_params.presentation_uri;
         }
 
-        if ('keep_conference_alive' in user_params) {
+        if ("keep_conference_alive" in user_params) {
             params.keep_conference_alive = user_params.keep_conference_alive;
         }
 
-        if ('remote_display_name' in user_params) {
+        if ("remote_display_name" in user_params) {
             params.remote_display_name = user_params.remote_display_name;
         }
 
-        if ('overlay_text' in user_params) {
+        if ("overlay_text" in user_params) {
             params.text = user_params.overlay_text;
         }
 
-        if ('prefer_ipv6' in user_params && user_params.prefer_ipv6) {
+        if ("prefer_ipv6" in user_params && user_params.prefer_ipv6) {
             params.prefer_ipv6 = user_params.prefer_ipv6;
         }
 
-        if ('streaming' in user_params) {
+        if ("streaming" in user_params) {
             streaming = user_params.streaming;
         }
     }
@@ -3140,17 +2944,17 @@ PexRTC.prototype.dialOut = function (destination, protocol, role, cb, user_param
         params.streaming = 'yes';
     }
 
-    if (role && role.toUpperCase() == 'GUEST') {
-        params.role = 'GUEST';
+    if (role && role.toUpperCase() == "GUEST") {
+        params.role = "GUEST";
     }
 
     if (cb) {
-        self.sendRequest(command, params, function (e) {
+        self.sendRequest(command, params, function(e) {
             var msg;
             try {
                 msg = JSON.parse(e.target.responseText);
             } catch (SyntaxError) {
-                return self.handleError('Unexpected Response: ' + e.target.status + ' ' + e.target.statusText);
+                return self.handleError("Unexpected Response: " + e.target.status + " " + e.target.statusText);
             }
             if (e.target.status != 200) {
                 return self.handleError(msg.result || msg.reason);
@@ -3163,77 +2967,77 @@ PexRTC.prototype.dialOut = function (destination, protocol, role, cb, user_param
     }
 };
 
-PexRTC.prototype.disconnectAll = function () {
+PexRTC.prototype.disconnectAll = function() {
     var self = this;
 
-    var command = 'disconnect';
+    var command = "disconnect";
     self.sendRequest(command);
 };
 
-PexRTC.prototype.getParticipants = function (cb) {
+PexRTC.prototype.getParticipants = function(cb) {
     var self = this;
 
-    var command = 'participants';
-    self.sendRequest(command, {}, cb, 'GET');
+    var command = "participants";
+    self.sendRequest(command, {}, cb, "GET");
 };
 
-PexRTC.prototype.setParticipantMute = function (uuid, setting) {
+PexRTC.prototype.setParticipantMute = function(uuid, setting) {
     var self = this;
 
-    var command = 'participants/' + uuid + '/';
-    command += setting ? 'mute' : 'unmute';
+    var command = "participants/" + uuid + "/";
+    command += setting ? "mute" : "unmute";
     self.sendRequest(command);
 };
 
-PexRTC.prototype.setParticipantRxPresentation = function (uuid, setting) {
+PexRTC.prototype.setParticipantRxPresentation = function(uuid, setting) {
     var self = this;
 
-    var command = 'participants/' + uuid + '/';
-    command += setting ? 'allowrxpresentation' : 'denyrxpresentation';
+    var command = "participants/" + uuid + "/";
+    command += setting ? "allowrxpresentation" : "denyrxpresentation";
     self.sendRequest(command);
 };
 
-PexRTC.prototype.setParticipantStudioSound = function (uuid, setting) {
+PexRTC.prototype.setParticipantStudioSound = function(uuid, setting) {
     var self = this;
 
-    var command = 'participants/' + uuid + '/studiosound';
-    var params = { enabled: setting };
+    var command = "participants/" + uuid + "/studiosound";
+    var params = { 'enabled': setting };
     self.sendRequest(command, params);
 };
 
-PexRTC.prototype.unlockParticipant = function (uuid) {
+PexRTC.prototype.unlockParticipant = function(uuid) {
     var self = this;
 
-    var command = 'participants/' + uuid + '/unlock';
+    var command = "participants/" + uuid + "/unlock";
     self.sendRequest(command);
 };
 
-PexRTC.prototype.holdParticipant = function (uuid) {
+PexRTC.prototype.holdParticipant = function(uuid) {
     var self = this;
 
-    var command = 'participants/' + uuid + '/hold';
+    var command = "participants/" + uuid + "/hold";
     self.sendRequest(command);
 };
 
-PexRTC.prototype.resumeParticipant = function (uuid) {
+PexRTC.prototype.resumeParticipant = function(uuid) {
     var self = this;
 
-    var command = 'participants/' + uuid + '/resume';
+    var command = "participants/" + uuid + "/resume";
     self.sendRequest(command);
 };
 
-PexRTC.prototype.disconnectParticipant = function (uuid) {
+PexRTC.prototype.disconnectParticipant = function(uuid) {
     var self = this;
 
-    var command = 'participants/' + uuid + '/disconnect';
+    var command = "participants/" + uuid + "/disconnect";
     self.sendRequest(command);
 };
 
-PexRTC.prototype.transferParticipant = function (uuid, destination, role, pin, cb) {
+PexRTC.prototype.transferParticipant = function(uuid, destination, role, pin, cb) {
     var self = this;
 
-    var command = 'participants/' + uuid + '/transfer';
-    var params = { conference_alias: destination };
+    var command = "participants/" + uuid + "/transfer";
+    var params = { 'conference_alias': destination };
     if (role) {
         params.role = role;
         if (pin) {
@@ -3242,7 +3046,7 @@ PexRTC.prototype.transferParticipant = function (uuid, destination, role, pin, c
     }
 
     if (cb) {
-        self.sendRequest(command, params, function (e) {
+        self.sendRequest(command, params, function(e) {
             if (e.target.status == 200) {
                 var msg = JSON.parse(e.target.responseText);
                 self.onLog(msg);
@@ -3256,80 +3060,80 @@ PexRTC.prototype.transferParticipant = function (uuid, destination, role, pin, c
     }
 };
 
-PexRTC.prototype.setParticipantSpotlight = function (uuid, setting) {
+PexRTC.prototype.setParticipantSpotlight = function(uuid, setting) {
     var self = this;
 
-    var command = 'participants/' + uuid + '/';
-    command += setting ? 'spotlighton' : 'spotlightoff';
+    var command = "participants/" + uuid + "/";
+    command += setting ? "spotlighton" : "spotlightoff";
     self.sendRequest(command);
 };
 
-PexRTC.prototype.overrideLayout = function (new_layout) {
+PexRTC.prototype.overrideLayout = function(new_layout) {
     var self = this;
 
-    var command = 'override_layout';
+    var command = "override_layout";
     self.sendRequest(command, new_layout);
 };
 
 PexRTC.prototype.transformLayout = function (transforms) {
     var self = this;
 
-    var command = 'transform_layout';
-    self.sendRequest(command, { transforms: transforms });
+    var command = "transform_layout";
+    self.sendRequest(command, {"transforms": transforms});
 };
 
-PexRTC.prototype.setParticipantText = function (uuid, text) {
+PexRTC.prototype.setParticipantText = function(uuid, text) {
     var self = this;
 
-    var command = 'participants/' + uuid + '/overlaytext';
-    var params = { text: text };
+    var command = "participants/" + uuid + "/overlaytext";
+    var params = { 'text': text };
     self.sendRequest(command, params);
 };
 
-PexRTC.prototype.setRole = function (uuid, role) {
+PexRTC.prototype.setRole = function(uuid, role) {
     var self = this;
 
     if (role !== 'chair' && role !== 'guest') {
-        throw new Error('Role must be chair or guest');
+        throw new Error("Role must be chair or guest");
     }
-    var command = 'participants/' + uuid + '/role';
-    var params = { role: role };
-    self.sendRequest(command, params, function () {});
+    var command = "participants/" + uuid + "/role";
+    var params = { 'role': role };
+    self.sendRequest(command, params, function() {});
 };
 
-PexRTC.prototype.setBuzz = function () {
+PexRTC.prototype.setBuzz = function() {
     var self = this;
 
-    var command = 'participants/' + self.uuid + '/buzz';
+    var command = "participants/" + self.uuid + "/buzz";
     self.sendRequest(command);
 };
 
-PexRTC.prototype.clearBuzz = function (uuid) {
+PexRTC.prototype.clearBuzz = function(uuid) {
     var self = this;
 
-    var command = 'participants/' + (uuid ? uuid : self.uuid) + '/clearbuzz';
+    var command = "participants/" + (uuid ? uuid : self.uuid) + "/clearbuzz";
     self.sendRequest(command);
 };
 
-PexRTC.prototype.clearAllBuzz = function () {
+PexRTC.prototype.clearAllBuzz = function() {
     var self = this;
 
-    var command = 'clearallbuzz';
+    var command = "clearallbuzz";
     self.sendRequest(command);
 };
 
 PexRTC.prototype.videoMuted = function () {
     var self = this;
 
-    var command = 'participants/' + self.uuid + '/video_muted';
-    self.sendRequest(command);
+    var command = "participants/" + self.uuid + "/video_muted";
+    self.sendRequest(command);  
 };
 
 PexRTC.prototype.videoUnmuted = function () {
     var self = this;
 
-    var command = 'participants/' + self.uuid + '/video_unmuted';
-    self.sendRequest(command);
+    var command = "participants/" + self.uuid + "/video_unmuted";
+    self.sendRequest(command);  
 };
 
 PexRTC.prototype.handleError = function (err) {
@@ -3355,10 +3159,10 @@ PexRTC.prototype.handleError = function (err) {
     }
 };
 
-PexRTC.prototype.connect = function (pin, extension) {
+PexRTC.prototype.connect = function(pin, extension) {
     var self = this;
 
-    var doConnect = function () {
+    var doConnect = function() {
         if (self.state != 'DISCONNECTING') {
             if (self.call) {
                 self.call.connect();
@@ -3386,19 +3190,10 @@ PexRTC.prototype.connect = function (pin, extension) {
     }
 };
 
-PexRTC.prototype.addCall = function (call_type, flash) {
+PexRTC.prototype.addCall = function(call_type, flash) {
     var self = this;
 
-    if (
-        self.call_type == 'none' &&
-        !(
-            call_type == 'screen' ||
-            call_type == 'window' ||
-            call_type == 'application' ||
-            call_type == 'screen_http' ||
-            call_type == 'presentation'
-        )
-    ) {
+    if (self.call_type == 'none' && !(call_type == 'screen' || call_type == 'window' || call_type == 'application' || call_type == 'screen_http' || call_type == 'presentation')) {
         self.call_type = '';
     }
 
@@ -3415,28 +3210,28 @@ PexRTC.prototype.addCall = function (call_type, flash) {
 
     if (!self.screenshare && (call_type == 'screen' || call_type == 'window' || call_type == 'application' || call_type == 'screen_http')) {
         self.screenshare = obj;
-        self.screenshare.onSetup = function (stream) {
+        self.screenshare.onSetup = function(stream) {
             self.screenshare.connect();
         };
-        self.screenshare.onConnect = function (stream) {
-            self.presentation_msg = { status: '' };
+        self.screenshare.onConnect = function(stream) {
+            self.presentation_msg = {'status': ''};
             if (self.onScreenshareConnected) {
                 self.onScreenshareConnected(stream);
             }
         };
-        self.screenshare.onDisconnect = function (reason) {
+        self.screenshare.onDisconnect = function(reason) {
             self.screenshare = null;
             if (self.onScreenshareStopped) {
                 self.onScreenshareStopped(reason);
             }
         };
-        self.screenshare.onError = function (reason) {
+        self.screenshare.onError = function(reason) {
             self.screenshare = null;
             if (self.onScreenshareStopped) {
                 self.onScreenshareStopped(reason);
             }
         };
-        self.screenshare.onScreenshareMissing = function () {
+        self.screenshare.onScreenshareMissing = function() {
             self.screenshare = null;
             if (self.onScreenshareMissing) {
                 self.onScreenshareMissing();
@@ -3447,21 +3242,21 @@ PexRTC.prototype.addCall = function (call_type, flash) {
         self.screenshare.makeCall(self, call_type);
     } else if (!self.presentation && call_type == 'presentation') {
         self.presentation = obj;
-        self.presentation.onSetup = function (stream) {
+        self.presentation.onSetup = function(stream) {
             self.presentation.connect();
         };
-        self.presentation.onConnect = function (stream) {
+        self.presentation.onConnect = function(stream) {
             if (self.onPresentationConnected) {
                 self.onPresentationConnected(stream);
             }
         };
-        self.presentation.onDisconnect = function (reason) {
+        self.presentation.onDisconnect = function(reason) {
             self.presentation = null;
             if (self.onPresentationDisconnected) {
                 self.onPresentationDisconnected(reason);
             }
         };
-        self.presentation.onError = function (reason) {
+        self.presentation.onError = function(reason) {
             self.presentation = null;
             if (self.onPresentationDisconnected) {
                 self.onPresentationDisconnected(reason);
@@ -3470,10 +3265,10 @@ PexRTC.prototype.addCall = function (call_type, flash) {
         self.presentation.makeCall(self, call_type);
     } else if (!self.call) {
         self.call = obj;
-        self.call.onSetup = function (stream) {
+        self.call.onSetup = function(stream) {
             self.onSetup(stream, self.pin_status, self.conference_extension);
         };
-        self.call.onConnect = function (stream) {
+        self.call.onConnect = function(stream) {
             if (self.mutedAudio) {
                 self.muteAudio(self.mutedAudio);
             }
@@ -3482,7 +3277,7 @@ PexRTC.prototype.addCall = function (call_type, flash) {
             }
             self.onConnect(stream);
         };
-        self.call.onDisconnect = function (reason) {
+        self.call.onDisconnect = function(reason) {
             if (self.call) {
                 if (self.stats_interval) {
                     clearInterval(self.stats_interval);
@@ -3497,7 +3292,7 @@ PexRTC.prototype.addCall = function (call_type, flash) {
                 }
             }
         };
-        self.call.onError = function (reason) {
+        self.call.onError = function(reason) {
             if (self.call && self.state != 'DISCONNECTING') {
                 if (self.stats_interval) {
                     clearInterval(self.stats_interval);
@@ -3507,18 +3302,13 @@ PexRTC.prototype.addCall = function (call_type, flash) {
                 self.onError(reason);
             }
         };
-        self.call.onMicActivity = function () {
+        self.call.onMicActivity = function() {
             if (self.onMicActivity) {
                 self.onMicActivity();
             }
         };
-        if (
-            self.call_type == 'screen' ||
-            self.call_type == 'window' ||
-            self.call_type == 'application' ||
-            self.call_type == 'screen_http'
-        ) {
-            self.call.onScreenshareMissing = function () {
+        if (self.call_type == 'screen' || self.call_type == 'window' || self.call_type == 'application' || self.call_type == 'screen_http') {
+            self.call.onScreenshareMissing = function() {
                 if (self.stats_interval) {
                     clearInterval(self.stats_interval);
                     self.stats_interval = null;
@@ -3538,7 +3328,7 @@ PexRTC.prototype.addCall = function (call_type, flash) {
 
         self.call.makeCall(self, self.call_type);
 
-        var pollMediaStatistics = function () {
+        var pollMediaStatistics = function() {
             if (self.call.pc && self.call.pc.getStats) {
                 if (self.chrome_ver > 78 && !self.is_electron) {
                     self.call.pc.getStats(null).then(function (rawStats) {
@@ -3574,7 +3364,7 @@ PexRTC.prototype.addCall = function (call_type, flash) {
     return obj;
 };
 
-PexRTC.prototype.disconnectCall = function (referral) {
+PexRTC.prototype.disconnectCall = function(referral) {
     var self = this;
 
     if (self.call) {
@@ -3590,7 +3380,7 @@ PexRTC.prototype.disconnectCall = function (referral) {
     }
 };
 
-PexRTC.prototype.renegotiate = function (call_type) {
+PexRTC.prototype.renegotiate = function(call_type) {
     var self = this;
 
     if (self.call && self.call.update) {
@@ -3598,12 +3388,12 @@ PexRTC.prototype.renegotiate = function (call_type) {
     }
 };
 
-PexRTC.prototype.clearLocalStream = function () {
+PexRTC.prototype.clearLocalStream = function() {
     var self = this;
 
     if (self.call && self.call.pc) {
         var streams = self.call.pc.getLocalStreams();
-        for (var i = 0; i < streams.length; i++) {
+        for (var i=0; i<streams.length; i++) {
             self.call.pc.removeStream(streams[i]);
         }
         self.call.localStream = null;
@@ -3611,7 +3401,7 @@ PexRTC.prototype.clearLocalStream = function () {
     self.user_media_stream = null;
 };
 
-PexRTC.prototype.present = function (call_type) {
+PexRTC.prototype.present = function(call_type) {
     var self = this;
     if (!self.screenshare && call_type) {
         self.addCall(call_type, null);
@@ -3622,7 +3412,7 @@ PexRTC.prototype.present = function (call_type) {
     }
 };
 
-PexRTC.prototype.muteAudio = function (setting) {
+PexRTC.prototype.muteAudio = function(setting) {
     var self = this;
 
     if (self.call && self.call.state == 'CONNECTED') {
@@ -3636,7 +3426,7 @@ PexRTC.prototype.muteAudio = function (setting) {
     return self.mutedAudio;
 };
 
-PexRTC.prototype.muteVideo = function (setting) {
+PexRTC.prototype.muteVideo = function(setting) {
     var self = this;
 
     if (self.call) {
@@ -3656,25 +3446,21 @@ PexRTC.prototype.muteVideo = function (setting) {
     return self.mutedVideo;
 };
 
-PexRTC.prototype.sendDTMFRequest = function (digits, target) {
+PexRTC.prototype.sendDTMFRequest = function(digits, target) {
     var self = this;
 
-    if (target == 'call') {
-        self.sendRequest('participants/' + self.uuid + '/calls/' + self.call.call_uuid + '/dtmf', { digits: digits }, function () {
-            self.dtmfSent(target);
-        });
+    if (target == "call") {
+        self.sendRequest('participants/' + self.uuid + '/calls/' + self.call.call_uuid + '/dtmf', { 'digits' : digits }, function() { self.dtmfSent(target); });
     } else {
-        self.sendRequest('participants/' + target + '/dtmf', { digits: digits }, function () {
-            self.dtmfSent(target);
-        });
+        self.sendRequest('participants/' + target + '/dtmf', { 'digits' : digits }, function() { self.dtmfSent(target); });
     }
 };
 
-PexRTC.prototype.sendDTMF = function (digits, target) {
+PexRTC.prototype.sendDTMF = function(digits, target) {
     var self = this;
 
-    target = target || 'call';
-    if (target == 'call' && !self.call) {
+    target = target || "call";
+    if (target == "call" && !self.call) {
         return false;
     }
 
@@ -3686,39 +3472,35 @@ PexRTC.prototype.sendDTMF = function (digits, target) {
     }
 };
 
-PexRTC.prototype.dtmfSent = function (target) {
-    var self = this;
+PexRTC.prototype.dtmfSent = function(target) {
+     var self = this;
 
-    if (self.dtmf_queue[target].length === 0) {
-        delete self.dtmf_queue[target];
-    } else {
+     if (self.dtmf_queue[target].length === 0) {
+         delete self.dtmf_queue[target];
+     } else {
         self.sendDTMFRequest(self.dtmf_queue[target].shift(), target);
-    }
+     }
 };
 
-PexRTC.prototype.sendFECCRequest = function (data, target) {
+PexRTC.prototype.sendFECCRequest = function(data, target) {
     var self = this;
 
-    if (target == 'call') {
-        self.sendRequest('participants/' + self.uuid + '/calls/' + self.call.call_uuid + '/fecc', data, function () {
-            self.feccSent(target);
-        });
+    if (target == "call") {
+        self.sendRequest('participants/' + self.uuid + '/calls/' + self.call.call_uuid + '/fecc', data, function() { self.feccSent(target); });
     } else {
-        self.sendRequest('participants/' + target + '/fecc', data, function () {
-            self.feccSent(target);
-        });
+        self.sendRequest('participants/' + target + '/fecc', data, function() { self.feccSent(target); });
     }
 };
 
-PexRTC.prototype.sendFECC = function (action, axis, direction, target, timeout) {
+PexRTC.prototype.sendFECC = function(action, axis, direction, target, timeout) {
     var self = this;
 
-    target = target || 'call';
-    if (target == 'call' && !self.call) {
+    target = target || "call";
+    if (target == "call" && !self.call) {
         return false;
     }
 
-    data = { action: action, movement: [{ axis: axis, direction: direction }], timeout: timeout };
+    data = {'action': action, 'movement': [{'axis': axis, 'direction': direction}], 'timeout': timeout};
     if (self.fecc_queue[target] === undefined) {
         self.fecc_queue[target] = [];
         self.sendFECCRequest(data, target);
@@ -3727,17 +3509,17 @@ PexRTC.prototype.sendFECC = function (action, axis, direction, target, timeout) 
     }
 };
 
-PexRTC.prototype.feccSent = function (target) {
-    var self = this;
+PexRTC.prototype.feccSent = function(target) {
+     var self = this;
 
-    if (self.fecc_queue[target].length === 0) {
-        delete self.fecc_queue[target];
-    } else {
+     if (self.fecc_queue[target].length === 0) {
+         delete self.fecc_queue[target];
+     } else {
         self.sendFECCRequest(self.fecc_queue[target].shift(), target);
-    }
+     }
 };
 
-PexRTC.prototype.holdresume = function (setting) {
+PexRTC.prototype.holdresume = function(setting) {
     var self = this;
 
     if (self.call) {
@@ -3755,7 +3537,7 @@ PexRTC.prototype.holdresume = function (setting) {
     }
 };
 
-PexRTC.prototype.getRosterList = function () {
+PexRTC.prototype.getRosterList = function() {
     var self = this;
 
     var roster = [];
@@ -3765,7 +3547,7 @@ PexRTC.prototype.getRosterList = function () {
     return roster;
 };
 
-PexRTC.prototype.processRoster = function (msg) {
+PexRTC.prototype.processRoster = function(msg) {
     var self = this;
 
     if (self.onRosterList) {
@@ -3773,46 +3555,29 @@ PexRTC.prototype.processRoster = function (msg) {
     }
 };
 
-PexRTC.prototype.getPresentationURL = function () {
+PexRTC.prototype.getPresentationURL = function() {
     var self = this;
     var url = null;
     var presentation_image = 'presentation.jpeg';
     if (self.presentation_event_id) {
         if (self.png_presentation) {
-            url =
-                'https://' +
-                self.node +
-                '/api/client/v2/conferences/' +
-                self.conference_uri +
-                '/presentation.png?id=' +
-                self.presentation_event_id +
-                '&token=' +
-                self.token;
+            url = "https://" + self.node + "/api/client/v2/conferences/" + self.conference_uri + "/presentation.png?id=" + self.presentation_event_id + "&token=" + self.token;
         } else {
-            if (self.bandwidth_in > 512) {
-                presentation_image = 'presentation_high.jpeg';
-            }
-            url =
-                'https://' +
-                self.node +
-                '/api/client/v2/conferences/' +
-                self.conference_uri +
-                '/' +
-                presentation_image +
-                '?id=' +
-                self.presentation_event_id +
-                '&token=' +
-                self.token;
+	    if (self.bandwidth_in > 512) {
+		presentation_image = "presentation_high.jpeg";
+	    }
+            url = "https://" + self.node + "/api/client/v2/conferences/" + self.conference_uri + "/" + presentation_image + "?id=" + self.presentation_event_id + "&token=" + self.token;
         }
     }
     return url;
 };
 
-PexRTC.prototype.getPresentation = function () {
+
+PexRTC.prototype.getPresentation = function() {
     var self = this;
 
     if (!self.presentation) {
-        self.addCall('presentation');
+        self.addCall("presentation");
     } else if (self.onPresentationConnected) {
         if (self.return_media_stream) {
             self.onPresentationConnected(self.presentation.stream);
@@ -3823,7 +3588,7 @@ PexRTC.prototype.getPresentation = function () {
     }
 };
 
-PexRTC.prototype.stopPresentation = function () {
+PexRTC.prototype.stopPresentation = function() {
     var self = this;
 
     if (self.presentation) {
@@ -3832,34 +3597,35 @@ PexRTC.prototype.stopPresentation = function () {
     }
 };
 
-PexRTC.prototype.processPresentation = function (msg) {
+
+PexRTC.prototype.processPresentation = function(msg) {
     var self = this;
 
-    if (msg.status == 'newframe') {
+    if (msg.status == "newframe") {
         if (self.onPresentationReload && !self.onHold) {
             self.onPresentationReload(self.getPresentationURL());
         }
     } else {
         if (self.onPresentation) {
-            if (msg.status == 'start') {
+            if (msg.status == "start") {
                 var presenter;
-                if (msg.presenter_name !== '') {
-                    presenter = msg.presenter_name + ' <' + msg.presenter_uri + '>';
+                if (msg.presenter_name !== "") {
+                    presenter = msg.presenter_name + " <" + msg.presenter_uri + ">";
                 } else {
                     presenter = msg.presenter_uri;
                 }
                 self.onPresentation(true, presenter, msg.presenter_uuid);
-            } else if (msg.status == 'stop') {
+            } else if (msg.status == "stop") {
                 self.onPresentation(false, null);
             }
         }
     }
 };
 
-PexRTC.prototype.processRefer = function (msg) {
+PexRTC.prototype.processRefer = function(msg) {
     var self = this;
 
-    self.disconnect('Call transferred', true);
+    self.disconnect("Call transferred", true);
     self.state = 'IDLE';
 
     if (self.onCallTransfer) {
@@ -3872,13 +3638,13 @@ PexRTC.prototype.processRefer = function (msg) {
     self.bandwidth_out = self.orig_bandwidth_out;
 
     if (self.state != 'DISCONNECTING') {
-        setTimeout(function () {
-            self.makeCall(self.node, msg.alias, self.display_name, undefined, self.call_type, self.flash);
+        setTimeout(function() {
+          self.makeCall(self.node, msg.alias, self.display_name, undefined, self.call_type, self.flash);
         }, 500);
     }
 };
 
-PexRTC.prototype.disconnect = function (reason, referral) {
+PexRTC.prototype.disconnect = function(reason, referral) {
     var self = this;
 
     self.state = 'DISCONNECTING';
@@ -3910,38 +3676,38 @@ PexRTC.prototype.disconnect = function (reason, referral) {
             params['reason'] = reason;
         }
         if (navigator.sendBeacon) {
-            var beaconUrl =
-                'https://' + self.node + '/api/client/v2/conferences/' + self.conference_uri + '/release_token?token=' + self.token;
+            var beaconUrl = "https://" + self.node + "/api/client/v2/conferences/" + self.conference_uri + "/release_token?token=" + self.token;
             navigator.sendBeacon(beaconUrl, JSON.stringify(params));
         } else {
-            self.sendRequest('release_token', params, false);
+            self.sendRequest("release_token", params, false);
         }
         self.token = null;
     }
 };
 
-PexRTC.prototype.sendPresentationImage = function (file, cb) {
+PexRTC.prototype.sendPresentationImage = function(file, cb) {
     var self = this;
     if (self.screenshare && self.screenshare.sendPresentationImageFile) {
         return self.screenshare.sendPresentationImageFile(file, cb);
     }
 };
 
-PexRTC.prototype.getMediaStatistics = function () {
+PexRTC.prototype.getMediaStatistics = function() {
     var self = this;
 
     return self.stats.getStats();
 };
 
-PexRTC.prototype.getVersion = function () {
+PexRTC.prototype.getVersion = function() {
     var self = this;
 
     if (self.version) {
-        return self.version.version_id + ' (' + self.version.pseudo_version + ')';
+        return self.version.version_id + " (" + self.version.pseudo_version + ")";
     } else {
-        return 'Unknown';
+        return "Unknown";
     }
 };
+
 
 function PexFlashEventsClass(call) {
     var self = this;
@@ -3949,30 +3715,31 @@ function PexFlashEventsClass(call) {
     self.call = call;
 }
 
-PexFlashEventsClass.prototype.onError = function () {
+PexFlashEventsClass.prototype.onError = function() {
     var self = this;
     self.call.onError(self.call.trans.ERROR_DISCONNECTED);
 };
 
-PexFlashEventsClass.prototype.onCallEnded = function () {
+PexFlashEventsClass.prototype.onCallEnded = function() {
     var self = this;
     //self.call.onDisconnect(self.call.trans.ERROR_DISCONNECTED);
 };
 
-PexFlashEventsClass.prototype.onMicActivity = function () {
+PexFlashEventsClass.prototype.onMicActivity = function() {
     var self = this;
     self.call.onMicActivity();
 };
 
-PexFlashEventsClass.prototype.onCameraError = function () {
+PexFlashEventsClass.prototype.onCameraError = function() {
     var self = this;
     self.call.onError(self.call.trans.ERROR_USER_MEDIA);
 };
 
-PexFlashEventsClass.prototype.onConnect = function (stream) {
+PexFlashEventsClass.prototype.onConnect = function(stream) {
     var self = this;
     self.call.onConnect(stream);
 };
+
 
 function PexRTCStreamStatistics(parent) {
     var self = this;
@@ -3988,24 +3755,24 @@ function PexRTCStreamStatistics(parent) {
     self.parent = parent;
 }
 
-PexRTCStreamStatistics.prototype.getStats = function () {
+PexRTCStreamStatistics.prototype.getStats = function() {
     var self = this;
     return self.info;
 };
 
-PexRTCStreamStatistics.prototype.updateBWEStats = function (result) {
+PexRTCStreamStatistics.prototype.updateBWEStats = function(result) {
     var self = this;
     self.info['configured-bitrate'] = (result.stat('googTargetEncBitrate') / 1000).toFixed(1) + 'kbps';
 };
 
-PexRTCStreamStatistics.prototype.updatePacketLossStats = function (currentPackets, currentLost) {
+PexRTCStreamStatistics.prototype.updatePacketLossStats = function(currentPackets, currentLost) {
     var self = this;
 
     var currentTotal = currentPackets + currentLost;
     if (currentTotal === 0) {
         self.info['percentage-lost'] = '0%';
     } else {
-        self.info['percentage-lost'] = ((currentLost / currentTotal) * 100).toFixed(1) + '%';
+        self.info['percentage-lost'] = (currentLost / currentTotal * 100).toFixed(1) + '%';
     }
 
     var sample;
@@ -4022,17 +3789,17 @@ PexRTCStreamStatistics.prototype.updatePacketLossStats = function (currentPacket
     if (self.recentTotal === 0) {
         self.info['percentage-lost-recent'] = '0%';
     } else {
-        self.info['percentage-lost-recent'] = ((self.recentLost / self.recentTotal) * 100).toFixed(1) + '%';
+        self.info['percentage-lost-recent'] = (self.recentLost / self.recentTotal * 100).toFixed(1) + '%';
     }
 };
 
-PexRTCStreamStatistics.prototype.updateRxStats = function (result) {
+PexRTCStreamStatistics.prototype.updateRxStats = function(result) {
     var self = this;
     self.info['packets-received'] = result.stat('packetsReceived');
     self.info['packets-lost'] = result.stat('packetsLost');
     self.info['percentage-lost'] = 0;
     self.info['percentage-lost-recent'] = 0;
-    self.info['bitrate'] = 'unavailable';
+    self.info['bitrate'] = "unavailable";
 
     var packetsReceived = parseInt(self.info['packets-received']) | 0;
     var packetsLost = parseInt(self.info['packets-lost']) | 0;
@@ -4041,16 +3808,18 @@ PexRTCStreamStatistics.prototype.updateRxStats = function (result) {
         self.updatePacketLossStats(packetsReceived, packetsLost);
 
         if (self.lastTimestamp > 0) {
-            var kbps = Math.round(((result.stat('bytesReceived') - self.lastBytes) * 8) / (result.timestamp - self.lastTimestamp));
+            var kbps = Math.round((result.stat('bytesReceived') - self.lastBytes) * 8 / (result.timestamp - self.lastTimestamp));
             self.info['bitrate'] = kbps + 'kbps';
         }
 
         if (result.stat('googFrameHeightReceived'))
             self.info['resolution'] = result.stat('googFrameWidthReceived') + 'x' + result.stat('googFrameHeightReceived');
 
-        if (result.stat('googCodecName')) self.info['codec'] = result.stat('googCodecName');
+        if (result.stat('googCodecName'))
+            self.info['codec'] = result.stat('googCodecName');
 
-        if (result.stat('googDecodeMs')) self.info['decode-delay'] = result.stat('googDecodeMs') + 'ms';
+        if (result.stat('googDecodeMs'))
+            self.info['decode-delay'] = result.stat('googDecodeMs') + 'ms';
     }
 
     self.lastTimestamp = result.timestamp;
@@ -4059,14 +3828,14 @@ PexRTCStreamStatistics.prototype.updateRxStats = function (result) {
     self.lastLost = packetsLost;
 };
 
-PexRTCStreamStatistics.prototype.updateTxStats = function (result) {
+PexRTCStreamStatistics.prototype.updateTxStats = function(result) {
     var self = this;
 
     self.info['packets-sent'] = result.stat('packetsSent');
     self.info['packets-lost'] = result.stat('packetsLost');
     self.info['percentage-lost'] = 0;
     self.info['percentage-lost-recent'] = 0;
-    self.info['bitrate'] = 'unavailable';
+    self.info['bitrate'] = "unavailable";
 
     var packetsSent = parseInt(self.info['packets-sent']) | 0;
     var packetsLost = parseInt(self.info['packets-lost']) | 0;
@@ -4075,7 +3844,7 @@ PexRTCStreamStatistics.prototype.updateTxStats = function (result) {
         self.updatePacketLossStats(packetsSent, packetsLost);
 
         if (self.lastTimestamp > 0) {
-            var kbps = Math.round(((result.stat('bytesSent') - self.lastBytes) * 8) / (result.timestamp - self.lastTimestamp));
+            var kbps = Math.round((result.stat('bytesSent') - self.lastBytes) * 8 / (result.timestamp - self.lastTimestamp));
             self.info['bitrate'] = kbps + 'kbps';
         }
 
@@ -4094,17 +3863,17 @@ PexRTCStreamStatistics.prototype.updateTxStats = function (result) {
     self.lastLost = packetsLost;
 };
 
-PexRTCStreamStatistics.prototype.updateRxStatsFF = function (result) {
+PexRTCStreamStatistics.prototype.updateRxStatsFF = function(result) {
     var self = this;
 
     self.info['packets-received'] = result.packetsReceived;
     self.info['packets-lost'] = result.packetsLost;
     self.info['percentage-lost'] = 0;
-    self.info['bitrate'] = 'unavailable';
+    self.info['bitrate'] = "unavailable";
 
     if (self.parent.codecs.hasOwnProperty(result['codecId'])) {
         var codec = self.parent.codecs[result['codecId']].split('/');
-        self.info['codec'] = codec[codec.length - 1];
+        self.info['codec'] = codec[codec.length-1];
     }
     if (self.parent.resolutions.hasOwnProperty(result['trackId'])) {
         self.info['resolution'] = self.parent.resolutions[result['trackId']];
@@ -4121,7 +3890,7 @@ PexRTCStreamStatistics.prototype.updateRxStatsFF = function (result) {
             // Safari is in milliseconds
             tsDiff = tsDiff / 1000;
         }
-        var kbps = Math.round(((result.bytesReceived - self.lastBytes) * 8) / tsDiff);
+        var kbps = Math.round((result.bytesReceived - self.lastBytes) * 8 / tsDiff);
         self.info['bitrate'] = kbps + 'kbps';
     }
 
@@ -4131,15 +3900,15 @@ PexRTCStreamStatistics.prototype.updateRxStatsFF = function (result) {
     self.lastLost = packetsLost;
 };
 
-PexRTCStreamStatistics.prototype.updateTxStatsFF = function (result) {
+PexRTCStreamStatistics.prototype.updateTxStatsFF = function(result) {
     var self = this;
 
     self.info['packets-sent'] = result.packetsSent;
-    self.info['bitrate'] = 'unavailable';
+    self.info['bitrate'] = "unavailable";
 
     if (self.parent.codecs.hasOwnProperty(result['codecId'])) {
         var codec = self.parent.codecs[result['codecId']].split('/');
-        self.info['codec'] = codec[codec.length - 1];
+        self.info['codec'] = codec[codec.length-1];
     }
     if (self.parent.resolutions.hasOwnProperty(result['trackId'])) {
         self.info['resolution'] = self.parent.resolutions[result['trackId']];
@@ -4152,7 +3921,7 @@ PexRTCStreamStatistics.prototype.updateTxStatsFF = function (result) {
         if (tsDiff > 500000) {
             tsDiff = tsDiff / 1000;
         }
-        var kbps = Math.round(((result.bytesSent - self.lastBytes) * 8) / tsDiff);
+        var kbps = Math.round((result.bytesSent - self.lastBytes) * 8 / tsDiff);
         self.info['bitrate'] = kbps + 'kbps';
     }
 
@@ -4160,7 +3929,7 @@ PexRTCStreamStatistics.prototype.updateTxStatsFF = function (result) {
     self.lastBytes = result.bytesSent;
 };
 
-PexRTCStreamStatistics.prototype.updateRtcpTxStatsFF = function (result) {
+PexRTCStreamStatistics.prototype.updateRtcpTxStatsFF = function(result) {
     var self = this;
 
     self.info['packets-lost'] = result.packetsLost;
@@ -4182,10 +3951,10 @@ function PexRTCStatistics() {
     self.audio_in = new PexRTCStreamStatistics(self);
     self.video_out = new PexRTCStreamStatistics(self);
     self.video_in = new PexRTCStreamStatistics(self);
-    self.googCpuLimitedResolution = 'false';
+    self.googCpuLimitedResolution = "false";
 }
 
-PexRTCStatistics.prototype.updateStats = function (results) {
+PexRTCStatistics.prototype.updateStats = function(results) {
     var self = this;
 
     var audio_send = null;
@@ -4196,10 +3965,8 @@ PexRTCStatistics.prototype.updateStats = function (results) {
     for (var i = 0; i < results.length; ++i) {
         if (self.statIsOfType(results[i], 'audio', 'send')) audio_send = results[i];
         else if (self.statIsOfType(results[i], 'audio', 'recv')) audio_recv = results[i];
-        else if (self.statIsOfType(results[i], 'video', 'send')) {
-            video_send = results[i];
-            self.updateGoogCpuLimitedResolution(results[i]);
-        } else if (self.statIsOfType(results[i], 'video', 'recv')) video_recv = results[i];
+        else if (self.statIsOfType(results[i], 'video', 'send')) { video_send = results[i]; self.updateGoogCpuLimitedResolution(results[i]); }
+        else if (self.statIsOfType(results[i], 'video', 'recv')) video_recv = results[i];
         else if (self.statIsBandwidthEstimation(results[i])) self.video_out.updateBWEStats(results[i]);
     }
 
@@ -4209,7 +3976,7 @@ PexRTCStatistics.prototype.updateStats = function (results) {
     if (video_recv) self.video_in.updateRxStats(video_recv);
 };
 
-PexRTCStatistics.prototype.updateStatsFF = function (results) {
+PexRTCStatistics.prototype.updateStatsFF = function(results) {
     var self = this;
 
     var keys = results.keys();
@@ -4224,26 +3991,24 @@ PexRTCStatistics.prototype.updateStatsFF = function (results) {
     }
 };
 
-PexRTCStatistics.prototype.updateStatsNew = function (results) {
+PexRTCStatistics.prototype.updateStatsNew = function(results) {
     var self = this;
 
     var values = results.values();
     for (var val_i = values.next(); !val_i.done; val_i = values.next()) {
         var val = val_i.value;
         if (val.type == 'outbound-rtp' && val.mediaType == 'audio') self.audio_out.updateTxStatsFF(val);
-        else if (val.type == 'remote-inbound-rtp' && (val.mediaType == 'audio' || val.kind == 'audio'))
-            self.audio_out.updateRtcpTxStatsFF(val);
+        else if (val.type == 'remote-inbound-rtp' && (val.mediaType == 'audio' || val.kind == 'audio')) self.audio_out.updateRtcpTxStatsFF(val);
         else if (val.type == 'inbound-rtp' && val.mediaType == 'audio') self.audio_in.updateRxStatsFF(val);
         else if (val.type == 'outbound-rtp' && val.mediaType == 'video') self.video_out.updateTxStatsFF(val);
-        else if (val.type == 'remote-inbound-rtp' && (val.mediaType == 'video' || val.kind == 'video'))
-            self.video_out.updateRtcpTxStatsFF(val);
+        else if (val.type == 'remote-inbound-rtp' && (val.mediaType == 'video' || val.kind == 'video')) self.video_out.updateRtcpTxStatsFF(val);
         else if (val.type == 'inbound-rtp' && val.mediaType == 'video') self.video_in.updateRxStatsFF(val);
         else if (val.type == 'codec') self.codecs[val.id] = val.mimeType;
-        else if (val.type == 'track' && val.frameWidth) self.resolutions[val.id] = val.frameWidth + 'x' + val.frameHeight;
+        else if (val.type == 'track' && val.frameWidth) self.resolutions[val.id] = val.frameWidth + "x" + val.frameHeight;
     }
 };
 
-PexRTCStatistics.prototype.updateStatsSafari = function (results) {
+PexRTCStatistics.prototype.updateStatsSafari = function(results) {
     var self = this;
 
     var keys = results.keys();
@@ -4256,26 +4021,20 @@ PexRTCStatistics.prototype.updateStatsSafari = function (results) {
     }
 };
 
-PexRTCStatistics.prototype.statIsBandwidthEstimation = function (result) {
+PexRTCStatistics.prototype.statIsBandwidthEstimation = function(result) {
     return result.type == 'VideoBwe';
 };
 
-PexRTCStatistics.prototype.statIsOfType = function (result, type, direction) {
+PexRTCStatistics.prototype.statIsOfType = function(result, type, direction) {
     var self = this;
     return result.type == 'ssrc' && result.stat('mediaType') == type && result.id.search(direction) != -1;
 };
 
-PexRTCStatistics.prototype.updateGoogCpuLimitedResolution = function (result) {
+PexRTCStatistics.prototype.updateGoogCpuLimitedResolution = function(result) {
     var self = this;
 
     var newLimit = result.stat('googCpuLimitedResolution');
-    if (
-        newLimit == 'true' &&
-        newLimit != self.googCpuLimitedResolution &&
-        self.parent.chrome_ver > 55 &&
-        self.parent.chrome_ver < 72 &&
-        self.parent.h264_enabled == true
-    ) {
+    if (newLimit == "true" && newLimit != self.googCpuLimitedResolution && self.parent.chrome_ver > 55 && self.parent.chrome_ver < 72 && self.parent.h264_enabled == true) {
         self.parent.onLog('googCpuLimitedResolution triggered, renegotiating to VP8');
         self.googCpuLimitedResolution = newLimit;
         self.parent.h264_enabled = false;
@@ -4283,7 +4042,7 @@ PexRTCStatistics.prototype.updateGoogCpuLimitedResolution = function (result) {
     }
 };
 
-PexRTCStatistics.prototype.getStats = function () {
+PexRTCStatistics.prototype.getStats = function() {
     var self = this;
     if (self.parent.firefox_ver > 0 && self.parent.firefox_ver < 47) {
         return {};
@@ -4291,8 +4050,8 @@ PexRTCStatistics.prototype.getStats = function () {
     if (self.audio_in.lastTimestamp === null) {
         return {};
     }
-    return {
-        outgoing: { audio: self.audio_out.getStats(), video: self.video_out.getStats() },
-        incoming: { audio: self.audio_in.getStats(), video: self.video_in.getStats() }
-    };
+    return {'outgoing': {'audio': self.audio_out.getStats(),
+                         'video': self.video_out.getStats()},
+            'incoming': {'audio': self.audio_in.getStats(),
+                         'video': self.video_in.getStats()}};
 };
