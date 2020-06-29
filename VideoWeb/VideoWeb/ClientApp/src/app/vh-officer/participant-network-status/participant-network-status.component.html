@@ -5,6 +5,7 @@
     src="/assets/images/{{ getParticipantNetworkStatus() }}"
     (mouseover)="onMouseEnter($event)"
     (mouseout)="onMouseExit($event)"
+    (mousemove)="updateGraphPosition($event)"
     alt="Open instant messaging chat window arrow"
   />
   <div *ngIf="displayGraph" #graphContainer class="graph-container" style="margin-left: 7px;" (mouseleave)="setGraphVisibility(false)">
