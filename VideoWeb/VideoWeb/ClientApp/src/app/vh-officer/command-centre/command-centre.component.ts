@@ -219,7 +219,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
                 });
 
                 if (this.hearings) {
-                    this.applyFilterInit();
+                  //  this.applyFilterInit();
                 }
 
                 if (this.selectedHearing) {
