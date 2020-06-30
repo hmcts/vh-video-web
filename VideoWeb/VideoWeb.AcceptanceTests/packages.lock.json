@@ -208,21 +208,21 @@
       },
       "Selenium.WebDriver.ChromeDriver": {
         "type": "Direct",
-        "requested": "[83.0.4103.3900, )",
-        "resolved": "83.0.4103.3900",
-        "contentHash": "lbVAHeSPf5E0IJNtsO5sf1rQhaA1ePoHfaA3o2XZBMsQVDOkM1WpDeTe9KyuPKabdluUvVbt7vkufxlZLCGJ6w=="
+        "requested": "[83.0.4103.3910, )",
+        "resolved": "83.0.4103.3910",
+        "contentHash": "bYb8VfBrPsg35tDa89N71rbZ7u3/6f4pdXGjWxjze6vIshA9bdK0lywZ2RJAxkC8MrA7PCMlrJyhkkT+aDjU7Q=="
       },
       "Selenium.WebDriver.GeckoDriver": {
         "type": "Direct",
-        "requested": "[0.26.0.1, )",
-        "resolved": "0.26.0.1",
-        "contentHash": "VCyWc1/t8wven03BCV39ptqXWcoflTIl/YSwT5yUWIP6Y95S6IqRXYAqOlRb8NXxl4JIrmDIHorEirCq+pZ9JA=="
+        "requested": "[0.26.0.3, )",
+        "resolved": "0.26.0.3",
+        "contentHash": "jVo8GB0Gabbp3WJcifn8roOTZisZg29yP7gQsUwHAMtseXkO0y7Fu+JVyK7tdNr7nVeZsqWPq2/17m7UsTOzjQ=="
       },
       "Selenium.WebDriver.IEDriver": {
         "type": "Direct",
-        "requested": "[3.150.1, )",
-        "resolved": "3.150.1",
-        "contentHash": "w30U4b7qQm86jQBAm7DFJTlwXPvNmDIs5/Ebz0UPuKEFVFwWEi0IfWqnzJxzH73vspDW5hXbs2C929U4FUpbvg=="
+        "requested": "[3.150.1.1, )",
+        "resolved": "3.150.1.1",
+        "contentHash": "jN7ubIOj+6g/emdoaWpApLsgbxDMHGYi0R8oUZD5q022hDYXtfT4R975ogEY33huOCWdzEUsnjH1A44ZNjJ5EA=="
       },
       "Selenium.WebDriver.MicrosoftDriver": {
         "type": "Direct",
@@ -276,9 +276,9 @@
       },
       "VH.AcceptanceTests.Common": {
         "type": "Direct",
-        "requested": "[1.0.229, )",
-        "resolved": "1.0.229",
-        "contentHash": "5wAB/wPRwQviW8uO6D3e7v1ID7SdSx+pJyolbUFA9jDeJpkAH6I/mgHhs8dGkEcMzeeKFmLpVz3WFUFvFMqkuQ==",
+        "requested": "[1.0.231, )",
+        "resolved": "1.0.231",
+        "contentHash": "GOSBfXscS/6fD+my3MDW5WVYAToExMaoX+r+KVKg/urVY64J9EiuNnleme6WFqaIOWgAycNvo9XfNgmRKv/lQA==",
         "dependencies": {
           "Appium.WebDriver": "4.1.1",
           "Azure.Storage.Blobs": "12.4.4",

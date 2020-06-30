@@ -18,7 +18,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By ParticipantContactName(Guid participantId) => By.Id($"tooltip-name-case-group-{participantId:D}");
         public static By ParticipantContactEmail(Guid participantId) => By.Id($"tooltip-email-{participantId:D}");
         public static By ParticipantContactPhone(Guid participantId) => By.Id($"tooltip-contact-phone-{participantId:D}");
-        public static By FiltersButton = By.Id("filterButton");
+        public static By FiltersButton = By.Id("filters-court-rooms");
         public static By HearingsTabButton = By.Id("hearingsTabButton");
         public static By MessagesTabButton = By.Id("messagesTabButton");
         public static By SelectParticipantToMessage(Guid participantId) => By.Id($"{participantId:D}-unread-messages-image");
