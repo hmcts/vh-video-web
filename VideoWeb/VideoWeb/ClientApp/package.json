@@ -52,7 +52,7 @@
     "ngx-device-detector": "^1.4.4",
     "ngx-moment": "^3.5.0",
     "run-script-os": "^1.1.1",
-    "rxjs": "^6.5.4",
+    "rxjs": "^6.5.5",
     "snyk": "^1.332.0",
     "webrtc-adapter": "^7.6.0",
     "zone.js": "~0.10.2"
