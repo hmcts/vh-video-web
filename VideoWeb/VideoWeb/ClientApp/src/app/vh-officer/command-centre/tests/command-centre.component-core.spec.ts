@@ -262,4 +262,15 @@ describe('CommandCentreComponent - Core', () => {
         component.applyFilter(filter);
         expect(component.hearings.length).toBe(0);
     });
+    it('should not filter hearings if all options selected to show all hearings for selected venues on init', () => {
+        const filter = [new CourtRoomsAccounts('judge', ['fudge'], true), new CourtRoomsAccounts('manual', ['manual1', 'manual2'], true)];
+        const courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
+        courtAccountsAllocationStorage.set(filter);
+        const numberHearing = component.hearings.length;
+
+        hearings.forEach(x => component.originalHearings.push(x));
+
+        component.applyFilterInit();
+        expect(component.hearings.length).toBe(numberHearing);
+    });
 });
