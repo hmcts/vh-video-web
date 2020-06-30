@@ -214,6 +214,9 @@ describe('CommandCentreComponent - Core', () => {
         const courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
         courtAccountsAllocationStorage.set(filter);
         const numberHearing = component.hearings.length;
+
+        hearings.forEach(x => component.originalHearings.push(x));
+
         component.applyFilter(filter);
         expect(component.hearings.length).toBe(numberHearing);
     });
@@ -232,6 +235,8 @@ describe('CommandCentreComponent - Core', () => {
         judge[0].last_name = 'manual1';
 
         component.hearings.push(new HearingSummary(conferencesFilter));
+        component.hearings.forEach(x => component.originalHearings.push(x));
+
         component.applyFilter(filter);
         expect(component.hearings.length).toBe(1);
         expect(component.hearings[0].getParticipants().filter(p => p.isJudge)[0].firstName).toBe('manual');
@@ -252,6 +257,8 @@ describe('CommandCentreComponent - Core', () => {
         judge[0].last_name = 'manual1';
 
         component.hearings.push(new HearingSummary(conferencesFilter));
+        component.hearings.forEach(x => component.originalHearings.push(x));
+
         component.applyFilter(filter);
         expect(component.hearings.length).toBe(0);
     });
