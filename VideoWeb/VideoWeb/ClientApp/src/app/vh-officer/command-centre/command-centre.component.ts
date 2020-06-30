@@ -237,7 +237,8 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     applyFilterInit() {
-        Object.assign(this.originalHearings, this.hearings);
+        this.originalHearings.length = 0;
+        this.hearings.forEach(x => this.originalHearings.push(x));
         const filter = this.courtAccountsAllocationStorage.get();
         if (filter) {
             this.hearingsFiltering(filter);
@@ -283,13 +284,9 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     applyFilter(filter: CourtRoomsAccounts[]) {
-        const isOriginal = filter.every(x => x.selected);
-        this.hearings = [];
-        Object.assign(this.hearings, this.originalHearings);
-
-        if (!isOriginal) {
-            this.hearingsFiltering(filter);
-        }
+        this.hearings.length = 0;
+        this.originalHearings.forEach(x => this.hearings.push(x));
+        this.hearingsFiltering(filter);
     }
 
     hearingsFiltering(filter) {
