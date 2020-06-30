@@ -218,9 +218,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
                     return h;
                 });
 
-                if (this.hearings) {
-                    this.applyFilterInit();
-                }
 
                 if (this.selectedHearing) {
                     this.eventbus.emit(new EmitEvent(VHEventType.PageRefreshed, null));
@@ -236,14 +233,14 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         );
     }
 
-    applyFilterInit() {
-        this.originalHearings.length = 0;
-        this.hearings.forEach(x => this.originalHearings.push(x));
-        const filter = this.courtAccountsAllocationStorage.get();
-        if (filter) {
-            this.hearingsFiltering(filter);
-        }
-    }
+    // applyFilterInit() {
+    //    this.originalHearings.length = 0;
+    //    this.hearings.forEach(x => this.originalHearings.push(x));
+    //    const filter = this.courtAccountsAllocationStorage.get();
+    //    if (filter) {
+    //        this.hearingsFiltering(filter);
+    //    }
+    // }
 
     isCurrentConference(conferenceId: string): boolean {
         return this.selectedHearing != null && this.selectedHearing.getConference().id === conferenceId;
