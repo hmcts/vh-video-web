@@ -17,7 +17,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly LoginSteps _loginSteps;
         private readonly HearingsListSteps _hearingListSteps;
         private readonly VhoHearingListSteps _vhoHearingListSteps;
-        private readonly VhoVenueListSteps _vhoVenueListSteps;
+        private readonly VenueListSteps _vhoVenueListSteps;
         private readonly IntroductionSteps _introductionSteps;
         private readonly EquipmentCheckSteps _equipmentCheckSteps;
         private readonly SwitchOnCamAndMicSteps _switchOnCamAndMicSteps;
@@ -33,7 +33,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             DataSetupSteps dataSetupSteps,
             LoginSteps loginSteps, 
             HearingsListSteps hearingListSteps, 
-            VhoVenueListSteps vhoVenueListSteps,
+            VenueListSteps vhoVenueListSteps,
             VhoHearingListSteps vhoHearingListSteps,
             IntroductionSteps introductionSteps,
             EquipmentCheckSteps equipmentCheckSteps, 
