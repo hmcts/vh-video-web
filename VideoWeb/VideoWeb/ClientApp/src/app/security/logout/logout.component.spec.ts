@@ -1,6 +1,8 @@
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { MockAdalService } from '../../testing/mocks/MockAdalService';
 import { LogoutComponent } from './logout.component';
+import { SessionStorage } from '../../services/session-storage';
+import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
 
 describe('LogoutComponent', () => {
     let component: LogoutComponent;
@@ -18,10 +20,13 @@ describe('LogoutComponent', () => {
     });
 
     it('should call logout if authenticated', () => {
+        const sessionStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
+        sessionStorage.set(['one', 'tow']);
         adalService.setAuthenticated(true);
         spyOn(adalService, 'logOut').and.callFake(() => {});
         component.ngOnInit();
         expect(adalService.logOut).toHaveBeenCalled();
+        expect(sessionStorage.get()).toBeNull();
     });
 
     it('should not call logout if unauthenticated', () => {
