@@ -218,7 +218,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
                     return h;
                 });
 
-
                 if (this.selectedHearing) {
                     this.eventbus.emit(new EmitEvent(VHEventType.PageRefreshed, null));
                 }
