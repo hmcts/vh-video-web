@@ -9,8 +9,8 @@
         <div class="graph-display">
           <canvas
             baseChart
-            width="700"
-            height="200"
+            width="525"
+            height="150"
             id="chartCanvas"
             [datasets]="lineChartData"
             [labels]="lineChartLabels"
@@ -28,7 +28,7 @@
           <span class="govuk-body-l vh-center-panel">Browser not sending heartbeat information</span>
         </div>
         <div
-          class="govuk-grid-row graph-panel"
+          class="govuk-grid-row graph-panel footer-border"
           style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px;"
           *ngIf="!showUnsupportedBrowser"
           [ngClass]="{
@@ -42,7 +42,7 @@
             class="govuk-body-s vh-text-panel"
             id="signal-strength"
             [ngClass]="{ 'vh-c': lastPackageLostValue !== 'poor' }"
-            style="color: white; margin-top: 15px;"
+            style="color: white; margin-top: 6px;"
           >
             {{ participantGraphInfo.status }}: {{ lastPackageLostValue }} signal
           </span>
