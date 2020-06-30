@@ -4,7 +4,6 @@ using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.Test.Helpers;
 using FluentAssertions;
-using OpenQA.Selenium;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
@@ -13,12 +12,12 @@ using VideoWeb.Services.Video;
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
-    public class VhoVenueListSteps : ISteps
+    public class VenueListSteps : ISteps
     {
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _c;
 
-        public VhoVenueListSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext)
+        public VenueListSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext)
         {
             _browsers = browsers;
             _c = testContext;
@@ -32,20 +31,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         
         [When(@"the VHO selects the courtroom (.*)")]
         [When(@"the VHO selects the courtrooms (.*)")]
-        public void SelectVenues(string venues)
-        {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesDropdown).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Click(VhoVenueAllocationPage.VenuesTextBox);
-
-            foreach (var venue in ConverterHelpers.ConvertStringIntoArray(venues))
-            {
-                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesTextBox).SendKeys(venue);
-                _browsers[_c.CurrentUser.Key].ClickCheckbox(VhoVenueAllocationPage.VenueCheckbox(venue));
-            }
-        }
-
-        [When(@"the VHO selects the hearings for Judge named (.*)")]
-        public void WhenTheVHOSelectsTheHearingsForJudgeNamedAutomationCourtroom(string judgeNames)
+        [When(@"the VHO selects the hearings for a Judge named (.*)")]
+        [When(@"the VHO selects the hearings for Judges named (.*)")]
+        public void SelectVenues(string judgeNames)
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesDropdown).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Click(VhoVenueAllocationPage.VenuesTextBox);
