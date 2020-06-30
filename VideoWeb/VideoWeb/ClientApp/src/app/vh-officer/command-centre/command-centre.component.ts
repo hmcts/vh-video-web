@@ -240,7 +240,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         Object.assign(this.originalHearings, this.hearings);
         const filter = this.courtAccountsAllocationStorage.get();
         if (filter) {
-            this.applyFilter(filter);
+            this.hearingsFiltering(filter);
         }
     }
 
@@ -284,11 +284,16 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
 
     applyFilter(filter: CourtRoomsAccounts[]) {
         const isOriginal = filter.every(x => x.selected);
+        this.hearings = [];
         Object.assign(this.hearings, this.originalHearings);
 
         if (!isOriginal) {
-            this.hearings = this.hearings.filter(x => x.getParticipants().some(j => j.isJudge && this.isSelectedHearing(j, filter)));
+            this.hearingsFiltering(filter);
         }
+    }
+
+    hearingsFiltering(filter) {
+        this.hearings = this.hearings.filter(x => x.getParticipants().some(j => j.isJudge && this.isSelectedHearing(j, filter)));
     }
 
     isSelectedHearing(participant: ParticipantSummary, filter: CourtRoomsAccounts[]): boolean {
