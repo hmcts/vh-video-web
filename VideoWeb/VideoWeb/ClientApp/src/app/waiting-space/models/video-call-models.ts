@@ -13,3 +13,15 @@ export class DisconnectedCall {
 export class CallError {
     constructor(public reason) {}
 }
+
+export class ParticipantUpdated {
+    public isMuted: boolean;
+
+    constructor(isMuted: string) {
+        this.isMuted = isMuted === 'YES';
+    }
+}
+
+export class ConferenceUpdated {
+    constructor(public guestedMuted: boolean) {}
+}
