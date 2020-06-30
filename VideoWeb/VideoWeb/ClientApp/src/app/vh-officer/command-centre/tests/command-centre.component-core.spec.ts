@@ -241,7 +241,7 @@ describe('CommandCentreComponent - Core', () => {
         expect(component.hearings.length).toBe(1);
         expect(component.hearings[0].getParticipants().filter(p => p.isJudge)[0].firstName).toBe('manual');
     });
-    it('should hide the hearing if venue is not match judge first name or venue is not selected', () => {
+    it('should hide the hearings if selected venues are not match judge first name or venue is not selected', () => {
         const filter = [new CourtRoomsAccounts('manual', ['manual1', 'manual2'], false), new CourtRoomsAccounts('judge', ['fudge'], false)];
         filter[0].courtsRooms[0].selected = false;
         filter[0].courtsRooms[1].selected = false;
