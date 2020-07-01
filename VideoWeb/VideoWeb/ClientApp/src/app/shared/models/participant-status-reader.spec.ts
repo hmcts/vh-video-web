@@ -8,8 +8,7 @@ describe('ParticipantStatusReader', () => {
         { status: ParticipantStatus.None, expected: 'Not signed in' },
         { status: ParticipantStatus.NotSignedIn, expected: 'Not signed in' },
         { status: ParticipantStatus.InConsultation, expected: 'In consultation' },
-        { status: ParticipantStatus.InHearing, expected: 'In hearing' },
-        { status: ParticipantStatus.UnableToJoin, expected: 'Unable to join' }
+        { status: ParticipantStatus.InHearing, expected: 'In hearing' }
     ];
 
     testCasesForGetStatusAsText.forEach(testCase => {
@@ -22,7 +21,6 @@ describe('ParticipantStatusReader', () => {
         { status: ParticipantStatus.None, expected: 'Unavailable' },
         { status: ParticipantStatus.NotSignedIn, expected: 'Unavailable' },
         { status: ParticipantStatus.InConsultation, expected: 'Unavailable' },
-        { status: ParticipantStatus.UnableToJoin, expected: 'Unavailable' },
         { status: ParticipantStatus.InHearing, expected: 'In hearing' },
         { status: ParticipantStatus.Available, expected: 'Available' }
     ];

@@ -204,10 +204,6 @@ describe('ParticipantStatusComponent', () => {
 
         expect(component.getParticipantStatusClass(participant.status)).toBe('participant-default-status');
 
-        p.status = ParticipantStatus.UnableToJoin;
-        participant = new Participant(p);
-        expect(component.getParticipantStatusClass(participant.status)).toBe('participant-default-status');
-
         p.status = ParticipantStatus.InHearing;
         participant = new Participant(p);
         expect(component.getParticipantStatusClass(participant.status)).toBe('participant-default-status');
