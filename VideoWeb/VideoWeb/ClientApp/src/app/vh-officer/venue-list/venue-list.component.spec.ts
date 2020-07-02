@@ -68,7 +68,7 @@ describe('VenueListComponent', () => {
         expect(result[0]).toBe(judges.first_names[0]);
     });
 
-    it('should navigate to admin hearing list', fakeAsync( () => {
+    it('should navigate to admin hearing list', fakeAsync(() => {
         component.goToHearingList();
         tick();
         expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.AdminHearingList);

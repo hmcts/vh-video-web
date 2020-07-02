@@ -59,7 +59,6 @@ export class VenueListComponent implements OnInit {
             }
             this.courtAccountsAllocationStorage.set(this.filterCourtRoomsAccounts);
             this.logger.info('Venue selection is changed');
-
         } else {
             this.logger.warn('No any venues selected');
         }
