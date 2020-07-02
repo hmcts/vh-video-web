@@ -68,10 +68,11 @@ describe('VenueListComponent', () => {
         expect(result[0]).toBe(judges.first_names[0]);
     });
 
-    it('should navigate to admin hearing list', () => {
+    it('should navigate to admin hearing list', fakeAsync( () => {
         component.goToHearingList();
+        tick();
         expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.AdminHearingList);
-    });
+    }));
 
     it('should return false when no allocations are selected', () => {
         component.selectedJudges = [];
@@ -123,10 +124,11 @@ describe('VenueListComponent', () => {
         expect(result[1].courtsRooms[0].selected).toBeFalse();
         expect(result[1].courtsRooms[1].selected).toBeTrue();
     }));
-    it('should not get court rooms accounts if no venues selected', () => {
+    it('should not get court rooms accounts if no venues selected', fakeAsync(() => {
         component.selectedJudges = null;
         spyOn(logger, 'warn');
         component.goToHearingList();
+        tick();
         expect(logger.warn).toHaveBeenCalled();
-    });
+    }));
 });
