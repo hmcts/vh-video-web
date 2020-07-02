@@ -1,78 +1,118 @@
 <div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-m">Participants</h2>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h2 class="govuk-heading-m">
+                Participants({{numberParticipants}})
+            </h2>
+        </div>
     </div>
-  </div>
+    <div id="p-row-{{ judge.id
+                }}" class="govuk-grid-row">
+        <div class="govuk-grid-column-one-half vh-mb5">
+            <div class="govuk-heading-m govuk-!-margin-bottom-0">Judge</div>
+            <p class="govuk-body-s govuk-!-margin-bottom-0">
+                <strong>{{ judge.display_name }}</strong>
+            </p>
+        </div>
+        <div class="govuk-grid-column-one-half vh-mb5">
+            <img src="/assets/images/govuk-crest.png"
+                 height="50"
+                 width="50"
+                 class="govuk-header__logotype-crest"
+                 alt="HM Courts &amp; Tribunals Service crest" />
+        </div>
+    </div>
+    <hr />
+    <div *ngIf="panelMembers.length > 0">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <h2 class="govuk-heading-s">Panel members</h2>
+            </div>
+        </div>
+        <div class="vh-border">
+            <div *ngFor="let participant of panelMembers" class="govuk-grid-row govuk-!-margin-bottom-6">
+                <div id="p-row-{{ participant.id }}" class="govuk-grid-column-full">
+                    <p class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
+                    <p class="govuk-body-s govuk-!-margin-bottom-1">{{ participant.case_type_group }}</p>
+                    <hr />
+                </div>
+            </div>
+        </div>
+    </div>
 
-  <div id="p-row-{{ judge.id }}" class="govuk-grid-row govuk-!-margin-bottom-6">
-    <div class="govuk-grid-column-one-half">
-      <div class="govuk-heading-m govuk-!-margin-bottom-0">Judge</div>
-      <p class="govuk-body-s govuk-!-margin-bottom-0">
-        <strong>{{ judge.display_name }}</strong>
-      </p>
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+            <h2 class="govuk-heading-s">Participants</h2>
+        </div>
     </div>
-    <div class="govuk-grid-column-one-half">
-      <img
-        src="/assets/images/govuk-crest.png"
-        height="50"
-        width="50"
-        class="govuk-header__logotype-crest"
-        alt="HM Courts &amp; Tribunals Service crest"
-      />
+    <div class="vh-border">
+        <div *ngFor="let participant of nonJugdeParticipants" class="govuk-grid-row govuk-!-margin-bottom-6">
+            <div id="p-row-{{ participant.id }}" class="govuk-grid-column-full">
+                <p class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
+                <p class="govuk-body-s govuk-!-margin-bottom-1">{{ participant.case_type_group }}</p>
+                <p *ngIf="participant.representee" class="govuk-body-s govuk-!-margin-bottom-1">
+                    Representing
+                    <span class="govuk-heading-s">{{ participant.representee }}</span>
+                </p>
+                <div *ngIf="canCallParticipant(participant)">
+                    <img src="/assets/images/glyphicons-181-facetime-video.png" width="20" height="13" alt="video camera icon" />
+                    <a id="p-call-{{ participant.id }}-btn"
+                       class="govuk-link govuk-!-margin-bottom-0 vh-ml5"
+                       href="javascript:void(0)"
+                       (click)="begingCallWith(participant)">Contact this person by video</a>
+                </div>
+                <hr />
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div *ngFor="let participant of nonJugdeParticipants" class="govuk-grid-row govuk-!-margin-bottom-6">
-    <div id="p-row-{{ participant.id }}" class="govuk-grid-column-full">
-      <p class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.case_type_group }}</p>
-      <p class="govuk-body-s govuk-!-margin-bottom-1">{{ participant.name }}</p>
-      <p *ngIf="participant.representee" class="govuk-body-s govuk-!-margin-bottom-1">Representing {{ participant.representee }}</p>
-      <a
-        *ngIf="canCallParticipant(participant)"
-        id="p-call-{{ participant.id }}-btn"
-        href="#"
-        class="govuk-link govuk-!-margin-bottom-0"
-        href="javascript:void(0)"
-        (click)="begingCallWith(participant)"
-        >Speak to this person now</a
-      >
+    <div *ngIf="observers.length > 0">
+        <div class="govuk-grid-row">
+            <div class="govuk-grid-column-full">
+                <h2 class="govuk-heading-s">Observers</h2>
+            </div>
+        </div>
+        <div class="vh-border">
+            <div *ngFor="let participant of observers" class="govuk-grid-row govuk-!-margin-bottom-6">
+                <div id="p-row-{{ participant.id }}" class="govuk-grid-column-full">
+                    <p class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
+                    <p class="govuk-body-s govuk-!-margin-bottom-1">{{ participant.case_type_group }}</p>
+                    <hr />
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+
 </div>
 
 <app-modal id="raise-pc-modal" class="modal clear consultation">
-  <app-raise-consultation
-    *ngIf="consultationRequestee"
-    [consultationRequestee]="consultationRequestee"
-    (cancelledRequest)="cancelConsultationRequest()"
-  ></app-raise-consultation>
+    <app-raise-consultation *ngIf="consultationRequestee"
+                            [consultationRequestee]="consultationRequestee"
+                            (cancelledRequest)="cancelConsultationRequest()"></app-raise-consultation>
 </app-modal>
 
 <app-modal id="receive-pc-modal" class="modal clear consultation">
-  <app-receive-consultation
-    *ngIf="consultationRequester"
-    [consultationRequester]="consultationRequester"
-    (respondedToConsulation)="answerConsultationRequest($event)"
-  ></app-receive-consultation>
+    <app-receive-consultation *ngIf="consultationRequester"
+                              [consultationRequester]="consultationRequester"
+                              (respondedToConsulation)="answerConsultationRequest($event)"></app-receive-consultation>
 </app-modal>
 
 <app-modal id="accepted-pc-modal" class="modal clear consultation">
-  <app-accepted-consultation *ngIf="consultationRequestee" [consultationRequestee]="consultationRequestee"></app-accepted-consultation>
+    <app-accepted-consultation *ngIf="consultationRequestee" [consultationRequestee]="consultationRequestee"></app-accepted-consultation>
 </app-modal>
 
 <app-modal id="rejected-pc-modal" class="modal clear consultation">
-  <app-rejected-consultation (closedModal)="closeAllPCModals()"></app-rejected-consultation>
+    <app-rejected-consultation (closedModal)="closeAllPCModals()"></app-rejected-consultation>
 </app-modal>
 
 <app-modal id="vho-raise-pc-modal" class="modal clear consultation">
-  <app-vho-raise-consultation (acceptedVhoCall)="acceptVhoConsultationRequest()"></app-vho-raise-consultation>
+    <app-vho-raise-consultation (acceptedVhoCall)="acceptVhoConsultationRequest()"></app-vho-raise-consultation>
 </app-modal>
 
 <app-modal id="no-room-pc-modal" class="modal clear consultation">
-  <app-no-consultation-room (closedModal)="closeAllPCModals()"></app-no-consultation-room>
+    <app-no-consultation-room (closedModal)="closeAllPCModals()"></app-no-consultation-room>
 </app-modal>
 
 <app-modal id="pc-error-modal" class="modal clear consultation">
-  <app-consultation-error (closedModal)="closeAllPCModals()"></app-consultation-error>
+    <app-consultation-error (closedModal)="closeAllPCModals()"></app-consultation-error>
 </app-modal>

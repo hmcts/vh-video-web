@@ -1,9 +1,23 @@
 @import '~govuk-frontend/govuk/all';
 
 .unavailable {
-  color: govuk-colour('red');
+    color: govuk-colour('red');
 }
 
 .available {
-  color: govuk-colour('green');
+    color: govuk-colour('green');
+}
+
+.vh-border {
+    border: 1px solid govuk-colour('mid-grey');
+    padding: 8px;
+    border-radius: 3px 4px;
+    margin-bottom: 15px;
+}
+
+.vh-mb5 {
+    margin-bottom: 5px;
+}
+.vh-ml5 {
+    margin-left:5px;
 }

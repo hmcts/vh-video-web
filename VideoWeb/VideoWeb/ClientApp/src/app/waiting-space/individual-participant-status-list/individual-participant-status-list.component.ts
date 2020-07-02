@@ -22,12 +22,15 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
 
     nonJugdeParticipants: ParticipantResponse[];
     judge: ParticipantResponse;
+    panelMembers: ParticipantResponse[];
+    observers: ParticipantResponse[];
 
     consultationRequestee: Participant;
     consultationRequester: Participant;
 
     adminConsultationMessage: AdminConsultationMessage;
     eventHubSubscriptions$ = new Subscription();
+    numberParticipants: number;
 
     constructor(
         private adalService: AdalService,
@@ -41,6 +44,8 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
         this.consultationService.resetWaitingForResponse();
         this.filterNonJudgeParticipants();
         this.filterJudge();
+        this.filterPanelMembers();
+        this.filterObservers();
         this.setupSubscribers();
     }
 
@@ -211,9 +216,18 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
 
     private filterNonJudgeParticipants(): void {
         this.nonJugdeParticipants = this.conference.participants.filter(x => x.role !== Role.Judge);
+        this.numberParticipants = this.nonJugdeParticipants.length;
     }
 
     private filterJudge(): void {
         this.judge = this.conference.participants.find(x => x.role === Role.Judge);
+    }
+
+    private filterPanelMembers(): void {
+        this.panelMembers = this.conference.participants.filter(x => x.role !== Role.Judge);
+    }
+
+    private filterObservers(): void {
+        this.observers = this.conference.participants.filter(x => x.role !== Role.Judge);
     }
 }
