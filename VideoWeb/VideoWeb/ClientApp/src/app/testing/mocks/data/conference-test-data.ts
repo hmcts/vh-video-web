@@ -464,4 +464,47 @@ export class ConferenceTestData {
             .with((h, i) => (h.recent_packet_loss = 4))
             .build();
     }
+
+    getListOfParticipantsObserverAndPanelMembers(): ParticipantResponseVho[] {
+        const participants: ParticipantResponseVho[] = [];
+        const participant1 = new ParticipantResponseVho({
+            id: '9F681318-4955-49AF-A887-DED64554429D',
+            name: 'Mr Chris Green',
+            status: ParticipantStatus.Available,
+            role: Role.Individual,
+            case_type_group: 'Observer',
+            display_name: 'Greeno',
+            username: 'chris.green@hearings.net',
+            tiled_display_name: 'T1;Greeno;9F681318-4955-49AF-A887-DED64554429D'
+        });
+
+        const participant2 = new ParticipantResponseVho({
+            id: '9F681318-4955-49AF-A887-DED64554429J',
+            name: 'Mr James Green',
+            representee: 'Chris Green',
+            status: ParticipantStatus.NotSignedIn,
+            role: Role.Representative,
+            display_name: 'James Green',
+            case_type_group: 'Observer',
+            username: 'james.green@hearings.net',
+            tiled_display_name: 'T2;James Green;9F681318-4955-49AF-A887-DED64554429J'
+        });
+
+        const participant3 = new ParticipantResponseVho({
+            id: '9F681318-4955-49AF-A887-DED64554429T',
+            name: 'Judge Fudge',
+            status: ParticipantStatus.Available,
+            role: Role.Representative,
+            display_name: 'Fudge',
+            username: 'judge.fudge@hearings.net',
+            case_type_group: 'PanelMember',
+            tiled_display_name: 'T0;Judge Fudge;9F681318-4955-49AF-A887-DED64554429T'
+        });
+
+        participants.push(participant1);
+        participants.push(participant2);
+        participants.push(participant3);
+        return participants;
+    }
+
 }

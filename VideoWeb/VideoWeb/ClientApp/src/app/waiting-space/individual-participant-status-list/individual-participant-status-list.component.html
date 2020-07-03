@@ -2,7 +2,7 @@
     <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
             <h2 class="govuk-heading-m">
-                Participants({{numberParticipants}})
+                Participants({{getNumberParticipants}})
             </h2>
         </div>
     </div>
@@ -30,11 +30,10 @@
             </div>
         </div>
         <div class="vh-border">
-            <div *ngFor="let participant of panelMembers" class="govuk-grid-row govuk-!-margin-bottom-6">
+            <div *ngFor="let participant of panelMembers; let lastItem = last;" class="govuk-grid-row govuk-!-margin-bottom-1">
                 <div id="p-row-{{ participant.id }}" class="govuk-grid-column-full">
                     <p class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
-                    <p class="govuk-body-s govuk-!-margin-bottom-1">{{ participant.case_type_group }}</p>
-                    <hr />
+                    <hr *ngIf="!lastItem"/>
                 </div>
             </div>
         </div>
@@ -46,11 +45,11 @@
         </div>
     </div>
     <div class="vh-border">
-        <div *ngFor="let participant of nonJugdeParticipants" class="govuk-grid-row govuk-!-margin-bottom-6">
+        <div *ngFor="let participant of nonJugdeParticipants; let lastItem = last;" class="govuk-grid-row govuk-!-margin-bottom-1">
             <div id="p-row-{{ participant.id }}" class="govuk-grid-column-full">
                 <p class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
                 <p class="govuk-body-s govuk-!-margin-bottom-1">{{ participant.case_type_group }}</p>
-                <p *ngIf="participant.representee" class="govuk-body-s govuk-!-margin-bottom-1">
+                <p *ngIf="participant.representee" class="govuk-body-s">
                     Representing
                     <span class="govuk-heading-s">{{ participant.representee }}</span>
                 </p>
@@ -61,7 +60,7 @@
                        href="javascript:void(0)"
                        (click)="begingCallWith(participant)">Contact this person by video</a>
                 </div>
-                <hr />
+                <hr *ngIf="!lastItem"/>
             </div>
         </div>
     </div>
@@ -73,11 +72,10 @@
             </div>
         </div>
         <div class="vh-border">
-            <div *ngFor="let participant of observers" class="govuk-grid-row govuk-!-margin-bottom-6">
+            <div *ngFor="let participant of observers; let lastItem = last;" class="govuk-grid-row govuk-!-margin-bottom-1">
                 <div id="p-row-{{ participant.id }}" class="govuk-grid-column-full">
                     <p class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
-                    <p class="govuk-body-s govuk-!-margin-bottom-1">{{ participant.case_type_group }}</p>
-                    <hr />
+                    <hr *ngIf="!lastItem"/>
                 </div>
             </div>
         </div>

@@ -9,6 +9,7 @@ import {
     UpdateParticipantRequest
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 
 @Component({
     selector: 'app-judge-participant-status-list',
@@ -26,16 +27,31 @@ export class JudgeParticipantStatusListComponent implements OnInit {
     showChangeJudgeDisplayName = false;
     newJudgeDisplayName: string;
 
+    observers: ParticipantResponse[];
+    panelMembers: ParticipantResponse[];
+
     constructor(private adalService: AdalService, private videoWebService: VideoWebService, private logger: Logger) {}
 
     ngOnInit() {
         this.filterNonJudgeParticipants();
         this.filterJudge();
         this.filterRepresentatives();
+        this.filterObservers();
+        this.filterPanelMembers();
     }
 
     private filterNonJudgeParticipants(): void {
-        this.nonJudgeParticipants = this.conference.participants.filter(x => x.role !== Role.Judge);
+        this.nonJudgeParticipants = this.conference.participants.filter(
+            x => x.role !== Role.Judge && x.case_type_group !== CaseTypeGroup.OBSERVER && x.case_type_group !== CaseTypeGroup.PANEL_MEMBER
+        );
+    }
+
+    private filterObservers(): void {
+        this.observers = this.conference.participants.filter(x => x.case_type_group === CaseTypeGroup.OBSERVER);
+    }
+
+    private filterPanelMembers(): void {
+        this.panelMembers = this.conference.participants.filter(x => x.case_type_group === CaseTypeGroup.PANEL_MEMBER);
     }
 
     private filterJudge(): void {
@@ -81,9 +97,19 @@ export class JudgeParticipantStatusListComponent implements OnInit {
     }
 
     private filterRepresentatives(): void {
-        this.representativeParticipants = this.conference.participants.filter(x => x.role === Role.Representative);
+        this.representativeParticipants = this.conference.participants.filter(
+            x =>
+                x.role === Role.Representative &&
+                x.case_type_group !== CaseTypeGroup.OBSERVER &&
+                x.case_type_group !== CaseTypeGroup.PANEL_MEMBER
+        );
         this.litigantInPerson = this.representativeParticipants.length === 0;
-        this.individualParticipants = this.conference.participants.filter(x => x.role === Role.Individual);
+        this.individualParticipants = this.conference.participants.filter(
+            x =>
+                x.role === Role.Individual &&
+                x.case_type_group !== CaseTypeGroup.OBSERVER &&
+                x.case_type_group !== CaseTypeGroup.PANEL_MEMBER
+        );
     }
 
     changeJudgeNameShow() {
@@ -122,6 +148,6 @@ export class JudgeParticipantStatusListComponent implements OnInit {
     }
 
     getParticipantsCount(): number {
-        return this.nonJudgeParticipants.length;
+        return this.nonJudgeParticipants.length + this.observers.length + this.panelMembers.length;
     }
 }

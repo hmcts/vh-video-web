@@ -42,3 +42,10 @@
 .vh-mt10 {
   margin-top: 10px;
 }
+
+.vh-last {
+}
+
+.vh-last hr:last-child {
+  display: none;
+}
