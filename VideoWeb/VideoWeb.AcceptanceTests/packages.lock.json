@@ -86,9 +86,9 @@
       },
       "Microsoft.IdentityModel.Clients.ActiveDirectory": {
         "type": "Direct",
-        "requested": "[5.2.7, )",
-        "resolved": "5.2.7",
-        "contentHash": "iR4L/pqzEYk2vhOF+2q5mIy7LqZdNz7NiorEQihDa/Fd6eddJ4CeAUpZ4XZDXwmWeyAU4s+O305k9M5RlVyRHA==",
+        "requested": "[5.2.8, )",
+        "resolved": "5.2.8",
+        "contentHash": "VIi6Bzt0UWEeannuEjtRFr/LgUXXw70a9LlIVfoCGorztZhzHgKiof6UJE1ETRYlf/L+kepsUZeekYZwqb6xPg==",
         "dependencies": {
           "Microsoft.CSharp": "4.3.0",
           "NETStandard.Library": "1.6.1",
@@ -276,9 +276,9 @@
       },
       "VH.AcceptanceTests.Common": {
         "type": "Direct",
-        "requested": "[1.0.231, )",
-        "resolved": "1.0.231",
-        "contentHash": "GOSBfXscS/6fD+my3MDW5WVYAToExMaoX+r+KVKg/urVY64J9EiuNnleme6WFqaIOWgAycNvo9XfNgmRKv/lQA==",
+        "requested": "[1.0.233, )",
+        "resolved": "1.0.233",
+        "contentHash": "u7zCIN9zFtEGxfTIiG46Vb/eB19sa5iFmk6jVym+9HYFZ79Zyfb6lb+gzdmGZzE86DQMHAVw4dTXwn21nfkHxg==",
         "dependencies": {
           "Appium.WebDriver": "4.1.1",
           "Azure.Storage.Blobs": "12.4.4",
