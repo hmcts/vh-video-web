@@ -96,7 +96,6 @@ describe('JudgeParticipantStatusListComponent', () => {
         { status: ParticipantStatus.Disconnected, expected: 'Disconnected' },
         { status: ParticipantStatus.Joining, expected: 'Joining' },
         { status: ParticipantStatus.NotSignedIn, expected: 'Not signed in' },
-        { status: ParticipantStatus.UnableToJoin, expected: 'Unable to join' },
         { status: ParticipantStatus.None, expected: 'Not signed in' }
     ];
 
@@ -115,7 +114,6 @@ describe('JudgeParticipantStatusListComponent', () => {
         { status: ParticipantStatus.InHearing, expected: 'in_hearing' },
         { status: ParticipantStatus.Joining, expected: 'joining' },
         { status: ParticipantStatus.NotSignedIn, expected: 'not_signed_in' },
-        { status: ParticipantStatus.UnableToJoin, expected: 'unable_to_join' },
         { status: ParticipantStatus.None, expected: 'not_signed_in' }
     ];
 

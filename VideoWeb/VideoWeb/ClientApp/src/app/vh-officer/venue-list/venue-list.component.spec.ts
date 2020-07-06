@@ -8,12 +8,15 @@ import { JudgeNameListResponse, CourtRoomsAccountResponse } from 'src/app/servic
 import { CourtRoomsAccounts } from '../services/models/court-rooms-accounts';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 describe('VenueListComponent', () => {
     let component: VenueListComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     let router: jasmine.SpyObj<Router>;
     let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
+    const logger: Logger = new MockLogger();
 
     const venueSessionStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
     const roomSessionStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
@@ -44,7 +47,7 @@ describe('VenueListComponent', () => {
     });
 
     beforeEach(() => {
-        component = new VenueListComponent(videoWebServiceSpy, router, vhoQueryService);
+        component = new VenueListComponent(videoWebServiceSpy, router, vhoQueryService, logger);
         videoWebServiceSpy.getDistinctJudgeNames.and.returnValue(Promise.resolve(judges));
         vhoQueryService.getCourtRoomsAccounts.and.returnValue(Promise.resolve(courtAccounts));
         venueSessionStorage.clear();
@@ -65,10 +68,11 @@ describe('VenueListComponent', () => {
         expect(result[0]).toBe(judges.first_names[0]);
     });
 
-    it('should navigate to admin hearing list', () => {
+    it('should navigate to admin hearing list', fakeAsync(() => {
         component.goToHearingList();
+        tick();
         expect(router.navigateByUrl).toHaveBeenCalledWith(pageUrls.AdminHearingList);
-    });
+    }));
 
     it('should return false when no allocations are selected', () => {
         component.selectedJudges = [];
@@ -80,7 +84,8 @@ describe('VenueListComponent', () => {
         expect(component.venuesSelected).toBeTruthy();
     });
     it('should  create filter records with all options are selected and store in storage', fakeAsync(() => {
-        component.getFiltersCourtRoomsAccounts();
+        component.selectedJudges = judgeNames;
+        component.goToHearingList();
         tick();
         expect(component.filterCourtRoomsAccounts.length).toBe(2);
         const result = roomSessionStorage.get();
@@ -98,12 +103,13 @@ describe('VenueListComponent', () => {
         expect(result[1].courtsRooms[1].selected).toBeTrue();
     }));
     it('should update filter records with select options from filter in storage', fakeAsync(() => {
+        component.selectedJudges = judgeNames;
         venueAccounts[0].courtsRooms[0].selected = false;
         venueAccounts[1].courtsRooms[0].selected = false;
 
         roomSessionStorage.set(venueAccounts);
 
-        component.getFiltersCourtRoomsAccounts();
+        component.goToHearingList();
         tick();
         expect(component.filterCourtRoomsAccounts.length).toBe(2);
         const result = roomSessionStorage.get();
@@ -117,5 +123,12 @@ describe('VenueListComponent', () => {
         expect(result[1].courtsRooms[0].courtRoom).toBe('Room 01');
         expect(result[1].courtsRooms[0].selected).toBeFalse();
         expect(result[1].courtsRooms[1].selected).toBeTrue();
+    }));
+    it('should not get court rooms accounts if no venues selected', fakeAsync(() => {
+        component.selectedJudges = null;
+        spyOn(logger, 'warn');
+        component.goToHearingList();
+        tick();
+        expect(logger.warn).toHaveBeenCalled();
     }));
 });

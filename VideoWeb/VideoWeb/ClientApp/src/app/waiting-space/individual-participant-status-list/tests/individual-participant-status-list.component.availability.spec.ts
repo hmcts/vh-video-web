@@ -69,7 +69,6 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
         { status: ParticipantStatus.Disconnected, expected: 'Unavailable' },
         { status: ParticipantStatus.Joining, expected: 'Unavailable' },
         { status: ParticipantStatus.NotSignedIn, expected: 'Unavailable' },
-        { status: ParticipantStatus.UnableToJoin, expected: 'Unavailable' },
         { status: ParticipantStatus.None, expected: 'Unavailable' }
     ];
 
@@ -127,7 +126,6 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
         { status: ParticipantStatus.Disconnected },
         { status: ParticipantStatus.Joining },
         { status: ParticipantStatus.NotSignedIn },
-        { status: ParticipantStatus.UnableToJoin },
         { status: ParticipantStatus.None }
     ];
 

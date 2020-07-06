@@ -6,6 +6,8 @@ import { SessionStorage } from 'src/app/services/session-storage';
 import { VhoStorageKeys } from '../services/models/session-keys';
 import { CourtRoomsAccounts } from 'src/app/vh-officer/services/models/court-rooms-accounts';
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { CourtRoomsAccountResponse } from '../../services/clients/api-client';
 
 @Component({
     selector: 'app-venue-list',
@@ -20,7 +22,12 @@ export class VenueListComponent implements OnInit {
     venueListLoading: boolean;
     filterCourtRoomsAccounts: CourtRoomsAccounts[];
 
-    constructor(private videoWebService: VideoWebService, private router: Router, private vhoQueryService: VhoQueryService) {
+    constructor(
+        private videoWebService: VideoWebService,
+        private router: Router,
+        private vhoQueryService: VhoQueryService,
+        private logger: Logger
+    ) {
         this.selectedJudges = [];
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
         this.courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
@@ -41,18 +48,20 @@ export class VenueListComponent implements OnInit {
 
     updateSelection() {
         this.judgeAllocationStorage.set(this.selectedJudges);
-        this.getFiltersCourtRoomsAccounts();
     }
 
-    getFiltersCourtRoomsAccounts() {
-        this.vhoQueryService.getCourtRoomsAccounts(this.selectedJudges).then(response => {
+    getFiltersCourtRoomsAccounts(response: CourtRoomsAccountResponse[]) {
+        if (this.venuesSelected) {
             this.filterCourtRoomsAccounts = response.map(x => new CourtRoomsAccounts(x.venue, x.court_rooms, true));
             const previousFilter = this.courtAccountsAllocationStorage.get();
             if (previousFilter) {
                 previousFilter.forEach(x => this.updateFilterSelection(x));
             }
             this.courtAccountsAllocationStorage.set(this.filterCourtRoomsAccounts);
-        });
+            this.logger.info('Venue selection is changed');
+        } else {
+            this.logger.warn('No any venues selected');
+        }
     }
 
     updateFilterSelection(filterVenue: CourtRoomsAccounts) {
@@ -65,6 +74,9 @@ export class VenueListComponent implements OnInit {
 
     goToHearingList() {
         this.updateSelection();
-        this.router.navigateByUrl(pageUrls.AdminHearingList);
+        this.vhoQueryService.getCourtRoomsAccounts(this.selectedJudges).then(response => {
+            this.getFiltersCourtRoomsAccounts(response);
+            this.router.navigateByUrl(pageUrls.AdminHearingList);
+        });
     }
 }
