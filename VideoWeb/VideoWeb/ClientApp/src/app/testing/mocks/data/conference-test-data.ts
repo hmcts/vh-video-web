@@ -506,5 +506,4 @@ export class ConferenceTestData {
         participants.push(participant3);
         return participants;
     }
-
 }
