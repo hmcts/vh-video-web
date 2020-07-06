@@ -34,7 +34,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.TimePanel).Displayed.Should().BeTrue();
             Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitToCallAndAnswer));
             var participant = _c.Test.ConferenceParticipants.First(x => x.Name.ToLower().Contains(user.ToLower()));
-            _browsers[_c.CurrentUser.Key].ClickLink(WaitingRoomPage.PrivateConsultationLink(participant.Id.ToString()));
+            _browsers[_c.CurrentUser.Key].ClickLink(ParticipantListPanel.PrivateConsultationLink(participant.Id.ToString()));
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(PrivateCallPopupPage.OutgoingCallMessage).Text.Should().Contain(participant.Name);
         }
 
@@ -98,7 +98,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser.Key].Refresh();
             var participantId = _c.Test.ConferenceParticipants.First(x => x.Name.ToLower().Contains(user.ToLower())).Id;
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(WaitingRoomPage.PrivateConsultationLink(participantId.ToString())).Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(ParticipantListPanel.PrivateConsultationLink(participantId.ToString())).Should().BeTrue();
         }
 
         [Then(@"the (.*) user sees a message that the request has not been answered")]

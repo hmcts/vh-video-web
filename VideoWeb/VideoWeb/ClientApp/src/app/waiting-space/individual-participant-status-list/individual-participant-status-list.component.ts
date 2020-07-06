@@ -11,6 +11,7 @@ import { ConsultationMessage } from 'src/app/services/models/consultation-messag
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
+import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 
 @Component({
     selector: 'app-individual-participant-status-list',
@@ -22,6 +23,8 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
 
     nonJugdeParticipants: ParticipantResponse[];
     judge: ParticipantResponse;
+    panelMembers: ParticipantResponse[];
+    observers: ParticipantResponse[];
 
     consultationRequestee: Participant;
     consultationRequester: Participant;
@@ -41,6 +44,8 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
         this.consultationService.resetWaitingForResponse();
         this.filterNonJudgeParticipants();
         this.filterJudge();
+        this.filterPanelMembers();
+        this.filterObservers();
         this.setupSubscribers();
     }
 
@@ -210,10 +215,24 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
     }
 
     private filterNonJudgeParticipants(): void {
-        this.nonJugdeParticipants = this.conference.participants.filter(x => x.role !== Role.Judge);
+        this.nonJugdeParticipants = this.conference.participants.filter(
+            x => x.role !== Role.Judge && x.case_type_group !== CaseTypeGroup.OBSERVER && x.case_type_group !== CaseTypeGroup.PANEL_MEMBER
+        );
     }
 
     private filterJudge(): void {
         this.judge = this.conference.participants.find(x => x.role === Role.Judge);
+    }
+
+    private filterPanelMembers(): void {
+        this.panelMembers = this.conference.participants.filter(x => x.case_type_group === CaseTypeGroup.PANEL_MEMBER);
+    }
+
+    private filterObservers(): void {
+        this.observers = this.conference.participants.filter(x => x.case_type_group === CaseTypeGroup.OBSERVER);
+    }
+
+    get getNumberParticipants() {
+        return this.nonJugdeParticipants.length + this.observers.length + this.panelMembers.length;
     }
 }

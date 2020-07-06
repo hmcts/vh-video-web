@@ -11,7 +11,7 @@ Scenario: Participant waiting room
 	And a phone number for help is provided
 	And the users status has updated to Available
 	And the participant can see information about their case
-	And the user can see a list of participants and their representatives
+	And the participant can see a list of other participants and their representatives
 	And the user can see a black box and an about to begin message
 
 @VIH-4610 @Smoketest @Smoketest-Extended
@@ -21,7 +21,8 @@ Scenario: Clerk waiting room
 	And a phone number for help is provided
 	And the users status has updated to Available
 	And the Clerk can see information about their case 
-	And the user can see other participants status
+  And the Clerk can see a list of participants and their representatives
+	And the Clerk can see other participants status
 	When the user navigates back to the hearing list
 	Then the user is on the Hearing List page
 	And the users status has updated to NotSignedIn
@@ -41,3 +42,37 @@ Scenario: Participant is in the waiting room early
 	And the users status has updated to Available
 	And the user can see the hearing is scheduled title
 	And the user can see a blue box and a scheduled message	
+
+@VIH-6131
+Scenario: Observer and Panel Member visible on Clerk Waiting Room
+  Given I have a hearing with an Observer and Panel Member
+  And the Clerk user has progressed to the Waiting Room page for the existing hearing
+  Then the Clerk can see a list of participants and their representatives
+
+@VIH-6131
+Scenario: Observer and Panel Member visible on Participant Waiting Room
+  Given I have a hearing with an Observer and Panel Member
+  And the Participant user has progressed to the Waiting Room page for the existing hearing
+  Then the participant can see a list of other participants and their representatives
+
+@VIH-6131
+Scenario: Observer Waiting Room
+  Given I have a hearing with an Observer and Panel Member
+  And the Observer user has progressed to the Waiting Room page for the existing hearing
+  Then the user is on the Waiting Room page
+	And a phone number for help is provided
+	And the users status has updated to Available
+	And the participant can see information about their case
+	And the participant can see a list of other participants and their representatives
+	And the user can see a black box and an about to begin message
+
+@VIH-6131
+Scenario: Panel Member Waiting Room
+  Given I have a hearing with an Observer and Panel Member
+  And the Panel Member user has progressed to the Waiting Room page for the existing hearing
+  Then the user is on the Waiting Room page
+	And a phone number for help is provided
+	And the users status has updated to Available
+	And the participant can see information about their case
+	And the participant can see a list of other participants and their representatives
+	And the user can see a black box and an about to begin message

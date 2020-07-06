@@ -116,3 +116,10 @@ $govuk-global-styles: true;
 .half-right {
   @include govuk-grid-column(one-half, $float: right);
 }
+
+.vh-border {
+    border: 1px solid govuk-colour('mid-grey');
+    padding: 8px;
+    border-radius: 3px 4px;
+    margin-bottom: 15px;
+}

@@ -464,4 +464,13 @@ export class ConferenceTestData {
             .with((h, i) => (h.recent_packet_loss = 4))
             .build();
     }
+
+    getListOfParticipantsObserverAndPanelMembers(): ParticipantResponseVho[] {
+        const participants: ParticipantResponseVho[] = this.getListOfParticipantDetails();
+        participants[0].case_type_group = 'Observer';
+        participants[1].case_type_group = 'Observer';
+        participants[2].case_type_group = 'PanelMember';
+
+        return participants;
+    }
 }

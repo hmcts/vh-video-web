@@ -1,18 +1,17 @@
 <div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-m">Participants</h2>
+      <h2 class="govuk-heading-m">Participants({{ getNumberParticipants }})</h2>
     </div>
   </div>
-
-  <div id="p-row-{{ judge.id }}" class="govuk-grid-row govuk-!-margin-bottom-6">
-    <div class="govuk-grid-column-one-half">
+  <div id="p-row-{{ judge.id }}" class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half vh-mb5">
       <div class="govuk-heading-m govuk-!-margin-bottom-0">Judge</div>
       <p class="govuk-body-s govuk-!-margin-bottom-0">
         <strong>{{ judge.display_name }}</strong>
       </p>
     </div>
-    <div class="govuk-grid-column-one-half">
+    <div class="govuk-grid-column-one-half vh-mb5">
       <img
         src="/assets/images/govuk-crest.png"
         height="50"
@@ -22,21 +21,65 @@
       />
     </div>
   </div>
+  <hr />
+  <div *ngIf="panelMembers.length > 0">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h2 class="govuk-heading-s">Panel members</h2>
+      </div>
+    </div>
+    <div class="vh-border">
+      <div *ngFor="let participant of panelMembers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
+        <div id="p-row-{{ participant.id }}-panel-member" class="govuk-grid-column-full">
+          <p id="p-{{ participant.id }}-name-panel-member" class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
+          <hr *ngIf="!lastItem" />
+        </div>
+      </div>
+    </div>
+  </div>
 
-  <div *ngFor="let participant of nonJugdeParticipants" class="govuk-grid-row govuk-!-margin-bottom-6">
-    <div id="p-row-{{ participant.id }}" class="govuk-grid-column-full">
-      <p class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.case_type_group }}</p>
-      <p class="govuk-body-s govuk-!-margin-bottom-1">{{ participant.name }}</p>
-      <p *ngIf="participant.representee" class="govuk-body-s govuk-!-margin-bottom-1">Representing {{ participant.representee }}</p>
-      <a
-        *ngIf="canCallParticipant(participant)"
-        id="p-call-{{ participant.id }}-btn"
-        href="#"
-        class="govuk-link govuk-!-margin-bottom-0"
-        href="javascript:void(0)"
-        (click)="begingCallWith(participant)"
-        >Speak to this person now</a
-      >
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h2 class="govuk-heading-s">Participants</h2>
+    </div>
+  </div>
+  <div class="vh-border">
+    <div *ngFor="let participant of nonJugdeParticipants; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
+      <div id="p-row-{{ participant.id }}-participant" class="govuk-grid-column-full">
+        <p id="p-{{ participant.id }}-name" class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
+        <p id="p-{{ participant.id }}-case-type-group" class="govuk-body-s govuk-!-margin-bottom-1">{{ participant.case_type_group }}</p>
+        <p *ngIf="participant.representee" class="govuk-body-s">
+          Representing
+          <span id="p-{{ participant.id }}-representee" class="govuk-heading-s">{{ participant.representee }}</span>
+        </p>
+        <div *ngIf="canCallParticipant(participant)">
+          <img src="/assets/images/glyphicons-181-facetime-video.png" width="20" height="13" alt="video camera icon" />
+          <a
+            id="p-call-{{ participant.id }}-btn"
+            class="govuk-link govuk-!-margin-bottom-0 vh-ml5"
+            href="javascript:void(0)"
+            (click)="begingCallWith(participant)"
+            >Contact this person by video</a
+          >
+        </div>
+        <hr *ngIf="!lastItem" />
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="observers.length > 0">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h2 class="govuk-heading-s">Observers</h2>
+      </div>
+    </div>
+    <div class="vh-border">
+      <div *ngFor="let participant of observers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
+        <div id="p-row-{{ participant.id }}-observer" class="govuk-grid-column-full">
+          <p id="p-{{ participant.id }}-name-observer" class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
+          <hr *ngIf="!lastItem" />
+        </div>
+      </div>
     </div>
   </div>
 </div>
