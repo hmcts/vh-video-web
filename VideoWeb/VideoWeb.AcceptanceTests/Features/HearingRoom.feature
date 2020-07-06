@@ -114,3 +114,23 @@ Scenario: VHO Monitors Hearing
   Then the VHO can see the Clerk status is Unavailable
   And the VHO can see the status of participant Individual01 is Available
   And the VHO can see that Individual01 is in the Waiting Room
+
+@HearingTest @Smoketest-Extended @DisableLogging
+Scenario: Observer and Panel Member join hearing
+  Given I have a hearing with an Observer and Panel Member
+	And the Observer01 user has progressed to the Waiting Room page for the existing hearing
+	And the PanelMember01 user has progressed to the Waiting Room page for the existing hearing
+	And the Clerk user has progressed to the Waiting Room page for the existing hearing
+	When the Clerk starts the hearing
+	Then the user is on the Countdown page
+	When the countdown finishes
+	Then the Clerk is on the Hearing Room page for 30 seconds
+	And the Clerk can see the participants
+	And Observer01 can see the other participants
+	And PanelMember01 can see the other participants
+  When in the Clerk's browser
+  And the Clerk clicks close
+	Then the user is on the Hearing List page
+	And the hearing status changed to Closed
+	When in Individual01's browser
+	Then the participants waiting room displays the closed status

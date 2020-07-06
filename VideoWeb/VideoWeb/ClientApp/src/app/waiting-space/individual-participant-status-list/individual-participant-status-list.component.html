@@ -31,8 +31,8 @@
         </div>
         <div class="vh-border">
             <div *ngFor="let participant of panelMembers; let lastItem = last;" class="govuk-grid-row govuk-!-margin-bottom-1">
-                <div id="p-row-{{ participant.id }}" class="govuk-grid-column-full">
-                    <p class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
+                <div id="p-row-{{ participant.id }}-panel-member" class="govuk-grid-column-full">
+                    <p id="p-{{ participant.id }}-name-panel-member" class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
                     <hr *ngIf="!lastItem"/>
                 </div>
             </div>
@@ -46,12 +46,12 @@
     </div>
     <div class="vh-border">
         <div *ngFor="let participant of nonJugdeParticipants; let lastItem = last;" class="govuk-grid-row govuk-!-margin-bottom-1">
-            <div id="p-row-{{ participant.id }}" class="govuk-grid-column-full">
-                <p class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
-                <p class="govuk-body-s govuk-!-margin-bottom-1">{{ participant.case_type_group }}</p>
+            <div id="p-row-{{ participant.id }}-participant" class="govuk-grid-column-full">
+                <p id="p-{{ participant.id }}-name" class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
+                <p id="p-{{ participant.id }}-case-type-group" class="govuk-body-s govuk-!-margin-bottom-1">{{ participant.case_type_group }}</p>
                 <p *ngIf="participant.representee" class="govuk-body-s">
                     Representing
-                    <span class="govuk-heading-s">{{ participant.representee }}</span>
+                    <span id="p-{{ participant.id }}-representee" class="govuk-heading-s">{{ participant.representee }}</span>
                 </p>
                 <div *ngIf="canCallParticipant(participant)">
                     <img src="/assets/images/glyphicons-181-facetime-video.png" width="20" height="13" alt="video camera icon" />
@@ -73,8 +73,8 @@
         </div>
         <div class="vh-border">
             <div *ngFor="let participant of observers; let lastItem = last;" class="govuk-grid-row govuk-!-margin-bottom-1">
-                <div id="p-row-{{ participant.id }}" class="govuk-grid-column-full">
-                    <p class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
+                <div id="p-row-{{ participant.id }}-observer" class="govuk-grid-column-full">
+                    <p id="p-{{ participant.id }}-name-observer" class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
                     <hr *ngIf="!lastItem"/>
                 </div>
             </div>

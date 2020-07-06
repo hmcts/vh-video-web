@@ -70,14 +70,14 @@
     </div>
     <div class="vh-border">
       <div *ngFor="let participant of panelMembers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
-        <div id="p-row-{{ participant.id }}" class="govuk-grid-column-full govuk-!-margin-top-2">
-          <p id="p-{{ participant.id }}-name" class="govuk-heading-m govuk-!-margin-bottom-0">
+        <div id="p-row-{{ participant.id }}-panel-member" class="govuk-grid-column-full govuk-!-margin-top-2">
+          <p id="p-{{ participant.id }}-name-panel-member" class="govuk-heading-m govuk-!-margin-bottom-0">
             {{ participant.name }}
           </p>
 
           <div class="govuk-body-s govuk-!-margin-bottom-3" *ngIf="isUserJudge()">
             <label
-              id="p-{{ participant.id }}-status"
+              id="p-{{ participant.id }}-status-participant"
               class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
             >
               {{ getParticipantStatus(participant) }}
@@ -100,20 +100,20 @@
 
   <div *ngIf="litigantInPerson" class="vh-border">
     <div *ngFor="let participant of individualParticipants; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
-      <div id="p-row-{{ participant.id }}" class="govuk-grid-column-full govuk-!-margin-top-2">
+      <div id="p-row-{{ participant.id }}-participant" class="govuk-grid-column-full govuk-!-margin-top-2">
         <!-- if hearing has litigant in person -->
         <div *ngIf="litigantInPerson">
-          <p id="p-{{ participant.id }}-casetype" class="govuk-heading-s govuk-!-margin-bottom-0">
+          <p id="p-{{ participant.id }}-case-type-group-participant" class="govuk-heading-s govuk-!-margin-bottom-0">
             {{ participant.case_type_group }}
           </p>
-          <p id="p-{{ participant.id }}-name" class="govuk-body-m govuk-!-margin-bottom-1">
+          <p id="p-{{ participant.id }}-name-participant" class="govuk-body-m govuk-!-margin-bottom-1">
             {{ participant.name }}
           </p>
         </div>
 
         <div class="govuk-body-s govuk-!-margin-bottom-3" *ngIf="isUserJudge()">
           <label
-            id="p-{{ participant.id }}-status"
+            id="p-{{ participant.id }}-status-participant"
             class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
           >
             {{ getParticipantStatus(participant) }}
@@ -127,23 +127,23 @@
 
   <div *ngIf="!litigantInPerson" class="vh-border">
     <div *ngFor="let participant of nonJudgeParticipants; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
-      <div id="p-row-{{ participant.id }}" class="govuk-grid-column-full govuk-!-margin-top-2">
+      <div id="p-row-{{ participant.id }}-participant" class="govuk-grid-column-full govuk-!-margin-top-2">
         <!-- represented by solicitor -->
         <div *ngIf="!litigantInPerson">
-          <p id="p-{{ participant.id }}-name" class="govuk-heading-m govuk-!-margin-bottom-0">
+          <p id="p-{{ participant.id }}-name-participant" class="govuk-heading-m govuk-!-margin-bottom-0">
             {{ participant.name }}
           </p>
           <p id="p-{{ participant.id }}-representee" *ngIf="participant.representee" class="govuk-body-m govuk-!-margin-bottom-1">
             Representing {{ participant.representee }}
           </p>
-          <p id="p-{{ participant.id }}-casetype" class="govuk-body-m govuk-!-margin-bottom-3">
+          <p id="p-{{ participant.id }}-case-type-group-participant" class="govuk-body-m govuk-!-margin-bottom-3">
             {{ participant.case_type_group }}
           </p>
         </div>
 
         <div class="govuk-body-s govuk-!-margin-bottom-3" *ngIf="isUserJudge()">
           <label
-            id="p-{{ participant.id }}-status"
+            id="p-{{ participant.id }}-status-participant"
             class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
           >
             {{ getParticipantStatus(participant) }}
@@ -166,14 +166,14 @@
 
     <div class="vh-border">
       <div *ngFor="let participant of observers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
-        <div id="p-row-{{ participant.id }}" class="govuk-grid-column-full govuk-!-margin-top-2">
-          <p id="p-{{ participant.id }}-name" class="govuk-heading-m govuk-!-margin-bottom-0">
+        <div id="p-row-{{ participant.id }}-observer" class="govuk-grid-column-full govuk-!-margin-top-2">
+          <p id="p-{{ participant.id }}-name-observer" class="govuk-heading-m govuk-!-margin-bottom-0">
             {{ participant.name }}
           </p>
 
           <div class="govuk-body-s govuk-!-margin-bottom-3" *ngIf="isUserJudge()">
             <label
-              id="p-{{ participant.id }}-status"
+              id="p-{{ participant.id }}-status-participant"
               class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
             >
               {{ getParticipantStatus(participant) }}
