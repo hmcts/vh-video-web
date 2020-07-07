@@ -99,7 +99,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var request = new HearingRequestBuilder()
                 .WithUserAccounts(_c.UserAccounts)
-                .WithScheduledTime(_c.TimeZone.AdjustForVideoWeb(DateTime.Now.ToUniversalTime()))
+                .WithScheduledTime(_c.TimeZone.AdjustForVideoWeb(DateTime.Now.AddMinutes(5).ToUniversalTime()))
                 .WithAnObserver()
                 .WithAPanelMember()
                 .Build();
