@@ -120,10 +120,19 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
             return false;
         }
 
+        const requester = this.getConsultationRequester();
+        if (requester.case_type_group === CaseTypeGroup.OBSERVER || requester.case_type_group === CaseTypeGroup.PANEL_MEMBER) {
+            return false;
+        }
+
         if (participant.username.toLocaleLowerCase().trim() === this.adalService.userInfo.userName.toLocaleLowerCase().trim()) {
             return false;
         }
         return this.isParticipantAvailable(participant);
+    }
+
+    getConsultationRequester(): ParticipantResponse {
+        return this.conference.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
     }
 
     async begingCallWith(participant: ParticipantResponse): Promise<void> {
@@ -131,9 +140,7 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
             return;
         }
         const requestee = this.conference.participants.find(x => x.id === participant.id);
-        const requester = this.conference.participants.find(
-            x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase()
-        );
+        const requester = this.getConsultationRequester();
 
         this.consultationRequester = new Participant(requester);
         this.consultationRequestee = new Participant(requestee);

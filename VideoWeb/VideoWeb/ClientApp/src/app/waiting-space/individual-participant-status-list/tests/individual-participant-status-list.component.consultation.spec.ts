@@ -8,7 +8,8 @@ import {
     ParticipantResponse,
     ParticipantStatus,
     Role,
-    RoomType
+    RoomType,
+    ParticipantResponseVho
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
@@ -22,12 +23,14 @@ import {
 } from 'src/app/testing/mocks/mock-events-service';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
+import { CaseTypeGroup } from '../../models/case-type-group';
 
 describe('IndividualParticipantStatusListComponent consultations', () => {
     let component: IndividualParticipantStatusListComponent;
     let conference: ConferenceResponse;
     let consultationRequester: Participant;
     let consultationRequestee: Participant;
+    let participantsObserverPanelMember: ParticipantResponseVho[];
 
     const mockAdalService = new MockAdalService();
     let adalService;
@@ -67,6 +70,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
 
         logger = jasmine.createSpyObj<Logger>('Logger', ['debug', 'info', 'warn', 'event', 'error']);
+        participantsObserverPanelMember = new ConferenceTestData().getListOfParticipantsObserverAndPanelMembers();
     });
 
     beforeEach(() => {
@@ -311,5 +315,23 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     it('should close all modals when user clicks close on modal', () => {
         component.closeAllPCModals();
         expect(consultationService.clearModals).toHaveBeenCalledTimes(1);
+    });
+    it('should not be able to call participant is user is observer', () => {
+        participantsObserverPanelMember.forEach(x => {
+            component.conference.participants.push(x);
+        });
+        const observer = component.conference.participants.find(x => x.case_type_group === CaseTypeGroup.OBSERVER);
+        adalService.userInfo.userName = observer.username;
+        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
+        expect(component.canCallParticipant(participant)).toBeFalsy();
+    });
+    it('should not be able to call participant is user is panel member', () => {
+        participantsObserverPanelMember.forEach(x => {
+            component.conference.participants.push(x);
+        });
+        const panelMember = component.conference.participants.find(x => x.case_type_group === CaseTypeGroup.PANEL_MEMBER);
+        adalService.userInfo.userName = panelMember.username;
+        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
+        expect(component.canCallParticipant(participant)).toBeFalsy();
     });
 });
