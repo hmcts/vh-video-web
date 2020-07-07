@@ -77,7 +77,7 @@ jobs:
       deviceConfiguration:
         - OS: Windows
           Browser: Chrome
-          BrowserVersion: Beta
+          BrowserVersion: Latest
           DeviceType: Desktop
           DeviceName:
           TestCaseFilter: TestCategory=AudioRecording
