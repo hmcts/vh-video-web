@@ -331,6 +331,9 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         });
         const panelMember = component.conference.participants.find(x => x.case_type_group === CaseTypeGroup.PANEL_MEMBER);
         adalService.userInfo.userName = panelMember.username;
+
+        expect(component.getConsultationRequester().username).toBe(panelMember.username);
+
         const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
         expect(component.canCallParticipant(participant)).toBeFalsy();
     });
