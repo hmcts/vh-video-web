@@ -53,3 +53,15 @@ Scenario: Participants cannot request Private consultation in suspended seating 
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
 	And the hearing status changes to Suspended
 	Then the private consultation link with Individual01 is not visible
+
+@VIH-6132
+Scenario: Observers cannot request Private consultation
+  Given I have a hearing with an Observer and Panel Member
+  And the Observer user has progressed to the Waiting Room page for the existing hearing
+	Then the private consultation link with Individual01 is not visible
+
+@VIH-6132
+Scenario: Panel Members cannot request Private consultation
+  Given I have a hearing with an Observer and Panel Member
+  And the Panel Member user has progressed to the Waiting Room page for the existing hearing
+  Then the private consultation link with Individual01 is not visible

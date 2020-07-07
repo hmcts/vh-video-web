@@ -123,3 +123,7 @@ $govuk-global-styles: true;
     border-radius: 3px 4px;
     margin-bottom: 15px;
 }
+
+.vh-line {
+    border-bottom: 1px solid govuk-colour('mid-grey');
+}

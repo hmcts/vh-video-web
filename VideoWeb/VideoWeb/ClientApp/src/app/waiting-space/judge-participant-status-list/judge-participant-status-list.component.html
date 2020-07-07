@@ -1,8 +1,8 @@
 <div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-l">
-        Participants <span id="participantCount">({{ getParticipantsCount() }})</span>
+      <h2 class="govuk-heading-m">
+        Participants <span id="participantCount"> ({{ getParticipantsCount() }})</span>
       </h2>
     </div>
   </div>
@@ -19,7 +19,7 @@
       </div>
 
       <div class="govuk-grid-column-two-thirds">
-        <div class="govuk-heading-l govuk-!-margin-bottom-0">
+        <div class="govuk-heading-m govuk-!-margin-bottom-0">
           <span>Judge</span>
           <span *ngIf="isUserJudge()"
             ><a href="javascript:void(0);" (click)="changeJudgeNameShow()" class="govuk-body govuk-link vh-ml10">Edit</a></span
@@ -59,11 +59,12 @@
     </div>
   </div>
 
-  <hr />
+  <div class="vh-line govuk-!-margin-bottom-3"></div>
+
   <div *ngIf="panelMembers.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-m">
+        <h2 class="govuk-heading-s">
           Panel members
         </h2>
       </div>
@@ -71,7 +72,7 @@
     <div class="vh-border">
       <div *ngFor="let participant of panelMembers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
         <div id="p-row-{{ participant.id }}-panel-member" class="govuk-grid-column-full govuk-!-margin-top-2">
-          <p id="p-{{ participant.id }}-name-panel-member" class="govuk-heading-m govuk-!-margin-bottom-0">
+          <p id="p-{{ participant.id }}-name-panel-member" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ participant.name }}
           </p>
 
@@ -84,7 +85,7 @@
             </label>
           </div>
 
-          <hr *ngIf="!lastItem" />
+          <div class="vh-line" *ngIf="!lastItem"></div>
         </div>
       </div>
     </div>
@@ -92,7 +93,7 @@
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-m">
+      <h2 class="govuk-heading-s">
         Participants
       </h2>
     </div>
@@ -103,11 +104,11 @@
       <div id="p-row-{{ participant.id }}-participant" class="govuk-grid-column-full govuk-!-margin-top-2">
         <!-- if hearing has litigant in person -->
         <div *ngIf="litigantInPerson">
-          <p id="p-{{ participant.id }}-case-type-group-participant" class="govuk-heading-s govuk-!-margin-bottom-0">
-            {{ participant.case_type_group }}
-          </p>
-          <p id="p-{{ participant.id }}-name-participant" class="govuk-body-m govuk-!-margin-bottom-1">
+          <p id="p-{{ participant.id }}-name-participant" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ participant.name }}
+          </p>
+          <p id="p-{{ participant.id }}-case-type-group-participant" class="govuk-body-m govuk-!-margin-bottom-3">
+            {{ participant.case_type_group }}
           </p>
         </div>
 
@@ -120,7 +121,7 @@
           </label>
         </div>
 
-        <hr *ngIf="!lastItem" />
+        <div class="vh-line" *ngIf="!lastItem"></div>
       </div>
     </div>
   </div>
@@ -130,10 +131,10 @@
       <div id="p-row-{{ participant.id }}-participant" class="govuk-grid-column-full govuk-!-margin-top-2">
         <!-- represented by solicitor -->
         <div *ngIf="!litigantInPerson">
-          <p id="p-{{ participant.id }}-name-participant" class="govuk-heading-m govuk-!-margin-bottom-0">
+          <p id="p-{{ participant.id }}-name-participant" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ participant.name }}
           </p>
-          <p id="p-{{ participant.id }}-representee" *ngIf="participant.representee" class="govuk-body-m govuk-!-margin-bottom-1">
+          <p id="p-{{ participant.id }}-representee" *ngIf="participant.representee" class="govuk-body-m govuk-!-margin-bottom-3">
             Representing {{ participant.representee }}
           </p>
           <p id="p-{{ participant.id }}-case-type-group-participant" class="govuk-body-m govuk-!-margin-bottom-3">
@@ -150,7 +151,7 @@
           </label>
         </div>
 
-        <hr *ngIf="!lastItem" />
+        <div class="vh-line" *ngIf="!lastItem"></div>
       </div>
     </div>
   </div>
@@ -158,7 +159,7 @@
   <div *ngIf="observers.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-m">
+        <h2 class="govuk-heading-s">
           Observers
         </h2>
       </div>
@@ -167,7 +168,7 @@
     <div class="vh-border">
       <div *ngFor="let participant of observers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
         <div id="p-row-{{ participant.id }}-observer" class="govuk-grid-column-full govuk-!-margin-top-2">
-          <p id="p-{{ participant.id }}-name-observer" class="govuk-heading-m govuk-!-margin-bottom-0">
+          <p id="p-{{ participant.id }}-name-observer" class="govuk-heading-s govuk-!-margin-bottom-3">
             {{ participant.name }}
           </p>
 
@@ -180,7 +181,7 @@
             </label>
           </div>
 
-          <hr *ngIf="!lastItem" />
+          <div class="vh-line" *ngIf="!lastItem"></div>
         </div>
       </div>
     </div>
