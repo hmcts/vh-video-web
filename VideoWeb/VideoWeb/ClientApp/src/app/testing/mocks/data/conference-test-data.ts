@@ -468,8 +468,10 @@ export class ConferenceTestData {
     getListOfParticipantsObserverAndPanelMembers(): ParticipantResponseVho[] {
         const participants: ParticipantResponseVho[] = this.getListOfParticipantDetails();
         participants[0].case_type_group = 'Observer';
+        participants[0].username = 'observer.green@hearings.net';
         participants[1].case_type_group = 'Observer';
         participants[2].case_type_group = 'PanelMember';
+        participants[2].username = 'pm.green@hearings.net';
 
         return participants;
     }
