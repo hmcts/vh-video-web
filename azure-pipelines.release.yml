@@ -120,6 +120,10 @@ stages:
           - group: KinlyConfiguration_Prod
             env:
              - Prod
+          - name: AppUri
+            value: $(AppUri_Prod)
+            env:
+             - Prod
         appSettings:
           - name: ApplicationInsights:InstrumentationKey
             value: vh-core-infra-AppInsightsKey
