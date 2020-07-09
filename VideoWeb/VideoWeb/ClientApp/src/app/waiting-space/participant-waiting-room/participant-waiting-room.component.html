@@ -89,12 +89,11 @@
         aria-label="Toggle hand raised status"
         (click)="toggleHandRaised()"
       >
-        Raise Hand
+        {{ handToggleText }}
         <span class="govuk-button__start-icon">
           <img
             id="toggle-hand-img"
             class="microphoneIcon"
-            [ngClass]="handRaised ? 'lower-hand-icon' : 'raise-hand-icon'"
             [src]="handRaised ? '/assets/images/hand.png' : '/assets/images/no-hand.png'"
             alt="Raise"
           />

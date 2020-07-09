@@ -521,6 +521,14 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.audioMuted = muteAudio;
     }
 
+    get handToggleText(): string {
+        if (this.handRaised) {
+            return 'Lower Hand';
+        } else {
+            return 'Raise Hand';
+        }
+    }
+
     toggleHandRaised() {
         if (this.handRaised) {
             this.logger.debug('lowering hand');
