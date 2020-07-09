@@ -16,9 +16,11 @@ export class CallError {
 
 export class ParticipantUpdated {
     public isMuted: boolean;
+    public handRaised: boolean;
 
-    constructor(isMuted: string) {
+    constructor(isMuted: string, buzzTime: number) {
         this.isMuted = isMuted === 'YES';
+        this.handRaised = buzzTime !== 0;
     }
 }
 

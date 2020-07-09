@@ -22,7 +22,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { DeviceTypeService } from '../../services/device-type.service';
 import { HeartbeatModelMapper } from '../../shared/mappers/heartbeat-model-mapper';
 import { Hearing } from '../../shared/models/hearing';
-import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models/video-call-models';
+import { CallError, CallSetup, ConnectedCall, DisconnectedCall, ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 
 declare var HeartbeatFactory: any;
@@ -57,6 +57,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     selfViewOpen: boolean;
     isAdminConsultation: boolean;
     audioMuted: boolean;
+    handRaised: boolean;
 
     clockSubscription$: Subscription;
     eventHubSubscription$ = new Subscription();
@@ -89,6 +90,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.showSelfView = false;
         this.isPrivateConsultation = false;
         this.audioMuted = false;
+        this.handRaised = false;
     }
 
     ngOnInit() {
@@ -336,6 +338,11 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.videoCallSubscription$.add(
             this.videoCallService.onCallDisconnected().subscribe(disconnectedCall => this.handleCallDisconnect(disconnectedCall))
         );
+        this.videoCallSubscription$.add(
+            this.videoCallService
+                .onParticipantUpdated()
+                .subscribe(updatedParticipant => this.handParticipantUpdatedInVideoCall(updatedParticipant))
+        );
 
         await this.videoCallService.setupClient();
     }
@@ -382,6 +389,10 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
                 this.call();
             }, this.CALL_TIMEOUT);
         }
+    }
+
+    handParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): void {
+        this.handRaised = updatedParticipant.handRaised;
     }
 
     call() {
@@ -508,5 +519,16 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         const muteAudio = this.videoCallService.toggleMute();
         this.logger.info('Participant mute status :' + muteAudio);
         this.audioMuted = muteAudio;
+    }
+
+    toggleHandRaised() {
+        if (this.handRaised) {
+            this.logger.debug('lowering hand');
+            this.videoCallService.lowerHand();
+        } else {
+            this.logger.debug('raising hand');
+            this.videoCallService.raiseHand();
+        }
+        this.handRaised = !this.handRaised;
     }
 }
