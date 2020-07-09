@@ -34,7 +34,9 @@ describe('JudgeHearingTableComponent', () => {
     it('should get the participant count excluding judge', () => {
         const hearing = new JudgeHearingSummary(new ConferenceTestData().getConferenceNow());
         const participantCount = component.getParticipantsCount(hearing);
-        expect(participantCount).toBe(hearing.applicants.length + hearing.respondents.length);
+        expect(participantCount).toBe(
+            hearing.applicants.length + hearing.respondents.length + hearing.observers.length + hearing.panelMembers.length
+        );
     });
 
     const conferenceStatusVisibilityTestCases = [

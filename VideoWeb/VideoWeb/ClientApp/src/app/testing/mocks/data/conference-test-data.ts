@@ -235,11 +235,31 @@ export class ConferenceTestData {
             case_type_group: 'respondent'
         });
 
+        const participant6 = new ParticipantForUserResponse({
+            id: '4444-4444-4444-444',
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'J Doe O',
+            username: 'jane.doe.O@hearings.net',
+            role: Role.Individual,
+            case_type_group: 'observer'
+        });
+
+        const participant7 = new ParticipantForUserResponse({
+            id: '4444-4444-4444-444',
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'J Doe PM',
+            username: 'jane.doe.PM@hearings.net',
+            role: Role.Individual,
+            case_type_group: 'panelmember'
+        });
+
         participants.push(participant1);
         participants.push(participant2);
         participants.push(participant3);
         participants.push(participant4);
         participants.push(participant5);
+        participants.push(participant6);
+        participants.push(participant7);
         return participants;
     }
 
