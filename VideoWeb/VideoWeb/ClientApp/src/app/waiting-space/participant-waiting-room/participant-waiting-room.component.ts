@@ -523,9 +523,9 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
     get handToggleText(): string {
         if (this.handRaised) {
-            return 'Lower Hand';
+            return 'Lower my hand';
         } else {
-            return 'Raise Hand';
+            return 'Raise my hand';
         }
     }
 

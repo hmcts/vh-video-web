@@ -237,25 +237,27 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
         component.handRaised = false;
         component.toggleHandRaised();
         expect(videoCallService.raiseHand).toHaveBeenCalledTimes(1);
+        expect(component.handToggleText).toBe('Lower my hand');
     });
 
     it('should lower hand on toggle if hand raised', () => {
         component.handRaised = true;
         component.toggleHandRaised();
         expect(videoCallService.lowerHand).toHaveBeenCalledTimes(1);
+        expect(component.handToggleText).toBe('Raise my hand');
     });
 
     it('should show raised hand on hand lowered', () => {
         const payload = new ParticipantUpdated('Yes', 0);
-        onParticipantUpdatedMock.next(payload);
-
+        onParticipantUpdatedSubject.next(payload);
         expect(component.handRaised).toBeFalsy();
+        expect(component.handToggleText).toBe('Raise my hand');
     });
 
     it('should show lower hand on hand raised', () => {
         const payload = new ParticipantUpdated('Yes', 123);
-        onParticipantUpdatedMock.next(payload);
-
+        onParticipantUpdatedSubject.next(payload);
         expect(component.handRaised).toBeTruthy();
+        expect(component.handToggleText).toBe('Lower my hand');
     });
 });
