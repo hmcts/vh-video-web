@@ -36,7 +36,7 @@ export class JudgeHearingTableComponent implements OnInit {
     }
 
     getParticipantsCount(hearing: JudgeHearingSummary): number {
-        return hearing.applicants.length + hearing.respondents.length;
+        return hearing.applicants.length + hearing.respondents.length + hearing.observers.length + hearing.panelMembers.length;
     }
 
     signIntoConference(hearing: JudgeHearingSummary) {
