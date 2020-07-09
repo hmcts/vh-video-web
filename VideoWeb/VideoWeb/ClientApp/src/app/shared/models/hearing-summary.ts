@@ -84,12 +84,10 @@ export class HearingSummary extends HearingBase {
     }
 
     get observers(): ParticipantSummary[] {
-        console.log(this.participants);
         return this.participants.filter(x => x.caseGroup !== '').filter(x => x.caseGroup.toLowerCase() === 'observer');
     }
 
     get panelMembers(): ParticipantSummary[] {
-        console.log(this.participants);
         return this.participants.filter(x => x.caseGroup !== '').filter(x => x.caseGroup.toLowerCase() === 'panelmember');
     }
 
