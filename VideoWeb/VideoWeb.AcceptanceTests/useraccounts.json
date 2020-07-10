@@ -15,7 +15,7 @@
       "AlternativeEmail": "a41@a.com"
     },
     {
-      "DefaultParticipant": true, 
+      "DefaultParticipant": true,
       "Role": "Individual",
       "Firstname": "Automation01",
       "Lastname": "Individual01",
@@ -128,6 +128,26 @@
       "CaseRoleName": "Claimant",
       "HearingRoleName": "Representative",
       "Representee": "Automation01 Individual04"
+    },
+    {
+      "Role": "Individual",
+      "Firstname": "Automation01",
+      "Lastname": "Observer01",
+      "DisplayName": "Automation01 Observer01",
+      "AlternativeEmail": "a81@a.com",
+      "CaseRoleName": "Observer",
+      "HearingRoleName": "Observer",
+      "Reference": "Automation01 Observer01"
+    },
+    {
+      "Role": "Individual",
+      "Firstname": "Automation01",
+      "Lastname": "PanelMember01",
+      "DisplayName": "Automation01 PanelMember01",
+      "AlternativeEmail": "a82@a.com",
+      "CaseRoleName": "Panel Member",
+      "HearingRoleName": "Panel Member",
+      "Reference": "Automation01 PanelMember01"
     }
   ]
 }

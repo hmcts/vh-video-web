@@ -408,6 +408,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
         if (this.hearing.isInSession()) {
             this.logger.debug('Showing video because hearing is in session');
+            this.resetMute();
             this.showSelfView = true;
             this.showVideo = true;
             this.showConsultationControls = false;
@@ -417,6 +418,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
         if (this.participant.status === ParticipantStatus.InConsultation) {
             this.logger.debug('Showing video because hearing is in session');
+            this.resetMute();
             this.showSelfView = true;
             this.showVideo = true;
             this.isPrivateConsultation = true;
@@ -490,6 +492,15 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         }
         if (this.hearing.isDelayed() || this.hearing.isSuspended()) {
             return 'hearing-delayed';
+        }
+    }
+
+    /**
+     *Unmutes participants
+     **/
+    resetMute() {
+        if (this.audioMuted) {
+            this.muteUnmuteCall();
         }
     }
 

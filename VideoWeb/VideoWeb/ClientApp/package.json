@@ -33,7 +33,7 @@
     "@angular/platform-server": "^8.2.14",
     "@angular/router": "^8.2.14",
     "@hmcts/frontend": "^0.0.41-alpha",
-    "@microsoft/signalr": "^3.1.2",
+    "@microsoft/signalr": "^3.1.4",
     "@ng-select/ng-select": "^3.7.3",
     "@nguniversal/module-map-ngfactory-loader": "8.2.6",
     "@popperjs/core": "^2.3.3",
@@ -47,12 +47,12 @@
     "guid-typescript": "^1.0.9",
     "moment": "^2.24.0",
     "ng-bullet": "^1.0.3",
-    "ng2-charts": "^2.3.0",
+    "ng2-charts": "^2.3.2",
     "ngx-clipboard": "^12.3.1",
     "ngx-device-detector": "^1.4.4",
     "ngx-moment": "^3.5.0",
     "run-script-os": "^1.1.1",
-    "rxjs": "^6.5.4",
+    "rxjs": "^6.5.5",
     "snyk": "^1.332.0",
     "webrtc-adapter": "^7.6.0",
     "zone.js": "~0.10.2"
@@ -82,7 +82,7 @@
     "node-sass": "^4.13.1",
     "nswag": "^13.6.0",
     "prettier": "^2.0.5",
-    "puppeteer": "^3.0.4",
+    "puppeteer": "^3.3.0",
     "typescript": "~3.5.3"
   },
   "optionalDependencies": {

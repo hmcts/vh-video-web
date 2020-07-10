@@ -237,10 +237,11 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     applyFilterInit() {
-        Object.assign(this.originalHearings, this.hearings);
+        this.originalHearings.length = 0;
+        this.hearings.forEach(x => this.originalHearings.push(x));
         const filter = this.courtAccountsAllocationStorage.get();
-        if (filter) {
-            this.applyFilter(filter);
+        if (filter && !filter.every(x => x.selected)) {
+            this.hearingsFiltering(filter);
         }
     }
 
@@ -283,12 +284,13 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     applyFilter(filter: CourtRoomsAccounts[]) {
-        const isOriginal = filter.every(x => x.selected);
-        Object.assign(this.hearings, this.originalHearings);
+        this.hearings.length = 0;
+        this.originalHearings.forEach(x => this.hearings.push(x));
+        this.hearingsFiltering(filter);
+    }
 
-        if (!isOriginal) {
-            this.hearings = this.hearings.filter(x => x.getParticipants().some(j => j.isJudge && this.isSelectedHearing(j, filter)));
-        }
+    hearingsFiltering(filter) {
+        this.hearings = this.hearings.filter(x => x.getParticipants().some(j => j.isJudge && this.isSelectedHearing(j, filter)));
     }
 
     isSelectedHearing(participant: ParticipantSummary, filter: CourtRoomsAccounts[]): boolean {
@@ -298,7 +300,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         } else {
             // if the venue could not be found (the venue name is not match the judge first name) will not hide the hearing
             this.logger.warn(`Venue for judge first name: ${participant.firstName} could not be found in court rooms accounts`);
-            return true;
+            return false;
         }
     }
 }

@@ -11,6 +11,7 @@ import { ConsultationMessage } from 'src/app/services/models/consultation-messag
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
+import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 
 @Component({
     selector: 'app-individual-participant-status-list',
@@ -22,6 +23,8 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
 
     nonJugdeParticipants: ParticipantResponse[];
     judge: ParticipantResponse;
+    panelMembers: ParticipantResponse[];
+    observers: ParticipantResponse[];
 
     consultationRequestee: Participant;
     consultationRequester: Participant;
@@ -41,6 +44,8 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
         this.consultationService.resetWaitingForResponse();
         this.filterNonJudgeParticipants();
         this.filterJudge();
+        this.filterPanelMembers();
+        this.filterObservers();
         this.setupSubscribers();
     }
 
@@ -115,10 +120,19 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
             return false;
         }
 
+        const requester = this.getConsultationRequester();
+        if (requester.case_type_group === CaseTypeGroup.OBSERVER || requester.case_type_group === CaseTypeGroup.PANEL_MEMBER) {
+            return false;
+        }
+
         if (participant.username.toLocaleLowerCase().trim() === this.adalService.userInfo.userName.toLocaleLowerCase().trim()) {
             return false;
         }
         return this.isParticipantAvailable(participant);
+    }
+
+    getConsultationRequester(): ParticipantResponse {
+        return this.conference.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
     }
 
     async begingCallWith(participant: ParticipantResponse): Promise<void> {
@@ -126,9 +140,7 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
             return;
         }
         const requestee = this.conference.participants.find(x => x.id === participant.id);
-        const requester = this.conference.participants.find(
-            x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase()
-        );
+        const requester = this.getConsultationRequester();
 
         this.consultationRequester = new Participant(requester);
         this.consultationRequestee = new Participant(requestee);
@@ -210,10 +222,24 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
     }
 
     private filterNonJudgeParticipants(): void {
-        this.nonJugdeParticipants = this.conference.participants.filter(x => x.role !== Role.Judge);
+        this.nonJugdeParticipants = this.conference.participants.filter(
+            x => x.role !== Role.Judge && x.case_type_group !== CaseTypeGroup.OBSERVER && x.case_type_group !== CaseTypeGroup.PANEL_MEMBER
+        );
     }
 
     private filterJudge(): void {
         this.judge = this.conference.participants.find(x => x.role === Role.Judge);
+    }
+
+    private filterPanelMembers(): void {
+        this.panelMembers = this.conference.participants.filter(x => x.case_type_group === CaseTypeGroup.PANEL_MEMBER);
+    }
+
+    private filterObservers(): void {
+        this.observers = this.conference.participants.filter(x => x.case_type_group === CaseTypeGroup.OBSERVER);
+    }
+
+    get getNumberParticipants() {
+        return this.nonJugdeParticipants.length + this.observers.length + this.panelMembers.length;
     }
 }

@@ -18,8 +18,8 @@
 .graph-panel {
   margin-left: 0;
   margin-right: 0;
-  height: 50px;
-  line-height: 50px;
+  height: 35px;
+  line-height: 35px;
   text-align: left;
 }
 
@@ -76,7 +76,7 @@
   @include govuk-font($size: 16, $weight: 'bold');
   background: govuk-colour('dark-grey');
   color: govuk-colour('white');
-  padding: 12px 16px 8px 16px;
+  padding: 8px 16px 1px 16px;
   border-radius: 3px 3px 0px 0px;
 }
 
@@ -103,7 +103,7 @@
   @include govuk-font($size: 16, $weight: 'regular');
   background: govuk-colour('dark-grey');
   color: govuk-colour('white');
-  padding: 12px 16px 8px 16px;
+  padding: 1px 8px 1px 8px;
   margin-top: 0px;
   margin-bottom: 0px;
 }
@@ -136,4 +136,14 @@
   margin: 10px;
   background-color: govuk-colour('white');
   border-radius: 3px;
+}
+
+.footer-border {
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.message {
+  color: govuk-colour('white');
+  margin-top: 4px;
 }

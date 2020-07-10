@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild, AfterContentChecked } from '@angular/core';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { HeartbeatHealth } from '../../services/models/participant-heartbeat';
@@ -12,7 +12,7 @@ import { VhoQueryService } from '../services/vho-query-service.service';
     templateUrl: './participant-network-status.component.html',
     styleUrls: ['./participant-network-status.component.scss', '../vho-global-styles.scss']
 })
-export class ParticipantNetworkStatusComponent implements OnInit {
+export class ParticipantNetworkStatusComponent implements OnInit, AfterContentChecked {
     @Input() participant: ParticipantSummary;
     @Input() conferenceId: string;
 
@@ -22,6 +22,7 @@ export class ParticipantNetworkStatusComponent implements OnInit {
     packageLostArray: PackageLost[];
 
     timeout: NodeJS.Timer;
+    mouseEvent: MouseEvent;
 
     @ViewChild('graphContainer', { static: false })
     graphContainer: ElementRef;
@@ -34,6 +35,7 @@ export class ParticipantNetworkStatusComponent implements OnInit {
 
     onMouseEnter($event: MouseEvent) {
         const self = this;
+        this.mouseEvent = $event;
         this.timeout = setTimeout(async function () {
             await self.showParticipantGraph($event);
         }, 500);
@@ -45,6 +47,7 @@ export class ParticipantNetworkStatusComponent implements OnInit {
     }
 
     async showParticipantGraph($event: MouseEvent) {
+        this.mouseEvent = $event;
         if (this.displayGraph || this.loading) {
             this.logger.debug('Graph already displayed or still loading');
             return;
@@ -75,6 +78,7 @@ export class ParticipantNetworkStatusComponent implements OnInit {
     }
 
     updateGraphPosition($event: MouseEvent) {
+        this.mouseEvent = $event;
         if (!this.graphContainer) {
             return;
         }
@@ -82,8 +86,8 @@ export class ParticipantNetworkStatusComponent implements OnInit {
         const y = $event.clientY;
         const elem = this.graphContainer.nativeElement as HTMLDivElement;
 
-        elem.style.top = y + 30 + 'px';
-        elem.style.left = x - 350 + 'px';
+        elem.style.top = y + 10 + 'px';
+        elem.style.left = x - 5 + 'px';
     }
 
     getParticipantNetworkStatus(): string {
@@ -127,5 +131,9 @@ export class ParticipantNetworkStatusComponent implements OnInit {
 
     setGraphVisibility(visible: boolean) {
         this.displayGraph = visible;
+    }
+
+    ngAfterContentChecked(): void {
+        this.updateGraphPosition(this.mouseEvent);
     }
 }

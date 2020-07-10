@@ -17,7 +17,7 @@ export class CopyIdComponent implements OnInit {
 
     ngOnInit(): void {
         this.displayTooltip = true;
-        this.tooltip = 'Copy hearing ID to clipboard';
+        this.tooltip = 'Copy conference ID to clipboard';
     }
 
     onMouseOver($event: MouseEvent): void {
@@ -35,7 +35,7 @@ export class CopyIdComponent implements OnInit {
 
     copyToClipboard(conference: HearingSummary) {
         this.clipboardService.copyFromContent(conference.id);
-        this.tooltip = 'Hearing ID copied to clipboard';
+        this.tooltip = 'Conference ID copied to clipboard';
         this.setTooltipVisibility(false);
     }
 
