@@ -96,4 +96,20 @@ describe('HearingSummary', () => {
         expect(hearing.startedDateTime).toEqual(c.started_date_time);
         expect(hearing.endedDateTime).toBeNull();
     });
+
+    it('should get observers', () => {
+        const c = new ConferenceTestData().getConferenceFuture();
+        const hearing = new HearingSummary(c);
+        const observers = hearing.observers;
+        const groups = observers.filter(x => x.caseGroup === 'observer').length;
+        expect(groups).toBe(1);
+    });
+
+    it('should get panel members', () => {
+        const c = new ConferenceTestData().getConferenceFuture();
+        const hearing = new HearingSummary(c);
+        const panelMembers = hearing.panelMembers;
+        const groups = panelMembers.filter(x => x.caseGroup === 'panelmember').length;
+        expect(groups).toBe(1);
+    });
 });
