@@ -214,6 +214,9 @@ describe('CommandCentreComponent - Core', () => {
         const courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
         courtAccountsAllocationStorage.set(filter);
         const numberHearing = component.hearings.length;
+
+        hearings.forEach(x => component.originalHearings.push(x));
+
         component.applyFilter(filter);
         expect(component.hearings.length).toBe(numberHearing);
     });
@@ -232,11 +235,13 @@ describe('CommandCentreComponent - Core', () => {
         judge[0].last_name = 'manual1';
 
         component.hearings.push(new HearingSummary(conferencesFilter));
+        component.hearings.forEach(x => component.originalHearings.push(x));
+
         component.applyFilter(filter);
         expect(component.hearings.length).toBe(1);
         expect(component.hearings[0].getParticipants().filter(p => p.isJudge)[0].firstName).toBe('manual');
     });
-    it('should hide the hearing if venue is not match judge first name or venue is not selected', () => {
+    it('should hide the hearings if selected venues are not match judge first name or venue is not selected', () => {
         const filter = [new CourtRoomsAccounts('manual', ['manual1', 'manual2'], false), new CourtRoomsAccounts('judge', ['fudge'], false)];
         filter[0].courtsRooms[0].selected = false;
         filter[0].courtsRooms[1].selected = false;
@@ -252,7 +257,20 @@ describe('CommandCentreComponent - Core', () => {
         judge[0].last_name = 'manual1';
 
         component.hearings.push(new HearingSummary(conferencesFilter));
+        component.hearings.forEach(x => component.originalHearings.push(x));
+
         component.applyFilter(filter);
         expect(component.hearings.length).toBe(0);
+    });
+    it('should not filter hearings if all options selected to show all hearings for selected venues on init', () => {
+        const filter = [new CourtRoomsAccounts('judge', ['fudge'], true), new CourtRoomsAccounts('manual', ['manual1', 'manual2'], true)];
+        const courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
+        courtAccountsAllocationStorage.set(filter);
+        const numberHearing = component.hearings.length;
+
+        hearings.forEach(x => component.originalHearings.push(x));
+
+        component.applyFilterInit();
+        expect(component.hearings.length).toBe(numberHearing);
     });
 });

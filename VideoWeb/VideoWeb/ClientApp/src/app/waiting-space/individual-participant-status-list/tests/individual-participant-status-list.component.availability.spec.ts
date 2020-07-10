@@ -1,7 +1,14 @@
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    ConferenceStatus,
+    ParticipantResponse,
+    ParticipantStatus,
+    Role,
+    ParticipantResponseVho
+} from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Participant } from 'src/app/shared/models/participant';
@@ -20,15 +27,22 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
     let videoWebService: jasmine.SpyObj<VideoWebService>;
 
     let conference: ConferenceResponse;
+    let participantsObserverPanelMember: ParticipantResponseVho[];
 
     beforeAll(() => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
         const testParticipant = conference.participants.filter(x => x.role === Role.Individual)[0];
+        participantsObserverPanelMember = new ConferenceTestData().getListOfParticipantsObserverAndPanelMembers();
+
         adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
             userInfo: <adal.User>{ userName: testParticipant.username, authenticated: true }
         });
 
-        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', ['clearOutoingCallTimeout', 'clearModals']);
+        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', [
+            'clearOutoingCallTimeout',
+            'clearModals',
+            'resetWaitingForResponse'
+        ]);
 
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
@@ -55,7 +69,6 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
         { status: ParticipantStatus.Disconnected, expected: 'Unavailable' },
         { status: ParticipantStatus.Joining, expected: 'Unavailable' },
         { status: ParticipantStatus.NotSignedIn, expected: 'Unavailable' },
-        { status: ParticipantStatus.UnableToJoin, expected: 'Unavailable' },
         { status: ParticipantStatus.None, expected: 'Unavailable' }
     ];
 
@@ -113,7 +126,6 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
         { status: ParticipantStatus.Disconnected },
         { status: ParticipantStatus.Joining },
         { status: ParticipantStatus.NotSignedIn },
-        { status: ParticipantStatus.UnableToJoin },
         { status: ParticipantStatus.None }
     ];
 
@@ -134,5 +146,21 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
 
         participantStatusSubject.next(payload);
         expect(consultationService.clearModals).toHaveBeenCalledTimes(1);
+    });
+    it('should show observers, panel members and participants', () => {
+        participantsObserverPanelMember.forEach(x => {
+            component.conference.participants.push(x);
+        });
+        component.ngOnInit();
+
+        expect(component.nonJugdeParticipants).toBeDefined();
+        expect(component.nonJugdeParticipants.length).toBe(2);
+
+        expect(component.observers).toBeDefined();
+        expect(component.observers.length).toBe(2);
+        expect(component.panelMembers).toBeDefined();
+        expect(component.panelMembers.length).toBe(1);
+
+        expect(component.getNumberParticipants).toBe(5);
     });
 });

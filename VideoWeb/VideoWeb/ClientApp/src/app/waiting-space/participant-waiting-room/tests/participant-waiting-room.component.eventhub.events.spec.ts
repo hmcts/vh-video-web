@@ -121,11 +121,13 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
     });
 
     it('should update conference status and show video when "in session" message received', fakeAsync(() => {
+        spyOn(component, 'resetMute').and.callThrough();
         const status = ConferenceStatus.InSession;
         const message = new ConferenceStatusMessage(gloalConference.id, status);
         hearingStatusSubject.next(message);
         flushMicrotasks();
 
+        expect(component.resetMute).toHaveBeenCalled();
         expect(component.hearing.status).toBe(status);
         expect(component.conference.status).toBe(status);
         expect(component.showVideo).toBeTruthy();
@@ -133,6 +135,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
     }));
 
     it('should update conference status and get closeed time when "closed" message received', fakeAsync(() => {
+        spyOn(component, 'resetMute').and.callThrough();
         const status = ConferenceStatus.Closed;
         const confWithCloseTime = new ConferenceResponse(Object.assign({}, gloalConference));
         confWithCloseTime.closed_date_time = new Date();
@@ -149,9 +152,11 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         expect(component.showVideo).toBeFalsy();
         expect(videoWebService.getConferenceById).toHaveBeenCalledWith(gloalConference.id);
         expect(component.getConferenceStatusText()).toBe('is closed');
+        expect(component.resetMute).toHaveBeenCalledTimes(0);
     }));
 
     it('should return correct conference status text when suspended', fakeAsync(() => {
+        spyOn(component, 'resetMute').and.callThrough();
         const status = ConferenceStatus.Suspended;
         const message = new ConferenceStatusMessage(gloalConference.id, status);
 
@@ -162,9 +167,11 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         expect(component.conference.status).toBe(status);
         expect(component.showVideo).toBeFalsy();
         expect(component.getConferenceStatusText()).toBe('is suspended');
+        expect(component.resetMute).toHaveBeenCalledTimes(0);
     }));
 
     it('should return correct conference status text when paused', fakeAsync(() => {
+        spyOn(component, 'resetMute').and.callThrough();
         const status = ConferenceStatus.Paused;
         const message = new ConferenceStatusMessage(gloalConference.id, status);
 
@@ -175,9 +182,11 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         expect(component.conference.status).toBe(status);
         expect(component.showVideo).toBeFalsy();
         expect(component.getConferenceStatusText()).toBe('is paused');
+        expect(component.resetMute).toHaveBeenCalledTimes(0);
     }));
 
     it('should update participant status to available', () => {
+        spyOn(component, 'resetMute').and.callThrough();
         const status = ParticipantStatus.Available;
         const message = new ParticipantStatusMessage(globalParticipant.id, globalParticipant.username, gloalConference.id, status);
 
@@ -187,9 +196,11 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         expect(participant.status).toBe(message.status);
         expect(component.isAdminConsultation).toBeFalsy();
         expect(component.showVideo).toBeFalsy();
+        expect(component.resetMute).toHaveBeenCalledTimes(0);
     });
 
     it('should update logged in participant status to in consultation', () => {
+        spyOn(component, 'resetMute').and.callThrough();
         const status = ParticipantStatus.InConsultation;
         const participant = globalParticipant;
         const message = new ParticipantStatusMessage(participant.id, participant.username, gloalConference.id, status);
@@ -197,6 +208,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
 
         participantStatusSubject.next(message);
 
+        expect(component.resetMute).toHaveBeenCalled();
         expect(component.participant.status).toBe(message.status);
         expect(component.showVideo).toBeTruthy();
         expect(component.isAdminConsultation).toBeFalsy();

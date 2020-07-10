@@ -45,3 +45,29 @@ Scenario: Video Hearings Officer cannot call users in a hearing
   When in the Clerk's browser
   And the Clerk clicks close
 	Then the user is on the Hearing List page
+
+@VIH-6132
+Scenario: Video Hearings Officer Calls Observer
+  Given I have a hearing with an Observer and Panel Member
+  And the Observer user has progressed to the Waiting Room page for the existing hearing
+	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
+	When the Video Hearings Officer starts a call with Observer
+	And Observer accepts the VHO call
+	Then the Video Hearings Officer can see and hear the other user
+	And the admin self view can be open and closed
+	Then the Observer can see and hear the other user
+	When the Video Hearings Officer ends the call
+	Then the user is on the Hearing List page
+
+@VIH-6132
+Scenario: Video Hearings Officer Calls Panel Member
+  Given I have a hearing with an Observer and Panel Member
+  And the Panel Member user has progressed to the Waiting Room page for the existing hearing
+	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
+	When the Video Hearings Officer starts a call with Panel Member
+	And Panel Member accepts the VHO call
+	Then the Video Hearings Officer can see and hear the other user
+	And the admin self view can be open and closed
+	Then the Panel Member can see and hear the other user
+	When the Video Hearings Officer ends the call
+	Then the user is on the Hearing List page
