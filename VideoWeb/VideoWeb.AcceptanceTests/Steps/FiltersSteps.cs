@@ -44,24 +44,31 @@ namespace VideoWeb.AcceptanceTests.Steps
             return participantUser;
         }
 
-        [When(@"the user filters by alert with the option (.*)")]
-        [When(@"the user filters by location with the option (.*)")]
-        [When(@"the user filters by status with the option (.*)")]
-        [When(@"the user filters by alert with the options (.*)")]
-        [When(@"the user filters by location with the options (.*)")]
-        [When(@"the user filters by status with the options (.*)")]
-        public void VhoFilter(string options)
+        [When(@"the VHO filters by Judge Name (.*)")]
+        public void WhenTheVHOFiltersByJudgeNameAutomationBuilding(string options)
         {
             _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.FiltersButton);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(FiltersPopupPage.FiltersPopup).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].ClickLink(FiltersPopupPage.ClearFiltersLink);
+            UnSelectTheSelectAllCheckboxes();
+
             foreach (var option in ConverterHelpers.ConvertStringIntoArray(options))
             {
                 _browsers[_c.CurrentUser.Key].ClickCheckbox(FiltersPopupPage.CheckBox(option));
             }
+
             _browsers[_c.CurrentUser.Key].Click(FiltersPopupPage.ApplyButton);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(FiltersPopupPage.FiltersPopup).Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Refresh();
+        }
+
+        private void UnSelectTheSelectAllCheckboxes()
+        {
+            var selectAllCount = _browsers[_c.CurrentUser.Key].Driver.FindElements(FiltersPopupPage.SelectAllCheckboxes).Count;
+
+            for (var i = 1; i <= selectAllCount; i++)
+            {
+                _browsers[_c.CurrentUser.Key].ClickCheckbox(FiltersPopupPage.SelectAllCheckbox(i));
+            }
         }
 
         [Then(@"the hearings are filtered")]
@@ -74,6 +81,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
         
         [Then(@"the hearings are filtered by the judge named (.*)")]
+        [Then(@"the hearings are filtered by judges named (.*)")]
         public void ThenTheHearingsAreFilteredByTheJudgeNames(string judgeName)
         {
             var hearingThatShouldNotBeVisible =
@@ -84,6 +92,15 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(hearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(VhoHearingListPage.CaseName(hearingThatShouldNotBeVisible.Id)).Should().BeTrue();
+        }
+
+        [Then(@"both hearings are visible")]
+        public void ThenBothHearingsAreVisible()
+        {
+            var firstHearingThatShouldBeVisible = _c.Test.Conferences.First();
+            var secondHearingThatShouldBeVisible = _c.Test.Conferences.Last();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(firstHearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(secondHearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
         }
     }
 }

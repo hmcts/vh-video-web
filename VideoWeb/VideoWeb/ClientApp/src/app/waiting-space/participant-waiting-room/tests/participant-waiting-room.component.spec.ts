@@ -277,4 +277,22 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         await component.onConsultationCancelled();
         expect(logger.error.calls.mostRecent().args[0]).toBe('Failed to leave private consultation');
     });
+
+    it('should unmute the participant already muted', () => {
+        spyOn(component, 'muteUnmuteCall').and.callThrough();
+        videoCallService.toggleMute.and.returnValue(false);
+        component.audioMuted = true;
+        component.resetMute();
+        expect(videoCallService.toggleMute).toHaveBeenCalled();
+        expect(component.muteUnmuteCall).toHaveBeenCalled();
+        expect(component.audioMuted).toBeFalsy();
+    });
+
+    it('should not reset mute option the participant not in mute', () => {
+        spyOn(component, 'muteUnmuteCall').and.callThrough();
+        component.audioMuted = false;
+        component.resetMute();
+        expect(component.muteUnmuteCall).toHaveBeenCalledTimes(0);
+        expect(component.audioMuted).toBeFalsy();
+    });
 });

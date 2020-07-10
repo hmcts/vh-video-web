@@ -21,26 +21,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         private const int ExtraTimeInWaitingRoomAfterThePause = 10;
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _c;
-        private readonly BrowserSteps _browserSteps;
 
-        public WaitingRoomSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, BrowserSteps browserSteps)
+        public WaitingRoomSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext)
         {
             _browsers = browsers;
             _c = testContext;
-            _browserSteps = browserSteps;
-        }
-
-        [Given(@"all the participants refresh their browsers")]
-        public void GivenAllTheParticipantsRefreshTheirBrowsers()
-        {
-            var participants = _c.Test.HearingParticipants.Where(x => !x.Display_name.ToLower().Contains("clerk"));
-            foreach (var participant in participants)
-            {
-                _browserSteps.GivenInTheUsersBrowser(participant.Last_name);
-                _browsers[_c.CurrentUser.Key].Refresh();
-                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails, 60).Text.Should().Contain(_c.Test.Case.Name);
-            }
-            _browserSteps.GivenInTheUsersBrowser("Clerk");
         }
 
         [When(@"the user navigates back to the hearing list")]
@@ -60,7 +45,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheFirstParticipantStatusIsDisplayedAsNotSignedIn(string name, string status)
         {
             var participant = _c.Test.ConferenceParticipants.First(x => x.Name.Contains(name));
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ParticipantStatus(participant.Id)).Text.ToUpper().Trim().Should().Be(status.ToUpper());
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantStatus(participant.Id)).Text.ToUpper().Trim().Should().Be(status.ToUpper());
         }
 
         [Then(@"the Clerk can see information about their case")]
@@ -70,11 +55,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ReturnToHearingRoomLink).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ContactVho).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.HearingTitle).Text.Should().Be($"{_c.Test.Case.Name} ({_c.Test.Hearing.Case_type_name}) case number: {_c.Test.Hearing.Cases.First().Number}");
+            
             var startDate = _c.TimeZone.Adjust(_c.Test.Hearing.Scheduled_date_time);
             var dateAndStartTime = startDate.ToString(DateFormats.ClerkWaitingRoomPageTime);
             var endTime = startDate.AddMinutes( _c.Test.Hearing.Scheduled_duration).ToString(DateFormats.ClerkWaitingRoomPageTimeEnd);
             var displayedTime = TextHelpers.RemoveSpacesOnSafari(_browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.HearingDateTime).Text);
             displayedTime.Should().Be($"{dateAndStartTime} to {endTime}");
+            
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.StartHearingText).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.IsEveryoneConnectedText).Displayed.Should().BeTrue();
         }
@@ -84,47 +71,95 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails).Text.Should().Contain(_c.Test.Case.Name);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails).Text.Should().Contain($"case number: {_c.Test.Hearing.Cases.First().Number}");
+            
             var displayedDateTime = TextHelpers.RemoveSpacesOnSafari(_browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.HearingDate).Text);
             displayedDateTime.Should().Contain(_c.TimeZone.Adjust(_c.Test.Hearing.Scheduled_date_time).ToString(DateFormats.WaitingRoomPageDate));
             displayedDateTime.Should().Contain(_c.TimeZone.Adjust(_c.Test.Hearing.Scheduled_date_time).ToString(DateFormats.WaitingRoomPageTime));
+            
             var endTime = _c.TimeZone.Adjust(_c.Test.Hearing.Scheduled_date_time).AddMinutes(_c.Test.Hearing.Scheduled_duration).ToString(DateFormats.WaitingRoomPageTime);
             displayedDateTime.Should().Contain(endTime);
+            
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(WaitingRoomPage.ContactVhTeam).Displayed.Should().BeTrue();
         }
 
-        [Then(@"the user can see a list of participants and their representatives")]
-        public void ThenTheUserCanSeeAListOfParticipantsAndTheirRepresentatives()
+        [Then(@"the Clerk can see a list of participants and their representatives")]
+        public void ThenTheClerkCanSeeAListOfParticipantsAndTheirRepresentatives()
         {
-            var rowsElement = _c.CurrentUser.Role.ToLower().Equals("individual") ? WaitingRoomPage.IndividualParticipantsList : WaitingRoomPage.ParticipantsList;
-            var allRows = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(rowsElement);
-            var participantRowIds = (from row in allRows where row.GetAttribute("id") != "" select row.GetAttribute("id")).ToList();
-            var participantsInformation = (from id in participantRowIds select _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(WaitingRoomPage.RowInformation(id)) into infoRows where infoRows.Count > 0 select new ParticipantInformation {CaseTypeGroup = infoRows[0].Text, Name = infoRows[1].Text, Representee = infoRows.Count.Equals(3) ? infoRows[2].Text : null}).ToList();
+            var panelMembers = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("panelmember"));
+            var individuals = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("individual"));
+            var representatives = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("representative"));
+            var observers = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("observer"));
 
-            foreach (var participant in _c.Test.ConferenceParticipants)
+            (panelMembers.Count + individuals.Count + representatives.Count + observers.Count).Should().BeGreaterThan(0);
+
+            foreach (var panelMember in panelMembers)
             {
-                if (!participant.User_role.Equals(UserRole.Individual) &&
-                    !participant.User_role.Equals(UserRole.Representative)) continue;
-                foreach (var row in participantsInformation.Where(row => row.Name.Equals(participant.Name)))
-                {
-                    row.CaseTypeGroup.Should().Be(participant.Case_type_group);
-                    if (participant.Representee != string.Empty)
-                    {
-                        row.Representee.Should().Be($"Representing {participant.Representee}");
-                    }
-                }
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(JudgeParticipantPanel.PanelMemberName(panelMember.Id)).Text.Trim().Should().Be(panelMember.Name);
+            }
+
+            foreach (var individual in individuals)
+            {
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantName(individual.Id)).Text.Trim().Should().Be(individual.Name);
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantCaseType(individual.Id)).Text.Trim().Should().Be(individual.Case_type_group);
+            }
+
+            foreach (var representative in representatives)
+            {
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantName(representative.Id)).Text.Trim().Should().Be(representative.Name);
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantCaseType(representative.Id)).Text.Trim().Should().Be(representative.Case_type_group);
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(JudgeParticipantPanel.RepresentativeRepresentee(representative.Id)).Text.Trim().Should().Be($"Representing {representative.Representee}");
+            }
+
+            foreach (var observer in observers)
+            {
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(JudgeParticipantPanel.ObserverName(observer.Id)).Text.Trim().Should().Be(observer.Name);
             }
         }
 
-        [Then(@"the user can see other participants status")]
+        [Then(@"the participant can see a list of other participants and their representatives")]
+        public void ThenTheParticipantCanSeeAListOfParticipantsAndTheirRepresentatives()
+        {
+            var panelMembers = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("panelmember"));
+            var individuals = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("individual"));
+            var representatives = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("representative"));
+            var observers = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("observer"));
+
+            (panelMembers.Count + individuals.Count + representatives.Count + observers.Count).Should().BeGreaterThan(0);
+
+            foreach (var panelMember in panelMembers)
+            {
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ParticipantListPanel.PanelMemberName(panelMember.Id)).Text.Trim().Should().Be(panelMember.Name);
+            }
+
+            foreach (var individual in individuals)
+            {
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ParticipantListPanel.ParticipantName(individual.Id)).Text.Trim().Should().Be(individual.Name);
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ParticipantListPanel.ParticipantCaseTypeGroup(individual.Id)).Text.Trim().Should().Be(individual.Case_type_group);
+            }
+
+            foreach (var representative in representatives)
+            {
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ParticipantListPanel.ParticipantName(representative.Id)).Text.Trim().Should().Be(representative.Name);
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ParticipantListPanel.ParticipantCaseTypeGroup(representative.Id)).Text.Trim().Should().Be(representative.Case_type_group);
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ParticipantListPanel.RepresentativeRepresentee(representative.Id)).Text.Trim().Should().Be(representative.Representee);
+            }
+
+            foreach (var observer in observers)
+            {
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ParticipantListPanel.ObserverName(observer.Id)).Text.Trim().Should().Be(observer.Name);
+            }
+        }
+
+        [Then(@"the Clerk can see other participants status")]
         public void ThenTheUserCanSeeOtherParticipantsStatus()
         {
-            var pats = _c.Test.ConferenceParticipants.Where(participant =>
+            var participants = _c.Test.ConferenceParticipants.Where(participant =>
                 participant.User_role == UserRole.Individual ||
                 participant.User_role == UserRole.Representative);
-            foreach (var participant in pats)
+            foreach (var participant in participants)
             {
                 _browsers[_c.CurrentUser.Key].Driver
-                    .WaitUntilVisible(WaitingRoomPage.OtherParticipantsStatus(participant.Id)).Text.Trim().ToUpperInvariant().Should()
+                    .WaitUntilVisible(JudgeParticipantPanel.ParticipantStatus(participant.Id)).Text.Trim().ToUpperInvariant().Should()
                     .BeEquivalentTo("Not signed in".ToUpperInvariant());
             }
         }
@@ -215,9 +250,9 @@ namespace VideoWeb.AcceptanceTests.Steps
             foreach (var user in loggedInParticipants)
             {
                 if ((user.User_role == UserRole.Judge)) continue;
-                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ParticipantStatus(user.Id));
-                _browsers[_c.CurrentUser.Key].ScrollTo(ClerkWaitingRoomPage.ParticipantStatus(user.Id));
-                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.ParticipantStatus(user.Id)).Text.ToUpper().Trim()
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantStatus(user.Id));
+                _browsers[_c.CurrentUser.Key].ScrollTo(JudgeParticipantPanel.ParticipantStatus(user.Id));
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantStatus(user.Id)).Text.ToUpper().Trim()
                     .Should().Be("CONNECTED");
             }
         }

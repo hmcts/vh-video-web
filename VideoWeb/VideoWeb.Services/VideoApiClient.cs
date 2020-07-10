@@ -5154,23 +5154,20 @@ namespace VideoWeb.Services.Video
         [System.Runtime.Serialization.EnumMember(Value = @"NotSignedIn")]
         NotSignedIn = 1,
     
-        [System.Runtime.Serialization.EnumMember(Value = @"UnableToJoin")]
-        UnableToJoin = 2,
-    
         [System.Runtime.Serialization.EnumMember(Value = @"Joining")]
-        Joining = 3,
+        Joining = 2,
     
         [System.Runtime.Serialization.EnumMember(Value = @"Available")]
-        Available = 4,
+        Available = 3,
     
         [System.Runtime.Serialization.EnumMember(Value = @"InHearing")]
-        InHearing = 5,
+        InHearing = 4,
     
         [System.Runtime.Serialization.EnumMember(Value = @"InConsultation")]
-        InConsultation = 6,
+        InConsultation = 5,
     
         [System.Runtime.Serialization.EnumMember(Value = @"Disconnected")]
-        Disconnected = 7,
+        Disconnected = 6,
     
     }
     

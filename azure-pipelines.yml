@@ -190,18 +190,11 @@ trigger:
     - master
     - release/*
     - hotfix/*
-  paths:
-    include:
-    - VideoWeb/*
-    - azure-pipelines.yml
+
 pr:
   branches:
     include:
     - master
-  paths:
-    include:
-    - VideoWeb/*
-    - azure-pipelines.yml
 
 resources:
   repositories:

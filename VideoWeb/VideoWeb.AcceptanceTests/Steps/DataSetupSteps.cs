@@ -94,6 +94,20 @@ namespace VideoWeb.AcceptanceTests.Steps
             GetTheNewConferenceDetails();
         }
 
+        [Given(@"I have a hearing with an Observer and Panel Member")]
+        public void GivenIHaveAHearingWithAnObserverAndPanelMember()
+        {
+            var request = new HearingRequestBuilder()
+                .WithUserAccounts(_c.UserAccounts)
+                .WithScheduledTime(_c.TimeZone.AdjustForVideoWeb(DateTime.Now.AddMinutes(5).ToUniversalTime()))
+                .WithAnObserver()
+                .WithAPanelMember()
+                .Build();
+
+            SendTheHearingRequest(request);
+            GetTheNewConferenceDetails();
+        }
+
         public void GivenIHaveAHearing(int minutes = 0, string location = "Birmingham Civil and Family Justice Centre")
         {
             var request = new HearingRequestBuilder()
