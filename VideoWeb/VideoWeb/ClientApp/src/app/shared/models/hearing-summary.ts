@@ -83,6 +83,14 @@ export class HearingSummary extends HearingBase {
             .filter(x => x.caseGroup.toLowerCase() === 'respondent' || x.caseGroup.toLowerCase() === 'defendant');
     }
 
+    get observers(): ParticipantSummary[] {
+        return this.participants.filter(x => x.caseGroup !== '').filter(x => x.caseGroup.toLowerCase() === 'observer');
+    }
+
+    get panelMembers(): ParticipantSummary[] {
+        return this.participants.filter(x => x.caseGroup !== '').filter(x => x.caseGroup.toLowerCase() === 'panelmember');
+    }
+
     get hearingVenueName(): string {
         return this.conference.hearing_venue_name;
     }

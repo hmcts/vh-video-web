@@ -17,7 +17,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly LoginSteps _loginSteps;
         private readonly HearingsListSteps _hearingListSteps;
         private readonly VhoHearingListSteps _vhoHearingListSteps;
-        private readonly VhoVenueListSteps _vhoVenueListSteps;
+        private readonly VenueListSteps _vhoVenueListSteps;
         private readonly IntroductionSteps _introductionSteps;
         private readonly EquipmentCheckSteps _equipmentCheckSteps;
         private readonly SwitchOnCamAndMicSteps _switchOnCamAndMicSteps;
@@ -33,7 +33,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             DataSetupSteps dataSetupSteps,
             LoginSteps loginSteps, 
             HearingsListSteps hearingListSteps, 
-            VhoVenueListSteps vhoVenueListSteps,
+            VenueListSteps vhoVenueListSteps,
             VhoHearingListSteps vhoHearingListSteps,
             IntroductionSteps introductionSteps,
             EquipmentCheckSteps equipmentCheckSteps, 
@@ -103,7 +103,9 @@ namespace VideoWeb.AcceptanceTests.Steps
                 return Journey.SelfTest; 
             if (RemoveNumbersFromUsername(user.ToLower()) == "participant" ||
                      RemoveNumbersFromUsername(user.ToLower()) == "individual" ||
-                     RemoveNumbersFromUsername(user.ToLower()) == "representative")
+                     RemoveNumbersFromUsername(user.ToLower()) == "representative" ||
+                     RemoveNumbersFromUsername(user.ToLower()) == "observer" ||
+                     RemoveNumbersFromUsername(user.ToLower()) == "panel member")
                 return Journey.Participant;
             if (RemoveNumbersFromUsername(user.ToLower()) == "video hearings officer") 
                 return Journey.Vho;

@@ -70,13 +70,14 @@ stages:
           - ${{ parameters.environment }}
         deploymentBranch: ${{ parameters.deploymentBranch }}
       ${{ if eq(variables['Build.Reason'], 'ResourceTrigger') }}:
-        deploymentBranch: $(resources.pipeline.CI.sourceBranch)
+        deploymentBranch: resources.pipeline.CI.sourceBranch
       releaseParameters:
         runZapTests: ${{ parameters.RunZap }}
         subscription: $(env_Subscription)
         secrets_KeyVault: $(env_Secret_KeyVault)
         secrets_Subscription: $(env_Secret_Subscription)
         devOpsResource: vh_video_web
+        deploymentSlot: production
         appName: vh-video-web-$(environment)
         resourceGroup: vh-video-web-$(environment)
         testCaseFilter: TestCategory=smoketest
@@ -117,6 +118,10 @@ stages:
             env:
              - Preprod
           - group: KinlyConfiguration_Prod
+            env:
+             - Prod
+          - name: AppUri
+            value: $(AppUri_Prod)
             env:
              - Prod
         appSettings:
@@ -242,6 +247,8 @@ stages:
             value: $(Saucelabs:Username)
           - name: Saucelabs:AccessKey
             value: $(Saucelabs:AccessKey)
+          - name: Saucelabs:RealDeviceApiKey
+            value: $(RealDeviceApiKey)
 
           # WowzaConfiguration
           - name: WowzaConfiguration:StorageAccountName

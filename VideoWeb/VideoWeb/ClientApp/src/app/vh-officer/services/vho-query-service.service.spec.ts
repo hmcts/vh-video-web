@@ -1,6 +1,6 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
-import { ApiClient } from '../../services/clients/api-client';
+import { ApiClient, CourtRoomsAccountResponse } from '../../services/clients/api-client';
 import { ConferenceTestData } from '../../testing/mocks/data/conference-test-data';
 import { VhoQueryService } from './vho-query-service.service';
 
@@ -15,7 +15,8 @@ describe('VhoQueryService', () => {
             'getConferenceByIdVHO',
             'getTasks',
             'completeTask',
-            'getHeartbeatDataForParticipant'
+            'getHeartbeatDataForParticipant',
+            'getCourtRoomAccounts'
         ]);
     });
 
@@ -97,5 +98,18 @@ describe('VhoQueryService', () => {
 
         const result = await service.getParticipantHeartbeats(confId, participantId);
         expect(result).toBe(data);
+    });
+    it('should get court rooms filter', async () => {
+        const courtRoomsAccounts1 = new CourtRoomsAccountResponse({ venue: 'Birmingham', court_rooms: ['Room 01', 'Room 02'] });
+        const courtRoomsAccounts2 = new CourtRoomsAccountResponse({ venue: 'Manchester', court_rooms: ['Room 01', 'Room 02'] });
+        const courtAccounts: CourtRoomsAccountResponse[] = [];
+        courtAccounts.push(courtRoomsAccounts1);
+        courtAccounts.push(courtRoomsAccounts2);
+
+        apiClient.getCourtRoomAccounts.and.returnValue(of(courtAccounts));
+        const usernames = ['Birmingham', 'Manchester'];
+        const result = await service.getCourtRoomsAccounts(usernames);
+        expect(apiClient.getCourtRoomAccounts).toHaveBeenCalledWith(usernames);
+        expect(result).toBe(courtAccounts);
     });
 });

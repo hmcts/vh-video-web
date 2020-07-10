@@ -19,7 +19,6 @@ import { HeaderComponent } from './header/header.component';
 import { MicVisualiserComponent } from './mic-visualiser/mic-visualiser.component';
 import { ModalComponent } from './modal/modal.component';
 import { NotFoundComponent } from './not-found/not-found.component';
-import { PaginationComponent } from './pagination/pagination.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { ScreenHelper } from './screen-helper';
 import { SelectMediaDevicesComponent } from './select-media-devices/select-media-devices.component';
@@ -33,7 +32,6 @@ import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-b
         HeaderComponent,
         FooterComponent,
         ContactUsComponent,
-        PaginationComponent,
         ContactUsFoldingComponent,
         ErrorComponent,
         NotFoundComponent,
@@ -57,7 +55,6 @@ import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-b
         FooterComponent,
         ContactUsComponent,
         ContactUsFoldingComponent,
-        PaginationComponent,
         SelectMediaDevicesComponent,
         MicVisualiserComponent,
         SelfTestComponent,

@@ -18,13 +18,14 @@
 .graph-panel {
   margin-left: 0;
   margin-right: 0;
-  height: 50px;
-  line-height: 50px;
+  height: 35px;
+  line-height: 35px;
   text-align: left;
 }
 
 .graph-footer-yellow {
   background-color: govuk-colour('yellow');
+  color: govuk-colour('black');
 }
 
 .graph-footer-green {
@@ -59,4 +60,90 @@
   text-align: center;
   width: 100%;
   margin-top: 30px;
+}
+
+.box {
+  background: govuk-colour('white');
+  width: auto;
+  height: auto;
+  border-radius: 3px;
+  position: absolute;
+  z-index: 99;
+  box-shadow: 0 7px 11px 0px rgba(0, 0, 0, 0.3);
+}
+
+.boxHead {
+  @include govuk-font($size: 16, $weight: 'bold');
+  background: govuk-colour('dark-grey');
+  color: govuk-colour('white');
+  padding: 8px 16px 1px 16px;
+  border-radius: 3px 3px 0px 0px;
+}
+
+.signalHead {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto;
+}
+
+.signalHeadName {
+  grid-column: 1/1;
+  justify-self: start;
+  align-self: center;
+  font-weight: 700;
+}
+
+.signalHeadTitle {
+  grid-column: 2/2;
+  justify-self: end;
+  align-self: center;
+}
+
+.boxBody {
+  @include govuk-font($size: 16, $weight: 'regular');
+  background: govuk-colour('dark-grey');
+  color: govuk-colour('white');
+  padding: 1px 8px 1px 8px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+.boxFoot {
+  @include govuk-font($size: 16, $weight: 'bold');
+  color: govuk-colour('white');
+  padding: 0px 15px;
+  border-radius: 0px 0px 3px 3px;
+}
+
+.boxFoot--Dead {
+  background: govuk-colour('black');
+  color: govuk-colour('white');
+}
+
+.boxFoot--Poor {
+  background: govuk-colour('yellow');
+  color: govuk-colour('black');
+}
+
+.shadow {
+  -webkit-box-shadow: 3px 3px 5px 6px govuk-colour('light-grey');
+  -moz-box-shadow: 3px 3px 5px 6px govuk-colour('light-grey');
+  box-shadow: 3px 3px 5px 6px govuk-colour('light-grey');
+}
+
+.graph-display {
+  display: block;
+  margin: 10px;
+  background-color: govuk-colour('white');
+  border-radius: 3px;
+}
+
+.footer-border {
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.message {
+  color: govuk-colour('white');
+  margin-top: 4px;
 }

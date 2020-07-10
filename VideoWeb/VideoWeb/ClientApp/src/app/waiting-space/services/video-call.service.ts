@@ -3,7 +3,7 @@ import { Observable, Subject } from 'rxjs';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
-import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models/video-call-models';
+import { CallError, CallSetup, ConferenceUpdated, ConnectedCall, DisconnectedCall, ParticipantUpdated } from '../models/video-call-models';
 
 declare var PexRTC: any;
 
@@ -13,6 +13,8 @@ export class VideoCallService {
     private onConnectedSubject = new Subject<ConnectedCall>();
     private onDisconnected = new Subject<DisconnectedCall>();
     private onErrorSubject = new Subject<CallError>();
+    private onParticipantUpdatedSubject = new Subject<ParticipantUpdated>();
+    private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
 
     pexipAPI: any;
 
@@ -41,6 +43,14 @@ export class VideoCallService {
 
         this.pexipAPI.onDisconnect = function (reason) {
             self.onDisconnected.next(new DisconnectedCall(reason));
+        };
+
+        this.pexipAPI.onParticipantUpdate = function (participantUpdate) {
+            self.onParticipantUpdatedSubject.next(new ParticipantUpdated(participantUpdate.is_muted));
+        };
+
+        this.pexipAPI.onConferenceUpdate = function (conferenceUpdate) {
+            self.onConferenceUpdatedSubject.next(new ConferenceUpdated(conferenceUpdate.guests_muted));
         };
     }
 
@@ -94,6 +104,14 @@ export class VideoCallService {
 
     onError(): Observable<CallError> {
         return this.onErrorSubject.asObservable();
+    }
+
+    onParticipantUpdated(): Observable<ParticipantUpdated> {
+        return this.onParticipantUpdatedSubject.asObservable();
+    }
+
+    onConferenceUpdated(): Observable<ConferenceUpdated> {
+        return this.onConferenceUpdatedSubject.asObservable();
     }
 
     updateCameraForCall(camera: UserMediaDevice) {

@@ -26,6 +26,14 @@ export class ParticipantSummary {
         return this.participant.username;
     }
 
+    get firstName(): string {
+        return this.participant.first_name;
+    }
+
+    get lastName(): string {
+        return this.participant.last_name;
+    }
+
     get status(): ParticipantStatus {
         return this.participant.status;
     }

@@ -211,7 +211,9 @@ export class ConferenceTestData {
             display_name: 'Judge Fudge',
             username: 'judge.fudge@hearings.net',
             role: Role.Judge,
-            case_type_group: 'judge'
+            case_type_group: 'judge',
+            first_name: 'judge',
+            last_name: 'fudge'
         });
 
         const participant4 = new ParticipantForUserResponse({
@@ -233,11 +235,31 @@ export class ConferenceTestData {
             case_type_group: 'respondent'
         });
 
+        const participant6 = new ParticipantForUserResponse({
+            id: '4444-4444-4444-444',
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'J Doe O',
+            username: 'jane.doe.O@hearings.net',
+            role: Role.Individual,
+            case_type_group: 'observer'
+        });
+
+        const participant7 = new ParticipantForUserResponse({
+            id: '4444-4444-4444-444',
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'J Doe PM',
+            username: 'jane.doe.PM@hearings.net',
+            role: Role.Individual,
+            case_type_group: 'panelmember'
+        });
+
         participants.push(participant1);
         participants.push(participant2);
         participants.push(participant3);
         participants.push(participant4);
         participants.push(participant5);
+        participants.push(participant6);
+        participants.push(participant7);
         return participants;
     }
 
@@ -461,5 +483,16 @@ export class ConferenceTestData {
             .with((h, i) => (h.browser_version = '84.1.0'))
             .with((h, i) => (h.recent_packet_loss = 4))
             .build();
+    }
+
+    getListOfParticipantsObserverAndPanelMembers(): ParticipantResponseVho[] {
+        const participants: ParticipantResponseVho[] = this.getListOfParticipantDetails();
+        participants[0].case_type_group = 'Observer';
+        participants[0].username = 'observer.green@hearings.net';
+        participants[1].case_type_group = 'Observer';
+        participants[2].case_type_group = 'PanelMember';
+        participants[2].username = 'pm.green@hearings.net';
+
+        return participants;
     }
 }

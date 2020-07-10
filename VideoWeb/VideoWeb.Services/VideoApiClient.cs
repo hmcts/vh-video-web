@@ -5154,23 +5154,20 @@ namespace VideoWeb.Services.Video
         [System.Runtime.Serialization.EnumMember(Value = @"NotSignedIn")]
         NotSignedIn = 1,
     
-        [System.Runtime.Serialization.EnumMember(Value = @"UnableToJoin")]
-        UnableToJoin = 2,
-    
         [System.Runtime.Serialization.EnumMember(Value = @"Joining")]
-        Joining = 3,
+        Joining = 2,
     
         [System.Runtime.Serialization.EnumMember(Value = @"Available")]
-        Available = 4,
+        Available = 3,
     
         [System.Runtime.Serialization.EnumMember(Value = @"InHearing")]
-        InHearing = 5,
+        InHearing = 4,
     
         [System.Runtime.Serialization.EnumMember(Value = @"InConsultation")]
-        InConsultation = 6,
+        InConsultation = 5,
     
         [System.Runtime.Serialization.EnumMember(Value = @"Disconnected")]
-        Disconnected = 7,
+        Disconnected = 6,
     
     }
     
@@ -5336,6 +5333,12 @@ namespace VideoWeb.Services.Video
     
         [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Display_name { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("first_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string First_name { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("last_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Last_name { get; set; }
     
         /// <summary>The current participant status</summary>
         [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]

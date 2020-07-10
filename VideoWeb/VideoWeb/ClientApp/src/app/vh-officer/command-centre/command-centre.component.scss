@@ -30,3 +30,16 @@
 .title {
   @extend %govuk-heading-m;
 }
+
+.ml5 {
+  margin-left: 5px;
+}
+
+.connected {
+  transform: translateY(-100%);
+  transform: translateX(-30%);
+  margin-top: 5px;
+  margin-left: 5px;
+  position: relative;
+  z-index: 9999 !important;
+}

@@ -8,7 +8,7 @@
     (mousemove)="updateGraphPosition($event)"
     alt="Open instant messaging chat window arrow"
   />
-  <div *ngIf="displayGraph" #graphContainer class="graph-container" (mouseleave)="setGraphVisibility(false)">
+  <div *ngIf="displayGraph" #graphContainer class="graph-container" style="margin-left: 7px;" (mouseleave)="setGraphVisibility(false)">
     <app-monitoring-graph
       [pakagesLostData]="packageLostArray"
       [participantGraphInfo]="monitoringParticipant"

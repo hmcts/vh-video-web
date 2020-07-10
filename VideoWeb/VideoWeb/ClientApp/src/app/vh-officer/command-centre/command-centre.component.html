@@ -1,49 +1,60 @@
-<div class="govuk-grid-row menu" style="clear: both;">
-  <div class="half-left">
-    <input
-      type="button"
-      value="Change courts"
-      (click)="goBackToVenueSelection()"
-      id="change-venue-allocation-btn"
-      class="govuk-button govuk-button--black"
-    />
+<div>
+  <div class="govuk-grid-row menu" style="clear: both;">
+    <div class="half-left">
+      <input
+        type="button"
+        value="Change courts"
+        (click)="goBackToVenueSelection()"
+        id="change-venue-allocation-btn"
+        class="govuk-button govuk-button--black"
+      />
+      <input type="button" value="Filters" (click)="showFilters()" id="filters-court-rooms" class="govuk-button govuk-button--black ml5" />
+    </div>
+
+    <div class="half-right">
+      <app-command-centre-menu (selectedMenu)="onMenuSelected($event)"></app-command-centre-menu>
+    </div>
   </div>
 
-  <div class="half-right">
-    <app-command-centre-menu (selectedMenu)="onMenuSelected($event)"></app-command-centre-menu>
+  <div class="vho-line-border"></div>
+
+  <div *ngIf="displayFilters">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full connected">
+        <app-court-rooms-filters [courtRoomsAccountsFilters]="courtRoomsAccountsFilters"></app-court-rooms-filters>
+      </div>
+    </div>
   </div>
-</div>
 
-<div class="vho-line-border"></div>
+  <div class="govuk-grid-row">
+    <div class="conference-list">
+      <app-vho-hearing-list #conferenceList [conferences]="hearings" (selectedConference)="onConferenceSelected($event)">
+      </app-vho-hearing-list>
+    </div>
+    <div class="selected-menu-content" [ngSwitch]="selectedMenu">
+      <ng-container *ngSwitchCase="menuOption.Hearing">
+        <app-admin-hearing *ngIf="selectedHearing; else nohearing" [hearing]="selectedHearing"></app-admin-hearing>
+      </ng-container>
 
-<div class="govuk-grid-row">
-  <div class="conference-list">
-    <app-vho-hearing-list #conferenceList [conferences]="hearings" (selectedConference)="onConferenceSelected($event)">
-    </app-vho-hearing-list>
-  </div>
-  <div class="selected-menu-content" [ngSwitch]="selectedMenu">
-    <ng-container *ngSwitchCase="menuOption.Hearing">
-      <app-admin-hearing *ngIf="selectedHearing; else nohearing" [hearing]="selectedHearing"></app-admin-hearing>
-    </ng-container>
+      <ng-container *ngSwitchCase="menuOption.Message">
+        <app-admin-im *ngIf="selectedHearing; else nohearing" [hearing]="selectedHearing"></app-admin-im>
+      </ng-container>
 
-    <ng-container *ngSwitchCase="menuOption.Message">
-      <app-admin-im *ngIf="selectedHearing; else nohearing" [hearing]="selectedHearing"></app-admin-im>
-    </ng-container>
-
-    <div *ngSwitchDefault>
-      <div class="govuk-grid-row govuk-!-padding-3">
-        <div class="govuk-grid-column-full">
-          <h1 class="govuk-heading-s">Select a hearing</h1>
+      <div *ngSwitchDefault>
+        <div class="govuk-grid-row govuk-!-padding-3">
+          <div class="govuk-grid-column-full">
+            <h1 class="govuk-heading-s">Select a hearing</h1>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<ng-template #nohearing>
-  <div class="govuk-grid-row govuk-!-padding-3">
-    <div class="govuk-grid-column-full">
-      <h1 class="title">Select a hearing</h1>
+  <ng-template #nohearing>
+    <div class="govuk-grid-row govuk-!-padding-3">
+      <div class="govuk-grid-column-full">
+        <h1 class="title">Select a hearing</h1>
+      </div>
     </div>
-  </div>
-</ng-template>
+  </ng-template>
+</div>

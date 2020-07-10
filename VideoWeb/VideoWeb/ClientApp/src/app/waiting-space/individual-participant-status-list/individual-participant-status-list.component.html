@@ -1,18 +1,17 @@
 <div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-m">Participants</h2>
+      <h2 class="govuk-heading-m">Participants ({{ getNumberParticipants }})</h2>
     </div>
   </div>
-
-  <div id="p-row-{{ judge.id }}" class="govuk-grid-row govuk-!-margin-bottom-6">
-    <div class="govuk-grid-column-one-half">
+  <div id="p-row-{{ judge.id }}" class="govuk-grid-row">
+    <div class="govuk-grid-column-one-half vh-mb5">
       <div class="govuk-heading-m govuk-!-margin-bottom-0">Judge</div>
       <p class="govuk-body-s govuk-!-margin-bottom-0">
         <strong>{{ judge.display_name }}</strong>
       </p>
     </div>
-    <div class="govuk-grid-column-one-half">
+    <div class="govuk-grid-column-one-half vh-mb5">
       <img
         src="/assets/images/govuk-crest.png"
         height="50"
@@ -22,148 +21,96 @@
       />
     </div>
   </div>
+  <div class="vh-line govuk-!-margin-bottom-3"></div>
 
-  <div *ngFor="let participant of nonJugdeParticipants" class="govuk-grid-row govuk-!-margin-bottom-6">
-    <div id="p-row-{{ participant.id }}" class="govuk-grid-column-full">
-      <p class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.case_type_group }}</p>
-      <p class="govuk-body-s govuk-!-margin-bottom-1">{{ participant.name }}</p>
-      <p *ngIf="participant.representee" class="govuk-body-s govuk-!-margin-bottom-1">Representing {{ participant.representee }}</p>
-      <a
-        *ngIf="canCallParticipant(participant)"
-        id="p-call-{{ participant.id }}-btn"
-        href="#"
-        class="govuk-link govuk-!-margin-bottom-0"
-        href="javascript:void(0)"
-        (click)="begingCallWith(participant)"
-        >Speak to this person now</a
-      >
+  <div *ngIf="panelMembers.length > 0">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h2 class="govuk-heading-s">Panel members</h2>
+      </div>
+    </div>
+    <div class="vh-border">
+      <div *ngFor="let participant of panelMembers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
+        <div id="p-row-{{ participant.id }}-panel-member" class="govuk-grid-column-full">
+          <p id="p-{{ participant.id }}-name-panel-member" class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
+          <div class="vh-line" *ngIf="!lastItem"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h2 class="govuk-heading-s">Participants</h2>
+    </div>
+  </div>
+  <div class="vh-border">
+    <div *ngFor="let participant of nonJugdeParticipants; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
+      <div id="p-row-{{ participant.id }}-participant" class="govuk-grid-column-full">
+        <p id="p-{{ participant.id }}-name" class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
+        <p id="p-{{ participant.id }}-case-type-group" class="govuk-body-s govuk-!-margin-bottom-1">{{ participant.case_type_group }}</p>
+        <p *ngIf="participant.representee" class="govuk-body-s">
+          Representing
+          <span id="p-{{ participant.id }}-representee" class="govuk-heading-s">{{ participant.representee }}</span>
+        </p>
+        <div *ngIf="canCallParticipant(participant)">
+          <img src="/assets/images/glyphicons-181-facetime-video.png" width="20" height="13" alt="video camera icon" />
+          <a
+            id="p-call-{{ participant.id }}-btn"
+            class="govuk-link govuk-!-margin-bottom-0 vh-ml5"
+            href="javascript:void(0)"
+            (click)="begingCallWith(participant)"
+            >Contact this person by video</a
+          >
+        </div>
+        <div class="vh-line" *ngIf="!lastItem"></div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="observers.length > 0">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h2 class="govuk-heading-s">Observers</h2>
+      </div>
+    </div>
+    <div class="vh-border">
+      <div *ngFor="let participant of observers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
+        <div id="p-row-{{ participant.id }}-observer" class="govuk-grid-column-full">
+          <p id="p-{{ participant.id }}-name-observer" class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
+          <div class="vh-line" *ngIf="!lastItem"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 <app-modal id="raise-pc-modal" class="modal clear consultation">
-  <div class="modal-content negative">
-    <div *ngIf="consultationRequestee" class="govuk-grid-row govuk-body">
-      <div class="govuk-grid-column-full">
-        <p class="govuk-!-font-size-27 govuk-!-font-weight-bold govuk-body--white govuk-!-margin-bottom-1">
-          Your contact request has been sent to
-        </p>
-        <p
-          id="receiver"
-          class="govuk-!-font-size-27 govuk-!-font-weight-bold govuk-body--white govuk-!-margin-top-1 govuk-!-margin-bottom-4"
-        >
-          {{ consultationRequestee.fullName }}
-        </p>
-        <p class="govuk-!-font-size-19 govuk-body--white">Please wait while the other participant responds</p>
-        <button
-          id="cancel-pc-request-btn"
-          class="govuk-button govuk-button--warning govuk-!-margin-top-9"
-          data-module="govuk-button"
-          (click)="cancelConsultationRequest()"
-          alt="Cancel call"
-        >
-          Cancel call
-        </button>
-      </div>
-    </div>
-  </div>
+  <app-raise-consultation
+    *ngIf="consultationRequestee"
+    [consultationRequestee]="consultationRequestee"
+    (cancelledRequest)="cancelConsultationRequest()"
+  ></app-raise-consultation>
 </app-modal>
 
 <app-modal id="receive-pc-modal" class="modal clear consultation">
-  <div class="modal-content negative">
-    <div *ngIf="consultationRequester" class="govuk-grid-row govuk-body">
-      <div class="govuk-grid-column-full">
-        <p id="caller" class="govuk-!-font-size-27 govuk-!-font-weight-bold govuk-body--white govuk-!-margin-bottom-1">
-          Incoming call from {{ consultationRequester.fullName }}
-        </p>
-      </div>
-      <div class="govuk-grid-column-one-half">
-        <button
-          id="accept-pc-request-btn"
-          class="govuk-button govuk-!-margin-top-9"
-          data-module="govuk-button"
-          (click)="answerConsultationRequest('Accepted')"
-          alt="Accept call"
-        >
-          Accept call
-        </button>
-      </div>
-      <div class="govuk-grid-column-one-half">
-        <button
-          id="reject-pc-request-btn"
-          class="govuk-button govuk-button--warning govuk-!-margin-top-9"
-          data-module="govuk-button"
-          (click)="answerConsultationRequest('Rejected')"
-          alt="Reject call"
-        >
-          Reject call
-        </button>
-      </div>
-    </div>
-  </div>
+  <app-receive-consultation
+    *ngIf="consultationRequester"
+    [consultationRequester]="consultationRequester"
+    (respondedToConsulation)="answerConsultationRequest($event)"
+  ></app-receive-consultation>
 </app-modal>
 
 <app-modal id="accepted-pc-modal" class="modal clear consultation">
-  <div class="modal-content negative">
-    <div *ngIf="consultationRequester" class="govuk-grid-row govuk-body">
-      <div class="govuk-grid-column-full govuk-!-padding-9">
-        <p id="receiver-accepted" class="govuk-!-font-size-27 govuk-!-font-weight-bold govuk-body--white govuk-!-margin-bottom-1">
-          {{ consultationRequestee.fullName }} has accepted your call
-        </p>
-        <p class="govuk-!-font-size-19 govuk-body--white">We're connecting you now.</p>
-      </div>
-    </div>
-  </div>
+  <app-accepted-consultation *ngIf="consultationRequestee" [consultationRequestee]="consultationRequestee"></app-accepted-consultation>
 </app-modal>
 
 <app-modal id="rejected-pc-modal" class="modal clear consultation">
-  <div class="modal-content negative">
-    <div class="govuk-grid-row govuk-body">
-      <div class="govuk-grid-column-full govuk-!-padding-3">
-        <p id="receiver-not-accepted" class="govuk-!-font-size-27 govuk-!-font-weight-bold govuk-body--white govuk-!-margin-bottom-1">
-          Your call request has not been accepted
-        </p>
-      </div>
-
-      <div class="govuk-grid-column-full">
-        <button
-          id="close-pc-rejection-btn"
-          class="govuk-button govuk-!-margin-top-3"
-          data-module="govuk-button"
-          (click)="closeConsultationRejection()"
-          alt="Close consultation rejection modal"
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
+  <app-rejected-consultation (closedModal)="closeAllPCModals()"></app-rejected-consultation>
 </app-modal>
 
 <app-modal id="vho-raise-pc-modal" class="modal clear consultation">
-  <div class="modal-content negative">
-    <div class="govuk-grid-row govuk-body">
-      <div class="govuk-grid-column-full">
-        <p id="vho-caller" class="govuk-!-font-size-27 govuk-!-font-weight-bold govuk-body--white govuk-!-margin-bottom-1">
-          Incoming call from Video Hearings Team
-        </p>
-        <p class="govuk-!-font-size-19 govuk-!-font-weight-bold govuk-body--white govuk-!-margin-bottom-1">
-          Please accept the call
-        </p>
-      </div>
-      <div class="govuk-grid-column-full">
-        <button
-          id="accept-pc-request-btn"
-          class="govuk-button govuk-!-margin-top-9"
-          data-module="govuk-button"
-          (click)="acceptVhoConsultationRequest()"
-          alt="Accept call"
-        >
-          Accept call
-        </button>
-      </div>
-    </div>
-  </div>
+  <app-vho-raise-consultation (acceptedVhoCall)="acceptVhoConsultationRequest()"></app-vho-raise-consultation>
 </app-modal>
 
 <app-modal id="no-room-pc-modal" class="modal clear consultation">

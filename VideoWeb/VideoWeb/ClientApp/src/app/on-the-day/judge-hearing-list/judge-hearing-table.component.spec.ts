@@ -31,6 +31,14 @@ describe('JudgeHearingTableComponent', () => {
         expect(ind.representee).toBeUndefined();
     });
 
+    it('should get the participant count excluding judge', () => {
+        const hearing = new JudgeHearingSummary(new ConferenceTestData().getConferenceNow());
+        const participantCount = component.getParticipantsCount(hearing);
+        expect(participantCount).toBe(
+            hearing.applicants.length + hearing.respondents.length + hearing.observers.length + hearing.panelMembers.length
+        );
+    });
+
     const conferenceStatusVisibilityTestCases = [
         { status: ConferenceStatus.Paused, expected: true },
         { status: ConferenceStatus.Suspended, expected: true },
