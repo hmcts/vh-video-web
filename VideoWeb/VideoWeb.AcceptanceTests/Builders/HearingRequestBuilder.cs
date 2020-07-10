@@ -19,7 +19,9 @@ namespace VideoWeb.AcceptanceTests.Builders
         private readonly List<ParticipantRequest> _participants;
         private List<UserAccount> _userAccounts;
         private string _venueName = "Birmingham Civil and Family Justice Centre";
-        private bool _audioRecordingRequired = false;
+        private bool _audioRecordingRequired;
+        private bool _addObserver;
+        private bool _addPanelMember;
 
         public HearingRequestBuilder()
         {
@@ -60,6 +62,18 @@ namespace VideoWeb.AcceptanceTests.Builders
             return this;
         }
 
+        public HearingRequestBuilder WithAnObserver()
+        {
+            _addObserver = true;
+            return this;
+        }
+
+        public HearingRequestBuilder WithAPanelMember()
+        {
+            _addPanelMember = true;
+            return this;
+        }
+
         public BookNewHearingRequest Build(string courtroom = "clerk")
         {
             _individuals.AddRange(UserManager.GetIndividualUsers(_userAccounts));
@@ -80,6 +94,20 @@ namespace VideoWeb.AcceptanceTests.Builders
             _participants.Add(new ParticipantsRequestBuilder()
                 .AddRepresentative().WithUser(_representatives[1])
                 .Build());
+
+            if (_addObserver)
+            {
+                _participants.Add(new ParticipantsRequestBuilder()
+                    .AddIndividual().WithUser(UserManager.GetObserverUser(_userAccounts))
+                    .Build());
+            }
+
+            if (_addPanelMember)
+            {
+                _participants.Add(new ParticipantsRequestBuilder()
+                    .AddIndividual().WithUser(UserManager.GetPanelMemberUser(_userAccounts))
+                    .Build());
+            }
 
             if (courtroom == "clerk")
             {

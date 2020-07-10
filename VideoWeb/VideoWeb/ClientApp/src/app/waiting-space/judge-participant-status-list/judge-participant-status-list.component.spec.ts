@@ -25,6 +25,8 @@ describe('JudgeParticipantStatusListComponent', () => {
 
     beforeEach(() => {
         conference = new ConferenceTestData().getConferenceDetailNow();
+        const participantObserverPanelMember = new ConferenceTestData().getListOfParticipantsObserverAndPanelMembers();
+        participantObserverPanelMember.forEach(x => conference.participants.push(x));
         component = new JudgeParticipantStatusListComponent(adalService, videoWebService, logger);
         component.conference = conference;
         component.ngOnInit();
@@ -34,6 +36,15 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(component).toBeTruthy();
         expect(component.judge).toBeDefined();
         expect(component.nonJudgeParticipants).toBeDefined();
+        expect(component.nonJudgeParticipants.length).toBe(2);
+
+        expect(component.observers).toBeDefined();
+        expect(component.observers.length).toBe(2);
+
+        expect(component.panelMembers).toBeDefined();
+        expect(component.panelMembers.length).toBe(1);
+
+        expect(component.getParticipantsCount()).toBe(5);
     });
 
     it('should show input template for change judge display name', () => {
@@ -75,7 +86,7 @@ describe('JudgeParticipantStatusListComponent', () => {
     });
     it('should get the participant count excluding judge', () => {
         const participantCount = component.getParticipantsCount();
-        expect(participantCount).toBe(component.nonJudgeParticipants.length);
+        expect(participantCount).toBe(component.nonJudgeParticipants.length + component.observers.length + component.panelMembers.length);
     });
 
     const participantStatusTestCases = [
@@ -85,7 +96,6 @@ describe('JudgeParticipantStatusListComponent', () => {
         { status: ParticipantStatus.Disconnected, expected: 'Disconnected' },
         { status: ParticipantStatus.Joining, expected: 'Joining' },
         { status: ParticipantStatus.NotSignedIn, expected: 'Not signed in' },
-        { status: ParticipantStatus.UnableToJoin, expected: 'Unable to join' },
         { status: ParticipantStatus.None, expected: 'Not signed in' }
     ];
 
@@ -104,7 +114,6 @@ describe('JudgeParticipantStatusListComponent', () => {
         { status: ParticipantStatus.InHearing, expected: 'in_hearing' },
         { status: ParticipantStatus.Joining, expected: 'joining' },
         { status: ParticipantStatus.NotSignedIn, expected: 'not_signed_in' },
-        { status: ParticipantStatus.UnableToJoin, expected: 'unable_to_join' },
         { status: ParticipantStatus.None, expected: 'not_signed_in' }
     ];
 

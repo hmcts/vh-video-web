@@ -1,4 +1,3 @@
-﻿using System;
 using AcceptanceTests.Common.PageObject.Helpers;
 using OpenQA.Selenium;
 
@@ -12,7 +11,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By HearingDateTime = By.XPath("//span[contains(text(),'to')]/ancestor::td");
         public static By StartHearingText = CommonLocators.ElementContainingText("Start video hearing");
         public static By IsEveryoneConnectedText = CommonLocators.ElementContainingText("Is everyone connected?");
-        public static By ParticipantStatus(Guid participantId) => By.XPath($"//div[@id='p-row-{participantId}']//label");
         public static By PausedText = CommonLocators.ElementContainingText("Hearing paused");
         public static By ResumeVideoCallButton = CommonLocators.ButtonWithInnerText("Resume video hearing");
         public static By StartVideoHearingButton = CommonLocators.ButtonWithInnerText("Start video hearing");
