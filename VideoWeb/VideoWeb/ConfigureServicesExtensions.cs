@@ -137,7 +137,11 @@ namespace VideoWeb
                 })
                 .AddHubOptions<EventHub.Hub.EventHub>(options => { options.EnableDetailedErrors = true; });
 
-            services.AddStackExchangeRedisCache(options => { options.Configuration = connectionStrings.RedisCache; });
+            services.AddStackExchangeRedisCache(options => { 
+                options.Configuration = connectionStrings.RedisCache;
+                options.ConfigurationOptions.AbortOnConnectFail = false;
+                options.ConfigurationOptions.Ssl = true;
+            });
             return services;
         }
 
