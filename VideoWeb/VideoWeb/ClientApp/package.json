@@ -54,7 +54,7 @@
     "run-script-os": "^1.1.1",
     "rxjs": "^6.5.5",
     "snyk": "^1.332.0",
-    "webrtc-adapter": "^7.6.0",
+    "webrtc-adapter": "^7.6.2",
     "zone.js": "~0.10.3"
   },
   "devDependencies": {
