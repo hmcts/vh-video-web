@@ -35,9 +35,7 @@ describe('JudgeHearingPageComponent', () => {
 
     beforeAll(() => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
-        audioRecordingServiceMock = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', [
-            'getAudioStreamInfo'
-        ]);
+        audioRecordingServiceMock = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
 
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
         videoWebService.getConferenceById.and.resolveTo(conference);
@@ -62,9 +60,7 @@ describe('JudgeHearingPageComponent', () => {
 
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError']);
 
-        audioRecordingServiceMock = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', [
-            'getAudioStreamInfo'
-        ]);
+        audioRecordingServiceMock = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
     });
 
     beforeEach(async () => {
