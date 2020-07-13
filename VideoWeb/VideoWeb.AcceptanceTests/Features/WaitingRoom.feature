@@ -64,7 +64,7 @@ Scenario: Observer Waiting Room
 	And the users status has updated to Available
 	And the participant can see information about their case
 	And the participant can see a list of other participants and their representatives
-	And the user can see a black box and an about to begin message
+	And the user can see a blue box and a scheduled message	
 
 @VIH-6131
 Scenario: Panel Member Waiting Room
@@ -75,4 +75,4 @@ Scenario: Panel Member Waiting Room
 	And the users status has updated to Available
 	And the participant can see information about their case
 	And the participant can see a list of other participants and their representatives
-	And the user can see a black box and an about to begin message
+	And the user can see a blue box and a scheduled message	
