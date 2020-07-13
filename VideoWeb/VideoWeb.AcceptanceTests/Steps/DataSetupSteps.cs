@@ -43,7 +43,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"I have another hearing in (.*) minutes time")]
         public void GivenIHaveAHearingAndAConferenceInMinutesTime(int minutes)
         {
-            CheckThatTheHearingWillBeCreatedForToday(_c.TimeZone.AdjustForVideoWeb(DateTime.Now.ToUniversalTime().AddMinutes(minutes)));
+            CheckThatTheHearingWillBeCreatedForToday(_c.TimeZone.AdjustAnyOS(DateTime.Now.ToUniversalTime().AddMinutes(minutes)));
             GivenIHaveAHearing(minutes);
             GetTheNewConferenceDetails();
             _c.Test.DelayedStartTime = minutes;
@@ -85,7 +85,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var request = new HearingRequestBuilder()
                 .WithUserAccounts(_c.UserAccounts)
-                .WithScheduledTime(_c.TimeZone.AdjustForVideoWeb(DateTime.Now.ToUniversalTime()))
+                .WithScheduledTime(_c.TimeZone.AdjustAnyOS(DateTime.Now.ToUniversalTime()))
                 .WithScheduledDuration(HearingDuration)
                 .AudioRecordingRequired()
                 .Build();
@@ -99,7 +99,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var request = new HearingRequestBuilder()
                 .WithUserAccounts(_c.UserAccounts)
-                .WithScheduledTime(_c.TimeZone.AdjustForVideoWeb(DateTime.Now.AddMinutes(5).ToUniversalTime()))
+                .WithScheduledTime(_c.TimeZone.AdjustAnyOS(DateTime.Now.AddMinutes(10).ToUniversalTime()))
                 .WithAnObserver()
                 .WithAPanelMember()
                 .Build();
@@ -112,7 +112,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var request = new HearingRequestBuilder()
                 .WithUserAccounts(_c.UserAccounts)
-                .WithScheduledTime(_c.TimeZone.AdjustForVideoWeb(DateTime.Now.ToUniversalTime().AddMinutes(minutes)))
+                .WithScheduledTime(_c.TimeZone.AdjustAnyOS(DateTime.Now.ToUniversalTime().AddMinutes(minutes)))
                 .WithScheduledDuration(HearingDuration)
                 .WithLocation(location)
                 .Build();
@@ -124,7 +124,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var request = new HearingRequestBuilder()
                 .WithUserAccounts(_c.UserAccounts)
-                .WithScheduledTime(_c.TimeZone.AdjustForVideoWeb(DateTime.Now.ToUniversalTime()))
+                .WithScheduledTime(_c.TimeZone.AdjustAnyOS(DateTime.Now.ToUniversalTime()))
                 .WithScheduledDuration(HearingDuration)
                 .Build();
 
@@ -134,7 +134,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var request = new HearingRequestBuilder()
                 .WithUserAccounts(_c.UserAccounts)
-                .WithScheduledTime(_c.TimeZone.AdjustForVideoWeb(DateTime.Now.ToUniversalTime()))
+                .WithScheduledTime(_c.TimeZone.AdjustAnyOS(DateTime.Now.ToUniversalTime()))
                 .WithScheduledDuration(HearingDuration)
                 .Build("judge");
 
@@ -156,7 +156,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private void CheckThatTheHearingWillBeCreatedForToday(DateTime dateTime)
         {
-            if (!_c.TimeZone.AdjustForVideoWeb(DateTime.Now).Day.Equals(dateTime.Day))
+            if (!_c.TimeZone.AdjustAnyOS(DateTime.Now).Day.Equals(dateTime.Day))
                 Assert.Ignore($"Ignoring the test as the hearing will be created for tomorrow, and won't be visible in the UI.");
         }
 
