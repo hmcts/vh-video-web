@@ -17,10 +17,12 @@ export class CallError {
 export class ParticipantUpdated {
     public isMuted: boolean;
     public handRaised: boolean;
+    public pexipDisplayName: string;
 
-    constructor(isMuted: string, buzzTime: number) {
+    constructor(isMuted: string, buzzTime: number, pexipName: string) {
         this.isMuted = isMuted === 'YES';
         this.handRaised = buzzTime !== 0;
+        this.pexipDisplayName = pexipName;
     }
 }
 

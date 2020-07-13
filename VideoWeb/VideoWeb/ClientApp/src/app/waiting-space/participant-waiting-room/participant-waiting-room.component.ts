@@ -392,7 +392,9 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     handParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): void {
-        this.handRaised = updatedParticipant.handRaised;
+        if (this.participant.tiled_display_name === updatedParticipant.pexipDisplayName) {
+            this.handRaised = updatedParticipant.handRaised;
+        }
     }
 
     call() {

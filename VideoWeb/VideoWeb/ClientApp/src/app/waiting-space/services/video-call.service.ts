@@ -46,7 +46,10 @@ export class VideoCallService {
         };
 
         this.pexipAPI.onParticipantUpdate = function (participantUpdate) {
-            self.onParticipantUpdatedSubject.next(new ParticipantUpdated(participantUpdate.is_muted, participantUpdate.buzz_time));
+            console.log(participantUpdate);
+            self.onParticipantUpdatedSubject.next(
+                new ParticipantUpdated(participantUpdate.is_muted, participantUpdate.buzz_time, participantUpdate.display_name)
+            );
         };
 
         this.pexipAPI.onConferenceUpdate = function (conferenceUpdate) {
