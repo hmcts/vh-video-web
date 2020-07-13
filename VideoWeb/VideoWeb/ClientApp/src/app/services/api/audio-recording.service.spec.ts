@@ -13,5 +13,4 @@ describe('AudioRecordingService', () => {
 
         expect(apiClient.getAudioStreamInfo).toHaveBeenCalled();
     });
-
 });
