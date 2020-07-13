@@ -118,8 +118,8 @@ Scenario: VHO Monitors Hearing
 @HearingTest @Smoketest-Extended @DisableLogging
 Scenario: Observer and Panel Member join hearing
   Given I have a hearing with an Observer and Panel Member
-	And the Observer01 user has progressed to the Waiting Room page for the existing hearing
-	And the PanelMember01 user has progressed to the Waiting Room page for the existing hearing
+	And the Observer user has progressed to the Waiting Room page for the existing hearing
+	And the Panel Member user has progressed to the Waiting Room page for the existing hearing
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
 	When the Clerk starts the hearing
 	Then the user is on the Countdown page
