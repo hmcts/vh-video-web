@@ -36,12 +36,15 @@ export class MicVisualiserComponent implements OnInit, OnDestroy {
         this.audioContext = new AudioContext();
         this.analyser = this.audioContext.createAnalyser();
         this.source = this.audioContext.createMediaStreamSource(this.stream);
-        const incomingSource = this.audioContext.createMediaStreamSource(this.incomingStream);
         // create mixer
         const merger = this.audioContext.createChannelMerger();
 
         this.source.connect(merger, 0, 0);
-        incomingSource.connect(merger, 0, 0);
+        if (this.incomingStream) {
+            const incomingSource = this.audioContext.createMediaStreamSource(this.incomingStream);
+            incomingSource.connect(merger, 0, 0);
+        }
+
         merger.connect(this.analyser);
 
         this.analyser.smoothingTimeConstant = 0.8;
