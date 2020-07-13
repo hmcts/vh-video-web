@@ -146,7 +146,6 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
         };
 
         if (conferenceStatus === ConferenceStatus.Closed) {
-            this.stopAudioRecording();
             this.logger.event(`Conference closed, navigating back to hearing list`, properties);
             return this.router.navigate([pageUrls.JudgeHearingList]);
         }
@@ -199,17 +198,5 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
         this.showAudioRecordingAlert = !value;
         this.continueWithNoRecording = true;
         clearInterval(this.interval);
-    }
-
-    async stopAudioRecording() {
-        if (this.conference.audio_recording_required) {
-            this.logger.event(`[Judge WR] - stop audio recording for hearing ${this.conference.hearing_ref_id}`);
-
-            try {
-                await this.audioRecordingService.stopAudioRecording(this.conference.hearing_ref_id);
-            } catch (error) {
-                this.logger.error(`[Judge WR] - failed to stop audio recording for hearing ${this.conference.hearing_ref_id}`, error);
-            }
-        }
     }
 }
