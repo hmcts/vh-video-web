@@ -141,9 +141,9 @@
       },
       "NUnit3TestAdapter": {
         "type": "Direct",
-        "requested": "[3.16.1, )",
-        "resolved": "3.16.1",
-        "contentHash": "wKuxi7G9Gs2I9gnckwtMVzbPIy7vkNj+FafrmQPaYCUguT+se5kmzI3XwsVCXEalWk9pSYZW7roBkNu4ogn3DA==",
+        "requested": "[3.17.0, )",
+        "resolved": "3.17.0",
+        "contentHash": "I9MNvK+GM2yXrHPitwZkAZKU9sYI2OO/8wKC+VuBD7V3z+ySQ1pSopX/urr0ooedI8/TIcajYPRO4vGRr7AM8A==",
         "dependencies": {
           "Microsoft.DotNet.InternalAbstractions": "1.0.0",
           "System.ComponentModel.EventBasedAsync": "4.3.0",
@@ -179,11 +179,11 @@
       },
       "Selenium.Axe": {
         "type": "Direct",
-        "requested": "[1.5.1, )",
-        "resolved": "1.5.1",
-        "contentHash": "rjwyZ2gijAXQIsc5YdEfW4kIpDMFzJsJNozMA5Es8o8ZGlr4lG40zWZV7sln1qgwBz4vutPhjF4uNCtEtCOfEg==",
+        "requested": "[1.5.2, )",
+        "resolved": "1.5.2",
+        "contentHash": "ZxSl9t0lwFeBfhIvFjGD+5B6aFR8UsjZ2WZKq8ZegHs0byPufw26fO8svcalM4+BQT2HpdJnq4+7zzm6iaI/lA==",
         "dependencies": {
-          "HtmlAgilityPack": "1.11.23",
+          "HtmlAgilityPack": "1.11.24",
           "Newtonsoft.Json": "12.0.3",
           "Selenium.WebDriver": "3.141.0"
         }
@@ -276,24 +276,24 @@
       },
       "VH.AcceptanceTests.Common": {
         "type": "Direct",
-        "requested": "[1.0.234, )",
-        "resolved": "1.0.234",
-        "contentHash": "98uvv0C9oDJXL6GxfovaKMks8BaxzZbYJjIf4QILqKsU+DtQMSBeIIhDSBT6iSrCLkHM5jhovPfoch3z3nRGzQ==",
+        "requested": "[1.0.246, )",
+        "resolved": "1.0.246",
+        "contentHash": "I7qyBd8eY190nyhH8u62uPUoB5q9SMglOrVwKCkgyeFl34xlc1m6ErOun/54IGiXXtkI4cPofY0w/aauz+wzDg==",
         "dependencies": {
           "Appium.WebDriver": "4.1.1",
           "Azure.Storage.Blobs": "12.4.4",
           "DotNetSeleniumExtras.WaitHelpers": "3.11.0",
           "FluentAssertions": "5.10.3",
           "Microsoft.Azure.Storage.Blob": "11.1.7",
-          "Microsoft.Extensions.Configuration": "3.1.4",
-          "Microsoft.Extensions.Configuration.Abstractions": "3.1.4",
-          "Microsoft.Extensions.Configuration.Binder": "3.1.4",
-          "Microsoft.Extensions.Configuration.EnvironmentVariables": "3.1.4",
-          "Microsoft.Extensions.Configuration.FileExtensions": "3.1.4",
-          "Microsoft.Extensions.Configuration.Json": "3.1.4",
-          "Microsoft.Extensions.Configuration.UserSecrets": "3.1.4",
-          "Microsoft.Extensions.Options": "3.1.4",
-          "Microsoft.IdentityModel.Clients.ActiveDirectory": "5.2.7",
+          "Microsoft.Extensions.Configuration": "3.1.5",
+          "Microsoft.Extensions.Configuration.Abstractions": "3.1.5",
+          "Microsoft.Extensions.Configuration.Binder": "3.1.5",
+          "Microsoft.Extensions.Configuration.EnvironmentVariables": "3.1.5",
+          "Microsoft.Extensions.Configuration.FileExtensions": "3.1.5",
+          "Microsoft.Extensions.Configuration.Json": "3.1.5",
+          "Microsoft.Extensions.Configuration.UserSecrets": "3.1.5",
+          "Microsoft.Extensions.Options": "3.1.5",
+          "Microsoft.IdentityModel.Clients.ActiveDirectory": "5.2.8",
           "NUnit": "3.12.0",
           "Newtonsoft.Json": "12.0.3",
           "Polly": "7.2.1",
@@ -301,10 +301,11 @@
           "RestSharp": "106.11.4",
           "Selenium.Support": "3.141.0",
           "Selenium.WebDriver": "3.141.0",
-          "Selenium.WebDriver.ChromeDriver": "83.0.4103.3900",
-          "SpecFlow": "3.1.97",
+          "Selenium.WebDriver.ChromeDriver": "83.0.4103.3910",
+          "SpecFlow": "3.3.30",
           "System.Collections": "4.3.0",
-          "System.Configuration.ConfigurationManager": "4.7.0"
+          "System.Configuration.ConfigurationManager": "4.7.0",
+          "TimeZoneConverter": "3.2.0"
         }
       },
       "Appium.WebDriver": {
@@ -398,14 +399,8 @@
       },
       "HtmlAgilityPack": {
         "type": "Transitive",
-        "resolved": "1.11.23",
-        "contentHash": "+cgMfM0ks6njN1HjeH157wcF9n9CksuLk4yzKZ3j5/dhC+t1xZ6SZVnksGZZ+6H22Y2RQ6gUEpue4E912271Hg==",
-        "dependencies": {
-          "System.Net.Http": "4.3.2",
-          "System.Xml.XPath": "4.3.0",
-          "System.Xml.XPath.XmlDocument": "4.3.0",
-          "System.Xml.XmlDocument": "4.3.0"
-        }
+        "resolved": "1.11.24",
+        "contentHash": "DLcytINO8EfCdBgMGsaz8Tvdgu2Aewoo2XX7WfZuRG9cBQRtbm8JZ4/sMRtFvzehjdIDqubdlQb8TqNfjRMEWg=="
       },
       "Microsoft.ApplicationInsights": {
         "type": "Transitive",
@@ -850,8 +845,8 @@
       },
       "Microsoft.Extensions.DependencyInjection.Abstractions": {
         "type": "Transitive",
-        "resolved": "3.1.4",
-        "contentHash": "AceHamXNKDMDwIoZqEoApLp8s3935wSC3VXrPaRWa0wWOaEcYdDlo1nWQ1zLiezoDmpJzV7FqDm53E0Ty/hEMg=="
+        "resolved": "3.1.5",
+        "contentHash": "2VSCj2TZPMdeEi279Lawi6qJQu4+sEWizSOYrhY6hapyS1jxn1jVUZT1Ugv68bya+x8+3lD4+RqhUZql9PhISQ=="
       },
       "Microsoft.Extensions.DiagnosticAdapter": {
         "type": "Transitive",
@@ -931,11 +926,11 @@
       },
       "Microsoft.Extensions.Options": {
         "type": "Transitive",
-        "resolved": "3.1.4",
-        "contentHash": "ntWmD8i6UmAo0nn5MiCXIVl3+75aybVHgP/NxL9B16zwsbGkSfs+66BullsGEDNvrimgIFVDO+iB/h0yWfATWg==",
+        "resolved": "3.1.5",
+        "contentHash": "f+JT/7lkKBMp/Ak2tVjO+TD7o+UoCfjnExkZNn0PZIso8kIXrqNy6x42Lrxf4Q0pW3JMf9ExmL2EQlvk2XnFAg==",
         "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "3.1.4",
-          "Microsoft.Extensions.Primitives": "3.1.4"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "3.1.5",
+          "Microsoft.Extensions.Primitives": "3.1.5"
         }
       },
       "Microsoft.Extensions.PlatformAbstractions": {
@@ -2573,6 +2568,11 @@
           "System.Xml.XPath": "4.3.0",
           "System.Xml.XmlDocument": "4.3.0"
         }
+      },
+      "TimeZoneConverter": {
+        "type": "Transitive",
+        "resolved": "3.2.0",
+        "contentHash": "f0UpF9H+ylj3qjO/l2+Yt0R77FFR327efJwsoXAys6J1fSYFcQPrPVhaGVVWoN79+PVutj0qzj79kuhSPN70gA=="
       },
       "Utf8Json": {
         "type": "Transitive",
