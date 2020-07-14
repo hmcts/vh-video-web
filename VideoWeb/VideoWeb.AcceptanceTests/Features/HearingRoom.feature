@@ -132,5 +132,5 @@ Scenario: Observer and Panel Member join hearing
   And the Clerk clicks close
 	Then the user is on the Hearing List page
 	And the hearing status changed to Closed
-	When in Individual01's browser
+	When in Observer01's browser
 	Then the participants waiting room displays the closed status
