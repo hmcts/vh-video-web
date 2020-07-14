@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RunSettings>
   <TestRunParameters>
-    <Parameter name="RunOnSauceLabs" value="false" />
+    <Parameter name="RunOnSauceLabs" value="true" />
     <Parameter name="TargetBrowser" value="Chrome" />
-    <Parameter name="TargetBrowserVersion" value="" />
+    <Parameter name="TargetBrowserVersion" value="Beta" />
     <Parameter name="TargetDevice" value="Desktop" />
     <Parameter name="TargetDeviceName" value="" />
-    <Parameter name="TargetEnvironment" value="" />
+    <Parameter name="TargetEnvironment" value="dev" />
     <Parameter name="TargetOS" value="" />
+    <Parameter name="UserGroup" value="1" />
   </TestRunParameters>
 </RunSettings>
