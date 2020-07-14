@@ -35,10 +35,7 @@ describe('JudgeHearingPageComponent', () => {
 
     beforeAll(() => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
-        audioRecordingServiceMock = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', [
-            'getAudioStreamInfo',
-            'stopAudioRecording'
-        ]);
+        audioRecordingServiceMock = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
 
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
         videoWebService.getConferenceById.and.resolveTo(conference);
@@ -63,11 +60,7 @@ describe('JudgeHearingPageComponent', () => {
 
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError']);
 
-        audioRecordingServiceMock = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', [
-            'getAudioStreamInfo',
-            'stopAudioRecording'
-        ]);
-        audioRecordingServiceMock.stopAudioRecording.and.callThrough();
+        audioRecordingServiceMock = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
     });
 
     beforeEach(async () => {
@@ -171,13 +164,6 @@ describe('JudgeHearingPageComponent', () => {
         component.retrieveAudioStreamInfo(hearingId);
 
         expect(component.showAudioRecordingAlert).toBeFalsy();
-    });
-
-    it('should stop audio recording', () => {
-        component.conference.audio_recording_required = true;
-        component.conference.hearing_ref_id = '1234567';
-        component.stopAudioRecording();
-        expect(audioRecordingServiceMock.stopAudioRecording).toHaveBeenCalled();
     });
 
     it('should clear subscriptions and intervals on destroy', () => {

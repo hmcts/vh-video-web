@@ -13,6 +13,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By RepresentativeRepresentee(Guid participantId) => By.Id($"p-{participantId:D}-representee");
         public static By ObserverRow(Guid participantId) => By.Id($"p-row-{participantId:D}-observer");
         public static By ObserverName(Guid participantId) => By.Id($"p-{participantId:D}-name-observer");
-        public static By PrivateConsultationLink(string participantId) => By.XPath($"//div[@id='p-row-{participantId}']/a");
+        public static By PrivateConsultationLink(Guid participantId) => By.Id($"p-call-{participantId:D}-btn");
     }
 }
