@@ -121,6 +121,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     changeDevices() {
         this.disconnect();
         this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
+        this.preferredMicrophoneStream = null;
         this.displayDeviceChangeModal = true;
     }
 
@@ -200,7 +201,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
         const mic = await this.userMediaService.getPreferredMicrophone();
         if (mic) {
-            this.videoCallService.updateCameraForCall(mic);
+            this.videoCallService.updateMicrophoneForCall(mic);
         }
         this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(mic);
     }
@@ -239,6 +240,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     closeStreams() {
         if (this.preferredMicrophoneStream) {
             this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
+            this.preferredMicrophoneStream = null;
         }
         this.preferredMicrophoneStream = null;
     }
