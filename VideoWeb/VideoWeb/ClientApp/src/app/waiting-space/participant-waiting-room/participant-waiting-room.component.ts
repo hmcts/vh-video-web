@@ -58,6 +58,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     isAdminConsultation: boolean;
     audioMuted: boolean;
     handRaised: boolean;
+    remoteMuted: boolean;
 
     clockSubscription$: Subscription;
     eventHubSubscription$ = new Subscription();
@@ -394,6 +395,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     handParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): void {
         if (this.participant.tiled_display_name === updatedParticipant.pexipDisplayName) {
             this.handRaised = updatedParticipant.handRaised;
+            this.remoteMuted = updatedParticipant.isRemoteMuted;
         }
     }
 
