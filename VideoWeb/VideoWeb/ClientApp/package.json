@@ -83,7 +83,7 @@
     "nswag": "^13.6.0",
     "prettier": "^2.0.5",
     "puppeteer": "^3.3.0",
-    "typescript": "~3.5.3"
+    "typescript": "~3.9.5"
   },
   "optionalDependencies": {
     "fsevents": "^2.1.3",
