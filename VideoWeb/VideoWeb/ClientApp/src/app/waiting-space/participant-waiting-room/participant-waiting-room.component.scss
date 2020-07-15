@@ -8,6 +8,7 @@
   min-height: 100%;
   max-width: 100%;
   max-height: 100vh;
+  margin-bottom: 10vh;
 }
 
 #incomingFeedPrivate {
@@ -107,9 +108,23 @@
 }
 
 #muteButton .govuk-button:focus {
-  background-color: #00703c;
+  background-color: govuk-colour('green');
 }
 
 #unmuteButton .govuk-button--warning:focus {
-  background-color: #d4351c;
+  background-color: govuk-colour('red');
+}
+
+.hand {
+  margin-left: 1vw;
+}
+
+#toggle-hand-button.govuk-button:focus {
+  background-color: govuk-colour('green');
+  color: govuk-colour('white');
+}
+
+#toggle-hand-button.govuk-button--warning:focus {
+  background-color: govuk-colour('red');
+  color: govuk-colour('white');
 }
