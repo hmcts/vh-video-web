@@ -76,6 +76,29 @@
           </button>
         </span>
       </ng-template>
+
+      <!-- toggle hand raise/lower-->
+
+      <button
+        *ngIf="!isPrivateConsultation"
+        id="toggle-hand-button"
+        data-module="govuk-button"
+        type="button"
+        class="govuk-button reduce-margin hand"
+        [ngClass]="handRaised ? 'govuk-button--warning' : ''"
+        aria-label="Toggle hand raised status"
+        (click)="toggleHandRaised()"
+      >
+        {{ handToggleText }}
+        <span class="govuk-button__start-icon">
+          <img
+            id="toggle-hand-img"
+            class="microphoneIcon"
+            [src]="handRaised ? '/assets/images/hand.png' : '/assets/images/no-hand.png'"
+            alt="Raise"
+          />
+        </span>
+      </button>
     </ng-container>
   </div>
 </div>
