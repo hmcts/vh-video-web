@@ -46,7 +46,9 @@ export class VideoCallService {
         };
 
         this.pexipAPI.onParticipantUpdate = function (participantUpdate) {
-            self.onParticipantUpdatedSubject.next(new ParticipantUpdated(participantUpdate.is_muted));
+            self.onParticipantUpdatedSubject.next(
+                new ParticipantUpdated(participantUpdate.is_muted, participantUpdate.buzz_time, participantUpdate.display_name)
+            );
         };
 
         this.pexipAPI.onConferenceUpdate = function (conferenceUpdate) {
@@ -130,5 +132,13 @@ export class VideoCallService {
 
     enableH264(enable: boolean) {
         this.pexipAPI.h264_enabled = enable;
+    }
+
+    raiseHand() {
+        this.pexipAPI.setBuzz();
+    }
+
+    lowerHand() {
+        this.pexipAPI.clearBuzz();
     }
 }
