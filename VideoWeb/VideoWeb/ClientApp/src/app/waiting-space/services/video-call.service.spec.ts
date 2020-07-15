@@ -32,7 +32,7 @@ describe('VideoCallService', () => {
     });
 
     beforeEach(() => {
-        pexipSpy = jasmine.createSpyObj('pexipAPI', ['connect', 'makeCall', 'muteAudio', 'disconnect']);
+        pexipSpy = jasmine.createSpyObj('pexipAPI', ['connect', 'makeCall', 'muteAudio', 'disconnect', 'setBuzz', 'clearBuzz']);
         service = new VideoCallService(logger, userMediaService);
     });
 
@@ -107,5 +107,17 @@ describe('VideoCallService', () => {
 
         service.makeCall(node, conferenceAlias, participantDisplayName, maxBandwidth);
         expect(pexipSpy.makeCall).toHaveBeenCalledWith(node, conferenceAlias, participantDisplayName, maxBandwidth);
+    });
+
+    it('should set buzz when hand is raised', () => {
+        service.pexipAPI = pexipSpy;
+        service.raiseHand();
+        expect(pexipSpy.setBuzz).toHaveBeenCalledTimes(1);
+    });
+
+    it('should clear buzz when hand is lowered', () => {
+        service.pexipAPI = pexipSpy;
+        service.lowerHand();
+        expect(pexipSpy.clearBuzz).toHaveBeenCalledTimes(1);
     });
 });

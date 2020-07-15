@@ -64,7 +64,7 @@ Scenario: Video Hearings Officer Calls Panel Member
   Given I have a hearing with an Observer and Panel Member
   And the Panel Member user has progressed to the Waiting Room page for the existing hearing
 	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
-	When the Video Hearings Officer starts a call with Panel Member
+	When the Video Hearings Officer starts a call with PanelMember
 	And Panel Member accepts the VHO call
 	Then the Video Hearings Officer can see and hear the other user
 	And the admin self view can be open and closed
