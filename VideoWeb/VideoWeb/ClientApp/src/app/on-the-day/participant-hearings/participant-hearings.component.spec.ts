@@ -1,4 +1,4 @@
-import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of, Subscription, throwError } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -20,6 +20,20 @@ describe('ParticipantHearingList', () => {
         last_name: 'Doe',
         role: Role.Individual,
         username: 'john.doe@hearings.net'
+    });
+    const mockPanelMemberProfile: UserProfileResponse = new UserProfileResponse({
+        display_name: 'J Doe PM',
+        first_name: 'Jane',
+        last_name: 'Doe PM',
+        role: Role.Individual,
+        username: 'jane.doe.PM@hearings.net'
+    });
+    const mockObserverProfile: UserProfileResponse = new UserProfileResponse({
+        display_name: 'J Doe PM',
+        first_name: 'Jane',
+        last_name: 'Doe O',
+        role: Role.Individual,
+        username: 'jane.doe.O@hearings.net'
     });
 
     const conferences = new ConferenceTestData().getTestData();
@@ -98,14 +112,38 @@ describe('ParticipantHearingList', () => {
         expect(component.hasHearings()).toBeTruthy();
     });
 
-    it('should navigate to introduction page when conference is selected', () => {
-        component.ngOnInit();
+    it('should navigate to introduction page when conference is selected', fakeAsync(() => {
         const conference = conferences[0];
+        videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
+        component.profile = mockProfile;
         component.onConferenceSelected(conference);
+        tick(100);
         expect(videoWebService.setActiveIndividualConference).toHaveBeenCalledWith(conference);
         expect(videoWebService.getConferenceById).toHaveBeenCalledWith(conference.id);
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.Introduction, conference.id]);
-    });
+    }));
+
+    it('should navigate to Waiting room page when conference is selected for panel member', fakeAsync(() => {
+        const conference = conferences[0];
+        videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
+        component.profile = mockPanelMemberProfile;
+        component.onConferenceSelected(conference);
+        tick(100);
+        expect(videoWebService.setActiveIndividualConference).toHaveBeenCalledWith(conference);
+        expect(videoWebService.getConferenceById).toHaveBeenCalledWith(conference.id);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.ParticipantWaitingRoom, conference.id]);
+    }));
+
+    it('should navigate to Waiting room page when conference is selected for observer', fakeAsync(() => {
+        const conference = conferences[0];
+        videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
+        component.profile = mockObserverProfile;
+        component.onConferenceSelected(conference);
+        tick(100);
+        expect(videoWebService.setActiveIndividualConference).toHaveBeenCalledWith(conference);
+        expect(videoWebService.getConferenceById).toHaveBeenCalledWith(conference.id);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.Introduction, conference.id]);
+    }));
 
     it('should go to equipment check without conference id', () => {
         component.goToEquipmentCheck();
