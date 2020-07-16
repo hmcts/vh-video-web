@@ -281,4 +281,20 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
         expect(component.handRaised).toBeFalsy();
         expect(component.handToggleText).toBe('Raise my hand');
     });
+
+    it('should mute locally if remote muted and not muted locally', () => {
+        videoCallService.toggleMute.calls.reset();
+        const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name);
+        component.audioMuted = false;
+        component.handParticipantUpdatedInVideoCall(payload);
+        expect(videoCallService.toggleMute).toHaveBeenCalledTimes(1);
+    });
+
+    it('should skip mute locally if remote muted and already muted locally', () => {
+        videoCallService.toggleMute.calls.reset();
+        const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name);
+        component.audioMuted = true;
+        component.handParticipantUpdatedInVideoCall(payload);
+        expect(videoCallService.toggleMute).toHaveBeenCalledTimes(0);
+    });
 });

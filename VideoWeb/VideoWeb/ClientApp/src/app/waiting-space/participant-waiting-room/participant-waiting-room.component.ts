@@ -393,9 +393,14 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     handParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): void {
-        if (this.participant.tiled_display_name === updatedParticipant.pexipDisplayName) {
-            this.handRaised = updatedParticipant.handRaised;
-            this.remoteMuted = updatedParticipant.isRemoteMuted;
+        if (this.participant.tiled_display_name !== updatedParticipant.pexipDisplayName) {
+            return;
+        }
+
+        this.handRaised = updatedParticipant.handRaised;
+        this.remoteMuted = updatedParticipant.isRemoteMuted;
+        if (this.remoteMuted && !this.audioMuted) {
+            this.muteUnmuteCall();
         }
     }
 
@@ -520,6 +525,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     muteUnmuteCall() {
+        console.warn('toggling mute');
         const muteAudio = this.videoCallService.toggleMute();
         this.logger.info('Participant mute status :' + muteAudio);
         this.audioMuted = muteAudio;
