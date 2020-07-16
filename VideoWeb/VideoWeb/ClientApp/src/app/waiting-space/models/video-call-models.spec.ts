@@ -8,12 +8,12 @@ describe('ParticipantUpdated', () => {
 
     it('should return muted status', () => {
         participantUpdated = new ParticipantUpdated('YES', 1234, participantDisplayName);
-        expect(participantUpdated.isMuted).toBeTruthy();
+        expect(participantUpdated.isRemoteMuted).toBeTruthy();
         expect(participantUpdated.pexipDisplayName).toBe(participantDisplayName);
     });
     it('should return unmuted status', () => {
         participantUpdated = new ParticipantUpdated('NO', 1234, participantDisplayName);
-        expect(participantUpdated.isMuted).toBeFalsy();
+        expect(participantUpdated.isRemoteMuted).toBeFalsy();
     });
     it('shuld return hand not raised', () => {
         participantUpdated = new ParticipantUpdated('YES', 1234, participantDisplayName);
