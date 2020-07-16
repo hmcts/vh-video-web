@@ -108,6 +108,23 @@ namespace VideoWeb.AcceptanceTests.Steps
             GetTheNewConferenceDetails();
         }
 
+        [Given(@"I have a hearing with an Observer and Panel Member in (.*) minutes time")]
+        public void GivenIHaveAHearingWithAnObserverAndPanelMemberIn(int minutes)
+        {
+            CheckThatTheHearingWillBeCreatedForToday(_c.TimeZone.AdjustAnyOS(DateTime.Now.ToUniversalTime().AddMinutes(minutes)));
+            var request = new HearingRequestBuilder()
+                .WithUserAccounts(_c.UserAccounts)
+                .WithScheduledTime(_c.TimeZone.AdjustAnyOS(DateTime.Now.ToUniversalTime().AddMinutes(minutes)))
+                .WithAnObserver()
+                .WithAPanelMember()
+                .Build();
+
+            SendTheHearingRequest(request);
+            GetTheNewConferenceDetails();
+
+            _c.Test.DelayedStartTime = minutes;
+        }
+
         public void GivenIHaveAHearing(int minutes = 0, string location = "Birmingham Civil and Family Justice Centre")
         {
             var request = new HearingRequestBuilder()
@@ -115,8 +132,6 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithScheduledTime(_c.TimeZone.AdjustAnyOS(DateTime.Now.ToUniversalTime().AddMinutes(minutes)))
                 .WithScheduledDuration(HearingDuration)
                 .WithLocation(location)
-                .WithAnObserver()
-                .WithAPanelMember()
                 .Build();
 
             SendTheHearingRequest(request);

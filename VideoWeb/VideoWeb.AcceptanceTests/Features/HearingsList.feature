@@ -90,7 +90,7 @@ Scenario: Participant can access Closed hearing within 30 minutes
   Then the participant is able to access the hearing
 
 Scenario: PanelMember has 1 or more hearings
-	Given I have a hearing
+	Given I have a hearing with an Observer and Panel Member
 	And a new browser is open for a PanelMember
 	When the user attempts to login with valid credentials
 	Then the user is on the Hearing List page
@@ -100,7 +100,7 @@ Scenario: PanelMember has 1 or more hearings
 	Then the user is on the Waiting Room page
 
 Scenario: PanelMember has a hearing more than 30 minutes in the future
-	Given I have a hearing in 31 minutes time
+	Given I have a hearing with an Observer and Panel Member in 31 minutes time
 	And a new browser is open for a PanelMember
 	When the user attempts to login with valid credentials
 	Then the user is on the Hearing List page

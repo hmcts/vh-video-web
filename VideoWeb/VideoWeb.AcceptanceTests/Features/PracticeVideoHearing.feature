@@ -80,7 +80,7 @@ Scenario: Panel member video hearing practice
 	When the user changes the camera and microphone
 	Then the choose your camera and microphone popup should disappear
 
-@VIH-4671 @Video
+@VIH-6140
 Scenario: Panel member confirms the equipment is working
 	Given the Panel Member Self Test user has progressed to the Practice video hearing page
 	Then the incoming and self video should be playing video
