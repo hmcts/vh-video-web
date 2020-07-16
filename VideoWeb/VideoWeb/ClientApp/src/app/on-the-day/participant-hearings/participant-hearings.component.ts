@@ -2,11 +2,12 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceForIndividualResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { ConferenceForIndividualResponse, ConferenceResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 import { ProfileService } from '../../services/api/profile.service';
 import { pageUrls } from '../../shared/page-url.constants';
-import { Logger } from 'src/app/services/logging/logger-base';
 
 @Component({
     selector: 'app-participant-hearings',
@@ -82,6 +83,26 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
 
     onConferenceSelected(conference: ConferenceForIndividualResponse) {
         this.videoWebService.setActiveIndividualConference(conference);
-        this.router.navigate([pageUrls.Introduction, conference.id]);
+        // this.router.navigate([pageUrls.Introduction, conference.id]);
+
+        this.getSelectedConferenceDetails(conference.id)
+            .then(data => {
+                const conferenceResponse = data;
+                const participant = conferenceResponse.participants.find(
+                    p => p.username.toLowerCase() === this.profile.username.toLowerCase()
+                );
+                if (participant.case_type_group.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLocaleLowerCase()) {
+                    this.router.navigate([pageUrls.ParticipantWaitingRoom, conference.id]);
+                } else {
+                    this.router.navigate([pageUrls.Introduction, conference.id]);
+                }
+            })
+            .catch(error => {
+                this.errorService.handleApiError(error);
+            });
+    }
+
+    async getSelectedConferenceDetails(conferenceId: string): Promise<ConferenceResponse> {
+        return this.videoWebService.getConferenceById(conferenceId);
     }
 }

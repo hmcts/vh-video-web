@@ -115,6 +115,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithScheduledTime(_c.TimeZone.AdjustAnyOS(DateTime.Now.ToUniversalTime().AddMinutes(minutes)))
                 .WithScheduledDuration(HearingDuration)
                 .WithLocation(location)
+                .WithAnObserver()
+                .WithAPanelMember()
                 .Build();
 
             SendTheHearingRequest(request);

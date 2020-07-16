@@ -18,7 +18,8 @@ describe('ParticipantHearingList', () => {
         display_name: 'John Doe',
         first_name: 'John',
         last_name: 'Doe',
-        role: Role.Individual
+        role: Role.Individual,
+        username: 'john.doe@hearings.net'
     });
 
     const conferences = new ConferenceTestData().getTestData();
@@ -32,7 +33,8 @@ describe('ParticipantHearingList', () => {
     beforeAll(() => {
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getConferencesForIndividual',
-            'setActiveIndividualConference'
+            'setActiveIndividualConference',
+            'getConferenceById'
         ]);
 
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
@@ -97,9 +99,11 @@ describe('ParticipantHearingList', () => {
     });
 
     it('should navigate to introduction page when conference is selected', () => {
+        component.ngOnInit();
         const conference = conferences[0];
         component.onConferenceSelected(conference);
         expect(videoWebService.setActiveIndividualConference).toHaveBeenCalledWith(conference);
+        expect(videoWebService.getConferenceById).toHaveBeenCalledWith(conference.id);
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.Introduction, conference.id]);
     });
 
