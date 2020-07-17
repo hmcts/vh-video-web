@@ -15,6 +15,7 @@ export abstract class ChatBaseComponent {
     messages: InstantMessage[] = [];
     pendingMessages: Map<string, InstantMessage[]> = new Map<string, InstantMessage[]>();
     loggedInUserProfile: UserProfileResponse;
+    disableScrollDown = false;
 
     DEFAULT_ADMIN_USERNAME = 'Admin';
     protected constructor(
@@ -140,14 +141,29 @@ export abstract class ChatBaseComponent {
     }
 
     scrollToBottom() {
+        if (this.disableScrollDown) {
+            return;
+        }
         try {
             this.content.nativeElement.scrollTop = this.content.nativeElement.scrollHeight;
         } catch (err) {}
     }
 
+    onScroll() {
+        const element = this.content.nativeElement;
+        const atBottom = element.scrollHeight - element.scrollTop === element.clientHeight;
+        if (this.disableScrollDown && atBottom) {
+            this.disableScrollDown = false;
+        } else {
+            this.disableScrollDown = true;
+        }
+    }
+
     async sendInstantMessage(instantMessage: InstantMessage) {
         this.addMessageToPending(instantMessage);
         await this.eventService.sendMessage(instantMessage);
+        this.disableScrollDown = false;
+        this.scrollToBottom();
         // 5 seconds is sufficient time to check if message has not returned
         setTimeout(() => {
             this.checkIfMessageFailed(instantMessage);
