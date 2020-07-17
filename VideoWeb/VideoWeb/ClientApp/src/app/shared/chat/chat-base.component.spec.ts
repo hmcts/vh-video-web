@@ -16,7 +16,7 @@ import { Hearing } from '../models/hearing';
 import { ChatBaseComponent } from './chat-base.component';
 
 class ChatBaseTest extends ChatBaseComponent {
-    content: ElementRef<any>;
+    content: ElementRef<HTMLElement>;
     messagesSent: string[] = [];
     incomingMessages: InstantMessage[] = [];
 
@@ -51,6 +51,7 @@ describe('ChatBaseComponent', () => {
     let conference: ConferenceResponse;
     let hearing: Hearing;
     const adminProfile = adminTestProfile;
+    let contentElement: HTMLDivElement;
 
     beforeAll(() => {
         adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
@@ -68,6 +69,8 @@ describe('ChatBaseComponent', () => {
 
     beforeEach(() => {
         component = new ChatBaseTest(videoWebServiceSpy, profileServiceSpy, eventsService, new MockLogger(), adalService, new ImHelper());
+        contentElement = document.createElement('div');
+        component.content = new ElementRef(contentElement);
     });
 
     it('should remove message from pending list', () => {
@@ -84,5 +87,26 @@ describe('ChatBaseComponent', () => {
         expect(component.pendingMessagesForConversation.length).toBe(1);
         component.removeMessageFromPending(instantMessage);
         expect(component.pendingMessagesForConversation.length).toBe(0);
+    });
+
+    it('should not disable scroll to bottom', () => {
+        component.disableScrollDown = true;
+        component.onScroll();
+        expect(component.disableScrollDown).toBeFalsy();
+    });
+
+    it('should disable scroll to bottom', () => {
+        component.disableScrollDown = false;
+        component.onScroll();
+        expect(component.disableScrollDown).toBeTruthy();
+    });
+
+    it('should not scroll to bottom when disabled', () => {
+        component.disableScrollDown = true;
+        let hasScrolled = false;
+        spyOnProperty(component.content.nativeElement, 'scrollTop', 'set').and.callFake(() => (hasScrolled = true));
+        spyOnProperty(component.content.nativeElement, 'scrollHeight', 'get').and.returnValue(100);
+        component.scrollToBottom();
+        expect(hasScrolled).toBeFalsy();
     });
 });
