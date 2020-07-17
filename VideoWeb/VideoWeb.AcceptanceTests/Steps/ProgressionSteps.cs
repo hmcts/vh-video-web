@@ -99,7 +99,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             if (RemoveNumbersFromUsername(user.ToLower()) == "clerk self test")
                 return Journey.ClerkSelftest;
             if (RemoveNumbersFromUsername(user.ToLower()) == "individual self test" ||
-                     RemoveNumbersFromUsername(user.ToLower()) == "representative self test")
+                RemoveNumbersFromUsername(user.ToLower()) == "representative self test" ||
+                RemoveNumbersFromUsername(user.ToLower()) == "panel member self test")
                 return Journey.SelfTest; 
             if (RemoveNumbersFromUsername(user.ToLower()) == "participant" ||
                      RemoveNumbersFromUsername(user.ToLower()) == "individual" ||

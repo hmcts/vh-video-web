@@ -69,3 +69,20 @@ Scenario: Clerk does not confirm the equipment is working
 	And the user clicks the Equipment is faulty button
 	When the user clicks the Continue button
 	Then the user is on the Hearing List page
+
+Scenario: Panel member video hearing practice
+	Given the Panel Member Self Test user has progressed to the Practice video hearing page
+	Then the incoming and self video should be playing video
+	And contact us details are available
+	When the video has ended
+	And the user clicks the Check equipment again button
+	Then the incoming and self video should be playing video
+	When the user changes the camera and microphone
+	Then the choose your camera and microphone popup should disappear
+
+@VIH-6140
+Scenario: Panel member confirms the equipment is working
+	Given the Panel Member Self Test user has progressed to the Practice video hearing page
+	Then the incoming and self video should be playing video
+	When the user clicks the Equipment is working button
+	Then the user is on the Hearing List page
