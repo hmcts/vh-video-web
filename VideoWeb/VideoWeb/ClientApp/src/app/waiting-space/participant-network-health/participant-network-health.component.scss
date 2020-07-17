@@ -1,0 +1,33 @@
+@import '~govuk-frontend/govuk/all';
+
+.health-container {
+  background: govuk-colour('black');
+  color: govuk-colour('white') !important;
+  padding-top: 20px;
+  padding-left: 10%;
+}
+
+.health-text {
+  color: govuk-colour('white');
+}
+
+.health-text.info {
+  text-decoration: underline;
+}
+
+.no-m {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.networkIcon {
+  height: 25px;
+}
+
+.modal-content {
+  width: fit-content !important;
+}
+
+.actions-row {
+  text-align: center;
+}
