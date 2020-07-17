@@ -27,7 +27,7 @@ export abstract class ChatBaseComponent {
         protected imHelper: ImHelper
     ) {}
 
-    abstract content: ElementRef;
+    abstract content: ElementRef<HTMLElement>;
     abstract sendMessage(messageBody: string): void;
     abstract get participantUsername(): string;
 
