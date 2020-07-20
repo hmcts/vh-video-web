@@ -1,8 +1,8 @@
-import { eventsServiceSpy, heartbeatSubjectMock } from 'src/app/testing/mocks/mock-events-service';
-import { ParticipantNetworkHealthComponent } from './participant-network-health.component';
-import { ParticipantHeartbeat, HeartbeatHealth } from 'src/app/services/models/participant-heartbeat';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { ModalService } from 'src/app/services/modal.service';
+import { HeartbeatHealth, ParticipantHeartbeat } from 'src/app/services/models/participant-heartbeat';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { eventsServiceSpy, heartbeatSubjectMock } from 'src/app/testing/mocks/mock-events-service';
+import { ParticipantNetworkHealthComponent } from '../participant-network-health.component';
 
 describe('ParticipantNetworkHealthComponent', () => {
     let component: ParticipantNetworkHealthComponent;
@@ -45,4 +45,8 @@ describe('ParticipantNetworkHealthComponent', () => {
             expect(component.isNetworkGood).toBe(testcase.expected);
         });
     });
+
+    it('should open guidance modal', () => {});
+
+    it('should close guidance modal', () => {});
 });

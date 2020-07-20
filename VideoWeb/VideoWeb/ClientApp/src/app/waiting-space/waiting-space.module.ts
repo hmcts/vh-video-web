@@ -20,6 +20,7 @@ import { AcceptedConsultationComponent } from './consultation-modals/accepted-co
 import { RejectedConsultationComponent } from './consultation-modals/rejected-consultation/rejected-consultation.component';
 import { VhoRaiseConsultationComponent } from './consultation-modals/vho-raise-consultation/vho-raise-consultation.component';
 import { ParticipantNetworkHealthComponent } from './participant-network-health/participant-network-health.component';
+import { WaitingRoomMonitorComponent } from './participant-network-health/waiting-room-monitor.component';
 
 @NgModule({
     imports: [SharedModule, WaitingSpaceRoutingModule],
@@ -40,7 +41,8 @@ import { ParticipantNetworkHealthComponent } from './participant-network-health/
         AcceptedConsultationComponent,
         RejectedConsultationComponent,
         VhoRaiseConsultationComponent,
-        ParticipantNetworkHealthComponent
+        ParticipantNetworkHealthComponent,
+        WaitingRoomMonitorComponent
     ],
     providers: [VideoCallService, NotificationSoundsService]
 })

@@ -1,0 +1,26 @@
+<div class="govuk-grid-row health-container hearing">
+  <div class="govuk-grid-column-full">
+    <ng-container *ngIf="isNetworkGood; else poorNetwork">
+      <p class="govuk-body govuk-!-font-weight-bold health-text">
+        Your internet connection is good
+        <span class="govuk-button__start-icon">
+          <img
+            id="hearing-network-good-img"
+            class="networkIcon"
+            src="/assets/images/connected-good-signal.png"
+            alt="Good network icon in hearing"
+          />
+        </span>
+      </p>
+    </ng-container>
+    <ng-template #poorNetwork>
+      <p class="govuk-body govuk-!-font-weight-bold health-text govuk-!-margin-bottom-0">
+        Your internet connection is poor
+        <span class="govuk-button__start-icon">
+          <img id="hearing-network-bad-img" class="networkIcon" src="/assets/images/alert-1.png" alt="Good network icon in hearing" />
+        </span>
+      </p>
+      <p class="govuk-body-s health-text no-m">Others may have trouble seeing and hearing you.</p>
+    </ng-template>
+  </div>
+</div>
