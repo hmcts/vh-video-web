@@ -43,21 +43,24 @@
     </video>
 
     <ng-container *ngIf="connected && showVideo">
-      <span *ngIf="!audioMuted; else unmuteButton">
-        <button
-          id="muteButton"
-          class="govuk-button reduce-margin"
-          data-module="govuk-button"
-          type="button"
-          (click)="muteUnmuteCall()"
-          aria-label="Mute Microphone Button"
-        >
-          Mute
-          <span class="govuk-button__start-icon">
-            <img id="mute-microphone-img" class="microphoneIcon" src="/assets/images/mic_on.png" alt="Mute Microphone Image" />
-          </span>
-        </button>
-      </span>
+      <ng-container *ngIf="!remoteMuted">
+        <span *ngIf="!audioMuted; else unmuteButton">
+          <button
+            id="muteButton"
+            class="govuk-button reduce-margin"
+            data-module="govuk-button"
+            type="button"
+            (click)="muteUnmuteCall()"
+            aria-label="Mute Microphone Button"
+          >
+            Mute
+            <span class="govuk-button__start-icon">
+              <img id="mute-microphone-img" class="microphoneIcon" src="/assets/images/mic_on.png" alt="Mute Microphone Image" />
+            </span>
+          </button>
+        </span>
+      </ng-container>
+
       <ng-template #unmuteButton>
         <span>
           <button
@@ -76,6 +79,20 @@
           </button>
         </span>
       </ng-template>
+      <!-- Remote muted -->
+      <button
+        *ngIf="remoteMuted"
+        id="remote-muted-button"
+        data-module="govuk-button"
+        type="button"
+        class="govuk-button govuk-button--warning reduce-margin hand"
+        aria-label="Remote muted button"
+      >
+        The judge muted you
+        <span class="govuk-button__start-icon microphoneIcon">
+          <img id="unmute-microphone-img" class="microphoneIcon" src="/assets/images/mic_off.png" alt="Unmute Microphone Image" />
+        </span>
+      </button>
 
       <!-- toggle hand raise/lower-->
 
@@ -100,6 +117,10 @@
         </span>
       </button>
     </ng-container>
+  </div>
+
+  <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-div">
+    <app-waiting-room-monitor [participant]="participant"></app-waiting-room-monitor>
   </div>
 </div>
 
@@ -190,6 +211,9 @@
       </div>
     </div>
 
+    <div *ngIf="isSupportedBrowserForNetworkHealth" class="govuk-!-padding-3">
+      <app-participant-network-health [participant]="participant"></app-participant-network-health>
+    </div>
     <div class="govuk-!-margin-top-9">
       <p class="govuk-body"><strong>Video hearings team: 0300 303 0655</strong></p>
     </div>

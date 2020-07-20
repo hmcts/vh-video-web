@@ -127,7 +127,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         hearingStatusSubject.next(message);
         flushMicrotasks();
 
-        expect(component.resetMute).toHaveBeenCalled();
+        expect(component.resetMute).toHaveBeenCalledTimes(0);
         expect(component.hearing.status).toBe(status);
         expect(component.conference.status).toBe(status);
         expect(component.showVideo).toBeTruthy();

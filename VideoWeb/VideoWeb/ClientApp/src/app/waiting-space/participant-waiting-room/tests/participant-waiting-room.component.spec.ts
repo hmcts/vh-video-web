@@ -62,7 +62,11 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         clockService.getClock.and.returnValue(of(new Date()));
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         heartbeatModelMapper = new HeartbeatModelMapper();
-        deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['getBrowserName', 'getBrowserVersion']);
+        deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', [
+            'getBrowserName',
+            'getBrowserVersion',
+            'isSupportedBrowser'
+        ]);
 
         consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', ['leaveConsultation']);
 
@@ -294,5 +298,20 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.resetMute();
         expect(component.muteUnmuteCall).toHaveBeenCalledTimes(0);
         expect(component.audioMuted).toBeFalsy();
+    });
+
+    const isSupportedBrowserForNetworkHealthTestCases = [
+        { isSupportedBrowser: true, browserName: 'Chrome', expected: true },
+        { isSupportedBrowser: false, browserName: 'Opera', expected: false },
+        { isSupportedBrowser: true, browserName: 'Safari', expected: false },
+        { isSupportedBrowser: true, browserName: 'MS-Edge', expected: false }
+    ];
+
+    isSupportedBrowserForNetworkHealthTestCases.forEach(testcase => {
+        it(`should return ${testcase.expected} when browser is ${testcase.browserName}`, () => {
+            deviceTypeService.isSupportedBrowser.and.returnValue(testcase.isSupportedBrowser);
+            deviceTypeService.getBrowserName.and.returnValue(testcase.browserName);
+            expect(component.isSupportedBrowserForNetworkHealth).toBe(testcase.expected);
+        });
     });
 });

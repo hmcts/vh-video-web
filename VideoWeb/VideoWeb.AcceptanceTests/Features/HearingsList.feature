@@ -88,3 +88,23 @@ Scenario: Participant can access Closed hearing within 30 minutes
 	And the hearing status changes to Closed
   And the Individual user has progressed to the Hearing List page for the existing hearing
   Then the participant is able to access the hearing
+
+Scenario: PanelMember has 1 or more hearings
+	Given I have a hearing with an Observer and Panel Member
+	And a new browser is open for a PanelMember
+	When the user attempts to login with valid credentials
+	Then the user is on the Hearing List page
+	And the participant can see a list of hearings including the new hearing
+	And contact us details are available
+	When the user clicks on the Start Hearing button
+	Then the user is on the Waiting Room page
+
+Scenario: PanelMember has a hearing more than 30 minutes in the future
+	Given I have a hearing with an Observer and Panel Member in 31 minutes time
+	And a new browser is open for a PanelMember
+	When the user attempts to login with valid credentials
+	Then the user is on the Hearing List page
+	And the new hearing isn't available to join yet
+	And when the hearing is ready to start the hearing button appears
+	When the user clicks on the Start Hearing button
+	Then the user is on the Waiting Room page

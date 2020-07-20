@@ -159,6 +159,7 @@ describe('VhoChatComponent', () => {
         expect(lastArg.conferenceId).toBe(conference.id);
         expect(lastArg.message).toBe(message);
         expect(lastArg.to).toBe(component.participant.username);
+        expect(component.disableScrollDown).toBeFalse();
     });
 
     it('should use profile from cache', async () => {
