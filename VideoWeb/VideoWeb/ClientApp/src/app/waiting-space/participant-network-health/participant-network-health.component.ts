@@ -11,7 +11,7 @@ import { ModalService } from 'src/app/services/modal.service';
     styleUrls: ['./participant-network-health.component.scss']
 })
 export class ParticipantNetworkHealthComponent implements OnInit, OnDestroy {
-    readonly GUIDANCE_MODAL = 'more-info-modal';
+    static GUIDANCE_MODAL = 'more-info-modal';
     eventSubscriptions$ = new Subscription();
     networkHealth?: HeartbeatHealth;
     @Input() participant: ParticipantResponse;
@@ -41,10 +41,10 @@ export class ParticipantNetworkHealthComponent implements OnInit, OnDestroy {
     }
 
     displayGuidanceModal() {
-        this.modalService.open(this.GUIDANCE_MODAL);
+        this.modalService.open(ParticipantNetworkHealthComponent.GUIDANCE_MODAL);
     }
 
     closeGuidanceModal() {
-        this.modalService.close(this.GUIDANCE_MODAL);
+        this.modalService.close(ParticipantNetworkHealthComponent.GUIDANCE_MODAL);
     }
 }
