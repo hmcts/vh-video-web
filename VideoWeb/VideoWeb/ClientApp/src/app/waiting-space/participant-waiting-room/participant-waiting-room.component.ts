@@ -58,6 +58,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     isAdminConsultation: boolean;
     audioMuted: boolean;
     handRaised: boolean;
+    remoteMuted: boolean;
 
     clockSubscription$: Subscription;
     eventHubSubscription$ = new Subscription();
@@ -392,8 +393,14 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     handParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): void {
-        if (this.participant.tiled_display_name === updatedParticipant.pexipDisplayName) {
-            this.handRaised = updatedParticipant.handRaised;
+        if (this.participant.tiled_display_name !== updatedParticipant.pexipDisplayName) {
+            return;
+        }
+
+        this.handRaised = updatedParticipant.handRaised;
+        this.remoteMuted = updatedParticipant.isRemoteMuted;
+        if (this.remoteMuted && !this.audioMuted) {
+            this.muteUnmuteCall();
         }
     }
 
@@ -421,7 +428,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
 
         if (this.hearing.isInSession()) {
             this.logger.debug('Showing video because hearing is in session');
-            this.resetMute();
             this.showSelfView = true;
             this.showVideo = true;
             this.showConsultationControls = false;
@@ -518,6 +524,7 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
     }
 
     muteUnmuteCall() {
+        console.warn('toggling mute');
         const muteAudio = this.videoCallService.toggleMute();
         this.logger.info('Participant mute status :' + muteAudio);
         this.audioMuted = muteAudio;

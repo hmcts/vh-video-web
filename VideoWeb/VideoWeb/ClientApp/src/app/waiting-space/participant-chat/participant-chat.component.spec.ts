@@ -196,5 +196,6 @@ describe('ParticipantChatComponent', () => {
         expect(lastArg.conferenceId).toBe(conference.id);
         expect(lastArg.message).toBe(message);
         expect(lastArg.to).toBe(component.DEFAULT_ADMIN_USERNAME);
+        expect(component.disableScrollDown).toBeFalse();
     });
 });

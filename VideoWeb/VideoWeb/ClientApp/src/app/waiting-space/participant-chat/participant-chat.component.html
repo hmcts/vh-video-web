@@ -20,7 +20,7 @@
     </span>
   </div>
   <div [hidden]="!showChat">
-    <div #content id="chat-list" class="govuk-!-padding-2 govuk-!-padding-left-4 chat-window">
+    <div #content id="chat-list" class="govuk-!-padding-2 govuk-!-padding-left-4 chat-window" (scroll)="onScroll()">
       <div *ngIf="loading" class="govuk-body">Loading...</div>
       <app-chat-body-window [messagesReceived]="messages" [pendingMessages]="pendingMessagesForConversation"></app-chat-body-window>
     </div>
