@@ -60,7 +60,7 @@ describe('ParticipantNetworkHealthComponent', () => {
     });
 
     it('should close guidance modal', () => {
-        component.displayGuidanceModal();
+        component.closeGuidanceModal();
         expect(modalService.close).toHaveBeenCalledWith(ParticipantNetworkHealthComponent.GUIDANCE_MODAL);
     });
 });
