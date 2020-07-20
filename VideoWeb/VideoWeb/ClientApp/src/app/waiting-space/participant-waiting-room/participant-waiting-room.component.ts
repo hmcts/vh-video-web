@@ -94,6 +94,15 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.handRaised = false;
     }
 
+    get isSupportedBrowserForNetworkHealth(): boolean {
+        if (!this.deviceTypeService.isSupportedBrowser()) {
+            return false;
+        }
+        const unsupportedBrowsers = ['Safari', 'MS-Edge'];
+        const browser = this.deviceTypeService.getBrowserName();
+        return unsupportedBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) < 0;
+    }
+
     ngOnInit() {
         this.errorCount = 0;
         this.logger.debug('Loading participant waiting room');
