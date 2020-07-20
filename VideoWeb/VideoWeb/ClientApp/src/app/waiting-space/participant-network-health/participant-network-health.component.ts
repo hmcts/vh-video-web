@@ -1,33 +1,27 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { EventsService } from 'src/app/services/events.service';
+import { Component } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { ParticipantHeartbeat, HeartbeatHealth } from 'src/app/services/models/participant-heartbeat';
-import { ParticipantResponse } from 'src/app/services/clients/api-client';
+import { EventsService } from 'src/app/services/events.service';
 import { ModalService } from 'src/app/services/modal.service';
+import { HeartbeatHealth, ParticipantHeartbeat } from 'src/app/services/models/participant-heartbeat';
+import { ParticipantNetworkHealthBaseComponent } from './participant-net-health-base.component';
 
 @Component({
     selector: 'app-participant-network-health',
     templateUrl: './participant-network-health.component.html',
     styleUrls: ['./participant-network-health.component.scss']
 })
-export class ParticipantNetworkHealthComponent implements OnInit, OnDestroy {
+export class ParticipantNetworkHealthComponent extends ParticipantNetworkHealthBaseComponent {
     static GUIDANCE_MODAL = 'more-info-modal';
     eventSubscriptions$ = new Subscription();
     networkHealth?: HeartbeatHealth;
-    @Input() participant: ParticipantResponse;
 
-    constructor(private eventsService: EventsService, private modalService: ModalService) {}
+    constructor(protected eventsService: EventsService, private modalService: ModalService) {
+        super(eventsService);
+        console.log('waiting room monitor loaded');
+    }
 
     get isNetworkGood() {
         return this.networkHealth && this.networkHealth === HeartbeatHealth.Good;
-    }
-
-    ngOnInit() {
-        this.setupSubscribers();
-    }
-
-    ngOnDestroy(): void {
-        this.eventSubscriptions$.unsubscribe();
     }
 
     setupSubscribers() {

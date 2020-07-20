@@ -118,6 +118,10 @@
       </button>
     </ng-container>
   </div>
+
+  <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-div">
+    <app-waiting-room-monitor [participant]="participant"></app-waiting-room-monitor>
+  </div>
 </div>
 
 <div *ngIf="!loadingData && hearing" class="govuk-grid-row">

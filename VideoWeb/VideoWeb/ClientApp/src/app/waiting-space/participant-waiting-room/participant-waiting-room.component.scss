@@ -11,6 +11,13 @@
   max-height: 90vh;
 }
 
+#hearing-monitor-div {
+  z-index: 100;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+}
+
 .video-background {
   background: #090909;
   position: fixed;
