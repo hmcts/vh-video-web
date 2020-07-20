@@ -1,8 +1,7 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { WaitingRoomMonitorComponent } from '../waiting-room-monitor.component';
+import { HeartbeatHealth, ParticipantHeartbeat } from 'src/app/services/models/participant-heartbeat';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy, heartbeatSubjectMock } from 'src/app/testing/mocks/mock-events-service';
-import { ParticipantHeartbeat, HeartbeatHealth } from 'src/app/services/models/participant-heartbeat';
+import { WaitingRoomMonitorComponent } from '../waiting-room-monitor.component';
 
 describe('WaitingRoomMonitorComponent', () => {
     let component: WaitingRoomMonitorComponent;
