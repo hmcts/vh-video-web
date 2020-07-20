@@ -80,7 +80,7 @@
     "karma-jasmine-html-reporter": "^1.5.4",
     "karma-junit-reporter": "^2.0.1",
     "node-sass": "^4.13.1",
-    "nswag": "^13.6.0",
+    "nswag": "^13.6.2",
     "prettier": "^2.0.5",
     "puppeteer": "^3.3.0",
     "typescript": "~3.5.3"
