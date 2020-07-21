@@ -222,6 +222,31 @@ describe('VhoChatComponent', () => {
         const result = component.pendingMessagesForConversation.pop();
         expect(result.failedToSend).toBeTruthy();
     });
+    it('should not update failed property if im could not be found', () => {
+        const judgeUsername = hearing.judge.username;
+        const adminUsername = 'admin@test.com';
+        adalService.userInfo.userName = adminUsername;
+        const instantMessage = new InstantMessage({
+            conferenceId: conference.id,
+            id: Guid.create().toString(),
+            from: adminUsername,
+            to: judgeUsername,
+            message: 'test message',
+            timestamp: new Date()
+        });
+        const instantMessage1 = new InstantMessage({
+            conferenceId: conference.id,
+            id: Guid.create().toString(),
+            from: adminUsername,
+            to: judgeUsername,
+            message: 'test message',
+            timestamp: new Date()
+        });
+        component.addMessageToPending(instantMessage1);
+        component.checkIfMessageFailed(instantMessage);
+        const result = component.pendingMessagesForConversation.pop();
+        expect(result.failedToSend).toBeFalsy();
+    });
 
     it('should handle pending IMs already processed', () => {
         const judgeUsername = hearing.judge.username;
