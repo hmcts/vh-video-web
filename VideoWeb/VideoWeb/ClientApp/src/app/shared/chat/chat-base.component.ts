@@ -174,7 +174,9 @@ export abstract class ChatBaseComponent {
         if (this.messages.findIndex(x => x.id === instantMessage.id) < 0 && this.pendingMessages.has(instantMessage.to)) {
             const entry = this.pendingMessages.get(instantMessage.to);
             const index = entry.findIndex(x => x.id === instantMessage.id);
-            entry[index].failedToSend = true;
+            if (index > -1) {
+                entry[index].failedToSend = true;
+            }
         }
     }
 }

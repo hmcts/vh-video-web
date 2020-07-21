@@ -42,7 +42,7 @@
     "aspnet-prerendering": "^3.0.1",
     "chart.js": "^2.9.3",
     "classlist.js": "^1.1.20150312",
-    "core-js": "^3.6.4",
+    "core-js": "^3.6.5",
     "govuk-frontend": "^3.7.0",
     "guid-typescript": "^1.0.9",
     "moment": "^2.27.0",
