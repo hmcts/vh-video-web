@@ -277,11 +277,17 @@ namespace VideoWeb.EventHub.Hub
         {
             try
             {
+                var dto = _heartbeatRequestMapper.MapToHealth(heartbeat);
                 await Clients.Group(VhOfficersGroupName).ReceiveHeartbeat
                 (
-                    conferenceId, participantId, _heartbeatRequestMapper.MapToHealth(heartbeat),
-                    heartbeat.BrowserName, heartbeat.BrowserVersion
+                    conferenceId, participantId, dto, heartbeat.BrowserName, heartbeat.BrowserVersion
                 );
+                var conference = await GetConference(conferenceId);
+                var participant = conference.Participants.Single(x => x.Id == participantId);
+                await Clients.Group(participant.Username.ToLowerInvariant()).ReceiveHeartbeat
+               (
+                   conferenceId, participantId, dto, heartbeat.BrowserName, heartbeat.BrowserVersion
+               );
 
                 var addHeartbeatRequest = _heartbeatRequestMapper.MapToRequest(heartbeat);
                 await _videoApiClient.SaveHeartbeatDataForParticipantAsync(conferenceId, participantId, addHeartbeatRequest);

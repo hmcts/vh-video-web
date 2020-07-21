@@ -118,6 +118,10 @@
       </button>
     </ng-container>
   </div>
+
+  <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-div">
+    <app-waiting-room-monitor [participant]="participant"></app-waiting-room-monitor>
+  </div>
 </div>
 
 <div *ngIf="!loadingData && hearing" class="govuk-grid-row">
@@ -207,6 +211,9 @@
       </div>
     </div>
 
+    <div *ngIf="isSupportedBrowserForNetworkHealth" class="govuk-!-padding-3">
+      <app-participant-network-health [participant]="participant"></app-participant-network-health>
+    </div>
     <div class="govuk-!-margin-top-9">
       <p class="govuk-body"><strong>Video hearings team: 0300 303 0655</strong></p>
     </div>

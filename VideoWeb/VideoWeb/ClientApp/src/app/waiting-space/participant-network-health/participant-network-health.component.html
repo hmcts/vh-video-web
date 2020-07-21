@@ -1,0 +1,48 @@
+<div *ngIf="networkHealth" class="govuk-grid-row health-container">
+  <div class="govuk-grid-column-full">
+    <ng-container *ngIf="isNetworkGood; else poorNetwork">
+      <p class="govuk-body govuk-!-font-weight-bold health-text">
+        Your internet connection is Good!
+        <span class="govuk-button__start-icon">
+          <img id="network-good-img" class="networkIcon" src="/assets/images/connected-good-signal.png" alt="Good network icon" />
+        </span>
+      </p>
+    </ng-container>
+    <ng-template #poorNetwork>
+      <p class="govuk-body govuk-!-font-weight-bold health-text">
+        Your internet connection is Poor!
+        <span class="govuk-button__start-icon">
+          <img id="network-bad-img" class="networkIcon" src="/assets/images/alert-1.png" alt="Good network icon" />
+        </span>
+      </p>
+      <p class="govuk-body-s health-text no-m">This may affect how others see and hear you.</p>
+      <p class="govuk-body-s health-text info" (click)="displayGuidanceModal()">Find out what you can do to improve it.</p>
+    </ng-template>
+  </div>
+</div>
+
+<app-modal id="more-info-modal" class="modal clear">
+  <div class="modal-content shadow">
+    <div class="govuk-grid-row govuk-body">
+      <div class="govuk-grid-column-full govuk-!-margin-4">
+        <h2 class="govuk-heading-l">Tips for improving your internet connection</h2>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>If you're on WiFi, try moving close to your router</li>
+          <li>If others are using the same connection, ask if they can wait until you've finished your hearing</li>
+          <li>If possible, use a wired connection rather than WiFi</li>
+        </ul>
+      </div>
+      <div class="actions-row">
+        <button
+          id="close-network-guidance-btn"
+          class="govuk-button govuk-!-margin-top-4"
+          data-module="govuk-button"
+          (click)="closeGuidanceModal()"
+          alt="Close"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</app-modal>

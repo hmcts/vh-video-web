@@ -83,6 +83,13 @@ $govuk-global-styles: true;
   border: 1px solid #888;
 }
 
+.shadow {
+  border: none;
+  -webkit-box-shadow: 0px 20px 30px 0px rgba(0, 0, 0, 0.7);
+  -moz-box-shadow: 0px 20px 30px 0px rgba(0, 0, 0, 0.7);
+  box-shadow: 0px 20px 30px 0px rgba(0, 0, 0, 0.7);
+}
+
 .modal-open {
   /* body overflow is hidden to hide main scrollbar when modal window is open */
   display: block;
@@ -118,12 +125,12 @@ $govuk-global-styles: true;
 }
 
 .vh-border {
-    border: 1px solid govuk-colour('mid-grey');
-    padding: 8px;
-    border-radius: 3px 4px;
-    margin-bottom: 15px;
+  border: 1px solid govuk-colour('mid-grey');
+  padding: 8px;
+  border-radius: 3px 4px;
+  margin-bottom: 15px;
 }
 
 .vh-line {
-    border-bottom: 1px solid govuk-colour('mid-grey');
+  border-bottom: 1px solid govuk-colour('mid-grey');
 }
