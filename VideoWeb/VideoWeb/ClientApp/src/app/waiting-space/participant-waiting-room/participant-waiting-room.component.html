@@ -80,42 +80,44 @@
         </span>
       </ng-template>
       <!-- Remote muted -->
-      <button
-        *ngIf="remoteMuted"
-        id="remote-muted-button"
-        data-module="govuk-button"
-        type="button"
-        class="govuk-button govuk-button--warning reduce-margin hand"
-        aria-label="Remote muted button"
-      >
-        The judge muted you
-        <span class="govuk-button__start-icon microphoneIcon">
-          <img id="unmute-microphone-img" class="microphoneIcon" src="/assets/images/mic_off.png" alt="Unmute Microphone Image" />
-        </span>
-      </button>
+      <span [ngClass]="{ 'remote-container': remoteMuted }">
+        <button
+          *ngIf="remoteMuted"
+          id="remote-muted-button"
+          data-module="govuk-button"
+          type="button"
+          class="govuk-button govuk-button--warning reduce-margin hand"
+          aria-label="Remote muted button"
+        >
+          The judge muted you
+          <span class="govuk-button__start-icon microphoneIcon">
+            <img id="unmute-microphone-img" class="microphoneIcon" src="/assets/images/mic_off.png" alt="Unmute Microphone Image" />
+          </span>
+        </button>
 
-      <!-- toggle hand raise/lower-->
+        <!-- toggle hand raise/lower-->
 
-      <button
-        *ngIf="!isPrivateConsultation"
-        id="toggle-hand-button"
-        data-module="govuk-button"
-        type="button"
-        class="govuk-button reduce-margin hand"
-        [ngClass]="handRaised ? 'govuk-button--warning' : ''"
-        aria-label="Toggle hand raised status"
-        (click)="toggleHandRaised()"
-      >
-        {{ handToggleText }}
-        <span class="govuk-button__start-icon">
-          <img
-            id="toggle-hand-img"
-            class="microphoneIcon"
-            [src]="handRaised ? '/assets/images/hand.png' : '/assets/images/no-hand.png'"
-            alt="Raise"
-          />
-        </span>
-      </button>
+        <button
+          *ngIf="!isPrivateConsultation"
+          id="toggle-hand-button"
+          data-module="govuk-button"
+          type="button"
+          class="govuk-button reduce-margin hand"
+          [ngClass]="handRaised ? 'govuk-button--warning' : ''"
+          aria-label="Toggle hand raised status"
+          (click)="toggleHandRaised()"
+        >
+          {{ handToggleText }}
+          <span class="govuk-button__start-icon">
+            <img
+              id="toggle-hand-img"
+              class="microphoneIcon"
+              [src]="handRaised ? '/assets/images/hand.png' : '/assets/images/no-hand.png'"
+              alt="Raise"
+            />
+          </span>
+        </button>
+      </span>
     </ng-container>
   </div>
 
