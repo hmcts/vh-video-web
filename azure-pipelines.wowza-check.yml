@@ -65,6 +65,7 @@ stages:
       subscription: $(env_Subscription)
       secrets_KeyVault: $(env_Secret_KeyVault)
       secrets_Subscription: $(env_Secret_Subscription)
+      environment: ${{ parameters.environment }}
       deploymentSlot: production
       appName: vh-video-web-$(environment)
       resourceGroup: vh-video-web-$(environment)
