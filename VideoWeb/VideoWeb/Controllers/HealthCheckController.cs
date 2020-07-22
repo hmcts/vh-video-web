@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using VideoWeb.Helpers;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
@@ -44,7 +45,8 @@ namespace VideoWeb.Controllers
             {
                 BookingsApiHealth = {Successful = true},
                 UserApiHealth = {Successful = true},
-                VideoApiHealth = {Successful = true}
+                VideoApiHealth = {Successful = true},
+                AppVersion = AppVersion.Instance()
             };
             try
             {
@@ -82,8 +84,7 @@ namespace VideoWeb.Controllers
             {
                 response.VideoApiHealth = HandleVideoApiCallException(ex);
             }
-
-
+            
             if (!response.UserApiHealth.Successful || !response.BookingsApiHealth.Successful ||
                 !response.VideoApiHealth.Successful)
             {
