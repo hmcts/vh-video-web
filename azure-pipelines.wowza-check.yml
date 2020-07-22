@@ -55,6 +55,9 @@ resources:
       name: hmcts/azure-devops-templates
       ref: refs/heads/master
       endpoint: hmcts (1)
+  pipelines:
+    - pipeline: CI
+      source: hmcts.vh-video-web
 
 stages:
   - template: stages/dotnet-ac.yml@templates
