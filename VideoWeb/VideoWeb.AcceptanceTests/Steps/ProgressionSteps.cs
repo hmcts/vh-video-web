@@ -105,9 +105,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             if (RemoveNumbersFromUsername(user.ToLower()) == "participant" ||
                      RemoveNumbersFromUsername(user.ToLower()) == "individual" ||
                      RemoveNumbersFromUsername(user.ToLower()) == "representative" ||
-                     RemoveNumbersFromUsername(user.ToLower()) == "observer" ||
-                     RemoveNumbersFromUsername(user.ToLower()) == "panel member")
+                     RemoveNumbersFromUsername(user.ToLower()) == "observer")
                 return Journey.Participant;
+            if (RemoveNumbersFromUsername(user.ToLower()) == "panel member")
+                return Journey.PanelMember;
             if (RemoveNumbersFromUsername(user.ToLower()) == "video hearings officer") 
                 return Journey.Vho;
 
@@ -127,6 +128,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {Journey.Clerk, new ClerkJourney()},
                 {Journey.ClerkSelftest, new ClerkSelfTestJourney()},
                 {Journey.Participant, new ParticipantJourney()},
+                {Journey.PanelMember, new PanelMemberJourney()},
                 {Journey.SelfTest, new SelfTestJourney()},
                 {Journey.Vho, new VhoJourney()}
             };
