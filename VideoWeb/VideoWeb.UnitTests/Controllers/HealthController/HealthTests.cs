@@ -153,6 +153,9 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
             response.BookingsApiHealth.Successful.Should().BeTrue();
             response.UserApiHealth.Successful.Should().BeTrue();
             response.VideoApiHealth.Successful.Should().BeTrue();
+            response.AppVersion.Should().NotBeNull();
+            response.AppVersion.FileVersion.Should().NotBeNullOrWhiteSpace();
+            response.AppVersion.InformationVersion.Should().NotBeNullOrWhiteSpace();
         }
     }
 }
