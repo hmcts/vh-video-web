@@ -244,7 +244,8 @@ describe('ParticipantChatComponent', () => {
             to: 'admin@test.com',
             from_display_name: judgeTestProfile.display_name,
             message: 'test message from vho',
-            timestamp: new Date()
+            timestamp: new Date(),
+            is_user: true
         });
         const chatHistory = [message1];
         videoWebService.getConferenceChatHistory.and.resolveTo(chatHistory);
@@ -252,6 +253,6 @@ describe('ParticipantChatComponent', () => {
         component.ngOnInit();
         tick();
 
-        expect(component.showChat).toBeTruthy();
+        expect(component.showChat).toBeFalsy();
     }));
 });
