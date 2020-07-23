@@ -39,5 +39,6 @@ export class EmitEvent<T> {
 export enum VHEventType {
     TaskCompleted = 'TaskCompleted',
     PageRefreshed = 'PageRefreshed',
-    ApplyCourtAccountFilter = 'ApplyCourtAccountFilter'
+    ApplyCourtAccountFilter = 'ApplyCourtAccountFilter',
+    ConferenceImClicked = 'ConferenceImClicked'
 }
