@@ -10,11 +10,13 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { InstantMessage } from '../../services/models/instant-message';
 import { Hearing } from '../../shared/models/hearing';
 import { UnreadMessagesComponent } from './unread-messages.component';
+import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-bus.service';
 
 describe('UnreadMessagesComponent', () => {
     let component: UnreadMessagesComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     let eventsService: jasmine.SpyObj<EventsService>;
+    let eventbus: jasmine.SpyObj<EventBusService>;
     const conference = new ConferenceTestData().getConferenceDetailNow();
     const mockEventService = new MockEventsService();
     let logger: MockLogger;
@@ -22,6 +24,7 @@ describe('UnreadMessagesComponent', () => {
     let unreadConferenceResponse: UnreadInstantMessageConferenceCountResponse;
 
     beforeAll(() => {
+        eventbus = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
         eventsService = jasmine.createSpyObj<EventsService>('EventsService', ['start', 'getAdminAnsweredChat', 'getChatMessage']);
 
         eventsService.getAdminAnsweredChat.and.returnValue(mockEventService.adminAnsweredChatSubject.asObservable());
@@ -45,7 +48,7 @@ describe('UnreadMessagesComponent', () => {
         });
         videoWebServiceSpy.getUnreadMessageCountForConference.and.callFake(() => Promise.resolve(unreadConferenceResponse));
 
-        component = new UnreadMessagesComponent(videoWebServiceSpy, eventsService, logger);
+        component = new UnreadMessagesComponent(videoWebServiceSpy, eventsService, logger, eventbus);
         component.unreadMessages = unreadMessages;
         component.hearing = new Hearing(conference);
     });
@@ -172,5 +175,11 @@ describe('UnreadMessagesComponent', () => {
 
         expect(component.unreadCount).toBe(0);
         expect(component.getIMStatus()).toBe('IM-empty.png');
+    });
+
+    it('should emit open im chat event', () => {
+        const expected = new EmitEvent(VHEventType.ConferenceImClicked, null);
+        component.openImChat();
+        expect(eventbus.emit).toHaveBeenCalledWith(expected);
     });
 });
