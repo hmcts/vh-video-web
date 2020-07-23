@@ -77,7 +77,6 @@ describe('ChatBodyWindowComponent', () => {
         expect(eventsService.sendMessage).toHaveBeenCalledTimes(0);
     });
 
-
     it('should return false if message is in received list', () => {
         component.messagesReceived = [imReceived];
         expect(component.hasMessageFailed(imReceived)).toBeFalsy();
