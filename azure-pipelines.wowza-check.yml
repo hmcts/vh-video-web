@@ -55,17 +55,17 @@ resources:
       name: hmcts/azure-devops-templates
       ref: refs/heads/master
       endpoint: hmcts (1)
+  pipelines:
+    - pipeline: CI
+      source: hmcts.vh-video-web
 
 stages:
   - template: stages/dotnet-ac.yml@templates
     parameters:
-      environments:
-        - ${{ parameters.environment }}
-      deploymentBranch: ${{ parameters.deploymentBranch }}
       subscription: $(env_Subscription)
       secrets_KeyVault: $(env_Secret_KeyVault)
       secrets_Subscription: $(env_Secret_Subscription)
-      devOpsResource: vh_video_web
+      environment: ${{ parameters.environment }}
       deploymentSlot: production
       appName: vh-video-web-$(environment)
       resourceGroup: vh-video-web-$(environment)
@@ -73,7 +73,6 @@ stages:
       - vh-user-api-$(environment)
       - vh-bookings-api-$(environment)
       - vh-video-api-$(environment)
-      runMultiDeviceTests: true
       deviceConfiguration:
         - OS: Windows
           Browser: Chrome
