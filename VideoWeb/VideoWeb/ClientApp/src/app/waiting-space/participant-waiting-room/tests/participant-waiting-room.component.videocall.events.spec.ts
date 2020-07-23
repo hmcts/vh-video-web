@@ -14,9 +14,9 @@ import {
     onConnectedSubjectMock,
     onDisconnectedSubjectMock,
     onErrorSubjectMock,
+    onParticipantUpdatedMock,
     onSetupSubjectMock,
-    videoCallServiceSpy,
-    onParticipantUpdatedMock
+    videoCallServiceSpy
 } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { Hearing } from '../../../shared/models/hearing';
@@ -88,14 +88,14 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
             videoWebService,
             eventsService,
             adalService,
-            errorService,
-            clockService,
             logger,
-            consultationService,
-            router,
+            errorService,
             heartbeatModelMapper,
+            videoCallService,
             deviceTypeService,
-            videoCallService
+            router,
+            consultationService,
+            clockService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, gloalConference));
@@ -286,7 +286,7 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
         videoCallService.toggleMute.calls.reset();
         const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name);
         component.audioMuted = false;
-        component.handParticipantUpdatedInVideoCall(payload);
+        component.handleParticipantUpdatedInVideoCall(payload);
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(1);
     });
 
@@ -294,7 +294,7 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
         videoCallService.toggleMute.calls.reset();
         const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name);
         component.audioMuted = true;
-        component.handParticipantUpdatedInVideoCall(payload);
+        component.handleParticipantUpdatedInVideoCall(payload);
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(0);
     });
 });

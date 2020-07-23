@@ -79,14 +79,14 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             videoWebService,
             eventsService,
             adalService,
-            errorService,
-            clockService,
             logger,
-            consultationService,
-            router,
+            errorService,
             heartbeatModelMapper,
+            videoCallService,
             deviceTypeService,
-            videoCallService
+            router,
+            consultationService,
+            clockService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, gloalConference));
@@ -215,13 +215,13 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
     it('should mute the participant when user opts to mute the call', () => {
         videoCallService.toggleMute.and.returnValue(true);
-        component.muteUnmuteCall();
+        component.toggleMute();
         expect(component.audioMuted).toBeTruthy();
     });
 
     it('should unmute the participant when user opts to turn off mute option', () => {
         videoCallService.toggleMute.and.returnValue(false);
-        component.muteUnmuteCall();
+        component.toggleMute();
         expect(component.audioMuted).toBeFalsy();
     });
 
@@ -283,20 +283,20 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     });
 
     it('should unmute the participant already muted', () => {
-        spyOn(component, 'muteUnmuteCall').and.callThrough();
+        spyOn(component, 'toggleMute').and.callThrough();
         videoCallService.toggleMute.and.returnValue(false);
         component.audioMuted = true;
         component.resetMute();
         expect(videoCallService.toggleMute).toHaveBeenCalled();
-        expect(component.muteUnmuteCall).toHaveBeenCalled();
+        expect(component.toggleMute).toHaveBeenCalled();
         expect(component.audioMuted).toBeFalsy();
     });
 
     it('should not reset mute option the participant not in mute', () => {
-        spyOn(component, 'muteUnmuteCall').and.callThrough();
+        spyOn(component, 'toggleMute').and.callThrough();
         component.audioMuted = false;
         component.resetMute();
-        expect(component.muteUnmuteCall).toHaveBeenCalledTimes(0);
+        expect(component.toggleMute).toHaveBeenCalledTimes(0);
         expect(component.audioMuted).toBeFalsy();
     });
 

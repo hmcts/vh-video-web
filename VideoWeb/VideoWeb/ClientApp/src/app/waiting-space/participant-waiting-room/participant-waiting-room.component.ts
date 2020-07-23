@@ -4,26 +4,19 @@ import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import {
-    ConferenceResponse,
-    ConferenceStatus,
-    ConsultationAnswer,
-    ParticipantResponse,
-    ParticipantStatus,
-    TokenResponse
-} from 'src/app/services/clients/api-client';
+import { ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { DeviceTypeService } from '../../services/device-type.service';
 import { HeartbeatModelMapper } from '../../shared/mappers/heartbeat-model-mapper';
 import { Hearing } from '../../shared/models/hearing';
-import { CallError, CallSetup, ConnectedCall, DisconnectedCall, ParticipantUpdated } from '../models/video-call-models';
+import { CallError, ConnectedCall, DisconnectedCall, ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
+import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
 
 declare var HeartbeatFactory: any;
 
@@ -32,75 +25,58 @@ declare var HeartbeatFactory: any;
     templateUrl: './participant-waiting-room.component.html',
     styleUrls: ['./participant-waiting-room.component.scss']
 })
-export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
-    private maxBandwidth = 768;
-
-    loadingData: boolean;
-    hearing: Hearing;
-    participant: ParticipantResponse;
-    conference: ConferenceResponse;
-    token: TokenResponse;
-
-    stream: MediaStream | URL;
-    connected: boolean;
-    outgoingStream: MediaStream | URL;
-
+export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
     currentTime: Date;
     hearingStartingAnnounced: boolean;
     currentPlayCount: number;
     hearingAlertSound: HTMLAudioElement;
 
-    showVideo: boolean;
-    showSelfView: boolean;
-    showConsultationControls: boolean;
     isPrivateConsultation: boolean;
-    selfViewOpen: boolean;
-    isAdminConsultation: boolean;
     audioMuted: boolean;
     handRaised: boolean;
     remoteMuted: boolean;
 
     clockSubscription$: Subscription;
-    eventHubSubscription$ = new Subscription();
-    videoCallSubscription$ = new Subscription();
-    errorCount: number;
 
     CALL_TIMEOUT = 31000; // 31 seconds
     callbackTimeout: NodeJS.Timer;
-    heartbeat: any;
 
     constructor(
-        private route: ActivatedRoute,
-        private videoWebService: VideoWebService,
-        private eventService: EventsService,
-        private adalService: AdalService,
-        private errorService: ErrorService,
-        private clockService: ClockService,
-        private logger: Logger,
+        protected route: ActivatedRoute,
+        protected videoWebService: VideoWebService,
+        protected eventService: EventsService,
+        protected adalService: AdalService,
+        protected logger: Logger,
+        protected errorService: ErrorService,
+        protected heartbeatMapper: HeartbeatModelMapper,
+        protected videoCallService: VideoCallService,
+        protected deviceTypeService: DeviceTypeService,
+        protected router: Router,
         private consultationService: ConsultationService,
-        private router: Router,
-        private heartbeatMapper: HeartbeatModelMapper,
-        private deviceTypeService: DeviceTypeService,
-        private videoCallService: VideoCallService
+        private clockService: ClockService
     ) {
-        this.isAdminConsultation = false;
-        this.loadingData = true;
-        this.showVideo = false;
-        this.showConsultationControls = false;
-        this.selfViewOpen = false;
-        this.showSelfView = false;
+        super(
+            route,
+            videoWebService,
+            eventService,
+            adalService,
+            logger,
+            errorService,
+            heartbeatMapper,
+            videoCallService,
+            deviceTypeService,
+            router
+        );
         this.isPrivateConsultation = false;
-        this.audioMuted = false;
         this.handRaised = false;
     }
 
-    get isSupportedBrowserForNetworkHealth(): boolean {
-        if (!this.deviceTypeService.isSupportedBrowser()) {
-            return false;
+    get handToggleText(): string {
+        if (this.handRaised) {
+            return 'Lower my hand';
+        } else {
+            return 'Raise my hand';
         }
-        const unsupportedBrowsers = ['Safari', 'MS-Edge'];
-        const browser = this.deviceTypeService.getBrowserName();
-        return unsupportedBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) < 0;
     }
 
     ngOnInit() {
@@ -122,15 +98,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
             this.heartbeat.kill();
         }
         this.disconnect();
-    }
-
-    disconnect() {
-        this.videoCallService.disconnectFromCall();
-        this.stream = null;
-        this.outgoingStream = null;
-        this.connected = false;
-        this.showVideo = false;
-        this.showSelfView = false;
     }
 
     initHearingAlert() {
@@ -182,41 +149,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         this.hearingStartingAnnounced = true;
     }
 
-    async getConference() {
-        const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-        return this.videoWebService
-            .getConferenceById(conferenceId)
-            .then((data: ConferenceResponse) => {
-                this.errorCount = 0;
-                this.loadingData = false;
-                this.hearing = new Hearing(data);
-                this.conference = this.hearing.getConference();
-                this.participant = data.participants.find(
-                    x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
-                );
-                this.logger.info(`Participant waiting room : Conference Id: ${conferenceId} and participantId: ${this.participant.id},
-          participant name : ${this.videoWebService.getObfuscatedName(this.participant.name)}`);
-            })
-            .catch(error => {
-                this.logger.error(`There was an error getting a conference ${conferenceId}`, error);
-                this.loadingData = false;
-                this.errorService.handleApiError(error);
-            });
-    }
-
-    async getJwtokenAndConnectToPexip(): Promise<void> {
-        try {
-            this.logger.debug('retrieving jwtoken');
-            this.token = await this.videoWebService.getJwToken(this.participant.id);
-            this.logger.debug('retrieved jwtoken for heartbeat');
-            await this.setupPexipEventSubscriptionAndClient();
-            this.call();
-        } catch (error) {
-            this.logger.error(`There was an error getting a jwtoken for ${this.participant.id}`, error);
-            this.errorService.handleApiError(error);
-        }
-    }
-
     getConferenceStatusText(): string {
         if (this.hearing.getConference().status === ConferenceStatus.NotStarted) {
             if (this.hearing.isStarting()) {
@@ -236,164 +168,26 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         return 'is in session';
     }
 
-    startEventHubSubscribers() {
-        this.logger.debug('Subscribing to conference status changes...');
-        this.eventHubSubscription$.add(
-            this.eventService.getHearingStatusMessage().subscribe(message => {
-                this.handleConferenceStatusChange(message);
-                this.updateShowVideo();
-            })
-        );
-
-        this.logger.debug('Subscribing to participant status changes...');
-        this.eventHubSubscription$.add(
-            this.eventService.getParticipantStatusMessage().subscribe(message => {
-                this.handleParticipantStatusChange(message);
-                this.updateShowVideo();
-            })
-        );
-
-        this.logger.debug('Subscribing to admin consultation messages...');
-        this.eventHubSubscription$.add(
-            this.eventService.getAdminConsultationMessage().subscribe(message => {
-                if (message.answer && message.answer === ConsultationAnswer.Accepted) {
-                    this.isAdminConsultation = true;
-                }
-            })
-        );
-
-        this.logger.debug('Subscribing to EventHub disconnects');
-        this.eventHubSubscription$.add(
-            this.eventService.getServiceDisconnected().subscribe(async attemptNumber => {
-                await this.handleEventHubDisconnection(attemptNumber);
-            })
-        );
-
-        this.logger.debug('Subscribing to EventHub reconnects');
-        this.eventHubSubscription$.add(
-            this.eventService.getServiceReconnected().subscribe(() => {
-                this.logger.info(`EventHub re-connected for ${this.participant.id} in conference ${this.hearing.id}`);
-                this.getConference().then(() => this.updateShowVideo());
-            })
-        );
-
-        this.eventService.start();
-    }
-
-    async handleEventHubDisconnection(reconnectionAttempt: number) {
-        if (reconnectionAttempt < 7) {
-            this.logger.info(`EventHub disconnection for ${this.participant.id} in conference ${this.hearing.id}`);
-            this.logger.info(`EventHub disconnection #${reconnectionAttempt}`);
-            try {
-                await this.getConference();
-                this.updateShowVideo();
-            } catch (error) {
-                this.errorService.handleApiError(error);
-            }
-        } else {
-            this.logger.info(`EventHub disconnection too many times (#${reconnectionAttempt}), going to service error`);
-            this.errorService.goToServiceError('Your connection was lost');
-        }
-    }
-
-    handleParticipantStatusChange(message: ParticipantStatusMessage): any {
-        const participant = this.hearing.getConference().participants.find(p => p.id === message.participantId);
-        const isMe = participant.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase();
-        if (isMe) {
-            this.participant.status = message.status;
-        }
-        participant.status = message.status;
-        this.logger.info(
-            `Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}, Participant status : ${participant.status}`
-        );
-        if (message.status !== ParticipantStatus.InConsultation && isMe) {
-            this.isAdminConsultation = false;
-        }
-    }
-
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
-        this.hearing.getConference().status = message.status;
-        this.conference.status = message.status;
-        this.logger.info(
-            `Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}, Conference status : ${message.status}`
-        );
+        super.handleConferenceStatusChange(message);
         if (message.status === ConferenceStatus.Closed) {
             this.getConferenceClosedTime(this.hearing.id);
         }
     }
 
-    setupParticipantHeartbeat() {
-        const baseUrl = this.conference.pexip_node_uri.replace('sip.', '');
-        const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${this.conference.id}`;
-        this.logger.debug(`heartbeat uri: ${url}`);
-        const bearerToken = `Bearer ${this.token.token}`;
-        this.heartbeat = new HeartbeatFactory(
-            this.videoCallService.pexipAPI,
-            url,
-            this.conference.id,
-            this.participant.id,
-            bearerToken,
-            this.handleHeartbeat(this)
-        );
-    }
-
-    async setupPexipEventSubscriptionAndClient() {
-        this.logger.debug('Setting up pexip client...');
-
-        this.videoCallSubscription$.add(this.videoCallService.onCallSetup().subscribe(setup => this.handleCallSetup(setup)));
-        this.videoCallSubscription$.add(
-            this.videoCallService.onCallConnected().subscribe(callConnected => this.handleCallConnected(callConnected))
-        );
-        this.videoCallSubscription$.add(this.videoCallService.onError().subscribe(callError => this.handleCallError(callError)));
-        this.videoCallSubscription$.add(
-            this.videoCallService.onCallDisconnected().subscribe(disconnectedCall => this.handleCallDisconnect(disconnectedCall))
-        );
-        this.videoCallSubscription$.add(
-            this.videoCallService
-                .onParticipantUpdated()
-                .subscribe(updatedParticipant => this.handParticipantUpdatedInVideoCall(updatedParticipant))
-        );
-
-        await this.videoCallService.setupClient();
-    }
-
-    handleCallSetup(callSetup: CallSetup) {
-        this.logger.info('running pexip setup');
-        this.videoCallService.connect('', null);
-        this.outgoingStream = callSetup.stream;
-    }
-
     handleCallConnected(callConnected: ConnectedCall) {
-        this.errorCount = 0;
-        this.connected = true;
-        this.logger.info('successfully connected to call');
-        this.stream = callConnected.stream;
-        const incomingFeedElement = document.getElementById('incomingFeed') as any;
-        if (this.stream) {
-            this.updateShowVideo();
-            if (incomingFeedElement) {
-                this.assignStream(incomingFeedElement, callConnected.stream);
-            }
-        }
+        super.handleCallConnected(callConnected);
         this.setupParticipantHeartbeat();
     }
 
     handleCallError(error: CallError) {
-        this.errorCount++;
-        this.connected = false;
+        super.handleCallError(error);
         this.heartbeat.kill();
-        this.updateShowVideo();
-        this.logger.error(`Error from pexip. Reason : ${error.reason}`, error.reason);
-        if (this.errorCount > 3) {
-            this.errorService.goToServiceError('Your connection was lost');
-        }
     }
 
     handleCallDisconnect(reason: DisconnectedCall) {
-        this.connected = false;
+        super.handleCallDisconnect(reason);
         this.heartbeat.kill();
-        this.updateShowVideo();
-        this.logger.warn(`Disconnected from pexip. Reason : ${reason.reason}`);
         if (!this.hearing.isPastClosedTime()) {
             this.callbackTimeout = setTimeout(() => {
                 this.call();
@@ -401,28 +195,12 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         }
     }
 
-    handParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): void {
-        if (this.participant.tiled_display_name !== updatedParticipant.pexipDisplayName) {
-            return;
+    handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): boolean {
+        if (super.handleParticipantUpdatedInVideoCall(updatedParticipant)) {
+            this.handRaised = updatedParticipant.handRaised;
+            return true;
         }
-
-        this.handRaised = updatedParticipant.handRaised;
-        this.remoteMuted = updatedParticipant.isRemoteMuted;
-        if (this.remoteMuted && !this.audioMuted) {
-            this.muteUnmuteCall();
-        }
-    }
-
-    call() {
-        this.logger.info('calling pexip');
-        const pexipNode = this.hearing.getConference().pexip_node_uri;
-        const conferenceAlias = this.hearing.getConference().participant_uri;
-        const displayName = this.participant.tiled_display_name;
-        this.logger.debug(`Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`);
-        if (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1) {
-            this.videoCallService.enableH264(false);
-        }
-        this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth);
+        return false;
     }
 
     updateShowVideo(): void {
@@ -491,26 +269,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         }
     }
 
-    assignStream(videoElement, stream) {
-        if (typeof MediaStream !== 'undefined' && stream instanceof MediaStream) {
-            videoElement.srcObject = stream;
-        } else {
-            videoElement.src = stream;
-        }
-    }
-
-    handleHeartbeat(self: this) {
-        return async function (heartbeat) {
-            const heartbeatModel = self.heartbeatMapper.map(
-                JSON.parse(heartbeat),
-                self.deviceTypeService.getBrowserName(),
-                self.deviceTypeService.getBrowserVersion()
-            );
-
-            await self.eventService.sendHeartbeat(self.hearing.id, self.participant.id, heartbeatModel);
-        };
-    }
-
     getCurrentTimeClass() {
         if (this.hearing.isOnTime() || this.hearing.isPaused() || this.hearing.isClosed()) {
             return 'hearing-on-time';
@@ -520,30 +278,6 @@ export class ParticipantWaitingRoomComponent implements OnInit, OnDestroy {
         }
         if (this.hearing.isDelayed() || this.hearing.isSuspended()) {
             return 'hearing-delayed';
-        }
-    }
-
-    /**
-     *Unmutes participants
-     **/
-    resetMute() {
-        if (this.audioMuted) {
-            this.muteUnmuteCall();
-        }
-    }
-
-    muteUnmuteCall() {
-        console.warn('toggling mute');
-        const muteAudio = this.videoCallService.toggleMute();
-        this.logger.info('Participant mute status :' + muteAudio);
-        this.audioMuted = muteAudio;
-    }
-
-    get handToggleText(): string {
-        if (this.handRaised) {
-            return 'Lower my hand';
-        } else {
-            return 'Raise my hand';
         }
     }
 

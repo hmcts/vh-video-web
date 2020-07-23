@@ -96,14 +96,14 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
             videoWebService,
             eventsService,
             adalService,
-            errorService,
-            clockService,
             logger,
-            consultationService,
-            router,
+            errorService,
             heartbeatModelMapper,
+            videoCallService,
             deviceTypeService,
-            videoCallService
+            router,
+            consultationService,
+            clockService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, gloalConference));
