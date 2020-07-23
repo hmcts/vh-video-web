@@ -14,6 +14,7 @@ export abstract class UnreadMessagesComponentBase {
     abstract getHearing(): Hearing;
     abstract resetUnreadCounter(conferenceId: string, participantUsername: string): void;
     abstract incrementUnreadCounter(conferenceId: string, participantUsername: string): void;
+    abstract openImChat();
 
     getIMStatus(): string {
         return this.unreadCount > 0 ? 'IM_icon.png' : 'IM-empty.png';
