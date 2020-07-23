@@ -235,4 +235,23 @@ describe('ParticipantChatComponent', () => {
 
         expect(component.showChat).toBeTruthy();
     }));
+
+    it('should not open window in load when user does not have unread messages', fakeAsync(() => {
+        const message1 = new InstantMessage({
+            conferenceId: conference.id,
+            id: Guid.create().toString(),
+            from: judgeUsername,
+            to: 'admin@test.com',
+            from_display_name: judgeTestProfile.display_name,
+            message: 'test message from vho',
+            timestamp: new Date()
+        });
+        const chatHistory = [message1];
+        videoWebService.getConferenceChatHistory.and.resolveTo(chatHistory);
+
+        component.ngOnInit();
+        tick();
+
+        expect(component.showChat).toBeTruthy();
+    }));
 });
