@@ -198,4 +198,22 @@ describe('ParticipantChatComponent', () => {
         expect(lastArg.to).toBe(component.DEFAULT_ADMIN_USERNAME);
         expect(component.disableScrollDown).toBeFalse();
     });
+
+    it('should display chat window when message is received', () => {
+        const adminUsername = 'admin@user.com';
+        component.showChat = false;
+        component.unreadMessageCount = 0;
+        const message: InstantMessage = new InstantMessage({
+            conferenceId: conference.id,
+            from: adminUsername,
+            from_display_name: 'Admin Test',
+            to: conference.participants[1].username,
+            id: Guid.create().toString(),
+            is_user: false,
+            message: 'test auto',
+            timestamp: new Date()
+        });
+        component.handleIncomingOtherMessage(message);
+        expect(component.showChat).toBeTruthy();
+    });
 });

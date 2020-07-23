@@ -94,6 +94,10 @@ export class ParticipantChatComponent extends ChatBaseComponent implements OnIni
         if (!this.showChat && !message.is_user) {
             this.unreadMessageCount++;
         }
+
+        if (!this.showChat) {
+            this.toggleChatDisplay();
+        }
     }
 
     resetUnreadMessageCount() {
