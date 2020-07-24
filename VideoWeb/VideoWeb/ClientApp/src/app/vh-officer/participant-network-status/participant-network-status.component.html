@@ -1,4 +1,4 @@
-<div id="p-row-{{ participant.id }}">
+<div id="p-row-{{ participant.id }}" *ngIf="!participant.isJudge">
   <img
     id="{{ participant.id }}-network-status-icon"
     class="network-status-icon"
