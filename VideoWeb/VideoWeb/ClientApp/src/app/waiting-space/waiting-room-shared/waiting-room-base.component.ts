@@ -46,6 +46,9 @@ export abstract class WaitingRoomBaseComponent {
     isAdminConsultation: boolean;
     showConsultationControls: boolean;
 
+    CALL_TIMEOUT = 31000; // 31 seconds
+    callbackTimeout: NodeJS.Timer;
+
     audioMuted: boolean;
     remoteMuted: boolean;
 
@@ -285,9 +288,11 @@ export abstract class WaitingRoomBaseComponent {
                 this.assignStream(incomingFeedElement, callConnected.stream);
             }
         }
+        this.setupParticipantHeartbeat();
     }
 
     handleCallError(error: CallError): void {
+        this.heartbeat.kill();
         this.errorCount++;
         this.connected = false;
         this.updateShowVideo();
@@ -299,6 +304,7 @@ export abstract class WaitingRoomBaseComponent {
 
     handleCallDisconnect(reason: DisconnectedCall): void {
         this.connected = false;
+        this.heartbeat.kill();
         this.updateShowVideo();
         this.logger.warn(`Disconnected from pexip. Reason : ${reason.reason}`);
     }

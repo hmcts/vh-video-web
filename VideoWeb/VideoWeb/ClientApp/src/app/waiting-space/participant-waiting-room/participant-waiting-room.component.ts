@@ -14,11 +14,9 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { DeviceTypeService } from '../../services/device-type.service';
 import { HeartbeatModelMapper } from '../../shared/mappers/heartbeat-model-mapper';
 import { Hearing } from '../../shared/models/hearing';
-import { CallError, ConnectedCall, DisconnectedCall, ParticipantUpdated } from '../models/video-call-models';
+import { DisconnectedCall, ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
-
-declare var HeartbeatFactory: any;
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -37,9 +35,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     remoteMuted: boolean;
 
     clockSubscription$: Subscription;
-
-    CALL_TIMEOUT = 31000; // 31 seconds
-    callbackTimeout: NodeJS.Timer;
 
     constructor(
         protected route: ActivatedRoute,
@@ -98,6 +93,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
             this.heartbeat.kill();
         }
         this.disconnect();
+        this.eventHubSubscription$.unsubscribe();
+        this.videoCallSubscription$.unsubscribe();
     }
 
     initHearingAlert() {
@@ -175,19 +172,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         }
     }
 
-    handleCallConnected(callConnected: ConnectedCall) {
-        super.handleCallConnected(callConnected);
-        this.setupParticipantHeartbeat();
-    }
-
-    handleCallError(error: CallError) {
-        super.handleCallError(error);
-        this.heartbeat.kill();
-    }
-
     handleCallDisconnect(reason: DisconnectedCall) {
         super.handleCallDisconnect(reason);
-        this.heartbeat.kill();
         if (!this.hearing.isPastClosedTime()) {
             this.callbackTimeout = setTimeout(() => {
                 this.call();
