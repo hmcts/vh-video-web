@@ -14,12 +14,12 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { eventsServiceSpy, hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
+import { JudgeWaitingRoom2Component } from '../judge-waiting-room2.component';
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
-    let component: JudgeWaitingRoomComponent;
+    let component: JudgeWaitingRoom2Component;
     const gloalConference = new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse;
     const globalParticipant = gloalConference.participants.filter(x => x.role === Role.Individual)[0];
     const videoCallService = videoCallServiceSpy;
@@ -73,7 +73,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     beforeEach(async () => {
-        component = new JudgeWaitingRoomComponent(
+        component = new JudgeWaitingRoom2Component(
             activatedRoute,
             videoWebService,
             eventsService,
