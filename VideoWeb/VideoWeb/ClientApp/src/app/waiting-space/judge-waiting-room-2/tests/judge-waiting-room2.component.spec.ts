@@ -12,11 +12,11 @@ import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-map
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { eventsServiceSpy, hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
-import { videoCallServiceSpy, onErrorSubjectMock } from 'src/app/testing/mocks/mock-video-call-service';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
+import { onErrorSubjectMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { JudgeWaitingRoom2Component } from '../judge-waiting-room2.component';
 import { CallError } from '../../models/video-call-models';
+import { JudgeWaitingRoom2Component } from '../judge-waiting-room2.component';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoom2Component;
