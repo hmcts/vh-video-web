@@ -64,6 +64,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     }
 
     updateShowVideo(): void {
+        console.warn('hello');
         if (!this.connected) {
             this.logger.debug('Not showing video because not connecting to node');
             this.showSelfView = false;
@@ -109,9 +110,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         return this.conference.status === ConferenceStatus.Paused || this.conference.status === ConferenceStatus.Suspended;
     }
 
-    startHearing() {
-        this.logger.info('starting hearing');
-    }
+    startHearing() {}
 
     goToJudgeHearingList(): void {
         this.router.navigate([pageUrls.JudgeHearingList]);

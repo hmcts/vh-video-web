@@ -3411,26 +3411,6 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("representee", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Representee { get; set; }
     
-        /// <summary>House number of an Individual</summary>
-        [Newtonsoft.Json.JsonProperty("house_number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string House_number { get; set; }
-    
-        /// <summary>Street number of an Individual</summary>
-        [Newtonsoft.Json.JsonProperty("street", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Street { get; set; }
-    
-        /// <summary>Postcode of an Individual</summary>
-        [Newtonsoft.Json.JsonProperty("postcode", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Postcode { get; set; }
-    
-        /// <summary>City/Town of an Individual</summary>
-        [Newtonsoft.Json.JsonProperty("city", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string City { get; set; }
-    
-        /// <summary>County of an Individual</summary>
-        [Newtonsoft.Json.JsonProperty("county", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string County { get; set; }
-    
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     
         [Newtonsoft.Json.JsonExtensionData]
@@ -3498,26 +3478,6 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("organisation_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Organisation_name { get; set; }
     
-        /// <summary>House number of an Individual</summary>
-        [Newtonsoft.Json.JsonProperty("house_number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string House_number { get; set; }
-    
-        /// <summary>Stree number of an Individual</summary>
-        [Newtonsoft.Json.JsonProperty("street", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Street { get; set; }
-    
-        /// <summary>Postcode of an Individual</summary>
-        [Newtonsoft.Json.JsonProperty("postcode", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Postcode { get; set; }
-    
-        /// <summary>City/Town of an Individual</summary>
-        [Newtonsoft.Json.JsonProperty("city", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string City { get; set; }
-    
-        /// <summary>County of an Individual</summary>
-        [Newtonsoft.Json.JsonProperty("county", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string County { get; set; }
-    
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     
         [Newtonsoft.Json.JsonExtensionData]
@@ -3563,26 +3523,6 @@ namespace VideoWeb.Services.Bookings
         /// <summary>Participant Display Name</summary>
         [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.AllowNull)]
         public string Display_name { get; set; }
-    
-        /// <summary>House number of an Individual</summary>
-        [Newtonsoft.Json.JsonProperty("house_number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string House_number { get; set; }
-    
-        /// <summary>Stree number of an Individual</summary>
-        [Newtonsoft.Json.JsonProperty("street", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Street { get; set; }
-    
-        /// <summary>Postcode of an Individual</summary>
-        [Newtonsoft.Json.JsonProperty("postcode", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Postcode { get; set; }
-    
-        /// <summary>City/Town of an Individual</summary>
-        [Newtonsoft.Json.JsonProperty("city", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string City { get; set; }
-    
-        /// <summary>County of an Individual</summary>
-        [Newtonsoft.Json.JsonProperty("county", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string County { get; set; }
     
         /// <summary>Participant Organisation</summary>
         [Newtonsoft.Json.JsonProperty("organisation_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]

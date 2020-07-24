@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
+    ConferenceStatus,
     ConsultationAnswer,
     ParticipantResponse,
     ParticipantStatus,
@@ -95,6 +96,21 @@ export abstract class WaitingRoomBaseComponent {
                 this.loadingData = false;
                 this.errorService.handleApiError(error);
             });
+    }
+
+    async getConferenceClosedTime(conferenceId: string): Promise<void> {
+        try {
+            this.conference = await this.videoWebService.getConferenceById(conferenceId);
+            this.hearing = new Hearing(this.conference);
+            this.participant = this.conference.participants.find(
+                x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
+            );
+            this.logger.info(
+                `Participant waiting room : Conference with id ${conferenceId} closed | Participant Id : ${this.participant.id}, ${this.participant.display_name}.`
+            );
+        } catch (error) {
+            this.logger.error(`There was an error getting a conference ${conferenceId}`, error);
+        }
     }
 
     startEventHubSubscribers() {
@@ -208,6 +224,10 @@ export abstract class WaitingRoomBaseComponent {
         this.audioMuted = muteAudio;
     }
 
+    toggleView(): boolean {
+        return (this.selfViewOpen = !this.selfViewOpen);
+    }
+
     async getJwtokenAndConnectToPexip(): Promise<void> {
         try {
             this.logger.debug('retrieving jwtoken');
@@ -282,6 +302,8 @@ export abstract class WaitingRoomBaseComponent {
         this.logger.info('successfully connected to call');
         this.stream = callConnected.stream;
         const incomingFeedElement = document.getElementById('incomingFeed') as any;
+        console.log(this.stream);
+        console.log(incomingFeedElement);
         if (this.stream) {
             this.updateShowVideo();
             if (incomingFeedElement) {
@@ -307,6 +329,11 @@ export abstract class WaitingRoomBaseComponent {
         this.heartbeat.kill();
         this.updateShowVideo();
         this.logger.warn(`Disconnected from pexip. Reason : ${reason.reason}`);
+        if (!this.hearing.isPastClosedTime()) {
+            this.callbackTimeout = setTimeout(() => {
+                this.call();
+            }, this.CALL_TIMEOUT);
+        }
     }
 
     handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): boolean {
@@ -326,6 +353,9 @@ export abstract class WaitingRoomBaseComponent {
         this.logger.info(
             `Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}, Conference status : ${message.status}`
         );
+        if (message.status === ConferenceStatus.Closed) {
+            this.getConferenceClosedTime(this.hearing.id);
+        }
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {

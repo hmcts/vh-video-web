@@ -9,12 +9,10 @@ import { ClockService } from 'src/app/services/clock.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { DeviceTypeService } from '../../services/device-type.service';
 import { HeartbeatModelMapper } from '../../shared/mappers/heartbeat-model-mapper';
-import { Hearing } from '../../shared/models/hearing';
-import { DisconnectedCall, ParticipantUpdated } from '../models/video-call-models';
+import { ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
 
@@ -165,22 +163,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         return 'is in session';
     }
 
-    handleConferenceStatusChange(message: ConferenceStatusMessage) {
-        super.handleConferenceStatusChange(message);
-        if (message.status === ConferenceStatus.Closed) {
-            this.getConferenceClosedTime(this.hearing.id);
-        }
-    }
-
-    handleCallDisconnect(reason: DisconnectedCall) {
-        super.handleCallDisconnect(reason);
-        if (!this.hearing.isPastClosedTime()) {
-            this.callbackTimeout = setTimeout(() => {
-                this.call();
-            }, this.CALL_TIMEOUT);
-        }
-    }
-
     handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): boolean {
         if (super.handleParticipantUpdatedInVideoCall(updatedParticipant)) {
             this.handRaised = updatedParticipant.handRaised;
@@ -233,25 +215,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
             await this.consultationService.leaveConsultation(this.conference, this.participant);
         } catch (error) {
             this.logger.error('Failed to leave private consultation', error);
-        }
-    }
-
-    toggleView(): boolean {
-        return (this.selfViewOpen = !this.selfViewOpen);
-    }
-
-    async getConferenceClosedTime(conferenceId: string): Promise<void> {
-        try {
-            this.conference = await this.videoWebService.getConferenceById(conferenceId);
-            this.hearing = new Hearing(this.conference);
-            this.participant = this.conference.participants.find(
-                x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
-            );
-            this.logger.info(
-                `Participant waiting room : Conference with id ${conferenceId} closed | Participant Id : ${this.participant.id}, ${this.participant.display_name}.`
-            );
-        } catch (error) {
-            this.logger.error(`There was an error getting a conference ${conferenceId}`, error);
         }
     }
 
