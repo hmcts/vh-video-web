@@ -20,7 +20,7 @@ import {
 } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { Hearing } from '../../../shared/models/hearing';
-import { CallError, CallSetup, ConnectedCall, DisconnectedCall, ParticipantUpdated } from '../../models/video-call-models';
+import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../../models/video-call-models';
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
 
 describe('ParticipantWaitingRoomComponent video call events', () => {
@@ -120,14 +120,12 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
     });
 
     it('should define outgoing stream when video call has been setup', () => {
-        const currentShowSelfVideo = component.showSelfView;
         const outgoingStream = <any>{};
         const payload = new CallSetup(outgoingStream);
         onSetupSubject.next(payload);
 
         expect(videoCallService.connect).toHaveBeenCalledWith('', null);
         expect(component.outgoingStream).toBeDefined();
-        expect(component.showSelfView).toBe(currentShowSelfVideo);
     });
 
     it('should define incoming stream when video call has connected', () => {
@@ -231,70 +229,5 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
         expect(component.heartbeat.kill).toHaveBeenCalled();
         expect(component.showVideo).toBeFalsy();
         expect(component.callbackTimeout).toBeUndefined();
-    });
-
-    it('should raise hand on toggle if hand not raised', () => {
-        component.handRaised = false;
-        component.toggleHandRaised();
-        expect(videoCallService.raiseHand).toHaveBeenCalledTimes(1);
-        expect(component.handToggleText).toBe('Lower my hand');
-    });
-
-    it('should lower hand on toggle if hand raised', () => {
-        component.handRaised = true;
-        component.toggleHandRaised();
-        expect(videoCallService.lowerHand).toHaveBeenCalledTimes(1);
-        expect(component.handToggleText).toBe('Raise my hand');
-    });
-
-    it('should show raised hand on hand lowered', () => {
-        const payload = new ParticipantUpdated('YES', 0, globalParticipant.tiled_display_name);
-        onParticipantUpdatedSubject.next(payload);
-        expect(component.remoteMuted).toBeTruthy();
-        expect(component.handRaised).toBeFalsy();
-        expect(component.handToggleText).toBe('Raise my hand');
-    });
-
-    it('should not show raised hand on hand lowered for another participant', () => {
-        const otherParticipant = gloalConference.participants.filter(x => x.role === Role.Representative)[0];
-        const payload = new ParticipantUpdated('YES', 0, otherParticipant.tiled_display_name);
-        component.handRaised = true;
-        component.remoteMuted = false;
-        onParticipantUpdatedSubject.next(payload);
-        expect(component.remoteMuted).toBeFalsy();
-        expect(component.handRaised).toBeTruthy();
-        expect(component.handToggleText).toBe('Lower my hand');
-    });
-
-    it('should show lower hand on hand raised', () => {
-        const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name);
-        onParticipantUpdatedSubject.next(payload);
-        expect(component.handRaised).toBeTruthy();
-        expect(component.handToggleText).toBe('Lower my hand');
-    });
-
-    it('should not show lower hand when hand raised for another participant', () => {
-        const otherParticipant = gloalConference.participants.filter(x => x.role === Role.Representative)[0];
-        const payload = new ParticipantUpdated('YES', 0, otherParticipant.tiled_display_name);
-        component.handRaised = false;
-        onParticipantUpdatedSubject.next(payload);
-        expect(component.handRaised).toBeFalsy();
-        expect(component.handToggleText).toBe('Raise my hand');
-    });
-
-    it('should mute locally if remote muted and not muted locally', () => {
-        videoCallService.toggleMute.calls.reset();
-        const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name);
-        component.audioMuted = false;
-        component.handleParticipantUpdatedInVideoCall(payload);
-        expect(videoCallService.toggleMute).toHaveBeenCalledTimes(1);
-    });
-
-    it('should skip mute locally if remote muted and already muted locally', () => {
-        videoCallService.toggleMute.calls.reset();
-        const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name);
-        component.audioMuted = true;
-        component.handleParticipantUpdatedInVideoCall(payload);
-        expect(videoCallService.toggleMute).toHaveBeenCalledTimes(0);
     });
 });

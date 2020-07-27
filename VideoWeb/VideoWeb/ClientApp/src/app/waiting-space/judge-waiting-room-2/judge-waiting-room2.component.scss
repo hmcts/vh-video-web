@@ -6,10 +6,6 @@
   color: govuk-colour('red');
 }
 
-.audio-icon {
-  height: 24px;
-  padding-top: 1px;
-}
 .vh-left {
   margin-left: 1px;
 }
@@ -52,20 +48,4 @@
   transform: rotateY(180deg);
   -webkit-transform: rotateY(180deg); /* Safari and Chrome */
   -moz-transform: rotateY(180deg); /* Firefox */
-}
-
-.hideVideo {
-  opacity: 0;
-}
-
-.showVideo {
-  opacity: 1;
-}
-
-.microphoneIcon {
-  height: 18px;
-}
-
-.reduce-margin {
-  margin-bottom: 2px;
 }

@@ -18,7 +18,7 @@ import { ConferenceStatusMessage } from 'src/app/services/models/conference-stat
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
-import { CallError, CallSetup, ConnectedCall, DisconnectedCall, ParticipantUpdated } from '../models/video-call-models';
+import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 
 declare var HeartbeatFactory: any;
@@ -42,16 +42,13 @@ export abstract class WaitingRoomBaseComponent {
     outgoingStream: MediaStream | URL;
 
     showVideo: boolean;
-    showSelfView: boolean;
-    selfViewOpen: boolean;
+    // showSelfView: boolean;
+    // selfViewOpen: boolean;
     isAdminConsultation: boolean;
     showConsultationControls: boolean;
 
     CALL_TIMEOUT = 31000; // 31 seconds
     callbackTimeout: NodeJS.Timer;
-
-    audioMuted: boolean;
-    remoteMuted: boolean;
 
     protected constructor(
         protected route: ActivatedRoute,
@@ -68,9 +65,6 @@ export abstract class WaitingRoomBaseComponent {
         this.isAdminConsultation = false;
         this.loadingData = true;
         this.showVideo = false;
-        this.selfViewOpen = false;
-        this.showSelfView = false;
-        this.audioMuted = false;
         this.showConsultationControls = false;
     }
 
@@ -209,25 +203,6 @@ export abstract class WaitingRoomBaseComponent {
         };
     }
 
-    /**
-     *Unmutes participants
-     **/
-    resetMute() {
-        if (this.audioMuted) {
-            this.toggleMute();
-        }
-    }
-
-    toggleMute() {
-        const muteAudio = this.videoCallService.toggleMute();
-        this.logger.info('Participant mute status :' + muteAudio);
-        this.audioMuted = muteAudio;
-    }
-
-    toggleView(): boolean {
-        return (this.selfViewOpen = !this.selfViewOpen);
-    }
-
     async getJwtokenAndConnectToPexip(): Promise<void> {
         try {
             this.logger.debug('retrieving jwtoken');
@@ -252,11 +227,6 @@ export abstract class WaitingRoomBaseComponent {
         this.videoCallSubscription$.add(
             this.videoCallService.onCallDisconnected().subscribe(disconnectedCall => this.handleCallDisconnect(disconnectedCall))
         );
-        this.videoCallSubscription$.add(
-            this.videoCallService
-                .onParticipantUpdated()
-                .subscribe(updatedParticipant => this.handleParticipantUpdatedInVideoCall(updatedParticipant))
-        );
 
         await this.videoCallService.setupClient();
     }
@@ -279,7 +249,6 @@ export abstract class WaitingRoomBaseComponent {
         this.outgoingStream = null;
         this.connected = false;
         this.showVideo = false;
-        this.showSelfView = false;
     }
 
     assignStream(videoElement, stream) {
@@ -302,8 +271,6 @@ export abstract class WaitingRoomBaseComponent {
         this.logger.info('successfully connected to call');
         this.stream = callConnected.stream;
         const incomingFeedElement = document.getElementById('incomingFeed') as any;
-        console.log(this.stream);
-        console.log(incomingFeedElement);
         if (this.stream) {
             this.updateShowVideo();
             if (incomingFeedElement) {
@@ -334,17 +301,6 @@ export abstract class WaitingRoomBaseComponent {
                 this.call();
             }, this.CALL_TIMEOUT);
         }
-    }
-
-    handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): boolean {
-        if (this.participant.tiled_display_name !== updatedParticipant.pexipDisplayName) {
-            return false;
-        }
-        this.remoteMuted = updatedParticipant.isRemoteMuted;
-        if (this.remoteMuted && !this.audioMuted) {
-            this.toggleMute();
-        }
-        return true;
     }
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
