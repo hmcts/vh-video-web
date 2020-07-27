@@ -55,7 +55,7 @@ namespace VideoWeb.Mappings
                 var position = 0;
                 foreach (var participant in response.Participants)
                 {
-                    participant.TiledDisplayName = $"T{position + 1 };{participant.DisplayName};{participant.Id}";
+                    participant.TiledDisplayName = GetTiledDisplayName(participant, position);
                     position++;
                 }
             }
@@ -69,13 +69,18 @@ namespace VideoWeb.Mappings
                     foreach (var p in pats)
                     {
                         var participant = response.Participants.Find(x => x.Id == p.Id);
-                        participant.TiledDisplayName = $"T{position};{participant.DisplayName};{participant.Id}";
+                        participant.TiledDisplayName = GetTiledDisplayName(participant, position);
                         position += 2;
                     }
                 }
             }
 
             return response;
+        }
+
+        private static string GetTiledDisplayName(ParticipantResponse participant, int position)
+        {
+            return  $"T{position};{participant.DisplayName};{participant.Id}";
         }
     }
 }
