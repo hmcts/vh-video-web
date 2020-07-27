@@ -8,8 +8,6 @@ Scenario: Clerk Instant Messaging
 	Given the Clerk user has progressed to the Waiting Room page
 	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
 	When the Video Hearings Officer instant messages the Clerk user
-  Then the Clerk user can see the notification for the message
-  When the Clerk user opens the chat window
 	Then the Clerk user can see the message
 	When the Clerk user instant messages the Video Hearings Officer
   When the Video Hearings Officer navigates to the message from the Clerk user
@@ -22,8 +20,6 @@ Scenario: Participant Instant Messaging
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
 	When the Video Hearings Officer instant messages the Individual01 user
-  Then the Individual01 user can see the notification for the message
-  When the Individual01 user opens the chat window
 	Then the Individual01 user can see the message
 	When the Individual01 user instant messages the Video Hearings Officer
   When the Video Hearings Officer navigates to the message from the Individual01 user
@@ -36,8 +32,6 @@ Scenario: Instant Messaging Video Hearings Officer logged in first
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
   When the Video Hearings Officer instant messages the Clerk user
   And the Clerk user has progressed to the Waiting Room page for the existing hearing
-  Then the Clerk user can see the notification for the message
-  When the Clerk user opens the chat window
 	Then the Clerk user can see the message
 	When the Clerk user instant messages the Video Hearings Officer
   Then the Video Hearings Officer user can see the message
