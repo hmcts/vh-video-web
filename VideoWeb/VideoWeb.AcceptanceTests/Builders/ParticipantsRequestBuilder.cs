@@ -1,4 +1,4 @@
-﻿using AcceptanceTests.Common.Configuration.Users;
+using AcceptanceTests.Common.Configuration.Users;
 using FizzWare.NBuilder;
 using VideoWeb.Services.Bookings;
 
@@ -36,12 +36,7 @@ namespace VideoWeb.AcceptanceTests.Builders
                 .With(x => x.Hearing_role_name = _user.HearingRoleName)
                 .With(x => x.Reference = _user.Reference)
                 .With(x => x.Representee = "")
-                .With(x => x.Organisation_name = "")
-                .With(x => x.House_number = "102")
-                .With(x => x.Street = "Petty France")
-                .With(x => x.Postcode = "SW1H 9AJ")
-                .With(x => x.City = "London")
-                .With(x => x.County = "Greater London");
+                .With(x => x.Organisation_name = "");
 
             _request = AddSharedProperties();
 
