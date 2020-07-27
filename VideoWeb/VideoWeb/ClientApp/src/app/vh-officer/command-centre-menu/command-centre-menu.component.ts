@@ -38,7 +38,6 @@ export class CommandCentreMenuComponent implements OnInit, OnDestroy {
 
     setupSubscribers() {
         this.subscriptions$ = this.eventbus.on(VHEventType.ConferenceImClicked, () => {
-            console.log('clicked im menu');
             this.displayMessages();
         });
     }

@@ -17,7 +17,6 @@ export class ParticipantNetworkHealthComponent extends ParticipantNetworkHealthB
 
     constructor(protected eventsService: EventsService, private modalService: ModalService) {
         super(eventsService);
-        console.log('waiting room monitor loaded');
     }
 
     get isNetworkGood() {

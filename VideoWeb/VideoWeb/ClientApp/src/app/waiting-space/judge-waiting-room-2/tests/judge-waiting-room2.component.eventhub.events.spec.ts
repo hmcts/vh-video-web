@@ -96,13 +96,11 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     it('should update conference status and show video when "in session" message received', fakeAsync(() => {
-        spyOn(component, 'resetMute').and.callThrough();
         const status = ConferenceStatus.InSession;
         const message = new ConferenceStatusMessage(gloalConference.id, status);
         hearingStatusSubject.next(message);
         flushMicrotasks();
 
-        expect(component.resetMute).toHaveBeenCalledTimes(0);
         expect(component.hearing.status).toBe(status);
         expect(component.conference.status).toBe(status);
         expect(component.showVideo).toBeTruthy();
@@ -110,7 +108,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     }));
 
     it('should update conference status and get closeed time when "closed" message received', fakeAsync(() => {
-        spyOn(component, 'resetMute').and.callThrough();
         const status = ConferenceStatus.Closed;
         const confWithCloseTime = new ConferenceResponse(Object.assign({}, gloalConference));
         confWithCloseTime.closed_date_time = new Date();
@@ -127,6 +124,5 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.showVideo).toBeFalsy();
         expect(videoWebService.getConferenceById).toHaveBeenCalledWith(gloalConference.id);
         expect(component.getConferenceStatusText()).toBe('Hearing is closed');
-        expect(component.resetMute).toHaveBeenCalledTimes(0);
     }));
 });

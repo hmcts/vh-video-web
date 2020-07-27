@@ -64,10 +64,8 @@ export class JudgeWaitingRoom2Component extends WaitingRoomBaseComponent impleme
     }
 
     updateShowVideo(): void {
-        console.warn('hello');
         if (!this.connected) {
             this.logger.debug('Not showing video because not connecting to node');
-            this.showSelfView = false;
             this.showVideo = false;
             this.showConsultationControls = false;
             return;
@@ -75,14 +73,12 @@ export class JudgeWaitingRoom2Component extends WaitingRoomBaseComponent impleme
 
         if (this.hearing.isInSession()) {
             this.logger.debug('Showing video because hearing is in session');
-            this.showSelfView = true;
             this.showVideo = true;
             this.showConsultationControls = false;
             return;
         }
 
         this.logger.debug('Not showing video because hearing is not in session and user is not in consultation');
-        this.showSelfView = false;
         this.showVideo = false;
         this.showConsultationControls = false;
     }

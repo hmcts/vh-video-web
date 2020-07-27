@@ -20,72 +20,16 @@
   </div>
 </div>
 
-<div class="govuk-grid-row" *ngIf="showSelfView">
-  <div class="govuk-grid-column-one-half" id="outgoingFeedDiv">
-    <button
-      id="outgoingFeedButton"
-      type="button"
-      class="govuk-button govuk-button--secondary reduce-margin govuk-!-margin-right-4"
-      data-module="govuk-button"
-      (click)="toggleView()"
-    >
-      {{ selfViewOpen ? 'Close' : 'Open' }} self-view
-    </button>
+<ng-container *ngIf="connected && showVideo">
+  <app-hearing-controls
+    [participant]="participant"
+    [isPrivateConsultation]="false"
+    [outgoingStream]="outgoingStream"
+  ></app-hearing-controls>
+</ng-container>
 
-    <video
-      [ngClass]="{ showVideo: selfViewOpen, hideVideo: !selfViewOpen }"
-      id="outgoingFeedVideo"
-      [muted]="true"
-      [srcObject]="this.outgoingStream"
-      autoplay
-      height="auto"
-    >
-      Your browser does not support Video
-    </video>
-
-    <ng-container *ngIf="connected && showVideo">
-      <ng-container *ngIf="!remoteMuted">
-        <span *ngIf="!audioMuted; else unmuteButton">
-          <button
-            id="muteButton"
-            class="govuk-button reduce-margin"
-            data-module="govuk-button"
-            type="button"
-            (click)="toggleMute()"
-            aria-label="Mute Microphone Button"
-          >
-            Mute
-            <span class="govuk-button__start-icon">
-              <img id="mute-microphone-img" class="microphoneIcon" src="/assets/images/mic_on.png" alt="Mute Microphone Image" />
-            </span>
-          </button>
-        </span>
-      </ng-container>
-
-      <ng-template #unmuteButton>
-        <span>
-          <button
-            id="unmuteButton"
-            class="govuk-button govuk-button--warning reduce-margin"
-            data-module="govuk-button"
-            type="button"
-            (click)="toggleMute()"
-            aria-label="Unmute Microphone Button"
-          >
-            Unmute
-
-            <span class="govuk-button__start-icon microphoneIcon">
-              <img id="unmute-microphone-img" class="microphoneIcon" src="/assets/images/mic_off.png" alt="Unmute Microphone Image" />
-            </span>
-          </button>
-        </span>
-      </ng-template>
-    </ng-container>
-  </div>
-
-  <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-div">
-    <app-waiting-room-monitor [participant]="participant"></app-waiting-room-monitor>
-  </div>
+<div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-div">
+  <app-waiting-room-monitor [participant]="participant"></app-waiting-room-monitor>
 </div>
 
 <div *ngIf="!loadingData && conference">

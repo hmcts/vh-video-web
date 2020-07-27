@@ -12,7 +12,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { DeviceTypeService } from '../../services/device-type.service';
 import { HeartbeatModelMapper } from '../../shared/mappers/heartbeat-model-mapper';
-import { ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
 
@@ -28,9 +27,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     hearingAlertSound: HTMLAudioElement;
 
     isPrivateConsultation: boolean;
-    audioMuted: boolean;
-    handRaised: boolean;
-    remoteMuted: boolean;
 
     clockSubscription$: Subscription;
 
@@ -61,15 +57,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
             router
         );
         this.isPrivateConsultation = false;
-        this.handRaised = false;
-    }
-
-    get handToggleText(): string {
-        if (this.handRaised) {
-            return 'Lower my hand';
-        } else {
-            return 'Raise my hand';
-        }
     }
 
     ngOnInit() {
@@ -163,18 +150,9 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         return 'is in session';
     }
 
-    handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): boolean {
-        if (super.handleParticipantUpdatedInVideoCall(updatedParticipant)) {
-            this.handRaised = updatedParticipant.handRaised;
-            return true;
-        }
-        return false;
-    }
-
     updateShowVideo(): void {
         if (!this.connected) {
             this.logger.debug('Not showing video because not connecting to node');
-            this.showSelfView = false;
             this.showVideo = false;
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;
@@ -183,7 +161,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
 
         if (this.hearing.isInSession()) {
             this.logger.debug('Showing video because hearing is in session');
-            this.showSelfView = true;
             this.showVideo = true;
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;
@@ -192,8 +169,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
 
         if (this.participant.status === ParticipantStatus.InConsultation) {
             this.logger.debug('Showing video because hearing is in session');
-            this.resetMute();
-            this.showSelfView = true;
             this.showVideo = true;
             this.isPrivateConsultation = true;
             this.showConsultationControls = !this.isAdminConsultation;
@@ -201,7 +176,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         }
 
         this.logger.debug('Not showing video because hearing is not in session and user is not in consultation');
-        this.showSelfView = false;
         this.showVideo = false;
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
@@ -228,16 +202,5 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         if (this.hearing.isDelayed() || this.hearing.isSuspended()) {
             return 'hearing-delayed';
         }
-    }
-
-    toggleHandRaised() {
-        if (this.handRaised) {
-            this.logger.debug('lowering hand');
-            this.videoCallService.lowerHand();
-        } else {
-            this.logger.debug('raising hand');
-            this.videoCallService.raiseHand();
-        }
-        this.handRaised = !this.handRaised;
     }
 }

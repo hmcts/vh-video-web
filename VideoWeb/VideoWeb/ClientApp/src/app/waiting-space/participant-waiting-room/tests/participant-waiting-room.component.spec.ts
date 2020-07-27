@@ -201,30 +201,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         expect(component.getConferenceStatusText()).toBe('is delayed');
     });
 
-    it('should show self view on-click when currently hidden', () => {
-        component.selfViewOpen = false;
-        component.toggleView();
-        expect(component.selfViewOpen).toBeTruthy();
-    });
-
-    it('should hide self view on-click when currently visible', () => {
-        component.selfViewOpen = true;
-        component.toggleView();
-        expect(component.selfViewOpen).toBeFalsy();
-    });
-
-    it('should mute the participant when user opts to mute the call', () => {
-        videoCallService.toggleMute.and.returnValue(true);
-        component.toggleMute();
-        expect(component.audioMuted).toBeTruthy();
-    });
-
-    it('should unmute the participant when user opts to turn off mute option', () => {
-        videoCallService.toggleMute.and.returnValue(false);
-        component.toggleMute();
-        expect(component.audioMuted).toBeFalsy();
-    });
-
     it('should make call to video conference', () => {
         videoCallService.enableH264.calls.reset();
         spyOnProperty(window, 'navigator').and.returnValue({
@@ -280,24 +256,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         consultationService.leaveConsultation.and.rejectWith(error);
         await component.onConsultationCancelled();
         expect(logger.error.calls.mostRecent().args[0]).toBe('Failed to leave private consultation');
-    });
-
-    it('should unmute the participant already muted', () => {
-        spyOn(component, 'toggleMute').and.callThrough();
-        videoCallService.toggleMute.and.returnValue(false);
-        component.audioMuted = true;
-        component.resetMute();
-        expect(videoCallService.toggleMute).toHaveBeenCalled();
-        expect(component.toggleMute).toHaveBeenCalled();
-        expect(component.audioMuted).toBeFalsy();
-    });
-
-    it('should not reset mute option the participant not in mute', () => {
-        spyOn(component, 'toggleMute').and.callThrough();
-        component.audioMuted = false;
-        component.resetMute();
-        expect(component.toggleMute).toHaveBeenCalledTimes(0);
-        expect(component.audioMuted).toBeFalsy();
     });
 
     const isSupportedBrowserForNetworkHealthTestCases = [
