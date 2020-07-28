@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+import { ApiClient } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
@@ -18,7 +19,7 @@ export class VideoCallService {
 
     pexipAPI: any;
 
-    constructor(private logger: Logger, private userMediaService: UserMediaService) {}
+    constructor(private logger: Logger, private userMediaService: UserMediaService, private apiClient: ApiClient) {}
 
     /**
      * This will initialise the pexip client and initalise the call with
@@ -140,5 +141,9 @@ export class VideoCallService {
 
     lowerHand() {
         this.pexipAPI.clearBuzz();
+    }
+
+    async startHearing(conferenceId: string) {
+        await this.apiClient.startOrResumeVideoHearing(conferenceId).toPromise();
     }
 }

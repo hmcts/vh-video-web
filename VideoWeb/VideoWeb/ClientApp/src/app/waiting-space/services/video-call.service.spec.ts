@@ -4,9 +4,13 @@ import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { VideoCallService } from './video-call.service';
+import { Guid } from 'guid-typescript';
+import { ApiClient } from 'src/app/services/clients/api-client';
+import { of } from 'rxjs';
 
 describe('VideoCallService', () => {
     let service: VideoCallService;
+    let apiClient: jasmine.SpyObj<ApiClient>;
     const logger: Logger = new MockLogger();
     let userMediaService: jasmine.SpyObj<UserMediaService>;
     const testData = new MediaDeviceTestData();
@@ -14,6 +18,8 @@ describe('VideoCallService', () => {
     let preferredMicrophone: UserMediaDevice;
     let pexipSpy: any;
     beforeAll(() => {
+        apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', ['startOrResumeVideoHearing']);
+
         userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
             'getListOfVideoDevices',
             'getListOfMicrophoneDevices',
@@ -33,7 +39,7 @@ describe('VideoCallService', () => {
 
     beforeEach(() => {
         pexipSpy = jasmine.createSpyObj('pexipAPI', ['connect', 'makeCall', 'muteAudio', 'disconnect', 'setBuzz', 'clearBuzz']);
-        service = new VideoCallService(logger, userMediaService);
+        service = new VideoCallService(logger, userMediaService, apiClient);
     });
 
     it('should init pexip and set pexip client', async () => {
@@ -119,5 +125,12 @@ describe('VideoCallService', () => {
         service.pexipAPI = pexipSpy;
         service.lowerHand();
         expect(pexipSpy.clearBuzz).toHaveBeenCalledTimes(1);
+    });
+
+    it('should make api start call on start hearing', async () => {
+        apiClient.startOrResumeVideoHearing.and.returnValue(of());
+        const conferenceId = Guid.create().toString();
+        await service.startHearing(conferenceId);
+        expect(apiClient.startOrResumeVideoHearing).toHaveBeenCalledWith(conferenceId);
     });
 });

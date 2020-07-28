@@ -14,6 +14,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { JudgeWaitingRoomComponent } from './judge-waiting-room.component';
+import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
@@ -28,6 +29,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     let errorService: jasmine.SpyObj<ErrorService>;
     const logger: Logger = new MockLogger();
     let judgeEventService: jasmine.SpyObj<JudgeEventService>;
+    const videocallService = videoCallServiceSpy;
 
     beforeAll(() => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
@@ -71,7 +73,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             eventsService,
             errorService,
             logger,
-            judgeEventService
+            judgeEventService,
+            videocallService
         );
         component.ngOnInit();
         tick(1000);
@@ -251,5 +254,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         const result = await component.postEventJudgeUnvailableStatus();
 
         expect(result).toBeFalsy();
+    });
+
+    it('should start video hearing when start has been clicked', async () => {
+        await component.startHearing();
+        expect(videocallService.startHearing).toHaveBeenCalledTimes(1);
     });
 });
