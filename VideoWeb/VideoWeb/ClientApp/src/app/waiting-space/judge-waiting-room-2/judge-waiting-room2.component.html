@@ -28,7 +28,7 @@
   ></app-hearing-controls>
 </ng-container>
 
-<div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-div">
+<div *ngIf="isSupportedBrowserForNetworkHealth && showVideo" id="hearing-monitor-div">
   <app-waiting-room-monitor [participant]="participant"></app-waiting-room-monitor>
 </div>
 
