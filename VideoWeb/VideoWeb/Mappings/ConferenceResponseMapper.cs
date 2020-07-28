@@ -52,11 +52,18 @@ namespace VideoWeb.Mappings
             if (tiledParticipants.Count > 4)
             {
                 // If the number of participants is more than 4, then simply increment the tile numbers
-                var position = 0;
+                var position = 1;
                 foreach (var participant in response.Participants)
                 {
-                    participant.TiledDisplayName = GetTiledDisplayName(participant, position);
-                    position++;
+                    if (participant.Role == Role.Judge)
+                    {
+                        participant.TiledDisplayName = GetTiledDisplayName(participant, 0);
+                    }
+                    else
+                    {
+                        participant.TiledDisplayName = GetTiledDisplayName(participant, position);
+                        position++;
+                    }
                 }
             }
             else

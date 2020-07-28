@@ -126,6 +126,11 @@ namespace VideoWeb.UnitTests.Mappings
             foreach (var participantResponse in participantsResponse)
             {
                 var position = participantResponse.TiledDisplayName.Split(';');
+                if (participantResponse.Role == Role.Judge)
+                {
+                    participantResponse.TiledDisplayName.StartsWith("T0").Should().BeTrue();
+                }
+
                 if (position[0].StartsWith("T"))
                 {
                     tiledNames.Count(x => x.StartsWith(position[0])).Should().Be(1);
