@@ -37,6 +37,79 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> StartOrResumeVideoHearingAsync(Guid conferenceId)
         {
+            var validatedRequest = await ValidateUserIsJudgeAndInConference(conferenceId);
+            if (validatedRequest != null)
+            {
+                return validatedRequest;
+            }
+            try
+            {
+                await _videoApiClient.StartOrResumeVideoHearingAsync(conferenceId);
+                return Accepted();
+            }
+            catch (VideoApiException ex)
+            {
+                _logger.LogError(ex, $"Unable to start video hearing {conferenceId}");
+                return StatusCode(ex.StatusCode, ex.Response);
+            }
+        }
+        
+        /// <summary>
+        /// Pause a video hearing
+        /// </summary>
+        /// <param name="conferenceId">conference id</param>
+        /// <returns>No Content status</returns>
+        [HttpPost("{conferenceId}/pause")]
+        [SwaggerOperation(OperationId = "PauseVideoHearing")]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        public async Task<IActionResult> PauseVideoHearingAsync(Guid conferenceId)
+        {
+            var validatedRequest = await ValidateUserIsJudgeAndInConference(conferenceId);
+            if (validatedRequest != null)
+            {
+                return validatedRequest;
+            }
+            try
+            {
+                await _videoApiClient.PauseVideoHearingAsync(conferenceId);
+                return Accepted();
+            }
+            catch (VideoApiException ex)
+            {
+                _logger.LogError(ex, $"Unable to pause video hearing {conferenceId}");
+                return StatusCode(ex.StatusCode, ex.Response);
+            }
+        }
+        
+        /// <summary>
+        /// End a video hearing
+        /// </summary>
+        /// <param name="conferenceId">conference id</param>
+        /// <returns>No Content status</returns>
+        [HttpPost("{conferenceId}/end")]
+        [SwaggerOperation(OperationId = "EndVideoHearing")]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        public async Task<IActionResult> EndVideoHearingAsync(Guid conferenceId)
+        {
+            var validatedRequest = await ValidateUserIsJudgeAndInConference(conferenceId);
+            if (validatedRequest != null)
+            {
+                return validatedRequest;
+            }
+            try
+            {
+                await _videoApiClient.EndVideoHearingAsync(conferenceId);
+                return Accepted();
+            }
+            catch (VideoApiException ex)
+            {
+                _logger.LogError(ex, $"Unable to end video hearing {conferenceId}");
+                return StatusCode(ex.StatusCode, ex.Response);
+            }
+        }
+
+        private async Task<IActionResult> ValidateUserIsJudgeAndInConference(Guid conferenceId)
+        {
             if (!IsJudge())
             {
                 _logger.LogWarning("Only judges may control hearings");
@@ -48,16 +121,8 @@ namespace VideoWeb.Controllers
                 _logger.LogWarning("Only judges may control hearings");
                 return Unauthorized("User must be a Judge");
             }
-            try
-            {
-                await _videoApiClient.StartOrResumeVideoHearingAsync(conferenceId);
-                return Accepted();
-            }
-            catch (VideoApiException ex)
-            {
-                _logger.LogError(ex, $"Unable to find start video hearing {conferenceId}");
-                return StatusCode(ex.StatusCode, ex.Response);
-            }
+
+            return null;
         }
 
         private bool IsJudge()

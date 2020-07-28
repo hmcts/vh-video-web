@@ -146,4 +146,12 @@ export class VideoCallService {
     async startHearing(conferenceId: string) {
         await this.apiClient.startOrResumeVideoHearing(conferenceId).toPromise();
     }
+
+    async pauseHearing(conferenceId: string) {
+        await this.apiClient.pauseVideoHearing(conferenceId).toPromise();
+    }
+
+    async endHearing(conferenceId: string) {
+        await this.apiClient.endVideoHearing(conferenceId).toPromise();
+    }
 }
