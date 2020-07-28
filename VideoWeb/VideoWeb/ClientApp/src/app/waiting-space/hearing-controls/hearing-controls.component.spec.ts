@@ -1,14 +1,12 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { HearingControlsComponent } from './hearing-controls.component';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { ConferenceResponse, Role, ParticipantStatus } from 'src/app/services/clients/api-client';
-import { eventsServiceSpy, participantStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
-import { videoCallServiceSpy, onParticipantUpdatedMock } from 'src/app/testing/mocks/mock-video-call-service';
+import { ConferenceResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { eventsServiceSpy, participantStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
+import { onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ParticipantUpdated } from '../models/video-call-models';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { HearingControlsComponent } from './hearing-controls.component';
 
 describe('HearingControlsComponent', () => {
     let component: HearingControlsComponent;

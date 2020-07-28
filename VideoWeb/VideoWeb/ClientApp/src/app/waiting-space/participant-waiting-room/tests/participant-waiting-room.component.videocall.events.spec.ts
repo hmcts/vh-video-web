@@ -14,7 +14,6 @@ import {
     onConnectedSubjectMock,
     onDisconnectedSubjectMock,
     onErrorSubjectMock,
-    onParticipantUpdatedMock,
     onSetupSubjectMock,
     videoCallServiceSpy
 } from 'src/app/testing/mocks/mock-video-call-service';
@@ -32,7 +31,6 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
     const onConnectedSubject = onConnectedSubjectMock;
     const onDisconnectedSubject = onDisconnectedSubjectMock;
     const onErrorSubject = onErrorSubjectMock;
-    const onParticipantUpdatedSubject = onParticipantUpdatedMock;
     const videoCallService = videoCallServiceSpy;
 
     const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: gloalConference.id }) } };
