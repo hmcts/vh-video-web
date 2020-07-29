@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Caching;
-using VideoWeb.Common.Extensions;
-using VideoWeb.Common.Models;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Controllers
@@ -137,26 +135,12 @@ namespace VideoWeb.Controllers
 
         private async Task<IActionResult> ValidateUserIsJudgeAndInConference(Guid conferenceId)
         {
-            if (!IsJudge())
-            {
-                _logger.LogWarning("Only judges may control hearings");
-                return Unauthorized("User must be a Judge");
-            }
-            
-            if (!await IsConferenceJudge(conferenceId))
-            {
-                _logger.LogWarning("Only judges may control hearings");
-                return Unauthorized("User must be a Judge");
-            }
+            if (await IsConferenceJudge(conferenceId)) return null;
+            _logger.LogWarning("Only judges may control hearings");
+            return Unauthorized("User must be a Judge");
 
-            return null;
         }
-
-        private bool IsJudge()
-        {
-            return User.IsInRole(Role.Judge.EnumDataMemberAttr());
-        }
-
+        
         private async Task<bool> IsConferenceJudge(Guid conferenceId)
         {
             var conference = await _conferenceCache.GetOrAddConferenceAsync
