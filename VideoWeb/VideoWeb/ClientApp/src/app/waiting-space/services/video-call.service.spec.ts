@@ -18,7 +18,12 @@ describe('VideoCallService', () => {
     let preferredMicrophone: UserMediaDevice;
     let pexipSpy: any;
     beforeAll(() => {
-        apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', ['startOrResumeVideoHearing', 'pauseVideoHearing', 'endVideoHearing']);
+        apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
+            'startOrResumeVideoHearing',
+            'pauseVideoHearing',
+            'endVideoHearing',
+            'requestTechnicalAssistance'
+        ]);
 
         userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
             'getListOfVideoDevices',
@@ -146,5 +151,12 @@ describe('VideoCallService', () => {
         const conferenceId = Guid.create().toString();
         await service.endHearing(conferenceId);
         expect(apiClient.endVideoHearing).toHaveBeenCalledWith(conferenceId);
+    });
+
+    it('should make api start call on request for technical assistance', async () => {
+        apiClient.requestTechnicalAssistance.and.returnValue(of());
+        const conferenceId = Guid.create().toString();
+        await service.requestTechnicalAssistance(conferenceId);
+        expect(apiClient.requestTechnicalAssistance).toHaveBeenCalledWith(conferenceId);
     });
 });

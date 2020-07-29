@@ -107,6 +107,33 @@ namespace VideoWeb.Controllers
                 return StatusCode(ex.StatusCode, ex.Response);
             }
         }
+        
+        /// <summary>
+        /// Request technical assistance (suspend a hearing)
+        /// </summary>
+        /// <param name="conferenceId">conference id</param>
+        /// <returns>No Content status</returns>
+        [HttpPost("{conferenceId}/technicalassistance")]
+        [SwaggerOperation(OperationId = "RequestTechnicalAssistance")]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        public async Task<IActionResult> RequestTechnicalAssistanceAsync(Guid conferenceId)
+        {
+            var validatedRequest = await ValidateUserIsJudgeAndInConference(conferenceId);
+            if (validatedRequest != null)
+            {
+                return validatedRequest;
+            }
+            try
+            {
+                await _videoApiClient.RequestTechnicalAssistanceAsync(conferenceId);
+                return Accepted();
+            }
+            catch (VideoApiException ex)
+            {
+                _logger.LogError(ex, $"Unable to request technical assistance for video hearing {conferenceId}");
+                return StatusCode(ex.StatusCode, ex.Response);
+            }
+        }
 
         private async Task<IActionResult> ValidateUserIsJudgeAndInConference(Guid conferenceId)
         {

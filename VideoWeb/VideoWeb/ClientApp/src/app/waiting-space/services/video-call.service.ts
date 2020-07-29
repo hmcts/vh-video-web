@@ -154,4 +154,12 @@ export class VideoCallService {
     async endHearing(conferenceId: string) {
         await this.apiClient.endVideoHearing(conferenceId).toPromise();
     }
+
+    /**
+     * Request technical assistance (this will suspend a video hearing)
+     * @param conferenceId the id of the conferece
+     */
+    async requestTechnicalAssistance(conferenceId: string) {
+        await this.apiClient.requestTechnicalAssistance(conferenceId).toPromise();
+    }
 }
