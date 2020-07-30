@@ -76,7 +76,6 @@ namespace VideoWeb.UnitTests.Mappings
             caseTypeGroups[1].Should().Be("Defendant");
             caseTypeGroups[2].Should().Be("None");
 
-            response.JudgeIFrameUri.Should().Be(meetingRoom.Judge_uri);
             response.ParticipantUri.Should().Be(meetingRoom.Participant_uri);
             response.PexipNodeUri.Should().Be(meetingRoom.Pexip_node);
             response.PexipSelfTestNodeUri.Should().NotBeNullOrWhiteSpace();
@@ -147,7 +146,6 @@ namespace VideoWeb.UnitTests.Mappings
             caseTypeGroups[3].Should().Be("Observer");
             caseTypeGroups[4].Should().Be("Panel Member");
 
-            response.JudgeIFrameUri.Should().Be(meetingRoom.Judge_uri);
             response.ParticipantUri.Should().Be(meetingRoom.Participant_uri);
             response.PexipNodeUri.Should().Be(meetingRoom.Pexip_node);
             response.PexipSelfTestNodeUri.Should().NotBeNullOrWhiteSpace();

@@ -42,7 +42,6 @@ namespace VideoWeb.Mappings
             if (conference.Meeting_room == null) return response;
 
             response.AdminIFrameUri = conference.Meeting_room.Admin_uri;
-            response.JudgeIFrameUri = conference.Meeting_room.Judge_uri;
             response.ParticipantUri = conference.Meeting_room.Participant_uri;
             response.PexipNodeUri = conference.Meeting_room.Pexip_node;
 

@@ -8,7 +8,7 @@ import { IndividualConsultationControlsComponent } from './individual-consultati
 import { IndividualParticipantStatusListComponent } from './individual-participant-status-list/individual-participant-status-list.component';
 import { JudgeHearingPageComponent } from './judge-hearing-page/judge-hearing-page.component';
 import { JudgeParticipantStatusListComponent } from './judge-participant-status-list/judge-participant-status-list.component';
-import { JudgeWaitingRoom2Component } from './judge-waiting-room-2/judge-waiting-room2.component';
+import { JudgeWaitingRoomComponent } from './judge-waiting-room/judge-waiting-room.component';
 import { ParticipantChatComponent } from './participant-chat/participant-chat.component';
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room/participant-waiting-room.component';
 import { NotificationSoundsService } from './services/notification-sounds.service';
@@ -21,7 +21,6 @@ import { RejectedConsultationComponent } from './consultation-modals/rejected-co
 import { VhoRaiseConsultationComponent } from './consultation-modals/vho-raise-consultation/vho-raise-consultation.component';
 import { ParticipantNetworkHealthComponent } from './participant-network-health/participant-network-health.component';
 import { WaitingRoomMonitorComponent } from './participant-network-health/waiting-room-monitor.component';
-import { JudgeWaitingRoomComponent } from './judge-waiting-room/judge-waiting-room.component';
 import { HearingControlsComponent } from './hearing-controls/hearing-controls.component';
 
 @NgModule({
@@ -31,7 +30,6 @@ import { HearingControlsComponent } from './hearing-controls/hearing-controls.co
         IndividualParticipantStatusListComponent,
         ParticipantWaitingRoomComponent,
         JudgeWaitingRoomComponent,
-        JudgeWaitingRoom2Component,
         JudgeHearingPageComponent,
         AnalogueClockComponent,
         IndividualConsultationControlsComponent,

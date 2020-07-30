@@ -16,10 +16,10 @@ import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { onErrorSubjectMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { CallError } from '../../models/video-call-models';
-import { JudgeWaitingRoom2Component } from '../judge-waiting-room2.component';
+import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
-    let component: JudgeWaitingRoom2Component;
+    let component: JudgeWaitingRoomComponent;
     const gloalConference = new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse;
     const globalParticipant = gloalConference.participants.filter(x => x.role === Role.Individual)[0];
     const videoCallService = videoCallServiceSpy;
@@ -72,7 +72,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     beforeEach(async () => {
-        component = new JudgeWaitingRoom2Component(
+        component = new JudgeWaitingRoomComponent(
             activatedRoute,
             videoWebService,
             eventsService,
