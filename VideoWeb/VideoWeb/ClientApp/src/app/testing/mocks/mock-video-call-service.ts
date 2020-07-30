@@ -25,7 +25,10 @@ videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService',
     'toggleMute',
     'enableH264',
     'raiseHand',
-    'lowerHand'
+    'lowerHand',
+    'startHearing',
+    'pauseHearing',
+    'endHearing'
 ]);
 
 videoCallServiceSpy.onCallSetup.and.returnValue(onSetupSubjectMock.asObservable());

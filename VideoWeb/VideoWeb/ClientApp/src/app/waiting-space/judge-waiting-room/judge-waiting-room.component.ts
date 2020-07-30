@@ -10,6 +10,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
+import { VideoCallService } from '../services/video-call.service';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -30,7 +31,8 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
         private eventService: EventsService,
         private errorService: ErrorService,
         private logger: Logger,
-        private judgeEventService: JudgeEventService
+        private judgeEventService: JudgeEventService,
+        private videocallService: VideoCallService
     ) {
         this.loadingData = true;
     }
@@ -172,5 +174,9 @@ export class JudgeWaitingRoomComponent implements OnInit, OnDestroy {
 
     hearingPaused(): boolean {
         return this.conference.status === ConferenceStatus.Paused;
+    }
+
+    async startHearing() {
+        await this.videocallService.startHearing(this.conference.id);
     }
 }
