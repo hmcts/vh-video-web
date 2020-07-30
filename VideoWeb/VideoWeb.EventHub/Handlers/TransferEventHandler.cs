@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
@@ -27,6 +28,7 @@ namespace VideoWeb.EventHub.Handlers
         {
             var participantStatus = DeriveParticipantStatusForTransferEvent(callbackEvent);
             await PublishParticipantStatusMessage(participantStatus).ConfigureAwait(false);
+            if (SourceParticipant.IsJudge() && participantStatus == ParticipantState.InHearing) await PublishLiveEventMessage();
         }
 
         private static ParticipantState DeriveParticipantStatusForTransferEvent(CallbackEvent callbackEvent)
@@ -56,6 +58,12 @@ namespace VideoWeb.EventHub.Handlers
                     throw new RoomTransferException(callbackEvent.TransferFrom.GetValueOrDefault(),
                         callbackEvent.TransferTo.GetValueOrDefault());
             }
+        }
+        
+        private async Task PublishLiveEventMessage()
+        {
+            var conferenceEvent = ConferenceStatus.InSession;
+            await PublishConferenceStatusMessage(conferenceEvent);
         }
     }
 }
