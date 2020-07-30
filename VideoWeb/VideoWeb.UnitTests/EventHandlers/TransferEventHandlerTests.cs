@@ -79,5 +79,75 @@ namespace VideoWeb.UnitTests.EventHandlers
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
                     It.IsAny<ParticipantState>()), Times.Never);
         }
+        
+        [Test]
+        public async Task
+            Should_send_in_hearing_message_to_participants_and_live_message_to_service_bus_when_judge_transfers_to_hearing_room()
+        {
+            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
+                VideoApiClientMock.Object);
+
+            var conference = TestConference;
+            var participantForEvent = conference.Participants.First(x => x.Role == Role.Judge);
+            var participantCount = conference.Participants.Count + 1; // plus one for admin
+
+            var callbackEvent = new CallbackEvent
+            {
+                EventType = EventType.Transfer,
+                EventId = Guid.NewGuid().ToString(),
+                ConferenceId = conference.Id,
+                TransferFrom = RoomType.WaitingRoom,
+                TransferTo = RoomType.HearingRoom,
+                ParticipantId = participantForEvent.Id,
+                TimeStampUtc = DateTime.UtcNow
+            };
+
+            await _eventHandler.HandleAsync(callbackEvent);
+
+
+            // Verify event hub client
+            EventHubClientMock.Verify(
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
+                    ParticipantState.InHearing), Times.Exactly(participantCount));
+
+            EventHubClientMock.Verify(
+                x => x.ConferenceStatusMessage(conference.Id, ConferenceStatus.InSession),
+                Times.Exactly(participantCount));
+        }
+        
+        [Test]
+        public async Task
+            Should_not_send_in_hearing_message_to_participants_and_live_message_to_service_bus_when_judge_transfers_to_waiting_room()
+        {
+            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
+                VideoApiClientMock.Object);
+
+            var conference = TestConference;
+            var participantForEvent = conference.Participants.First(x => x.Role == Role.Judge);
+            var participantCount = conference.Participants.Count + 1; // plus one for admin
+
+            var callbackEvent = new CallbackEvent
+            {
+                EventType = EventType.Transfer,
+                EventId = Guid.NewGuid().ToString(),
+                ConferenceId = conference.Id,
+                TransferFrom = RoomType.ConsultationRoom1,
+                TransferTo = RoomType.WaitingRoom,
+                ParticipantId = participantForEvent.Id,
+                TimeStampUtc = DateTime.UtcNow
+            };
+
+            await _eventHandler.HandleAsync(callbackEvent);
+
+
+            // Verify event hub client
+            EventHubClientMock.Verify(
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
+                    ParticipantState.Available), Times.Exactly(participantCount));
+
+            EventHubClientMock.Verify(
+                x => x.ConferenceStatusMessage(conference.Id, ConferenceStatus.InSession),
+                Times.Never);
+        }
     }
 }

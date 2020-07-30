@@ -14,7 +14,7 @@ namespace VideoWeb.AcceptanceTests.Strategies.HearingStatus
             var request = new CallbackEventRequestBuilder()
                 .WithConferenceId(context.Test.NewConferenceId)
                 .WithParticipantId(participantId)
-                .WithEventType(EventType.JudgeAvailable)
+                .WithEventType(EventType.Joined)
                 .Build();
 
             var response = context.Apis.VideoWebApi.SendCallBackEvent(request);
