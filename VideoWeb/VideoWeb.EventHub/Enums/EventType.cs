@@ -11,13 +11,11 @@ namespace VideoWeb.EventHub.Enums
         Close,
         Leave,
         Consultation,
-        JudgeAvailable,
         MediaPermissionDenied,
         ParticipantJoining,
         SelfTestFailed,
         Suspend,
         VhoCall,
-        JudgeUnavailable,
         ParticipantNotSignedIn
     }
 }

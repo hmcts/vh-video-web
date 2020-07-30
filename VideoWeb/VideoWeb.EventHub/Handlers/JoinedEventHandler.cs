@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using VideoWeb.Common.Caching;
-using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
@@ -24,15 +23,8 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            var participantState = SourceParticipant.IsJudge() ? ParticipantState.InHearing : ParticipantState.Available;
+            var participantState = ParticipantState.Available;
             await PublishParticipantStatusMessage(participantState).ConfigureAwait(false);
-            if (SourceParticipant.IsJudge()) await PublishLiveEventMessage();
-        }
-
-        private async Task PublishLiveEventMessage()
-        {
-            var conferenceEvent = ConferenceStatus.InSession;
-            await PublishConferenceStatusMessage(conferenceEvent);
         }
     }
 }
