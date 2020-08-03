@@ -71,7 +71,6 @@ describe('JudgeHearingPageComponent', () => {
             eventsService,
             domSanitizer,
             errorService,
-            userMediaService,
             logger,
             audioRecordingServiceMock
         );

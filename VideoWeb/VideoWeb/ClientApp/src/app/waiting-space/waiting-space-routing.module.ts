@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ConferenceGuard } from '../security/conference.guard';
+import { ParticipantWaitingRoomGuard } from '../security/participant-waiting-room.guard';
 import { pageUrls } from '../shared/page-url.constants';
 import { JudgeHearingPageComponent } from './judge-hearing-page/judge-hearing-page.component';
 import { JudgeWaitingRoomComponent } from './judge-waiting-room/judge-waiting-room.component';
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room/participant-waiting-room.component';
-import { ParticipantWaitingRoomGuard } from '../security/participant-waiting-room.guard';
 
 const routes: Routes = [
     {

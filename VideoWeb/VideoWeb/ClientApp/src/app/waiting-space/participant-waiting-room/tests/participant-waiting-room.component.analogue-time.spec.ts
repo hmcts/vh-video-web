@@ -54,14 +54,14 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
             videoWebService,
             eventsService,
             adalService,
-            errorService,
-            clockService,
             logger,
-            consultationService,
-            router,
+            errorService,
             heartbeatModelMapper,
+            videoCallService,
             deviceTypeService,
-            videoCallService
+            router,
+            consultationService,
+            clockService
         );
     });
 

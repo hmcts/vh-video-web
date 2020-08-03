@@ -8,7 +8,6 @@ import { ConferenceResponse, ConferenceStatus, Role } from 'src/app/services/cli
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { UserMediaService } from 'src/app/services/user-media.service';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
@@ -37,7 +36,6 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
         private eventService: EventsService,
         public sanitizer: DomSanitizer,
         private errorService: ErrorService,
-        private userMediaService: UserMediaService,
         private logger: Logger,
         private audioRecordingService: AudioRecordingService
     ) {
@@ -75,30 +73,20 @@ export class JudgeHearingPageComponent implements OnInit, OnDestroy {
     }
 
     async sanitiseIframeUrl(): Promise<void> {
-        const judge = this.conference.participants.find(x => x.role === Role.Judge);
-        const encodedDisplayName = encodeURIComponent(judge.tiled_display_name);
-
-        const preferredCam = await this.userMediaService.getPreferredCamera();
-        const preferredMic = await this.userMediaService.getPreferredMicrophone();
-
-        let cam = '';
-        let mic = preferredMic ? preferredMic.deviceId : '';
-
-        if (preferredCam) {
-            this.logger.info(`judge using camera ${preferredCam.label}`);
-            cam = encodeURI(preferredCam.label);
-        }
-
-        if (preferredMic) {
-            this.logger.info(`judge using microphone ${preferredMic.label}`);
-            mic = encodeURI(preferredMic.label);
-        }
-
-        const iframeOrigin = new URL(this.conference.judge_i_frame_uri).origin;
-        this.allowPermissions = `microphone ${iframeOrigin}; camera ${iframeOrigin};`;
-
-        this.judgeUri = `${this.conference.judge_i_frame_uri}?display_name=${encodedDisplayName}&cam=${cam}&mic=${mic}`;
-        this.selectedHearingUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.judgeUri);
+        // const judge = this.conference.participants.find(x => x.role === Role.Judge);
+        // const encodedDisplayName = encodeURIComponent(judge.tiled_display_name);
+        // const preferredCam = await this.userMediaService.getPreferredCamera();
+        // const preferredMic = await this.userMediaService.getPreferredMicrophone();
+        // let cam = '';
+        // let mic = preferredMic ? preferredMic.deviceId : '';
+        // if (preferredCam) {
+        //     this.logger.info(`judge using camera ${preferredCam.label}`);
+        //     cam = encodeURI(preferredCam.label);
+        // }
+        // if (preferredMic) {
+        //     this.logger.info(`judge using microphone ${preferredMic.label}`);
+        //     mic = encodeURI(preferredMic.label);
+        // }
     }
 
     private setupSubscribers() {

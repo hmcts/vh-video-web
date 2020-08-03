@@ -21,6 +21,7 @@ import { RejectedConsultationComponent } from './consultation-modals/rejected-co
 import { VhoRaiseConsultationComponent } from './consultation-modals/vho-raise-consultation/vho-raise-consultation.component';
 import { ParticipantNetworkHealthComponent } from './participant-network-health/participant-network-health.component';
 import { WaitingRoomMonitorComponent } from './participant-network-health/waiting-room-monitor.component';
+import { HearingControlsComponent } from './hearing-controls/hearing-controls.component';
 
 @NgModule({
     imports: [SharedModule, WaitingSpaceRoutingModule],
@@ -42,7 +43,8 @@ import { WaitingRoomMonitorComponent } from './participant-network-health/waitin
         RejectedConsultationComponent,
         VhoRaiseConsultationComponent,
         ParticipantNetworkHealthComponent,
-        WaitingRoomMonitorComponent
+        WaitingRoomMonitorComponent,
+        HearingControlsComponent
     ],
     providers: [VideoCallService, NotificationSoundsService]
 })
