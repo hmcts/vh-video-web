@@ -97,4 +97,22 @@
       </button>
     </span>
   </div>
+  <!-- Judge-only controls-->
+  <div class="govuk-grid-column-one-half" *ng-if="isJudge()">
+    <button id="pauseButton" type="button" class="govuk-button govuk-button--secondary" data-module="govuk-button" (click)="pause()">
+      Pause
+    </button>
+    <button
+      id="techinicalIssuesButton"
+      type="button"
+      class="govuk-button govuk-button--secondary"
+      data-module="govuk-button"
+      (click)="suspend()"
+    >
+      Technical Issues
+    </button>
+    <button id="closeButton" type="button" class="govuk-button govuk-button--secondary" data-module="govuk-button" (click)="close()">
+      Close
+    </button>
+  </div>
 </div>

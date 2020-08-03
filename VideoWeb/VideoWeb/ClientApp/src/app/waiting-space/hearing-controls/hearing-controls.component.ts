@@ -1,5 +1,5 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { Component, OnInit, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { VideoCallService } from '../services/video-call.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Subscription } from 'rxjs';
@@ -16,6 +16,11 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
     @Input() participant: ParticipantResponse;
     @Input() isPrivateConsultation: boolean;
     @Input() outgoingStream: MediaStream | URL;
+    @Input() conferenceId: string;
+
+    @Output() paused = new EventEmitter();
+    @Output() suspended = new EventEmitter();
+    @Output() closed = new EventEmitter();
 
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
@@ -112,5 +117,24 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
             this.videoCallService.raiseHand();
         }
         this.handRaised = !this.handRaised;
+    }
+
+    isJudge() {
+        return this.participant.role === Role.Judge;
+    }
+
+    pause() {
+        this.videoCallService.pauseHearing(this.conferenceId);
+        this.paused.emit();
+    }
+
+    suspend() {
+        this.videoCallService.requestTechnicalAssistance(this.conferenceId);
+        this.suspended.emit();
+    }
+
+    close() {
+        this.videoCallService.endHearing(this.conferenceId);
+        this.closed.emit();
     }
 }
