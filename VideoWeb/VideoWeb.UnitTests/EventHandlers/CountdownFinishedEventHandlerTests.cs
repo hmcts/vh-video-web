@@ -9,21 +9,20 @@ using VideoWeb.EventHub.Models;
 
 namespace VideoWeb.UnitTests.EventHandlers
 {
-    public class PauseEventHandlerTests : EventHandlerTestBase
+    public class CountdownFinishedEventHandlerTests : EventHandlerTestBase
     {
-        private PauseEventHandler _eventHandler;
-
+        private CountdownFinishedEventHandler _eventHandler;
+        
         [Test]
         public async Task Should_send_messages_to_participants_on_pause()
         {
-            _eventHandler = new PauseEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
+            _eventHandler = new CountdownFinishedEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
                 VideoApiClientMock.Object);
 
             var conference = TestConference;
-            var participantCount = conference.Participants.Count + 1; // plus one for admin
             var callbackEvent = new CallbackEvent
             {
-                EventType = EventType.Pause,
+                EventType = EventType.CountdownFinished,
                 EventId = Guid.NewGuid().ToString(),
                 ConferenceId = conference.Id,
                 TimeStampUtc = DateTime.UtcNow
@@ -32,8 +31,8 @@ namespace VideoWeb.UnitTests.EventHandlers
             await _eventHandler.HandleAsync(callbackEvent);
 
             // Verify messages sent to event hub clients
-            EventHubClientMock.Verify(x => x.ConferenceStatusMessage(conference.Id, ConferenceStatus.Paused),
-                Times.Exactly(participantCount));
+            EventHubClientMock.Verify(x => x.ConferenceStatusMessage(conference.Id, It.IsAny<ConferenceStatus>()),
+                Times.Never);
         }
     }
 }
