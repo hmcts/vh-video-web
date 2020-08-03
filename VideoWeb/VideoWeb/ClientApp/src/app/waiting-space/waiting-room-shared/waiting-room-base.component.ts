@@ -302,6 +302,9 @@ export abstract class WaitingRoomBaseComponent {
     }
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
+        if (!this.validateIsForConference(message.conferenceId)) {
+            return;
+        }
         this.hearing.getConference().status = message.status;
         this.conference.status = message.status;
         this.logger.info(
@@ -313,6 +316,9 @@ export abstract class WaitingRoomBaseComponent {
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
+        if (!this.validateIsForConference(message.conferenceId)) {
+            return;
+        }
         const participant = this.hearing.getConference().participants.find(p => p.id === message.participantId);
         const isMe = participant.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase();
         if (isMe) {
@@ -325,5 +331,13 @@ export abstract class WaitingRoomBaseComponent {
         if (message.status !== ParticipantStatus.InConsultation && isMe) {
             this.isAdminConsultation = false;
         }
+    }
+
+    private validateIsForConference(conferenceId: string): boolean {
+        if (conferenceId !== this.hearing.id) {
+            this.logger.info('message not for current conference');
+            return false;
+        }
+        return true;
     }
 }

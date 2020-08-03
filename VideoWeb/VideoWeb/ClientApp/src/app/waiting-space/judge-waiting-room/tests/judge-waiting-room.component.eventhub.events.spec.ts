@@ -1,18 +1,27 @@
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
+import { Guid } from 'guid-typescript';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse, Role, TokenResponse } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    ConferenceStatus,
+    ParticipantResponse,
+    ParticipantStatus,
+    Role,
+    TokenResponse
+} from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { eventsServiceSpy, hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
+import { eventsServiceSpy, hearingStatusSubjectMock, participantStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
@@ -27,6 +36,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     let videoWebService: jasmine.SpyObj<VideoWebService>;
     const eventsService = eventsServiceSpy;
     const hearingStatusSubject = hearingStatusSubjectMock;
+    const participantStatusSubject = participantStatusSubjectMock;
 
     let adalService: jasmine.SpyObj<AdalService>;
     let errorService: jasmine.SpyObj<ErrorService>;
@@ -124,5 +134,25 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.showVideo).toBeFalsy();
         expect(videoWebService.getConferenceById).toHaveBeenCalledWith(gloalConference.id);
         expect(component.getConferenceStatusText()).toBe('Hearing is closed');
+    }));
+
+    it('should ignore conference updates for another conference', fakeAsync(() => {
+        const status = ConferenceStatus.Closed;
+        const message = new ConferenceStatusMessage(Guid.create().toString(), status);
+        component.hearing.getConference().status = ConferenceStatus.InSession;
+        hearingStatusSubject.next(message);
+        flushMicrotasks();
+
+        expect(component.hearing.status).toBe(ConferenceStatus.InSession);
+    }));
+
+    it('should ignore participant updates for another conference', fakeAsync(() => {
+        const status = ParticipantStatus.Disconnected;
+        const message = new ParticipantStatusMessage(globalParticipant.id, globalParticipant.username, Guid.create().toString(), status);
+
+        participantStatusSubject.next(message);
+
+        const participant = component.hearing.getConference().participants.find(x => x.id === message.participantId);
+        expect(participant.status === message.status).toBeFalsy();
     }));
 });
