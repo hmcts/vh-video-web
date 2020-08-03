@@ -111,24 +111,25 @@
     </button>
 
     <button
-      id="techinicalIssuesButton"
-      class="govuk-button reduce-margin button-spacing"
-      data-module="govuk-button"
-      type="button"
-      (click)="suspend()"
-      aria-label="Suspend Button"
-    >
-      Suspend
-    </button>
-    <button
       id="closeButton"
-      class="govuk-button reduce-margin"
+      class="govuk-button reduce-margin button-spacing govuk-button--warning"
       data-module="govuk-button"
       type="button"
       (click)="close()"
       aria-label="Close Button"
     >
-      Close
+      End
+    </button>
+
+    <button
+      id="techinicalIssuesButton"
+      class="govuk-button govuk-button--secondary reduce-margin"
+      data-module="govuk-button"
+      type="button"
+      (click)="suspend()"
+      aria-label="Suspend Button"
+    >
+      Technical Assistance
     </button>
   </div>
 </div>
