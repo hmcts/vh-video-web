@@ -98,7 +98,7 @@
     </span>
   </div>
   <!-- Judge-only controls-->
-  <div class="govuk-grid-column-one-half" *ng-if="isJudge()">
+  <div class="govuk-grid-column-one-half" *ngIf="isJudge()">
     <button id="pauseButton" type="button" class="govuk-button govuk-button--secondary" data-module="govuk-button" (click)="pause()">
       Pause
     </button>
