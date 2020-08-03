@@ -1,7 +1,15 @@
 #outgoingFeedDiv {
-  left: 0.2%;
-  position: fixed;
-  bottom: 1%;
+    left: 0.2%;
+    position: fixed;
+    bottom: 1%;
+    z-index: 50;
+}
+
+#judgeControlsDiv {
+    right: 0.2%;
+    position: fixed;
+    bottom: 1%;
+    z-index: 50;
 }
 
 #outgoingFeedVideo {
@@ -55,4 +63,8 @@
 
 .remote-container {
   margin-left: -1vw;
+}
+
+.button-spacing {
+    margin-right : 10px;
 }

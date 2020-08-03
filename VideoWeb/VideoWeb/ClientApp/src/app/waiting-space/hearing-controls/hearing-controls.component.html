@@ -98,20 +98,36 @@
     </span>
   </div>
   <!-- Judge-only controls-->
-  <div class="govuk-grid-column-one-half" *ngIf="isJudge()">
-    <button id="pauseButton" type="button" class="govuk-button govuk-button--secondary" data-module="govuk-button" (click)="pause()">
+  <div class="govuk-grid-column-one-half" *ngIf="isJudge()" id="judgeControlsDiv">
+    <button
+      id="pauseButton"
+      class="govuk-button reduce-margin button-spacing"
+      data-module="govuk-button"
+      type="button"
+      (click)="pause()"
+      aria-label="Pause Button"
+    >
       Pause
     </button>
+
     <button
       id="techinicalIssuesButton"
-      type="button"
-      class="govuk-button govuk-button--secondary"
+      class="govuk-button reduce-margin button-spacing"
       data-module="govuk-button"
+      type="button"
       (click)="suspend()"
+      aria-label="Suspend Button"
     >
-      Technical Issues
+      Suspend
     </button>
-    <button id="closeButton" type="button" class="govuk-button govuk-button--secondary" data-module="govuk-button" (click)="close()">
+    <button
+      id="closeButton"
+      class="govuk-button reduce-margin"
+      data-module="govuk-button"
+      type="button"
+      (click)="close()"
+      aria-label="Close Button"
+    >
       Close
     </button>
   </div>
