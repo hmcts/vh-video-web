@@ -60,7 +60,7 @@
     <!-- Remote muted -->
     <span [ngClass]="{ 'remote-container': remoteMuted }">
       <button
-        *ngIf="remoteMuted"
+        *ngIf="remoteMuted && !isJudge"
         id="remote-muted-button"
         data-module="govuk-button"
         type="button"
