@@ -100,10 +100,22 @@
     </p>
 
     <div>
-      <button *ngIf="isNotStarted()" type="submit" class="govuk-button govuk-button--start" (click)="startHearing()">
+      <button
+        [disabled]="!connected"
+        *ngIf="isNotStarted()"
+        type="submit"
+        class="govuk-button govuk-button--start"
+        (click)="startHearing()"
+      >
         Start video hearing
       </button>
-      <button *ngIf="hearingPaused() || hearingSuspended()" type="submit" class="govuk-button govuk-button--start" (click)="startHearing()">
+      <button
+        [disabled]="!connected"
+        *ngIf="hearingPaused() || hearingSuspended()"
+        type="submit"
+        class="govuk-button govuk-button--start"
+        (click)="startHearing()"
+      >
         Resume video hearing
       </button>
     </div>
