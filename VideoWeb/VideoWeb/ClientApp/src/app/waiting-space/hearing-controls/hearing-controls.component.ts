@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { VideoCallService } from '../services/video-call.service';
 import { Logger } from 'src/app/services/logging/logger-base';
