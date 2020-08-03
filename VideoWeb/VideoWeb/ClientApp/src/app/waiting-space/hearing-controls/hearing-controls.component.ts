@@ -36,7 +36,6 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.setupVideoCallSubscribers();
         this.setupEventhubSubscribers();
-        console.log('app-hearing-controls');
     }
 
     setupEventhubSubscribers() {
