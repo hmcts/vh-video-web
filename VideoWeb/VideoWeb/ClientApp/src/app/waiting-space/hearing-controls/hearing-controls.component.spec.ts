@@ -173,23 +173,17 @@ describe('HearingControlsComponent', () => {
     });
 
     it('should pause the hearing', () => {
-        spyOn(component.paused, 'emit').and.callFake(() => {});
         component.pause();
         expect(videoCallService.pauseHearing).toHaveBeenCalled();
-        expect(component.paused.emit).toHaveBeenCalled();
     });
 
     it('should close the hearing', () => {
-        spyOn(component.closed, 'emit').and.callFake(() => {});
         component.close();
         expect(videoCallService.endHearing).toHaveBeenCalled();
-        expect(component.closed.emit).toHaveBeenCalled();
     });
 
     it('should suspend the hearing', () => {
-        spyOn(component.suspended, 'emit').and.callFake(() => {});
         component.suspend();
         expect(videoCallService.requestTechnicalAssistance).toHaveBeenCalled();
-        expect(component.suspended.emit).toHaveBeenCalled();
     });
 });

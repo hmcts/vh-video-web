@@ -18,10 +18,6 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
     @Input() outgoingStream: MediaStream | URL;
     @Input() conferenceId: string;
 
-    @Output() paused = new EventEmitter();
-    @Output() suspended = new EventEmitter();
-    @Output() closed = new EventEmitter();
-
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
 
@@ -125,16 +121,13 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
 
     pause() {
         this.videoCallService.pauseHearing(this.conferenceId);
-        this.paused.emit();
     }
 
     suspend() {
         this.videoCallService.requestTechnicalAssistance(this.conferenceId);
-        this.suspended.emit();
     }
 
     close() {
         this.videoCallService.endHearing(this.conferenceId);
-        this.closed.emit();
     }
 }
