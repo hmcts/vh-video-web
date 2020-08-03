@@ -42,8 +42,6 @@ export abstract class WaitingRoomBaseComponent {
     outgoingStream: MediaStream | URL;
 
     showVideo: boolean;
-    // showSelfView: boolean;
-    // selfViewOpen: boolean;
     isAdminConsultation: boolean;
     showConsultationControls: boolean;
 

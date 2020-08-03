@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { VideoCallService } from '../services/video-call.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Subscription } from 'rxjs';
@@ -29,9 +29,14 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         this.handRaised = false;
     }
 
+    get isJudge(): boolean {
+        return this.participant.role === Role.Judge;
+    }
+
     ngOnInit(): void {
         this.setupVideoCallSubscribers();
         this.setupEventhubSubscribers();
+        console.log('app-hearing-controls');
     }
 
     setupEventhubSubscribers() {
