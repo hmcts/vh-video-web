@@ -127,7 +127,7 @@
     </div>
   </div>
 
-  <div class="govuk-grid-column-one-third">
+  <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': showVideo }">
     <app-individual-participant-status-list aria-label="list of participants in hearing" [conference]="hearing.getConference()">
     </app-individual-participant-status-list>
   </div>
