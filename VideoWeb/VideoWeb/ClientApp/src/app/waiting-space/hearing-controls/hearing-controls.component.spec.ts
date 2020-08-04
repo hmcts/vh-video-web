@@ -172,19 +172,24 @@ describe('HearingControlsComponent', () => {
         expect(component.audioMuted).toBeFalsy();
     });
 
+    it('should start the hearing', () => {
+        component.start();
+        expect(videoCallService.startHearing).toHaveBeenCalledWith(component.conferenceId);
+    });
+
     it('should pause the hearing', () => {
         component.pause();
-        expect(videoCallService.pauseHearing).toHaveBeenCalled();
+        expect(videoCallService.pauseHearing).toHaveBeenCalledWith(component.conferenceId);
     });
 
     it('should close the hearing', () => {
         component.close();
-        expect(videoCallService.endHearing).toHaveBeenCalled();
+        expect(videoCallService.endHearing).toHaveBeenCalledWith(component.conferenceId);
     });
 
     it('should suspend the hearing', () => {
         component.suspend();
-        expect(videoCallService.requestTechnicalAssistance).toHaveBeenCalled();
+        expect(videoCallService.requestTechnicalAssistance).toHaveBeenCalledWith(component.conferenceId);
     });
 
     it('should return true when partipant is judge', () => {

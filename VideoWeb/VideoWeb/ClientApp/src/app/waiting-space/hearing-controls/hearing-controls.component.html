@@ -1,5 +1,5 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-half" id="outgoingFeedDiv">
+  <div [ngClass]="{ 'govuk-grid-column-one-half': !isJudge, 'govuk-grid-column-one-third': isJudge }" id="outgoingFeedDiv">
     <button
       id="outgoingFeedButton"
       type="button"
@@ -98,38 +98,51 @@
     </span>
   </div>
   <!-- Judge-only controls-->
-  <div class="govuk-grid-column-one-half" *ngIf="isJudge" id="judgeControlsDiv">
-    <button
-      id="pauseButton"
-      class="govuk-button reduce-margin button-spacing"
-      data-module="govuk-button"
-      type="button"
-      (click)="pause()"
-      aria-label="Pause Button"
-    >
-      Pause
-    </button>
+  <div [ngClass]="{ 'govuk-grid-column-one-half': !isJudge, 'govuk-grid-column-one-third': isJudge }" *ngIf="isJudge" id="judgeControlsDiv">
+    <div class="judge-controls-container">
+      <button
+        id="start-button"
+        class="govuk-button reduce-margin button-spacing"
+        data-module="govuk-button"
+        type="button"
+        (click)="start()"
+        aria-label="Start Button"
+      >
+        Start
+      </button>
 
-    <button
-      id="closeButton"
-      class="govuk-button reduce-margin button-spacing govuk-button--warning"
-      data-module="govuk-button"
-      type="button"
-      (click)="close()"
-      aria-label="Close Button"
-    >
-      End
-    </button>
+      <button
+        id="pauseButton"
+        class="govuk-button reduce-margin button-spacing"
+        data-module="govuk-button"
+        type="button"
+        (click)="pause()"
+        aria-label="Pause Button"
+      >
+        Pause
+      </button>
 
-    <button
-      id="techinicalIssuesButton"
-      class="govuk-button govuk-button--secondary reduce-margin"
-      data-module="govuk-button"
-      type="button"
-      (click)="suspend()"
-      aria-label="Suspend Button"
-    >
-      Technical Assistance
-    </button>
+      <button
+        id="closeButton"
+        class="govuk-button reduce-margin button-spacing govuk-button--warning"
+        data-module="govuk-button"
+        type="button"
+        (click)="close()"
+        aria-label="Close Button"
+      >
+        End
+      </button>
+
+      <button
+        id="techinicalIssuesButton"
+        class="govuk-button govuk-button--secondary reduce-margin"
+        data-module="govuk-button"
+        type="button"
+        (click)="suspend()"
+        aria-label="Suspend Button"
+      >
+        Technical Assistance
+      </button>
+    </div>
   </div>
 </div>

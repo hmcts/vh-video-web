@@ -2,7 +2,7 @@
   <p class="govuk-body">Loading please wait...</p>
 </div>
 
-<div *ngIf="showVideo" class="govuk-grid-row">
+<div *ngIf="showVideo && !isAdminConsultation" class="govuk-grid-row">
   <div class="video-background"></div>
   <div class="govuk-grid-column-one-half">
     <video id="incomingFeed" autoplay height="auto">

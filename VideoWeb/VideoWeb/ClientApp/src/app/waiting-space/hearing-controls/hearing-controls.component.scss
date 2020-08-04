@@ -2,14 +2,17 @@
   left: 0.2%;
   position: fixed;
   bottom: 1%;
-  z-index: 50;
+  z-index: 200;
 }
 
 #judgeControlsDiv {
-  right: 0.2%;
   position: fixed;
   bottom: 1%;
   z-index: 50;
+}
+
+.judge-controls-container {
+  text-align: center;
 }
 
 #outgoingFeedVideo {
