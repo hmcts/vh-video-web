@@ -27,35 +27,30 @@
       </div>
     </div>
 
-    <table class="govuk-table table-br" summary="Judge hearing participants panel">
-      <tbody class="govuk-table_body">
-          <tr class="vh-th">
-              <th>Display name</th>
-              <th>Mute icon</th>
-              <th>Raise hand icon</th>
-          </tr>
-        <tr class="govuk-table_row vh-line" *ngFor="let participant of participants; let i = index">
-          <td class="govuk-table_cell govuk-body-s--white" [ngClass]="{ 'vh-hide': !expandPanel }">
+    <div class="govuk-table table-br" summary="Judge hearing participants panel">
+      <div class="govuk-table_body">
+        <div class="govuk-table_row vh-line" *ngFor="let participant of participants; let i = index">
+          <div class="govuk-table_cell govuk-body-s--white vh-name" *ngIf="expandPanel">
             <span class="govuk-!-margin-bottom-3 govuk-!-margin-top-2 vh-panel-name">
               {{ participant.displayName }}
             </span>
-          </td>
-          <td class="govuk-table_cell cell-icon">
+          </div>
+          <div class="govuk-table_cell cell-icon">
             <span *ngIf="isMuteAll; else unmute">
               <img src="/assets/images/mute-mic-red.png" class="panel-icon" alt="Microphon off icon" />
             </span>
             <ng-template #unmute>
               <img src="/assets/images/mic.png" class="panel-icon" alt="Microphon off icon" />
             </ng-template>
-          </td>
-          <td class="govuk-table_cell cell-icon">
+          </div>
+          <div class="govuk-table_cell cell-icon">
             <span *ngIf="!isLowerAllHands">
               <img src="/assets/images/hand-yellow.png" class="panel-icon" alt="Hand on icon" />
             </span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="govuk-grid-row govuk-!-margin-bottom-1" *ngIf="expandPanel">
       <div class="govuk-grid-column-full govuk-!-margin-top-2 govuk-!-margin-bottom-3">
         <input type="button" class="govuk-button grey-btn vh-mr" value="Mute all" (click)="muteAll()" />

@@ -1,10 +1,5 @@
 @import '~govuk-frontend/govuk/all';
 
-@mixin all-transition($time) {
-  transition: all $time;
-  -webkit-transition: all $time;
-}
-
 .panel-container {
   background: govuk-colour('black');
   color: govuk-colour('white') !important;
@@ -21,7 +16,6 @@
   opacity: 0.7;
   overflow-y: auto;
   overflow-x: hidden;
-  @include all-transition(0.3s);
 }
 
 .table-br {
@@ -35,6 +29,7 @@
 
 .cell-icon {
   width: 31px;
+  display: inline-block;
 }
 
 .icon-op:hover {
@@ -45,8 +40,9 @@
   opacity: 0.5;
 }
 
-.vh-hide {
-  display: none;
+.vh-name {
+  display: inline-block;
+  width: 210px;
 }
 
 .vh-twidth {
@@ -93,6 +89,6 @@
   margin-left: 10px;
 }
 
-.vh-th{
+.vh-th {
   visibility: collapse;
 }
