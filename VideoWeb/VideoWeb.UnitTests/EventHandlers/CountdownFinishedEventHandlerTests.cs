@@ -14,7 +14,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         private CountdownFinishedEventHandler _eventHandler;
         
         [Test]
-        public async Task Should_send_messages_to_participants_on_pause()
+        public async Task Should_send_do_nothing_when_countdown_has_finished()
         {
             _eventHandler = new CountdownFinishedEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
                 VideoApiClientMock.Object);

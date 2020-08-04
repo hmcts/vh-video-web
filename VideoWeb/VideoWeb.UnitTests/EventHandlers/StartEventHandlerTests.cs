@@ -14,7 +14,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         private StartEventHandler _eventHandler;
 
         [Test]
-        public async Task Should_send_messages_to_participants_on_pause()
+        public async Task Should_send_messages_to_participants_on_start()
         {
             _eventHandler = new StartEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
                 VideoApiClientMock.Object);
