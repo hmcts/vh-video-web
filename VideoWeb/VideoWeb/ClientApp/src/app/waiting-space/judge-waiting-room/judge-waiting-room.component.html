@@ -2,21 +2,18 @@
   <p class="govuk-body">Loading please wait...</p>
 </div>
 
-<div *ngIf="showVideo && !isAdminConsultation" class="govuk-grid-row">
-  <div class="video-background"></div>
-  <div class="govuk-grid-column-one-half">
-    <video id="incomingFeed" autoplay height="auto">
-      Your browser does not support Video
-    </video>
-  </div>
-</div>
-
-<div *ngIf="showVideo && isAdminConsultation" class="govuk-grid-row">
-  <div class="video-background"></div>
-  <div class="govuk-grid-column-one-half">
-    <video id="incomingFeedPrivate" autoplay [srcObject]="this.stream" height="auto">
-      Your browser does not support Video
-    </video>
+<!-- contains the in-hearing participant list and incoming video -->
+<div id="video-container" class="govuk-grid-row">
+  <div class="hearing-video">
+    <!-- hearing video-->
+    <div *ngIf="showVideo && !isAdminConsultation" class="govuk-grid-row">
+      <div class="video-background"></div>
+      <div class="govuk-grid-column-one-half">
+        <video id="incomingFeed" [srcObject]="this.stream" autoplay height="auto">
+          Your browser does not support Video
+        </video>
+      </div>
+    </div>
   </div>
 </div>
 
