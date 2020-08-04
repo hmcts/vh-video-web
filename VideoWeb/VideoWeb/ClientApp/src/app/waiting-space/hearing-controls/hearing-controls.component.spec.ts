@@ -186,4 +186,19 @@ describe('HearingControlsComponent', () => {
         component.suspend();
         expect(videoCallService.requestTechnicalAssistance).toHaveBeenCalled();
     });
+
+    it('should return true when partipant is judge', () => {
+        component.participant = gloalConference.participants.find(x => x.role === Role.Judge);
+        expect(component.isJudge).toBeTruthy();
+    });
+
+    it('should return false when partipant is an individual', () => {
+        component.participant = gloalConference.participants.find(x => x.role === Role.Individual);
+        expect(component.isJudge).toBeFalsy();
+    });
+
+    it('should return false when partipant is a representative', () => {
+        component.participant = gloalConference.participants.find(x => x.role === Role.Representative);
+        expect(component.isJudge).toBeFalsy();
+    });
 });

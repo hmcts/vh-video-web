@@ -60,7 +60,7 @@
     <!-- Remote muted -->
     <span [ngClass]="{ 'remote-container': remoteMuted }">
       <button
-        *ngIf="remoteMuted"
+        *ngIf="remoteMuted && !isJudge"
         id="remote-muted-button"
         data-module="govuk-button"
         type="button"
@@ -76,7 +76,7 @@
       <!-- toggle hand raise/lower-->
 
       <button
-        *ngIf="!isPrivateConsultation"
+        *ngIf="!isPrivateConsultation && !isJudge"
         id="toggle-hand-button"
         data-module="govuk-button"
         type="button"
@@ -98,7 +98,7 @@
     </span>
   </div>
   <!-- Judge-only controls-->
-  <div class="govuk-grid-column-one-half" *ngIf="isJudge()" id="judgeControlsDiv">
+  <div class="govuk-grid-column-one-half" *ngIf="isJudge" id="judgeControlsDiv">
     <button
       id="pauseButton"
       class="govuk-button reduce-margin button-spacing"

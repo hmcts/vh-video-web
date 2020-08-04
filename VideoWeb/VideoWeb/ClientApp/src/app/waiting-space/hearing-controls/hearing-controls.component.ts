@@ -30,6 +30,10 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         this.handRaised = false;
     }
 
+    get isJudge(): boolean {
+        return this.participant.role === Role.Judge;
+    }
+
     ngOnInit(): void {
         this.setupVideoCallSubscribers();
         this.setupEventhubSubscribers();
@@ -113,10 +117,6 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
             this.videoCallService.raiseHand();
         }
         this.handRaised = !this.handRaised;
-    }
-
-    isJudge() {
-        return this.participant.role === Role.Judge;
     }
 
     pause() {
