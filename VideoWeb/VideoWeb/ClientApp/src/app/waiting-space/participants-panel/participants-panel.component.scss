@@ -1,0 +1,65 @@
+@import '~govuk-frontend/govuk/all';
+
+
+@mixin all-transition($time) {
+    transition: all $time;
+    -webkit-transition: all $time;
+}
+
+.panel-container {
+    background: govuk-colour('black');
+    color: govuk-colour('white') !important;
+    width: 300px;
+    min-height: 100px;
+    max-height: 50%;
+    padding-right: 10px;
+    position: fixed;
+    z-index: 100;
+    -webkit-box-shadow: -3px 0px 5px 0px rgba(0,0,0,0.2);
+    box-shadow: -3px 0px 5px 0px rgba(0,0,0,0.2);
+    left: 0;
+    opacity: 0.9;
+    overflow-y: auto;
+    overflow-x: hidden;
+    @include all-transition(0.3s);
+}
+
+
+.panel-icon {
+    height: 25px;
+    margin: 8px;
+}
+
+.icon-op:hover {
+    opacity: 1;
+}
+
+.icon-op {
+    opacity: 0.5;
+}
+
+.vh-hide {
+    display: none;
+}
+
+.vh-twidth {
+    width: 100px;
+}
+
+.grey-btn {
+    background: govuk-colour('dark-grey');
+    color: govuk-color('white');
+    white-space: normal;
+}
+
+.grey-btn:hover {
+    background: govuk-colour('red') !important;
+    border-color: govuk-colour('red') !important;
+    color: govuk-color('white') !important;
+}
+
+.grey-btn:focus {
+    background: govuk-colour('red') !important;
+    color: #ffffff !important;
+    border-color: govuk-colour('red') !important;
+}

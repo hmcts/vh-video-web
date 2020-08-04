@@ -22,6 +22,7 @@ import { VhoRaiseConsultationComponent } from './consultation-modals/vho-raise-c
 import { ParticipantNetworkHealthComponent } from './participant-network-health/participant-network-health.component';
 import { WaitingRoomMonitorComponent } from './participant-network-health/waiting-room-monitor.component';
 import { HearingControlsComponent } from './hearing-controls/hearing-controls.component';
+import { ParticipantsPanelComponent } from './participants-panel/participants-panel.component';
 
 @NgModule({
     imports: [SharedModule, WaitingSpaceRoutingModule],
@@ -44,7 +45,8 @@ import { HearingControlsComponent } from './hearing-controls/hearing-controls.co
         VhoRaiseConsultationComponent,
         ParticipantNetworkHealthComponent,
         WaitingRoomMonitorComponent,
-        HearingControlsComponent
+        HearingControlsComponent,
+        ParticipantsPanelComponent
     ],
     providers: [VideoCallService, NotificationSoundsService]
 })

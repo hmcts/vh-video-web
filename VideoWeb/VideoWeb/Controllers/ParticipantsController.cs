@@ -228,5 +228,24 @@ namespace VideoWeb.Controllers
                 return StatusCode(ex.StatusCode, ex.Response);
             }
         }
+
+        [HttpGet("{conferenceId}/participants")]
+        [SwaggerOperation(OperationId = "GetParticipantsByConferenceId")]
+        [ProducesResponseType(typeof(List<ParticipantForUserResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetParticipantsByConferenceIdAsync(Guid conferenceId)
+        {
+            try
+            {
+                var response = await _videoApiClient.GetParticipantsByConferenceIdAsync(conferenceId);
+                var participants = ParticipantForUserResponseMapper.MapParticipants(response);
+                return Ok(participants);
+            }
+            catch (VideoApiException e)
+            {
+                return StatusCode(e.StatusCode, e.Response);
+            }
+        }
+
     }
 }

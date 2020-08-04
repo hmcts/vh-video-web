@@ -12,7 +12,8 @@ import {
     TokenResponse,
     UpdateParticipantRequest,
     UpdateParticipantStatusEventRequest,
-    JudgeNameListResponse
+    JudgeNameListResponse,
+    ParticipantForUserResponse
 } from '../clients/api-client';
 export interface IVideoWebApiService {
     getConferencesForJudge(): Observable<ConferenceForJudgeResponse[]>;
@@ -31,4 +32,5 @@ export interface IVideoWebApiService {
     getConferenceChatHistory(conferenceId: string, participantUsername: string): Promise<ChatResponse[]>;
     updateParticipantDetails(conferenceId: string, participantId: string, updateParticipantRequest: UpdateParticipantRequest);
     getDistinctJudgeNames(): Promise<JudgeNameListResponse>;
+    getParticipantsByConferenceId(conferenceId: string): Promise<ParticipantForUserResponse[]>;
 }
