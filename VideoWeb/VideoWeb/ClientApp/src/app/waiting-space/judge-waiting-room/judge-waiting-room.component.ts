@@ -1,12 +1,14 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
+import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VideoCallService } from '../services/video-call.service';
@@ -18,6 +20,11 @@ import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-ba
     styleUrls: ['./judge-waiting-room.component.scss']
 })
 export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
+    audioRecordingInterval: NodeJS.Timer;
+    isRecording: boolean;
+    continueWithNoRecording = false;
+    showAudioRecordingAlert = false;
+
     constructor(
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,
@@ -28,7 +35,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         protected heartbeatMapper: HeartbeatModelMapper,
         protected videoCallService: VideoCallService,
         protected deviceTypeService: DeviceTypeService,
-        protected router: Router
+        protected router: Router,
+        private audioRecordingService: AudioRecordingService
     ) {
         super(
             route,
@@ -51,6 +59,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         this.getConference().then(() => {
             this.startEventHubSubscribers();
             this.getJwtokenAndConnectToPexip();
+            if (this.conference.audio_recording_required) {
+                this.initAudioRecordingInterval();
+            }
         });
     }
 
@@ -58,6 +69,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     async ngOnDestroy(): Promise<void> {
         this.logger.debug('[Judge WR] - Clearing intervals and subscriptions for judge waiting room');
         clearTimeout(this.callbackTimeout);
+        clearInterval(this.audioRecordingInterval);
         this.disconnect();
         this.eventHubSubscription$.unsubscribe();
         this.videoCallSubscription$.unsubscribe();
@@ -124,5 +136,44 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
 
     hearingPaused(): boolean {
         return this.conference.status === ConferenceStatus.Paused;
+    }
+
+    handleConferenceStatusChange(message: ConferenceStatusMessage) {
+        super.handleConferenceStatusChange(message);
+        if (this.validateIsForConference(message.conferenceId) && message.status === ConferenceStatus.Closed) {
+            this.router.navigate([pageUrls.JudgeHearingList]);
+        }
+    }
+
+    initAudioRecordingInterval() {
+        this.audioRecordingInterval = setInterval(async () => {
+            await this.retrieveAudioStreamInfo(this.conference.hearing_ref_id);
+        }, 10000);
+    }
+
+    async retrieveAudioStreamInfo(hearingId): Promise<void> {
+        this.logger.debug(`**** retrieve audio stream info for ${hearingId}`);
+        try {
+            const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId);
+            this.logger.debug('**** Got response: recording: ' + audioStreamWorking);
+
+            if (!audioStreamWorking && !this.continueWithNoRecording) {
+                this.logger.debug('**** not recording, show alert');
+                this.showAudioRecordingAlert = true;
+            }
+        } catch (error) {
+            this.logger.debug('**** Got error: ' + JSON.stringify(error));
+
+            if (!this.continueWithNoRecording) {
+                this.logger.debug('**** showAudioRecordingAlert FROM catch');
+                this.showAudioRecordingAlert = true;
+            }
+        }
+    }
+
+    closeAlert(value) {
+        this.showAudioRecordingAlert = !value;
+        this.continueWithNoRecording = true;
+        clearInterval(this.audioRecordingInterval);
     }
 }
