@@ -12,7 +12,7 @@ import {
     TokenResponse,
     UpdateParticipantRequest,
     UpdateParticipantStatusEventRequest,
-    JudgeNameListResponse,
+    JudgeNameListResponse,
     ParticipantForUserResponse
 } from '../clients/api-client';
 export interface IVideoWebApiService {

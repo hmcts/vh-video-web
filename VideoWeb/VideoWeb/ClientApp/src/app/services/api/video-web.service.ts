@@ -17,7 +17,8 @@ import {
     UpdateParticipantRequest,
     UpdateParticipantStatusEventRequest,
     UnreadInstantMessageConferenceCountResponse,
-    JudgeNameListResponse,    ParticipantForUserResponse
+    JudgeNameListResponse,
+    ParticipantForUserResponse
 } from '../clients/api-client';
 import { ConferenceLite } from '../models/conference-lite';
 import { SessionStorage } from '../session-storage';
