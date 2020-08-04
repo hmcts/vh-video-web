@@ -1,6 +1,7 @@
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
+import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse, Role, TokenResponse } from 'src/app/services/clients/api-client';
@@ -39,6 +40,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     let consultationService: jasmine.SpyObj<ConsultationService>;
     const logger: Logger = new MockLogger();
 
+    let audioRecordingService: jasmine.SpyObj<AudioRecordingService>;
+
     const mockHeartbeat = {
         kill: jasmine.createSpy()
     };
@@ -69,6 +72,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         heartbeatModelMapper = new HeartbeatModelMapper();
         deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['getBrowserName', 'getBrowserVersion']);
         consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', ['leaveConsultation']);
+        audioRecordingService = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
     });
 
     beforeEach(async () => {
@@ -82,7 +86,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             heartbeatModelMapper,
             videoCallService,
             deviceTypeService,
-            router
+            router,
+            audioRecordingService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, gloalConference));
@@ -99,6 +104,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.ngOnDestroy();
         if (component.callbackTimeout) {
             clearTimeout(component.callbackTimeout);
+        }
+
+        if (component.audioRecordingInterval) {
+            clearInterval(component.callbackTimeout);
         }
     });
 
@@ -206,5 +215,58 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.errorCount).toBeGreaterThan(currentErrorCount);
         expect(component.showVideo).toBeFalsy();
         expect(errorService.goToServiceError).toHaveBeenCalledTimes(0);
+    });
+
+    it('should start the hearing', () => {
+        component.startHearing();
+        expect(videoCallService.startHearing).toHaveBeenCalledWith(component.conference.id);
+    });
+
+    it('should close audio  alert  for judge', () => {
+        component.closeAlert(true);
+        expect(component.continueWithNoRecording).toBeTruthy();
+    });
+
+    it('should stop to show alert if it was already closed by judge', async () => {
+        audioRecordingService.getAudioStreamInfo.and.throwError('Error');
+        await component.retrieveAudioStreamInfo(gloalConference.id);
+        component.closeAlert(true);
+
+        expect(component.showAudioRecordingAlert).toBeFalsy();
+    });
+
+    it('should display audio recording alert when audio info throws an error and hearing must be recorded', async () => {
+        audioRecordingService.getAudioStreamInfo.and.throwError('Error');
+        await component.retrieveAudioStreamInfo(gloalConference.id);
+        expect(component.showAudioRecordingAlert).toBeTruthy();
+    });
+
+    it('should not display audio recording alert when audio info throws an error and hearing must be recorded', async () => {
+        audioRecordingService.getAudioStreamInfo.and.throwError('Error');
+        component.continueWithNoRecording = false;
+        await component.retrieveAudioStreamInfo(gloalConference.id);
+
+        expect(component.showAudioRecordingAlert).toBeTruthy();
+    });
+
+    it('should not display audio recording alert when audio info returns true', async () => {
+        audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(true));
+        await component.retrieveAudioStreamInfo(gloalConference.id);
+
+        expect(component.showAudioRecordingAlert).toBeFalsy();
+    });
+
+    it('should display audio recording alert when audio info returns false and hearing must be recorded', async () => {
+        audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
+        component.continueWithNoRecording = false;
+        await component.retrieveAudioStreamInfo(gloalConference.id);
+
+        expect(component.showAudioRecordingAlert).toBeTruthy();
+    });
+
+    it('should init audio recording interval', () => {
+        spyOn(component, 'retrieveAudioStreamInfo');
+        component.initAudioRecordingInterval();
+        expect(component.audioRecordingInterval).toBeDefined();
     });
 });

@@ -25,6 +25,8 @@ import { eventsServiceSpy, hearingStatusSubjectMock, participantStatusSubjectMoc
 import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
+import { pageUrls } from 'src/app/shared/page-url.constants';
+import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
@@ -48,6 +50,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
     let consultationService: jasmine.SpyObj<ConsultationService>;
     const logger: Logger = new MockLogger();
+
+    let audioRecordingService: jasmine.SpyObj<AudioRecordingService>;
 
     const jwToken = new TokenResponse({
         expires_on: '06/10/2020 01:13:00',
@@ -75,6 +79,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         heartbeatModelMapper = new HeartbeatModelMapper();
         deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['getBrowserName', 'getBrowserVersion']);
         consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', ['leaveConsultation']);
+
+        audioRecordingService = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
     });
 
     beforeEach(async () => {
@@ -88,7 +94,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             heartbeatModelMapper,
             videoCallService,
             deviceTypeService,
-            router
+            router,
+            audioRecordingService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, gloalConference));
@@ -99,6 +106,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.connected = true; // assume connected to pexip
         component.startEventHubSubscribers();
         videoWebService.getConferenceById.calls.reset();
+        router.navigate.calls.reset();
     });
 
     afterEach(() => {
@@ -115,6 +123,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.conference.status).toBe(status);
         expect(component.showVideo).toBeTruthy();
         expect(component.getConferenceStatusText()).toBe('Hearing is in session');
+        expect(router.navigate).toHaveBeenCalledTimes(0);
     }));
 
     it('should update conference status and get closeed time when "closed" message received', fakeAsync(() => {
@@ -134,6 +143,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.showVideo).toBeFalsy();
         expect(videoWebService.getConferenceById).toHaveBeenCalledWith(gloalConference.id);
         expect(component.getConferenceStatusText()).toBe('Hearing is closed');
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeHearingList]);
     }));
 
     it('should ignore conference updates for another conference', fakeAsync(() => {
