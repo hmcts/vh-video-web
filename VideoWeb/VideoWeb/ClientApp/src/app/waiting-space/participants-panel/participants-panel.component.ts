@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantForUserResponse, Role } from 'src/app/services/clients/api-client';
 import { ParticipantPanelModel } from '../models/participant-panel-model';
@@ -10,21 +10,17 @@ import { ActivatedRoute } from '@angular/router';
     styleUrls: ['./participants-panel.component.scss']
 })
 export class ParticipantsPanelComponent implements OnInit {
-  //  @Input() conferenceId: string;
-
     participants: ParticipantPanelModel[] = [];
     expandPanel = true;
     isMuteAll = false;
-    isLowerAllHands = false;
+    isLowerAllHands = true;
     conferenceId: string;
 
     constructor(private videoWebService: VideoWebService, protected route: ActivatedRoute) {}
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-
         this.getParticipantsList();
-
     }
 
     getParticipantsList() {
@@ -48,7 +44,7 @@ export class ParticipantsPanelComponent implements OnInit {
     muteAll() {
         this.isMuteAll = !this.isMuteAll;
     }
-    p;
+
     lowerAllHands() {
         this.isLowerAllHands = !this.isLowerAllHands;
     }
