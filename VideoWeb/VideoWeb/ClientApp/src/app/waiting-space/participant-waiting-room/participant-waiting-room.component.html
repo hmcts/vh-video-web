@@ -5,7 +5,7 @@
 <div *ngIf="showVideo && !isPrivateConsultation" class="govuk-grid-row">
   <div class="video-background"></div>
   <div class="govuk-grid-column-one-half">
-    <video id="incomingFeed" autoplay height="auto">
+    <video id="incomingFeed" [srcObject]="this.stream" autoplay height="auto">
       Your browser does not support Video
     </video>
   </div>
