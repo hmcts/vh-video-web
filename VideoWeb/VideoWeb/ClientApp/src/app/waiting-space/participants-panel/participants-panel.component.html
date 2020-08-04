@@ -1,54 +1,61 @@
 <div>
-    <div class="panel-container" [ngClass]="{'vh-twidth': !expandPanel}">
-        <div class="govuk-grid-row govuk-!-margin-bottom-1">
-            <div class="govuk-grid-column-full govuk-!-margin-top-2">
-                <span *ngIf="expandPanel; else collapsePanel">
-                    <span class="govuk-!-margin-bottom-3 vh-expand">
-                        <img src="/assets/images/collapse.png" class="panel-icon icon-op" alt="Collapse panel icon" id="collapse-icon-id" (click)="toggleCollapseExpand()" />
-                    </span>
-                </span>
-                <ng-template #collapsePanel>
-                    <span class="govuk-!-margin-bottom-3 vh-collaps">
-                        <img src="/assets/images/expand.png" class="panel-icon icon-op" alt="Expand panel icon" id="expand-icon-id" (click)="toggleCollapseExpand()" />
-                    </span>
-                </ng-template>
-            </div>
-
-        </div>
-
-        <table class="govuk-table table-br">
-            <tbody class="govuk-table_body">
-                <tr class="govuk-table_row vh-line" *ngFor="let participant of participants; let i = index">
-                    <td class="govuk-table_cell govuk-body-s--white" [ngClass]="{'vh-hide': !expandPanel}">
-                        <span class=" govuk-!-margin-bottom-3 govuk-!-margin-top-2 vh-panel-name">
-                            {{ participant.displayName }}
-                        </span>
-                    </td>
-                    <td class="govuk-table_cell cell-icon">
-                        <span *ngIf="isMuteAll; else unmute;">
-                            <img src="/assets/images/mute-mic-red.png" class="panel-icon" alt="Microphon off icon" />
-                        </span>
-                        <ng-template #unmute>
-                            <img src="/assets/images/mic.png" class="panel-icon" alt="Microphon off icon" />
-                        </ng-template>
-
-                    </td>
-                    <td class="govuk-table_cell cell-icon">
-                        <span *ngIf="!isLowerAllHands">
-                            <img src="/assets/images/hand-yellow.png" class="panel-icon" alt="Hand on icon" />
-                        </span>
-
-                    </td>
-
-                </tr>
-            </tbody>
-        </table>
-        <div class="govuk-grid-row govuk-!-margin-bottom-1" *ngIf="expandPanel">
-            <div class="govuk-grid-column-full govuk-!-margin-top-2 govuk-!-margin-bottom-3">
-                <input type="button" class="govuk-button grey-btn vh-mr" value="Mute all" (click)="muteAll()" />
-                <input type="button" class="govuk-button grey-btn" value="Lower all hands" (click)="lowerAllHands()" />
-            </div>
-
-        </div>
+  <div class="panel-container" [ngClass]="{ 'vh-twidth': !expandPanel }">
+    <div class="govuk-grid-row govuk-!-margin-bottom-1">
+      <div class="govuk-grid-column-full govuk-!-margin-top-2">
+        <span *ngIf="expandPanel; else collapsePanel">
+          <span class="govuk-!-margin-bottom-3 vh-expand">
+            <img
+              src="/assets/images/collapse.png"
+              class="panel-icon icon-op"
+              alt="Collapse panel icon"
+              id="collapse-icon-id"
+              (click)="toggleCollapseExpand()"
+            />
+          </span>
+        </span>
+        <ng-template #collapsePanel>
+          <span class="govuk-!-margin-bottom-3 vh-collaps">
+            <img
+              src="/assets/images/expand.png"
+              class="panel-icon icon-op"
+              alt="Expand panel icon"
+              id="expand-icon-id"
+              (click)="toggleCollapseExpand()"
+            />
+          </span>
+        </ng-template>
+      </div>
     </div>
+
+    <table class="govuk-table table-br">
+      <tbody class="govuk-table_body">
+        <tr class="govuk-table_row vh-line" *ngFor="let participant of participants; let i = index">
+          <td class="govuk-table_cell govuk-body-s--white" [ngClass]="{ 'vh-hide': !expandPanel }">
+            <span class="govuk-!-margin-bottom-3 govuk-!-margin-top-2 vh-panel-name">
+              {{ participant.displayName }}
+            </span>
+          </td>
+          <td class="govuk-table_cell cell-icon">
+            <span *ngIf="isMuteAll; else unmute">
+              <img src="/assets/images/mute-mic-red.png" class="panel-icon" alt="Microphon off icon" />
+            </span>
+            <ng-template #unmute>
+              <img src="/assets/images/mic.png" class="panel-icon" alt="Microphon off icon" />
+            </ng-template>
+          </td>
+          <td class="govuk-table_cell cell-icon">
+            <span *ngIf="!isLowerAllHands">
+              <img src="/assets/images/hand-yellow.png" class="panel-icon" alt="Hand on icon" />
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="govuk-grid-row govuk-!-margin-bottom-1" *ngIf="expandPanel">
+      <div class="govuk-grid-column-full govuk-!-margin-top-2 govuk-!-margin-bottom-3">
+        <input type="button" class="govuk-button grey-btn vh-mr" value="Mute all" (click)="muteAll()" />
+        <input type="button" class="govuk-button grey-btn" value="Lower all hands" (click)="lowerAllHands()" />
+      </div>
+    </div>
+  </div>
 </div>

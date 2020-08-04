@@ -1,95 +1,94 @@
 @import '~govuk-frontend/govuk/all';
 
-
 @mixin all-transition($time) {
-    transition: all $time;
-    -webkit-transition: all $time;
+  transition: all $time;
+  -webkit-transition: all $time;
 }
 
 .panel-container {
-    background: govuk-colour('black');
-    color: govuk-colour('white') !important;
-    width: 300px;
-    min-height: 100px;
-    max-height: 50%;
-    padding-right: 10px;
-    position: fixed;
-    z-index: 100;
-    -webkit-box-shadow: -3px 0px 5px 0px rgba(0,0,0,0.2);
-    box-shadow: -3px 0px 5px 0px rgba(0,0,0,0.2);
-    left: 0;
-    vertical-align: top;
-    opacity: 0.7;
-    overflow-y: auto;
-    overflow-x: hidden;
-    @include all-transition(0.3s);
+  background: govuk-colour('black');
+  color: govuk-colour('white') !important;
+  width: 300px;
+  min-height: 100px;
+  max-height: 50%;
+  padding-right: 10px;
+  position: fixed;
+  z-index: 100;
+  -webkit-box-shadow: -3px 0px 5px 0px rgba(0, 0, 0, 0.2);
+  box-shadow: -3px 0px 5px 0px rgba(0, 0, 0, 0.2);
+  left: 0;
+  vertical-align: top;
+  opacity: 0.7;
+  overflow-y: auto;
+  overflow-x: hidden;
+  @include all-transition(0.3s);
 }
 
 .table-br {
-    border-color: govuk-colour('dark-grey') !important;
+  border-color: govuk-colour('dark-grey') !important;
 }
 
 .panel-icon {
-    height: 25px;
-    margin: 8px 3px;
+  height: 25px;
+  margin: 8px 3px;
 }
 
 .cell-icon {
-    width: 31px;
+  width: 31px;
 }
 
 .icon-op:hover {
-    opacity: 1;
+  opacity: 1;
 }
 
 .icon-op {
-    opacity: 0.5;
+  opacity: 0.5;
 }
 
 .vh-hide {
-    display: none;
+  display: none;
 }
 
 .vh-twidth {
-    width: 100px;
+  width: 100px;
 }
 
 .grey-btn {
-    background: govuk-colour('dark-grey');
-    color: govuk-color('white');
-    white-space: normal;
+  background: govuk-colour('dark-grey');
+  color: govuk-color('white');
+  white-space: normal;
 }
 
 .grey-btn:hover {
-    background: govuk-colour('red') !important;
-    border-color: govuk-colour('red') !important;
-    color: govuk-color('white') !important;
+  background: govuk-colour('red') !important;
+  border-color: govuk-colour('red') !important;
+  color: govuk-color('white') !important;
 }
 
 .grey-btn:focus {
-    background: govuk-colour('red') !important;
-    color: #ffffff !important;
-    border-color: govuk-colour('red') !important;
+  background: govuk-colour('red') !important;
+  color: #ffffff !important;
+  border-color: govuk-colour('red') !important;
 }
 
 .vh-expand {
-    float: right;
-    margin-right: 5px;
+  float: right;
+  margin-right: 5px;
 }
 
 .vh-collaps {
-    float: left;
-    margin-left: 5px;
+  float: left;
+  margin-left: 5px;
 }
 
 .vh-panel-name {
-    font-weight: bold;
-    font-size: 90%;
-    float: left;
-    margin-left: 5px;
+  font-weight: bold;
+  font-size: 90%;
+  float: left;
+  margin-left: 5px;
 }
 
 .vh-mr {
-    margin-right: 20px;
-    margin-left: 10px;
+  margin-right: 20px;
+  margin-left: 10px;
 }
