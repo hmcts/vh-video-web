@@ -18,7 +18,7 @@ export class ParticipantPanelModel {
     }
 
     private setOrderInTheList(): number {
-        let order = 2;
+        let order: number;
         switch (this.caseTypeGroup.toLowerCase()) {
             case 'panelmember':
                 order = 1;

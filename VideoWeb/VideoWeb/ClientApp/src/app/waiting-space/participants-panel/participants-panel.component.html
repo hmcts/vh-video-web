@@ -27,8 +27,13 @@
       </div>
     </div>
 
-    <table class="govuk-table table-br">
+    <table class="govuk-table table-br" summary="Judge hearing participants panel">
       <tbody class="govuk-table_body">
+          <tr class="vh-th">
+              <th>Display name</th>
+              <th>Mute icon</th>
+              <th>Raise hand icon</th>
+          </tr>
         <tr class="govuk-table_row vh-line" *ngFor="let participant of participants; let i = index">
           <td class="govuk-table_cell govuk-body-s--white" [ngClass]="{ 'vh-hide': !expandPanel }">
             <span class="govuk-!-margin-bottom-3 govuk-!-margin-top-2 vh-panel-name">
