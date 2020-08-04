@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { VideoCallService } from '../services/video-call.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Subscription } from 'rxjs';
@@ -27,6 +27,10 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
 
     constructor(private videoCallService: VideoCallService, private eventService: EventsService, private logger: Logger) {
         this.handRaised = false;
+    }
+
+    get isJudge(): boolean {
+        return this.participant.role === Role.Judge;
     }
 
     ngOnInit(): void {
