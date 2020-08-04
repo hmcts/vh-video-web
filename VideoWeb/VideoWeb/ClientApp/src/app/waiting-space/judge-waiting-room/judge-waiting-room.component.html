@@ -1,129 +1,132 @@
 <div *ngIf="loadingData">
-    <p class="govuk-body">Loading please wait...</p>
+  <p class="govuk-body">Loading please wait...</p>
 </div>
 
-<div *ngIf="showVideo" class="govuk-grid-row">
-    <div class="video-background"></div>
-    <div class="govuk-grid-column-one-half">
-        <video id="incomingFeed" autoplay height="auto">feature
-            Your browser does not support Video
+<!-- contains the in-hearing participant list and incoming video -->
+<div id="video-container" class="govuk-grid-row">
+  <div class="hearing-video">
+    <!-- hearing video-->
+    <div *ngIf="showVideo && !isAdminConsultation" class="govuk-grid-row">
+      <div class="video-background"></div>
+      <div class="govuk-grid-column-one-half">
+        <video id="incomingFeed" [srcObject]="this.stream" autoplay height="auto">
+          Your browser does not support Video
         </video>
+      </div>
     </div>
+  </div>
 </div>
-
-<div *ngIf="showVideo && isAdminConsultation" class="govuk-grid-row">
-    <div class="video-background"></div>
-    <div class="govuk-grid-column-one-half">
-        <video id="incomingFeedPrivate" autoplay [srcObject]="this.stream" height="auto">
-            Your browser does not support Video
-        </video>
-    </div>
-</div>
-<ng-container *ngIf="connected && showVideo">
-    <app-participants-panel></app-participants-panel>
-</ng-container>
 
 <ng-container *ngIf="connected && showVideo">
-    <app-hearing-controls [participant]="participant"
-                          [isPrivateConsultation]="isAdminConsultation"
-                          [outgoingStream]="outgoingStream"></app-hearing-controls>
+  <app-hearing-controls
+    [participant]="participant"
+    [isPrivateConsultation]="isAdminConsultation"
+    [outgoingStream]="outgoingStream"
+    [conferenceId]="conference.id"
+  ></app-hearing-controls>
 </ng-container>
 
 <div *ngIf="!loadingData && conference">
-    <a id="back-to-hearing-list-link" href="javascript:void(0)" (click)="goToJudgeHearingList()" class="govuk-back-link">
-        Return to video hearing list
-    </a>
+  <a id="back-to-hearing-list-link" href="javascript:void(0)" (click)="goToJudgeHearingList()" class="govuk-back-link">
+    Return to video hearing list
+  </a>
 
-    <div class="govuk-!-margin-top-5" *ngIf="isNotStarted() || isPaused()">
-        <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button" (click)="checkEquipment()" aria-label="Camera Check">
-            Check equipment
-        </button>
-    </div>
+  <div class="govuk-!-margin-top-5" *ngIf="isNotStarted() || isPaused()">
+    <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button" (click)="checkEquipment()" aria-label="Camera Check">
+      Check equipment
+    </button>
+  </div>
 
-    <table class="govuk-table vh-fullwidth" aria-describedby="Details of the hearing">
-        <thead class="govuk-table__head no-mass">
-            <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header">Hearing</th>
-                <th scope="col" class="govuk-table__header">Date</th>
-            </tr>
-        </thead>
-        <tbody class="govuk-table__body">
-            <tr class="govuk-table__row">
-                <td class="govuk-table__cell hearing-details-col1-width">
-                    <strong>{{ conference.case_name }}</strong> ({{ conference.case_type }}) <span>case number</span>:
-                    <strong>{{ conference.case_number }}</strong>
-                </td>
-                <td class="govuk-table__cell hearing-details-col2-width">
-                    {{ hearing.scheduledStartTime | date: 'dd MMMM	yyyy' }}
-                    <span class="govuk-!-font-weight-bold">
-                        {{ hearing.scheduledStartTime | date: 'HH:mm' }} to
-                        {{ hearing.scheduledEndTime | date: 'HH:mm' }}
-                    </span>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+  <table class="govuk-table vh-fullwidth" aria-describedby="Details of the hearing">
+    <thead class="govuk-table__head no-mass">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">Hearing</th>
+        <th scope="col" class="govuk-table__header">Date</th>
+      </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell hearing-details-col1-width">
+          <strong>{{ conference.case_name }}</strong> ({{ conference.case_type }}) <span>case number</span>:
+          <strong>{{ conference.case_number }}</strong>
+        </td>
+        <td class="govuk-table__cell hearing-details-col2-width">
+          {{ hearing.scheduledStartTime | date: 'dd MMMM	yyyy' }}
+          <span class="govuk-!-font-weight-bold">
+            {{ hearing.scheduledStartTime | date: 'HH:mm' }} to
+            {{ hearing.scheduledEndTime | date: 'HH:mm' }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
 <div *ngIf="!loadingData && conference" class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-xl" [ngClass]="hearingSuspended() ? 'text-highlight-red' : ''">
-            {{ getConferenceStatusText() }}
-        </h1>
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-xl" [ngClass]="hearingSuspended() ? 'text-highlight-red' : ''">
+      {{ getConferenceStatusText() }}
+    </h1>
 
-        <h2 class="govuk-heading-m" *ngIf="isNotStarted()">Is everyone connected?</h2>
+    <h2 class="govuk-heading-m" *ngIf="isNotStarted()">Is everyone connected?</h2>
 
-        <p class="govuk-body govuk-!-margin-bottom-3" *ngIf="isNotStarted()">
-            If any participants are not connected, you must call the video hearings team on <strong>0300 303 0655</strong> before you start the
-            hearing.
-        </p>
+    <p class="govuk-body govuk-!-margin-bottom-3" *ngIf="isNotStarted()">
+      If any participants are not connected, you must call the video hearings team on <strong>0300 303 0655</strong> before you start the
+      hearing.
+    </p>
 
-        <p class="govuk-body govuk-!-margin-bottom-3" *ngIf="hearingPaused()">
-            Please call the video hearings team on <strong>0300 303 0655</strong> if you're having problems. We'll update the participants.
-        </p>
+    <p class="govuk-body govuk-!-margin-bottom-3" *ngIf="hearingPaused()">
+      Please call the video hearings team on <strong>0300 303 0655</strong> if you're having problems. We'll update the participants.
+    </p>
 
-        <p class="govuk-body govuk-!-margin-bottom-3" *ngIf="hearingSuspended()">
-            The video hearings team has been alerted and we're informing the participants. Please call us now on <strong>0300 303 0655</strong>.
-        </p>
+    <p class="govuk-body govuk-!-margin-bottom-3" *ngIf="hearingSuspended()">
+      The video hearings team has been alerted and we're informing the participants. Please call us now on <strong>0300 303 0655</strong>.
+    </p>
 
-        <p class="govuk-body govuk-body govuk-!-margin-bottom-6 govuk-!-margin-top-6">
-            <span class="govuk-button__start-icon vh-left">
-                <img id="recording-on-img"
-                     class="audio-icon"
-                     src="/assets/images/{{ conference.audio_recording_required ? 'audio_on' : 'audio_off' }}.png"
-                     alt="Recording {{ conference.audio_recording_required ? 'on' : 'off' }} image" />
-            </span>
-            <strong class="govuk-!-padding-1">
-                The audio of this hearing is {{ conference.audio_recording_required ? '' : 'NOT' }} being recorded.
-            </strong>
-        </p>
+    <p class="govuk-body govuk-body govuk-!-margin-bottom-6 govuk-!-margin-top-6">
+      <span class="govuk-button__start-icon vh-left">
+        <img
+          id="recording-on-img"
+          class="audio-icon"
+          src="/assets/images/{{ conference.audio_recording_required ? 'audio_on' : 'audio_off' }}.png"
+          alt="Recording {{ conference.audio_recording_required ? 'on' : 'off' }} image"
+        />
+      </span>
+      <strong class="govuk-!-padding-1">
+        The audio of this hearing is {{ conference.audio_recording_required ? '' : 'NOT' }} being recorded.
+      </strong>
+    </p>
 
-        <div>
-            <button [disabled]="!connected"
-                    *ngIf="isNotStarted()"
-                    type="submit"
-                    class="govuk-button govuk-button--start"
-                    (click)="startHearing()">
-                Start video hearing
-            </button>
-            <button [disabled]="!connected"
-                    *ngIf="hearingPaused() || hearingSuspended()"
-                    type="submit"
-                    class="govuk-button govuk-button--start"
-                    (click)="startHearing()">
-                Resume video hearing
-            </button>
-        </div>
-
-        <div *ngIf="isSupportedBrowserForNetworkHealth && !showVideo" id="hearing-monitor-div">
-            <app-waiting-room-monitor [participant]="participant"></app-waiting-room-monitor>
-        </div>
+    <div>
+      <button
+        [disabled]="!connected"
+        *ngIf="isNotStarted()"
+        type="submit"
+        class="govuk-button govuk-button--start"
+        (click)="startHearing()"
+      >
+        Start video hearing
+      </button>
+      <button
+        [disabled]="!connected"
+        *ngIf="hearingPaused() || hearingSuspended()"
+        type="submit"
+        class="govuk-button govuk-button--start"
+        (click)="startHearing()"
+      >
+        Resume video hearing
+      </button>
     </div>
 
-    <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': showVideo }">
-        <app-judge-participant-status-list aria-label="list of participants in hearing" [conference]="conference">
-        </app-judge-participant-status-list>
+    <div *ngIf="isSupportedBrowserForNetworkHealth && !showVideo" id="hearing-monitor-div">
+      <app-waiting-room-monitor [participant]="participant"></app-waiting-room-monitor>
     </div>
+  </div>
+
+  <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': showVideo }">
+    <app-judge-participant-status-list aria-label="list of participants in hearing" [conference]="conference">
+    </app-judge-participant-status-list>
+  </div>
 </div>
 
 <app-participant-chat *ngIf="hearing && !showVideo" [hearing]="hearing"></app-participant-chat>

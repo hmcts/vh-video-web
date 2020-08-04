@@ -16,6 +16,7 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
     @Input() participant: ParticipantResponse;
     @Input() isPrivateConsultation: boolean;
     @Input() outgoingStream: MediaStream | URL;
+    @Input() conferenceId: string;
 
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
@@ -116,5 +117,21 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
             this.videoCallService.raiseHand();
         }
         this.handRaised = !this.handRaised;
+    }
+
+    start() {
+        this.videoCallService.startHearing(this.conferenceId);
+    }
+
+    pause() {
+        this.videoCallService.pauseHearing(this.conferenceId);
+    }
+
+    suspend() {
+        this.videoCallService.requestTechnicalAssistance(this.conferenceId);
+    }
+
+    close() {
+        this.videoCallService.endHearing(this.conferenceId);
     }
 }
