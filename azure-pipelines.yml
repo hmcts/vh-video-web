@@ -182,7 +182,7 @@ variables:
   - group: vh test users
   - group: Saucelabs
   - group: vh-wowza-dev
-  - group: KinlyConfiguration_Test
+  - group: KinlyConfiguration_Test2
 
 trigger:
   branches:
