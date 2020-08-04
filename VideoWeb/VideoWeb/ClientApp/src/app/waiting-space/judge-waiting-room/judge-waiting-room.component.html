@@ -130,7 +130,3 @@
 </div>
 
 <app-participant-chat *ngIf="hearing && !showVideo" [hearing]="hearing"></app-participant-chat>
-
-<div *ngIf="showAudioRecordingAlert">
-  <app-audio-alert (alertClose)="closeAlert($event)"></app-audio-alert>
-</div>

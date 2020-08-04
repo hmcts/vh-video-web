@@ -119,18 +119,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(videoCallService.setupClient).toHaveBeenCalled();
     }));
 
-    it('should init audio recording check when audio recording enabled for conference', fakeAsync(() => {
-        const audioRecordedConference = new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse;
-        audioRecordedConference.audio_recording_required = true;
-        videoWebService.getConferenceById.and.resolveTo(audioRecordedConference);
-        spyOn(component, 'initAudioRecordingInterval');
-
-        component.ngOnInit();
-        flushMicrotasks();
-
-        expect(component.initAudioRecordingInterval).toHaveBeenCalledTimes(1);
-    }));
-
     it('should return correct conference status text when suspended', async () => {
         component.conference.status = ConferenceStatus.Suspended;
         expect(component.getConferenceStatusText()).toBe('Hearing suspended');

@@ -59,9 +59,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         this.getConference().then(() => {
             this.startEventHubSubscribers();
             this.getJwtokenAndConnectToPexip();
-            if (this.conference.audio_recording_required) {
-                this.initAudioRecordingInterval();
-            }
         });
     }
 
