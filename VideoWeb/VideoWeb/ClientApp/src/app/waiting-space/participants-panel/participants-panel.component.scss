@@ -1,0 +1,97 @@
+@import '~govuk-frontend/govuk/all';
+
+.panel-container {
+  background: govuk-colour('black');
+  color: govuk-colour('white') !important;
+  width: 300px;
+  min-height: 100px;
+  max-height: 50%;
+  padding-right: 10px;
+  position: relative;
+  z-index: 100;
+  -webkit-box-shadow: -3px 0px 5px 0px rgba(0, 0, 0, 0.2);
+  box-shadow: -3px 0px 5px 0px rgba(0, 0, 0, 0.2);
+  opacity: 0.8;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.table-br {
+  border-color: govuk-colour('dark-grey') !important;
+}
+
+.panel-icon {
+  height: 25px;
+  margin: 8px 5px;
+}
+
+.cell-icon {
+  width: 31px;
+  display: inline-block;
+}
+
+.icon-op:hover {
+  opacity: 1;
+}
+
+.icon-op {
+  opacity: 0.5;
+}
+
+.vh-name {
+  display: inline-block;
+  width: 210px;
+}
+
+.vh-twidth {
+  width: 100px;
+}
+
+.grey-btn {
+  background: govuk-colour('dark-grey');
+  color: govuk-color('white');
+  white-space: normal;
+}
+
+.grey-btn:hover {
+  background: govuk-colour('red') !important;
+  border-color: govuk-colour('red') !important;
+  color: govuk-color('white') !important;
+}
+
+.grey-btn:focus {
+  background: govuk-colour('red') !important;
+  color: #ffffff !important;
+  border-color: govuk-colour('red') !important;
+}
+
+.vh-expand {
+  float: right;
+  margin-right: 5px;
+}
+
+.vh-collapse {
+  float: left;
+  margin-left: 5px;
+}
+
+.vh-panel-name {
+  font-weight: bold;
+  font-size: 90%;
+  float: left;
+  margin-left: 5px;
+}
+
+.vh-mr {
+  margin-right: 20px;
+  margin-left: 10px;
+}
+
+.vh-mr-icon {
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+.vh-th {
+  visibility: collapse;
+}
