@@ -18,7 +18,9 @@
 </div>
 
 <ng-container *ngIf="connected && showVideo">
-  <app-participants-panel></app-participants-panel>
+  <div class="panel-wrap">
+    <app-participants-panel></app-participants-panel>
+  </div>
 </ng-container>
 
 <ng-container *ngIf="connected && showVideo">
