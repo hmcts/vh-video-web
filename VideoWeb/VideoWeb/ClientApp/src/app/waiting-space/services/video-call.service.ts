@@ -131,6 +131,14 @@ export class VideoCallService {
         return this.pexipAPI.muteAudio();
     }
 
+    muteParticipant(participantId: string, mute: boolean) {
+        this.pexipAPI.setParticipantMute(participantId, mute);
+    }
+
+    muteAllParticipants(mute: boolean) {
+        this.pexipAPI.setMuteAllGuests(mute);
+    }
+
     enableH264(enable: boolean) {
         this.pexipAPI.h264_enabled = enable;
     }
