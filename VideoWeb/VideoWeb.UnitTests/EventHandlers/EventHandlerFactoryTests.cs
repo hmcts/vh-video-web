@@ -18,6 +18,8 @@ namespace VideoWeb.UnitTests.EventHandlers
         [TestCase(EventType.Transfer, typeof(TransferEventHandler))]
         [TestCase(EventType.ParticipantJoining, typeof(ParticipantJoiningEventHandler))]
         [TestCase(EventType.VhoCall, typeof(VhOfficerCallEventHandler))]
+        [TestCase(EventType.Start, typeof(StartEventHandler))]
+        [TestCase(EventType.CountdownFinished, typeof(CountdownFinishedEventHandler))]
         public void Should_return_instance_of_event_handler_when_factory_get_is_called_with_valid_request(
             EventType eventType, Type typeOfEventHandler)
         {
