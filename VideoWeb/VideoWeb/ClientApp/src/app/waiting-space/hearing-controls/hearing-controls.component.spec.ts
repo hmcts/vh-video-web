@@ -7,6 +7,7 @@ import { onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/m
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ParticipantUpdated } from '../models/video-call-models';
 import { HearingControlsComponent } from './hearing-controls.component';
+import { Guid } from 'guid-typescript';
 
 describe('HearingControlsComponent', () => {
     let component: HearingControlsComponent;
@@ -24,6 +25,7 @@ describe('HearingControlsComponent', () => {
     beforeEach(() => {
         component = new HearingControlsComponent(videoCallService, eventsService, logger);
         component.participant = globalParticipant;
+        component.conferenceId = Guid.create().toString();
         component.ngOnInit();
     });
 
@@ -168,6 +170,26 @@ describe('HearingControlsComponent', () => {
         component.resetMute();
         expect(component.toggleMute).toHaveBeenCalledTimes(0);
         expect(component.audioMuted).toBeFalsy();
+    });
+
+    it('should start the hearing', () => {
+        component.start();
+        expect(videoCallService.startHearing).toHaveBeenCalledWith(component.conferenceId);
+    });
+
+    it('should pause the hearing', () => {
+        component.pause();
+        expect(videoCallService.pauseHearing).toHaveBeenCalledWith(component.conferenceId);
+    });
+
+    it('should close the hearing', () => {
+        component.close();
+        expect(videoCallService.endHearing).toHaveBeenCalledWith(component.conferenceId);
+    });
+
+    it('should suspend the hearing', () => {
+        component.suspend();
+        expect(videoCallService.requestTechnicalAssistance).toHaveBeenCalledWith(component.conferenceId);
     });
 
     it('should return true when partipant is judge', () => {

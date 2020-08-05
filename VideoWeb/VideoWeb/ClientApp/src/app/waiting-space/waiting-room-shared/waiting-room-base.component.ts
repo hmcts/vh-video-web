@@ -333,7 +333,7 @@ export abstract class WaitingRoomBaseComponent {
         }
     }
 
-    private validateIsForConference(conferenceId: string): boolean {
+    protected validateIsForConference(conferenceId: string): boolean {
         if (conferenceId !== this.hearing.id) {
             this.logger.info('message not for current conference');
             return false;
