@@ -55,6 +55,8 @@ namespace VideoWeb.UnitTests.Builders
                 new JoinedEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
                     apiClientMock.Object),
                 new LeaveEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object, apiClientMock.Object),
+                new StartEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object, apiClientMock.Object),
+                new CountdownFinishedEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object, apiClientMock.Object),
                 new PauseEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object, apiClientMock.Object),
                 new SuspendEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
                     apiClientMock.Object),
