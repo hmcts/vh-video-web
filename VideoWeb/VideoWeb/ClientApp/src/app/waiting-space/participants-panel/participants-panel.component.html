@@ -14,7 +14,7 @@
           </span>
         </span>
         <ng-template #collapsePanel>
-          <span class="govuk-!-margin-bottom-3 vh-collaps">
+          <span class="govuk-!-margin-bottom-3 vh-collapse">
             <img
               src="/assets/images/expand.png"
               class="panel-icon icon-op"
@@ -51,11 +51,31 @@
         </div>
       </div>
     </div>
-    <div class="govuk-grid-row govuk-!-margin-bottom-1" *ngIf="expandPanel">
-      <div class="govuk-grid-column-full govuk-!-margin-top-2 govuk-!-margin-bottom-3">
+    <div class="govuk-grid-row govuk-!-margin-bottom-1">
+      <div class="govuk-grid-column-full govuk-!-margin-top-2 govuk-!-margin-bottom-3" *ngIf="expandPanel; else buttonsCollapse">
         <input type="button" class="govuk-button grey-btn vh-mr" value="Mute all" (click)="muteAll()" />
         <input type="button" class="govuk-button grey-btn" value="Lower all hands" (click)="lowerAllHands()" />
       </div>
+      <ng-template #buttonsCollapse>
+        <div class="govuk-grid-column-full govuk-!-margin-top-2 govuk-!-margin-bottom-3">
+          <img
+            src="/assets/images/mute-mic-red.png"
+            class="panel-icon vh-mr-icon"
+            alt="Microphon off icon"
+            (click)="muteAll()"
+            style="cursor: pointer;"
+            title="Mute all"
+          />
+          <img
+            src="/assets/images/no-hand.png"
+            class="panel-icon"
+            alt="Lower all hand icon"
+            (click)="lowerAllHands()"
+            style="cursor: pointer;"
+            title="Lower all hands"
+          />
+        </div>
+      </ng-template>
     </div>
   </div>
 </div>
