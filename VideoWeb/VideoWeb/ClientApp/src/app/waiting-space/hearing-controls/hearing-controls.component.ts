@@ -119,10 +119,6 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         this.handRaised = !this.handRaised;
     }
 
-    start() {
-        this.videoCallService.startHearing(this.conferenceId);
-    }
-
     pause() {
         this.videoCallService.pauseHearing(this.conferenceId);
     }
