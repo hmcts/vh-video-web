@@ -172,11 +172,6 @@ describe('HearingControlsComponent', () => {
         expect(component.audioMuted).toBeFalsy();
     });
 
-    it('should start the hearing', () => {
-        component.start();
-        expect(videoCallService.startHearing).toHaveBeenCalledWith(component.conferenceId);
-    });
-
     it('should pause the hearing', () => {
         component.pause();
         expect(videoCallService.pauseHearing).toHaveBeenCalledWith(component.conferenceId);

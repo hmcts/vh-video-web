@@ -41,10 +41,14 @@
 .no-mass {
   display: none;
 }
+
+#hearing-monitor-container {
+  margin-bottom: 25px;
+}
+
 .panel-wrap {
   left: 0;
   position: fixed;
   vertical-align: top;
   z-index: 999;
-  max-width: 300px;
 }
