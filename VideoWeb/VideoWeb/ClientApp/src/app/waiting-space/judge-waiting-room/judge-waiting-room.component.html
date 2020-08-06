@@ -18,6 +18,12 @@
 </div>
 
 <ng-container *ngIf="connected && showVideo">
+  <div class="panel-wrap">
+    <app-participants-panel></app-participants-panel>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="connected && showVideo">
   <app-hearing-controls
     [participant]="participant"
     [isPrivateConsultation]="isAdminConsultation"
@@ -118,7 +124,7 @@
       </button>
     </div>
 
-    <div *ngIf="isSupportedBrowserForNetworkHealth && !showVideo" id="hearing-monitor-div">
+    <div *ngIf="isSupportedBrowserForNetworkHealth && !showVideo" id="hearing-monitor-container">
       <app-waiting-room-monitor [participant]="participant"></app-waiting-room-monitor>
     </div>
   </div>
