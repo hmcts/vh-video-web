@@ -1,7 +1,8 @@
-import { Role } from '../../services/clients/api-client';
+import { ParticipantStatus, Role } from '../../services/clients/api-client';
 
 export class ParticipantPanelModel {
     public participantId: string;
+    public status: ParticipantStatus;
     public isMuted: boolean;
     public handRaised: boolean;
     public displayName: string;
@@ -9,12 +10,13 @@ export class ParticipantPanelModel {
     public role: Role;
     public caseTypeGroup: string;
 
-    constructor(participantId: string, displayName: string, role: Role, caseTypeGroup: string) {
+    constructor(participantId: string, displayName: string, role: Role, caseTypeGroup: string, status: ParticipantStatus) {
         this.participantId = participantId;
         this.displayName = displayName;
         this.role = role;
         this.caseTypeGroup = caseTypeGroup;
         this.orderInTheList = this.setOrderInTheList();
+        this.status = status;
     }
 
     private setOrderInTheList(): number {

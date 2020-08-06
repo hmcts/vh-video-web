@@ -30,31 +30,53 @@
     <div class="govuk-table table-br" summary="Judge hearing participants panel">
       <div class="govuk-table_body">
         <div class="govuk-table_row vh-line" *ngFor="let participant of participants; let i = index">
-          <div class="govuk-table_cell govuk-body-s--white vh-name" *ngIf="expandPanel">
-            <span class="govuk-!-margin-bottom-3 govuk-!-margin-top-2 vh-panel-name">
-              {{ participant.displayName }}
-            </span>
-          </div>
-          <div class="govuk-table_cell cell-icon">
-            <span *ngIf="isMuteAll; else unmute">
-              <img src="/assets/images/mute-mic-red.png" class="panel-icon" alt="Microphon off icon" />
+          <div *ngIf="isParticipantInHearing(participant)">
+            <div class="govuk-table_cell govuk-body-s--white vh-name" *ngIf="expandPanel">
+              <span class="govuk-!-margin-bottom-3 govuk-!-margin-top-2 vh-panel-name">
+                {{ participant.displayName }}
+              </span>
+            </div>
+            <div class="govuk-table_cell cell-icon">
+              <span>
+                <img
+                  [src]="isMuteAll || participant.isMuted ? '/assets/images/mute-mic-red.png' : '/assets/images/mute-mic-red.png'"
+                  class="panel-icon"
+                  [alt]="isMuteAll || participant.isMuted ? 'Microphone on icon' : 'Microphone off icon'"
+                  (click)="toggleMuteParticipant(participant)"
+                />
+              </span>
+              <!-- <span *ngIf="isMuteAll; else unmute">
+              <img
+                src="/assets/images/mute-mic-red.png"
+                class="panel-icon"
+                alt="Microphon off icon"
+                (click)="toggleMuteParticipant(participant)"
+              />
             </span>
             <ng-template #unmute>
-              <img src="/assets/images/mic.png" class="panel-icon" alt="Microphon off icon" />
-            </ng-template>
-          </div>
-          <div class="govuk-table_cell cell-icon">
-            <span *ngIf="!isLowerAllHands">
-              <img src="/assets/images/hand-yellow.png" class="panel-icon" alt="Hand on icon" />
-            </span>
+              <img src="/assets/images/mic.png" class="panel-icon" alt="Microphon off icon" (click)="toggleMuteParticipant(participant)" />
+            </ng-template> -->
+            </div>
+            <div class="govuk-table_cell cell-icon">
+              <span *ngIf="!isLowerAllHands">
+                <img src="/assets/images/hand-yellow.png" class="panel-icon" alt="Hand on icon" />
+              </span>
+            </div>
           </div>
         </div>
       </div>
     </div>
     <div class="govuk-grid-row govuk-!-margin-bottom-1">
       <div class="govuk-grid-column-full govuk-!-margin-top-2 govuk-!-margin-bottom-3" *ngIf="expandPanel; else buttonsCollapse">
-        <input type="button" class="govuk-button grey-btn vh-mr" value="Mute all" (click)="muteAll()" />
-        <input type="button" class="govuk-button grey-btn" value="Lower all hands" (click)="lowerAllHands()" />
+        <button
+          data-prevent-double-click="true"
+          class="govuk-button grey-btn vh-mr"
+          [ngClass]="{ muted: isMuteAll }"
+          (click)="toggleMuteAll()"
+        >
+          {{ muteAllToggleText }}
+        </button>
+        <input type="button" class="govuk-button grey-btn" value="Lower all hands" (click)="lowerAllHands($event)" />
       </div>
       <ng-template #buttonsCollapse>
         <div class="govuk-grid-column-full govuk-!-margin-top-2 govuk-!-margin-bottom-3">
@@ -62,7 +84,7 @@
             src="/assets/images/mute-mic-red.png"
             class="panel-icon vh-mr-icon"
             alt="Microphon off icon"
-            (click)="muteAll()"
+            (click)="toggleMuteAll()"
             style="cursor: pointer;"
             title="Mute all"
           />

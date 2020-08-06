@@ -17,7 +17,7 @@ export class VideoCallService {
     private onParticipantUpdatedSubject = new Subject<ParticipantUpdated>();
     private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
 
-    pexipAPI: any;
+    pexipAPI: PexipClient;
 
     constructor(private logger: Logger, private userMediaService: UserMediaService, private apiClient: ApiClient) {}
 
