@@ -70,12 +70,12 @@ describe('ParticipantsPanelComponent', () => {
         expect(component.expandPanel).toBe(!currentValue);
     });
 
-    it('should raise hand on toggle if hand not raised', () => {
+    it('should mute on toggle and change text to mute all ', () => {
         component.isMuteAll = false;
         expect(component.muteAllToggleText).toBe('Mute all');
     });
 
-    it('should lower hand on toggle if hand raised', () => {
+    it('should unmute on toggle add set text to Unmute all', () => {
         component.isMuteAll = true;
         expect(component.muteAllToggleText).toBe('Unmute all');
     });
@@ -179,5 +179,15 @@ describe('ParticipantsPanelComponent', () => {
         pat.isMuted = false;
         component.toggleMuteParticipant(pat);
         expect(videocallService.muteParticipant).toHaveBeenCalledWith(pat.pexipId, true);
+    });
+    it('should lower hand for all participants', () => {
+        component.lowerAllHands();
+        expect(videocallService.lowerAllHands).toHaveBeenCalled();
+    });
+    it('should lower hand of participant', () => {
+        const pat = component.participants[0];
+        pat.handRaised = true;
+        component.lowerParticipantHand(pat.participantId);
+        expect(videocallService.lowerHandById).toHaveBeenCalledWith(pat.pexipId);
     });
 });

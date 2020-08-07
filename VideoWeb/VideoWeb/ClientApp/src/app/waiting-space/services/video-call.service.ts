@@ -156,6 +156,14 @@ export class VideoCallService {
         this.pexipAPI.clearBuzz();
     }
 
+    lowerHandById(uuid: string) {
+        this.pexipAPI.clearBuzz(uuid);
+    }
+
+    lowerAllHands() {
+        this.pexipAPI.clearAllBuzz();
+    }
+
     async startHearing(conferenceId: string) {
         await this.apiClient.startOrResumeVideoHearing(conferenceId).toPromise();
     }

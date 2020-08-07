@@ -51,7 +51,8 @@ describe('VideoCallService', () => {
             'setBuzz',
             'clearBuzz',
             'setParticipantMute',
-            'setMuteAllGuests'
+            'setMuteAllGuests',
+            'clearAllBuzz'
         ]);
         service = new VideoCallService(logger, userMediaService, apiClient);
         await service.setupClient();
@@ -141,7 +142,17 @@ describe('VideoCallService', () => {
         service.lowerHand();
         expect(pexipSpy.clearBuzz).toHaveBeenCalledTimes(1);
     });
-
+    it('should clear buzz when hand is lowered for participant uuid', () => {
+        service.pexipAPI = pexipSpy;
+        const uuid = '12345';
+        service.lowerHandById(uuid);
+        expect(pexipSpy.clearBuzz).toHaveBeenCalledWith(uuid);
+    });
+    it('should clear all buzz when hand is lowered for all participants', () => {
+        service.pexipAPI = pexipSpy;
+        service.lowerAllHands();
+        expect(pexipSpy.clearAllBuzz).toHaveBeenCalledTimes(1);
+    });
     it('should make api start call on start hearing', async () => {
         apiClient.startOrResumeVideoHearing.and.returnValue(of());
         const conferenceId = Guid.create().toString();

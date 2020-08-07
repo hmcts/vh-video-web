@@ -27,6 +27,7 @@ declare interface PexipClient {
     muteAudio(): boolean;
     setBuzz();
     clearBuzz(uuid?: string);
+    clearAllBuzz(): () => void;
 }
 
 declare interface PexipParticipant {
