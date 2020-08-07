@@ -23,6 +23,7 @@ export class EventsService {
 
     private participantStatusSubject = new Subject<ParticipantStatusMessage>();
     private hearingStatusSubject = new Subject<ConferenceStatusMessage>();
+    private hearingCountdownCompleteSubject = new Subject<string>();
     private helpMessageSubject = new Subject<HelpMessage>();
     private consultationMessageSubject = new Subject<ConsultationMessage>();
     private adminConsultationMessageSubject = new Subject<AdminConsultationMessage>();
@@ -89,6 +90,11 @@ export class EventsService {
             const message = new ConferenceStatusMessage(conferenceId, status);
             this.logger.event('ConferenceStatusMessage received', message);
             this.hearingStatusSubject.next(message);
+        });
+
+        this.connection.on('CountdownFinished', (conferenceId: string) => {
+            this.logger.event('CountdownFinished received', conferenceId);
+            this.hearingCountdownCompleteSubject.next(conferenceId);
         });
 
         this.connection.on('HelpMessage', (conferenceId: string, participantName: string) => {
@@ -190,6 +196,10 @@ export class EventsService {
 
     getHearingStatusMessage(): Observable<ConferenceStatusMessage> {
         return this.hearingStatusSubject.asObservable();
+    }
+
+    getHearingCountdownCompleteMessage(): Observable<string> {
+        return this.hearingCountdownCompleteSubject.asObservable();
     }
 
     getConsultationMessage(): Observable<ConsultationMessage> {

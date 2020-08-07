@@ -20,6 +20,7 @@ namespace VideoWeb.UnitTests.EventHandlers
                 VideoApiClientMock.Object);
 
             var conference = TestConference;
+            var participantCount = conference.Participants.Count + 1; // plus one for admin
             var callbackEvent = new CallbackEvent
             {
                 EventType = EventType.CountdownFinished,
@@ -31,8 +32,8 @@ namespace VideoWeb.UnitTests.EventHandlers
             await _eventHandler.HandleAsync(callbackEvent);
 
             // Verify messages sent to event hub clients
-            EventHubClientMock.Verify(x => x.ConferenceStatusMessage(conference.Id, It.IsAny<ConferenceStatus>()),
-                Times.Never);
+            EventHubClientMock.Verify(x => x.CountdownFinished(conference.Id),
+                Times.Exactly(participantCount));
         }
     }
 }

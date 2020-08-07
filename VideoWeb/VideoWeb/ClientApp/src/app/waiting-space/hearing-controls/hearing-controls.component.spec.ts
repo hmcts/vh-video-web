@@ -2,7 +2,11 @@ import { ConferenceResponse, ParticipantStatus, Role } from 'src/app/services/cl
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { eventsServiceSpy, participantStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
+import {
+    eventsServiceSpy,
+    participantStatusSubjectMock,
+    hearingCountdownCompleteSubjectMock
+} from 'src/app/testing/mocks/mock-events-service';
 import { onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ParticipantUpdated } from '../models/video-call-models';
@@ -25,7 +29,7 @@ describe('HearingControlsComponent', () => {
     beforeEach(() => {
         component = new HearingControlsComponent(videoCallService, eventsService, logger);
         component.participant = globalParticipant;
-        component.conferenceId = Guid.create().toString();
+        component.conferenceId = gloalConference.id;
         component.ngOnInit();
     });
 
@@ -200,5 +204,35 @@ describe('HearingControlsComponent', () => {
     it('should return false when partipant is a representative', () => {
         component.participant = gloalConference.participants.find(x => x.role === Role.Representative);
         expect(component.isJudge).toBeFalsy();
+    });
+
+    it('should reset mute on countdown complete for judge', () => {
+        videoCallService.toggleMute.calls.reset();
+        component.audioMuted = true;
+        component.participant = gloalConference.participants.filter(x => x.role === Role.Judge)[0];
+
+        hearingCountdownCompleteSubjectMock.next(gloalConference.id);
+
+        expect(videoCallService.toggleMute).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not reset mute on countdown complete for another hearing', () => {
+        videoCallService.toggleMute.calls.reset();
+        component.audioMuted = true;
+        component.participant = gloalConference.participants.filter(x => x.role === Role.Judge)[0];
+
+        hearingCountdownCompleteSubjectMock.next(Guid.create().toString());
+
+        expect(videoCallService.toggleMute).toHaveBeenCalledTimes(0);
+    });
+
+    it('should not reset mute on countdown complete for another hearing', () => {
+        videoCallService.toggleMute.calls.reset();
+        component.audioMuted = true;
+        component.participant = gloalConference.participants.filter(x => x.role === Role.Individual)[0];
+
+        hearingCountdownCompleteSubjectMock.next(gloalConference.toString());
+
+        expect(videoCallService.toggleMute).toHaveBeenCalledTimes(0);
     });
 });

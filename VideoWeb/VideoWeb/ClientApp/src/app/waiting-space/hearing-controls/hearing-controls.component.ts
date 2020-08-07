@@ -45,6 +45,11 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
                 this.handleParticipantStatusChange(message);
             })
         );
+        this.eventhubSubscription$.add(
+            this.eventService.getHearingCountdownCompleteMessage().subscribe(conferenceId => {
+                this.handleHearingCountdownComplete(conferenceId);
+            })
+        );
     }
 
     ngOnDestroy(): void {
@@ -85,6 +90,12 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
             return;
         }
         if (message.status === ParticipantStatus.InConsultation) {
+            this.resetMute();
+        }
+    }
+
+    handleHearingCountdownComplete(conferenceId: string) {
+        if (this.isJudge && conferenceId === this.conferenceId) {
             this.resetMute();
         }
     }

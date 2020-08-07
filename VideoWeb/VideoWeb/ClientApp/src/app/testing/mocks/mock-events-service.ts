@@ -11,6 +11,7 @@ export let eventsServiceSpy: jasmine.SpyObj<EventsService>;
 
 export const hearingStatusSubjectMock = new Subject<ConferenceStatusMessage>();
 export const participantStatusSubjectMock = new Subject<ParticipantStatusMessage>();
+export const hearingCountdownCompleteSubjectMock = new Subject<string>();
 export const adminConsultationMessageSubjectMock = new Subject<AdminConsultationMessage>();
 export const eventHubDisconnectSubjectMock = new Subject<number>();
 export const eventHubReconnectSubjectMock = new Subject();
@@ -22,6 +23,7 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', [
     'start',
     'getHearingStatusMessage',
     'getParticipantStatusMessage',
+    'getHearingCountdownCompleteMessage',
     'getAdminConsultationMessage',
     'getServiceDisconnected',
     'getServiceReconnected',
@@ -34,6 +36,7 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', [
 
 eventsServiceSpy.getHearingStatusMessage.and.returnValue(hearingStatusSubjectMock.asObservable());
 eventsServiceSpy.getParticipantStatusMessage.and.returnValue(participantStatusSubjectMock.asObservable());
+eventsServiceSpy.getHearingCountdownCompleteMessage.and.returnValue(hearingCountdownCompleteSubjectMock.asObservable());
 eventsServiceSpy.getAdminConsultationMessage.and.returnValue(adminConsultationMessageSubjectMock.asObservable());
 eventsServiceSpy.getServiceDisconnected.and.returnValue(eventHubDisconnectSubjectMock.asObservable());
 eventsServiceSpy.getServiceReconnected.and.returnValue(eventHubReconnectSubjectMock.asObservable());

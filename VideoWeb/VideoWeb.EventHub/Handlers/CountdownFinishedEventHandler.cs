@@ -22,8 +22,14 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            // simply a logging event
-            await Task.CompletedTask;
+            foreach (var participant in SourceConference.Participants)
+            {
+                await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
+                    .CountdownFinished(SourceConference.Id);
+                Logger.LogTrace($"Conference Countdown finished: Conference Id: { SourceConference.Id }");
+            }
+            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
+                .CountdownFinished(SourceConference.Id);
         }
     }
 }
