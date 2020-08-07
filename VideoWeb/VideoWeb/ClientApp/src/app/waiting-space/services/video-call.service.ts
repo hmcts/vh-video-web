@@ -17,7 +17,7 @@ export class VideoCallService {
     private onParticipantUpdatedSubject = new Subject<ParticipantUpdated>();
     private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
 
-    pexipAPI: any;
+    pexipAPI: PexipClient;
 
     constructor(private logger: Logger, private userMediaService: UserMediaService, private apiClient: ApiClient) {}
 
@@ -48,7 +48,12 @@ export class VideoCallService {
 
         this.pexipAPI.onParticipantUpdate = function (participantUpdate) {
             self.onParticipantUpdatedSubject.next(
-                new ParticipantUpdated(participantUpdate.is_muted, participantUpdate.buzz_time, participantUpdate.display_name)
+                new ParticipantUpdated(
+                    participantUpdate.is_muted,
+                    participantUpdate.buzz_time,
+                    participantUpdate.display_name,
+                    participantUpdate.uuid
+                )
             );
         };
 
@@ -129,6 +134,14 @@ export class VideoCallService {
 
     toggleMute(): boolean {
         return this.pexipAPI.muteAudio();
+    }
+
+    muteParticipant(participantId: string, mute: boolean) {
+        this.pexipAPI.setParticipantMute(participantId, mute);
+    }
+
+    muteAllParticipants(mute: boolean) {
+        this.pexipAPI.setMuteAllGuests(mute);
     }
 
     enableH264(enable: boolean) {
