@@ -154,4 +154,30 @@ describe('ParticipantsPanelComponent', () => {
         expect(result.isMuted).toBeFalsy();
         expect(result.handRaised).toBeFalsy();
     });
+
+    it('should unmute all participants', () => {
+        component.isMuteAll = true;
+        component.toggleMuteAll();
+        expect(videocallService.muteAllParticipants).toHaveBeenCalledWith(false);
+    });
+
+    it('should mute all participants', () => {
+        component.isMuteAll = false;
+        component.toggleMuteAll();
+        expect(videocallService.muteAllParticipants).toHaveBeenCalledWith(true);
+    });
+
+    it('should mute participant', () => {
+        const pat = component.participants[0];
+        pat.isMuted = true;
+        component.toggleMuteParticipant(pat);
+        expect(videocallService.muteParticipant).toHaveBeenCalledWith(pat.pexipId, false);
+    });
+
+    it('should unmute participant', () => {
+        const pat = component.participants[0];
+        pat.isMuted = false;
+        component.toggleMuteParticipant(pat);
+        expect(videocallService.muteParticipant).toHaveBeenCalledWith(pat.pexipId, true);
+    });
 });
