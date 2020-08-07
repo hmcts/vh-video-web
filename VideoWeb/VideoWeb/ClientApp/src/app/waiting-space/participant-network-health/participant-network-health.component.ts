@@ -19,10 +19,6 @@ export class ParticipantNetworkHealthComponent extends ParticipantNetworkHealthB
         super(eventsService);
     }
 
-    get isNetworkGood() {
-        return this.networkHealth && this.networkHealth === HeartbeatHealth.Good;
-    }
-
     setupSubscribers() {
         this.eventSubscriptions$.add(this.eventsService.getHeartbeat().subscribe(heartbeat => this.handleHeartbeat(heartbeat)));
     }
