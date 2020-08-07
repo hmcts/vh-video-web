@@ -22,11 +22,11 @@
 
 .panel-icon {
   height: 25px;
-  margin: 8px 5px;
+  margin: 8px 8px;
 }
 
 .cell-icon {
-  width: 31px;
+  width: 33px;
   display: inline-block;
 }
 
@@ -106,4 +106,45 @@
 
 .vh-th {
   visibility: collapse;
+}
+
+.tooltip {
+  display: inline-block;
+  position: relative;
+  border-bottom: 1px dotted #666;
+  text-align: left;
+}
+
+.top {
+  max-width: 150px;
+  margin-left: 0;
+  transform: translate(-60%, -50%);
+  padding: 5px;
+  color: govuk-colour('white');
+  background-color: govuk-colour('black');
+  font-weight: normal;
+  font-size: 13px;
+  border-radius: 4px;
+  border: 1px solid govuk-colour('dark-grey');
+  position: absolute;
+  z-index: 9999;
+  display: none;
+  overflow-wrap: break-word;
+}
+
+.tooltip-collapse {
+  transform: translate(0, -50%);
+}
+
+.tooltip-collapse-hand {
+  transform: translate(-15%, -70%);
+  min-width: 75px;
+}
+
+.tooltip-collapse-btn {
+  transform: translate(0, -100%);
+}
+
+.tooltip:hover .top {
+  display: block;
 }
