@@ -8,7 +8,6 @@ export abstract class ParticipantNetworkHealthBaseComponent implements OnInit, O
     eventSubscriptions$ = new Subscription();
     networkHealth?: HeartbeatHealth;
     @Input() participant: ParticipantResponse;
-
     constructor(protected eventsService: EventsService) {}
 
     get isNetworkGood() {
