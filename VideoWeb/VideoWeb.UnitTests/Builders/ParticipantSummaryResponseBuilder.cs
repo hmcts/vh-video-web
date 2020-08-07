@@ -1,3 +1,4 @@
+using System;
 using FizzWare.NBuilder;
 using VideoWeb.Services.Video;
 
@@ -10,6 +11,7 @@ namespace VideoWeb.UnitTests.Builders
         public ParticipantSummaryResponseBuilder(UserRole role)
         {
             _participant = Builder<ParticipantSummaryResponse>.CreateNew()
+                .With(x => x.Id = Guid.NewGuid())
                 .With(x => x.Status = ParticipantState.Available)
                 .With(x => x.User_role = role);
         }

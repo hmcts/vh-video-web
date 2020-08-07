@@ -3486,6 +3486,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     /** The representee (if participant is a representative) */
     representee?: string | undefined;
     case_type_group?: string | undefined;
+    pexip_display_name?: string | undefined;
 
     constructor(data?: IParticipantForUserResponse) {
         if (data) {
@@ -3506,6 +3507,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
             this.status = _data['status'];
             this.representee = _data['representee'];
             this.case_type_group = _data['case_type_group'];
+            this.pexip_display_name = _data['pexip_display_name'];
         }
     }
 
@@ -3527,6 +3529,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
         data['status'] = this.status;
         data['representee'] = this.representee;
         data['case_type_group'] = this.case_type_group;
+        data['pexip_display_name'] = this.pexip_display_name;
         return data;
     }
 }
@@ -3546,6 +3549,7 @@ export interface IParticipantForUserResponse {
     /** The representee (if participant is a representative) */
     representee?: string | undefined;
     case_type_group?: string | undefined;
+    pexip_display_name?: string | undefined;
 }
 
 export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerResponse {
@@ -4614,7 +4618,9 @@ export enum EventType {
     SelfTestFailed = 'SelfTestFailed',
     Suspend = 'Suspend',
     VhoCall = 'VhoCall',
-    ParticipantNotSignedIn = 'ParticipantNotSignedIn'
+    ParticipantNotSignedIn = 'ParticipantNotSignedIn',
+    Start = 'Start',
+    CountdownFinished = 'CountdownFinished'
 }
 
 export class AddMediaEventRequest implements IAddMediaEventRequest {

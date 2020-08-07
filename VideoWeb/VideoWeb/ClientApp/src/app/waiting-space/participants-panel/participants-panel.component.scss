@@ -53,10 +53,22 @@
   white-space: normal;
 }
 
+.muted {
+  background: govuk-colour('red') !important;
+  border-color: govuk-colour('red') !important;
+  color: govuk-color('white') !important;
+}
+
 .grey-btn:hover {
   background: govuk-colour('red') !important;
   border-color: govuk-colour('red') !important;
   color: govuk-color('white') !important;
+}
+
+.muted:focus {
+  background: govuk-colour('red') !important;
+  color: #ffffff !important;
+  border-color: govuk-colour('red') !important;
 }
 
 .grey-btn:focus {

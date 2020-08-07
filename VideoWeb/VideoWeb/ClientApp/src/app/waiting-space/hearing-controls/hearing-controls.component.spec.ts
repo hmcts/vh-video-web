@@ -48,7 +48,7 @@ describe('HearingControlsComponent', () => {
     });
 
     it('should show raised hand on hand lowered', () => {
-        const payload = new ParticipantUpdated('YES', 0, globalParticipant.tiled_display_name);
+        const payload = new ParticipantUpdated('YES', 0, globalParticipant.tiled_display_name, Guid.create().toString());
         onParticipantUpdatedSubject.next(payload);
         expect(component.remoteMuted).toBeTruthy();
         expect(component.handRaised).toBeFalsy();
@@ -57,7 +57,7 @@ describe('HearingControlsComponent', () => {
 
     it('should not show raised hand on hand lowered for another participant', () => {
         const otherParticipant = gloalConference.participants.filter(x => x.role === Role.Representative)[0];
-        const payload = new ParticipantUpdated('YES', 0, otherParticipant.tiled_display_name);
+        const payload = new ParticipantUpdated('YES', 0, otherParticipant.tiled_display_name, Guid.create().toString());
         component.handRaised = true;
         component.remoteMuted = false;
         onParticipantUpdatedSubject.next(payload);
@@ -67,7 +67,7 @@ describe('HearingControlsComponent', () => {
     });
 
     it('should show lower hand on hand raised', () => {
-        const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name);
+        const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name, Guid.create().toString());
         onParticipantUpdatedSubject.next(payload);
         expect(component.handRaised).toBeTruthy();
         expect(component.handToggleText).toBe('Lower my hand');
@@ -75,7 +75,7 @@ describe('HearingControlsComponent', () => {
 
     it('should not show lower hand when hand raised for another participant', () => {
         const otherParticipant = gloalConference.participants.filter(x => x.role === Role.Representative)[0];
-        const payload = new ParticipantUpdated('YES', 0, otherParticipant.tiled_display_name);
+        const payload = new ParticipantUpdated('YES', 0, otherParticipant.tiled_display_name, Guid.create().toString());
         component.handRaised = false;
         onParticipantUpdatedSubject.next(payload);
         expect(component.handRaised).toBeFalsy();
@@ -84,7 +84,7 @@ describe('HearingControlsComponent', () => {
 
     it('should mute locally if remote muted and not muted locally', () => {
         videoCallService.toggleMute.calls.reset();
-        const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name);
+        const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name, Guid.create().toString());
         component.audioMuted = false;
         component.handleParticipantUpdatedInVideoCall(payload);
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(1);
@@ -92,7 +92,7 @@ describe('HearingControlsComponent', () => {
 
     it('should skip mute locally if remote muted and already muted locally', () => {
         videoCallService.toggleMute.calls.reset();
-        const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name);
+        const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name, Guid.create().toString());
         component.audioMuted = true;
         component.handleParticipantUpdatedInVideoCall(payload);
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(0);

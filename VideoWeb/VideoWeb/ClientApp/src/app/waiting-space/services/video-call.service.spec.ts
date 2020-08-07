@@ -16,7 +16,7 @@ describe('VideoCallService', () => {
     const testData = new MediaDeviceTestData();
     let preferredCamera: UserMediaDevice;
     let preferredMicrophone: UserMediaDevice;
-    let pexipSpy: any;
+    let pexipSpy: jasmine.SpyObj<PexipClient>;
     beforeAll(() => {
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
             'startOrResumeVideoHearing',
@@ -42,9 +42,19 @@ describe('VideoCallService', () => {
         userMediaService.getPreferredMicrophone.and.resolveTo(preferredMicrophone);
     });
 
-    beforeEach(() => {
-        pexipSpy = jasmine.createSpyObj('pexipAPI', ['connect', 'makeCall', 'muteAudio', 'disconnect', 'setBuzz', 'clearBuzz']);
+    beforeEach(async () => {
+        pexipSpy = jasmine.createSpyObj<PexipClient>('PexipClient', [
+            'connect',
+            'makeCall',
+            'muteAudio',
+            'disconnect',
+            'setBuzz',
+            'clearBuzz',
+            'setParticipantMute',
+            'setMuteAllGuests'
+        ]);
         service = new VideoCallService(logger, userMediaService, apiClient);
+        await service.setupClient();
     });
 
     it('should init pexip and set pexip client', async () => {
