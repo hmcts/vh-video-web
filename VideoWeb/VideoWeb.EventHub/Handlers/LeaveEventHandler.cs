@@ -23,8 +23,7 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            var participantState = SourceParticipant.IsJudge() ? ParticipantState.NotSignedIn : ParticipantState.Disconnected;
-            await PublishParticipantStatusMessage(participantState);
+            await PublishParticipantStatusMessage(ParticipantState.Disconnected);
         }
     }
 }
