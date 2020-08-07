@@ -3,10 +3,14 @@
 </div>
 
 <!-- contains the in-hearing participant list and incoming video -->
-<div id="video-container" class="govuk-grid-row">
+<div id="video-container" class="govuk-grid-row" *ngIf="showVideo">
+  <div class="panel-wrap">
+    <app-participants-panel></app-participants-panel>
+  </div>
+
   <div class="hearing-video">
     <!-- hearing video-->
-    <div *ngIf="showVideo && !isAdminConsultation" class="govuk-grid-row">
+    <div *ngIf="!isAdminConsultation" class="govuk-grid-row">
       <div class="video-background"></div>
       <div class="govuk-grid-column-one-half">
         <video id="incomingFeed" [srcObject]="this.stream" autoplay height="auto">
@@ -16,12 +20,6 @@
     </div>
   </div>
 </div>
-
-<ng-container *ngIf="connected && showVideo">
-  <div class="panel-wrap">
-    <app-participants-panel></app-participants-panel>
-  </div>
-</ng-container>
 
 <ng-container *ngIf="connected && showVideo">
   <app-hearing-controls

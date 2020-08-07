@@ -36,15 +36,23 @@
             </span>
           </div>
           <div class="govuk-table_cell cell-icon">
-            <span *ngIf="isMuteAll; else unmute">
+            <span *ngIf="isMuteAll; else unmute" class="tooltip">
+              <span class="top" [ngClass]="{ 'tooltip-collapse': !expandPanel }"> Mute {{ participant.displayName }} </span>
               <img src="/assets/images/mute-mic-red.png" class="panel-icon" alt="Microphon off icon" />
             </span>
             <ng-template #unmute>
-              <img src="/assets/images/mic.png" class="panel-icon" alt="Microphon off icon" />
+              <span class="tooltip">
+                <span class="top" [ngClass]="{ 'tooltip-collapse': !expandPanel }">
+                  {{ participant.displayName }}
+                </span>
+
+                <img src="/assets/images/mic.png" class="panel-icon" alt="Microphon on icon" />
+              </span>
             </ng-template>
           </div>
           <div class="govuk-table_cell cell-icon">
-            <span *ngIf="!isLowerAllHands">
+            <span *ngIf="!isLowerAllHands" class="tooltip">
+              <span class="top" [ngClass]="{ 'tooltip-collapse-hand': !expandPanel }"> Lower hand {{ participant.displayName }} </span>
               <img src="/assets/images/hand-yellow.png" class="panel-icon" alt="Hand on icon" />
             </span>
           </div>
@@ -53,27 +61,35 @@
     </div>
     <div class="govuk-grid-row govuk-!-margin-bottom-1">
       <div class="govuk-grid-column-full govuk-!-margin-top-2 govuk-!-margin-bottom-3" *ngIf="expandPanel; else buttonsCollapse">
-        <input type="button" class="govuk-button grey-btn vh-mr" value="Mute all" (click)="muteAll()" />
-        <input type="button" class="govuk-button grey-btn" value="Lower all hands" (click)="lowerAllHands()" />
+        <button class="govuk-button grey-btn vh-mr" (click)="muteAll()">Mute all</button>
+        <button class="govuk-button grey-btn" (click)="lowerAllHands()">Lower all hands</button>
       </div>
       <ng-template #buttonsCollapse>
         <div class="govuk-grid-column-full govuk-!-margin-top-2 govuk-!-margin-bottom-3">
-          <img
-            src="/assets/images/mute-mic-red.png"
-            class="panel-icon vh-mr-icon"
-            alt="Microphon off icon"
-            (click)="muteAll()"
-            style="cursor: pointer;"
-            title="Mute all"
-          />
-          <img
-            src="/assets/images/no-hand.png"
-            class="panel-icon"
-            alt="Lower all hand icon"
-            (click)="lowerAllHands()"
-            style="cursor: pointer;"
-            title="Lower all hands"
-          />
+          <span class="tooltip">
+            <span class="top" [ngClass]="{ 'tooltip-collapse-btn': !expandPanel }">
+              Mute all participants
+            </span>
+            <img
+              src="/assets/images/mute-mic-red.png"
+              class="panel-icon vh-mr-icon"
+              alt="Microphon off icon"
+              (click)="muteAll()"
+              style="cursor: pointer;"
+            />
+          </span>
+          <span class="tooltip">
+            <span class="top" [ngClass]="{ 'tooltip-collapse-btn': !expandPanel }">
+              Lower all hands
+            </span>
+            <img
+              src="/assets/images/no-hand.png"
+              class="panel-icon"
+              alt="Lower all hand icon"
+              (click)="lowerAllHands()"
+              style="cursor: pointer;"
+            />
+          </span>
         </div>
       </ng-template>
     </div>
