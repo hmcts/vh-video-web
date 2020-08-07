@@ -6,17 +6,27 @@ export class ParticipantPanelModel {
     public isMuted: boolean;
     public handRaised: boolean;
     public displayName: string;
+    public pexipId: string;
+    public pexipDisplayName: string;
     public orderInTheList: number;
     public role: Role;
     public caseTypeGroup: string;
 
-    constructor(participantId: string, displayName: string, role: Role, caseTypeGroup: string, status: ParticipantStatus) {
+    constructor(
+        participantId: string,
+        displayName: string,
+        role: Role,
+        caseTypeGroup: string,
+        status: ParticipantStatus,
+        pexipDisplayName: string
+    ) {
         this.participantId = participantId;
         this.displayName = displayName;
         this.role = role;
         this.caseTypeGroup = caseTypeGroup;
         this.orderInTheList = this.setOrderInTheList();
         this.status = status;
+        this.pexipDisplayName = pexipDisplayName;
     }
 
     private setOrderInTheList(): number {

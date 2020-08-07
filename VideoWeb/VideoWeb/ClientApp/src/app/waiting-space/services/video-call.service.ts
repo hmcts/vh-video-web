@@ -48,7 +48,12 @@ export class VideoCallService {
 
         this.pexipAPI.onParticipantUpdate = function (participantUpdate) {
             self.onParticipantUpdatedSubject.next(
-                new ParticipantUpdated(participantUpdate.is_muted, participantUpdate.buzz_time, participantUpdate.display_name)
+                new ParticipantUpdated(
+                    participantUpdate.is_muted,
+                    participantUpdate.buzz_time,
+                    participantUpdate.display_name,
+                    participantUpdate.uuid
+                )
             );
         };
 

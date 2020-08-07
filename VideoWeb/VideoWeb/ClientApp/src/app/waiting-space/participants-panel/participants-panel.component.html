@@ -39,23 +39,12 @@
             <div class="govuk-table_cell cell-icon">
               <span>
                 <img
-                  [src]="isMuteAll || participant.isMuted ? '/assets/images/mute-mic-red.png' : '/assets/images/mute-mic-red.png'"
+                  [src]="isMuteAll || participant.isMuted ? '/assets/images/mute-mic-red.png' : '/assets/images/mic.png'"
                   class="panel-icon"
-                  [alt]="isMuteAll || participant.isMuted ? 'Microphone on icon' : 'Microphone off icon'"
+                  [alt]="isMuteAll || participant.isMuted ? 'Microphone muted icon' : 'Microphone on icon'"
                   (click)="toggleMuteParticipant(participant)"
                 />
               </span>
-              <!-- <span *ngIf="isMuteAll; else unmute">
-              <img
-                src="/assets/images/mute-mic-red.png"
-                class="panel-icon"
-                alt="Microphon off icon"
-                (click)="toggleMuteParticipant(participant)"
-              />
-            </span>
-            <ng-template #unmute>
-              <img src="/assets/images/mic.png" class="panel-icon" alt="Microphon off icon" (click)="toggleMuteParticipant(participant)" />
-            </ng-template> -->
             </div>
             <div class="govuk-table_cell cell-icon">
               <span *ngIf="!isLowerAllHands">

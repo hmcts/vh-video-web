@@ -169,17 +169,4 @@ describe('VideoCallService', () => {
         await service.requestTechnicalAssistance(conferenceId);
         expect(apiClient.requestTechnicalAssistance).toHaveBeenCalledWith(conferenceId);
     });
-
-    // it('should mute participant', () => {
-    //     const participant = Guid.create().toString();
-    //     const mute = true;
-    //     service.muteParticipant(participant, mute);
-    //     expect(pexipSpy.setParticipantMute).toHaveBeenCalledWith(participant, mute);
-    // });
-
-    // it('should mute all participants', () => {
-    //     const mute = true;
-    //     service.muteAllParticipants(mute);
-    //     expect(pexipSpy.setMuteAllGuests).toHaveBeenCalledWith(mute);
-    // });
 });

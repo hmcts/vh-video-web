@@ -8,6 +8,7 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 import { ParticipantPanelModel } from '../models/participant-panel-model';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 @Component({
     selector: 'app-participants-panel',
@@ -28,22 +29,24 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private videoWebService: VideoWebService,
         private route: ActivatedRoute,
         private videoCallService: VideoCallService,
-        private eventService: EventsService
+        private eventService: EventsService,
+        private logger: Logger
     ) {}
 
     get muteAllToggleText() {
         if (this.isMuteAll) {
-            return 'Unmute All';
+            return 'Unmute all';
         } else {
-            return 'Mute All';
+            return 'Mute all';
         }
     }
 
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
-        this.getParticipantsList();
-        this.setupVideoCallSubscribers();
-        this.setupEventhubSubscribers();
+        this.getParticipantsList().then(() => {
+            this.setupVideoCallSubscribers();
+            this.setupEventhubSubscribers();
+        });
     }
 
     ngOnDestroy(): void {
@@ -78,10 +81,11 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): boolean {
-        const participant = this.participants.find(x => x.displayName === updatedParticipant.pexipDisplayName);
+        const participant = this.participants.find(x => x.pexipDisplayName === updatedParticipant.pexipDisplayName);
         if (!participant) {
             return;
         }
+        participant.pexipId = updatedParticipant.uuid;
         participant.isMuted = updatedParticipant.isRemoteMuted;
         participant.handRaised = updatedParticipant.handRaised;
     }
@@ -94,18 +98,20 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         participant.status = message.status;
     }
 
-    getParticipantsList() {
-        this.videoWebService.getParticipantsByConferenceId(this.conferenceId).then(data => {
-            if (data && data.length > 0) {
-                data.filter(x => x.role !== Role.Judge).forEach(x => {
-                    const participant = this.mapParticipant(x);
-                    this.participants.push(participant);
-                });
-                this.participants.sort((x, z) => {
-                    return x.orderInTheList === z.orderInTheList ? 0 : +(x.orderInTheList > z.orderInTheList) || -1;
-                });
-            }
-        });
+    async getParticipantsList() {
+        try {
+            const data = await this.videoWebService.getParticipantsByConferenceId(this.conferenceId);
+
+            data.filter(x => x.role !== Role.Judge).forEach(x => {
+                const participant = this.mapParticipant(x);
+                this.participants.push(participant);
+            });
+            this.participants.sort((x, z) => {
+                return x.orderInTheList === z.orderInTheList ? 0 : +(x.orderInTheList > z.orderInTheList) || -1;
+            });
+        } catch (err) {
+            this.logger.error('Failed to get participants for judge hearing panel', err);
+        }
     }
 
     isParticipantInHearing(participant: ParticipantPanelModel): boolean {
@@ -121,7 +127,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     toggleMuteParticipant(participant: ParticipantPanelModel) {
-        this.videoCallService.muteParticipant(participant.displayName, !participant.isMuted);
+        const p = this.participants.find(x => x.participantId === participant.participantId);
+        this.videoCallService.muteParticipant(p.pexipId, !p.isMuted);
     }
 
     lowerAllHands() {
@@ -134,7 +141,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             participant.display_name,
             participant.role,
             participant.case_type_group,
-            participant.status
+            participant.status,
+            participant.pexip_display_name
         );
     }
 }

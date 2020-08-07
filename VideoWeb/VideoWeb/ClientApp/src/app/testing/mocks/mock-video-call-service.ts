@@ -1,6 +1,13 @@
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { Subject } from 'rxjs';
-import { CallSetup, ConnectedCall, DisconnectedCall, CallError, ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
+import {
+    CallSetup,
+    ConnectedCall,
+    DisconnectedCall,
+    CallError,
+    ParticipantUpdated,
+    ConferenceUpdated
+} from 'src/app/waiting-space/models/video-call-models';
 
 export let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
 
@@ -9,6 +16,7 @@ export const onConnectedSubjectMock = new Subject<ConnectedCall>();
 export const onDisconnectedSubjectMock = new Subject<DisconnectedCall>();
 export const onErrorSubjectMock = new Subject<CallError>();
 export const onParticipantUpdatedMock = new Subject<ParticipantUpdated>();
+export const onConferenceUpdatedMock = new Subject<ConferenceUpdated>();
 
 videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', [
     'setupClient',
@@ -18,6 +26,7 @@ videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService',
     'onCallSetup',
     'onCallConnected',
     'onCallDisconnected',
+    'onConferenceUpdated',
     'onParticipantUpdated',
     'onError',
     'updateCameraForCall',
@@ -39,3 +48,4 @@ videoCallServiceSpy.onCallConnected.and.returnValue(onConnectedSubjectMock.asObs
 videoCallServiceSpy.onCallDisconnected.and.returnValue(onDisconnectedSubjectMock.asObservable());
 videoCallServiceSpy.onError.and.returnValue(onErrorSubjectMock.asObservable());
 videoCallServiceSpy.onParticipantUpdated.and.returnValue(onParticipantUpdatedMock.asObservable());
+videoCallServiceSpy.onConferenceUpdated.and.returnValue(onConferenceUpdatedMock.asObservable());

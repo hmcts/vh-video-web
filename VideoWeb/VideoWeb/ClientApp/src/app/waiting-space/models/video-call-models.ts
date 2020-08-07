@@ -18,11 +18,13 @@ export class ParticipantUpdated {
     public isRemoteMuted: boolean;
     public handRaised: boolean;
     public pexipDisplayName: string;
+    public uuid: string;
 
-    constructor(isMuted: string, buzzTime: number, pexipName: string) {
+    constructor(isMuted: string, buzzTime: number, pexipName: string, uuid: string) {
         this.isRemoteMuted = isMuted.toUpperCase() === 'YES';
         this.handRaised = buzzTime !== 0;
         this.pexipDisplayName = pexipName;
+        this.uuid = uuid;
     }
 }
 

@@ -45,14 +45,21 @@ namespace VideoWeb.Mappings
             response.ParticipantUri = conference.Meeting_room.Participant_uri;
             response.PexipNodeUri = conference.Meeting_room.Pexip_node;
 
+            AssignTilePositions(conference, response);
+
+            return response;
+        }
+
+        private static void AssignTilePositions(ConferenceDetailsResponse conference, ConferenceResponseVho response)
+        {
             var tiledParticipants = conference.Participants.Where(x =>
                 x.User_role == UserRole.Individual || x.User_role == UserRole.Representative).ToList();
 
             var partyGroups = tiledParticipants.GroupBy(x => x.Case_type_group).ToList();
             foreach (var group in partyGroups)
             {
-                var pats = group.ToList();
-                var position = partyGroups.IndexOf(group) + 1;
+                var pats = @group.ToList();
+                var position = partyGroups.IndexOf(@group) + 1;
                 foreach (var p in pats)
                 {
                     var participant = response.Participants.Find(x => x.Id == p.Id);
@@ -60,8 +67,6 @@ namespace VideoWeb.Mappings
                     position += 2;
                 }
             }
-
-            return response;
         }
     }
 }

@@ -49,5 +49,10 @@ namespace VideoWeb.Contract.Responses
         /// The group a participant belongs to
         /// </summary>
         public string CaseTypeGroup { get; set; }
+        
+        /// <summary>
+        /// The display name provided to the pexip node (includes tile position, display name and id)
+        /// </summary>
+        public string PexipDisplayName {get; set; }
     }
 }
