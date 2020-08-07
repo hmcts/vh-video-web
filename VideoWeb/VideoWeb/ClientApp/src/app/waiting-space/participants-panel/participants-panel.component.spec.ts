@@ -56,7 +56,6 @@ describe('ParticipantsPanelComponent', () => {
     }));
 
     it('should log error when api returns error', async () => {
-        const error = { error: 'test error', statusCode: 500 };
         videoWebServiceSpy.getParticipantsByConferenceId.and.returnValue(Promise.reject(participants));
         spyOn(logger, 'error');
 
