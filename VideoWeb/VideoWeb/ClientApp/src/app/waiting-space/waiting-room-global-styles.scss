@@ -1,0 +1,33 @@
+#incomingFeed,
+#incomingFeedPrivate {
+  position: fixed;
+  left: 0;
+  top: 0;
+  min-width: 100%;
+  min-height: 80vh;
+  max-width: 100%;
+  max-height: 90vh;
+  z-index: 100;
+}
+
+#hearing-monitor-div {
+  z-index: 100;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+}
+
+.video-background {
+  background: #090909;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow: auto;
+  z-index: 10;
+}
+
+.no-mass {
+  display: none;
+}

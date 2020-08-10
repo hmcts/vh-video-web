@@ -8,9 +8,9 @@
 }
 
 .health-container.live-hearing {
-  margin-right: 3vw;
-  margin-bottom: 0;
-  width: max-content;
+  padding-right: 1vw;
+  padding-top: 0px;
+  float: right;
 }
 
 .health-text {
@@ -19,11 +19,6 @@
 
 .health-text.info {
   text-decoration: underline;
-}
-
-.no-m {
-  margin-top: 0;
-  margin-bottom: 0;
 }
 
 .networkIcon {

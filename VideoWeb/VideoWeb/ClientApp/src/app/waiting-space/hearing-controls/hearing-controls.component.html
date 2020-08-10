@@ -2,7 +2,7 @@
   <div class="main-container">
     <div class="outgoing-video-container govuk-grid-column-full">
       <video
-        [ngClass]="{ showVideo: selfViewOpen, hideVideo: !selfViewOpen }"
+        [ngClass]="{ 'vh-fade-in': selfViewOpen, 'vh-fade-out': !selfViewOpen }"
         id="outgoingFeedVideo"
         [muted]="true"
         [srcObject]="this.outgoingStream"
@@ -141,6 +141,14 @@
             Technical Assistance
           </button>
         </div>
+      </div>
+
+      <div
+        *ngIf="isSupportedBrowserForNetworkHealth"
+        [ngClass]="{ 'govuk-grid-column-one-half': !isJudge, 'govuk-grid-column-one-third': isJudge }"
+        id="hearing-monitor-div"
+      >
+        <app-waiting-room-monitor [participant]="participant"></app-waiting-room-monitor>
       </div>
     </div>
   </div>
