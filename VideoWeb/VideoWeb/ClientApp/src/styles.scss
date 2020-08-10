@@ -134,3 +134,15 @@ $govuk-global-styles: true;
 .vh-line {
   border-bottom: 1px solid govuk-colour('mid-grey');
 }
+
+.vh-fade-out {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s linear 300ms, opacity 300ms;
+}
+
+.vh-fade-in {
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s linear 0s, opacity 300ms;
+}
