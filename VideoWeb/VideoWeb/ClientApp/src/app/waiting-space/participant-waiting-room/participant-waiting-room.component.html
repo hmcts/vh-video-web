@@ -25,12 +25,9 @@
     [participant]="participant"
     [isPrivateConsultation]="isPrivateConsultation"
     [outgoingStream]="outgoingStream"
+    [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
   ></app-hearing-controls>
 </ng-container>
-
-<div *ngIf="isSupportedBrowserForNetworkHealth && showVideo" id="hearing-monitor-div">
-  <app-waiting-room-monitor [participant]="participant"></app-waiting-room-monitor>
-</div>
 
 <div *ngIf="!loadingData && hearing" class="govuk-grid-row">
   <div class="govuk-grid-column-full">
