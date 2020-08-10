@@ -8,7 +8,6 @@ using AcceptanceTests.Common.Driver.Enums;
 using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.Test.Helpers;
 using FluentAssertions;
-using OpenQA.Selenium;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
@@ -40,7 +39,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             Thread.Sleep(TimeSpan.FromSeconds(CountdownDuration));
             Thread.Sleep(TimeSpan.FromSeconds(ExtraTimeAfterTheCountdown));
-            SwitchToTheJudgeIFrame();
+            StartOrResumeHearing();
             new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser.Key]).Feed(HearingRoomPage.ClerkIncomingVideo);
         }
 
@@ -49,12 +48,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             if (_c.VideoWebConfig.TestConfig.TargetBrowser != TargetBrowser.Firefox)
             {
-                SwitchToTheJudgeIFrame();
+                StartOrResumeHearing();
             }
 
             _browsers[_c.CurrentUser.Key].Click(HearingRoomPage.PauseButton);
             Thread.Sleep(TimeSpan.FromSeconds(PauseCloseTransferDuration));
-            _c.Test.JudgeInIframe = false;
         }
 
         [When(@"the Clerk clicks close")]
@@ -62,12 +60,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             if (_c.VideoWebConfig.TestConfig.TargetBrowser != TargetBrowser.Firefox)
             {
-                SwitchToTheJudgeIFrame();
+                StartOrResumeHearing();
             }
             
             _browsers[_c.CurrentUser.Key].Click(HearingRoomPage.CloseButton);
             Thread.Sleep(TimeSpan.FromSeconds(PauseCloseTransferDuration));
-            _c.Test.JudgeInIframe = false;
         }
 
         [When(@"the Clerk is on the Hearing Room page for (.*) seconds")]
@@ -89,7 +86,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the hearing controls are visible")]
         public void ThenTheHearingControlsAreVisible()
         {
-            SwitchToTheJudgeIFrame();
+            StartOrResumeHearing();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.ToggleSelfView).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.PauseButton).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.CloseButton).Displayed.Should().BeTrue();
@@ -99,7 +96,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the user can see themselves and toggle the view off and on")]
         public void ThenTheUserCanSeeThemselvesAndToggleTheViewOffAndOn()
         {
-            SwitchToTheJudgeIFrame();
+            StartOrResumeHearing();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.SelfView).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Click(HearingRoomPage.ToggleSelfView);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(HearingRoomPage.SelfView).Should().BeTrue();
@@ -117,7 +114,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Clerk can see the participants")]
         public void ThenTheClerkCanSeeTheOtherParticipants()
         {
-            SwitchToTheJudgeIFrame();
+            StartOrResumeHearing();
             new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser.Key]).Feed(HearingRoomPage.ClerkIncomingVideo);
         }
 
@@ -148,7 +145,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Then(@"the VHO can see that the Judge and (.*) participants are in the Hearing Room")]
-        public void ThenTheVHOCanSeeThatAllTheParticipantsAreInTheHearingRoom(string lastname)
+        public void ThenTheVHOCanSeeThatAllTheJudgeAndParticipantsAreInTheHearingRoom(string lastname)
         {
             SwitchToTheVhoIframe();
             var judgeId = _c.Test.Conference.Participants.First(x => x.User_role == UserRole.Judge).Id;
@@ -160,16 +157,15 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         public void ProgressToNextPage()
         {
-            SwitchToTheJudgeIFrame();
+            StartOrResumeHearing();
             WhenTheUserClicksClose();
         }
 
-        private void SwitchToTheJudgeIFrame()
+        private void StartOrResumeHearing()
         {
-            if (_c.Test.JudgeInIframe) return;
-            if (!_browsers[_c.CurrentUser.Key].IsDisplayed(By.Id(HearingRoomPage.JudgeIframeId))) return;
-            _browsers[_c.CurrentUser.Key].Driver.SwitchTo().Frame(HearingRoomPage.JudgeIframeId);
-            _c.Test.JudgeInIframe = true;
+            if (_browsers[_c.CurrentUser.Key].IsDisplayed(HearingRoomPage.PauseButton)) return;
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.StartVideoHearingButton).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Click(ClerkWaitingRoomPage.StartVideoHearingButton);
         }
 
         private void SwitchToTheVhoIframe()

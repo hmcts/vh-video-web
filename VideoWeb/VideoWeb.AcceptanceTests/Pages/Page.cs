@@ -28,8 +28,8 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly Page Rules = new Page("Rules", "hearing-rules");
         public static readonly Page Declaration = new Page("Declaration", "declaration");
         public static readonly Page WaitingRoom = new Page("Waiting Room", "waiting-room");
-        public static readonly Page Countdown = new Page("Countdown", "hearing-room");
-        public static readonly Page HearingRoom = new Page("Hearing Room", "hearing-room");
+        public static readonly Page Countdown = new Page("Countdown", "waiting-room");
+        public static readonly Page HearingRoom = new Page("Hearing Room", "waiting-room");
         public static readonly Page NotFound = new Page("Not Found", "not-found");
         public static readonly Page Unauthorised = new Page("Unauthorised", "unauthorised");
         public static readonly Page Help = new Page("Help", "get-help");
