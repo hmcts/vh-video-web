@@ -17,7 +17,7 @@ import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-ba
 @Component({
     selector: 'app-judge-waiting-room',
     templateUrl: './judge-waiting-room.component.html',
-    styleUrls: ['./judge-waiting-room.component.scss']
+    styleUrls: ['./judge-waiting-room.component.scss', '../waiting-room-global-styles.scss']
 })
 export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
     audioRecordingInterval: NodeJS.Timer;

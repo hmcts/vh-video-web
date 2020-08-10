@@ -17,6 +17,7 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
     @Input() isPrivateConsultation: boolean;
     @Input() outgoingStream: MediaStream | URL;
     @Input() conferenceId: string;
+    @Input() isSupportedBrowserForNetworkHealth: boolean;
 
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
