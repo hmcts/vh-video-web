@@ -62,6 +62,21 @@
                 />
               </span>
             </div>
+            <div class="govuk-table_cell cell-icon">
+              <app-participant-alert [participant]="mapParticipantToParticipantResponse(participant)"></app-participant-alert>
+            </div>
+            <div *ngIf="isParticipantDisconnected(participant)">
+              <div class="govuk-grid-row">
+                <div class="govuk-grid-column-three-quarters" style="margin-top: 4px;">
+                  <p class="disconnected">DISCONNECTED</p>
+                </div>
+                <div class="govuk-grid-column-one-quarter">
+                  <span class="tooltip">
+                    <img src="/assets/images/participant-disconnected.png" class="panel-icon" alt="participant disconnected" />
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

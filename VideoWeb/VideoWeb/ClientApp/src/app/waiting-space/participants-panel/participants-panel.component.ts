@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ParticipantForUserResponse, Role, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ParticipantForUserResponse, Role, ParticipantStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { ParticipantPanelModel } from '../models/participant-panel-model';
@@ -148,5 +148,18 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             participant.status,
             participant.pexip_display_name
         );
+    }
+
+    mapParticipantToParticipantResponse(participant: ParticipantPanelModel): ParticipantResponse {
+        const participantResponse = new ParticipantResponse();
+        participantResponse.id = participant.participantId;
+        participantResponse.status = participant.status;
+        participantResponse.display_name = participant.displayName;
+        participantResponse.role = participant.role;
+        participantResponse.case_type_group = participant.caseTypeGroup;
+        return participantResponse;
+    }
+    isParticipantDisconnected(participant: ParticipantPanelModel): boolean {
+        return participant.status === ParticipantStatus.Disconnected;
     }
 }
