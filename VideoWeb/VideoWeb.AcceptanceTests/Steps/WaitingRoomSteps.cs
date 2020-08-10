@@ -226,7 +226,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the Clerk starts the hearing")]
         public void ProgressToNextPage()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.StartHearingText).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.StartVideoHearingButton).Displayed.Should().BeTrue();
             CheckParticipantsAreStillConnected();
             _browsers[_c.CurrentUser.Key].Click(ClerkWaitingRoomPage.StartVideoHearingButton);
         }
