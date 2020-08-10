@@ -285,10 +285,18 @@ namespace VideoWeb.EventHub.Hub
                 var conference = await GetConference(conferenceId);
                 var participant = conference.Participants.Single(x => x.Id == participantId);
                 await Clients.Group(participant.Username.ToLowerInvariant()).ReceiveHeartbeat
-               (
-                   conferenceId, participantId, dto, heartbeat.BrowserName, heartbeat.BrowserVersion
-               );
+                (
+                    conferenceId, participantId, dto, heartbeat.BrowserName, heartbeat.BrowserVersion
+                );
 
+                if (!participant.IsJudge())
+                {
+                    var judge = conference.GetJudge();
+                    await Clients.Group(judge.Username.ToLowerInvariant()).ReceiveHeartbeat
+                    (
+                        conferenceId, participantId, dto, heartbeat.BrowserName, heartbeat.BrowserVersion
+                    );
+                }
                 var addHeartbeatRequest = _heartbeatRequestMapper.MapToRequest(heartbeat);
                 await _videoApiClient.SaveHeartbeatDataForParticipantAsync(conferenceId, participantId, addHeartbeatRequest);
             }

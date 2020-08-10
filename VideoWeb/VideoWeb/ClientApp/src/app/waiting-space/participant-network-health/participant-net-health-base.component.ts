@@ -11,14 +11,15 @@ export abstract class ParticipantNetworkHealthBaseComponent implements OnInit, O
     constructor(protected eventsService: EventsService) {}
 
     get isNetworkGood() {
-        console.log('ParticipantNetworkHealthBaseComponent -> PARTICIPANT ' + this.participant.display_name);
-        console.log('ParticipantNetworkHealthBaseComponent -> PARTICIPANT ID ' + this.participant.id);
-        console.log('ParticipantNetworkHealthBaseComponent -> NETWORK HEALTH ' + this.networkHealth);
         return this.networkHealth && this.networkHealth === HeartbeatHealth.Good;
     }
 
     get isVideoOn(): boolean {
         return this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation;
+    }
+
+    get isParticipantDisconnected(): boolean {
+        return this.participant.status === ParticipantStatus.Disconnected;
     }
 
     ngOnInit() {
@@ -34,7 +35,6 @@ export abstract class ParticipantNetworkHealthBaseComponent implements OnInit, O
     }
 
     handleHeartbeat(heartbeat: ParticipantHeartbeat): void {
-        console.log('ParticipantNetworkHealthBaseComponent -> heartbeat ' + heartbeat);
         if (this.participant.id === heartbeat.participantId) {
             this.networkHealth = heartbeat.heartbeatHealth;
         }
