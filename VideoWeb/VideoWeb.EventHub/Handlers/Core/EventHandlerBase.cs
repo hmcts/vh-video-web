@@ -18,8 +18,9 @@ namespace VideoWeb.EventHub.Handlers.Core
     public abstract class EventHandlerBase : IEventHandler
     {
         protected readonly IHubContext<Hub.EventHub, IEventHubClient> HubContext;
+        protected readonly ILogger<EventHandlerBase> Logger;
         private readonly IConferenceCache _conferenceCache;
-        private readonly ILogger<EventHandlerBase> _logger;
+        
         private readonly IVideoApiClient _videoApiClient;
 
         protected EventHandlerBase(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
@@ -27,7 +28,7 @@ namespace VideoWeb.EventHub.Handlers.Core
         {
             HubContext = hubContext;
             _conferenceCache = conferenceCache;
-            _logger = logger;
+            Logger = logger;
             _videoApiClient = videoApiClient;
         }
 
@@ -44,7 +45,7 @@ namespace VideoWeb.EventHub.Handlers.Core
             SourceParticipant = SourceConference.Participants
                 .SingleOrDefault(x => x.Id == callbackEvent.ParticipantId);
 
-            _logger.LogTrace($"Handling Event: {callbackEvent.EventType} for conferenceId {callbackEvent.ConferenceId} with reason " +
+            Logger.LogTrace($"Handling Event: {callbackEvent.EventType} for conferenceId {callbackEvent.ConferenceId} with reason " +
                 $"{callbackEvent.Reason} at Timestamp: { (DateTime.Now) :yyyy-MM-dd HH:mm:ss.fffffff}");
             await PublishStatusAsync(callbackEvent);
         }
@@ -66,13 +67,13 @@ namespace VideoWeb.EventHub.Handlers.Core
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
                     .ParticipantStatusMessage(SourceParticipant.Id, SourceParticipant.Username, SourceConference.Id, participantState);
-                _logger.LogTrace($"Participant Status: Participant Id: { participant.Id } | " +
+                Logger.LogTrace($"Participant Status: Participant Id: { participant.Id } | " +
                     $"Role: { participant.Role } | Participant State: { participantState } | Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
             }
             
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .ParticipantStatusMessage(SourceParticipant.Id, SourceParticipant.Username, SourceConference.Id, participantState);
-            _logger.LogTrace($"Participant Status: Participant Id: { SourceParticipant.Id } | " +
+            Logger.LogTrace($"Participant Status: Participant Id: { SourceParticipant.Id } | " +
                 $"Role: { SourceParticipant.Role } | Participant State: { participantState } | Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
         }
 
@@ -87,7 +88,7 @@ namespace VideoWeb.EventHub.Handlers.Core
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
                     .ConferenceStatusMessage(SourceConference.Id, hearingEventStatus);
-                _logger.LogTrace($"Conference Status: Conference Id: { SourceConference.Id } | Participant Id: { participant.Id } | " +
+                Logger.LogTrace($"Conference Status: Conference Id: { SourceConference.Id } | Participant Id: { participant.Id } | " +
                     $"Role: { participant.Role } | Participant State: { hearingEventStatus } | Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
             }
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
