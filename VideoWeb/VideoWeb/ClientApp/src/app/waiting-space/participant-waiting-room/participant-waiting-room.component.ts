@@ -18,7 +18,7 @@ import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-ba
 @Component({
     selector: 'app-participant-waiting-room',
     templateUrl: './participant-waiting-room.component.html',
-    styleUrls: ['./participant-waiting-room.component.scss']
+    styleUrls: ['./participant-waiting-room.component.scss', '../waiting-room-global-styles.scss']
 })
 export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
     currentTime: Date;
