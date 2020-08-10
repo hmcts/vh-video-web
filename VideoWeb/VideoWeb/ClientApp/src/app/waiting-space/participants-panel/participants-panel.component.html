@@ -52,9 +52,14 @@
               </span>
             </div>
             <div class="govuk-table_cell cell-icon">
-              <span *ngIf="!isLowerAllHands" class="tooltip">
+              <span *ngIf="participant.handRaised" class="tooltip">
                 <span class="top" [ngClass]="{ 'tooltip-collapse-hand': !expandPanel }"> Lower hand {{ participant.displayName }} </span>
-                <img src="/assets/images/hand-yellow.png" class="panel-icon" alt="Hand on icon" />
+                <img
+                  src="/assets/images/hand-yellow.png"
+                  class="panel-icon"
+                  alt="Hand on icon"
+                  (click)="lowerParticipantHand(participant.participantId)"
+                />
               </span>
             </div>
           </div>
@@ -79,25 +84,13 @@
             <span class="top" [ngClass]="{ 'tooltip-collapse-btn': !expandPanel }">
               Mute all participants
             </span>
-            <img
-              src="/assets/images/mute-mic-red.png"
-              class="panel-icon vh-mr-icon"
-              alt="Microphon off icon"
-              (click)="toggleMuteAll()"
-              style="cursor: pointer;"
-            />
+            <img src="/assets/images/mute-mic-red.png" class="panel-icon vh-mr-icon" alt="Microphon off icon" (click)="toggleMuteAll()" />
           </span>
           <span class="tooltip">
             <span class="top" [ngClass]="{ 'tooltip-collapse-btn': !expandPanel }">
               Lower all hands
             </span>
-            <img
-              src="/assets/images/no-hand.png"
-              class="panel-icon"
-              alt="Lower all hand icon"
-              (click)="lowerAllHands()"
-              style="cursor: pointer;"
-            />
+            <img src="/assets/images/no-hand.png" class="panel-icon" alt="Lower all hand icon" (click)="lowerAllHands()" />
           </span>
         </div>
       </ng-template>

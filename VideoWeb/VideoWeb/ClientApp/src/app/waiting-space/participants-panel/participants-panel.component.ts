@@ -19,7 +19,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     participants: ParticipantPanelModel[] = [];
     expandPanel = true;
     isMuteAll = false;
-    isLowerAllHands = true;
     conferenceId: string;
 
     videoCallSubscription$ = new Subscription();
@@ -132,7 +131,12 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     lowerAllHands() {
-        this.isLowerAllHands = !this.isLowerAllHands;
+        this.videoCallService.lowerAllHands();
+    }
+
+    lowerParticipantHand(participantId: string) {
+        const participant = this.participants.find(x => x.participantId === participantId);
+        this.videoCallService.lowerHandById(participant.pexipId);
     }
 
     private mapParticipant(participant: ParticipantForUserResponse): ParticipantPanelModel {
