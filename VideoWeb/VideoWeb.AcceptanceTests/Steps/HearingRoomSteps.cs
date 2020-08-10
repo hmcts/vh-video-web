@@ -167,8 +167,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         private void SwitchToTheJudgeIFrame()
         {
             if (_c.Test.JudgeInIframe) return;
-            if (!_browsers[_c.CurrentUser.Key].IsDisplayed(By.Id(HearingRoomPage.JudgeIframeId))) return;
-            _browsers[_c.CurrentUser.Key].Driver.SwitchTo().Frame(HearingRoomPage.JudgeIframeId);
+            if (!_browsers[_c.CurrentUser.Key].IsDisplayed(HearingRoomPage.PauseButton))
+            {
+                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.StartVideoHearingButton).Displayed.Should().BeTrue();
+                _browsers[_c.CurrentUser.Key].Driver.FindElement(ClerkWaitingRoomPage.StartVideoHearingButton).Click();
+            }
             _c.Test.JudgeInIframe = true;
         }
 

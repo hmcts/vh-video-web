@@ -10,8 +10,7 @@ Scenario: Clerk pauses and closes hearing
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
 	Then the participant status for Individual01 is displayed as Connected
 	When the Clerk starts the hearing
-	Then the user is on the Countdown page
-	When the countdown finishes
+	And the countdown finishes
   Then the hearing status changed to InSession
 	And the Clerk is on the Hearing Room page for 20 seconds
 	When the Clerk clicks pause
