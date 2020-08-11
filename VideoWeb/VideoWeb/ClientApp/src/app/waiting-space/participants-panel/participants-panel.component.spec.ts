@@ -190,4 +190,12 @@ describe('ParticipantsPanelComponent', () => {
         component.lowerParticipantHand(pat.participantId);
         expect(videocallService.lowerHandById).toHaveBeenCalledWith(pat.pexipId);
     });
+    it('should return true when participant is disconnected', () => {
+        const pat = new ParticipantPanelModel('1111', 'test run', Role.Individual, 'group1', ParticipantStatus.Disconnected, 'pexipName');
+        expect(component.isParticipantDisconnected(pat)).toBeTruthy();
+    });
+    it('should return false when participant is not disconnected', () => {
+        const pat = new ParticipantPanelModel('1111', 'test run', Role.Individual, 'group1', ParticipantStatus.InHearing, 'pexipName');
+        expect(component.isParticipantDisconnected(pat)).toBeFalsy();
+    });
 });

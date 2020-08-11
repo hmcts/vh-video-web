@@ -18,10 +18,6 @@ export abstract class ParticipantNetworkHealthBaseComponent implements OnInit, O
         return this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation;
     }
 
-    get isParticipantDisconnected(): boolean {
-        return this.participant.status === ParticipantStatus.Disconnected;
-    }
-
     ngOnInit() {
         this.setupSubscribers();
     }

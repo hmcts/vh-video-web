@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
@@ -20,6 +20,8 @@ namespace VideoWeb.UnitTests.Hub
             var participantUsername = "individual@test.com";
             var conference = InitConference(participantUsername);
             var participant = conference.Participants.First(x => x.Username == participantUsername);
+            var judge = conference.Participants.First(x => x.Role == Role.Judge);
+            var judgeName = judge.Username;
             
             var conferenceId = conference.Id;
             var participantId = participant.Id;
@@ -36,8 +38,10 @@ namespace VideoWeb.UnitTests.Hub
             
             var mockAdminClient = new Mock<IEventHubClient>();
             var mockParticipantClient = new Mock<IEventHubClient>();
+            var mockJudgeClient = new Mock<IEventHubClient>();
             EventHubClientMock.Setup(x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName)).Returns(mockAdminClient.Object);
             EventHubClientMock.Setup(x => x.Group(participantUsername.ToLowerInvariant())).Returns(mockParticipantClient.Object);
+            EventHubClientMock.Setup(x => x.Group(judgeName.ToLowerInvariant())).Returns(mockJudgeClient.Object);
             HeartbeatMapper.Setup(x => x.MapToHealth(heartbeat)).Returns(HeartbeatHealth.Good);
             var addHeartbeatRequest = new AddHeartbeatRequest
             {
@@ -64,7 +68,16 @@ namespace VideoWeb.UnitTests.Hub
                 ), 
                 Times.Once
             );
-            
+
+            mockJudgeClient.Verify
+            (
+                x => x.ReceiveHeartbeat
+                (
+                    conferenceId, participantId, HeartbeatHealth.Good, heartbeat.BrowserName, heartbeat.BrowserVersion
+                ),
+                Times.Once
+            );
+
             VideoApiClientMock.Verify
             (
                 x => x.SaveHeartbeatDataForParticipantAsync(conferenceId, participantId, addHeartbeatRequest), 

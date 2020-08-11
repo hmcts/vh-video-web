@@ -152,7 +152,7 @@
 .disconnected {
   @include govuk-font(16, $weight: 'bold', $tabular: false, $line-height: false);
   color: govuk-colour('red');
-  margin: 8px 8px;
+  margin: 4px 4px;
 }
 
 .tooltip-collapse-alert {
