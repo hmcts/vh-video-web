@@ -87,6 +87,12 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         participant.pexipId = updatedParticipant.uuid;
         participant.isMuted = updatedParticipant.isRemoteMuted;
         participant.handRaised = updatedParticipant.handRaised;
+        this.checkParticipantMuteAllStatus();
+    }
+
+    checkParticipantMuteAllStatus() {
+        const numberOfMutedParticipants = this.participants.filter(x => x.isMuted).length;
+        this.isMuteAll = numberOfMutedParticipants > 0;
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
