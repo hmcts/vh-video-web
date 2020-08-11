@@ -143,6 +143,15 @@ describe('ParticipantsPanelComponent', () => {
         expect(result.handRaised).toBeTruthy();
     });
 
+    it('should display unmute all when at least one participant is muted', () => {
+        component.setupVideoCallSubscribers();
+        const pat = component.participants.filter(x => x.role !== Role.Judge)[0];
+        const payload = new ParticipantUpdated('YES', 1, pat.pexipDisplayName, Guid.create().toString());
+
+        onParticipantUpdatedMock.next(payload);
+        expect(component.isMuteAll).toBeTruthy();
+    });
+
     it('should not process video call participant updates not in list', () => {
         component.setupVideoCallSubscribers();
         const pat = component.participants.filter(x => x.role !== Role.Judge)[1];
