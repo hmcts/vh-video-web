@@ -38,12 +38,12 @@
   margin-left: 1vw;
 }
 
-#toggle-hand-button.govuk-button:focus {
+#toggle-hand-button .govuk-button:focus {
   background-color: govuk-colour('green');
   color: govuk-colour('white');
 }
 
-#toggle-hand-button.govuk-button--warning:focus {
+#toggle-handup-button .govuk-button--warning:focus {
   background-color: govuk-colour('red');
   color: govuk-colour('white');
 }
