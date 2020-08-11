@@ -242,7 +242,9 @@ export abstract class WaitingRoomBaseComponent {
     }
 
     disconnect() {
-        this.videoCallService.disconnectFromCall();
+        if (this.connected) {
+            this.videoCallService.disconnectFromCall();
+        }
         this.stream = null;
         this.outgoingStream = null;
         this.connected = false;
