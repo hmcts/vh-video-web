@@ -1,11 +1,11 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
-import { VideoCallService } from '../services/video-call.service';
-import { Logger } from 'src/app/services/logging/logger-base';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { ParticipantUpdated } from '../models/video-call-models';
+import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { ParticipantUpdated } from '../models/video-call-models';
+import { VideoCallService } from '../services/video-call.service';
 
 @Component({
     selector: 'app-hearing-controls',
@@ -29,6 +29,9 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
 
     constructor(private videoCallService: VideoCallService, private eventService: EventsService, private logger: Logger) {
         this.handRaised = false;
+        this.audioMuted = false;
+        this.remoteMuted = false;
+        this.selfViewOpen = false;
     }
 
     get isJudge(): boolean {
@@ -38,6 +41,13 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.setupVideoCallSubscribers();
         this.setupEventhubSubscribers();
+        if (this.isJudge) {
+            this.toggleView();
+        }
+
+        if (!this.isJudge && !this.audioMuted) {
+            this.toggleMute();
+        }
     }
 
     setupEventhubSubscribers() {
@@ -98,6 +108,10 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
     handleHearingCountdownComplete(conferenceId: string) {
         if (this.isJudge && conferenceId === this.conferenceId) {
             this.resetMute();
+        }
+
+        if (!this.isJudge && conferenceId === this.conferenceId && !this.audioMuted) {
+            this.toggleMute();
         }
     }
 

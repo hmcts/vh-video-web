@@ -30,11 +30,30 @@ describe('HearingControlsComponent', () => {
         component = new HearingControlsComponent(videoCallService, eventsService, logger);
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
-        component.ngOnInit();
+        component.setupEventhubSubscribers();
+        component.setupVideoCallSubscribers();
     });
 
     afterEach(() => {
         component.ngOnDestroy();
+    });
+
+    it('should open self-view by default for judge', () => {
+        component.participant = gloalConference.participants.find(x => x.role === Role.Judge);
+        component.ngOnInit();
+        expect(component.selfViewOpen).toBeTruthy();
+    });
+
+    it('should mute non-judge by default', () => {
+        component.participant = gloalConference.participants.find(x => x.role === Role.Individual);
+        component.ngOnInit();
+        expect(videoCallService.toggleMute).toHaveBeenCalled();
+    });
+
+    it('should close self-view by default for non judge participants', () => {
+        component.participant = gloalConference.participants.find(x => x.role === Role.Individual);
+        component.ngOnInit();
+        expect(component.selfViewOpen).toBeFalsy();
     });
 
     it('should raise hand on toggle if hand not raised', () => {
@@ -231,8 +250,18 @@ describe('HearingControlsComponent', () => {
         component.audioMuted = true;
         component.participant = gloalConference.participants.filter(x => x.role === Role.Individual)[0];
 
-        hearingCountdownCompleteSubjectMock.next(gloalConference.toString());
+        hearingCountdownCompleteSubjectMock.next(globalParticipant.id.toString());
 
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(0);
+    });
+
+    it('should make sure non-judge participants are muted after countdown is complete', () => {
+        component.participant = gloalConference.participants.find(x => x.role === Role.Individual);
+        component.audioMuted = false;
+        videoCallService.toggleMute.calls.reset();
+
+        hearingCountdownCompleteSubjectMock.next(gloalConference.id.toString());
+
+        expect(videoCallService.toggleMute).toHaveBeenCalledTimes(1);
     });
 });

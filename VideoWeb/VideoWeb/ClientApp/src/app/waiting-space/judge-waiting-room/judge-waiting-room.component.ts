@@ -65,11 +65,15 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     @HostListener('window:beforeunload')
     async ngOnDestroy(): Promise<void> {
         this.logger.debug('[Judge WR] - Clearing intervals and subscriptions for judge waiting room');
+        this.executeEndHearingSequence();
+        this.eventHubSubscription$.unsubscribe();
+        this.videoCallSubscription$.unsubscribe();
+    }
+
+    executeEndHearingSequence() {
         clearTimeout(this.callbackTimeout);
         clearInterval(this.audioRecordingInterval);
         this.disconnect();
-        this.eventHubSubscription$.unsubscribe();
-        this.videoCallSubscription$.unsubscribe();
     }
 
     updateShowVideo(): void {
@@ -138,6 +142,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
         super.handleConferenceStatusChange(message);
         if (this.validateIsForConference(message.conferenceId) && message.status === ConferenceStatus.Closed) {
+            this.executeEndHearingSequence();
             this.router.navigate([pageUrls.JudgeHearingList]);
         }
     }
