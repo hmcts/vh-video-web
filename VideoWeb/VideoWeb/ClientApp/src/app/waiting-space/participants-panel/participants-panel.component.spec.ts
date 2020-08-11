@@ -198,4 +198,12 @@ describe('ParticipantsPanelComponent', () => {
         const pat = new ParticipantPanelModel('1111', 'test run', Role.Individual, 'group1', ParticipantStatus.InHearing, 'pexipName');
         expect(component.isParticipantDisconnected(pat)).toBeFalsy();
     });
+    it('should map the participant panel model to the participant response model', () => {
+        const ppm = new ParticipantPanelModel('1111', 'test run', Role.Individual, 'group1', ParticipantStatus.InHearing, 'pexipName');
+        const pr = component.mapParticipantToParticipantResponse(ppm);
+        expect(pr.id).toBe(ppm.participantId);
+        expect(pr.role).toBe(ppm.role);
+        expect(pr.status).toBe(ppm.status);
+        expect(pr.display_name).toBe(ppm.displayName);
+    });
 });
