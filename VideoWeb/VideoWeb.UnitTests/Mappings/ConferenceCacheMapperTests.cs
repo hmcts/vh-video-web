@@ -30,6 +30,10 @@ namespace VideoWeb.UnitTests.Mappings
             resultParticipant.Username.Should().Be(participant.Username);
             resultParticipant.Role.Should().Be(participant.User_role);
             resultParticipant.DisplayName.Should().Be(participant.Display_name);
+            resultParticipant.FirstName.Should().Be(participant.First_name);
+            resultParticipant.LastName.Should().Be(participant.Last_name);
+            resultParticipant.ContactEmail.Should().Be(participant.Contact_email);
+            resultParticipant.ContactTelephone.Should().Be(participant.Contact_telephone);
         }
 
         private static ConferenceDetailsResponse BuildConferenceDetailsResponse()
