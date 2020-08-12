@@ -53,7 +53,7 @@
             </div>
             <div class="govuk-table_cell cell-icon">
               <span *ngIf="participant.handRaised" class="tooltip">
-                <span class="top govuk-body-s--white" [ngClass]="{ 'tooltip-collapse-hand': !expandPanel }">
+                <span class="top govuk-body-s--white" [ngClass]="expandPanel ? 'tooltip-expand-hand' : 'tooltip-collapse-hand'">
                   Lower hand {{ participant.displayName }}</span
                 >
                 <img
