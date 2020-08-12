@@ -117,9 +117,9 @@
 }
 
 .top {
-  max-width: 150px;
   margin-left: 0;
-  transform: translate(-60%, -90%);
+  margin-left: -60%;
+  margin-top: -130%;
   padding: 5px;
   color: govuk-colour('white');
   background-color: govuk-colour('black');
@@ -130,20 +130,29 @@
   position: absolute;
   z-index: 9999;
   display: none;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
+  font-family: sans-serif;
+}
+
+.tooltip-expand-hand {
+  margin-left: -65%;
+  margin-top: -200%;
 }
 
 .tooltip-collapse {
-  transform: translate(0, -90%);
+  margin-left: 0;
+  margin-top: -130%;
 }
 
 .tooltip-collapse-hand {
-  transform: translate(-15%, -90%);
   min-width: 75px;
+  margin-left: -65%;
+  margin-top: -160%;
 }
 
 .tooltip-collapse-btn {
-  transform: translate(0, -100%);
+  margin-left: 0;
+  margin-top: -130%;
 }
 
 .tooltip:hover .top {

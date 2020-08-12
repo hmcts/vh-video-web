@@ -78,27 +78,39 @@
           </button>
 
           <!-- toggle hand raise/lower-->
-
-          <button
-            *ngIf="!isPrivateConsultation && !isJudge"
-            id="toggle-hand-button"
-            data-module="govuk-button"
-            type="button"
-            class="govuk-button reduce-margin hand"
-            [ngClass]="handRaised ? 'govuk-button--warning' : ''"
-            aria-label="Toggle hand raised status"
-            (click)="toggleHandRaised()"
-          >
-            {{ handToggleText }}
-            <span class="govuk-button__start-icon">
-              <img
-                id="toggle-hand-img"
-                class="microphoneIcon"
-                [src]="handRaised ? '/assets/images/hand.png' : '/assets/images/no-hand.png'"
-                alt="Raise"
-              />
-            </span>
-          </button>
+          <span *ngIf="!isPrivateConsultation && !isJudge">
+            <!--lowed hand-->
+            <button
+              *ngIf="!handRaised; else handup"
+              id="toggle-hand-button"
+              data-module="govuk-button"
+              type="button"
+              class="govuk-button reduce-margin hand"
+              aria-label="Hand lowered status"
+              (click)="toggleHandRaised()"
+            >
+              {{ handToggleText }}
+              <span class="govuk-button__start-icon">
+                <img id="toggle-hand-img" class="microphoneIcon" src="/assets/images/no-hand.png" alt="Raise" />
+              </span>
+            </button>
+            <!-- raised hand-->
+            <ng-template #handup>
+              <button
+                id="toggle-handup-button"
+                data-module="govuk-button"
+                type="button"
+                class="govuk-button govuk-button--warning reduce-margin hand"
+                aria-label="Hand raised status"
+                (click)="toggleHandRaised()"
+              >
+                {{ handToggleText }}
+                <span class="govuk-button__start-icon">
+                  <img id="toggle-hand-img" class="microphoneIcon" src="/assets/images/hand.png" alt="Raise" />
+                </span>
+              </button>
+            </ng-template>
+          </span>
         </span>
       </div>
       <!-- Judge-only controls-->
