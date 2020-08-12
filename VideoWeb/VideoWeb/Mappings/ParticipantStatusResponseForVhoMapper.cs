@@ -13,7 +13,6 @@ namespace VideoWeb.Mappings
     {
         public static IEnumerable<ParticipantContactDetailsResponseVho> MapParticipantsTo(
             Conference conference,
-            IEnumerable<BookingParticipant> bookingParticipants,
             IEnumerable<JudgeInHearingResponse> judgesInHearings)
         {
             var conferenceId = conference.Id;
@@ -24,7 +23,6 @@ namespace VideoWeb.Mappings
                 .Select(x =>
                 {
                     var status = Enum.Parse<ParticipantStatus>(x.ParticipantStatus.ToString());
-                    var bookingParticipant = bookingParticipants.SingleOrDefault(p => p.Id == x.RefId);
                     var judgeInHearing = judgesInHearings.SingleOrDefault(j => j.Username == x.Username && j.Id != x.Id);
 
                     return new ParticipantContactDetailsResponseVho
@@ -36,12 +34,12 @@ namespace VideoWeb.Mappings
                         Username = x.Username,
                         CaseTypeGroup = x.CaseTypeGroup,
                         RefId = x.RefId,
-                        FirstName = bookingParticipant?.First_name,
-                        LastName = bookingParticipant?.Last_name,
+                        FirstName = x.FirstName,
+                        LastName = x.LastName,
                         DisplayName = x.DisplayName,
                         Status = status,
-                        ContactEmail = bookingParticipant?.Contact_email,
-                        ContactTelephone = bookingParticipant?.Telephone_number,
+                        ContactEmail = x.ContactEmail,
+                        ContactTelephone = x.ContactTelephone,
                         HearingVenueName = hearingVenueName,
                         JudgeInAnotherHearing = judgeInHearing != null
                     };
