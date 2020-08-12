@@ -8,12 +8,13 @@
   max-height: 50%;
   padding-right: 10px;
   position: relative;
-  z-index: 100;
+  z-index: 101;
   -webkit-box-shadow: -3px 0px 5px 0px rgba(0, 0, 0, 0.2);
   box-shadow: -3px 0px 5px 0px rgba(0, 0, 0, 0.2);
   opacity: 0.8;
   overflow-y: auto;
   overflow-x: hidden;
+  overflow: visible;
 }
 
 .table-br {
@@ -112,7 +113,6 @@
 .tooltip {
   display: inline-block;
   position: relative;
-  border-bottom: 1px dotted #666;
   text-align: left;
 }
 
@@ -128,7 +128,7 @@
   border-radius: 4px;
   border: 1px solid govuk-colour('dark-grey');
   position: absolute;
-  z-index: 9999;
+  z-index: 111;
   display: none;
   overflow-wrap: normal;
   font-family: sans-serif;
