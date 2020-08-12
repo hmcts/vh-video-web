@@ -189,6 +189,30 @@ describe('ParticipantsPanelComponent', () => {
         component.toggleMuteParticipant(pat);
         expect(videocallService.muteParticipant).toHaveBeenCalledWith(pat.pexipId, true);
     });
+
+    it('should unmute conference when last participant is unmuted after a conference mute', () => {
+        videocallService.muteAllParticipants.calls.reset();
+        component.isMuteAll = true;
+        const pat = component.participants[0];
+        pat.isMuted = true;
+
+        component.toggleMuteParticipant(pat);
+
+        expect(videocallService.muteAllParticipants).toHaveBeenCalledWith(false);
+    });
+
+    it('should not unmute conference when second last participant is unmuted after a conference mute', () => {
+        videocallService.muteAllParticipants.calls.reset();
+        component.isMuteAll = true;
+        const pat = component.participants[0];
+        pat.isMuted = true;
+        component.participants[1].isMuted = true;
+
+        component.toggleMuteParticipant(pat);
+
+        expect(videocallService.muteAllParticipants).toHaveBeenCalledTimes(0);
+    });
+
     it('should lower hand for all participants', () => {
         component.lowerAllHands();
         expect(videocallService.lowerAllHands).toHaveBeenCalled();
