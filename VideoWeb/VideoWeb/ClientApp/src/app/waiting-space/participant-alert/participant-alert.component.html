@@ -4,3 +4,14 @@
     <img *ngIf="!isNetworkGood" src="/assets/images/alert-1.png" class="panel-icon-alert" alt="Hand on icon" />
   </span>
 </div>
+
+<div *ngIf="isDisconnected" class="govuk-grid-row">
+  <div class="govuk-grid-column-three-quarters">
+    <p class="disconnected">DISCONNECTED</p>
+  </div>
+  <div class="govuk-grid-column-one-quarter">
+    <span class="tooltip">
+      <img src="/assets/images/participant-disconnected.png" class="panel-icon" alt="participant disconnected" />
+    </span>
+  </div>
+</div>

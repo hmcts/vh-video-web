@@ -32,22 +32,26 @@
         <div class="govuk-table_row vh-line" *ngFor="let participant of participants; let i = index">
           <div *ngIf="isParticipantInHearing(participant)">
             <div class="govuk-table_cell govuk-body-s--white vh-name" *ngIf="expandPanel">
-              <span class="govuk-!-margin-bottom-3 govuk-!-margin-top-2 vh-panel-name">
+              <span class="govuk-!-margin-top-2 vh-panel-name">
                 {{ participant.displayName }}
               </span>
             </div>
             <ng-container *ngIf="!isParticipantDisconnected(participant); else participantDisconnected">
+              <div class="govuk-table_cell govuk-body-s--white vh-name" *ngIf="expandPanel">
+                <span class="vh-panel-name">
+                  {{ participant.role }}
+                </span>
+              </div>
               <div class="govuk-table_cell cell-icon">
                 <span> </span>
                 <span class="tooltip">
                   <span class="top" [ngClass]="{ 'tooltip-collapse': !expandPanel }">
                     {{ participant.displayName }}
                   </span>
-
                   <img
-                  [src]="participant.isMuted ? '/assets/images/mute-mic-red.png' : '/assets/images/mic.png'"
+                    [src]="participant.isMuted ? '/assets/images/mute-mic-red.png' : '/assets/images/mic.png'"
                     class="panel-icon"
-                  [alt]="participant.isMuted ? 'Microphone muted icon' : 'Microphone on icon'"
+                    [alt]="participant.isMuted ? 'Microphone muted icon' : 'Microphone on icon'"
                     (click)="toggleMuteParticipant(participant)"
                   />
                 </span>
@@ -68,16 +72,7 @@
               </div>
             </ng-container>
             <ng-template #participantDisconnected>
-              <div class="govuk-grid-row">
-                <div class="govuk-grid-column-three-quarters">
-                  <p class="disconnected">DISCONNECTED</p>
-                </div>
-                <div class="govuk-grid-column-one-quarter">
-                  <span class="tooltip">
-                    <img src="/assets/images/participant-disconnected.png" class="panel-icon" alt="participant disconnected" />
-                  </span>
-                </div>
-              </div>
+              <app-participant-alert [participant]="mapParticipantToParticipantResponse(participant)"></app-participant-alert>
             </ng-template>
           </div>
         </div>
