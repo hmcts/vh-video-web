@@ -19,7 +19,6 @@ using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
-using ParticipantResponse = VideoWeb.Services.Bookings.ParticipantResponse;
 using ProblemDetails = VideoWeb.Services.User.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
@@ -30,7 +29,6 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         private Mock<IVideoApiClient> _videoApiClientMock;
         private Mock<ILogger<ParticipantsController>> _mockLogger;
         private Mock<IConferenceCache> _mockConferenceCache;
-        private Mock<IBookingsApiClient> _bookingsApiClientMock;
         private List<Participant> _participants;
         private ParticipantsController _controller;
 
@@ -41,7 +39,6 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _videoApiClientMock = new Mock<IVideoApiClient>();
             _mockLogger = new Mock<ILogger<ParticipantsController>>(MockBehavior.Loose);
             _mockConferenceCache = new Mock<IConferenceCache>();
-            _bookingsApiClientMock = new Mock<IBookingsApiClient>();
 
             var judge = CreateParticipant("Judge", "Judge");
             var individual = CreateParticipant("Individual", "Claimant");
@@ -64,13 +61,6 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var judge3DifferentHearing = CreateParticipant("judge3", "Judge");
             conference.Participants = _participants;
 
-            var bookingParticipants = new List<ParticipantResponse>
-            {
-                new ParticipantResponse{Id = _participants[0].RefId, First_name = "judge1", Last_name = "judge1", Contact_email = "judge1", Telephone_number = "judge1"},
-                new ParticipantResponse{Id = _participants[1].RefId, First_name = "judge2", Last_name = "judge2", Contact_email = "judge2", Telephone_number = "judge2"},
-                new ParticipantResponse{Id = _participants[2].RefId, First_name = "judge3", Last_name = "judge3", Contact_email = "judge3", Telephone_number = "judge3"}
-            };
-
             var judgesInHearings = new List<JudgeInHearingResponse>
             {
                 new JudgeInHearingResponse{ Id = judge3DifferentHearing.Id, Username = _participants[2].Username, Status = ParticipantState.InHearing }
@@ -79,8 +69,6 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _mockConferenceCache.Setup(x => x.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
-            _bookingsApiClientMock.Setup(x => x.GetAllParticipantsInHearingAsync(conference.HearingId))
-                .ReturnsAsync(bookingParticipants);
             _videoApiClientMock
                 .Setup(x => x.GetJudgesInHearingsTodayAsync())
                 .ReturnsAsync(judgesInHearings);
@@ -94,9 +82,9 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             results.Should().NotBeNullOrEmpty();
             results.Count.Should().Be(3);
 
-            AssertResponseItem(results.ElementAt(0), conference.Participants[1], conferenceId, bookingParticipants[1], false);
-            AssertResponseItem(results.ElementAt(1), conference.Participants[2], conferenceId, bookingParticipants[2], true);
-            AssertResponseItem(results.ElementAt(2), conference.Participants[0], conferenceId, bookingParticipants[0], false);
+            AssertResponseItem(results.ElementAt(0), conference.Participants[1], conferenceId, false);
+            AssertResponseItem(results.ElementAt(1), conference.Participants[2], conferenceId, true);
+            AssertResponseItem(results.ElementAt(2), conference.Participants[0], conferenceId, false);
         }
 
         [Test]
@@ -136,34 +124,9 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
-        
-        [Test]
-        public async Task Should_throw_error_when_get_booking_api_throws_error()
-        {
-            var conferenceId = Guid.NewGuid();
-            var conference = CreateValidConference(conferenceId);
-
-            conference.Participants = _participants;
-
-            _mockConferenceCache.Setup(x => x.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(conference);
-            
-            var apiException = new BookingsApiException("Hearing does not exist", (int)HttpStatusCode.NotFound,
-                "Invalid Hearing Id", null, null);
-            _mockConferenceCache.Setup(x => x.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(conference);
-            _bookingsApiClientMock.Setup(x => x.GetAllParticipantsInHearingAsync(conference.HearingId))
-                .ThrowsAsync(apiException);
-        
-            var result = await _controller.GetParticipantsWithContactDetailsByConferenceIdAsync(conferenceId);
-            var typedResult = (ObjectResult)result;
-            typedResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
-        }
 
         private static void AssertResponseItem(ParticipantContactDetailsResponseVho response, Participant participant, 
-            Guid conferenceId, ParticipantResponse bookingParticipant, bool isInAnotherHearing)
+            Guid conferenceId, bool isInAnotherHearing)
         {
             response.Id.Should().Be(participant.Id);
             response.ConferenceId.Should().Be(conferenceId);
@@ -172,12 +135,12 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             response.Username.Should().Be(participant.Username);
             response.CaseTypeGroup.Should().Be(participant.CaseTypeGroup);
             response.RefId.Should().Be(participant.RefId);
-            response.FirstName.Should().Be(bookingParticipant.First_name);
-            response.LastName.Should().Be(bookingParticipant.Last_name);
+            response.FirstName.Should().Be(participant.FirstName);
+            response.LastName.Should().Be(participant.LastName);
             response.DisplayName.Should().Be(participant.DisplayName);
             response.Status.Should().Be(participant.ParticipantStatus);
-            response.ContactEmail.Should().Be(bookingParticipant.Contact_email);
-            response.ContactTelephone.Should().Be(bookingParticipant.Telephone_number);
+            response.ContactEmail.Should().Be(participant.ContactEmail);
+            response.ContactTelephone.Should().Be(participant.ContactTelephone);
             response.HearingVenueName.Should().Be("MyVenue");
             response.JudgeInAnotherHearing.Should().Be(isInAnotherHearing);
         }
@@ -218,7 +181,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
 
             var eventHandlerFactory = new EventHandlerFactory(_eventComponentHelper.GetHandlers());
             return new ParticipantsController(_videoApiClientMock.Object, eventHandlerFactory, _mockConferenceCache.Object, 
-                _mockLogger.Object, _bookingsApiClientMock.Object)
+                _mockLogger.Object)
             {
                 ControllerContext = context
             };
