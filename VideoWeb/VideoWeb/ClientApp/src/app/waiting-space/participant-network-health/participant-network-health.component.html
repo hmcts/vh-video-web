@@ -2,7 +2,7 @@
   <div class="govuk-grid-column-full">
     <ng-container *ngIf="isNetworkGood; else poorNetwork">
       <p class="govuk-body govuk-!-font-weight-bold health-text">
-        Your internet connection is good!
+        Your internet connection is good
         <span class="govuk-button__start-icon">
           <img id="network-good-img" class="networkIcon" src="/assets/images/connected-good-signal.png" alt="Good network icon" />
         </span>
@@ -10,7 +10,7 @@
     </ng-container>
     <ng-template #poorNetwork>
       <p class="govuk-body govuk-!-font-weight-bold health-text govuk-!-margin-bottom-0">
-        Your internet connection is poor!
+        Your internet connection is poor
         <span class="govuk-button__start-icon">
           <img id="network-bad-img" class="networkIcon" src="/assets/images/alert-1.png" alt="Good network icon" />
         </span>
