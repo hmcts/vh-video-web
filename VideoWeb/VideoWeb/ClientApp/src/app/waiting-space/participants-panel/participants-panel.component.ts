@@ -132,8 +132,14 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     toggleMuteParticipant(participant: ParticipantPanelModel) {
+        const numberOfMutedParticipants = this.participants.filter(x => x.isMuted).length;
         const p = this.participants.find(x => x.participantId === participant.participantId);
         this.videoCallService.muteParticipant(p.pexipId, !p.isMuted);
+
+        // check if last person to be unmuted manually
+        if (numberOfMutedParticipants === 1 && this.isMuteAll) {
+            this.videoCallService.muteAllParticipants(false);
+        }
     }
 
     lowerAllHands() {
